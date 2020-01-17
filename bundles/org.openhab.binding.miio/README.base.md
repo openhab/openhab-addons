@@ -20,6 +20,19 @@ The following things types are available:
 
 !!!devices
 
+# Advanced: Unsupported devices
+
+Newer devices may not yet be supported. However, many devices share large similarties with existing devices.
+The binding allows to try/test if your new device is working with database files of older devices as well.
+For this, first remove your unsupported thing. Manually add a miio:basic thing. Besides the regular configuration (like ip address, token) the modelId needs to be provided.
+Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
+Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
+
+# Advanced: adding local database files to support new devices
+
+Things using the basic handler (miio:basic things) are driven by json 'database' files. This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
+The User Data Folder/miio (e.g. in Linux `/opt/openhab2/userdata/miio/`) is scanned for database files and will be used for your devices. Note that local database files take preference over build-in ones. Hence if a json file is local and in the database the local file will be used. For format, please check the current database files in Openhab github.
+
 # Discovery
 
 The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
