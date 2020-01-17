@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nanoleaf.internal.model;
+package org.openhab.binding.nanoleaf.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Interface for settings with integer value
+ * Exception if request to Nanoleaf OpenAPI does not return any data
  *
- * @author Martin Raepple - Initial contribution
+ * @author Stefan Höhn - Initial contribution
  */
 @NonNullByDefault
-public interface IntegerState {
+public class NanoleafNotFoundException extends NanoleafException {
 
-    void setValue(int value);
+    private static final long serialVersionUID = -6941678941424573256L;
 
-    int getValue();
+    public NanoleafNotFoundException(String message) {
+        super(message);
+    }
 }

@@ -12,17 +12,28 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Interface for settings with integer value
+ * Represents effect commands for select and write
  *
- * @author Martin Raepple - Initial contribution
+ * @author Stefan Höhn - Initial contribution
  */
+
 @NonNullByDefault
-public interface IntegerState {
+public class TouchEvents {
 
-    void setValue(int value);
+    private List<TouchEvent> events = new ArrayList<>();
 
-    int getValue();
+    public List<TouchEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<TouchEvent> events) {
+        this.events = events;
+    }
+
 }

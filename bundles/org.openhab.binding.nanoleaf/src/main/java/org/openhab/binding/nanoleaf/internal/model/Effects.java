@@ -14,38 +14,42 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Represents effect commands for select and write
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Effects {
 
-    private String select;
-    private List<String> effectsList = null;
-    private Write write;
+    private @Nullable String select;
+    private @Nullable List<String> effectsList = null;
+    private @Nullable Write write;
 
-    public String getSelect() {
+    public @Nullable String getSelect() {
         return select;
     }
 
-    public void setSelect(String select) {
+    public void setSelect(@Nullable String select) {
         this.select = select;
     }
 
-    public List<String> getEffectsList() {
+    public @Nullable List<String> getEffectsList() {
         return effectsList;
     }
 
-    public void setEffectsList(List<String> effectsList) {
+    public void setEffectsList(@Nullable List<String> effectsList) {
         this.effectsList = effectsList;
     }
 
-    public Write getWrite() {
+    public @Nullable Write getWrite() {
         return write;
     }
 
-    public void setWrite(Write write) {
+    public void setWrite(@Nullable Write write) {
         this.write = write;
     }
 

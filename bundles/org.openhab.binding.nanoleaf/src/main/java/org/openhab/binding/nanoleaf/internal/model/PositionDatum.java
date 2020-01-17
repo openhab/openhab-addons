@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class PositionDatum {
 
     private int panelId;

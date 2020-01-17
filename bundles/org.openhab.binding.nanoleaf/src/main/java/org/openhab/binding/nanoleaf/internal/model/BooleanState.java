@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for boolean value states
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public interface BooleanState {
 
-    public boolean getValue();
+    boolean getValue();
 
-    public void setValue(boolean value);
+    void setValue(boolean value);
 }
