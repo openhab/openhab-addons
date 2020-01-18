@@ -146,6 +146,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaMyfoxCameraHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_MYFOX_ALARM)) {
             return new SomfyTahomaMyfoxAlarmHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+            return new SomfyTahomaThermostatHandler(thing);
         } else {
             return null;
         }

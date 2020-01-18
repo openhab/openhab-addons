@@ -21,32 +21,20 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
- * The {@link SomfyTahomaHeatingSystemHandler} is responsible for handling commands,
- * which are sent to one of the channels of the heating system thing.
+ * The {@link SomfyTahomaThermostatHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the Somfy thermostat thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaThermostatHandler extends SomfyTahomaBaseThingHandler {
 
-    public SomfyTahomaHeatingSystemHandler(Thing thing) {
+    public SomfyTahomaThermostatHandler(Thing thing) {
         super(thing);
         stateNames.put(TARGET_TEMPERATURE, TARGET_TEMPERATURE_STATE);
-        stateNames.put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
         stateNames.put(BATTERY_LEVEL, BATTERY_LEVEL_STATE);
-        stateNames.put(CURRENT_STATE, "zwave:SetPointTypeState");
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-        if (RefreshType.REFRESH.equals(command)) {
-            return;
-        } else {
-            if (TARGET_TEMPERATURE.equals(channelUID.getId())) {
-                String param = "[" + command.toString() + "]";
-                sendCommand("setTargetTemperature", param);
-            }
-        }
+        stateNames.put(HEATING_MODE, "somfythermostat:HeatingModeState");
+        stateNames.put(DEROGATION_HEATING_MODE, "somfythermostat:DerogationHeatingModeState");
+        stateNames.put(DEROGATION_ACTIVATION, "core:DerogationActivationState" );
     }
 }

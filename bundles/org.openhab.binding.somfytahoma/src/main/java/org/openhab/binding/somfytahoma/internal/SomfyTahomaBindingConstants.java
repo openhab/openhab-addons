@@ -140,6 +140,9 @@ public class SomfyTahomaBindingConstants {
     // MyFox Camera
     public static final ThingTypeUID THING_TYPE_MYFOX_CAMERA = new ThingTypeUID(BINDING_ID, "myfoxcamera");
 
+    // Thermostat
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -198,6 +201,11 @@ public class SomfyTahomaBindingConstants {
     public static final String CURRENT_STATE = "current_state";
     public static final String BATTERY_LEVEL = "battery_level";
     public static final String TARGET_HEATING_LEVEL = "target_heating_level";
+
+    // Thermostat
+    public static final String HEATING_MODE = "heating_mode";
+    public static final String DEROGATION_HEATING_MODE = "derogation_heating_mode";
+    public static final String DEROGATION_ACTIVATION = "derogation_activation";
 
     // Window handle
     public static final String HANDLE_STATE = "handle_state";
@@ -281,37 +289,38 @@ public class SomfyTahomaBindingConstants {
     public static final String CLOUD_DEVICE_STATUS_STATE = "core:CloudDeviceStatusState";
     public static final String BATTERY_LEVEL_STATE = "core:BatteryLevelState";
     public static final String SIREN_STATUS_STATE = "internal:SirenStatusState";
+    public static final String TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState";
 
     // supported uiClasses
-    public static final String THING_ROLLER_SHUTTER = "RollerShutter";
-    public static final String THING_SCREEN = "Screen";
-    public static final String THING_VENETIAN_BLIND = "VenetianBlind";
-    public static final String THING_EXTERIOR_SCREEN = "ExteriorScreen";
-    public static final String THING_EXTERIOR_VENETIAN_BLIND = "ExteriorVenetianBlind";
-    public static final String THING_GARAGE_DOOR = "GarageDoor";
-    public static final String THING_AWNING = "Awning";
-    public static final String THING_ON_OFF = "OnOff";
-    public static final String THING_LIGHT = "Light";
-    public static final String THING_LIGHT_SENSOR = "LightSensor";
-    public static final String THING_SMOKE_SENSOR = "SmokeSensor";
-    public static final String THING_CONTACT_SENSOR = "ContactSensor";
-    public static final String THING_OCCUPANCY_SENSOR = "OccupancySensor";
-    public static final String THING_HUMIDITY_SENSOR = "HumiditySensor";
-    public static final String THING_WINDOW = "Window";
-    public static final String THING_ALARM = "Alarm";
-    public static final String THING_POD = "Pod";
-    public static final String THING_HEATING_SYSTEM = "HeatingSystem";
-    public static final String THING_DOOR_LOCK = "DoorLock";
-    public static final String THING_PERGOLA = "Pergola";
-    public static final String THING_WINDOW_HANDLE = "WindowHandle";
-    public static final String THING_TEMPERATURE_SENSOR = "TemperatureSensor";
-    public static final String THING_GATE = "Gate";
-    public static final String THING_CURTAIN = "Curtain";
-    public static final String THING_ELECTRICITY_SENSOR = "ElectricitySensor";
-    public static final String THING_DOCK = "Dock";
-    public static final String THING_SIREN = "Siren";
-    public static final String THING_ADJUSTABLE_SLATS_ROLLER_SHUTTER = "AdjustableSlatsRollerShutter";
-    public static final String THING_CAMERA = "Camera";
+    public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";
+    public static final String CLASS_SCREEN = "Screen";
+    public static final String CLASS_VENETIAN_BLIND = "VenetianBlind";
+    public static final String CLASS_EXTERIOR_SCREEN = "ExteriorScreen";
+    public static final String CLASS_EXTERIOR_VENETIAN_BLIND = "ExteriorVenetianBlind";
+    public static final String CLASS_GARAGE_DOOR = "GarageDoor";
+    public static final String CLASS_AWNING = "Awning";
+    public static final String CLASS_ON_OFF = "OnOff";
+    public static final String CLASS_LIGHT = "Light";
+    public static final String CLASS_LIGHT_SENSOR = "LightSensor";
+    public static final String CLASS_SMOKE_SENSOR = "SmokeSensor";
+    public static final String CLASS_CONTACT_SENSOR = "ContactSensor";
+    public static final String CLASS_OCCUPANCY_SENSOR = "OccupancySensor";
+    public static final String CLASS_HUMIDITY_SENSOR = "HumiditySensor";
+    public static final String CLASS_WINDOW = "Window";
+    public static final String CLASS_ALARM = "Alarm";
+    public static final String CLASS_POD = "Pod";
+    public static final String CLASS_HEATING_SYSTEM = "HeatingSystem";
+    public static final String CLASS_DOOR_LOCK = "DoorLock";
+    public static final String CLASS_PERGOLA = "Pergola";
+    public static final String CLASS_WINDOW_HANDLE = "WindowHandle";
+    public static final String CLASS_TEMPERATURE_SENSOR = "TemperatureSensor";
+    public static final String CLASS_GATE = "Gate";
+    public static final String CLASS_CURTAIN = "Curtain";
+    public static final String CLASS_ELECTRICITY_SENSOR = "ElectricitySensor";
+    public static final String CLASS_DOCK = "Dock";
+    public static final String CLASS_SIREN = "Siren";
+    public static final String CLASS_ADJUSTABLE_SLATS_ROLLER_SHUTTER = "AdjustableSlatsRollerShutter";
+    public static final String CLASS_CAMERA = "Camera";
 
     // unsupported uiClasses
     public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
@@ -333,7 +342,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
             THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
             THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO, THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR,
-            THING_TYPE_MYFOX_ALARM));
+            THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT));
 
     //somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

@@ -289,4 +289,25 @@
 		<label>Myfox Shutter</label>
 		<description>A channel for controlling the shutter</description>
 	</channel-type>
+
+	<channel-type id="heating_mode">
+		<item-type>String</item-type>
+		<label>Heating Mode</label>
+		<description>Heating mode of the Somfy thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="derogation_heating_mode">
+		<item-type>String</item-type>
+		<label>Derogation Heating Mode</label>
+		<description>Derogation heating mode of the Somfy thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="derogation_activation">
+		<item-type>String</item-type>
+		<label>Derogation Activation State</label>
+		<description>Derogation activation state of the Somfy thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
