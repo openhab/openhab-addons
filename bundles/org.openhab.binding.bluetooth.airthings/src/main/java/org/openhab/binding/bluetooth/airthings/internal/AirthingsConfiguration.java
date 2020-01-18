@@ -1,0 +1,33 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.bluetooth.airthings.internal;
+
+/**
+ * Configuration class for {@link AirthingsBinding} device.
+ *
+ *
+ * @author Pauli Anttila - Initial contribution
+ */
+public class AirthingsConfiguration {
+    public String address;
+    public int refreshInterval;
+
+    @Override
+    public String toString() {
+        String str = "[";
+        str += "address = " + address;
+        str += ", refreshInterval = " + refreshInterval;
+        str += "]";
+        return str;
+    }
+}
