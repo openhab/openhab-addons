@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Arjen Korevaar - Initial contribution
@@ -25,6 +28,7 @@ public class DataItem {
     private DataType dataType;
     private int bitpos;
     private String subject;
+    private @Nullable Unit<?> unit;
 
     public int getID() {
         return id;
@@ -74,6 +78,10 @@ public class DataItem {
         this.subject = subject;
     }
 
+    public @Nullable Unit<?> getUnit() {
+        return unit;
+    }
+
     public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject) {
         this.id = id;
         this.msg = msg;
@@ -81,5 +89,10 @@ public class DataItem {
         this.dataType = dataType;
         this.bitpos = bit;
         this.subject = subject;
+    }
+
+    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject, Unit<?> unit) {
+        this(id, msg, byteType, dataType, bit, subject);
+        this.unit = unit;
     }
 }

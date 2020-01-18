@@ -5,98 +5,98 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="roomtemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature</label>
 		<description>Current sensed room temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="roomsetpoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Room Setpoint</label>
 		<description>Current room temperature setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="temperaturetemporary">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temporary Room Setpoint Override</label>
 		<description>Temporary override room temperature setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f °C"></state>
+		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="temperatureconstant">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Constant Room Setpoint Override</label>
 		<description>Constant override room temperature setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f °C"></state>
+		<state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="controlsetpoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Control Setpoint</label>
 		<description>Central heating water setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="dhwtemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Temperature</label>
 		<description>Domestic hot water temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="tdhwset">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Setpoint</label>
 		<description>Domestic hot water temperature setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="overridedhwsetpoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Setpoint Override</label>
 		<description>Domestic hot water temperature setpoint override</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
+		<state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="flowtemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Boiler Water Temperature</label>
 		<description>Boiler water temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="returntemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Return Water Temperature</label>
 		<description>Return water temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="outsidetemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Outside Temperature</label>
 		<description>Outside temperature</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="-40" max="100" step="0.1" pattern="%.1f °C"></state>
+		<state readOnly="false" min="-40" max="100" step="0.1" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="waterpressure">
-		<item-type>Number</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Central Heating Water Pressure</label>
 		<description>Central heating water pressure</description>
-		<state readOnly="true" pattern="%.1f bar"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="ch_enable">
@@ -135,14 +135,14 @@
 	</channel-type>
 
 	<channel-type id="modulevel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Modulation Level</label>
 		<description>Relative modulation level</description>
 		<state readOnly="true" pattern="%.1f %%"></state>
 	</channel-type>
 
 	<channel-type id="maxrelmdulevel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Maximum Relative Modulation Level</label>
 		<description>Maximum relative modulation level</description>
 		<state readOnly="true" pattern="%.1f %%"></state>
@@ -198,7 +198,7 @@
 	</channel-type>
 
 	<channel-type id="oemfaultcode">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>OEM Fault Code</label>
 		<description>OEM fault code</description>
 		<state readOnly="true"></state>

@@ -14,6 +14,8 @@ package org.openhab.binding.openthermgateway.handler;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -54,6 +56,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Nullable private OpenThermGatewayConnector connector;
 
+    boolean connecting = false;
+
     public OpenThermGatewayHandler(Thing thing) {
         super(thing);
     }
@@ -78,9 +82,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             String code = getGatewayCodeFromChannel(channel);
 
             GatewayCommand gatewayCommand;
+
             if (command instanceof QuantityType) {
-                gatewayCommand = GatewayCommand.parse(code,
-                        Double.toString(((QuantityType) command).doubleValue()));
+                gatewayCommand = GatewayCommand.parse(code, Double.toString(((QuantityType) command).doubleValue()));
             } else {
                 gatewayCommand = GatewayCommand.parse(code, command.toFullString());
             }
@@ -90,8 +94,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             }
         }
     }
-
-    boolean connecting = false;
 
     @Override
     public void connecting() {
@@ -148,12 +150,14 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                         state = new DecimalType(message.getInt(dataItem.getByteType()));
                         break;
                     case FLOAT:
-                        state = new DecimalType(message.getFloat());
+                        float value = message.getFloat();
+                        @Nullable Unit<?> unit = dataItem.getUnit();
+                        state = (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
                         break;
                     case DOWTOD:
                         break;
                 }
-
+          
                 if (state != null) {
                     logger.debug("Received update for channel '{}': {}", channelId, state.toFullString());
                     updateState(channelId, state);

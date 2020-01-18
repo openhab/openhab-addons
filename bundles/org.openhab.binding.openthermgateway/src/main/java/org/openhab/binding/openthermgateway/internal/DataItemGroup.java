@@ -15,6 +15,8 @@ package org.openhab.binding.openthermgateway.internal;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
 /**
  * @author Arjen Korevaar - Initial contribution
@@ -66,7 +68,7 @@ public class DataItemGroup {
                 new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 5, "ch2E"),
                 new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 6, "diag"),
                 new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 7, "0x00:7") });
-        g.put(1, new DataItem[] { new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint") });
+        g.put(1, new DataItem[] { new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint", SIUnits.CELSIUS) });
         g.put(2, new DataItem[] { new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 0, "0x02:0"),
                 new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 1, "0x02:1"),
                 new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 2, "0x02:2"),
@@ -126,20 +128,20 @@ public class DataItemGroup {
         g.put(14, new DataItem[] { new DataItem(14, Msg.READ, ByteType.LOWBYTE, DataType.FLOAT, 0, "maxrelmdulevel") });
         g.put(15, new DataItem[] { new DataItem(15, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "maxcapkw"),
                 new DataItem(15, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "maxcapprc") });
-        g.put(16, new DataItem[] { new DataItem(16, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomsetpoint") });
+        g.put(16, new DataItem[] { new DataItem(16, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomsetpoint", SIUnits.CELSIUS) });
         g.put(17, new DataItem[] { new DataItem(17, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "modulevel") });
-        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure") });
+        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure", SmartHomeUnits.BAR) });
         g.put(19, new DataItem[] { new DataItem(19, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "dhwflow") });
         g.put(20, new DataItem[] { new DataItem(20, Msg.READWRITE, ByteType.BOTH, DataType.DOWTOD, 0, "dowtod") });
         g.put(21, new DataItem[] { new DataItem(21, Msg.READWRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "month"),
                 new DataItem(21, Msg.READWRITE, ByteType.LOWBYTE, DataType.UINT8, 0, "dom") });
         g.put(22, new DataItem[] { new DataItem(22, Msg.READWRITE, ByteType.LOWBYTE, DataType.UINT8, 0, "year") });
         g.put(23, new DataItem[] { new DataItem(23, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "setpointch2") });
-        g.put(24, new DataItem[] { new DataItem(24, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomtemp") });
-        g.put(25, new DataItem[] { new DataItem(25, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "flowtemp") });
-        g.put(26, new DataItem[] { new DataItem(26, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "dhwtemp") });
-        g.put(27, new DataItem[] { new DataItem(27, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "outsidetemp") });
-        g.put(28, new DataItem[] { new DataItem(28, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "returntemp") });
+        g.put(24, new DataItem[] { new DataItem(24, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomtemp", SIUnits.CELSIUS) });
+        g.put(25, new DataItem[] { new DataItem(25, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "flowtemp", SIUnits.CELSIUS) });
+        g.put(26, new DataItem[] { new DataItem(26, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "dhwtemp", SIUnits.CELSIUS) });
+        g.put(27, new DataItem[] { new DataItem(27, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "outsidetemp", SIUnits.CELSIUS) });
+        g.put(28, new DataItem[] { new DataItem(28, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "returntemp", SIUnits.CELSIUS) });
         g.put(29, new DataItem[] { new DataItem(29, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "solstortemp") });
         g.put(30, new DataItem[] { new DataItem(30, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "solcolltemp") });
         g.put(31, new DataItem[] { new DataItem(31, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "flowtemp2") });
@@ -151,7 +153,7 @@ public class DataItemGroup {
                 new DataItem(49, Msg.READ, ByteType.LOWBYTE, DataType.INT8, 0, "maxchl") });
         g.put(50, new DataItem[] { new DataItem(50, Msg.READ, ByteType.HIGHBYTE, DataType.INT8, 0, "otcu"),
                 new DataItem(50, Msg.READ, ByteType.LOWBYTE, DataType.INT8, 0, "otcl") });
-        g.put(56, new DataItem[] { new DataItem(56, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "tdhwset") });
+        g.put(56, new DataItem[] { new DataItem(56, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "tdhwset", SIUnits.CELSIUS) });
         g.put(57, new DataItem[] { new DataItem(57, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "tchmax") });
         g.put(58, new DataItem[] { new DataItem(58, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "otchcratio") });
         g.put(100,
