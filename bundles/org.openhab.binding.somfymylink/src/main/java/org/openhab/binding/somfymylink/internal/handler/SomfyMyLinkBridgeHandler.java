@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -306,22 +305,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         synchronized (CONNECTION_LOCK) {
             try {
                 logger.debug("Sending: {}", command);
-                Socket socket = getConnection();
-                OutputStream out = socket.getOutputStream();
-
-                try {
+                try (Socket socket = getConnection(); OutputStream out = socket.getOutputStream()) {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
                     // send the command
                     out.write(sendBuffer, 0, sendBuffer.length);
-                } finally {
-                    logger.debug("Cleaning up after command");
-                    // cleanup
-                    try {
-                        out.close();
-                        socket.close();
-                    } catch (IOException e ) {
-                        logger.debug("Error during socket tidy up. {}", e.getMessage());
-                    }
                 }
 
                 // give time for mylink to process
@@ -344,11 +331,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         synchronized (CONNECTION_LOCK) {
             try {
                 logger.debug("Sending: {}", command);
-                Socket socket = getConnection();
-                OutputStream out = socket.getOutputStream();
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                try {
+                try (Socket socket = getConnection();
+                        OutputStream out = socket.getOutputStream();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                     byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
 
                     // send the command
@@ -384,15 +369,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                             // it wasn't a full message?
                             logger.debug("Trouble parsing message received. Message:" + e.getMessage());
                         }
-                    }
-                } finally {
-                    // cleanup
-                    try {
-                        out.close();
-                        in.close();
-                        socket.close();
-                    } catch (IOException e) {
-                        logger.debug("Error during socket tidy up. {}", e.getMessage());
                     }
                 }
 
@@ -436,8 +412,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         // quote and fix '-' back to '.'
         String tId = String.format("\"%1$s\"", targetId).replace('-', '.');
 
-        return String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "targetID", tId,
-                config.systemId);
+        return String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "targetID", tId, config.systemId);
     }
 
     private String buildSceneCommand(String method, Integer sceneId) {
@@ -447,8 +422,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
-        return String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "sceneId", sceneId,
-                config.systemId);
+        return String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "sceneId", sceneId, config.systemId);
     }
 
     @Override
