@@ -144,6 +144,8 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // List of all Channel ids
+    public static final String RSSI = "rssi";
+
     // Gateway
     public static final String STATUS = "status";
 
@@ -277,6 +279,8 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_CHECK_TRIGGER = "checkEventTrigger";
 
     // States
+    public static final String NAME_STATE = "core:NameState";
+    public static final String RSSI_LEVEL_STATE = "core:RSSILevelState";
     public static final String STATUS_STATE = "core:StatusState";
     public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
     public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";

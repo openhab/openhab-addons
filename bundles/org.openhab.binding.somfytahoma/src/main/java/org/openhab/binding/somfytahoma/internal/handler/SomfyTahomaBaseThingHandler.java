@@ -31,6 +31,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -63,6 +65,23 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
+        if (getThing().getProperties().containsKey(RSSI_LEVEL_STATE)) {
+            createRSSIChannel();
+        }
+    }
+
+    private void createRSSIChannel() {
+        if (thing.getChannel(RSSI) == null) {
+            logger.debug("Creating a rssi channel");
+            createChannel(RSSI, "Number","RSSI Level");
+        }
+    }
+
+    private void createChannel(String name, String type, String label) {
+        ThingBuilder thingBuilder = editThing();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), type).withLabel(label).build();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
     }
 
     @Override
@@ -277,9 +296,24 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         for (SomfyTahomaState state : states) {
             logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
             properties.put(state.getName(), state.getValue().toString());
-            updateThingChannels(state);
+            if (RSSI_LEVEL_STATE.equals(state.getName())) {
+                // RSSI channel is a dynamic one
+                updateRSSIChannel(state);
+            } else {
+                updateThingChannels(state);
+            }
         }
         updateProperties(properties);
+    }
+
+    private void updateRSSIChannel(SomfyTahomaState state) {
+        createRSSIChannel();
+        Channel ch = thing.getChannel(RSSI);
+        if (ch != null && isChannelLinked(ch)) {
+            logger.debug("updating RSSI channel with value: {}", state.getValue());
+            State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+            updateState(ch.getUID(), newState);
+        }
     }
 
     public void updateThingChannels(SomfyTahomaState state) {
