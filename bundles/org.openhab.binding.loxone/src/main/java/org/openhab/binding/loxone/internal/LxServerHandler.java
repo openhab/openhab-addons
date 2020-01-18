@@ -16,13 +16,17 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -51,6 +55,7 @@ import org.openhab.binding.loxone.internal.types.LxConfig.LxServerInfo;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
 import org.openhab.binding.loxone.internal.types.LxResponse;
 import org.openhab.binding.loxone.internal.types.LxState;
+import org.openhab.binding.loxone.internal.types.LxStateUpdate;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +80,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     private InetAddress host;
 
     // initial delay to initiate connection
-    private int reconnectDelay;
+    private AtomicInteger reconnectDelay = new AtomicInteger();
 
     // Map of state UUID to a map of control UUID and state objects
     // State with a unique UUID can be configured in many controls and each control can even have a different name of
@@ -89,12 +94,14 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     private int debugId = 0;
     private Thread monitorThread;
     private final Lock threadLock = new ReentrantLock();
-    private final Condition connectDelay = threadLock.newCondition();
-    private final Condition sessionActive = threadLock.newCondition();
+    private final Lock queueUpdatedLock = new ReentrantLock();
+    private final Condition queueUpdated = queueUpdatedLock.newCondition();
+    private AtomicBoolean sessionActive = new AtomicBoolean(false);
 
     // Data structures
     private final Map<LxUuid, LxControl> controls = new HashMap<>();
     private final Map<ChannelUID, LxControl> channels = new HashMap<>();
+    private final ConcurrentLinkedQueue<LxStateUpdate> stateUpdateQueue = new ConcurrentLinkedQueue<>();
 
     private LxDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final Logger logger = LoggerFactory.getLogger(LxServerHandler.class);
@@ -115,11 +122,12 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     /**
      * Create {@link LxServerHandler} object
      *
-     * @param thing    Thing object that creates the handler
+     * @param thing Thing object that creates the handler
      * @param provider state description provider service
      */
     public LxServerHandler(Thing thing, LxDynamicStateDescriptionProvider provider) {
         super(thing);
+        logger.debug("[{}] Constructing thing object", debugId);
         if (provider != null) {
             dynamicStateDescriptionProvider = provider;
         } else {
@@ -157,31 +165,30 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
     @Override
     public void initialize() {
-        debugId = staticDebugId.getAndIncrement();
-
-        logger.trace("[{}] Initializing thing instance", debugId);
-        bindingConfig = getConfig().as(LxBindingConfiguration.class);
-        try {
-            this.host = InetAddress.getByName(bindingConfig.host);
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
-            return;
-        }
-        reconnectDelay = bindingConfig.firstConDelay;
-
-        jettyThreadPool = new QueuedThreadPool();
-        jettyThreadPool.setName(LxServerHandler.class.getSimpleName() + "-" + debugId);
-        jettyThreadPool.setDaemon(true);
-
-        socket = new LxWebSocket(debugId, this, bindingConfig, host);
-        wsClient = new WebSocketClient();
-        wsClient.setExecutor(jettyThreadPool);
-
         threadLock.lock();
-        if (debugId > 1) {
-            reconnectDelay = 0;
-        }
         try {
+            debugId = staticDebugId.getAndIncrement();
+
+            logger.debug("[{}] Initializing thing instance", debugId);
+            bindingConfig = getConfig().as(LxBindingConfiguration.class);
+            try {
+                this.host = InetAddress.getByName(bindingConfig.host);
+            } catch (UnknownHostException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+                return;
+            }
+            reconnectDelay.set(bindingConfig.firstConDelay);
+
+            jettyThreadPool = new QueuedThreadPool();
+            jettyThreadPool.setName(LxServerHandler.class.getSimpleName() + "-" + debugId);
+            jettyThreadPool.setDaemon(true);
+
+            socket = new LxWebSocket(debugId, this, bindingConfig, host);
+            wsClient = new WebSocketClient();
+            wsClient.setExecutor(jettyThreadPool);
+            if (debugId > 1) {
+                reconnectDelay.set(0);
+            }
             if (monitorThread == null) {
                 monitorThread = new LxServerThread(debugId);
                 monitorThread.start();
@@ -197,6 +204,8 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         Thread thread;
         threadLock.lock();
         try {
+            sessionActive.set(false);
+            stateUpdateQueue.clear();
             thread = monitorThread;
             if (monitorThread != null) {
                 monitorThread.interrupt();
@@ -399,40 +408,24 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     }
 
     /**
-     * Update to the new value of a state received from Miniserver. This method will go through all instances of this
-     * state UUID and update their value, which will trigger corresponding control state update method in each control
-     * that has this state.
-     *
-     * @param uuid  Miniserver's state UUID
-     * @param value a new value for this state
-     */
-    void updateStateValue(LxUuid uuid, Object value) {
-        Map<LxUuid, LxState> perStateUuid = states.get(uuid);
-        if (perStateUuid != null) {
-            perStateUuid.forEach((controlUuid, state) -> {
-                state.setStateValue(value);
-            });
-        }
-    }
-
-    /**
      * Set thing status to offline and start attempts to establish a new connection to the Miniserver after a delay
      * depending of the reason for going offline.
      *
-     * @param code   error code
+     * @param code error code
      * @param reason reason for going offline
      */
     void setOffline(LxErrorCode code, String reason) {
+        logger.debug("[{}] set offline code={} reason={}", debugId, code, reason);
         switch (code) {
             case TOO_MANY_FAILED_LOGIN_ATTEMPTS:
                 // assume credentials are wrong, do not re-attempt connections any time soon
                 // expect a new instance will have to be initialized with corrected configuration
-                setReconnectDelay(60 * 60 * 24 * 7);
+                reconnectDelay.set(60 * 60 * 24 * 7);
                 updateStatusToOffline(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Too many failed login attempts - stopped trying");
                 break;
             case USER_UNAUTHORIZED:
-                setReconnectDelay(bindingConfig.userErrorDelay);
+                reconnectDelay.set(bindingConfig.userErrorDelay);
                 updateStatusToOffline(ThingStatusDetail.CONFIGURATION_ERROR,
                         reason != null ? reason : "User authentication error (invalid user name or password)");
                 break;
@@ -440,7 +433,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                 updateStatusToOffline(ThingStatusDetail.COMMUNICATION_ERROR, "User authentication timeout");
                 break;
             case COMMUNICATION_ERROR:
-                setReconnectDelay(bindingConfig.comErrorDelay);
+                reconnectDelay.set(bindingConfig.comErrorDelay);
                 String text = "Error communicating with Miniserver";
                 if (reason != null) {
                     text += " (" + reason + ")";
@@ -463,13 +456,39 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                 updateStatusToOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown reason");
                 break;
         }
-        threadLock.lock();
-        try {
-            sessionActive.signalAll();
-        } finally {
-            threadLock.unlock();
-        }
+        sessionActive.set(false);
+    }
 
+    /**
+     * Put a new state update event to the queue for processing and signal thread to process it
+     *
+     * @param uuid state uuid (null indicates websocket session should be closed)
+     * @param value new state value
+     */
+    void queueStateUpdate(LxUuid uuid, Object value) {
+        stateUpdateQueue.add(new LxStateUpdate(uuid, value));
+        queueUpdatedLock.lock();
+        try {
+            queueUpdated.signalAll();
+        } finally {
+            queueUpdatedLock.unlock();
+        }
+    }
+
+    /**
+     * Update to the new value of a state received from Miniserver. This method will go through all instances of this
+     * state UUID and update their value, which will trigger corresponding control state update method in each control
+     * that has this state.
+     *
+     * @param update Miniserver's update event
+     */
+    private void updateStateValue(LxStateUpdate update) {
+        Map<LxUuid, LxState> perStateUuid = states.get(update.getUuid());
+        if (perStateUuid != null) {
+            perStateUuid.forEach((controlUuid, state) -> {
+                state.setStateValue(update.getValue());
+            });
+        }
     }
 
     /**
@@ -504,7 +523,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      * It is expected that input list contains no duplicate channel IDs.
      *
      * @param newChannels a list of channels to add to the thing
-     * @param purge       if true, old channels will be removed, otherwise merged
+     * @param purge if true, old channels will be removed, otherwise merged
      */
     private void addThingChannels(List<Channel> newChannels, boolean purge) {
         List<Channel> channels = newChannels;
@@ -545,6 +564,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
         try {
             wsClient.start();
+
             // Following the PR github.com/eclipse/smarthome/pull/6636
             // without this zero timeout, jetty will wait 30 seconds for stopping the client to eventually fail
             // with the timeout it is immediate and all threads end correctly
@@ -552,6 +572,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             URI target = new URI("ws://" + host.getHostAddress() + ":" + bindingConfig.port + SOCKET_URL);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("remotecontrol");
+
             socket.startResponseTimeout();
             logger.debug("[{}] Connecting to server : {} ", debugId, target);
             wsClient.connect(socket, target, request);
@@ -572,23 +593,9 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      */
 
     /**
-     * Sets value for the delay before websocket connect attempt
-     *
-     * @param delay number of seconds to wait
-     */
-    private void setReconnectDelay(int delay) {
-        threadLock.lock();
-        try {
-            reconnectDelay = delay;
-        } finally {
-            threadLock.unlock();
-        }
-    }
-
-    /**
      * Disconnect websocket session - initiated from this end.
      *
-     * @param code   error code for disconnecting the websocket
+     * @param code error code for disconnecting the websocket
      * @param reason reason for disconnecting the websocket
      */
     private void disconnect(LxErrorCode code, String reason) {
@@ -614,6 +621,8 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      */
     private class LxServerThread extends Thread {
         private int debugId = 0;
+        private long elapsed = 0;
+        private Instant lastKeepAlive;
 
         LxServerThread(int id) {
             debugId = id;
@@ -622,39 +631,62 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         @Override
         public void run() {
             logger.debug("[{}] Thread starting", debugId);
-            threadLock.lock();
             try {
                 while (!isInterrupted()) {
-                    try {
-                        if (reconnectDelay > 0) {
-                            logger.debug("[{}] Delaying connect request by {} seconds.", debugId, reconnectDelay);
-                            connectDelay.await(reconnectDelay, TimeUnit.SECONDS);
-                        }
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                    logger.debug("[{}] Server connecting to websocket", debugId);
-                    if (!connect()) {
-                        updateStatusToOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Failed to connect to Miniserver's WebSocket");
-                        reconnectDelay = bindingConfig.connectErrDelay;
-                    } else {
-                        try {
-                            logger.debug("[{}] Sleeping for {} seconds.", debugId, bindingConfig.keepAlivePeriod);
-                            while (!sessionActive.await(bindingConfig.keepAlivePeriod, TimeUnit.SECONDS)) {
-                                socket.sendKeepAlive();
-                            }
-                        } catch (InterruptedException e) {
-                            break;
-                        }
-                    }
+                    sessionActive.set(connectSession());
+                    processStateUpdates();
                 }
-                logger.debug("[{}] Stopping reconnect attempts permanently", debugId);
-                disconnect(LxErrorCode.OK, "Thing is going down.");
-            } finally {
-                threadLock.unlock();
+            } catch (InterruptedException e) {
+                logger.debug("[{}] Thread interrupted", debugId);
             }
+            disconnect(LxErrorCode.OK, "Thing is going down.");
             logger.debug("[{}] Thread ending", debugId);
+        }
+
+        private boolean connectSession() throws InterruptedException {
+            int delay = reconnectDelay.get();
+            if (delay > 0) {
+                logger.debug("[{}] Delaying connect request by {} seconds.", debugId, reconnectDelay);
+                TimeUnit.SECONDS.sleep(delay);
+            }
+            logger.debug("[{}] Server connecting to websocket", debugId);
+            if (!connect()) {
+                updateStatusToOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to connect to Miniserver's WebSocket");
+                reconnectDelay.set(bindingConfig.connectErrDelay);
+                return false;
+            }
+            lastKeepAlive = Instant.now();
+            return true;
+        }
+
+        private void processStateUpdates() throws InterruptedException {
+            while (sessionActive.get()) {
+                logger.debug("[{}] Sleeping for {} seconds.", debugId, bindingConfig.keepAlivePeriod - elapsed);
+                queueUpdatedLock.lock();
+                try {
+                    if (!queueUpdated.await(bindingConfig.keepAlivePeriod - elapsed, TimeUnit.SECONDS)) {
+                        sendKeepAlive();
+                        continue;
+                    }
+                } finally {
+                    queueUpdatedLock.unlock();
+                }
+                elapsed = Duration.between(lastKeepAlive, Instant.now()).getSeconds();
+                if (elapsed >= bindingConfig.keepAlivePeriod) {
+                    sendKeepAlive();
+                }
+                LxStateUpdate update;
+                while ((update = stateUpdateQueue.poll()) != null && sessionActive.get()) {
+                    updateStateValue(update);
+                }
+            }
+        }
+
+        private void sendKeepAlive() {
+            socket.sendKeepAlive();
+            lastKeepAlive = Instant.now();
+            elapsed = 0;
         }
     }
 
@@ -662,7 +694,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      * Updates the thing status to offline, if it is not already offline. This will preserve he first reason of going
      * offline in case there were multiple reasons.
      *
-     * @param code   error code
+     * @param code error code
      * @param reason reason for going offline
      */
     private void updateStatusToOffline(ThingStatusDetail code, String reason) {
