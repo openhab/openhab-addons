@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
+import com.google.gson.JsonSyntaxException;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 
 import com.google.gson.Gson;
@@ -26,7 +27,7 @@ import com.google.gson.GsonBuilder;
 public class ICloudDeviceInformationParser {
     private final Gson gson = new GsonBuilder().create();
 
-    public ICloudAccountDataResponse parse(String json) {
+    public ICloudAccountDataResponse parse(String json) throws JsonSyntaxException {
         return gson.fromJson(json, ICloudAccountDataResponse.class);
     }
 }

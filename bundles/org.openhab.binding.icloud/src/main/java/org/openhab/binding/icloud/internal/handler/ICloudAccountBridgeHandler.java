@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
+import com.google.gson.JsonSyntaxException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Retrieves the data for a given account from iCloud and passes the
- * information to {@link DeviceDiscover} and to the {@link ICloudDeviceHandler}s.
+ * information to {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the {@link ICloudDeviceHandler}s.
  *
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Extended support with initial Contribution
@@ -149,8 +150,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            ICloudAccountDataResponse iCloudData = deviceInformationParser.parse(json);
             try {
+                ICloudAccountDataResponse iCloudData = deviceInformationParser.parse(json);
                 int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());
                 if (statusCode == 200) {
                     updateStatus(ThingStatus.ONLINE);
@@ -161,9 +162,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 }
 
                 logger.debug("iCloud bridge data refresh complete.");
-            } catch (NumberFormatException e) {
-                logger.warn("iCloud returned an incorrect account status code : '{}'",
-                        iCloudData.getICloudAccountStatusCode());
+            } catch (NumberFormatException | JsonSyntaxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Response = " + json);
+                logger.warn("An error occured during iCloud Bridge data parsing", e);
             }
         }
     }
