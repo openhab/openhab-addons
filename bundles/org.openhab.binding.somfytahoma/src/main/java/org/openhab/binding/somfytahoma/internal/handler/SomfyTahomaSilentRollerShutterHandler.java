@@ -41,7 +41,7 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShut
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             String cmd = getTahomaCommand(command.toString());

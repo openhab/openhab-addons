@@ -408,7 +408,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
-    public @Nullable List<SomfyTahomaDevice> getDevices() {
+    public List<SomfyTahomaDevice> getDevices() {
         String url;
         String line = "";
 
@@ -433,7 +433,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 Thread.currentThread().interrupt();
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 
     private void getTahomaUpdates() {
@@ -539,12 +539,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private synchronized void updateAllStates() {
         logger.debug("Updating all states");
-        List<SomfyTahomaDevice> devices = getDevices();
-        if (devices != null) {
-            for (SomfyTahomaDevice device : devices) {
-                updateDevice(device);
-            }
-        }
+        getDevices().forEach(device -> updateDevice(device));
     }
 
     private void updateDevice(SomfyTahomaDevice device) {
@@ -567,7 +562,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void processStateChangedEvent(SomfyTahomaEvent event) {
         String deviceUrl = event.getDeviceUrl();
-        ArrayList<SomfyTahomaState> states = event.getDeviceStates();
+        List<SomfyTahomaState> states = event.getDeviceStates();
         logger.debug("States for device {} : {}", deviceUrl, states);
         Thing thing = getThingByDeviceUrl(deviceUrl);
 

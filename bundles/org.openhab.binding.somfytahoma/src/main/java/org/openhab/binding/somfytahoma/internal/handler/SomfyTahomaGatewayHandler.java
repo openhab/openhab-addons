@@ -39,16 +39,6 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-    }
-
-    @Override
     public void refresh(String channel) {
         String id = getGateWayId();
         SomfyTahomaStatus status = getTahomaStatus(id);

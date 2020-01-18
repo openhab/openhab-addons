@@ -62,7 +62,7 @@ public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaBaseThingHandler {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             if (command instanceof OnOffType) {

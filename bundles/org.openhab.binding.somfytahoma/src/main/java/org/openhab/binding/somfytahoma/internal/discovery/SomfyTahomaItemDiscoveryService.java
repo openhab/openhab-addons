@@ -316,13 +316,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private boolean hasState(SomfyTahomaDevice device, String state) {
-        SomfyTahomaDeviceDefinition def = device.getDefinition();
-        for (SomfyTahomaDeviceDefinitionState st : def.getStates()) {
-            if (state.equals(st.getQualifiedName())) {
-                return true;
-            }
-        }
-        return false;
+        return device.getDefinition().getStates().stream().anyMatch(st -> state.equals(st.getQualifiedName()));
     }
 
     private boolean hasMyfoxShutter(SomfyTahomaDevice device) {
@@ -346,13 +340,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private boolean hasCommmand(SomfyTahomaDevice device, String command) {
-        SomfyTahomaDeviceDefinition def = device.getDefinition();
-        for (SomfyTahomaDeviceDefinitionCommand cmd : def.getCommands()) {
-            if (command.equals(cmd.getCommandName())) {
-                return true;
-            }
-        }
-        return false;
+        return device.getDefinition().getCommands().stream().anyMatch(cmd -> command.equals(cmd.getCommandName()));
     }
 
     private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID) {

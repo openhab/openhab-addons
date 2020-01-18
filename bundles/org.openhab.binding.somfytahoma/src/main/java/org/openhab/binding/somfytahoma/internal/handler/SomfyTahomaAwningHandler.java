@@ -41,7 +41,7 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             String cmd = getTahomaCommand(command.toString());

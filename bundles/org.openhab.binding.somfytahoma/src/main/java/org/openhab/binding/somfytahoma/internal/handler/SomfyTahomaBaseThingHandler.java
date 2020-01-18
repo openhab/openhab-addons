@@ -68,7 +68,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             refresh(channelUID.getId());
         }
     }
@@ -283,16 +283,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateThingChannels(SomfyTahomaState state) {
-        for (HashMap.Entry<String, String> entry : stateNames.entrySet()) {
-            if (entry.getValue().equals(state.getName()) ) {
-                //get channel and update it if linked
-                Channel ch = thing.getChannel(entry.getKey());
+        stateNames.forEach((k,v) -> {
+            if (v.equals(state.getName())) {
+                Channel ch = thing.getChannel(k);
                 if (ch != null && isChannelLinked(ch)) {
-                    logger.debug("updating channel: {} with value: {}", entry.getKey(), state.getValue());
+                    logger.debug("updating channel: {} with value: {}", k, v);
                     State newState = parseTahomaState(ch.getAcceptedItemType(), state);
                     updateState(ch.getUID(), newState);
                 }
             }
-        }
+        });
     }
 }

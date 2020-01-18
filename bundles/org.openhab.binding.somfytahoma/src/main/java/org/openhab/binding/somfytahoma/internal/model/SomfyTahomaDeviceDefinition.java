@@ -13,6 +13,7 @@
 package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,14 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaDeviceDefinition {
 
-    private ArrayList<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
-    private ArrayList<SomfyTahomaDeviceDefinitionState> states = new ArrayList<>();
+    private List<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
+    private List<SomfyTahomaDeviceDefinitionState> states = new ArrayList<>();
 
-    public ArrayList<SomfyTahomaDeviceDefinitionCommand> getCommands() {
+    public List<SomfyTahomaDeviceDefinitionCommand> getCommands() {
         return commands;
     }
 
-    public ArrayList<SomfyTahomaDeviceDefinitionState> getStates() {
+    public List<SomfyTahomaDeviceDefinitionState> getStates() {
         return states;
     }
 

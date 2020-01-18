@@ -27,13 +27,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaDeviceDefinitionState {
 
     private String qualifiedName = "";
-    private ArrayList<String> values = new ArrayList<>();
+    private List<String> values = new ArrayList<>();
 
     public String getQualifiedName() {
         return qualifiedName;
     }
 
-    public ArrayList<String> getValues() {
+    public List<String> getValues() {
         return values;
     }
 
