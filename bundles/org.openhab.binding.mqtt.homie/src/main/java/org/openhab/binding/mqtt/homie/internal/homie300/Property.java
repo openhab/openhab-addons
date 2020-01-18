@@ -191,9 +191,9 @@ public class Property implements AttributeChanged {
                         ? max.subtract(min).divide(new BigDecimal(100.0), new MathContext(isDecimal ? 2 : 0))
                         : null;
                 if (step != null && !isDecimal && step.intValue() <= 0) {
-                        step = new BigDecimal(1);
+                    step = new BigDecimal(1);
                 }
-                if(attributes.unit != null && attributes.unit.contains("%")) {
+                if (attributes.unit != null && attributes.unit.contains("%")) {
                     value = new PercentageValue(min, max, step, null, null);
                 } else {
                     value = new NumberValue(min, max, step, attributes.unit);
