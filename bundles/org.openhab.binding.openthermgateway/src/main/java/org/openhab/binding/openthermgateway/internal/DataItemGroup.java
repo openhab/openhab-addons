@@ -16,7 +16,6 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
 /**
  * @author Arjen Korevaar - Initial contribution
@@ -130,7 +129,7 @@ public class DataItemGroup {
                 new DataItem(15, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "maxcapprc") });
         g.put(16, new DataItem[] { new DataItem(16, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomsetpoint", SIUnits.CELSIUS) });
         g.put(17, new DataItem[] { new DataItem(17, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "modulevel") });
-        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure", SmartHomeUnits.BAR) });
+        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure") });
         g.put(19, new DataItem[] { new DataItem(19, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "dhwflow") });
         g.put(20, new DataItem[] { new DataItem(20, Msg.READWRITE, ByteType.BOTH, DataType.DOWTOD, 0, "dowtod") });
         g.put(21, new DataItem[] { new DataItem(21, Msg.READWRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "month"),

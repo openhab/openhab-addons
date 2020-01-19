@@ -21,11 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
 import org.openhab.binding.openthermgateway.internal.DataItem;
@@ -77,14 +79,15 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
-        if (command.toFullString() != "REFRESH") {
+        if (!(command instanceof RefreshType)) {
             String channel = channelUID.getId();
             String code = getGatewayCodeFromChannel(channel);
 
             GatewayCommand gatewayCommand;
 
-            if (command instanceof QuantityType) {
-                gatewayCommand = GatewayCommand.parse(code, Double.toString(((QuantityType) command).doubleValue()));
+            if (command instanceof QuantityType<?>) {
+                double value  = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS).doubleValue();
+                gatewayCommand = GatewayCommand.parse(code, Double.toString(value));
             } else {
                 gatewayCommand = GatewayCommand.parse(code, command.toFullString());
             }

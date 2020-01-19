@@ -93,10 +93,10 @@
 	</channel-type>
 
 	<channel-type id="waterpressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Central Heating Water Pressure</label>
 		<description>Central heating water pressure</description>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f bar"></state>
 	</channel-type>
 
 	<channel-type id="ch_enable">
