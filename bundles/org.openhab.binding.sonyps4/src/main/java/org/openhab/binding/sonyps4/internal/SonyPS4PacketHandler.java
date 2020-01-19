@@ -177,10 +177,10 @@ public class SonyPS4PacketHandler {
         return packet.array();
     }
 
-    byte[] makeLoginPacket(String userCredential, String passCode) {
+    byte[] makeLoginPacket(String userCredential, String pinCode, String pairingCode) {
         ByteBuffer packet = newPacketForEncryption(16 + 64 + 256 + 16 + 16 + 16);
         packet.putInt(LOGIN_REQ);
-        packet.put(passCode.getBytes(), 0, 4); // pass Code
+        packet.put(pinCode.getBytes(), 0, 4); // pin Code
         packet.putInt(0x0201); // Magic number
         packet.put(userCredential.getBytes(StandardCharsets.US_ASCII), 0, 64);
         packet.put("OpenHAB PlayStation 4 Binding".getBytes(StandardCharsets.UTF_8)); // app_label
@@ -189,7 +189,7 @@ public class SonyPS4PacketHandler {
         packet.position(16 + 64 + 256 + 16);
         packet.put("Mac mini 2012".getBytes()); // Model, name of paired unit, shown on the PS4 in the settings view.
         packet.position(16 + 64 + 256 + 16 + 16);
-        packet.put(new byte[16]); // pin code, only for pairing?
+        packet.put(pairingCode.getBytes(), 0, 8); // Pairing code?
 
         SecretKeySpec keySpec = new SecretKeySpec(randomSeed, "AES");
         try {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,4 +83,15 @@ public class SonyPS4BindingConstants {
     static final int PS4_KEY_CLOSE_RC = 1 << 11;
 
     static final String PS4COMS_SYNC = "Ps4Sync";
+
+    /**
+     * Default port numbers PS4 uses.
+     */
+    public static final int DEFAULT_BROADCAST_PORT = 987;
+    public static final int DEFAULT_COMMUNICATION_PORT = 997;
+
+    private SonyPS4BindingConstants() {
+        // No need to instance this class.
+    }
+
 }

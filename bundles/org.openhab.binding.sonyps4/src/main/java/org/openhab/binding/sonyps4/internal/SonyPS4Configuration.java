@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,80 +44,37 @@ public class SonyPS4Configuration {
     /**
      * IP-address of PS4.
      */
-    private String ipAddress = "";
+    public String ipAddress = "";
 
     /**
      * User-credential for the PS4.
      */
-    private String userCredential = "";
+    public String userCredential = "";
 
     /**
      * IP-port of PS4.
      */
-    private Integer ipPort = Integer.valueOf(997);
+    public int ipPort = SonyPS4BindingConstants.DEFAULT_COMMUNICATION_PORT;
 
     /**
      * Size of artwork for applications.
      */
-    private Integer artworkSize = Integer.valueOf(320);
+    public int artworkSize = 320;
 
     /**
      * host-id of PS4.
      */
-    private String hostId = "";
+    public String hostId = "";
 
     /**
-     * pin code for user.
+     * pin code for user (4 digits).
      */
-    private String pinCode = "";
+    public String pinCode = "";
 
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public String getUserCredential() {
-        return userCredential;
-    }
-
-    public void setUserCredential(String userCredential) {
-        this.userCredential = userCredential;
-    }
-
-    public Integer getIpPort() {
-        return ipPort;
-    }
-
-    public void setIpPort(Integer ipPort) {
-        this.ipPort = ipPort;
-    }
-
-    public Integer getArtworkSize() {
-        return artworkSize;
-    }
-
-    public void setArtworkSize(Integer artworkSize) {
-        this.artworkSize = artworkSize;
-    }
-
-    public String getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(String hostId) {
-        this.hostId = hostId;
-    }
-
-    public String getPinCode() {
-        return pinCode;
-    }
-
-    public void setPinCode(String pinCode) {
-        this.pinCode = pinCode;
-    }
+    /**
+     * pairing code for this device (8 digits).
+     */
+    public String pairingCode = "";
 
     @Override
     public String toString() {

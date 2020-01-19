@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -43,13 +44,11 @@ import org.slf4j.LoggerFactory;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class,
-        SonyPS4Discovery.class }, immediate = true, configurationPid = "binding.sonyps4")
+@Component(service = { DiscoveryService.class, SonyPS4Discovery.class }, configurationPid = "binding.sonyps4")
 public class SonyPS4Discovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SonyPS4Discovery.class);
 
-    private static final int BROADCAST_PORT = 987;
     private static final int DISCOVERY_TIMEOUT_SECONDS = 3;
 
     public SonyPS4Discovery() {
@@ -59,7 +58,8 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
     /**
      * Activates the Discovery Service.
      */
-    public void activate() {
+    @Override
+    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
     }
 
     /**
@@ -76,7 +76,7 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
     }
 
     private synchronized void discover() {
-        logger.debug("Try to discover all PS4 devices");
+        logger.debug("Trying to discover all PS4 devices");
 
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
@@ -86,7 +86,8 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
 
             // send discover
             byte[] discover = "SRCH * HTTP/1.1\ndevice-discovery-protocol-version:00020020\n".getBytes();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, BROADCAST_PORT);
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
+                    SonyPS4BindingConstants.DEFAULT_BROADCAST_PORT);
             socket.send(packet);
             logger.debug("Disover message sent: '{}'", discover);
 

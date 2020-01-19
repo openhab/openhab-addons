@@ -57,7 +57,6 @@ public class SonyPS4Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SonyPS4Handler.class);
     private final SonyPS4PacketHandler ps4PacketHandler = new SonyPS4PacketHandler();
     private final SonyPS4ArtworkHandler ps4ArtworkHandler = new SonyPS4ArtworkHandler();
-    private static final int BROADCAST_PORT = 987;
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
     private static final int MIN_SENDKEY_DELAY = 200; // min delay between sendKey sends
@@ -73,7 +72,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     private String currentApplicationId = "";
     private OnOffType currentPower = OnOffType.OFF;
     private State currentArtwork = UnDefType.UNDEF;
-    private Integer currentComPort = 997;
+    private int currentComPort = DEFAULT_COMMUNICATION_PORT;
 
     public SonyPS4Handler(Thing thing, @Nullable LocaleProvider localeProvider) {
         super(thing);
@@ -99,29 +98,31 @@ public class SonyPS4Handler extends BaseThingHandler {
                     startApplication(currentApplicationId);
                 }
             }
-            if (CHANNEL_KEY_UP.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_UP);
-            }
-            if (CHANNEL_KEY_DOWN.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_DOWN);
-            }
-            if (CHANNEL_KEY_RIGHT.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_RIGHT);
-            }
-            if (CHANNEL_KEY_LEFT.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_LEFT);
-            }
-            if (CHANNEL_KEY_ENTER.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_ENTER);
-            }
-            if (CHANNEL_KEY_BACK.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_BACK);
-            }
-            if (CHANNEL_KEY_OPTION.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_OPTION);
-            }
-            if (CHANNEL_KEY_PS.equals(channelUID.getId()) && command instanceof OnOffType) {
-                sendRemoteKey(PS4_KEY_PS);
+            if (command instanceof OnOffType) {
+                if (CHANNEL_KEY_UP.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_UP);
+                }
+                if (CHANNEL_KEY_DOWN.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_DOWN);
+                }
+                if (CHANNEL_KEY_RIGHT.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_RIGHT);
+                }
+                if (CHANNEL_KEY_LEFT.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_LEFT);
+                }
+                if (CHANNEL_KEY_ENTER.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_ENTER);
+                }
+                if (CHANNEL_KEY_BACK.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_BACK);
+                }
+                if (CHANNEL_KEY_OPTION.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_OPTION);
+                }
+                if (CHANNEL_KEY_PS.equals(channelUID.getId())) {
+                    sendRemoteKey(PS4_KEY_PS);
+                }
             }
         }
     }
@@ -130,7 +131,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Start initializing!");
         config = getConfigAs(SonyPS4Configuration.class);
-        currentComPort = config.getIpPort();
+        currentComPort = config.ipPort;
 
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer(1);
@@ -156,8 +157,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
-        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllChannels(), initialWaitTime, 10,
-                TimeUnit.SECONDS);
+        refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, initialWaitTime, 10, TimeUnit.SECONDS);
     }
 
     private void refreshFromState(ChannelUID channelUID) {
@@ -184,11 +184,11 @@ public class SonyPS4Handler extends BaseThingHandler {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
             socket.setSoTimeout(SOCKET_TIMEOUT_SECONDS * 1000);
-            InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
+            InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
 
             // send discover
             byte[] discover = ps4PacketHandler.makeSearchPacket();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, BROADCAST_PORT);
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
 
             // wait for response
@@ -208,10 +208,10 @@ public class SonyPS4Handler extends BaseThingHandler {
     private void wakeUpPS4() {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
-            InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
+            InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send wake-up
-            byte[] wakeup = ps4PacketHandler.makeWakeupPacket(config.getUserCredential());
-            DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, BROADCAST_PORT);
+            byte[] wakeup = ps4PacketHandler.makeWakeupPacket(config.userCredential);
+            DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -222,10 +222,10 @@ public class SonyPS4Handler extends BaseThingHandler {
     private boolean openComs() {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
-            InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
+            InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send launch
-            byte[] launch = ps4PacketHandler.makeLaunchPacket(config.getUserCredential());
-            DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, BROADCAST_PORT);
+            byte[] launch = ps4PacketHandler.makeLaunchPacket(config.userCredential);
+            DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
             return true;
         } catch (IOException e) {
@@ -237,7 +237,7 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private boolean login(SocketChannel channel) throws IOException {
         logger.debug("PS4 tcp connecting");
-        String hostName = config.getIpAddress();
+        String hostName = config.ipAddress;
         channel.configureBlocking(true);
 
         // TODO Loop here a couple of times and check if we are connected.
@@ -269,7 +269,7 @@ public class SonyPS4Handler extends BaseThingHandler {
 
         // Send login request
         logger.debug("PS4 sending login packet");
-        outPacket = ps4PacketHandler.makeLoginPacket(config.getUserCredential(), config.getPinCode());
+        outPacket = ps4PacketHandler.makeLoginPacket(config.userCredential, config.pinCode, config.pairingCode);
         channel.write(ByteBuffer.wrap(outPacket));
 
         // Read login response
@@ -457,8 +457,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 if (power != null) {
                     if (currentPower != power) {
                         currentPower = power;
-                        ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_POWER);
-                        updateState(channel, currentPower);
+                        updateState(CHANNEL_POWER, currentPower);
                     }
                     if (thing.getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
@@ -479,8 +478,8 @@ public class SonyPS4Handler extends BaseThingHandler {
                     applicationId = value;
                     break;
                 case RESPONSE_HOST_REQUEST_PORT:
-                    Integer port = Integer.valueOf(value);
-                    if (!currentComPort.equals(port)) {
+                    int port = Integer.parseInt(value);
+                    if (currentComPort != port) {
                         currentComPort = port;
                         logger.info("PS4 host request port: {}", port);
                     }
@@ -492,8 +491,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         }
         if (!currentApplication.equals(applicationName)) {
             currentApplication = applicationName;
-            ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_NAME);
-            updateState(channel, StringType.valueOf(applicationName));
+            updateState(CHANNEL_APPLICATION_NAME, StringType.valueOf(applicationName));
             logger.debug("PS4 current application: {}", applicationName);
         }
         if (!currentApplicationId.equals(applicationId)) {
@@ -511,11 +509,10 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (localeProvider != null) {
             locale = localeProvider.getLocale();
         }
-        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize(), locale);
+        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.artworkSize, locale);
         if (artWork != null) {
             currentArtwork = artWork;
-            ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_IMAGE);
-            updateState(channel, artWork);
+            updateState(CHANNEL_APPLICATION_IMAGE, artWork);
         } else {
             logger.info("Couldn't fetch artwork for title id: {}", currentApplicationId);
         }
