@@ -125,7 +125,7 @@ Group weatherDay6 "Weather in 6 days"
 DateTime todayForecastDate  "Forecast for [%1$tY/%1$tm/%1$td]"  <calendar>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#forecastDate"}
 String todayPCode    "Pictocode [%d]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
 String todayCond     "Condition [%s]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
-String todayIcon     "Icon [%s]"       (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
+Image todayIcon     "Icon [%s]"       (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
 Number todayUV       "UV Index [%d]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#UVIndex"}
 Number:Temperature  todayTempL  "Low Temp [%.2f °F]"   <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
 Number:Temperature  todayTempH  "High Temp [%.2f °F]"  <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
