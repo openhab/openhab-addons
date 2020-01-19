@@ -108,7 +108,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             }
         }     
         catch (IOException ex) {
-            logger.debug("Unable to connect to the OpenTherm Gateway: {}" , ex);
+            logger.debug("Unable to connect to the OpenTherm Gateway." , ex);
         }        
     }
 
