@@ -64,17 +64,16 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private @Nullable ICloudAccountThingConfiguration config;
     private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
-    ServiceRegistration<?> service;
+    @Nullable ServiceRegistration<?> service;
 
     private Object synchronizeRefresh = new Object();
 
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
             .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
 
-    @Nullable
-    ScheduledFuture<?> refreshJob;
+    @Nullable ScheduledFuture<?> refreshJob;
 
-    public ICloudAccountBridgeHandler(@NonNull Bridge bridge) {
+    public ICloudAccountBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
