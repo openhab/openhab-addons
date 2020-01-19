@@ -64,10 +64,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
         if (getThing().getProperties().containsKey(RSSI_LEVEL_STATE)) {
             createRSSIChannel();
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void createRSSIChannel() {

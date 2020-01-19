@@ -352,7 +352,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         properties.put("url", deviceURL);
         properties.put(NAME_STATE, label);
         if (rssi) {
-            properties.put(RSSI_LEVEL_STATE, "N/A");
+            properties.put(RSSI_LEVEL_STATE, "-1");
         }
 
         ThingUID thingUID = new ThingUID(thingTypeUID, bridge.getThing().getUID(), oid);
