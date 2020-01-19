@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.tibber.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TibberConfiguration} class contains fields mapping configuration parameters.
  *
  * @author Stian Kjoglum - Initial contribution
  */
+@NonNullByDefault
 public class TibberConfiguration {
-    public String token;
-    public String homeid;
-    public int refresh;
+    private @NonNullByDefault({}) String token;
+    private @NonNullByDefault({}) String homeid;
+    private int refresh;
 
     public String getToken() {
         return token;

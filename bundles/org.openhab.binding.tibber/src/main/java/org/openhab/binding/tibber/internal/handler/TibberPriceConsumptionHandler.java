@@ -14,46 +14,32 @@ package org.openhab.binding.tibber.internal.handler;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link TibberPriceConsumptionHandler} class contains fields mapping price info parameters.
  *
  * @author Stian Kjoglum - Initial contribution
  */
+@NonNullByDefault
 public class TibberPriceConsumptionHandler {
 
     public InputStream connectionInputStream(String homeId) {
         String connectionquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId + "\\\") {id }}}\"}";
-        InputStream myInputStream = new ByteArrayInputStream(connectionquery.getBytes(Charset.forName("UTF-8")));
-        return myInputStream;
+        return new ByteArrayInputStream(connectionquery.getBytes(StandardCharsets.UTF_8));
     }
 
     public InputStream getInputStream(String homeId) {
-        String query = "{\"query\": \"{viewer {home (id: \\\"" + homeId
-                + "\\\") {currentSubscription {priceInfo {current {total startsAt }}}}}}\"}";
-        InputStream myInputStream = new ByteArrayInputStream(query.getBytes(Charset.forName("UTF-8")));
-        return myInputStream;
+        String Query = "{\"query\": \"{viewer {home (id: \\\"" + homeId
+                + "\\\") {currentSubscription {priceInfo {current {total startsAt }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
+        return new ByteArrayInputStream(Query.getBytes(StandardCharsets.UTF_8));
     }
 
     public InputStream getRealtimeInputStream(String homeId) {
         String realtimeenabledquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId
                 + "\\\") {features {realTimeConsumptionEnabled }}}}\"}";
-        InputStream myInputStream = new ByteArrayInputStream(realtimeenabledquery.getBytes(Charset.forName("UTF-8")));
-        return myInputStream;
-    }
-
-    public InputStream getDailyInputStream(String homeId) {
-        String dailyquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId
-                + "\\\") {daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
-        InputStream myInputStream = new ByteArrayInputStream(dailyquery.getBytes(Charset.forName("UTF-8")));
-        return myInputStream;
-    }
-
-    public InputStream getHourlyInputStream(String homeId) {
-        String hourlyquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId
-                + "\\\") {hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
-        InputStream myInputStream = new ByteArrayInputStream(hourlyquery.getBytes(Charset.forName("UTF-8")));
-        return myInputStream;
+        return new ByteArrayInputStream(realtimeenabledquery.getBytes(StandardCharsets.UTF_8));
     }
 }
