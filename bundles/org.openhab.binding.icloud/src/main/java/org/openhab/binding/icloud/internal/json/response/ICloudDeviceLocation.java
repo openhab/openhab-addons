@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Serializable class to parse json response received from the Apple server.
  * Contains device location information.
@@ -19,6 +21,7 @@ package org.openhab.binding.icloud.internal.json.response;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ICloudDeviceLocation {
     private double altitude;
 

@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Base64;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
 import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
@@ -35,6 +36,7 @@ import com.google.gson.GsonBuilder;
  * @author Patrik Gfeller - SOCKET_TIMEOUT changed from 2500 to 10000
  * @author Martin van Wingerden - add support for custom CA of https://fmipmobile.icloud.com
  */
+@NonNullByDefault
 public class ICloudConnection {
     private static final String ICLOUD_URL = "https://www.icloud.com";
     private static final String ICLOUD_API_BASE_URL = "https://fmipmobile.icloud.com";

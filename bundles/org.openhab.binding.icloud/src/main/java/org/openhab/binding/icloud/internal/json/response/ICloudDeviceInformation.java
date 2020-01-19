@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.util.ArrayList;
 
 /**
@@ -21,6 +23,7 @@ import java.util.ArrayList;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ICloudDeviceInformation {
     private boolean activationLocked;
 

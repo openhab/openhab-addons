@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.icloud.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents the configuration of an iCloud Device Thing.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ICloudDeviceThingConfiguration {
     public String deviceId;
 }

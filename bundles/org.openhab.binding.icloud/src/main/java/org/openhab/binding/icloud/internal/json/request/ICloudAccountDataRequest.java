@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.icloud.internal.json.request;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Serializable request for icloud device data.
  *
  * @author Patrik Gfeller - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ICloudAccountDataRequest {
     @SuppressWarnings("unused")
     private ClientContext clientContext;
@@ -26,6 +29,7 @@ public class ICloudAccountDataRequest {
         this.clientContext = ClientContext.defaultInstance();
     }
 
+    @NonNullByDefault
     public static ICloudAccountDataRequest defaultInstance() {
         return new ICloudAccountDataRequest();
     }

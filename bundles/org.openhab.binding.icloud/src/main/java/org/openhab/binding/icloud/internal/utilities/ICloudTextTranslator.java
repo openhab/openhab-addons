@@ -14,6 +14,7 @@ package org.openhab.binding.icloud.internal.utilities;
 
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
@@ -23,6 +24,7 @@ import org.osgi.framework.Bundle;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class ICloudTextTranslator {
 
     private final Bundle bundle;

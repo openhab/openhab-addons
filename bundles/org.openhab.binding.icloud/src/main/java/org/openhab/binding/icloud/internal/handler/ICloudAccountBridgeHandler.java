@@ -21,8 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-import com.google.gson.JsonSyntaxException;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -41,13 +42,17 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Retrieves the data for a given account from iCloud and passes the
- * information to {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the {@link ICloudDeviceHandler}s.
+ * information to {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the
+ * {@link ICloudDeviceHandler}s.
  *
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Extended support with initial Contribution
  */
+@NonNullByDefault
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
@@ -66,6 +71,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
             .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
 
+    @Nullable
     ScheduledFuture<?> refreshJob;
 
     public ICloudAccountBridgeHandler(@NonNull Bridge bridge) {
