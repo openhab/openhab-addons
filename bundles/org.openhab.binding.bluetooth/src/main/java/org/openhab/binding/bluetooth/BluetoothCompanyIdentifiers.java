@@ -850,7 +850,7 @@ public class BluetoothCompanyIdentifiers {
         CIC.put(817, "3flares Technologies Inc.");
         CIC.put(818, "Electrocompaniet A.S.");
         CIC.put(819, "Mul-T-Lock");
-        CIC.put(820, "Airthings AS");
+        CIC.put(820, "Corentium/Airthings AS");
         CIC.put(821, "Enlighted Inc");
         CIC.put(822, "GISTIC");
         CIC.put(823, "AJP2 Holdings, LLC");
