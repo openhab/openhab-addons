@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -64,14 +63,16 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private @Nullable ICloudAccountThingConfiguration config;
     private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
-    @Nullable ServiceRegistration<?> service;
+    @Nullable
+    ServiceRegistration<?> service;
 
     private Object synchronizeRefresh = new Object();
 
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
             .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
 
-    @Nullable ScheduledFuture<?> refreshJob;
+    @Nullable
+    ScheduledFuture<?> refreshJob;
 
     public ICloudAccountBridgeHandler(Bridge bridge) {
         super(bridge);

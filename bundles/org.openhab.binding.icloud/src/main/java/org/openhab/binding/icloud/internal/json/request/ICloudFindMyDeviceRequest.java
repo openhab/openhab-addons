@@ -15,6 +15,7 @@ package org.openhab.binding.icloud.internal.json.request;
 import static org.openhab.binding.icloud.internal.ICloudBindingConstants.FIND_MY_DEVICE_REQUEST_SUBJECT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -29,7 +30,7 @@ public class ICloudFindMyDeviceRequest {
     String deviceId;
     final String subject = FIND_MY_DEVICE_REQUEST_SUBJECT;
 
-    public ICloudFindMyDeviceRequest(String id) {
+    public ICloudFindMyDeviceRequest(@Nullable String id) {
         deviceId = id;
     }
 }

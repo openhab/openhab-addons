@@ -14,7 +14,6 @@ package org.openhab.binding.icloud.internal.utilities;
 
 import java.util.Locale;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
