@@ -60,8 +60,6 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
         super.initialize();
         configuration = getConfigAs(AirthingsConfiguration.class);
         logger.debug("Using configuration: {}", configuration);
-        scheduledTask = scheduler.scheduleWithFixedDelay(this::connect, 30, configuration.refreshInterval,
-                TimeUnit.SECONDS);
     }
 
     @Override
@@ -73,8 +71,15 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                 scheduledTask.cancel(true);
                 scheduledTask = null;
             }
-            disconnect();
             servicesResolved = false;
+        }
+    }
+
+    private void startScheduledTask() {
+        if (scheduledTask == null) {
+            logger.debug("Start cheduled task to read device in every {} seconds", configuration.refreshInterval);
+            scheduledTask = scheduler.scheduleWithFixedDelay(this::connect, 1, configuration.refreshInterval,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -137,6 +142,7 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
             switch (connectionNotification.getConnectionState()) {
                 case DISCOVERED:
                     logger.debug("Device {} DISCOVERED", address);
+                    startScheduledTask();
                     break;
                 case CONNECTED:
                     logger.debug("Device {} CONNECTED", address);
@@ -159,6 +165,12 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                     logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address,
                             characteristic.getValue());
                     updateStatus(ThingStatus.ONLINE);
+                    try {
+                        updateChannels(new AirthingsWavePlusDataParser(characteristic.getValue()));
+                    } catch (AirthingsParserException e) {
+                        logger.warn("Data parsing error occured, when parsing data from device {}, cause {}", address,
+                                e.getMessage(), e);
+                    }
                 } else {
                     logger.debug("Characteristic {} from device {} failed", characteristic.getUuid(), address);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
@@ -166,20 +178,6 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                 }
             } finally {
                 disconnect();
-            }
-        });
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        scheduler.submit(() -> {
-            logger.debug("Characteristic {} update from device {}: {}", characteristic.getUuid(), address,
-                    characteristic.getValue());
-            try {
-                updateChannels(new AirthingsWavePlusDataParser(characteristic.getValue()));
-            } catch (AirthingsParserException e) {
-                logger.warn("Data parsing error occured, when parsing data from device {}, cause {}", address,
-                        e.getMessage(), e);
             }
         });
     }
