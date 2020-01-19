@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -72,8 +74,8 @@
     <sat.version>0.9.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
-    <bnd.importpackage/>
-    <bnd.exportpackage/>
+    <bnd.importpackage />
+    <bnd.exportpackage />
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
@@ -164,8 +166,7 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
-        <!-- Required to make the maven-jar-plugin pick up the bnd generated
-          manifest. Also avoid packaging empty Jars -->
+        <!-- Required to make the maven-jar-plugin pick up the bnd generated manifest. Also avoid packaging empty Jars -->
         <!-- Moved... -->
 
         <!-- Setup the indexer for running and testing -->
@@ -210,7 +211,7 @@ Import-Package: \\
           <version>${bnd.version}</version>
           <configuration>
             <failOnChanges>false</failOnChanges>
-            <bndruns/>
+            <bndruns />
           </configuration>
           <executions>
             <execution>
@@ -253,8 +254,7 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- Define the version of the baseline plugin we use and avoid failing
-          when no baseline jar exists. -->
+        <!-- Define the version of the baseline plugin we use and avoid failing when no baseline jar exists. -->
         <!-- (for example before the first release) -->
         <plugin>
           <groupId>biz.aQute.bnd</groupId>
@@ -440,7 +440,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -453,7 +453,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -467,7 +467,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -480,7 +480,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -494,7 +494,7 @@ Import-Package: \\
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute/>
+                    <execute />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -533,11 +533,11 @@ Import-Package: \\
                 <file>openhab_codestyle.xml</file>
                 <version>4.11.0</version>
               </eclipse>
-              <removeUnusedImports/>
+              <removeUnusedImports />
               <importOrder>
                 <file>openhab.importorder</file>
               </importOrder>
-              <endWithNewline/>
+              <endWithNewline />
             </java>
             <formats>
               <format>
@@ -558,8 +558,8 @@ Import-Package: \\
                   </files>
                   <version>4.12.0</version>
                 </eclipseWtp>
-                <trimTrailingWhitespace/>
-                <endWithNewline/>
+                <trimTrailingWhitespace />
+                <endWithNewline />
               </format>
               <format>
                 <!-- feature.xml -->
@@ -588,8 +588,8 @@ Import-Package: \\
                   </files>
                   <version>4.12.0</version>
                 </eclipseWtp>
-                <trimTrailingWhitespace/>
-                <endWithNewline/>
+                <trimTrailingWhitespace />
+                <endWithNewline />
               </format>
             </formats>
           </configuration>
@@ -657,11 +657,11 @@ Import-Package: \\
       </plugin>
     </plugins>
     <extensions>
-       <extension>
-          <groupId>org.openhab.tools.sat</groupId>
-          <artifactId>sat-extension</artifactId>
-          <version>${sat.version}</version>
-       </extension>
+      <extension>
+        <groupId>org.openhab.tools.sat</groupId>
+        <artifactId>sat-extension</artifactId>
+        <version>${sat.version}</version>
+      </extension>
     </extensions>
   </build>
 
