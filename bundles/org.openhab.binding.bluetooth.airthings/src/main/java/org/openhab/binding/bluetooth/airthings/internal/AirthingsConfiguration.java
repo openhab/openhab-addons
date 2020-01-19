@@ -15,7 +15,6 @@ package org.openhab.binding.bluetooth.airthings.internal;
 /**
  * Configuration class for {@link AirthingsBinding} device.
  *
- *
  * @author Pauli Anttila - Initial contribution
  */
 public class AirthingsConfiguration {

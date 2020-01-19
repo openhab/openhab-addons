@@ -196,8 +196,8 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                 QuantityType.valueOf(Double.valueOf(parser.getCo2()), SmartHomeUnits.PARTS_PER_MILLION));
         updateState(CHANNEL_ID_TVOC, QuantityType.valueOf(Double.valueOf(parser.getTvoc()), PARTS_PER_BILLION));
         updateState(CHANNEL_ID_RADON_ST_AVG,
-                QuantityType.valueOf(Double.valueOf(parser.getRadonShortTermAvg()), BECQUEREL_PER_CUPIC_METER));
+                QuantityType.valueOf(Double.valueOf(parser.getRadonShortTermAvg()), BECQUEREL_PER_CUBIC_METRE));
         updateState(CHANNEL_ID_RADON_LT_AVG,
-                QuantityType.valueOf(Double.valueOf(parser.getRadonLongTermAvg()), BECQUEREL_PER_CUPIC_METER));
+                QuantityType.valueOf(Double.valueOf(parser.getRadonLongTermAvg()), BECQUEREL_PER_CUBIC_METRE));
     }
 }

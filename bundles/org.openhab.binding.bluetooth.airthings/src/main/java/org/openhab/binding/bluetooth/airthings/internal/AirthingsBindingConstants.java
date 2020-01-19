@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.dimension.Density;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -34,6 +35,7 @@ import tec.uom.se.unit.Units;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class AirthingsBindingConstants {
 
     // List of all Thing Type UIDs
@@ -51,11 +53,11 @@ public class AirthingsBindingConstants {
 
     public static final Unit<Dimensionless> PARTS_PER_BILLION = new TransformedUnit<>(SmartHomeUnits.ONE,
             new RationalConverter(BigInteger.ONE, BigInteger.valueOf(1000000000)));
-    public static final Unit<Density> BECQUEREL_PER_CUPIC_METER = new AlternateUnit<Density>(
+    public static final Unit<Density> BECQUEREL_PER_CUBIC_METRE = new AlternateUnit<Density>(
             Units.BECQUEREL.divide(Units.CUBIC_METRE), "Bq/m³");
 
     static {
         SimpleUnitFormat.getInstance().label(PARTS_PER_BILLION, "ppb");
-        SimpleUnitFormat.getInstance().label(BECQUEREL_PER_CUPIC_METER, BECQUEREL_PER_CUPIC_METER.getSymbol());
+        SimpleUnitFormat.getInstance().label(BECQUEREL_PER_CUBIC_METRE, BECQUEREL_PER_CUBIC_METRE.getSymbol());
     }
 }

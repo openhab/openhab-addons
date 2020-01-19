@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bluetooth.airthings.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for data parsing errors.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class AirthingsParserException extends Exception {
 
     private static final long serialVersionUID = 1;

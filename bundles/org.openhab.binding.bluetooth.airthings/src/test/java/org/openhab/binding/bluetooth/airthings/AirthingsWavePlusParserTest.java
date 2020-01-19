@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.airthings;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsParserException;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsWavePlusDataParser;
@@ -23,6 +24,7 @@ import org.openhab.binding.bluetooth.airthings.internal.AirthingsWavePlusDataPar
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class AirthingsWavePlusParserTest {
 
     @Test(expected = AirthingsParserException.class)
