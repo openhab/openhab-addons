@@ -116,7 +116,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
-    public void findMyDevice(String deviceId) throws IOException {
+    public void findMyDevice(@Nullable String deviceId) throws IOException {
         connection.findMyDevice(deviceId);
     }
 

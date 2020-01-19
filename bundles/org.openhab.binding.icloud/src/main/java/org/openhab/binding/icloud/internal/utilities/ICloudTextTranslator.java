@@ -25,12 +25,11 @@ import org.osgi.framework.Bundle;
  *
  * @author Patrik Gfeller - Initial contribution
  */
-@NonNullByDefault
 public class ICloudTextTranslator {
 
-    private @Nullable final Bundle bundle;
-    private @Nullable final TranslationProvider i18nProvider;
-    private @Nullable final LocaleProvider localeProvider;
+    private final Bundle bundle;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     public ICloudTextTranslator(Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         this.bundle = bundle;

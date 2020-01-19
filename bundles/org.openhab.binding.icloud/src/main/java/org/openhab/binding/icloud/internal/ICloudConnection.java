@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
 import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
@@ -52,7 +53,7 @@ public class ICloudConnection {
     private final String iCloudDataRequestURL;
     private final String iCloudFindMyDeviceURL;
 
-    public ICloudConnection(String appleId, String password) throws URISyntaxException {
+    public ICloudConnection(@Nullable String appleId, @Nullable String password) throws URISyntaxException {
         authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
         iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
         iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
