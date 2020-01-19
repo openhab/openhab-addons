@@ -24,10 +24,6 @@ public class AirthingsConfiguration {
 
     @Override
     public String toString() {
-        String str = "[";
-        str += "address = " + address;
-        str += ", refreshInterval = " + refreshInterval;
-        str += "]";
-        return str;
+        return "[address=" + address + ", refreshInterval=" + refreshInterval + "]";
     }
 }

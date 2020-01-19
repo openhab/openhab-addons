@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsBindingConstants;
-import org.openhab.binding.bluetooth.airthings.internal.AirthingsHandler;
+import org.openhab.binding.bluetooth.airthings.internal.AirthingsWavePlusHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -49,7 +49,7 @@ public class AirthingsHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS)) {
-            return new AirthingsHandler(thing);
+            return new AirthingsWavePlusHandler(thing);
         }
 
         return null;
