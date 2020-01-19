@@ -57,7 +57,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Nullable private OpenThermGatewayConnector connector;
 
-    boolean connecting = false;
+    private boolean connecting = false;
+
+    private boolean explicitDisconnect = false;
 
     public OpenThermGatewayHandler(Thing thing) {
         super(thing);
@@ -190,28 +192,19 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     private synchronized boolean connect() {
-       try {
-            disconnect();
+        disconnect();
 
-            logger.info("Starting OpenTherm Gateway connector");
+        logger.info("Starting OpenTherm Gateway connector");
 
-            explicitDisconnect = false;
+        explicitDisconnect = false;
 
-            connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
-            new Thread(connector).start();
+        connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
+        new Thread(connector).start();
 
-            logger.info("OpenTherm Gateway connector started");
+        logger.info("OpenTherm Gateway connector started");
 
-            return true;
-       }
-       catch (Exception ex) {
-            disconnected();
-       }
-
-       return false;
+        return true;
     }
-
-    boolean explicitDisconnect = false;
 
     private synchronized void disconnect() {
         if (connector != null) {

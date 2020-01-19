@@ -13,7 +13,6 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -47,8 +46,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private String ipaddress;
     private int port;
 
-    private @Nullable Socket socket;
-    private @Nullable BufferedReader reader;
     private @Nullable PrintWriter writer;
 
     private volatile boolean stopping;
@@ -66,66 +63,59 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     public void run() {
         stopping = false;
         connected = false;
+        
+        logger.info("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
 
-        try {            
-            logger.info("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
-
-            callback.connecting();
-
-            socket = new Socket();
+        callback.connecting();
+        
+        try (Socket socket = new Socket()) {            
             socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
             socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+    
             connected = true;
-
+    
             callback.connected();
-
+    
             logger.debug("OpenThermGatewaySocketConnector connected");
-
-            sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
-            // Set the OTGW to report every message it receives and transmits
-            sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
-
-            while (!stopping && !Thread.currentThread().isInterrupted()) {
-                @Nullable String message = reader.readLine();
-
-                if (message != null) {
-                    handleMessage(message);
-                } else {
-                    logger.info("Connection closed by OpenTherm Gateway");
-                    break;
-                }
+    
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
+                    // Make writer accessible on class level
+                    writer = wrt;
+    
+                    sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
+                    // Set the OTGW to report every message it receives and transmits
+                    sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
+        
+                    while (!stopping && !Thread.currentThread().isInterrupted()) {
+                        @Nullable String message = reader.readLine();
+        
+                        if (message != null) {
+                            handleMessage(message);
+                        } else {
+                            logger.info("Connection closed by OpenTherm Gateway");
+                            break;
+                        }
+                    }
+        
+                    logger.debug("Stopping OpenThermGatewaySocketConnector");
             }
-
-            logger.debug("Stopping OpenThermGatewaySocketConnector");
-        } catch (Exception e) {
-            logger.error("An error occured in OpenThermGatewaySocketConnector: {}", e.getMessage());
-        } finally {
-
-            if (writer != null) {
-                writer.flush();
-                writer.close();
+            finally {
+                connected = false;
+    
+                logger.debug("OpenThermGatewaySocketConnector disconnected");
+                callback.disconnected();
             }
-
-            close(reader);
-            close(writer);
-
-            connected = false;
-
-            logger.debug("OpenThermGatewaySocketConnector disconnected");
-            callback.disconnected();
-        }
+        }     
+        catch (IOException ex) {
+            logger.debug("Unable to connect to the OpenTherm Gateway: {}" , ex);
+        }        
     }
 
     @Override
     public synchronized void stop() {
         logger.debug("Stopping OpenThermGatewaySocketConnector");
-
         stopping = true;
-
-        close(socket);
     }
 
     @Override
@@ -215,15 +205,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private void receiveMessage(Message message) {
         if (message != null && callback != null) {
             callback.receiveMessage(message);
-        }
-    }
-
-    private void close(@Nullable Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException e) {
-            }
         }
     }
 }
