@@ -78,5 +78,4 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
                 .withBridge(device.getAdapter().getUID()).withLabel(label).build();
     }
-
 }

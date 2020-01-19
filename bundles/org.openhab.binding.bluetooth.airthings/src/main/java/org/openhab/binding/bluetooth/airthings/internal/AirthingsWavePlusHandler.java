@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
 
     private static final String DATA_UUID = "b42e2a68-ade7-11e4-89d3-123b93f75cba";
-    private static final int EXPECTED_DATA_LEN = 20;
 
     private final Logger logger = LoggerFactory.getLogger(AirthingsWavePlusHandler.class);
     private final UUID uuid = UUID.fromString(DATA_UUID);
@@ -155,71 +154,50 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
     @Override
     public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
         scheduler.submit(() -> {
-            if (status == BluetoothCompletionStatus.SUCCESS) {
-                logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address,
-                        characteristic.getValue());
-                updateStatus(ThingStatus.ONLINE);
-                parseRawDataAndUpdateChannels(characteristic.getValue());
-            } else {
-                logger.debug("Characteristic {} from device {} failed", characteristic.getUuid(), address);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
-                return;
+            try {
+                if (status == BluetoothCompletionStatus.SUCCESS) {
+                    logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address,
+                            characteristic.getValue());
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    logger.debug("Characteristic {} from device {} failed", characteristic.getUuid(), address);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
+                    return;
+                }
+            } finally {
+                disconnect();
             }
-            disconnect();
         });
     }
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        logger.debug("Characteristic {} update from device {}: {}", characteristic.getUuid(), address,
-                characteristic.getValue());
-    }
-
-    private void parseRawDataAndUpdateChannels(int[] rawData) {
-        try {
-            if (rawData.length == EXPECTED_DATA_LEN) {
-                int sensor_version = rawData[0];
-
-                if (sensor_version == 1) {
-                    double humidity = rawData[1] / 2D;
-                    int radon_short_term_avg = intFromBytes(rawData[4], rawData[5]);
-                    int radon_long_term_avg = intFromBytes(rawData[6], rawData[7]);
-                    double temperature = intFromBytes(rawData[8], rawData[9]) / 100D;
-                    double pressure = intFromBytes(rawData[10], rawData[11]) / 50D;
-                    int co2 = intFromBytes(rawData[12], rawData[13]);
-                    int voc = intFromBytes(rawData[14], rawData[15]);
-
-                    logger.debug(
-                            "Data from device {}: humidity={} %rH, radon_short_term_avg={} Bq/m3, radon_long_term_avg={} Bq/m3, temperature={} °C, pressure={} mbar, co2={} ppm, tvoc={} ppb",
-                            address, humidity, radon_short_term_avg, radon_long_term_avg, temperature, pressure, co2,
-                            voc);
-
-                    updateState(CHANNEL_ID_HUMIDITY,
-                            QuantityType.valueOf(Double.valueOf(humidity), SmartHomeUnits.PERCENT));
-                    updateState(CHANNEL_ID_TEMPERATURE,
-                            QuantityType.valueOf(Double.valueOf(temperature), SIUnits.CELSIUS));
-                    updateState(CHANNEL_ID_PRESSURE,
-                            QuantityType.valueOf(Double.valueOf(pressure), SmartHomeUnits.MILLIBAR));
-                    updateState(CHANNEL_ID_CO2,
-                            QuantityType.valueOf(Double.valueOf(co2), SmartHomeUnits.PARTS_PER_MILLION));
-                    updateState(CHANNEL_ID_TVOC, QuantityType.valueOf(Double.valueOf(voc), PARTS_PER_BILLION));
-                    updateState(CHANNEL_ID_RADON_ST_AVG,
-                            QuantityType.valueOf(Double.valueOf(radon_short_term_avg), BECQUEREL_PER_CUPIC_METER));
-                    updateState(CHANNEL_ID_RADON_LT_AVG,
-                            QuantityType.valueOf(Double.valueOf(radon_long_term_avg), BECQUEREL_PER_CUPIC_METER));
-                } else {
-                    logger.warn("Unsupported data structure version {} received from device {}", sensor_version,
-                            address);
-                }
-            } else {
-                logger.warn("Illegal data structure length ({}) received from device {}", rawData.length, address);
+        scheduler.submit(() -> {
+            logger.debug("Characteristic {} update from device {}: {}", characteristic.getUuid(), address,
+                    characteristic.getValue());
+            try {
+                updateChannels(new AirthingsWavePlusDataParser(characteristic.getValue()));
+            } catch (AirthingsParserException e) {
+                logger.warn("Data parsing error occured, when parsing data from device {}, cause {}", address,
+                        e.getMessage(), e);
             }
-        } catch (RuntimeException e) {
-            logger.warn("Unknown error occured when parsing data from device {}", address, e);
-        }
+        });
     }
 
-    private int intFromBytes(int lowByte, int highByte) {
-        return (highByte & 0xFF) << 8 | (lowByte & 0xFF);
+    private void updateChannels(AirthingsWavePlusDataParser parser) {
+        logger.debug("Parsed data: {}", parser);
+        updateState(CHANNEL_ID_HUMIDITY,
+                QuantityType.valueOf(Double.valueOf(parser.getHumidity()), SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_ID_TEMPERATURE,
+                QuantityType.valueOf(Double.valueOf(parser.getTemperature()), SIUnits.CELSIUS));
+        updateState(CHANNEL_ID_PRESSURE,
+                QuantityType.valueOf(Double.valueOf(parser.getPressure()), SmartHomeUnits.MILLIBAR));
+        updateState(CHANNEL_ID_CO2,
+                QuantityType.valueOf(Double.valueOf(parser.getCo2()), SmartHomeUnits.PARTS_PER_MILLION));
+        updateState(CHANNEL_ID_TVOC, QuantityType.valueOf(Double.valueOf(parser.getTvoc()), PARTS_PER_BILLION));
+        updateState(CHANNEL_ID_RADON_ST_AVG,
+                QuantityType.valueOf(Double.valueOf(parser.getRadonShortTermAvg()), BECQUEREL_PER_CUPIC_METER));
+        updateState(CHANNEL_ID_RADON_LT_AVG,
+                QuantityType.valueOf(Double.valueOf(parser.getRadonLongTermAvg()), BECQUEREL_PER_CUPIC_METER));
     }
 }
