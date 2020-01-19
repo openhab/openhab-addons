@@ -15,6 +15,7 @@ package org.openhab.binding.icloud.internal.utilities;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
@@ -27,9 +28,9 @@ import org.osgi.framework.Bundle;
 @NonNullByDefault
 public class ICloudTextTranslator {
 
-    private final Bundle bundle;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
+    private @Nullable final Bundle bundle;
+    private @Nullable final TranslationProvider i18nProvider;
+    private @Nullable final LocaleProvider localeProvider;
 
     public ICloudTextTranslator(Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         this.bundle = bundle;

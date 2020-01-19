@@ -29,7 +29,6 @@ public class ICloudAccountDataRequest {
         this.clientContext = ClientContext.defaultInstance();
     }
 
-    @NonNullByDefault
     public static ICloudAccountDataRequest defaultInstance() {
         return new ICloudAccountDataRequest();
     }

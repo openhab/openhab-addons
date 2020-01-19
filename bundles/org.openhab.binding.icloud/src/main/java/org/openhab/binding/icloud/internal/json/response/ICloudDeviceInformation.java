@@ -23,7 +23,6 @@ import java.util.ArrayList;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-@NonNullByDefault
 public class ICloudDeviceInformation {
     private boolean activationLocked;
 

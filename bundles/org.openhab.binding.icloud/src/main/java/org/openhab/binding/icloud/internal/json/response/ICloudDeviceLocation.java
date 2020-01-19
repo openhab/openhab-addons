@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-@NonNullByDefault
 public class ICloudDeviceLocation {
     private double altitude;
 

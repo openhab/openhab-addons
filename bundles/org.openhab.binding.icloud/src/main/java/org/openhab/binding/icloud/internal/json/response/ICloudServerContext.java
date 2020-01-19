@@ -13,6 +13,7 @@
 package org.openhab.binding.icloud.internal.json.response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Serializable class to parse json response received from the Apple server.
@@ -20,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-@NonNullByDefault
 public class ICloudServerContext {
+    @Nullable
     private String authToken;
 
     private int callbackIntervalInMS;

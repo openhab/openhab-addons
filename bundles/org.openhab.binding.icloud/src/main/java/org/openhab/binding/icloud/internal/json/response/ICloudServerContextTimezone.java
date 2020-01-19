@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Patrik Gfeller - Initial Contribution
  *
  */
-@NonNullByDefault
 public class ICloudServerContextTimezone {
     private int currentOffset;
 

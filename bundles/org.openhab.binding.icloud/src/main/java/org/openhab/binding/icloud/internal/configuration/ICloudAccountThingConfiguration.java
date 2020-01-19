@@ -13,6 +13,7 @@
 package org.openhab.binding.icloud.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents the configuration of an iCloud Account Thing.
@@ -22,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ICloudAccountThingConfiguration {
-    public String appleId;
-    public String password;
-    public Integer refreshTimeInMinutes;
+    public @Nullable String appleId;
+    public @Nullable String password;
+    public @Nullable int refreshTimeInMinutes;
 }
