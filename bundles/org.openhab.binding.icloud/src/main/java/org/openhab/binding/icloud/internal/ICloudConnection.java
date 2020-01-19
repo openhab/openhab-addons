@@ -64,7 +64,7 @@ public class ICloudConnection {
      *
      * @throws IOException
      */
-    public void findMyDevice(String id) throws IOException {
+    public void findMyDevice(@Nullable String id) throws IOException {
         callApi(iCloudFindMyDeviceURL, gson.toJson(new ICloudFindMyDeviceRequest(id)));
     }
 
