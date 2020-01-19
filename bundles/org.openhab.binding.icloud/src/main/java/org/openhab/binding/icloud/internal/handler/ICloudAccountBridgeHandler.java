@@ -166,11 +166,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Status = " + statusCode + ", Response = " + json);
                 }
-
                 logger.debug("iCloud bridge data refresh complete.");
             } catch (NumberFormatException | JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Response = " + json);
-                logger.warn("An error occured during iCloud Bridge data parsing", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "iCloud response invalid: " + e.getMessage());
             }
         }
     }
