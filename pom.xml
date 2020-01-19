@@ -78,7 +78,6 @@
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
     <spotless.version>1.24.3</spotless.version>
-    <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
   </properties>
 
   <dependencyManagement>
