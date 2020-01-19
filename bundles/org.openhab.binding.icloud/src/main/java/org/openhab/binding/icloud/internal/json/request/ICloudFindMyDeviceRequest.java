@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ICloudFindMyDeviceRequest {
     @SerializedName("device")
-    String deviceId;
+    @Nullable String deviceId;
     final String subject = FIND_MY_DEVICE_REQUEST_SUBJECT;
 
     public ICloudFindMyDeviceRequest(@Nullable String id) {
