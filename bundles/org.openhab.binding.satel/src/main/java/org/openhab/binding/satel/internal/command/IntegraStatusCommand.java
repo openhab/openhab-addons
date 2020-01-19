@@ -14,6 +14,7 @@ package org.openhab.binding.satel.internal.command;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraStatusEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraStatusCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(IntegraStatusCommand.class);
@@ -43,6 +45,7 @@ public class IntegraStatusCommand extends SatelCommandBase {
      */
     public LocalDateTime getIntegraTime() {
         // parse current date and time
+        final SatelMessage response = getResponse();
         return LocalDateTime.of(bcdToInt(response.getPayload(), 0, 2), bcdToInt(response.getPayload(), 2, 1),
                 bcdToInt(response.getPayload(), 3, 1), bcdToInt(response.getPayload(), 4, 1),
                 bcdToInt(response.getPayload(), 5, 1), bcdToInt(response.getPayload(), 6, 1));
@@ -52,6 +55,7 @@ public class IntegraStatusCommand extends SatelCommandBase {
      * @return first status byte
      */
     public byte getStatusByte1() {
+        final SatelMessage response = getResponse();
         return response.getPayload()[7];
     }
 
@@ -59,6 +63,7 @@ public class IntegraStatusCommand extends SatelCommandBase {
      * @return second status byte
      */
     public byte getStatusByte2() {
+        final SatelMessage response = getResponse();
         return response.getPayload()[8];
     }
 

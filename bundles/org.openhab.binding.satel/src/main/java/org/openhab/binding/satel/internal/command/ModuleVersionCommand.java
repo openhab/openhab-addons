@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.ModuleVersionEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ModuleVersionCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(ModuleVersionCommand.class);
@@ -47,6 +49,7 @@ public class ModuleVersionCommand extends SatelCommandBase {
      * @return <code>true</code> if the module supports extended (32-bit) payload for zones/outputs
      */
     public boolean hasExtPayloadSupport() {
+        final SatelMessage response = getResponse();
         return (response.getPayload()[11] & 0x01) != 0;
     }
 

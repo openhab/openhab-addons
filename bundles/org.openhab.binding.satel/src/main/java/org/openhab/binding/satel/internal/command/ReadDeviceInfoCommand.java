@@ -14,6 +14,7 @@ package org.openhab.binding.satel.internal.command;
 
 import java.nio.charset.Charset;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ReadDeviceInfoCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(ReadDeviceInfoCommand.class);
@@ -74,10 +76,8 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * Creates new command class instance to read description for given
      * parameters.
      *
-     * @param deviceType
-     *                         type of the device
-     * @param deviceNumber
-     *                         device number
+     * @param deviceType   type of the device
+     * @param deviceNumber device number
      */
     public ReadDeviceInfoCommand(DeviceType deviceType, int deviceNumber) {
         super(COMMAND_CODE, new byte[] { (byte) deviceType.getCode(), getDeviceNumber(deviceType, deviceNumber) });
@@ -119,6 +119,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * @return kind of the device
      */
     public int getDeviceKind() {
+        final SatelMessage response = getResponse();
         return response.getPayload()[2] & 0xff;
     }
 
@@ -127,11 +128,11 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * depends on firmware language and must be specified in the binding
      * configuration.
      *
-     * @param encoding
-     *                     encoding for the text
+     * @param encoding encoding for the text
      * @return device name
      */
     public String getName(Charset encoding) {
+        final SatelMessage response = getResponse();
         return new String(response.getPayload(), 3, 16, encoding).trim();
     }
 
@@ -141,6 +142,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * @return additional info
      */
     public int getAdditionalInfo() {
+        final SatelMessage response = getResponse();
         return (response.getPayload().length == 20) ? (response.getPayload()[19] & 0xff) : 0;
     }
 

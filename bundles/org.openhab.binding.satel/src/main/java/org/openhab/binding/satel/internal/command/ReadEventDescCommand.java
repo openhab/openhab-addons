@@ -14,16 +14,17 @@ package org.openhab.binding.satel.internal.command;
 
 import java.nio.charset.Charset;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Command class for command that reads description for specific event
- * code.
+ * Command class for command that reads description for specific event code.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ReadEventDescCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(ReadEventDescCommand.class);
@@ -70,7 +71,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
      * @return text of the description
      */
     public String getText(Charset encoding) {
-        int length = isLongDescription() ? 46 : 16;
+        final SatelMessage response = getResponse();
+        final int length = isLongDescription() ? 46 : 16;
         return new String(response.getPayload(), 5, length, encoding).trim();
     }
 
@@ -80,6 +82,7 @@ public class ReadEventDescCommand extends SatelCommandBase {
      * @return kind of description
      */
     public int getKind() {
+        final SatelMessage response = getResponse();
         if (isLongDescription()) {
             return response.getPayload()[2] & 0xff;
         } else {
