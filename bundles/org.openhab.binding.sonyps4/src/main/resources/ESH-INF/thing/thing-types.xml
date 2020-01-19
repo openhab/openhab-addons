@@ -55,10 +55,10 @@
 				<label>Pin code</label>
 				<description>Pin code to log in to PlayStation 4, optional, 4 digits.</description>
 			</parameter>
-            <parameter name="pairingCode" type="text">
-                <label>Pairing code</label>
-                <description>Pairing code to pair OpenHAB device to PlayStation 4, only needed first time, 8 digits.</description>
-            </parameter>
+			<parameter name="pairingCode" type="text">
+				<label>Pairing code</label>
+				<description>Pairing code to pair OpenHAB device to PlayStation 4, only needed first time, 8 digits.</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
