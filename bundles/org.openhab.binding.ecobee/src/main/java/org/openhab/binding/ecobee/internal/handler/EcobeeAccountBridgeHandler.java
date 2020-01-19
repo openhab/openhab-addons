@@ -145,6 +145,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
         String thermostatId = (String) thermostatThing.getConfiguration().get(CONFIG_THERMOSTAT_ID);
         thermostatHandlers.put(thermostatId, (EcobeeThermostatBridgeHandler) thermostatHandler);
         thermostatIds.add(thermostatId);
+        scheduleQuickPoll();
         logger.debug("AccountBridge: Adding thermostat handler for {} with id {}", thermostatThing.getUID(),
                 thermostatId);
     }
@@ -257,6 +258,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
         if (refreshThermostatsCounter.get() > refreshIntervalQuick) {
             logger.debug("AccountBridge: Scheduling quick poll");
             refreshThermostatsCounter.set(refreshIntervalQuick);
+            forceFullNextPoll();
         }
     }
 
@@ -271,9 +273,13 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     private void cancelRefreshJob() {
         Future<?> localRefreshThermostatsJob = refreshThermostatsJob;
         if (localRefreshThermostatsJob != null) {
-            previousSummary = null;
+            forceFullNextPoll();
             localRefreshThermostatsJob.cancel(true);
             logger.debug("AccountBridge: Canceling thermostat refresh job");
         }
+    }
+
+    private void forceFullNextPoll() {
+        previousSummary = null;
     }
 }

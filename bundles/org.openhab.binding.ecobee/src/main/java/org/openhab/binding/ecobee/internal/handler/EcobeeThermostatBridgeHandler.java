@@ -647,8 +647,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_EVENT_IS_OCCUPIED, EcobeeUtils.undefOrOnOff(runningEvent.isOccupied));
         updateChannel(grp + CH_EVENT_IS_COOL_OFF, EcobeeUtils.undefOrOnOff(runningEvent.isCoolOff));
         updateChannel(grp + CH_EVENT_IS_HEAT_OFF, EcobeeUtils.undefOrOnOff(runningEvent.isHeatOff));
-        updateChannel(grp + CH_EVENT_COOL_HOLD_TEMP, EcobeeUtils.undefOrDecimal(runningEvent.coolHoldTemp));
-        updateChannel(grp + CH_EVENT_HEAT_HOLD_TEMP, EcobeeUtils.undefOrDecimal(runningEvent.heatHoldTemp));
+        updateChannel(grp + CH_EVENT_COOL_HOLD_TEMP, EcobeeUtils.undefOrTemperature(runningEvent.coolHoldTemp));
+        updateChannel(grp + CH_EVENT_HEAT_HOLD_TEMP, EcobeeUtils.undefOrTemperature(runningEvent.heatHoldTemp));
         updateChannel(grp + CH_EVENT_FAN, EcobeeUtils.undefOrString(runningEvent.fan));
         updateChannel(grp + CH_EVENT_VENT, EcobeeUtils.undefOrString(runningEvent.vent));
         updateChannel(grp + CH_EVENT_VENTILATOR_MIN_ON_TIME,
