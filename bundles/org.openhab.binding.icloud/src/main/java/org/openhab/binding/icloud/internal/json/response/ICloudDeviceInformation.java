@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import java.util.ArrayList;
 

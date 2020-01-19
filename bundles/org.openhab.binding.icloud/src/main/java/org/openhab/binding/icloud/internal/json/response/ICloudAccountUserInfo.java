@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Serializable class to parse json response received from the Apple server.

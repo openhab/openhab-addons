@@ -15,7 +15,6 @@ package org.openhab.binding.icloud.internal.json.response;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Serializable class to parse the device information json response

@@ -47,8 +47,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.icloud")
 public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
-    private LocaleProvider localeProvider;
-    private TranslationProvider i18nProvider;
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable TranslationProvider i18nProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -25,5 +25,5 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ICloudAccountThingConfiguration {
     public @Nullable String appleId;
     public @Nullable String password;
-    public @Nullable int refreshTimeInMinutes;
+    public int refreshTimeInMinutes = 10;
 }

@@ -60,9 +60,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private static final int CACHE_EXPIRY = (int) SECONDS.toMillis(5);
 
     private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
-    private ICloudConnection connection;
-    private ICloudAccountThingConfiguration config;
-    private ExpiringCache<String> iCloudDeviceInformationCache;
+    private @Nullable ICloudConnection connection;
+    private @Nullable ICloudAccountThingConfiguration config;
+    private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
     ServiceRegistration<?> service;
 
@@ -168,7 +168,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 }
                 logger.debug("iCloud bridge data refresh complete.");
             } catch (NumberFormatException | JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "iCloud response invalid: " + e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "iCloud response invalid: " + e.getMessage());
             }
         }
     }

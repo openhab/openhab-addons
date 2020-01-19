@@ -13,6 +13,7 @@
 package org.openhab.binding.icloud.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents the configuration of an iCloud Device Thing.
@@ -22,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ICloudDeviceThingConfiguration {
-    public String deviceId;
+    public @Nullable String deviceId;
 }
