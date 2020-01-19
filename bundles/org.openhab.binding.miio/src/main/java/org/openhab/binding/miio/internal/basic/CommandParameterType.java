@@ -22,6 +22,7 @@ public enum CommandParameterType {
     EMPTY("empty"),
     ONOFF("onoff"),
     ONOFFPARA("onoffpara"),
+    ONOFFBOOL("onoffbool"),
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
