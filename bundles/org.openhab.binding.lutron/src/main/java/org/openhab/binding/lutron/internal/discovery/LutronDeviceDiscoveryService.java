@@ -34,6 +34,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
@@ -79,6 +81,7 @@ import org.slf4j.LoggerFactory;
  *         Timeclock, and Green Mode. Added option to read XML from file. Switched to jetty HTTP client for better
  *         exception handling. Added keypad model discovery.
  */
+@NonNullByDefault
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DECLARATION_MAX_LEN = 80;
@@ -96,7 +99,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private final HttpClient httpClient;
 
-    private Future<?> scanTask;
+    private @Nullable Future<?> scanTask;
 
     public LutronDeviceDiscoveryService(IPBridgeHandler bridgeHandler, HttpClient httpClient)
             throws IllegalArgumentException {
@@ -429,8 +432,8 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
         notifyDiscovery(THING_TYPE_GREENMODE, greenmode.getIntegrationId(), label);
     }
 
-    private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label, String propName,
-            Object propValue) {
+    private void notifyDiscovery(ThingTypeUID thingTypeUID, @Nullable Integer integrationId, String label,
+            @Nullable String propName, @Nullable Object propValue) {
         if (integrationId == null) {
             logger.info("Discovered {} with no integration ID", label);
 
