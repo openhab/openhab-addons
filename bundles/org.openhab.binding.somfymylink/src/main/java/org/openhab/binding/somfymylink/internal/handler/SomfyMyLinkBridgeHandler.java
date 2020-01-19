@@ -428,20 +428,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     @Override
     public void thingUpdated(Thing thing) {
         SomfyMyLinkConfiguration newConfig = thing.getConfiguration().as(SomfyMyLinkConfiguration.class);
-
-        boolean validConfig = validConfiguration(newConfig);
-        boolean needsReconnect = false; // validConfig && !this.config.sameConnectionParameters(newConfig);
-
-        if (!validConfig || needsReconnect) {
-            dispose();
-        }
-
-        this.thing = thing;
         config = newConfig;
-
-        if (needsReconnect) {
-            initialize();
-        }
     }
 
     @Override
