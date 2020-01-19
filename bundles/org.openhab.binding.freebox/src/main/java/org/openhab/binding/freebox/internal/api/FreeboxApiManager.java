@@ -49,6 +49,7 @@ import org.openhab.binding.freebox.internal.api.model.FreeboxDiscoveryResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxEmptyResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxFtpConfig;
 import org.openhab.binding.freebox.internal.api.model.FreeboxFtpConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.FreeboxFtthStatusResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLanConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLanHostsResponse;
@@ -199,6 +200,10 @@ public class FreeboxApiManager {
 
     public String getxDslStatus() throws FreeboxException {
         return executeGetUrl("connection/xdsl/", FreeboxXdslStatusResponse.class).getStatus();
+    }
+
+    public String getFtthStatus() throws FreeboxException {
+        return executeGetUrl("connection/ftth/", FreeboxFtthStatusResponse.class).getSfp_present().toString();
     }
 
     public boolean isWifiEnabled() throws FreeboxException {
