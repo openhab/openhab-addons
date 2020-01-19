@@ -34,7 +34,6 @@ import org.openhab.binding.openthermgateway.internal.DataItem;
 import org.openhab.binding.openthermgateway.internal.DataItemGroup;
 import org.openhab.binding.openthermgateway.internal.GatewayCommand;
 import org.openhab.binding.openthermgateway.internal.GatewayCommandCode;
-import org.openhab.binding.openthermgateway.internal.LogLevel;
 import org.openhab.binding.openthermgateway.internal.Message;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayCallback;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConfiguration;
@@ -166,58 +165,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                     updateState(channelId, state);
                 }
             }
-        }
-    }
-
-    @Override
-    public void log(LogLevel loglevel, String format, String arg) {
-        String message = String.format(format, arg);
-        log(loglevel, message);
-    }
-
-    @Override
-    public void log(LogLevel loglevel, String message, Throwable t) {
-        switch (loglevel) {
-            case TRACE:
-                logger.trace("{}", message, t);
-                break;
-            case DEBUG:
-                logger.debug("{}", message, t);
-                break;
-            case INFO:
-                logger.info("{}", message, t);
-                break;
-            case WARNING:
-                logger.warn("{}", message, t);
-                break;
-            case ERROR:
-                logger.error("{}", message, t);
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void log(LogLevel loglevel, String message) {
-        switch (loglevel) {
-            case TRACE:
-                logger.trace("{}", message);
-                break;
-            case DEBUG:
-                logger.debug("{}", message);
-                break;
-            case INFO:
-                logger.info("{}", message);
-                break;
-            case WARNING:
-                logger.warn("{}", message);
-                break;
-            case ERROR:
-                logger.error("{}", message);
-                break;
-            default:
-                break;
         }
     }
 

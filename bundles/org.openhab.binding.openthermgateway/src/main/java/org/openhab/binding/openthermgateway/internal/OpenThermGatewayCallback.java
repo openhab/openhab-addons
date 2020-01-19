@@ -26,10 +26,4 @@ public interface OpenThermGatewayCallback {
     void disconnected();
 
     void receiveMessage(Message message);
-
-    void log(LogLevel loglevel, String message);
-
-    void log(LogLevel loglevel, String format, String arg);
-
-    void log(LogLevel loglevel, String format, Throwable t);
 }
