@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth.airthings.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AirthingsWavePlusDataParser} is responsible for parsing data from the device.
+ * The {@link AirthingsWavePlusDataParser} is responsible for parsing data from Wave Plus device format.
  *
  * @author Pauli Anttila - Initial contribution
  */
@@ -24,13 +24,13 @@ public class AirthingsWavePlusDataParser {
     private static final int EXPECTED_DATA_LEN = 20;
     private static final int EXPECTED_VER = 1;
 
-    double humidity;
-    int radonShortTermAvg;
-    int radonLongTermAvg;
-    double temperature;
-    double pressure;
-    int co2;
-    int tvoc;
+    private double humidity;
+    private int radonShortTermAvg;
+    private int radonLongTermAvg;
+    private double temperature;
+    private double pressure;
+    private int co2;
+    private int tvoc;
 
     public AirthingsWavePlusDataParser(int[] data) throws AirthingsParserException {
         parseData(data);
