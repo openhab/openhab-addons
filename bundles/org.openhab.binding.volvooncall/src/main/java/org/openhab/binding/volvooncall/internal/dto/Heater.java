@@ -13,21 +13,23 @@
 package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 
 /**
- * The {@link TyrePressure} is responsible for storing
- * Tyre Pressure informations returned by vehicule status rest answer
+ * The {@link Heater} is responsible for storing
+ * heater information returned by vehicle status rest answer
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Arie van der Lee - Initial contribution
  */
 @NonNullByDefault
-public class TyrePressure {
-    public @NonNullByDefault({}) String frontLeftTyrePressure;
-    public @NonNullByDefault({}) String frontRightTyrePressure;
-    public @NonNullByDefault({}) String rearLeftTyrePressure;
-    public @NonNullByDefault({}) String rearRightTyrePressure;
+public class Heater {
+    public @NonNullByDefault({}) OnOffType status;
+
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;
      */
+
 }
+
+

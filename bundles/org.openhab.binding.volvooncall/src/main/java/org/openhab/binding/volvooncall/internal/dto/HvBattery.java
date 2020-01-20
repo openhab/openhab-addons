@@ -12,22 +12,27 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TyrePressure} is responsible for storing
- * Tyre Pressure informations returned by vehicule status rest answer
+ * The {@link HvBattery} is responsible for storing
+ * PHEV Battery information returned by vehicle status rest answer
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Arie van der Lee - Initial contribution
  */
 @NonNullByDefault
-public class TyrePressure {
-    public @NonNullByDefault({}) String frontLeftTyrePressure;
-    public @NonNullByDefault({}) String frontRightTyrePressure;
-    public @NonNullByDefault({}) String rearLeftTyrePressure;
-    public @NonNullByDefault({}) String rearRightTyrePressure;
+public class HvBattery {
+    public int hvBatteryLevel = UNDEFINED;
+    public int distanceToHVBatteryEmpty = UNDEFINED;
+    public @NonNullByDefault({}) String hvBatteryChargeStatusDerived;
+    public int timeToHVBatteryFullyCharged = UNDEFINED;
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;
      */
+
 }
+
+

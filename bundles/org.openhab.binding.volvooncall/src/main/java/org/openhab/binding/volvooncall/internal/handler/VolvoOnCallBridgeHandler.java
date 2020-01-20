@@ -132,7 +132,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     public class ActionResultControler implements Runnable {
         PostResponse postResponse;
 
-        public ActionResultControler(PostResponse postResponse) {
+        ActionResultControler(PostResponse postResponse) {
             this.postResponse = postResponse;
         }
 
@@ -158,7 +158,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
+    void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
         InputStream inputStream = body != null ? new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)) : null;
         String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
         logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
@@ -169,7 +169,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         } else {
             logger.warn("URL {} returned {}", URL, postResponse.errorDescription);
         }
-        pendingActions.removeIf(ScheduledFuture<?>::isDone);
+        pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
     @Override
