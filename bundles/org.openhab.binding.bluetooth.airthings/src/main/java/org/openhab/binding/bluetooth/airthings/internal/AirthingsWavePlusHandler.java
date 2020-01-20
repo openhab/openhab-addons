@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
+import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.slf4j.Logger;
@@ -77,17 +78,34 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
 
     private void startScheduledTask() {
         if (scheduledTask == null) {
-            logger.debug("Start cheduled task to read device in every {} seconds", configuration.refreshInterval);
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::connect, 1, configuration.refreshInterval,
+            logger.debug("Start scheduled task to read device in every {} seconds", configuration.refreshInterval);
+            scheduledTask = scheduler.scheduleWithFixedDelay(this::execute, 0, configuration.refreshInterval,
                     TimeUnit.SECONDS);
         }
     }
 
-    private void connect() {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Device {} is offline, skip connect", address);
-            return;
+    private void execute() {
+        ConnectionState connectionState = device.getConnectionState();
+        logger.debug("Device {} state is {}", address, connectionState);
+        switch (connectionState) {
+            case DISCONNECTED:
+                connect();
+                break;
+            case CONNECTED:
+                synchronized (servicesResolved) {
+                    if (servicesResolved) {
+                        read();
+                    } else {
+                        discoverServices();
+                    }
+                }
+                break;
+            default:
+                break;
         }
+    }
+
+    private void connect() {
         logger.debug("Connect to device {}...", address);
         if (!device.connect()) {
             logger.debug("Connecting to device {} failed", address);
@@ -101,21 +119,27 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
         }
     }
 
-    private void readDevice() {
-        synchronized (servicesResolved) {
-            if (!servicesResolved) {
-                logger.debug("Discover services for device {}", address);
-                if (!device.discoverServices()) {
-                    logger.debug("Discovering services failed");
-                    disconnect();
-                }
-            } else {
-                logger.debug("Read data from device {}...", address);
-                BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
-                if (!device.readCharacteristic(characteristic)) {
-                    logger.debug("Read data from device {} failed", address);
-                    disconnect();
-                }
+    private void discoverServices() {
+        logger.debug("Discover services for device {}", address);
+        if (!device.discoverServices()) {
+            logger.debug("Discovering services failed");
+            disconnect();
+        }
+    }
+
+    private void read() {
+        logger.debug("Read data from device {}...", address);
+        BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
+        if (!device.readCharacteristic(characteristic)) {
+            logger.debug("Read data from device {} failed", address);
+            disconnect();
+        }
+    }
+
+    private void printServices() {
+        if (logger.isDebugEnabled()) {
+            for (BluetoothService service : device.getServices()) {
+                logger.debug("Device {} Service '{}'", address, service);
             }
         }
     }
@@ -124,15 +148,11 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
     public void onServicesDiscovered() {
         scheduler.submit(() -> {
             synchronized (servicesResolved) {
-                if (!servicesResolved) {
-                    servicesResolved = true;
-                    logger.debug("Service discovery completed for device {}", address);
-                }
+                servicesResolved = true;
             }
-            for (BluetoothService service : device.getServices()) {
-                logger.debug("Service '{}'", service);
-            }
-            readDevice();
+            logger.debug("Service discovery completed for device {}", address);
+            printServices();
+            execute();
         });
     }
 
@@ -146,7 +166,7 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                     break;
                 case CONNECTED:
                     logger.debug("Device {} CONNECTED", address);
-                    readDevice();
+                    execute();
                     break;
                 case DISCONNECTED:
                     logger.debug("Device {} DISCONNECTED", address);
@@ -174,7 +194,6 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                 } else {
                     logger.debug("Characteristic {} from device {} failed", characteristic.getUuid(), address);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
-                    return;
                 }
             } finally {
                 disconnect();
