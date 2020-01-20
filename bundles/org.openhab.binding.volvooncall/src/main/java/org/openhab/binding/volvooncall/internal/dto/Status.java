@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,21 +26,27 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  */
 @NonNullByDefault
 public class Status {
-    public static final int UNDEFINED = -1;
 
     public double averageFuelConsumption = UNDEFINED;
-    public @NonNullByDefault({}) OnOffType carLocked;
-    public int distanceToEmpty = UNDEFINED;
-    public @NonNullByDefault({}) OnOffType engineRunning;
+    public int averageSpeed = UNDEFINED;
     public int fuelAmount = UNDEFINED;
     public int fuelAmountLevel = UNDEFINED;
+    public int distanceToEmpty = UNDEFINED;
     public int odometer = UNDEFINED;
-    public @NonNullByDefault({}) String serviceWarningStatus;
     public int tripMeter1 = UNDEFINED;
     public int tripMeter2 = UNDEFINED;
+
+    public @NonNullByDefault({}) OnOffType carLocked;
+    public @NonNullByDefault({}) OnOffType engineRunning;
+    public @NonNullByDefault({}) String brakeFluidLevel;
     public @NonNullByDefault({}) String washerFluidLevel;
     public @Nullable WindowsStatus windows;
     public @Nullable DoorsStatus doors;
+    public @Nullable TyrePressure tyrePressure;
+    public @Nullable HvBattery hvBattery;
+    public @Nullable Heater heater;
+
+    public @NonNullByDefault({}) String serviceWarningStatus;
 
     /*
      * Currently not used in the binding, maybe interesting for the future
@@ -46,9 +54,7 @@ public class Status {
      * @SerializedName("ERS")
      * private ERSStatus ers;
      * private ZonedDateTime averageFuelConsumptionTimestamp;
-     * private Integer averageSpeed;
      * private ZonedDateTime averageSpeedTimestamp;
-     * private String brakeFluid;
      * private ZonedDateTime brakeFluidTimestamp;
      * private List<String> bulbFailures = null;
      * private ZonedDateTime bulbFailuresTimestamp;
@@ -68,7 +74,6 @@ public class Status {
      * private String timePartiallyAccessibleUntil;
      * private ZonedDateTime tripMeter1Timestamp;
      * private ZonedDateTime tripMeter2Timestamp;
-     * private TyrePressure tyrePressure;
      * private ZonedDateTime washerFluidLevelTimestamp;
      */
 }

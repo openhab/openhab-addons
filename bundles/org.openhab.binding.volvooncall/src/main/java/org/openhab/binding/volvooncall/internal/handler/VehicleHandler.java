@@ -13,9 +13,69 @@
 package org.openhab.binding.volvooncall.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.ACTUAL_LOCATION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.AVERAGE_SPEED;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.BATTERY_DISTANCE_TO_EMPTY;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.BATTERY_LEVEL;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.BRAKE_FLUID_LEVEL;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.CALCULATED_LOCATION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.CAR_LOCATOR;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.CAR_LOCKED;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.CHARGE_STATUS;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.CHARGING_END;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.DISTANCE_TO_EMPTY;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.ENGINE_RUNNING;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.ENGINE_START;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FRONT_LEFT;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FRONT_LEFT_TYRE;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FRONT_LEFT_WND;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FRONT_RIGHT;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FRONT_RIGHT_TYRE;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FRONT_RIGHT_WND;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FUEL_ALERT;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FUEL_AMOUNT;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FUEL_CONSUMPTION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.FUEL_LEVEL;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.HEADING;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.HONK_AND_OR_BLINK;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.HONK_BLINK;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.HOOD;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.JOURNAL_LOG;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.LAST_TRIP_GROUP;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.LAST_TRIP_ID;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.LOCATION_TIMESTAMP;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.LOCK;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.ODOMETER;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.PRECLIMATIZATION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REAR_LEFT;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REAR_LEFT_TYRE;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REAR_LEFT_WND;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REAR_RIGHT;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REAR_RIGHT_TYRE;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REAR_RIGHT_WND;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.REMOTE_HEATER;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.SERVICE_URL;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.SERVICE_WARNING;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TAILGATE;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TIME_TO_BATTERY_FULLY_CHARGED;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIPMETER1;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIPMETER2;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_CONSUMPTION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_DISTANCE;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_DURATION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_END_POSITION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_END_TIME;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_START_ODOMETER;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_START_POSITION;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_START_TIME;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.TRIP_STOP_ODOMETER;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNDEFINED;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNLOCK;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.UNLOCK_TIME;
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.WASHER_FLUID_LEVEL;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,12 +85,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Time;
-import javax.measure.quantity.Volume;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -88,7 +145,7 @@ public class VehicleHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler, String vin)
+    private Map<String, String> discoverAttributes(VolvoOnCallBridgeHandler bridgeHandler, String vin)
             throws JsonSyntaxException, IOException {
         Attributes attributes = bridgeHandler.getURL(Attributes.class, vin);
 
@@ -125,7 +182,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
 
                 activeOptions = thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
-                        .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 if (thing.getProperties().containsKey(LAST_TRIP_ID)) {
                     lastTripId = Integer.parseInt(thing.getProperties().get(LAST_TRIP_ID));
@@ -145,13 +202,13 @@ public class VehicleHandler extends BaseThingHandler {
      * @param refresh : refresh frequency in minutes
      */
     private void startAutomaticRefresh(int refresh) {
-        if (refreshJob == null || (refreshJob != null && refreshJob.isCancelled())) {
+        if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
                     TimeUnit.MINUTES);
         }
     }
 
-    public void queryApiAndUpdateChannels() {
+    private void queryApiAndUpdateChannels() {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             try {
@@ -230,27 +287,26 @@ public class VehicleHandler extends BaseThingHandler {
 
     }
 
-    public State getTripValue(String channelId, TripDetail tripDetails) {
+    private State getTripValue(String channelId, TripDetail tripDetails) {
         switch (channelId) {
             case TRIP_CONSUMPTION:
                 if (tripDetails.fuelConsumption != null) {
-                    return new QuantityType<Volume>(tripDetails.fuelConsumption.floatValue() / 100,
-                            SmartHomeUnits.LITRE);
+                    return new QuantityType<>(tripDetails.fuelConsumption.floatValue() / 100, SmartHomeUnits.LITRE);
                 } else {
                     return UnDefType.UNDEF;
                 }
             case TRIP_DISTANCE:
-                return new QuantityType<Length>((double) tripDetails.distance / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.distance / 1000, KILO(SIUnits.METRE));
             case TRIP_START_TIME:
                 return tripDetails.getStartTime();
             case TRIP_END_TIME:
                 return tripDetails.getEndTime();
             case TRIP_DURATION:
-                return new QuantityType<Time>(tripDetails.getDurationInMinutes(), SmartHomeUnits.MINUTE);
+                return new QuantityType<>(tripDetails.getDurationInMinutes(), SmartHomeUnits.MINUTE);
             case TRIP_START_ODOMETER:
-                return new QuantityType<Length>((double) tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
             case TRIP_STOP_ODOMETER:
-                return new QuantityType<Length>((double) tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<>((double) tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
             case TRIP_START_POSITION:
                 return tripDetails.getStartPosition();
             case TRIP_END_POSITION:
@@ -260,7 +316,7 @@ public class VehicleHandler extends BaseThingHandler {
         return UnDefType.NULL;
     }
 
-    public State getValue(String channelId, Status status, VehiclePositionWrapper position) {
+    private State getValue(String channelId, Status status, VehiclePositionWrapper position) {
         switch (channelId) {
             case TAILGATE:
                 return status.doors != null ? status.doors.tailgateOpen : UnDefType.NULL;
@@ -282,33 +338,61 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.windows != null ? status.windows.frontRightWindowOpen : UnDefType.NULL;
             case FRONT_LEFT_WND:
                 return status.windows != null ? status.windows.frontLeftWindowOpen : UnDefType.NULL;
+            case REAR_RIGHT_TYRE:
+                return status.tyrePressure != null ? new StringType(status.tyrePressure.rearRightTyrePressure) : UnDefType.NULL;
+            case REAR_LEFT_TYRE:
+                return status.tyrePressure != null ? new StringType(status.tyrePressure.rearLeftTyrePressure) : UnDefType.NULL;
+            case FRONT_RIGHT_TYRE:
+                return status.tyrePressure != null ? new StringType(status.tyrePressure.frontRightTyrePressure) : UnDefType.NULL;
+            case FRONT_LEFT_TYRE:
+                return status.tyrePressure != null ? new StringType(status.tyrePressure.frontLeftTyrePressure) : UnDefType.NULL;
             case ODOMETER:
-                return status.odometer != Status.UNDEFINED
-                        ? new QuantityType<Length>((double) status.odometer / 1000, KILO(SIUnits.METRE))
+                return status.odometer != UNDEFINED
+                        ? new QuantityType<>((double) status.odometer / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER1:
-                return status.tripMeter1 != Status.UNDEFINED
-                        ? new QuantityType<Length>((double) status.tripMeter1 / 1000, KILO(SIUnits.METRE))
+                return status.tripMeter1 != UNDEFINED
+                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER2:
-                return status.tripMeter2 != Status.UNDEFINED
-                        ? new QuantityType<Length>((double) status.tripMeter2 / 1000, KILO(SIUnits.METRE))
+                return status.tripMeter2 != UNDEFINED
+                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case DISTANCE_TO_EMPTY:
-                return status.distanceToEmpty != Status.UNDEFINED
-                        ? new QuantityType<Length>(status.distanceToEmpty, KILO(SIUnits.METRE))
+                return status.distanceToEmpty != UNDEFINED
+                        ? new QuantityType<>(status.distanceToEmpty, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case FUEL_AMOUNT:
-                return status.fuelAmount != Status.UNDEFINED
-                        ? new QuantityType<Volume>(status.fuelAmount, SmartHomeUnits.LITRE)
+                return status.fuelAmount != UNDEFINED
+                        ? new QuantityType<>(status.fuelAmount, SmartHomeUnits.LITRE)
                         : UnDefType.UNDEF;
             case FUEL_LEVEL:
-                return status.fuelAmountLevel != Status.UNDEFINED
+                return status.fuelAmountLevel != UNDEFINED
                         ? new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT)
                         : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
-                return status.averageFuelConsumption != Status.UNDEFINED
+                return status.averageFuelConsumption != UNDEFINED
                         ? new DecimalType(status.averageFuelConsumption / 10)
+                        : UnDefType.UNDEF;
+            case BATTERY_LEVEL:
+                return status.hvBattery.hvBatteryLevel != UNDEFINED
+                        ? new QuantityType<>(status.hvBattery.hvBatteryLevel, SmartHomeUnits.PERCENT)
+                        : UnDefType.UNDEF;
+            case BATTERY_DISTANCE_TO_EMPTY:
+                return status.hvBattery.distanceToHVBatteryEmpty != UNDEFINED
+                        ? new QuantityType<>(status.hvBattery.distanceToHVBatteryEmpty, KILO(SIUnits.METRE))
+                        : UnDefType.UNDEF;
+            case CHARGE_STATUS:
+                return status.hvBattery.hvBatteryChargeStatusDerived != null
+                        ? new StringType(status.hvBattery.hvBatteryChargeStatusDerived)
+                        : UnDefType.UNDEF;
+            case TIME_TO_BATTERY_FULLY_CHARGED:
+                return status.hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
+                        ? new QuantityType<>(status.hvBattery.timeToHVBatteryFullyCharged, SmartHomeUnits.MINUTE)
+                        : UnDefType.UNDEF;
+            case CHARGING_END:
+                return status.hvBattery.timeToHVBatteryFullyCharged != UNDEFINED && status.hvBattery.timeToHVBatteryFullyCharged > 0
+                        ? new DateTimeType(ZonedDateTime.now().plusMinutes(status.hvBattery.timeToHVBatteryFullyCharged))
                         : UnDefType.UNDEF;
             case ACTUAL_LOCATION:
                 return position.getPosition();
@@ -322,12 +406,26 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.carLocked;
             case ENGINE_RUNNING:
                 return status.engineRunning;
-            case WASHER_FLUID:
+            case BRAKE_FLUID_LEVEL:
+                return new StringType(status.brakeFluidLevel);
+            case WASHER_FLUID_LEVEL:
                 return new StringType(status.washerFluidLevel);
+            case AVERAGE_SPEED:
+                return status.averageSpeed != UNDEFINED
+                    ? new QuantityType<>(status.averageSpeed, SIUnits.KILOMETRE_PER_HOUR)
+                    : UnDefType.UNDEF;
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);
             case FUEL_ALERT:
                 return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+            case REMOTE_HEATER:
+                return status.heater != null && status.heater.status != null
+                        ? status.heater.status
+                        : UnDefType.UNDEF;
+            case PRECLIMATIZATION:
+                return status.heater != null && status.heater.status != null
+                        ? status.heater.status
+                        : UnDefType.UNDEF;
         }
 
         return UnDefType.NULL;
@@ -443,7 +541,7 @@ public class VehicleHandler extends BaseThingHandler {
      * update
      *
      */
-    public void updateIfMatches(String vin) {
+    void updateIfMatches(String vin) {
         if (vin.equalsIgnoreCase(configuration.vin)) {
             queryApiAndUpdateChannels();
         }
