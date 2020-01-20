@@ -42,6 +42,12 @@ public class SonyPS4Configuration {
     public static final String IP_PORT = "ipPort";
 
     /**
+     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Value of this field needs to match {@link #pairingCode.
+     */
+    public static final String PAIRING_CODE = "pairingCode";
+
+    /**
      * IP-address of PS4.
      */
     public String ipAddress = "";

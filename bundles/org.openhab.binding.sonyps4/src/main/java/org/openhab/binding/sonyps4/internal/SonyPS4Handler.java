@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -85,7 +86,12 @@ public class SonyPS4Handler extends BaseThingHandler {
         super.handleConfigurationUpdate(configurationParameters);
         if (!config.pairingCode.isEmpty()) {
             logger.debug("Pairing to PS4.");
-            pairPS4();
+            if (pairPS4()) {
+                // If we are paired, remove pairing code as it's one use only.
+                Configuration editedConfig = editConfiguration();
+                editedConfig.put(SonyPS4Configuration.PAIRING_CODE, "");
+                updateConfiguration(editedConfig);
+            }
         }
     }
 
@@ -359,13 +365,12 @@ public class SonyPS4Handler extends BaseThingHandler {
         }
     }
 
-    private void pairPS4() {
+    private boolean pairPS4() {
         if (!openComs()) {
-            return;
+            return false;
         }
         try (SocketChannel channel = SocketChannel.open()) {
-            login(channel);
-            return;
+            return login(channel);
         } catch (SocketTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
@@ -373,6 +378,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
         }
+        return false;
     }
 
     private void startApplication(String application) {
