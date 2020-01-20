@@ -181,6 +181,7 @@
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
+/bundles/org.openhab.binding.rootedtoon/ @DaanMeijer
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.rotelra1x/ @fa2k
 /bundles/org.openhab.binding.russound/ @tmrobert8
