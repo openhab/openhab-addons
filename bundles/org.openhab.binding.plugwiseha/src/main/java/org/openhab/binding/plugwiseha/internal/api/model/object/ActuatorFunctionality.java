@@ -19,10 +19,10 @@ import java.util.Optional;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * The {@link ActuatorFunctionality} class is an object model class
- * that mirrors the XML structure provided by the Plugwise Home Automation
- * controller for the any actuator functionality. It implements the
- * {@link PlugwiseComparableDate} interface and extends the abstract class {@link PlugwiseBaseModel}.
+ * The {@link ActuatorFunctionality} class is an object model class that mirrors
+ * the XML structure provided by the Plugwise Home Automation controller for the
+ * any actuator functionality. It implements the {@link PlugwiseComparableDate}
+ * interface and extends the abstract class {@link PlugwiseBaseModel}.
  * 
  * @author B. van Wetten - Initial contribution
  */
@@ -30,6 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ActuatorFunctionality extends PlugwiseBaseModel implements PlugwiseComparableDate<ActuatorFunctionality> {
 
     private String type;
+    private String duration;
     private String setpoint;
     private String resolution;
     private String lock;
@@ -45,6 +46,10 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
 
     public String getType() {
         return type;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     public String getSetpoint() {

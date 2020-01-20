@@ -28,6 +28,9 @@ import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunction
 import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunctionality;
 import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunctionalityRelay;
 import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunctionalityThermostat;
+import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunctionalityThreshold;
+import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunctionalityTimer;
+import org.openhab.binding.plugwiseha.internal.api.model.object.ActuatorFunctionalityToggle;
 import org.openhab.binding.plugwiseha.internal.api.model.object.Appliance;
 import org.openhab.binding.plugwiseha.internal.api.model.object.Appliances;
 import org.openhab.binding.plugwiseha.internal.api.model.object.DomainObjects;
@@ -80,7 +83,7 @@ public class PlugwiseHAXStream extends XStream {
 
         // Whitelist classes
         this.allowClass(GatewayInfo.class);
-        this.allowClass(GatewayEnvironment.class);        
+        this.allowClass(GatewayEnvironment.class);
         this.allowClass(Appliances.class);
         this.allowClass(Appliance.class);
         this.allowClass(Modules.class);
@@ -96,6 +99,9 @@ public class PlugwiseHAXStream extends XStream {
         this.allowClass(ActuatorFunctionality.class);
         this.allowClass(ActuatorFunctionalityThermostat.class);
         this.allowClass(ActuatorFunctionalityRelay.class);
+        this.allowClass(ActuatorFunctionalityTimer.class);
+        this.allowClass(ActuatorFunctionalityThreshold.class);
+        this.allowClass(ActuatorFunctionalityToggle.class);
         this.allowClass(DomainObjects.class);
 
         // Register custom converters
