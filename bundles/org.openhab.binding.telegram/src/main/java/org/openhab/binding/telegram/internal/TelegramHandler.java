@@ -152,15 +152,15 @@ public class TelegramHandler extends BaseThingHandler {
                 .readTimeout(75, TimeUnit.SECONDS);
 
         String proxyHost = config.getProxyHost();
-        String proxyPort = config.getProxyPort();
+        Integer proxyPort = config.getProxyPort();
         String proxyType = config.getProxyType();
 
-        if (proxyHost != null && proxyPort != null) {
-            InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort));
+        if (proxyHost != null) {
+            InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
 
             Proxy.Type proxyTypeParam = Proxy.Type.SOCKS;
 
-            if (proxyType != null && "HTTP".equals(proxyType)) {
+            if ("HTTP".equals(proxyType)) {
                 proxyTypeParam = Proxy.Type.HTTP;
             }
 
