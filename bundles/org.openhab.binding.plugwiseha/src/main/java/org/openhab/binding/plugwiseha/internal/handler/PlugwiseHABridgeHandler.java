@@ -198,7 +198,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         } catch (PlugwiseHATimeoutException e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_TIMEOUT);
         } catch (Exception e) {
-            logger.warn("Unhandled exception while refreshing the Plugwise Home Automation Controller {} - {}",
+            logger.debug("Unhandled exception while refreshing the Plugwise Home Automation Controller {} - {}",
                     getThing().getUID(), e.getMessage());
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
