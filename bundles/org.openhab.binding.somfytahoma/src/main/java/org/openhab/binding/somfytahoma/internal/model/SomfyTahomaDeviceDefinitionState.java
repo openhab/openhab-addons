@@ -18,17 +18,27 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaAction} holds information about a list of
- * commands for one concrete device.
+ * The {@link SomfyTahomaDeviceDefinitionState} holds information about states
+ * provided by a device.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaAction {
+public class SomfyTahomaDeviceDefinitionState {
 
-    private String deviceURL = "";
+    private String qualifiedName = "";
+    private List<String> values = new ArrayList<>();
 
-    public String getDeviceURL() {
-        return deviceURL;
+    public String getQualifiedName() {
+        return qualifiedName;
+    }
+
+    public List<String> getValues() {
+        return values;
+    }
+
+    @Override
+    public String toString() {
+        return qualifiedName + " (values: " + String.join(", ", values) + ")";
     }
 }

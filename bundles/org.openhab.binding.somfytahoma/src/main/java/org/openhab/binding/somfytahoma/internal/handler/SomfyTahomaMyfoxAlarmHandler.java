@@ -15,38 +15,32 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
- * The {@link SomfyTahomaGateHandler} is responsible for handling commands,
- * which are sent to one of the channels of the gate thing.
+ * The {@link SomfyTahomaMyfoxAlarmHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the Myfox alarm thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaMyfoxAlarmHandler extends SomfyTahomaBaseThingHandler {
 
-    public SomfyTahomaGateHandler(Thing thing) {
+    public SomfyTahomaMyfoxAlarmHandler(Thing thing) {
         super(thing);
-        stateNames.put(GATE_STATE, "core:OpenClosedPedestrianState");
+        stateNames.put(ALARM_STATE, "myfox:AlarmStatusState");
+        stateNames.put(INTRUSION_STATE, "core:IntrusionState");
+        stateNames.put(CLOUD_STATUS, CLOUD_DEVICE_STATUS_STATE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (command instanceof RefreshType) {
-            return;
-        } else {
-            if (GATE_COMMAND.equals(channelUID.getId())) {
-                sendCommand(getGateCommand(command.toString().toLowerCase()));
-            }
+        if (MYFOX_ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
+            sendCommand(command.toString());
         }
-    }
-
-    private String getGateCommand(String command) {
-        return "pedestrian".equals(command) ? COMMAND_SET_PEDESTRIANPOSITION : command;
     }
 }

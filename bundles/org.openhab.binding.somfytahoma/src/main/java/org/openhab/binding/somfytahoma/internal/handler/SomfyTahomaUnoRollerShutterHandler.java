@@ -21,32 +21,18 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
- * The {@link SomfyTahomaGateHandler} is responsible for handling commands,
- * which are sent to one of the channels of the gate thing.
+ * The {@link SomfyTahomaUnoRollerShutterHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the Uno roller shutter things.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaUnoRollerShutterHandler extends SomfyTahomaRollerShutterHandler {
 
-    public SomfyTahomaGateHandler(Thing thing) {
+    public SomfyTahomaUnoRollerShutterHandler(Thing thing) {
         super(thing);
-        stateNames.put(GATE_STATE, "core:OpenClosedPedestrianState");
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-        if (command instanceof RefreshType) {
-            return;
-        } else {
-            if (GATE_COMMAND.equals(channelUID.getId())) {
-                sendCommand(getGateCommand(command.toString().toLowerCase()));
-            }
-        }
-    }
-
-    private String getGateCommand(String command) {
-        return "pedestrian".equals(command) ? COMMAND_SET_PEDESTRIANPOSITION : command;
+        // clear states set by RollerShutterHandler
+        stateNames.clear();
+        stateNames.put(CONTROL, TARGET_CLOSURE_STATE);
     }
 }

@@ -3,13 +3,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="light">
+	<thing-type id="myfoxcamera">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>Somfy Light Switch</label>
+		<label>Somfy Myfox Camera</label>
 		<channels>
-			<channel id="switch" typeId="system.power"></channel>
+			<channel id="cloud_status" typeId="cloud_status"></channel>
+			<channel id="shutter" typeId="shutter"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
