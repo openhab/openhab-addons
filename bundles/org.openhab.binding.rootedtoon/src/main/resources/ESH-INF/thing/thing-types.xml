@@ -43,7 +43,7 @@
                 <label>URL</label>
                 <description>The URL on which to contact your local Toon.</description>
             </parameter>
-            <parameter name="refreshInterval" type="integer" required="true" min="1" max="3600" va>
+            <parameter name="refreshInterval" type="integer" required="true" min="1" max="3600">
                 <default>8</default>
                 <label>Refresh interval</label>
                 <description>The interval in seconds between automatic refreshes.</description>
