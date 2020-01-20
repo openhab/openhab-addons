@@ -26,6 +26,7 @@ import java.util.TimeZone;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.openhab.binding.meteoblue.internal.json.JsonDataDay;
 import org.openhab.binding.meteoblue.internal.json.JsonMetadata;
 import org.openhab.binding.meteoblue.internal.json.JsonUnits;
@@ -456,7 +457,8 @@ public class Forecast {
 
     private Image loadImageIcon(String imageFileName) {
         BufferedImage buf = null;
-        File dataFile = new File(new File("../conf/icons/classic/"), imageFileName);
+        String configDirectory = ConfigConstants.getConfigFolder();
+        File dataFile = new File(new File(configDirectory, "icons/classic/"), imageFileName);
         if (!dataFile.exists()) {
             logger.debug("Image file '{}' does not exist. Unable to create imageIcon.", dataFile.getAbsolutePath());
             return null;

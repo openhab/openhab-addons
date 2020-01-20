@@ -5,6 +5,6 @@
 
 	<name>@text/binding.nanoleaf.name</name>
 	<description>@text/binding.nanoleaf.description</description>
-	<author>Martin Raepple</author>
+	<author>Martin Raepple, (Stefan Höhn)</author>
 
 </binding:binding>

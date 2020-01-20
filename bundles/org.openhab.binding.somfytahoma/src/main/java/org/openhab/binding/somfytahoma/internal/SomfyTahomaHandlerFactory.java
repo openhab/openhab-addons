@@ -82,6 +82,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_SILENT)) {
             return new SomfyTahomaSilentRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_UNO)) {
+            return new SomfyTahomaUnoRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND) || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
@@ -104,6 +106,10 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaOccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CONTACTSENSOR)) {
             return new SomfyTahomaContactSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_WATERSENSOR)) {
+            return new SomfyTahomaWaterSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HUMIDITYSENSOR)) {
+            return new SomfyTahomaHumiditySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
             return new SomfyTahomaWindowHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_INTERNAL_ALARM)) {
@@ -126,7 +132,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaTemperatureSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GATE)) {
             return new SomfyTahomaGateHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)){
+        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)) {
             return new SomfyTahomaCurtainHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ELECTRICITYSENSOR)) {
             return new SomfyTahomaElectricitySensorHandler(thing);
@@ -136,7 +142,13 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaSirenHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER)) {
             return new SomfyTahomaAdjustableSlatsRollerShutterHandler(thing);
-        }else {
+        } else if (thingTypeUID.equals(THING_TYPE_MYFOX_CAMERA)) {
+            return new SomfyTahomaMyfoxCameraHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MYFOX_ALARM)) {
+            return new SomfyTahomaMyfoxAlarmHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+            return new SomfyTahomaThermostatHandler(thing);
+        } else {
             return null;
         }
     }

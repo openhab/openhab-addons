@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.onewire.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link OwException} class defines an exception for handling OneWireExceptions
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class OwException extends Exception {
     private static final long serialVersionUID = 71120587360960199L;
 
