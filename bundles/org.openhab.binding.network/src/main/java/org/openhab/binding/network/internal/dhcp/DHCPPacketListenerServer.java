@@ -70,7 +70,7 @@ public class DHCPPacketListenerServer extends Thread {
 
         Byte dhcpMessageType = request.getDHCPMessageType();
 
-        if (dhcpMessageType != null && dhcpMessageType != DHCPPacket.DHCPREQUEST) {
+        if (dhcpMessageType != DHCPPacket.DHCPREQUEST) {
             return; // skipping non DHCPREQUEST message types
         }
 
