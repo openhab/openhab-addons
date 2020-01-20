@@ -13,30 +13,37 @@
 package org.openhab.binding.onewire.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_ID;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_MS_TX;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.OwPageBuffer;
-import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
 
 /**
- * Tests cases for {@link MultisensorThingHandler}.
+ * Tests cases for {@link BasicMultisensorThingHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
     private static final String TEST_ID = "00.000000000000";
 
@@ -46,15 +53,27 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
 
         initializeBridge();
 
+        final Bridge bridge = this.bridge;
+        if (bridge == null) {
+            Assert.fail("bridge is null");
+            return;
+        }
+
         thingConfiguration.put(CONFIG_ID, TEST_ID);
 
         thing = ThingBuilder.create(THING_TYPE_MS_TX, "testthing").withLabel("Test thing").withChannels(channels)
                 .withConfiguration(new Configuration(thingConfiguration)).withProperties(thingProperties)
                 .withBridge(bridge.getUID()).build();
 
+        final Thing thing = this.thing;
+        if (thing == null) {
+            Assert.fail("thing is null");
+            return;
+        }
+
         thingHandler = new BasicMultisensorThingHandler(thing, stateProvider) {
             @Override
-            protected Bridge getBridge() {
+            protected @Nullable Bridge getBridge() {
                 return bridge;
             }
         };
@@ -74,6 +93,11 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
 
     @Test
     public void testInitializationEndsWithUnknown() {
+        final ThingHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
+            Assert.fail("thingHandler is null");
+            return;
+        }
         thingHandler.initialize();
 
         waitForAssert(() -> assertEquals(ThingStatus.UNKNOWN, thingHandler.getThing().getStatusInfo().getStatus()));
@@ -81,6 +105,12 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
 
     @Test
     public void testRefresh() throws OwException {
+        final OwBaseThingHandler thingHandler = this.thingHandler;
+        final InOrder inOrder = this.inOrder;
+        if (thingHandler == null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
         thingHandler.initialize();
 
         // needed to determine initialization is finished

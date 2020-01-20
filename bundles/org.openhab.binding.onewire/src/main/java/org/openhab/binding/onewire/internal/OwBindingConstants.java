@@ -44,24 +44,9 @@ public class OwBindingConstants {
     public static final ThingTypeUID THING_TYPE_EDS_ENV = new ThingTypeUID(BINDING_ID, "edsenv");
     public static final ThingTypeUID THING_TYPE_BAE091X = new ThingTypeUID(BINDING_ID, "bae091x");
 
-    // TODO: remove after 2.5.0 release & cleanup
-    public static final ThingTypeUID THING_TYPE_MS_TH = new ThingTypeUID(BINDING_ID, "ms-th");
-    public static final ThingTypeUID THING_TYPE_MS_TV = new ThingTypeUID(BINDING_ID, "ms-tv");
-    public static final ThingTypeUID THING_TYPE_COUNTER = new ThingTypeUID(BINDING_ID, "counter");
-    public static final ThingTypeUID THING_TYPE_COUNTER2 = new ThingTypeUID(BINDING_ID, "counter2");
-    public static final ThingTypeUID THING_TYPE_DIGITALIO = new ThingTypeUID(BINDING_ID, "digitalio");
-    public static final ThingTypeUID THING_TYPE_DIGITALIO2 = new ThingTypeUID(BINDING_ID, "digitalio2");
-    public static final ThingTypeUID THING_TYPE_DIGITALIO8 = new ThingTypeUID(BINDING_ID, "digitalio8");
-    public static final ThingTypeUID THING_TYPE_IBUTTON = new ThingTypeUID(BINDING_ID, "ibutton");
-    public static final ThingTypeUID THING_TYPE_TEMPERATURE = new ThingTypeUID(BINDING_ID, "temperature");
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_OWSERVER, THING_TYPE_TEMPERATURE, THING_TYPE_IBUTTON, THING_TYPE_DIGITALIO,
-                            THING_TYPE_DIGITALIO2, THING_TYPE_DIGITALIO8, THING_TYPE_AMS, THING_TYPE_BMS,
-                            THING_TYPE_MS_TH, THING_TYPE_MS_TX, THING_TYPE_MS_TV, THING_TYPE_EDS_ENV,
-                            THING_TYPE_COUNTER, THING_TYPE_COUNTER2, THING_TYPE_BASIC, THING_TYPE_BAE091X)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_OWSERVER, THING_TYPE_AMS, THING_TYPE_BMS, THING_TYPE_MS_TX,
+                    THING_TYPE_EDS_ENV, THING_TYPE_BASIC, THING_TYPE_BAE091X).collect(Collectors.toSet()));
 
     // List of all config options
     public static final String CONFIG_ADDRESS = "network-address";

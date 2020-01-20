@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_LOGIC;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_MODE;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
@@ -79,8 +81,14 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
                 }
 
                 if (dynamicStateDescriptionProvider != null) {
-                    dynamicStateDescriptionProvider.setDescription(ioConfig.get(i).getChannelUID(),
-                            new StateDescription(null, null, null, null, ioConfig.get(i).isInput(), null));
+                    StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                            .withReadOnly(ioConfig.get(i).isInput()).build().toStateDescription();
+                    if (stateDescription != null) {
+                        dynamicStateDescriptionProvider.setDescription(ioConfig.get(i).getChannelUID(),
+                                stateDescription);
+                    } else {
+                        logger.warn("Failed to create state description in thing {}", thing.getUID());
+                    }
                 } else {
                     logger.debug(
                             "state description may be inaccurate, state description provider not available in thing {}",

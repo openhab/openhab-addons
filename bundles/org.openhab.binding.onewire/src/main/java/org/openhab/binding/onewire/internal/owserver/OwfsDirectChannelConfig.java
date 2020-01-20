@@ -14,6 +14,8 @@ package org.openhab.binding.onewire.internal.owserver;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
 /**
@@ -21,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public class OwfsDirectChannelConfig {
     public String path = "";
     public BigDecimal refresh = new BigDecimal(300);
@@ -29,12 +31,12 @@ public class OwfsDirectChannelConfig {
     public long lastRefresh = 0;
     public int refreshCycle = 300;
 
-    public ChannelUID channelUID;
-    public String acceptedItemType;
+    public @Nullable ChannelUID channelUID;
+    public String acceptedItemType = "";
 
-    public boolean initialize(ChannelUID channelUID, String acceptedItemType) {
+    public boolean initialize(ChannelUID channelUID, @Nullable String acceptedItemType) {
         this.channelUID = channelUID;
-        this.acceptedItemType = acceptedItemType;
+        this.acceptedItemType = acceptedItemType != null ? acceptedItemType : "";
         refreshCycle = refresh.intValue() * 1000;
 
         return !path.isEmpty();
