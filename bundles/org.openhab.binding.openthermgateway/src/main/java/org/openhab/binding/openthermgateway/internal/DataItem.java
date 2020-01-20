@@ -34,20 +34,8 @@ public class DataItem {
         return id;
     }
 
-    public void setID(int id) {
-        this.id = id;
-    }
-
     public Msg getMsg() {
         return msg;
-    }
-
-    public void setMsg(Msg msg) {
-        this.msg = msg;
-    }
-
-    public void setByteType(ByteType byteType) {
-        this.byteType = byteType;
     }
 
     public ByteType getByteType() {
@@ -58,24 +46,12 @@ public class DataItem {
         return dataType;
     }
 
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
-
     public int getBitPos() {
         return bitpos;
     }
 
-    public void setBitPos(int bitpos) {
-        this.bitpos = bitpos;
-    }
-
     public String getSubject() {
         return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public @Nullable Unit<?> getUnit() {

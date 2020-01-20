@@ -21,30 +21,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public class DataItemGroup {
-    private int id;
-    private DataItem[] dataItems;
-
-    public int getID() {
-        return id;
-    }
-
-    public void setID(int id) {
-        this.id = id;
-    }
-
-    public DataItem[] getDataItems() {
-        return dataItems;
-    }
-
-    public void setDataItem(DataItem[] dataItems) {
-        this.dataItems = dataItems;
-    }
-
-    public DataItemGroup(int id, DataItem... dataItems) {
-        this.id = id;
-        this.dataItems = dataItems;
-    }
+public class DataItemGroup {    
 
     public static final HashMap<Integer, DataItem[]> dataItemGroups = createDataItemGroups();
 
