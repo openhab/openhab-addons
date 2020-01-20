@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Assert;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.OwPageBuffer;
@@ -33,15 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public class OwserverTestServer {
     private final Logger logger = LoggerFactory.getLogger(OwserverTestServer.class);
 
     private final ServerSocket serverSocket;
-    private Socket connectionSocket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
-
     private boolean isRunning = false;
 
     public OwserverTestServer(int port) throws IOException {
@@ -59,12 +56,13 @@ public class OwserverTestServer {
                 serverStarted.complete(true);
                 try {
                     while (isRunning) {
-                        connectionSocket = serverSocket.accept();
-                        inputStream = new DataInputStream(connectionSocket.getInputStream());
-                        outputStream = new DataOutputStream(connectionSocket.getOutputStream());
+                        final Socket connectionSocket = serverSocket.accept();
+                        final DataInputStream inputStream = new DataInputStream(connectionSocket.getInputStream());
+                        final DataOutputStream outputStream = new DataOutputStream(connectionSocket.getOutputStream());
 
                         receivedPacket = new OwserverPacket(inputStream, OwserverPacketType.REQUEST);
                         logger.debug("received {}", receivedPacket);
+
                         answerPackets = processPacket(receivedPacket);
 
                         answerPackets.forEach(answerPacket -> {

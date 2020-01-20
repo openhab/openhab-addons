@@ -34,6 +34,8 @@ public class NanoleafBindingConstants {
     public static final String CONFIG_ADDRESS = "address";
     public static final String CONFIG_PORT = "port";
     public static final String CONFIG_AUTH_TOKEN = "authToken";
+    public static final String CONFIG_DEVICE_TYPE_CANVAS = "canvas";
+    public static final String CONFIG_DEVICE_TYPE_LIGHTPANELS = "lightPanels";
 
     // Panel configuration settings
     public static final String CONFIG_PANEL_ID = "id";
@@ -51,16 +53,26 @@ public class NanoleafBindingConstants {
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "panelColor";
+    public static final String CHANNEL_PANEL_SINGLE_TAP = "singleTap";
+    public static final String CHANNEL_PANEL_DOUBLE_TAP = "doubleTap";
 
     // Nanoleaf OpenAPI URLs
     public static final String API_V1_BASE_URL = "/api/v1";
     public static final String API_GET_CONTROLLER_INFO = "/";
     public static final String API_ADD_USER = "/new";
+    public static final String API_EVENTS = "/events";
     public static final String API_DELETE_USER = "";
     public static final String API_SET_VALUE = "/state";
     public static final String API_EFFECT = "/effects";
     public static final String API_RHYTHM_MODE = "/rhythm/rhythmMode";
-    public static final String API_MIN_FW_VER = "1.5.0";
+
+    // Nanoleaf model IDs and minimum required firmware versions
+    public static final String API_MIN_FW_VER_LIGHTPANELS = "1.5.0";
+    public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
+    public static final String MODEL_ID_LIGHTPANELS = "NL22";
+    public static final String MODEL_ID_CANVAS = "NL29";
+    public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
+    public static final String DEVICE_TYPE_CANVAS = "canvas";
 
     // mDNS discovery service type
     // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0
@@ -70,5 +82,5 @@ public class NanoleafBindingConstants {
     public static final String EFFECT_NAME_STATIC_COLOR = "*Dynamic*";
 
     // Color channels increase/decrease brightness step size
-    public final static int BRIGHTNESS_STEP_SIZE = 5;
+    public static final int BRIGHTNESS_STEP_SIZE = 5;
 }

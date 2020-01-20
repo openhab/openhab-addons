@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * General binding exception if something goes wrong.
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class NanoleafException extends Exception {
     private static final long serialVersionUID = 1L;
 

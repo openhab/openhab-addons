@@ -74,6 +74,20 @@ public class NumberValue extends Value {
     }
 
     @Override
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        if (state == UnDefType.UNDEF) {
+            return "";
+        }
+
+        String formatPattern = pattern;
+        if (formatPattern == null || "%s".equals(formatPattern)) {
+            formatPattern = "%f";
+        }
+
+        return state.format(formatPattern);
+    }
+
+    @Override
     public void update(Command command) throws IllegalArgumentException {
         DecimalType oldvalue = (state == UnDefType.UNDEF) ? new DecimalType() : (DecimalType) state;
         BigDecimal newValue = null;

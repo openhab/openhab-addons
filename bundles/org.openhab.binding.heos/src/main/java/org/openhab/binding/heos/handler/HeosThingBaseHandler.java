@@ -14,6 +14,7 @@ package org.openhab.binding.heos.handler;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 //import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
@@ -80,7 +82,15 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID);
+        ChannelTypeUID channelTypeUID = null; // Needed to detect the favorite channels
+        Channel channel = this.getThing().getChannel(channelUID.getId());
+        if (channel != null) {
+            channelTypeUID = channel.getChannelTypeUID();
+        } else {
+            logger.debug("No valid channel found");
+            return;
+        }
+        HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID, channelTypeUID);
         if (channelHandler != null) {
             channelHandler.handleCommand(command, id, this, channelUID);
         }

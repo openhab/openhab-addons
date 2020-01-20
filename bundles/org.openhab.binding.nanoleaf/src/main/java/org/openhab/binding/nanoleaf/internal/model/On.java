@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents power state of the light panels
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class On implements BooleanState {
 
     private boolean value;
