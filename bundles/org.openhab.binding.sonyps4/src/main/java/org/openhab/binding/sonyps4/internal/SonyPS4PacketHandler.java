@@ -133,7 +133,7 @@ public class SonyPS4PacketHandler {
     byte[] makeSearchPacket() {
         StringBuilder packet = new StringBuilder("SRCH * HTTP/1.1\n");
         packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
-        return packet.toString().getBytes();
+        return packet.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     byte[] makeWakeupPacket(String userCredential) {
@@ -142,14 +142,14 @@ public class SonyPS4PacketHandler {
         packet.append("auth-type:C\n");
         packet.append("user-credential:" + userCredential + "\n");
         packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
-        return packet.toString().getBytes();
+        return packet.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     byte[] makeLaunchPacket(String userCredential) {
         StringBuilder packet = new StringBuilder("LAUNCH * HTTP/1.1\n");
         packet.append("user-credential:" + userCredential + "\n");
         packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
-        return packet.toString().getBytes();
+        return packet.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     byte[] makeHelloPacket() {

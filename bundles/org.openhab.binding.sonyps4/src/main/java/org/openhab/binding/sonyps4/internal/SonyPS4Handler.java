@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +78,15 @@ public class SonyPS4Handler extends BaseThingHandler {
     public SonyPS4Handler(Thing thing, @Nullable LocaleProvider localeProvider) {
         super(thing);
         this.localeProvider = localeProvider;
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        if (!config.pairingCode.isEmpty()) {
+            logger.debug("Pairing to PS4.");
+            pairPS4();
+        }
     }
 
     @Override
@@ -340,6 +350,22 @@ public class SonyPS4Handler extends BaseThingHandler {
                 logger.warn("PS4 no standby response!");
             }
 
+        } catch (SocketTimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
+        }
+    }
+
+    private void pairPS4() {
+        if (!openComs()) {
+            return;
+        }
+        try (SocketChannel channel = SocketChannel.open()) {
+            login(channel);
+            return;
         } catch (SocketTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
