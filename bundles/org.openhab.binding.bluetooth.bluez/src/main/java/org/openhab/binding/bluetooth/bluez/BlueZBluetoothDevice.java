@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
@@ -54,8 +53,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
-    private final ReentrantLock inactiveCleanupJobLock = new ReentrantLock();
-    private volatile ScheduledFuture<?> inactiveCleanupJob;
+    private final InactiveCleanupJob inactiveCleanupJob = new InactiveCleanupJob();
 
     /**
      * Constructor
@@ -90,19 +88,19 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * This method should always be called directly after creating a new object instance.
      */
     public void initialize() {
-        scheduler.submit(() -> {
-            synchronized (BlueZBluetoothDevice.this) {
-                if (this.device == null) {
-                    tinyb.BluetoothDevice tinybDevice = findTinybDevice(address.toString());
-                    if (tinybDevice != null) {
-                        device = tinybDevice;
-                        enableNotifications();
-                    }
-                } else {
-                    enableNotifications();
-                }
+        scheduler.submit(this::initializeDevice);
+    }
+
+    private synchronized void initializeDevice() {
+        if (this.device == null) {
+            tinyb.BluetoothDevice tinybDevice = findTinybDevice(address.toString());
+            if (tinybDevice != null) {
+                device = tinybDevice;
+                enableNotifications();
             }
-        });
+        } else {
+            enableNotifications();
+        }
     }
 
     /**
@@ -112,14 +110,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * @param tinybDevice the new device instance to use for communication
      */
     public synchronized void updateTinybDevice(tinyb.BluetoothDevice tinybDevice) {
-        try {
-            inactiveCleanupJobLock.lock();
-            if (inactiveCleanupJob == null || inactiveCleanupJob.isDone()) {
-                onActivity();
-            }
-        } finally {
-            inactiveCleanupJobLock.unlock();
-        }
+        inactiveCleanupJob.onDeviceUpdate();
 
         if (device != null && !tinybDevice.equals(device)) {
             // we need to replace the instance - let's deactivate notifications on the old one
@@ -149,14 +140,14 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     private void enableNotifications() {
         logger.debug("Enabling notifications for device '{}'", device.getAddress());
         device.enableRSSINotifications(n -> {
-            onActivity();
+            inactiveCleanupJob.onActivity();
             rssi = (int) n;
             BluetoothScanNotification notification = new BluetoothScanNotification();
             notification.setRssi(n);
             notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
         });
         device.enableManufacturerDataNotifications(n -> {
-            onActivity();
+            inactiveCleanupJob.onActivity();
             for (Map.Entry<Short, byte[]> entry : n.entrySet()) {
                 BluetoothScanNotification notification = new BluetoothScanNotification();
                 byte[] data = new byte[entry.getValue().length + 2];
@@ -416,46 +407,22 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return null;
     }
 
-    private void cancelInactiveCleanupJob() {
-        try {
-            inactiveCleanupJobLock.lock();
-            if (inactiveCleanupJob != null) {
-                inactiveCleanupJob.cancel(true);
-                inactiveCleanupJob = null;
-            }
-        } finally {
-            inactiveCleanupJobLock.unlock();
-        }
-    }
-
-    private void onActivity() {
-        logger.trace("device scanned: {}", device.getAddress());
-        try {
-            inactiveCleanupJobLock.lock();
-            cancelInactiveCleanupJob();
-            inactiveCleanupJob = scheduler.schedule(() -> {
-                synchronized (BlueZBluetoothDevice.this) {
-                    if (device != null && !device.getConnected()) {
-                        logger.debug("Removing device '{}' due to inactivity", device.getAddress());
-                        try {
-                            disableNotifications();
-                            device.remove();
-                        } catch (BluetoothException ex) {
-                            if (ex.getMessage().contains("Does Not Exist")) {
-                                // this happens when the underlying device has already been removed
-                                // but we don't have a way to check if that is the case beforehand so
-                                // we will just eat the error here.
-                            } else {
-                                logger.debug("Exception occurred when trying to remove inactive device '{}': {}",
-                                        device.getAddress(), ex.getMessage());
-                            }
-                        }
-                        // device = null;
-                    }
+    private synchronized void removeForInactivity() {
+        if (device != null && !device.getConnected()) {
+            logger.debug("Removing device '{}' due to inactivity", device.getAddress());
+            try {
+                disableNotifications();
+                device.remove();
+            } catch (BluetoothException ex) {
+                if (ex.getMessage().contains("Does Not Exist")) {
+                    // this happens when the underlying device has already been removed
+                    // but we don't have a way to check if that is the case beforehand so
+                    // we will just eat the error here.
+                } else {
+                    logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
+                            ex.getMessage());
                 }
-            }, 5, TimeUnit.MINUTES);
-        } finally {
-            inactiveCleanupJobLock.unlock();
+            }
         }
     }
 
@@ -463,7 +430,39 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * Clean up and release memory.
      */
     public void dispose() {
-        cancelInactiveCleanupJob();
+        inactiveCleanupJob.cancel();
         disableNotifications();
     }
+
+    /**
+     * Handler for the pending removal job which will trigger after a set period of inactivity.
+     * Every time the device is scanned again the timer will reset.
+     *
+     * Note: this will not remove connected devices since connected devices typically won't receive
+     * scan notifications.
+     */
+    private class InactiveCleanupJob {
+
+        private ScheduledFuture<?> pendingRemovalJob;
+
+        public synchronized void cancel() {
+            if (pendingRemovalJob != null) {
+                pendingRemovalJob.cancel(true);
+                pendingRemovalJob = null;
+            }
+        }
+
+        public synchronized void onActivity() {
+            logger.trace("device scanned: {}", address);
+            cancel();
+            pendingRemovalJob = scheduler.schedule(BlueZBluetoothDevice.this::removeForInactivity, 5, TimeUnit.MINUTES);
+        }
+
+        public synchronized void onDeviceUpdate() {
+            if (pendingRemovalJob == null || pendingRemovalJob.isDone()) {
+                onActivity();
+            }
+        }
+    }
+
 }
