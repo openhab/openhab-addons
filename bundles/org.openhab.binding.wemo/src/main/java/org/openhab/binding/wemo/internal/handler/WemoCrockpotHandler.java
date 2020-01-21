@@ -53,30 +53,23 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     private final Logger logger = LoggerFactory.getLogger(WemoCrockpotHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_CROCKPOT);
-
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
-
+    /**
+     * The default refresh interval in Seconds.
+     */
+    private final int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
+    private final Map<String, Boolean> subscriptionState = new HashMap<>();
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private UpnpIOService service;
 
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private final int DEFAULT_REFRESH_INTERVAL = 120;
-
     private ScheduledFuture<?> refreshJob;
 
-    private final Runnable refreshRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            updateWemoState();
-            if (!isUpnpDeviceRegistered()) {
-                logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-            } else {
-                onSubscription();
-            }
+    private final Runnable refreshRunnable = () -> {
+        updateWemoState();
+        if (!isUpnpDeviceRegistered()) {
+            logger.debug("WeMo UPnP device {} not yet registered", getUDN());
+        } else {
+            onSubscription();
         }
     };
 
@@ -128,11 +121,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
         String time = null;
 
         if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
+            updateWemoState();
         } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
             String commandString = command.toString();
             switch (commandString) {
@@ -214,7 +203,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 service.removeSubscription(this, subscription);
             }
 
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState.remove(subscription);
             service.unregisterParticipant(this);
         }
     }
@@ -222,11 +211,10 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     private synchronized void onUpdate() {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
+            int refreshInterval = DEFAULT_REFRESH_INTERVAL_SECONDS;
             Object refreshConfig = config.get("refresh");
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
-            }
+            refreshInterval = refreshConfig == null ? DEFAULT_REFRESH_INTERVAL_SECONDS
+                    : ((BigDecimal) refreshConfig).intValue();
             refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
