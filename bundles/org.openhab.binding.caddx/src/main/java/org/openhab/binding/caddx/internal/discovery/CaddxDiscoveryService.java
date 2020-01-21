@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel("Caddx Bridge - " + port).build());
         } catch (Exception e) {
-            logger.warn("addBridge(): Error: {}", e);
+            logger.warn("addBridge(): ", e);
         }
     }
 
