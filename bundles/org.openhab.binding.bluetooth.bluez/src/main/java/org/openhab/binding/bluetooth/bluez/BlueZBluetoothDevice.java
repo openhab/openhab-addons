@@ -453,7 +453,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         }
 
         public synchronized void onActivity() {
-            logger.trace("device scanned: {}", address);
+            logger.trace("resetting inactivity timer for device: {}", address);
             cancel();
             pendingRemovalJob = scheduler.schedule(BlueZBluetoothDevice.this::removeForInactivity, 5, TimeUnit.MINUTES);
         }
