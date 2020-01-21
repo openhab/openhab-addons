@@ -66,8 +66,8 @@ public class ExecHandler extends BaseThingHandler {
     /**
      * Shell executables
      */
-    public static final String SHELL_WINDOWS = "cmd";
-    public static final String SHELL_NIX = "sh";
+    public static final String[] SHELL_WINDOWS = new String[] {"cmd"};
+    public static final String[] SHELL_NIX = new String[] {"sh", "bash", "zsh"};
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
@@ -180,14 +180,14 @@ public class ExecHandler extends BaseThingHandler {
                 }
 
                 String[] cmdArray;
-                String shell = "";
+                String[] shell;
                 if (commandLine.contains(CMD_LINE_DELIMITER)) {
                     logger.debug("Splitting by '{}'", CMD_LINE_DELIMITER);
                     try {
                         cmdArray = commandLine.split(CMD_LINE_DELIMITER);
                     } catch (PatternSyntaxException e) {
                         logger.warn("An exception occurred while splitting '{}' : '{}'",
-                                commandLine.toString(), e.getMessage());
+                                commandLine, e.getMessage());
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType(e.getMessage()));
                         return;
@@ -197,13 +197,13 @@ public class ExecHandler extends BaseThingHandler {
                     logger.debug("Passing to shell for parsing command.");
                     if (getOperatingSystemType() == OS.WINDOWS) {
                         shell = SHELL_WINDOWS;
-                        cmdArray = new String[] {shell, "/c", commandLine};
                         logger.debug("OS: WINDOWS ({})", getOperatingSystemName());
+                        cmdArray = createCmdArray(shell, "/c", commandLine);
                     } else if (getOperatingSystemType() != OS.UNKNOWN) {
                         // assume sh is present, should all be POSIX-compliant
                         shell = SHELL_NIX;
-                        cmdArray = new String[] {shell, "-c", commandLine};
                         logger.debug("OS: *NIX ({})", getOperatingSystemName());
+                        cmdArray = createCmdArray(shell, "-c", commandLine);
                     } else {
                         String err = "OS not supported, please manually split commands!";
                         logger.debug("OS: Unknown ({})", getOperatingSystemName());
@@ -212,6 +212,11 @@ public class ExecHandler extends BaseThingHandler {
                         updateState(OUTPUT, new StringType(err));
                         return;
                     }
+                }
+
+                if (cmdArray.length == 0) {
+                    logger.trace("Empty command received, not executing");
+                    return;
                 }
 
                 logger.trace("The command to be executed will be '{}'", Arrays.asList(cmdArray));
@@ -240,7 +245,7 @@ public class ExecHandler extends BaseThingHandler {
                     isr.close();
                 } catch (IOException e) {
                     logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
-                            commandLine.toString(), e.getMessage());
+                            commandLine, e.getMessage());
                 }
 
                 try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
@@ -253,7 +258,7 @@ public class ExecHandler extends BaseThingHandler {
                     isr.close();
                 } catch (IOException e) {
                     logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
-                            commandLine.toString(), e.getMessage());
+                            commandLine, e.getMessage());
                 }
 
                 boolean exitVal = false;
@@ -261,12 +266,12 @@ public class ExecHandler extends BaseThingHandler {
                     exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
-                            commandLine.toString(), e.getMessage());
+                            commandLine, e.getMessage());
                 }
 
                 if (!exitVal) {
                     logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms",
-                            commandLine.toString(), timeOut);
+                            commandLine, timeOut);
                     proc.destroyForcibly();
                 }
 
@@ -343,6 +348,45 @@ public class ExecHandler extends BaseThingHandler {
         String pattern = matcher.group(2);
 
         return new String[] { type, pattern };
+    }
+
+    /**
+     * Transforms the command string into an array.
+     * Either invokes the shell and passes using the "c" option
+     * or (if command already starts with one of the shells) splits by space.
+     *
+     * @param shell (path), picks to first one to execute the command
+     * @param "c"-option string
+     * @param command to execute
+     * @return command array
+     */
+    protected String[] createCmdArray(String[] shell, String cOption, String commandLine) {
+        boolean startsWithShell = (shell.length == 0);
+        for (String sh : shell) {
+            if (commandLine.startsWith(sh)) {
+                startsWithShell = true;
+                break;
+            }
+        }
+
+        if (!startsWithShell) {
+            if (commandLine.length() != 0) {
+                return new String[]{shell[0], cOption, commandLine};
+            } else {
+                return new String[] {};
+            }
+        } else {
+            logger.debug("Splitting by spaces");
+            try {
+                return commandLine.split(" ");
+            } catch (PatternSyntaxException e) {
+                logger.warn("An exception occurred while splitting '{}' : '{}'",
+                        commandLine, e.getMessage());
+                updateState(RUN, OnOffType.OFF);
+                updateState(OUTPUT, new StringType(e.getMessage()));
+                return new String[] {};
+            }
+        }
     }
 
 
