@@ -56,7 +56,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
 
-    private static final int CACHE_EXPIRY = (int) SECONDS.toMillis(5);
+    private static final int CACHE_EXPIRY = (int) SECONDS.toMillis(10);
 
     private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
     private @Nullable ICloudConnection connection;

@@ -44,7 +44,7 @@ public class ICloudConnection {
     private static final String ICLOUD_API_URL = ICLOUD_API_BASE_URL + "/fmipservice/device/";
     private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
     private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
-    private static final int SOCKET_TIMEOUT = 10;
+    private static final int SOCKET_TIMEOUT = 15;
 
     private final Gson gson = new GsonBuilder().create();
     private final String iCloudDataRequest = gson.toJson(ICloudAccountDataRequest.defaultInstance());
