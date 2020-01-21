@@ -49,24 +49,21 @@ public class IntegraVersionCommand extends SatelCommandBase {
      * @return Integra type
      */
     public byte getType() {
-        final SatelMessage response = getResponse();
-        return response.getPayload()[0];
+        return getResponse().getPayload()[0];
     }
 
     /**
      * @return firmware language
      */
     public byte getLanguage() {
-        final SatelMessage response = getResponse();
-        return response.getPayload()[12];
+        return getResponse().getPayload()[12];
     }
 
     /**
      * @return <code>true</code> if alarm settings are stored in flash memory
      */
     public boolean areSettingsInFlash() {
-        final SatelMessage response = getResponse();
-        return response.getPayload()[13] == (byte) 0xFF;
+        return getResponse().getPayload()[13] == (byte) 0xFF;
     }
 
     @Override

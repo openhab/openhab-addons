@@ -46,8 +46,8 @@ public class ReadZoneTemperature extends SatelCommandBase {
      * @return zone temperature
      */
     public float getTemperature() {
-        final SatelMessage response = getResponse();
-        int temp = ((response.getPayload()[1] & 0xff) << 8) + (response.getPayload()[2] & 0xff);
+        final byte[] payload = getResponse().getPayload();
+        int temp = ((payload[1] & 0xff) << 8) + (payload[2] & 0xff);
         return (temp - 110) / 2.0f;
     }
 

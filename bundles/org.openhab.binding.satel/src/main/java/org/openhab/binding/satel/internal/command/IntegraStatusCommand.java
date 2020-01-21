@@ -45,26 +45,23 @@ public class IntegraStatusCommand extends SatelCommandBase {
      */
     public LocalDateTime getIntegraTime() {
         // parse current date and time
-        final SatelMessage response = getResponse();
-        return LocalDateTime.of(bcdToInt(response.getPayload(), 0, 2), bcdToInt(response.getPayload(), 2, 1),
-                bcdToInt(response.getPayload(), 3, 1), bcdToInt(response.getPayload(), 4, 1),
-                bcdToInt(response.getPayload(), 5, 1), bcdToInt(response.getPayload(), 6, 1));
+        final byte[] payload = getResponse().getPayload();
+        return LocalDateTime.of(bcdToInt(payload, 0, 2), bcdToInt(payload, 2, 1), bcdToInt(payload, 3, 1),
+                bcdToInt(payload, 4, 1), bcdToInt(payload, 5, 1), bcdToInt(payload, 6, 1));
     }
 
     /**
      * @return first status byte
      */
     public byte getStatusByte1() {
-        final SatelMessage response = getResponse();
-        return response.getPayload()[7];
+        return getResponse().getPayload()[7];
     }
 
     /**
      * @return second status byte
      */
     public byte getStatusByte2() {
-        final SatelMessage response = getResponse();
-        return response.getPayload()[8];
+        return getResponse().getPayload()[8];
     }
 
     @Override

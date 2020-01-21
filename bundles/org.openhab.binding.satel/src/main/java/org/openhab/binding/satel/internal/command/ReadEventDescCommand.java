@@ -71,9 +71,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
      * @return text of the description
      */
     public String getText(Charset encoding) {
-        final SatelMessage response = getResponse();
         final int length = isLongDescription() ? 46 : 16;
-        return new String(response.getPayload(), 5, length, encoding).trim();
+        return new String(getResponse().getPayload(), 5, length, encoding).trim();
     }
 
     /**
@@ -82,11 +81,11 @@ public class ReadEventDescCommand extends SatelCommandBase {
      * @return kind of description
      */
     public int getKind() {
-        final SatelMessage response = getResponse();
+        final byte[] payload = getResponse().getPayload();
         if (isLongDescription()) {
-            return response.getPayload()[2] & 0xff;
+            return payload[2] & 0xff;
         } else {
-            return ((response.getPayload()[3] & 0xff) << 8) + (response.getPayload()[4] & 0xff);
+            return ((payload[3] & 0xff) << 8) + (payload[4] & 0xff);
         }
     }
 

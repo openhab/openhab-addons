@@ -49,8 +49,7 @@ public class ModuleVersionCommand extends SatelCommandBase {
      * @return <code>true</code> if the module supports extended (32-bit) payload for zones/outputs
      */
     public boolean hasExtPayloadSupport() {
-        final SatelMessage response = getResponse();
-        return (response.getPayload()[11] & 0x01) != 0;
+        return (getResponse().getPayload()[11] & 0x01) != 0;
     }
 
     @Override

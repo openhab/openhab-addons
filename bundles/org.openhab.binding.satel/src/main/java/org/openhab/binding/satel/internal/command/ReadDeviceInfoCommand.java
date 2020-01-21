@@ -119,8 +119,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * @return kind of the device
      */
     public int getDeviceKind() {
-        final SatelMessage response = getResponse();
-        return response.getPayload()[2] & 0xff;
+        return getResponse().getPayload()[2] & 0xff;
     }
 
     /**
@@ -132,8 +131,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * @return device name
      */
     public String getName(Charset encoding) {
-        final SatelMessage response = getResponse();
-        return new String(response.getPayload(), 3, 16, encoding).trim();
+        return new String(getResponse().getPayload(), 3, 16, encoding).trim();
     }
 
     /**
@@ -142,8 +140,8 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * @return additional info
      */
     public int getAdditionalInfo() {
-        final SatelMessage response = getResponse();
-        return (response.getPayload().length == 20) ? (response.getPayload()[19] & 0xff) : 0;
+        final byte[] payload = getResponse().getPayload();
+        return (payload.length == 20) ? (payload[19] & 0xff) : 0;
     }
 
     @Override

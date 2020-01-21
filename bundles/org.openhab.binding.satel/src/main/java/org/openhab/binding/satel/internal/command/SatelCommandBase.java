@@ -205,12 +205,10 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
      */
     public String getVersion(int offset) {
         // build version string
-        final SatelMessage response = getResponse();
-        String verStr = new String(response.getPayload(), offset, 1) + "."
-                + new String(response.getPayload(), offset + 1, 2) + " "
-                + new String(response.getPayload(), offset + 3, 4) + "-"
-                + new String(response.getPayload(), offset + 7, 2) + "-"
-                + new String(response.getPayload(), offset + 9, 2);
+        final byte[] payload = getResponse().getPayload();
+        String verStr = new String(payload, offset, 1) + "." + new String(payload, offset + 1, 2) + " "
+                + new String(payload, offset + 3, 4) + "-" + new String(payload, offset + 7, 2) + "-"
+                + new String(payload, offset + 9, 2);
         return verStr;
     }
 
