@@ -182,12 +182,17 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     private void updateSensors(StatusScheduleResponse status) {
         status.sensors.forEach(sensor -> {
             String group = "sensor" + sensor.input;
-            updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.active > 0 ? OnOffType.ON : OnOffType.OFF);
             updateGroupState(group, CHANNEL_SENSOR_MODE, new DecimalType(sensor.type));
             updateGroupState(group, CHANNEL_SENSOR_NAME, new StringType(sensor.name));
-            updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.offlevel));
             updateGroupState(group, CHANNEL_SENSOR_OFFTIMER, new DecimalType(sensor.offtimer));
             updateGroupState(group, CHANNEL_SENSOR_TIMER, new DecimalType(sensor.timer));
+            // Some fields are missing depending on sensor type.
+            if (sensor.offlevel != null) {
+                updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.offlevel));
+            }
+            if (sensor.active != null) {
+                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.active > 0 ? OnOffType.ON : OnOffType.OFF);
+            }
         });
     }
 
