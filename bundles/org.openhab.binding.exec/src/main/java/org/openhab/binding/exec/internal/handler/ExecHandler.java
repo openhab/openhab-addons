@@ -67,7 +67,7 @@ public class ExecHandler extends BaseThingHandler {
      * Shell executables
      */
     public static final String[] SHELL_WINDOWS = new String[] {"cmd"};
-    public static final String[] SHELL_NIX = new String[] {"sh", "bash", "zsh"};
+    public static final String[] SHELL_NIX = new String[] {"sh", "bash", "zsh", "csh"};
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
@@ -361,20 +361,16 @@ public class ExecHandler extends BaseThingHandler {
      * @return command array
      */
     protected String[] createCmdArray(String[] shell, String cOption, String commandLine) {
-        boolean startsWithShell = (shell.length == 0);
+        boolean startsWithShell = false;
         for (String sh : shell) {
-            if (commandLine.startsWith(sh)) {
+            if (commandLine.startsWith(sh+" ")) {
                 startsWithShell = true;
                 break;
             }
         }
 
         if (!startsWithShell) {
-            if (commandLine.length() != 0) {
-                return new String[]{shell[0], cOption, commandLine};
-            } else {
-                return new String[] {};
-            }
+            return new String[]{shell[0], cOption, commandLine};
         } else {
             logger.debug("Splitting by spaces");
             try {
