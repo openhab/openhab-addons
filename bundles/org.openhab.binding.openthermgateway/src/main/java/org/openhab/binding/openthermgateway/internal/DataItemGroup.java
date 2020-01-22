@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public class DataItemGroup {    
+public class DataItemGroup {
 
     public static final HashMap<Integer, DataItem[]> dataItemGroups = createDataItemGroups();
 
@@ -132,35 +132,29 @@ public class DataItemGroup {
         g.put(56, new DataItem[] { new DataItem(56, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "tdhwset", SIUnits.CELSIUS) });
         g.put(57, new DataItem[] { new DataItem(57, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "tchmax") });
         g.put(58, new DataItem[] { new DataItem(58, Msg.READWRITE, ByteType.BOTH, DataType.FLOAT, 0, "otchcratio") });
-        g.put(100,
-                new DataItem[] { new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "rof0"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "rof1"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "rof2"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "rof3"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "rof4"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "rof5"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "rof6"),
-                        new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "rof7") });
+        g.put(100, new DataItem[] { new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "rof0"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "rof1"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "rof2"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "rof3"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "rof4"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "rof5"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "rof6"),
+                new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "rof7") });
         g.put(115, new DataItem[] { new DataItem(115, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "oemdiagcode") });
         g.put(116, new DataItem[] { new DataItem(116, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerstarts") });
         g.put(117, new DataItem[] { new DataItem(117, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumpstarts") });
         g.put(118, new DataItem[] { new DataItem(118, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvstarts") });
-        g.put(119,
-                new DataItem[] { new DataItem(119, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerstarts") });
+        g.put(119, new DataItem[] { new DataItem(119, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerstarts") });
         g.put(120, new DataItem[] { new DataItem(120, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerhours") });
         g.put(121, new DataItem[] { new DataItem(121, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumphours") });
         g.put(122, new DataItem[] { new DataItem(122, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvhours") });
         g.put(123, new DataItem[] { new DataItem(123, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerhours") });
-        g.put(124,
-                new DataItem[] { new DataItem(124, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "masterotversion") });
+        g.put(124, new DataItem[] { new DataItem(124, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "masterotversion") });
         g.put(125, new DataItem[] { new DataItem(125, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "slaveotversion") });
-        g.put(126,
-                new DataItem[] {
-                        new DataItem(126, Msg.WRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "masterproducttype"),
-                        new DataItem(126, Msg.WRITE, ByteType.LOWBYTE, DataType.UINT8, 0, "masterproductversion") });
-        g.put(127,
-                new DataItem[] { new DataItem(127, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "slaveproducttype"),
-                        new DataItem(127, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "slaveproductversion") });
+        g.put(126, new DataItem[] { new DataItem(126, Msg.WRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "masterproducttype"),
+                new DataItem(126, Msg.WRITE, ByteType.LOWBYTE, DataType.UINT8, 0, "masterproductversion") });
+        g.put(127, new DataItem[] { new DataItem(127, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "slaveproducttype"),
+                new DataItem(127, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "slaveproductversion") });
 
         return g;
     }
