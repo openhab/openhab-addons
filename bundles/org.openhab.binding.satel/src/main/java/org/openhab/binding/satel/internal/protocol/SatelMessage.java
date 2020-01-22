@@ -14,6 +14,8 @@ package org.openhab.binding.satel.internal.protocol;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class SatelMessage {
     private static final Logger LOGGER = LoggerFactory.getLogger(SatelMessage.class);
 
@@ -39,9 +42,9 @@ public class SatelMessage {
      * Creates new instance with specified command code and payload.
      *
      * @param command
-     *            command code
+     *                    command code
      * @param payload
-     *            command payload
+     *                    command payload
      */
     public SatelMessage(byte command, byte[] payload) {
         this.command = command;
@@ -51,8 +54,7 @@ public class SatelMessage {
     /**
      * Creates new instance with specified command code and empty payload.
      *
-     * @param command
-     *            command code
+     * @param command command code
      */
     public SatelMessage(byte command) {
         this(command, EMPTY_PAYLOAD);
@@ -61,11 +63,10 @@ public class SatelMessage {
     /**
      * Deserializes new message instance from specified byte buffer.
      *
-     * @param buffer
-     *            bytes to deserialize a message from
+     * @param buffer bytes to deserialize a message from
      * @return deserialized message instance
      */
-    public static SatelMessage fromBytes(byte[] buffer) {
+    public static @Nullable SatelMessage fromBytes(byte[] buffer) {
         // we need at least command and checksum
         if (buffer.length < 3) {
             LOGGER.error("Invalid message length: {}", buffer.length);
@@ -137,8 +138,7 @@ public class SatelMessage {
     /**
      * Calculates a checksum for the specified buffer.
      *
-     * @param buffer
-     *            the buffer to calculate.
+     * @param buffer the buffer to calculate.
      * @return the checksum value.
      */
     private static int calculateChecksum(byte[] buffer, int length) {
@@ -159,7 +159,7 @@ public class SatelMessage {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -193,4 +193,5 @@ public class SatelMessage {
         result = prime * result + Arrays.hashCode(payload);
         return result;
     }
+
 }

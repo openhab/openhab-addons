@@ -15,8 +15,10 @@ package org.openhab.binding.satel.internal.handler;
 import static org.openhab.binding.satel.internal.SatelBindingConstants.THING_TYPE_ZONE;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -34,6 +36,7 @@ import org.openhab.binding.satel.internal.types.ZoneState;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class SatelZoneHandler extends WirelessChannelsHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ZONE);
@@ -43,12 +46,13 @@ public class SatelZoneHandler extends WirelessChannelsHandler {
     }
 
     @Override
-    protected SatelCommand convertCommand(ChannelUID channel, Command command) {
+    protected Optional<SatelCommand> convertCommand(ChannelUID channel, Command command) {
         if (command instanceof OnOffType) {
+            final SatelBridgeHandler bridgeHandler = getBridgeHandler();
             boolean switchOn = (command == OnOffType.ON);
             StateType stateType = getStateType(channel.getId());
             int size = bridgeHandler.getIntegraType().hasExtPayload() ? 32 : 16;
-            byte[] zones = getObjectBitset(size, thingConfig.getId());
+            byte[] zones = getObjectBitset(size, getThingConfig().getId());
             ZoneControl action = null;
             switch ((ZoneState) stateType) {
                 case BYPASS:
@@ -63,17 +67,17 @@ public class SatelZoneHandler extends WirelessChannelsHandler {
             }
 
             if (action != null) {
-                return new ControlObjectCommand(action, zones, bridgeHandler.getUserCode(), scheduler);
+                return Optional.of(new ControlObjectCommand(action, zones, bridgeHandler.getUserCode(), scheduler));
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
     protected StateType getStateType(String channelId) {
         StateType result = super.getStateType(channelId);
-        if (result == null) {
+        if (result == StateType.NONE) {
             result = ZoneState.valueOf(channelId.toUpperCase());
         }
         return result;

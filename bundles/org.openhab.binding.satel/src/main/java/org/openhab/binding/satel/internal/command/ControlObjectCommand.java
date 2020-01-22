@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -29,6 +30,7 @@ import org.openhab.binding.satel.internal.types.ControlType;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ControlObjectCommand extends ControlCommand {
 
     private static final long REFRESH_DELAY = 1000;
@@ -39,14 +41,10 @@ public class ControlObjectCommand extends ControlCommand {
     /**
      * Creates new command class instance for specified type of control.
      *
-     * @param controlType
-     *            type of controlled objects
-     * @param objects
-     *            bits that represents objects to control
-     * @param userCode
-     *            code of the user on behalf the control is made
-     * @param scheduler
-     *            scheduler object for scheduling refreshes
+     * @param controlType type of controlled objects
+     * @param objects     bits that represents objects to control
+     * @param userCode    code of the user on behalf the control is made
+     * @param scheduler   scheduler object for scheduling refreshes
      */
     public ControlObjectCommand(ControlType controlType, byte[] objects, String userCode,
             ScheduledExecutorService scheduler) {
@@ -60,7 +58,7 @@ public class ControlObjectCommand extends ControlCommand {
         if (super.handleResponse(eventDispatcher, response)) {
             // force refresh states that might have changed
             final BitSet newStates = this.controlType.getControlledStates();
-            if (newStates != null && !newStates.isEmpty()) {
+            if (!newStates.isEmpty()) {
                 // add delay to give a chance to process sent command
                 scheduler.schedule(() -> eventDispatcher.dispatchEvent(new NewStatesEvent(newStates)), REFRESH_DELAY,
                         TimeUnit.MILLISECONDS);
