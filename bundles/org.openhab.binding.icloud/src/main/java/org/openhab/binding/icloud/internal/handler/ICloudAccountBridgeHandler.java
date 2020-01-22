@@ -136,8 +136,10 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         try {
             logger.debug("iCloud bridge starting handler ...");
             ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-            if(config.appleId != null || config.password != null) {
-                connection = new ICloudConnection(config.appleId, config.password);
+            final String appleId = config.appleId;
+            final String password = config.password;
+            if(appleId != null || password != null) {
+                connection = new ICloudConnection(appleId, password);
             }
             else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Apple ID/Password is not set!");
