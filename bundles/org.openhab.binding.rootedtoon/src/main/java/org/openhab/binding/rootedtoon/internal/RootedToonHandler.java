@@ -225,17 +225,67 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
                 updateChannel("Preheat", OnOffType.ON);
                 return;
         }
-        updateStatus(ThingStatus.OFFLINE);
+        // I have no idea why this was here
+        // updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override
     public void newRealtimeUsageInfo(@Nullable RealtimeUsageInfo realtimeUsageInfo) {
-        updateChannel("GasMeterReading", new DecimalType(realtimeUsageInfo.gas.total.doubleValue()));
-        updateChannel("GasConsumption", new DecimalType(realtimeUsageInfo.gas.flow.doubleValue()));
-        updateChannel("PowerConsumption", new DecimalType(realtimeUsageInfo.elec_delivered_lt.flow.doubleValue()
-                + realtimeUsageInfo.elec_delivered_nt.flow.doubleValue()));
 
-        updateChannel("PowerMeterReading", new DecimalType(realtimeUsageInfo.elec_delivered_nt.total.doubleValue()));
-        updateChannel("PowerMeterReadingLow", new DecimalType(realtimeUsageInfo.elec_delivered_lt.total.doubleValue()));
+        if (!realtimeUsageInfo.gas.total.isNaN()) {
+            updateChannel("GasMeterReading", new DecimalType(realtimeUsageInfo.gas.total.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.gas.flow.isNaN()) {
+            updateChannel("GasConsumption", new DecimalType(realtimeUsageInfo.gas.flow.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_delivered_lt.flow.isNaN() && !realtimeUsageInfo.elec_delivered_nt.flow.isNaN()) {
+            updateChannel("PowerConsumption", new DecimalType(realtimeUsageInfo.elec_delivered_lt.flow.doubleValue()
+                    + realtimeUsageInfo.elec_delivered_nt.flow.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_delivered_nt.total.isNaN()) {
+            updateChannel("PowerMeterReading",
+                    new DecimalType(realtimeUsageInfo.elec_delivered_nt.total.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_delivered_lt.total.isNaN()) {
+            updateChannel("PowerMeterReadingLow",
+                    new DecimalType(realtimeUsageInfo.elec_delivered_lt.total.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_delivered_nt.flow.isNaN()) {
+            updateChannel("PowerMeterFlow", new DecimalType(realtimeUsageInfo.elec_delivered_nt.flow.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_delivered_lt.flow.isNaN()) {
+            updateChannel("PowerMeterFlowLow", new DecimalType(realtimeUsageInfo.elec_delivered_lt.flow.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_received_nt.total.isNaN()) {
+            updateChannel("PowerProducedReading",
+                    new DecimalType(realtimeUsageInfo.elec_received_nt.total.doubleValue()));
+        }
+        if (!realtimeUsageInfo.elec_received_lt.total.isNaN()) {
+            updateChannel("PowerProducedReadingLow",
+                    new DecimalType(realtimeUsageInfo.elec_received_lt.total.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_received_nt.flow.isNaN()) {
+            updateChannel("PowerProducedFlow", new DecimalType(realtimeUsageInfo.elec_received_nt.flow.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_received_lt.flow.isNaN()) {
+            updateChannel("PowerProducedFlowLow",
+                    new DecimalType(realtimeUsageInfo.elec_received_lt.flow.doubleValue()));
+        }
+
+        if (!realtimeUsageInfo.elec_solar.total.isNaN()) {
+            updateChannel("SolarPowerReading", new DecimalType(realtimeUsageInfo.elec_solar.total.doubleValue()));
+        }
+        if (!realtimeUsageInfo.elec_solar.flow.isNaN()) {
+            updateChannel("SolarPowerFlow", new DecimalType(realtimeUsageInfo.elec_solar.flow.doubleValue()));
+        }
     }
 }

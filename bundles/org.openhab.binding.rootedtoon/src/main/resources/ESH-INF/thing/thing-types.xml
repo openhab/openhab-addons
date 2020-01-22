@@ -15,17 +15,48 @@
             <channel id="SetpointMode" typeId="setpointMode" />
             <channel id="GasMeterReading" typeId="gasMeterReading" />
             <channel id="GasConsumption" typeId="gasConsumption" />
-            <channel id="PowerMeterReading" typeId="currentMeterReading">
+            <channel id="PowerMeterReading" typeId="powerAmount">
                 <label>Energy, high rate</label>
             </channel>
-            <channel id="PowerMeterReadingLow" typeId="currentMeterReading">
+            <channel id="PowerMeterReadingLow" typeId="powerAmount">
                 <label>Energy, low rate</label>
             </channel>
+            
+            
+            <channel id="PowerMeterFlow" typeId="powerAmount">
+                <label>Energy flow, high rate</label>
+            </channel>
+            <channel id="PowerMeterFlowLow" typeId="powerFlow">
+                <label>Energy flow, low rate</label>
+            </channel>
+
+            <channel id="PowerProducedReading" typeId="powerAmount">
+                <label>Power produced, high rate</label>
+            </channel>
+            <channel id="PowerProducedFlow" typeId="powerFlow">
+                <label>Power producing flow, high rate</label>
+            </channel>
+            
+            <channel id="PowerProducedFlowLow" typeId="powerAmount">
+                <label>Power produced, low rate</label>
+            </channel>
+            <channel id="PowerProducedReadingLow" typeId="powerFlow">
+                <label>Power producing flow, low rate</label>
+            </channel>
+            
+            <channel id="SolarPowerReading" typeId="powerAmount">
+                <label>Solar power</label>
+            </channel>
+            <channel id="SolarPowerFlow" typeId="powerFlow">
+                <label>Solar power flow</label>
+            </channel>
+            
+            
             <channel id="ProgramEnabled" typeId="switch_binary">
                 <label>Program enabled</label>
             </channel>
 
-            <channel id="PowerConsumption" typeId="powerConsumption" />
+            <channel id="PowerConsumption" typeId="powerFlow" />
 
             <channel id="ModulationLevel" typeId="modulationLevel" />
             <channel id="Heating" typeId="heating" />
@@ -111,18 +142,18 @@
         <state readOnly="true" pattern="%d" />
     </channel-type>
 
-    <channel-type id="currentMeterReading" advanced="true">
+    <channel-type id="powerAmount" advanced="true">
         <item-type>Number</item-type>
         <label>Energy</label>
-        <description>Current energy meter reading in Wh</description>
+        <description>Electric energy amount</description>
         <category>energy</category>
         <state readOnly="true" pattern="%d Wh" />
     </channel-type>
 
-    <channel-type id="powerConsumption">
+    <channel-type id="powerFlow">
         <item-type>Number</item-type>
         <label>Power</label>
-        <description>Current power consumption</description>
+        <description>Electric energy flow</description>
         <category>energy</category>
         <state pattern="%.1f W" readOnly="true" />
     </channel-type>

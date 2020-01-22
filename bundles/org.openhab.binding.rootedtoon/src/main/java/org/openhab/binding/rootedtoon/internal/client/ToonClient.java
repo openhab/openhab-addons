@@ -114,6 +114,7 @@ public class ToonClient {
             public void newPowerUsageInfo(PowerUsageInfo puInfo) {
                 System.out.println(puInfo);
             }
+
         });
         client.requestThermostatInfo();
         client.requestRealtimeUsageInfo();
@@ -185,65 +186,52 @@ public class ToonClient {
                 JsonObject dev = elm.getValue().getAsJsonObject();
 
                 try {
-                    String str;
-                    switch ((str = dev.get("type").getAsString()).hashCode()) {
-                        case -1646462228:
-                            if (!str.equals("elec_received_lt")) {
-                                continue;
-                            }
+                    String str = dev.get("type").getAsString();
+                    switch (str) {
+                        case "elec_received_lt":
 
                             result.elec_received_lt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
-                        case -1646462166:
-                            if (!str.equals("elec_received_nt")) {
-                                continue;
-                            }
+                            break;
+                        case "elec_received_nt":
+
                             result.elec_received_nt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
-                        case 102105:
-                            if (!str.equals("gas")) {
-                                continue;
-                            }
+                            break;
+                        case "gas":
                             result.gas = new RatedValue(Double.valueOf(dev.get("CurrentGasFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentGasQuantity").getAsDouble()));
-                        case 3115909:
-                            if (!str.equals("elec")) {
-                                continue;
-                            }
+                            break;
+                        case "elec":
                             result.elec = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
-                        case 3198448:
-                            if (!str.equals("heat")) {
-                                continue;
-                            }
+                            break;
+                        case "heat":
                             result.heat = new RatedValue(Double.valueOf(dev.get("CurrentHeatQuantity").getAsDouble()),
                                     null);
-                        case 123542663:
-                            if (!str.equals("elec_solar")) {
-                                continue;
-                            }
-                            result.elec_solar = new RatedValue(
-                                    Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
-                                    Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
-                        case 1930858909:
-                            if (!str.equals("elec_delivered_lt")) {
-                                continue;
-                            }
+                            break;
+                        case "elec_solar":
+                            double flow = Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble());
+                            double total = Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble());
+                            result.elec_solar = new RatedValue(flow, total);
+                            break;
+                        case "elec_delivered_lt":
                             result.elec_delivered_lt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
-                        case 1930858971:
-                            if (!str.equals("elec_delivered_nt")) {
-                                continue;
-                            }
+                            break;
+                        case "elec_delivered_nt":
                             result.elec_delivered_nt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
+                            break;
                     }
                 } catch (Exception exception) {
+                    logger.error(dev.toString());
+                    logger.error("Error while parsing getDevices.json output", exception);
                 }
             }
 
@@ -251,6 +239,7 @@ public class ToonClient {
                 listener.newRealtimeUsageInfo(result);
             }
         } catch (Exception e) {
+            logger.error("Error while processing the listeners", e);
             throw new ToonConnectionException(e.getMessage());
         }
     }
