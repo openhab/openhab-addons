@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.xmltv.internal.handler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,12 +71,11 @@ public class XmlTVHandler extends BaseBridgeHandler {
         logger.debug("Initializing {} for input file '{}'", getClass(), config.filePath);
 
         reloadJob = scheduler.scheduleWithFixedDelay(() -> {
-            final StreamSource source = new StreamSource(config.filePath);
             currentXmlFile = null;
             XMLStreamReader xsr = null;
             try {
                 // This can take some seconds depending upon weight of the XmlTV source file
-                xsr = xif.createXMLStreamReader(source);
+                xsr = xif.createXMLStreamReader(new FileInputStream(new File(config.filePath)), config.encoding);
 
                 try {
                     Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -93,7 +96,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
                 } catch (JAXBException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
                 }
-            } catch (XMLStreamException e) {
+            } catch (XMLStreamException | FileNotFoundException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } finally {
                 try {

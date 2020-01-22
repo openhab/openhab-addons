@@ -18,6 +18,11 @@
 				<description>Specifies the XMLTV file reload interval in hours</description>
 				<default>24</default>
 			</parameter>
+			<parameter name="encoding" type="text" required="true">
+				<label>File encoding</label>
+				<description>Specifies the XMLTV file encoding</description>
+				<default>UTF8</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 	
