@@ -53,7 +53,7 @@ public class ICloudConnection {
     private final String iCloudDataRequestURL;
     private final String iCloudFindMyDeviceURL;
 
-    public ICloudConnection(@Nullable String appleId, @Nullable String password) throws URISyntaxException {
+    public ICloudConnection(String appleId, String password) throws URISyntaxException {
         authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
         iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
         iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
@@ -64,7 +64,7 @@ public class ICloudConnection {
      *
      * @throws IOException
      */
-    public void findMyDevice(@Nullable String id) throws IOException {
+    public void findMyDevice(String id) throws IOException {
         callApi(iCloudFindMyDeviceURL, gson.toJson(new ICloudFindMyDeviceRequest(id)));
     }
 

@@ -31,7 +31,7 @@ public class ICloudFindMyDeviceRequest {
     String deviceId;
     final String subject = FIND_MY_DEVICE_REQUEST_SUBJECT;
 
-    public ICloudFindMyDeviceRequest(@Nullable String id) {
+    public ICloudFindMyDeviceRequest(String id) {
         deviceId = id;
     }
 }

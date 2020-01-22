@@ -60,7 +60,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
     private @Nullable ICloudConnection connection;
-    private @Nullable ICloudAccountThingConfiguration config;
     private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
     @Nullable
@@ -117,7 +116,11 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
-    public void findMyDevice(@Nullable String deviceId) throws IOException {
+    public void findMyDevice(String deviceId) throws IOException {
+        if(connection == null) {
+            logger.debug("Can't send Find My Device request, because connection is null!");
+            return;
+        }
         connection.findMyDevice(deviceId);
     }
 
@@ -132,10 +135,14 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private void startHandler() {
         try {
             logger.debug("iCloud bridge starting handler ...");
-            config = getConfigAs(ICloudAccountThingConfiguration.class);
-
-            connection = new ICloudConnection(config.appleId, config.password);
-
+            ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+            if(config.appleId != null || config.password != null) {
+                connection = new ICloudConnection(config.appleId, config.password);
+            }
+            else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Apple ID/Password is not set!");
+                return;
+            }
             refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes, MINUTES);
 
             logger.debug("iCloud bridge handler started.");
