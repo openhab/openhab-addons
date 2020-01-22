@@ -811,6 +811,14 @@ public class LGWebOSTVSocket {
 
     }
 
+    // Simulate Remote Control Button press
+
+    public void sendRCButton(String rcButton, ResponseListener<CommandConfirmation> listener) {
+        executeMouse(s -> s.button(rcButton));
+    }
+
+    //
+
     public interface ConfigProvider {
         void storeKey(String key);
 

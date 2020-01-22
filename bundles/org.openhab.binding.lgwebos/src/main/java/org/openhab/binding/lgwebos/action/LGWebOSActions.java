@@ -237,6 +237,12 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
+    @RuleAction(label = "@text/actionSendRCButtonLabel", description = "@text/actionSendRCButtonDesc")
+    public void sendRCButton(
+            @ActionInput(name = "text", label = "@text/actionSendRCButtonInputTextLabel", description = "@text/actionSendRCButtonInputTextDesc") String rcButton) {
+        getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(rcButton)));
+    }
+
     private Optional<LGWebOSTVSocket> getConnectedSocket() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
@@ -356,6 +362,14 @@ public class LGWebOSActions implements ThingActions {
     public static void decreaseChannel(@Nullable ThingActions actions) {
         if (actions instanceof LGWebOSActions) {
             ((LGWebOSActions) actions).decreaseChannel();
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void sendRCButton(@Nullable ThingActions actions, String rcButton) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).sendRCButton(rcButton);
         } else {
             throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
         }
