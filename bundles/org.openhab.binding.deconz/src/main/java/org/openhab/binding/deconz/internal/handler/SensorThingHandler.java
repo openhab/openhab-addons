@@ -341,7 +341,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                 break;
             case CHANNEL_BATTERY_LOW:
                 if (batteryLevel != null) {
-                    updateState(channelUID, batteryLevel <= 10 ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(batteryLevel <= 10));
                 }
                 break;
             case CHANNEL_TEMPERATURE:
