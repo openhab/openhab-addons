@@ -194,16 +194,22 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                         case EIR_FLAGS:
                             break;
                         case EIR_MANUFACTURER_SPECIFIC:
-                            Map<Short, int[]> eirRecord = (Map<Short, int[]>) eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
-                            if (eirRecord != null) {
-                                Map.Entry<Short, int[]> eirEntry = eirRecord.entrySet().iterator().next();
-                                int[] manufacturerInt = eirEntry.getValue();
-                                manufacturerData = new byte[manufacturerInt.length];
-                                for (int i = 0; i < manufacturerInt.length; i++) {
-                                    manufacturerData[i] = (byte) manufacturerInt[i];
+                            Object obj = eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
+                            if (obj != null && obj instanceof Map<?, ?>) {
+                                try {
+                                    @SuppressWarnings("unchecked")
+                                    Map<Short, int[]> eirRecord = (Map<Short, int[]>) obj;
+                                    Map.Entry<Short, int[]> eirEntry = eirRecord.entrySet().iterator().next();
+                                    int[] manufacturerInt = eirEntry.getValue();
+                                    manufacturerData = new byte[manufacturerInt.length];
+                                    for (int i = 0; i < manufacturerInt.length; i++) {
+                                        manufacturerData[i] = (byte) manufacturerInt[i];
+                                    }
+                                    manufacturer = (int) eirEntry.getKey();
+                                } catch (ClassCastException e) {
+                                    logger.debug("Unsupported manufacturer specific record received from device {}",
+                                            address);
                                 }
-
-                                manufacturer = (int) eirEntry.getKey();
                             }
                             break;
                         case EIR_NAME_LONG:
