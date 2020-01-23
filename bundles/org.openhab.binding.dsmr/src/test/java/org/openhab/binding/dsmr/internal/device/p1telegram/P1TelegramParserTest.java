@@ -41,7 +41,7 @@ public class P1TelegramParserTest {
             { "dsmr_40", 39, },
             { "dsmr_42", 39, },
             { "dsmr_50", 41, },
-            { "flu5", 20, },
+            { "flu5", 21, },
             { "Iskra_AM550", 41, },
             { "Landis_Gyr_E350", 10, },
             { "Landis_Gyr_ZCF110", 25, },

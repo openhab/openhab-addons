@@ -304,7 +304,8 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF1,
                     CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TARIFF_INDICATOR,
                     CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
-                    CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_SWITCH_POSITION},
+                    CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_FUSE_THRESHOLD_A,
+                    CosemObjectType.EMETER_SWITCH_POSITION},
             new CosemObjectType[] {
                     CosemObjectType.EMETER_INSTANT_CURRENT_L1, CosemObjectType.EMETER_INSTANT_CURRENT_L2,
                     CosemObjectType.EMETER_INSTANT_CURRENT_L3, CosemObjectType.EMETER_INSTANT_VOLTAGE_L1,

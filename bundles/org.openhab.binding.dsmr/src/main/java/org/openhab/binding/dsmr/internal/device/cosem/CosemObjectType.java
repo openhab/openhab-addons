@@ -72,6 +72,7 @@ public enum CosemObjectType {
     EMETER_ACTUAL_PRODUCTION(new OBISIdentifier(1, 0, 2, 7, 0, null), CosemQuantity.KILO_WATT),
     EMETER_TRESHOLD_A_V2_1(new OBISIdentifier(1, 0, 17, 0, 0, null), CosemQuantity.AMPERE),
     EMETER_TRESHOLD_A(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemQuantity.AMPERE),
+    EMETER_FUSE_THRESHOLD_A(new OBISIdentifier(1, 0, 31, 4, 0, null), CosemQuantity.AMPERE),
     EMETER_TRESHOLD_KWH(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemQuantity.KILO_WATT),
     EMETER_SWITCH_POSITION_V2_1(new OBISIdentifier(1, 0, 96, 3, 10, null), CosemDecimal.INSTANCE),
     EMETER_SWITCH_POSITION(new OBISIdentifier(0, 0, 96, 3, 10, null), CosemDecimal.INSTANCE),
