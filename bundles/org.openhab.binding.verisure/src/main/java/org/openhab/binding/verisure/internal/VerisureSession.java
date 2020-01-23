@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -223,11 +223,11 @@ public class VerisureSession {
             logger.debug("Set installation URL: {}", url);
             httpClient.GET(url);
         } catch (ExecutionException e) {
-            logger.warn("Caught ExecutionException {}", e);
+            logger.warn("Caught ExecutionException {}", e.getMessage(), e);
         } catch (InterruptedException e) {
-            logger.warn("Caught InterruptedException {}", e);
+            logger.warn("Caught InterruptedException {}", e.getMessage(), e);
         } catch (TimeoutException e) {
-            logger.warn("Caught TimeoutException {}", e);
+            logger.warn("Caught TimeoutException {}", e.getMessage(), e);
         }
     }
 
@@ -241,13 +241,13 @@ public class VerisureSession {
             source = resp.getContentAsString();
             logger.trace("{} html: {}", url, source);
         } catch (ExecutionException e) {
-            logger.warn("Caught ExecutionException {}", e);
+            logger.warn("Caught ExecutionException {}", e.getMessage(), e);
             return null;
         } catch (InterruptedException e) {
-            logger.warn("Caught InterruptedException {}", e);
+            logger.warn("Caught InterruptedException {}", e.getMessage(), e);
             return null;
         } catch (TimeoutException e) {
-            logger.warn("Caught TimeoutException {}", e);
+            logger.warn("Caught TimeoutException {}", e.getMessage(), e);
             return null;
         }
 
@@ -256,7 +256,7 @@ public class VerisureSession {
             subString = source.substring(labelIndex + 14, labelIndex + 78);
             logger.debug("csrf-token: {}", subString);
         } catch (IndexOutOfBoundsException e) {
-            logger.debug("Exception caught when parsing csrf {}", e);
+            logger.debug("Exception caught when parsing csrf {}", e.getMessage(), e);
         }
         return subString;
     }
@@ -307,11 +307,11 @@ public class VerisureSession {
                     break;
             }
         } catch (ExecutionException e) {
-            logger.warn("ExecutionException: {}", e);
+            logger.warn("ExecutionException: {}", e.getMessage(), e);
         } catch (InterruptedException e) {
-            logger.warn("InterruptedException: {}", e);
+            logger.warn("InterruptedException: {}", e.getMessage(), e);
         } catch (TimeoutException e) {
-            logger.warn("TimeoutException: {}", e);
+            logger.warn("TimeoutException: {}", e.getMessage(), e);
         }
         return 0;
     }
@@ -360,15 +360,15 @@ public class VerisureSession {
             logger.debug("HTTP POST Request {}.", request.toString());
             return request.send();
         } catch (ExecutionException e) {
-            logger.warn("Caught ExecutionException {}", e);
+            logger.warn("Caught ExecutionException {}", e.getMessage(), e);
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Caught UnsupportedEncodingException {}", e);
+            logger.warn("Caught UnsupportedEncodingException {}", e.getMessage(), e);
         } catch (InterruptedException e) {
-            logger.warn("Caught InterruptedException {}", e);
+            logger.warn("Caught InterruptedException {}", e.getMessage(), e);
         } catch (TimeoutException e) {
-            logger.warn("Caught TimeoutException {}", e);
+            logger.warn("Caught TimeoutException {}", e.getMessage(), e);
         } catch (RuntimeException e) {
-            logger.warn("Caught RuntimeException {}", e);
+            logger.warn("Caught RuntimeException {}", e.getMessage(), e);
         }
         return null;
     }
@@ -451,11 +451,11 @@ public class VerisureSession {
                 }
             }
         } catch (ExecutionException e) {
-            logger.warn("ExecutionException: {}", e);
+            logger.warn("ExecutionException: {}", e.getMessage(), e);
         } catch (InterruptedException e) {
-            logger.warn("InterruptedException: {}", e);
+            logger.warn("InterruptedException: {}", e.getMessage(), e);
         } catch (TimeoutException e) {
-            logger.warn("TimeoutException: {}", e);
+            logger.warn("TimeoutException: {}", e.getMessage(), e);
         }
 
         url = AUTH_LOGIN;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
                 updateState(cuid, new DateTimeType(zdtLocal));
             } catch (IllegalArgumentException e) {
-                logger.warn("Parsing date failed: {}.", e);
+                logger.warn("Parsing date failed: {}.", e.getMessage(), e);
             }
         } else {
             logger.debug("Timestamp is null!");
