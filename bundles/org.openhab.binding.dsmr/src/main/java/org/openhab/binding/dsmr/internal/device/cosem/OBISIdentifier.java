@@ -258,6 +258,16 @@ public class OBISIdentifier {
     }
 
     /**
+     * Returns an reduced OBIS Identifier with both group E and F is set to null
+     * (.i.e. not applicable)
+     *
+     * @return reduced OBIS Identifier
+     */
+    public OBISIdentifier getReducedOBISIdentifierGroupE() {
+        return new OBISIdentifier(groupA, groupB, groupC, groupD, null, null);
+    }
+
+    /**
      * Returns whether or not the reduced OBIS Identifier is a wildcard identifier (meaning groupA groupB or groupC is
      * null)
      * Note that the DSMR specification does not use groupF so this is implemented always as a wildcard.

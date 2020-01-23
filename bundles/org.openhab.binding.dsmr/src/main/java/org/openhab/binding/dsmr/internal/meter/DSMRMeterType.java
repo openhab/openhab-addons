@@ -47,7 +47,10 @@ public enum DSMRMeterType {
 
     /** DSMR V5 Device meter type (used for device (and not meter specific) related messages) */
     DEVICE_V5(DSMRMeterKind.DEVICE, CosemObjectType.UNKNOWN,
-            CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_VERSION_OUTPUT, CosemObjectType.P1_TIMESTAMP),
+            new CosemObjectType[] {
+                    CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_VERSION_OUTPUT, CosemObjectType.P1_TIMESTAMP },
+            new CosemObjectType[] {
+                    CosemObjectType.P1_TEXT_STRING_LONG }),
 
     /** ACE4000 Electricity */
     ELECTRICITY_ACE4000(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,

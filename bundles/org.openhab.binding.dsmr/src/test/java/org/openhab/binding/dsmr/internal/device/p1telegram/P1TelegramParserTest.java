@@ -46,7 +46,7 @@ public class P1TelegramParserTest {
             { "Landis_Gyr_E350", 10, },
             { "Landis_Gyr_ZCF110", 25, },
             { "Sagemcom_XS210", 41, },
-            { "smarty", 24, },
+            { "smarty", 28, },
         });
     }
     // @formatter:on

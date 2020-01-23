@@ -47,6 +47,7 @@ public enum CosemObjectType {
     P1_TIMESTAMP(new OBISIdentifier(0, 0, 1, 0, 0, null), new CosemDate("")),
     P1_TEXT_CODE(new OBISIdentifier(0, 0, 96, 13, 1, null), CosemHexString.INSTANCE),
     P1_TEXT_STRING(new OBISIdentifier(0, 0, 96, 13, 0, null), CosemHexString.INSTANCE),
+    P1_TEXT_STRING_LONG(new OBISIdentifier(0, 0, 96, 13, null, null), CosemHexString.INSTANCE),
 
     /* Generic Meter Cosem Object types */
     METER_EQUIPMENT_IDENTIFIER(new OBISIdentifier(0, null, 96, 1, 0, null), CosemHexString.INSTANCE),
