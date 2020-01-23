@@ -3,7 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
 	<channel-type id="deliveryType">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery</label>
@@ -150,8 +149,14 @@
 	</channel-type>
 	<channel-type id="actualTresholdAType" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Actual Threshold</label>
+		<label>Actual Threshold Current</label>
 		<description>The actual threshold.</description>
+		<state pattern="%.0f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="actualFuseThresholdAType" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Actual Fuse Threshold</label>
+		<description>The actual fuse threshold.</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="actualTresholdkWType" advanced="true">
