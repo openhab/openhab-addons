@@ -76,7 +76,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     
             callback.connected();
     
-            logger.debug("OpenThermGatewaySocketConnector connected");
+            logger.info("OpenThermGatewaySocketConnector connected");
     
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
@@ -98,23 +98,23 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                         }
                     }
         
-                    logger.debug("Stopping OpenThermGatewaySocketConnector");
+                    logger.info("Stopping OpenThermGatewaySocketConnector");
             }
             finally {
                 connected = false;
     
-                logger.debug("OpenThermGatewaySocketConnector disconnected");
+                logger.info("OpenThermGatewaySocketConnector disconnected");
                 callback.disconnected();
             }
         }     
         catch (IOException ex) {
-            logger.debug("Unable to connect to the OpenTherm Gateway." , ex);
+            logger.warn("Unable to connect to the OpenTherm Gateway." , ex);
         }        
     }
 
     @Override
     public synchronized void stop() {
-        logger.debug("Stopping OpenThermGatewaySocketConnector");
+        logger.info("Stopping OpenThermGatewaySocketConnector");
         stopping = true;
     }
 
@@ -161,10 +161,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         Message msg = Message.parse(message);
 
         if (msg == null) {
-            logger.debug("Received message: {}, (unknown)", message);
+            logger.trace("Received message: {}, (unknown)", message);
             return;
         } else {
-            logger.debug("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(), msg.getMessageType().toString());
+            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(), msg.getMessageType().toString());
         }
 
         if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
@@ -192,7 +192,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                         break;
                 }
 
-                logger.debug("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(),
+                logger.trace("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(),
                     dataItem.getDataType().toString(), state == null ? "" : state.toString());
             }
         }
