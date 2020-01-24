@@ -10,7 +10,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel" />
 			<channel-group id="sensors" typeId="externalTemperature" />
-            <channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -22,7 +22,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel" />
 			<channel-group id="meter" typeId="meter" />
-            <channel-group id="sensors" typeId="externalTemperature" />
+			<channel-group id="sensors" typeId="externalTemperature" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
