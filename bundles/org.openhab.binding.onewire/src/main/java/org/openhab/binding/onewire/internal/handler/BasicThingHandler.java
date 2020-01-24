@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.onewire.internal.handler;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DIGITAL;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_BASIC;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,14 +28,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
-import org.openhab.binding.onewire.internal.device.AbstractDigitalOwDevice;
-import org.openhab.binding.onewire.internal.device.DS18x20;
-import org.openhab.binding.onewire.internal.device.DS2401;
-import org.openhab.binding.onewire.internal.device.DS2405;
-import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
-import org.openhab.binding.onewire.internal.device.DS2408;
-import org.openhab.binding.onewire.internal.device.DS2423;
-import org.openhab.binding.onewire.internal.device.OwSensorType;
+import org.openhab.binding.onewire.internal.device.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BasicThingHandler extends OwBaseThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_DIGITALIO, THING_TYPE_DIGITALIO2, THING_TYPE_DIGITALIO8, THING_TYPE_BASIC,
-                    THING_TYPE_TEMPERATURE, THING_TYPE_IBUTTON, THING_TYPE_COUNTER, THING_TYPE_COUNTER2)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BASIC);
     public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
             .unmodifiableSet(Stream.of(OwSensorType.DS1420, OwSensorType.DS18B20, OwSensorType.DS18S20,
                     OwSensorType.DS1822, OwSensorType.DS2401, OwSensorType.DS2405, OwSensorType.DS2406,
@@ -62,11 +53,6 @@ public class BasicThingHandler extends OwBaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: remove after 2.5.0 release
-        if (!thing.getThingTypeUID().equals(THING_TYPE_BASIC)) {
-            changeThingType(THING_TYPE_BASIC, getConfig());
-        }
-
         if (!super.configureThingHandler()) {
             return;
         }

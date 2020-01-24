@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.generic.values;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,7 +25,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
@@ -162,14 +161,12 @@ public abstract class Value {
     }
 
     /**
-     * Return the state description for this value state.
+     * Return the state description fragment builder for this value state.
      *
-     * @param unit An optional unit string. Might be an empty string.
      * @param readOnly True if this is a read-only value.
-     * @return A state description
+     * @return A state description fragment builder
      */
-    public StateDescription createStateDescription(String unit, boolean readOnly) {
-        return new StateDescription(null, null, null, "%s " + unit.replace("%", "%%"), readOnly,
-                Collections.emptyList());
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        return StateDescriptionFragmentBuilder.create().withReadOnly(readOnly).withPattern("%s");
     }
 }

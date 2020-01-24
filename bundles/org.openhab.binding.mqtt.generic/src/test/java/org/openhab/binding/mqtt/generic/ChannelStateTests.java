@@ -157,7 +157,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalTest() {
-        NumberValue value = new NumberValue(null, null, new BigDecimal(10));
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10), null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -175,7 +175,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveDecimalFractionalTest() {
-        NumberValue value = new NumberValue(null, null, new BigDecimal(10.5));
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10.5), null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 

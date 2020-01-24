@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents color palette in the write command
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Palette {
 
     private int hue;

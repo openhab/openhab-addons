@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if request to Nanoleaf OpenAPI is unauthorized (e.g. invalid or missing auth token)
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class NanoleafUnauthorizedException extends NanoleafException {
 
     private static final long serialVersionUID = -6941678941424573257L;

@@ -13,30 +13,24 @@
 package org.openhab.binding.onewire;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openhab.binding.onewire.internal.OwBindingConstants;
+import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
-import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.*;
 
 /**
  * Tests cases for binding completeness
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class CompletenessTest {
     // internal/temporary types, DS2409 (MicroLAN Coupler), DS2431 (EEPROM)
     private static final Set<OwSensorType> IGNORED_SENSOR_TYPES = Collections
@@ -48,14 +42,6 @@ public class CompletenessTest {
                     BasicMultisensorThingHandler.SUPPORTED_SENSOR_TYPES, BasicThingHandler.SUPPORTED_SENSOR_TYPES,
                     EDSSensorThingHandler.SUPPORTED_SENSOR_TYPES, BAE091xSensorThingHandler.SUPPORTED_SENSOR_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet()));
-
-    private static final Set<ThingTypeUID> DEPRECATED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(OwBindingConstants.THING_TYPE_MS_TH, OwBindingConstants.THING_TYPE_MS_TV,
-                    OwBindingConstants.THING_TYPE_COUNTER2, OwBindingConstants.THING_TYPE_DIGITALIO,
-                    OwBindingConstants.THING_TYPE_DIGITALIO2, OwBindingConstants.THING_TYPE_DIGITALIO8,
-                    OwBindingConstants.THING_TYPE_COUNTER2, OwBindingConstants.THING_TYPE_COUNTER,
-                    OwBindingConstants.THING_TYPE_IBUTTON, OwBindingConstants.THING_TYPE_TEMPERATURE)
-            .collect(Collectors.toSet()));
 
     @Test
     public void allSupportedTypesInThingHandlerMap() {
@@ -97,14 +83,15 @@ public class CompletenessTest {
     }
 
     @Test
-    public void acceptedItemTypeMapCompleteness() {
+    public void acceptedItemTypeMapCompleteness() throws OwException {
         List<String> channels = Arrays.stream(OwBindingConstants.class.getDeclaredFields())
                 .filter(f -> Modifier.isStatic(f.getModifiers()))
                 .filter(f -> f.getName().startsWith("CHANNEL") && !f.getName().startsWith("CHANNEL_TYPE")).map(f -> {
                     try {
                         return (String) f.get(null);
                     } catch (IllegalAccessException e) {
-                        throw new RuntimeException("unexpected", e);
+                        Assert.fail("unexpected");
+                        return null;
                     }
                 }).collect(Collectors.toList());
 

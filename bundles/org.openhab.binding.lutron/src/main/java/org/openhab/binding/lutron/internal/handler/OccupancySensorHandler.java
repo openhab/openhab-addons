@@ -14,6 +14,7 @@ package org.openhab.binding.lutron.internal.handler;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_OCCUPANCYSTATUS;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Added initDeviceState method
  */
+@NonNullByDefault
 public class OccupancySensorHandler extends LutronHandler {
     private static final String OCCUPIED_STATE_UPDATE = "2";
     private static final String STATE_OCCUPIED = "3";

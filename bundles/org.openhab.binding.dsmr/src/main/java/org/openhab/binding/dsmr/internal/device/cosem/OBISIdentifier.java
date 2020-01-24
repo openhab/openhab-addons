@@ -46,6 +46,8 @@ public class OBISIdentifier {
     private @Nullable Integer groupE;
     private @Nullable Integer groupF;
 
+    private boolean conflict;
+
     /**
      * Constructs a new OBIS Identifier (A-B:C.D.E.F)
      *
@@ -58,12 +60,29 @@ public class OBISIdentifier {
      */
     public OBISIdentifier(int groupA, @Nullable Integer groupB, int groupC, int groupD, @Nullable Integer groupE,
             @Nullable Integer groupF) {
+        this(groupA, groupB, groupC, groupD, groupE, groupF, false);
+    }
+
+    /**
+     * Constructs a new OBIS Identifier (A-B:C.D.E.F)
+     *
+     * @param groupA A value
+     * @param groupB B value
+     * @param groupC C value
+     * @param groupD D value
+     * @param groupE E value
+     * @param groupF F value
+     * @param conflict if true indicates this OBIS Identifier is used for different types of data.
+     */
+    public OBISIdentifier(int groupA, @Nullable Integer groupB, int groupC, int groupD, @Nullable Integer groupE,
+            @Nullable Integer groupF, boolean conflict) {
         this.groupA = groupA;
         this.groupB = groupB;
         this.groupC = groupC;
         this.groupD = groupD;
         this.groupE = groupE;
         this.groupF = groupF;
+        this.conflict = conflict;
     }
 
     /**
@@ -102,6 +121,10 @@ public class OBISIdentifier {
         } else {
             throw new ParseException("Invalid OBIS identifier:" + obisIDString, 0);
         }
+    }
+
+    public boolean isConflict() {
+        return conflict;
     }
 
     /**
@@ -232,6 +255,16 @@ public class OBISIdentifier {
      */
     public OBISIdentifier getReducedOBISIdentifier() {
         return new OBISIdentifier(groupA, groupB, groupC, groupD, groupE, null);
+    }
+
+    /**
+     * Returns an reduced OBIS Identifier with both group E and F is set to null
+     * (.i.e. not applicable)
+     *
+     * @return reduced OBIS Identifier
+     */
+    public OBISIdentifier getReducedOBISIdentifierGroupE() {
+        return new OBISIdentifier(groupA, groupB, groupC, groupD, null, null);
     }
 
     /**

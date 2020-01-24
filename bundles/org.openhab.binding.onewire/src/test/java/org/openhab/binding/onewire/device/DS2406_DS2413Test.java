@@ -18,25 +18,27 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
 
 /**
- * Tests cases for {@link DS2406_DS1413}.
+ * Tests cases for {@link DS2406_DS2413}.
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class DS2406_DS2413Test extends DeviceTestParent {
+@NonNullByDefault
+public class DS2406_DS2413Test extends DeviceTestParent<DS2406_DS2413> {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_DIGITALIO2);
-        deviceTestClazz = DS2406_DS2413.class;
+        setupMocks(THING_TYPE_BASIC, DS2406_DS2413.class);
 
         for (int i = 0; i < 2; i++) {
             addChannel(channelName(i), "Switch");
@@ -52,7 +54,8 @@ public class DS2406_DS2413Test extends DeviceTestParent {
     }
 
     private void digitalChannelTest(OnOffType state, int channelNo) {
-        instantiateDevice();
+        final DS2406_DS2413 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         BitSet returnValue = new BitSet(8);
         if (state == OnOffType.ON) {
@@ -74,6 +77,6 @@ public class DS2406_DS2413Test extends DeviceTestParent {
     }
 
     private String channelName(int channelNo) {
-        return CHANNEL_DIGITAL + String.valueOf(channelNo);
+        return CHANNEL_DIGITAL + channelNo;
     }
 }

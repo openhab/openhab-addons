@@ -160,6 +160,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString().toLowerCase() + "\"" + para + "]";
                     } else if (paramType == CommandParameterType.ONOFFPARA) {
                         cmd = cmd.replace("*", command.toString().toLowerCase()) + "[]";
+                    } else if (paramType == CommandParameterType.ONOFFBOOL) {
+                        boolean boolCommand = command == OnOffType.ON;
+                        cmd = cmd + "[" + preCommandPara1 + "\"" + boolCommand + "\"" + para + "]";
                     } else {
                         cmd = cmd + "[]";
                     }
@@ -182,9 +185,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             updateDataCache.invalidateValue();
             updateData();
-        } else
-
-        {
+        } else {
             logger.debug("Actions not loaded yet");
         }
     }

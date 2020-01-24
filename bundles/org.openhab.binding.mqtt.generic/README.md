@@ -93,6 +93,7 @@ You can connect this channel to a String item.
 * __min__: An optional minimum value.
 * __max__: An optional maximum value.
 * __step__: For decrease, increase commands the step needs to be known
+* __unit__: Unit of measurement (optional). For supported units see [OpenHAB: List of Units](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units). Examples: "°C", "°F"
 
 A decimal value (like 0.2) is send to the MQTT topic if the number has a fractional part.
 If you always require an integer, please use the formatter.

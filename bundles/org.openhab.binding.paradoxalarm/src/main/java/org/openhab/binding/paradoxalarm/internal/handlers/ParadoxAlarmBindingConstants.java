@@ -42,14 +42,14 @@ public class ParadoxAlarmBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID COMMUNICATOR_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
-        PARADOX_COMMUNICATOR_THING_TYPE_ID);
+            PARADOX_COMMUNICATOR_THING_TYPE_ID);
     public static final ThingTypeUID PANEL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARADOX_PANEL_THING_TYPE_ID);
     public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARTITION_THING_TYPE_ID);
     public static final ThingTypeUID ZONE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, ZONE_THING_TYPE_ID);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-        Stream.of(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID)
-            .collect(Collectors.toSet()));
+            Stream.of(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID)
+                    .collect(Collectors.toSet()));
 
     // List of all Channel UIDs
     public static final String IP150_COMMUNICATION_COMMAND_CHANNEL_UID = "communicationCommand";
@@ -61,9 +61,26 @@ public class ParadoxAlarmBindingConstants {
     public static final String PANEL_APPLICATION_VERSION_PROPERTY_NAME = "applicationVersion";
     public static final String PANEL_BOOTLOADER_VERSION_PROPERTY_NAME = "bootloaderVersion";
 
-    public static final String PARTITION_ADDITIONAL_STATES_CHANNEL_UID = "additionalStates";
-    public static final String PARTITION_STATE_CHANNEL_UID = "state";
     public static final String PARTITION_LABEL_CHANNEL_UID = "partitionLabel";
+    public static final String PARTITION_STATE_CHANNEL_UID = "state";
+    @Deprecated // After implementation of channels for every possible state, the summarized additional states is no
+                // longer needed. We'll keep it for backward compatibility
+    public static final String PARTITION_ADDITIONAL_STATES_CHANNEL_UID = "additionalStates";
+    public static final String PARTITION_READY_TO_ARM_CHANNEL_UID = "readyToArm";
+    public static final String PARTITION_IN_EXIT_DELAY_CHANNEL_UID = "inExitDelay";
+    public static final String PARTITION_IN_ENTRY_DELAY_CHANNEL_UID = "inEntryDelay";
+    public static final String PARTITION_IN_TROUBLE_CHANNEL_UID = "inTrouble";
+    public static final String PARTITION_ALARM_IN_MEMORY_CHANNEL_UID = "alarmInMemory";
+    public static final String PARTITION_ZONE_BYPASS_CHANNEL_UID = "zoneBypass";
+    public static final String PARTITION_ZONE_IN_TAMPER_CHANNEL_UID = "zoneInTamperTrouble";
+    public static final String PARTITION_ZONE_IN_LOW_BATTERY_CHANNEL_UID = "zoneInLowBatteryTrouble";
+    public static final String PARTITION_ZONE_IN_FIRE_LOOP_CHANNEL_UID = "zoneInFireLoopTrouble";
+    public static final String PARTITION_ZONE_IN_SUPERVISION_TROUBLE_CHANNEL_UID = "zoneInSupervisionTrouble";
+    public static final String PARTITION_STAY_INSTANT_READY_CHANNEL_UID = "stayInstantReady";
+    public static final String PARTITION_FORCE_READY_CHANNEL_UID = "forceReady";
+    public static final String PARTITION_BYPASS_READY_CHANNEL_UID = "bypassReady";
+    public static final String PARTITION_INHIBIT_READY_CHANNEL_UID = "inhibitReady";
+    public static final String PARTITION_ALL_ZONES_CLOSED_CHANNEL_UID = "allZonesClosed";
 
     public static final String ZONE_LABEL_CHANNEL_UID = "zoneLabel";
     public static final String ZONE_OPENED_CHANNEL_UID = "opened";

@@ -14,7 +14,6 @@
 		<description>A Tesla Model X Vehicle</description>
 
 		<channels>
-			<channel id="allowwakeup" typeId="allowwakeup" />
 			<channel id="autoconditioning" typeId="autoconditioning" />
 			<channel id="autoparkstate" typeId="autoparkstate" />
 			<channel id="autoparkstate2" typeId="autoparkstate" />

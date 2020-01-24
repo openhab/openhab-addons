@@ -14,7 +14,9 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -37,57 +39,53 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaAdjustableSlatsRollerShutterHandler.class);
-
     public SomfyTahomaAdjustableSlatsRollerShutterHandler(Thing thing) {
         super(thing);
-        stateNames.put(CONTROL, "core:ClosureOrRockerPositionState");
-        stateNames.put(ROCKER, "core:ClosureOrRockerPositionState");
-        stateNames.put(ORIENTATION, "core:SlateOrientationState");
+        stateNames.put(CONTROL, CLOSURE_OR_ROCKER_STATE);
+        stateNames.put(ROCKER, CLOSURE_OR_ROCKER_STATE);
+        stateNames.put(ORIENTATION, SLATE_ORIENTATION_STATE);
         //override state type because the control may return string 'rocker'
         cacheStateType(CONTROL, TYPE_PERCENT);
     }
 
     @Override
-    public void updateThingChannels(List<SomfyTahomaState> states) {
-        for (SomfyTahomaState state : states) {
-            logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
-            updateProperty(state.getName(), state.getValue().toString());
-            if ("core:ClosureOrRockerPositionState".equals(state.getName())) {
-                Channel ch = thing.getChannel(CONTROL);
-                Channel chRocker = thing.getChannel(ROCKER);
-                if ("rocker".equals(state.getValue())) {
-                    if (chRocker != null) {
-                        updateState(chRocker.getUID(), OnOffType.ON);
-                    }
-                } else {
-                    if (chRocker != null) {
-                        updateState(chRocker.getUID(), OnOffType.OFF);
-                    }
-                    if (ch != null) {
-                        State newState = parseTahomaState(state);
+    public void updateThingChannels(SomfyTahomaState state) {
+        if (CLOSURE_OR_ROCKER_STATE.equals(state.getName())) {
+            Channel ch = thing.getChannel(CONTROL);
+            Channel chRocker = thing.getChannel(ROCKER);
+            if ("rocker".equals(state.getValue())) {
+                if (chRocker != null) {
+                    updateState(chRocker.getUID(), OnOffType.ON);
+                }
+            } else {
+                if (chRocker != null) {
+                    updateState(chRocker.getUID(), OnOffType.OFF);
+                }
+                if (ch != null) {
+                    State newState = parseTahomaState(state);
+                    if (newState != null) {
                         updateState(ch.getUID(), newState);
                     }
                 }
-            } else if ("core:SlateOrientationState".equals(state.getName())) {
-                Channel ch = thing.getChannel(ORIENTATION);
-                if (ch != null) {
-                    State newState = parseTahomaState(state);
-                    updateState(ch.getUID(), newState);
-                }
             }
-
+        } else if (SLATE_ORIENTATION_STATE.equals(state.getName())) {
+            Channel ch = thing.getChannel(ORIENTATION);
+            if (ch != null) {
+                State newState = parseTahomaState(state);
+                updateState(ch.getUID(), newState);
+            }
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!ROCKER.equals(channelUID.getId()) && !CONTROL.equals(channelUID.getId()) && !ORIENTATION.equals(channelUID.getId())) {
+        if (!ROCKER.equals(channelUID.getId()) && !CONTROL.equals(channelUID.getId())
+                && !ORIENTATION.equals(channelUID.getId())) {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else if (ROCKER.equals(channelUID.getId())) {
             if (OnOffType.ON.equals(command)) {
@@ -98,13 +96,15 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
             if (COMMAND_SET_ROCKERPOSITION.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the roller shutter is moving and rocker is sent => STOP it
+                    // Check if the roller shutter is moving and rocker is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_SET_ROCKERPOSITION);
                 }
             } else {
-                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd)) ? "[" + command.toString() + "]" : "[]";
+                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
+                        ? "[" + command.toString() + "]"
+                        : "[]";
                 sendCommand(cmd, param);
             }
         }

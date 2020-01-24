@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public abstract class SatelCommandBase extends SatelMessage implements SatelCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SatelCommandBase.class);
@@ -34,17 +37,16 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     private static final byte COMMAND_RESULT_CODE = (byte) 0xef;
 
     private volatile State state = State.NEW;
+
     private boolean logResponseError = true;
-    protected SatelMessage response;
+
+    private @Nullable SatelMessage response;
 
     /**
      * Creates new command basing on command code and extended command flag.
      *
-     * @param commandCode
-     *            command code
-     * @param extended
-     *            if <code>true</code> command will be sent as extended (256
-     *            zones or outputs)
+     * @param commandCode command code
+     * @param extended    if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public SatelCommandBase(byte commandCode, boolean extended) {
         this(commandCode, extended ? EXTENDED_CMD_PAYLOAD : EMPTY_PAYLOAD);
@@ -53,10 +55,8 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     /**
      * Creates new instance with specified command code and payload.
      *
-     * @param command
-     *            command code
-     * @param payload
-     *            command payload
+     * @param command command code
+     * @param payload command payload
      */
     public SatelCommandBase(byte commandCode, byte[] payload) {
         super(commandCode, payload);
@@ -83,9 +83,6 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     @Override
     public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
         // if response is valid, store it for future use
-        if (response == null) {
-            return false;
-        }
         if (response.getCommand() == COMMAND_RESULT_CODE) {
             if (!hasCommandSucceeded(response)) {
                 return false;
@@ -99,6 +96,15 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
 
     public void ignoreResponseError() {
         this.logResponseError = false;
+    }
+
+    protected SatelMessage getResponse() {
+        final SatelMessage response = this.response;
+        if (response != null) {
+            return response;
+        } else {
+            throw new IllegalStateException("Response not yet received for command. " + this.toString());
+        }
     }
 
     /**
@@ -189,6 +195,21 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
             logger.info("{}. {}", errorMsg, getRequest());
         }
         return false;
+    }
+
+    /**
+     * Decodes firmware version and release date from command payload
+     *
+     * @param offset starting offset in payload
+     * @return decoded firmware version and release date as string
+     */
+    public String getVersion(int offset) {
+        // build version string
+        final byte[] payload = getResponse().getPayload();
+        String verStr = new String(payload, offset, 1) + "." + new String(payload, offset + 1, 2) + " "
+                + new String(payload, offset + 3, 4) + "-" + new String(payload, offset + 7, 2) + "-"
+                + new String(payload, offset + 9, 2);
+        return verStr;
     }
 
 }

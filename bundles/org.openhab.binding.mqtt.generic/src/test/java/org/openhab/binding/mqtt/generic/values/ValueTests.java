@@ -77,7 +77,7 @@ public class ValueTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void illegalNumberCommand() {
-        NumberValue v = new NumberValue(null, null, null);
+        NumberValue v = new NumberValue(null, null, null, null);
         v.update(OnOffType.OFF);
     }
 
@@ -216,6 +216,18 @@ public class ValueTests {
         assertThat((PercentType) v.getChannelState(), is(new PercentType(100)));
         v.update(OnOffType.OFF);
         assertThat((PercentType) v.getChannelState(), is(new PercentType(0)));
+    }
+
+    @Test
+    public void percentMQTTValue() {
+        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        v.update(new DecimalType("10.10000"));
+        assertThat(v.getMQTTpublishValue(null), is("10.1"));
+        for (int i = 0; i <= 100; i++) {
+            v.update(new DecimalType(i));
+            assertThat(v.getMQTTpublishValue(null), is("" + i));
+        }
+
     }
 
     @Test
