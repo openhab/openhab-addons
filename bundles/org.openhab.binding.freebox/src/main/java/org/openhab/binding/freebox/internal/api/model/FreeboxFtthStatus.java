@@ -20,30 +20,30 @@ package org.openhab.binding.freebox.internal.api.model;
  * @author Gaël L'hopital - Initial contribution
  */
 public class FreeboxFtthStatus {
-    private Boolean sfp_present;
-    private Boolean sfp_alim_ok;
-    private Boolean sfp_has_power_report;
-    private Boolean sfp_has_signal;
-    private Boolean link;
+    private boolean sfp_present;
+    private boolean sfp_alim_ok;
+    private boolean sfp_has_power_report;
+    private boolean sfp_has_signal;
+    private boolean link;
     private String sfp_serial;
     private String sfp_model;
     private String sfp_vendor;
     private long sfp_pwr_tx;
     private long sfp_pwr_rx;
 
-    public Boolean getSfp_present() {
+    public boolean getSfpPresent() {
         return sfp_present;
     }
 
-    public Boolean getSfp_alim_ok() {
+    public boolean getSfpAlimOk() {
         return sfp_alim_ok;
     }
 
-    public Boolean getSfp_has_power_report() {
+    public boolean getSfpHasPowerReport() {
         return sfp_has_power_report;
     }
 
-    public Boolean getSfp_has_signal() {
+    public Boolean getSfpHasSignal() {
         return sfp_has_signal;
     }
 
@@ -51,24 +51,23 @@ public class FreeboxFtthStatus {
         return link;
     }
 
-    public String getSfp_serial() {
+    public String getSfpSerial() {
         return sfp_serial;
     }
 
-    public String getSfp_model() {
+    public String getSfpModel() {
         return sfp_model;
     }
 
-    public String getSfp_vendor() {
+    public String getSfpVendor() {
         return sfp_vendor;
     }
 
-    public long getSfp_pwr_tx() {
+    public long getSfpPwrTx() {
         return sfp_pwr_tx;
     }
 
-    public long getSfp_pwr_rx() {
+    public long getSfpPwrRx() {
         return sfp_pwr_rx;
     }
-
 }

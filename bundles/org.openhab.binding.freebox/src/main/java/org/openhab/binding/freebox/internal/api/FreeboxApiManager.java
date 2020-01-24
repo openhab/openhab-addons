@@ -202,8 +202,8 @@ public class FreeboxApiManager {
         return executeGetUrl("connection/xdsl/", FreeboxXdslStatusResponse.class).getStatus();
     }
 
-    public String getFtthStatus() throws FreeboxException {
-        return executeGetUrl("connection/ftth/", FreeboxFtthStatusResponse.class).getSfp_present().toString();
+    public boolean getFtthPresent() throws FreeboxException {
+        return executeGetUrl("connection/ftth/", FreeboxFtthStatusResponse.class).getSfpPresent();
     }
 
     public boolean isWifiEnabled() throws FreeboxException {
