@@ -414,7 +414,7 @@
 	</channel-type>
 	
 	<channel-type id="ftth_status">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>FTTH Status</label>
 		<description>Status of the Fiber Optic line</description>
 		<state readOnly="true" />
