@@ -22,6 +22,7 @@
 			<channel id="emeter_actual_delivery" typeId="actualDeliveryType" />
 			<channel id="emeter_actual_production" typeId="actualProductionType" />
 			<channel id="emeter_switch_position" typeId="switchPositionType" />
+			<channel id="emeter_fuse_threshold_a" typeId="actualFuseThresholdAType" />
 			<channel id="emeter_treshold_kw" typeId="actualTresholdkWType" />
 			<channel id="emeter_instant_current_l1" typeId="instantCurrentL1Type" />
 			<channel id="emeter_instant_current_l2" typeId="instantCurrentL2Type" />

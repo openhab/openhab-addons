@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.satel.internal.event;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Event class describing current temperature in a zone.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ZoneTemperatureEvent implements SatelEvent {
 
     private int zoneNbr;
@@ -25,10 +28,8 @@ public class ZoneTemperatureEvent implements SatelEvent {
     /**
      * Constructs new event class.
      *
-     * @param zoneNbr
-     *                        zone number
-     * @param temperature
-     *                        current temperature in the zone
+     * @param zoneNbr     zone number
+     * @param temperature current temperature in the zone
      */
     public ZoneTemperatureEvent(int zoneNbr, float temperature) {
         this.zoneNbr = zoneNbr;

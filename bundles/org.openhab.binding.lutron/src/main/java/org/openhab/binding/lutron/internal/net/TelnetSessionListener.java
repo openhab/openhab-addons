@@ -14,11 +14,14 @@ package org.openhab.binding.lutron.internal.net;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Listener for telnet session events.
  *
  * @author Allan Tong - Initial contribution
  */
+@NonNullByDefault
 public interface TelnetSessionListener {
 
     void inputAvailable();

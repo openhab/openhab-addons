@@ -16,6 +16,7 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Added initDeviceState method
  */
+@NonNullByDefault
 public class SwitchHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
 

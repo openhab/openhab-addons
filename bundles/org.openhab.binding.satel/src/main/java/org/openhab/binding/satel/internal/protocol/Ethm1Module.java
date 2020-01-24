@@ -23,6 +23,7 @@ import java.net.SocketTimeoutException;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,27 +35,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class Ethm1Module extends SatelModule {
+
+    private static final ByteArrayInputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(new byte[0]);
 
     private final Logger logger = LoggerFactory.getLogger(Ethm1Module.class);
 
-    private String host;
-    private int port;
-    private String encryptionKey;
+    private final String host;
+    private final int port;
+    private final String encryptionKey;
 
     /**
      * Creates new instance with host, port, timeout and encryption key set to
      * specified values.
      *
-     * @param host
-     *            host name or IP of ETHM-1 module
-     * @param port
-     *            TCP port the module listens on
-     * @param timeout
-     *            timeout value in milliseconds for connect/read/write
-     *            operations
-     * @param encryptionKey
-     *            encryption key for encrypted communication
+     * @param host          host name or IP of ETHM-1 module
+     * @param port          TCP port the module listens on
+     * @param timeout       timeout value in milliseconds for connect/read/write operations
+     * @param encryptionKey encryption key for encrypted communication
      */
     public Ethm1Module(String host, int port, int timeout, String encryptionKey) {
         super(timeout);
@@ -138,11 +137,11 @@ public class Ethm1Module extends SatelModule {
             this.rollingCounter = 0;
 
             this.inputStream = new InputStream() {
-                private ByteArrayInputStream inputBuffer = null;
+                private ByteArrayInputStream inputBuffer = EMPTY_INPUT_STREAM;
 
                 @Override
                 public int read() throws IOException {
-                    if (inputBuffer == null || inputBuffer.available() == 0) {
+                    if (inputBuffer.available() == 0) {
                         // read message and decrypt it
                         byte[] data = readMessage(socket.getInputStream());
                         // create new buffer

@@ -31,16 +31,11 @@ public class OneWireGPIOBindingConstants {
     public static final String TEMPERATURE = "temperature";
 
     /**
-     * The refresh time in seconds.
-     */
-    public static final String REFRESH_TIME = "refresh_time";
-
-    /**
      * The default auto refresh time in seconds.
      */
     public static final Integer DEFAULT_REFRESH_TIME = Integer.valueOf(120);
 
-    public static final String GPIO_BUS_FILE = "gpio_bus_file";
+    public static final int MAX_PRECISION_VALUE = 3;
 
     public static final String FILE_TEMP_MARKER = "t=";
 
