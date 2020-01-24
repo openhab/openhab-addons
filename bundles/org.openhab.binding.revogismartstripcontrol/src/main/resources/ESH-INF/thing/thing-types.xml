@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="revogismartstripcontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- SmartStrip Thing Type -->
+	<thing-type id="smartstrip">
+		<label>RevogiSmartStrip Binding Thing</label>
+		<description>Sample thing for RevogiSmartStrip Binding</description>
+
+		<channels>
+			<channel id="plug1" typeId="single-plug" />
+			<channel id="plug2" typeId="single-plug" />
+			<channel id="plug3" typeId="single-plug" />
+			<channel id="plug4" typeId="single-plug" />
+			<channel id="plug5" typeId="single-plug" />
+			<channel id="plug6" typeId="single-plug" />
+			<channel id="allplugs" typeId="all-plugs" />
+			<channel id="stats" typeId="stats" />
+		</channels>
+
+		<config-description>
+			<parameter name="serialnumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of your smart strip.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="single-plug">
+		<item-type>revogismartstripItem</item-type>
+		<label>RevogiSmartStrip Binding Single Plug Channel</label>
+		<description>Single plug channel for RevogiSmartStrip Binding</description>
+	</channel-type>
+	<channel-type id="all-plugs">
+		<item-type>revogismartstripItem</item-type>
+		<label>RevogiSmartStrip Binding All Plugs Channel</label>
+		<description>all plugs channel for RevogiSmartStrip Binding</description>
+	</channel-type>
+	<channel-type id="stats">
+		<item-type>revogismartstripItem</item-type>
+		<label>RevogiSmartStrip Binding Statistics Channel</label>
+		<description>statistics channel for RevogiSmartStrip Binding</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
