@@ -381,7 +381,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 logger.debug("{}: Unable to update status: {} ({})", thingName, e.getMessage(), e.getClass());
                 status = "@text/offline.status-error-unexpected-api-result";
             }
-            if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED) || (profile != null && !profile.isSensor)) {
+            if (!status.isEmpty() || (profile != null && !profile.isSensor)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, status);
             }
         } catch (NullPointerException e) {

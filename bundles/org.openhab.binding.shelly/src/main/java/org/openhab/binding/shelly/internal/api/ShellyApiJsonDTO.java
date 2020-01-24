@@ -459,6 +459,9 @@ public class ShellyApiJsonDTO {
         public Boolean overpower; // Shelly1PM only if maximum allowed power was exceeded
         public Double temperature; // Internal device temperature
         public Boolean overtemperature; // Device over heated
+
+        @SerializedName("ext_temperature")
+        public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
     }
 
     public static class ShellyShortLightStatus {
@@ -591,6 +594,22 @@ public class ShellyApiJsonDTO {
             @SerializedName("is_valid")
             public Boolean isValid; // whether the internal sensor is operating properly
             public Double value;
+        }
+
+        public static class ShellyExtTemperature {
+            public static class ShellyShortTemp {
+                public Double tC; // temperature in deg C
+                public Double tF; // temperature in deg F
+            }
+
+            // Shelly 1/1PM have up to 3 sensors
+            // for whatever reasons it's not an array, but 3 independent elements
+            @SerializedName("0")
+            public ShellyShortTemp sensor1;
+            @SerializedName("1")
+            public ShellyShortTemp sensor2;
+            @SerializedName("2")
+            public ShellyShortTemp sensor3;
         }
 
         public ShellySensorTmp tmp;

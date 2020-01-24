@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -305,6 +306,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         ShellyDeviceProfile profile = getProfile();
 
         boolean updated = false;
+        // Check for Relay in Standard Mode
         if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
             logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays.toString());
 
@@ -323,6 +325,25 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                         updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
                         updated |= updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
+                        if (relay.extTemperature != null) {
+                            // Shelly 1/1PM support up to 3 external sensors
+                            // for whatever reason those are not represented as an array, but 3 elements
+                            logger.debug("{}: Updating external sensor", thingName);
+                            if (relay.extTemperature.sensor1 != null) {
+                                updated |= updateChannel(groupName, CHANNEL_ETEMP_SENSOR1,
+                                        toQuantityType(getDouble(relay.extTemperature.sensor1.tC), SIUnits.CELSIUS));
+                            }
+                            if (relay.extTemperature.sensor2 != null) {
+                                updated |= updateChannel(groupName, CHANNEL_ETEMP_SENSOR2,
+                                        toQuantityType(getDouble(relay.extTemperature.sensor2.tC), SIUnits.CELSIUS));
+                            }
+                            if (relay.extTemperature.sensor3 != null) {
+                                updated |= updateChannel(groupName, CHANNEL_ETEMP_SENSOR3,
+                                        toQuantityType(getDouble(relay.extTemperature.sensor3.tC), SIUnits.CELSIUS));
+                            }
+                        }
+
+                        // Update Auto-ON/OFF timer
                         ShellySettingsRelay rsettings = profile.settings.relays.get(i);
                         if (rsettings != null) {
                             updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
@@ -330,6 +351,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
                                     toQuantityType(getDouble(rsettings.autoOff), SmartHomeUnits.SECOND));
                         }
+
+                        // Update input(s) state
                         updated |= updateInputs(groupName, status, i);
                         i++;
                     }
@@ -337,6 +360,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             }
         }
+
+        // Check for Relay in Roller Mode
         if (profile.hasRelays && profile.isRoller && (status.rollers != null)) {
             logger.trace("{}: Updating {} rollers", thingName, profile.numRollers.toString());
             int i = 0;

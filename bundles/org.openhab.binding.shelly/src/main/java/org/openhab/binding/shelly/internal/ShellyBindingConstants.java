@@ -144,6 +144,12 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_TIMER_AUTOOFF = "autoOff";
     public static final String CHANNEL_TIMER_ACTIVE = "timerActive";
 
+    // External sensors for Shelly1/1PM
+    public static final String CHANNEL_GROUP_ETEMP_SENSORS = "sensors";
+    public static final String CHANNEL_ETEMP_SENSOR1 = "temperature1";
+    public static final String CHANNEL_ETEMP_SENSOR2 = "temperature2";
+    public static final String CHANNEL_ETEMP_SENSOR3 = "temperature3";
+
     // Roller
     public static final String CHANNEL_GROUP_ROL_CONTROL = "roller";
     public static final String CHANNEL_ROL_CONTROL_CONTROL = "control";
