@@ -29,7 +29,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The thing can be configured through the Paper UI.
+The Thing can be configured through the Paper UI.
 Use the configuration if you have devices of type LD382 or LD686, want to enable color fading,
 or if the device discovery does not find your LED controller automatically.
 
@@ -42,24 +42,24 @@ You can choose between two drivers with different functionality:
 | CLASSIC |                       |         ✓         |        ✓        |
 | FADING  |            ✓          |                   |                 |
 
-While the CLASSIC driver let you choose and run device internal programs (e.g. alternating blue),
-all normal operations (turn on or off, switch color, set brightness, ...) are performed immediately
-and without any fading effect.
+While the CLASSIC driver lets you choose and run device internal programs (e.g. alternating blue),
+all normal operations (e.g. turn on or off, switch color, etc.) are performed immediately and
+without any fading effect.
 
-If you prefer to switch colors smoothly and to turn your light on and off by slightly rising/decreasing the brightness
-you should try the FADING driver.
-If selected you can also set the number of fading steps and the fading duration in the thing configuration.
-Note that each fading step will at least take 10 ms for being processed.
-This natural limit is given by the speed of the LED controller and your network speed.
-Thus, a color fading with a configured fading duration of 0s might still take some time (count with more than 1 second for 100 steps).
-IF the "FADING" driver is chosen the program channel and the programSpeed channel will not have any effect.
+If you prefer to switch colors smoothly and to turn your light on and off by slightly increasing/decreasing the brightness,
+you should try the FADING driver.  If selected, you can also set the number of fading steps and the fading duration in the
+Thing configuration.  Each fading step will at least take 10 ms to be processed. This limit comes from the speed of the LED
+controller and your network speed. Thus a color fading with a configured fading duration of 0s might still take some time;
+count on more than 1 second for 100 steps.  If the FADING driver is chosen, the program and the programSpeed channels will
+not have any effect.
 
-The polling period is a parameter only used by the CLASSIC driver and specifies a the time in seconds after the LED state is refreshed in openHAB.
+The polling period is a parameter only used by the CLASSIC driver and specifies the time in seconds after the LED state is
+refreshed in openHAB.
 
 ### Device Discovery
 
-If the automatic discovery fails you have to set the IP address and the port of your device manually.
-Moreover, make sure that the device protocol matches you device type.
+If the automatic discovery fails, you have to set the IP address and the port of your device manually.  Make sure that the
+device protocol matches your device type.
 
 ## Channels
 
@@ -75,7 +75,7 @@ Moreover, make sure that the device protocol matches you device type.
 ## Example
 
 Usually, there is no need to define your WiFi LED controllers via configuration files.
-However, if you like to do it, here is an example.
+However, here is an example.
 
 wifiled.things:
 
