@@ -25,15 +25,21 @@ public class SonyPS4Configuration {
 
     /**
      * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
-     * Value of this field needs to match {@link #ipAddress}.
-     */
-    public static final String IP_ADDRESS = "ipAddress";
-
-    /**
-     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
      * Value of this field needs to match {@link #userCredential}.
      */
     public static final String USER_CREDENTIAL = "userCredential";
+
+    /**
+     * Constant field used in config update to see if pairingCode is set.
+     * Value of this field needs to match {@link #pairingCode}.
+     */
+    public static final String PAIRING_CODE = "pairingCode";
+
+    /**
+     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Value of this field needs to match {@link #ipAddress}.
+     */
+    public static final String IP_ADDRESS = "ipAddress";
 
     /**
      * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
@@ -42,20 +48,14 @@ public class SonyPS4Configuration {
     public static final String IP_PORT = "ipPort";
 
     /**
-     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
-     * Value of this field needs to match {@link #pairingCode.
+     * User-credential for the PS4.
      */
-    public static final String PAIRING_CODE = "pairingCode";
+    public String userCredential = "";
 
     /**
      * IP-address of PS4.
      */
     public String ipAddress = "";
-
-    /**
-     * User-credential for the PS4.
-     */
-    public String userCredential = "";
 
     /**
      * IP-port of PS4.

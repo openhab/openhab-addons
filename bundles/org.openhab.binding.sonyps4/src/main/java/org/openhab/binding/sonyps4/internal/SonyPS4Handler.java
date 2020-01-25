@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -147,7 +148,6 @@ public class SonyPS4Handler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Start initializing!");
         config = getConfigAs(SonyPS4Configuration.class);
-        currentComPort = config.ipPort;
 
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer(1);
@@ -271,10 +271,15 @@ public class SonyPS4Handler extends BaseThingHandler {
 
         // Read hello response
         final ByteBuffer readBuffer = ByteBuffer.allocate(512);
+        readBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
         int responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
-            logger.debug("PS4 hello response received: {}", readBuffer);
+            byte[] respBuff = new byte[responseLength];
+            readBuffer.rewind();
+            readBuffer.get(respBuff);
             ps4PacketHandler.handleHelloResponse(readBuffer);
+            logger.debug("PS4 hello response received: {}", respBuff);
         } else {
             return false;
         }
@@ -293,8 +298,8 @@ public class SonyPS4Handler extends BaseThingHandler {
         responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
             byte[] respBuff = new byte[responseLength];
-            readBuffer.position(0);
-            readBuffer.get(respBuff, 0, responseLength);
+            readBuffer.rewind();
+            readBuffer.get(respBuff);
             byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
             logger.debug("PS4 login response: {}", loginDecrypt);
             // TODO Here we should probably do some checks that we are actually logged in.
