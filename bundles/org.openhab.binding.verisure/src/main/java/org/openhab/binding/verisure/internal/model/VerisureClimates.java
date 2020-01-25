@@ -30,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureClimatesJSON extends VerisureBaseThingJSON {
+public class VerisureClimates extends VerisureBaseThing {
 
     private @Nullable Data data;
 
@@ -38,16 +38,7 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
      * No args constructor for use in serialization
      *
      */
-    public VerisureClimatesJSON() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureClimatesJSON(@Nullable Data data) {
-        super();
-        this.data = data;
+    public VerisureClimates() {
     }
 
     public @Nullable Data getData() {
@@ -73,10 +64,10 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureClimatesJSON)) {
+        if (!(other instanceof VerisureClimates)) {
             return false;
         }
-        VerisureClimatesJSON rhs = ((VerisureClimatesJSON) other);
+        VerisureClimates rhs = ((VerisureClimates) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
@@ -97,29 +88,6 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
          *
          */
         public Climate() {
-        }
-
-        /**
-         *
-         * @param temperatureValue
-         * @param humidityTimestamp
-         * @param temperatureTimestamp
-         * @param typename
-         * @param humidityValue
-         * @param device
-         * @param humidityEnabled
-         */
-        public Climate(@Nullable Device device, @Nullable Boolean humidityEnabled, @Nullable String humidityTimestamp,
-                @Nullable Double humidityValue, @Nullable String temperatureTimestamp,
-                @Nullable Double temperatureValue, @Nullable String typename) {
-            super();
-            this.device = device;
-            this.humidityEnabled = humidityEnabled;
-            this.humidityTimestamp = humidityTimestamp;
-            this.humidityValue = humidityValue;
-            this.temperatureTimestamp = temperatureTimestamp;
-            this.temperatureValue = temperatureValue;
-            this.typename = typename;
         }
 
         public @Nullable Device getDevice() {
@@ -222,15 +190,6 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
         public Data() {
         }
 
-        /**
-         *
-         * @param installation
-         */
-        public Data(@Nullable Installation installation) {
-            super();
-            this.installation = installation;
-        }
-
         public @Nullable Installation getInstallation() {
             return installation;
         }
@@ -275,17 +234,6 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
          *
          */
         public Installation() {
-        }
-
-        /**
-         *
-         * @param climates
-         * @param typename
-         */
-        public Installation(@Nullable List<Climate> climates, @Nullable String typename) {
-            super();
-            this.climates = climates;
-            this.typename = typename;
         }
 
         public @Nullable List<Climate> getClimates() {
@@ -342,22 +290,6 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
          *
          */
         public Device() {
-        }
-
-        /**
-         *
-         * @param gui
-         * @param area
-         * @param typename
-         * @param deviceLabel
-         */
-        public Device(@Nullable String deviceLabel, @Nullable String area, @Nullable Gui gui,
-                @Nullable String typename) {
-            super();
-            this.deviceLabel = deviceLabel;
-            this.area = area;
-            this.gui = gui;
-            this.typename = typename;
         }
 
         public @Nullable String getDeviceLabel() {
@@ -431,17 +363,6 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
          *
          */
         public Gui() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param label
-         */
-        public Gui(@Nullable String label, @Nullable String typename) {
-            super();
-            this.label = label;
-            this.typename = typename;
         }
 
         public @Nullable String getLabel() {

@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureBroadbandConnectionsJSON extends VerisureBaseThingJSON {
+public class VerisureBroadbandConnections extends VerisureBaseThing {
 
     private @Nullable Data data;
 
@@ -35,14 +35,14 @@ public class VerisureBroadbandConnectionsJSON extends VerisureBaseThingJSON {
      * No args constructor for use in serialization
      *
      */
-    public VerisureBroadbandConnectionsJSON() {
+    public VerisureBroadbandConnections() {
     }
 
     /**
      *
      * @param data
      */
-    public VerisureBroadbandConnectionsJSON(@Nullable Data data) {
+    public VerisureBroadbandConnections(@Nullable Data data) {
         super();
         this.data = data;
     }
@@ -70,10 +70,10 @@ public class VerisureBroadbandConnectionsJSON extends VerisureBaseThingJSON {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureBroadbandConnectionsJSON)) {
+        if (!(other instanceof VerisureBroadbandConnections)) {
             return false;
         }
-        VerisureBroadbandConnectionsJSON rhs = ((VerisureBroadbandConnectionsJSON) other);
+        VerisureBroadbandConnections rhs = ((VerisureBroadbandConnections) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

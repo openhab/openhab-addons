@@ -36,7 +36,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
-import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
+import org.openhab.binding.verisure.internal.model.VerisureThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +72,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
             }
             String deviceId = config.getDeviceId();
             if (session != null && deviceId != null) {
-                VerisureThingJSON thing = session.getVerisureThing(deviceId);
+                VerisureThing thing = session.getVerisureThing(deviceId);
                 update(thing);
             }
         } else {
@@ -92,6 +92,10 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     }
 
     protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp) {
+        updateTimeStamp(lastUpdatedTimeStamp, CHANNEL_TIMESTAMP);
+    }
+
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, String channel) {
         if (lastUpdatedTimeStamp != null) {
             try {
                 logger.debug("Parsing date {}", lastUpdatedTimeStamp);
@@ -99,7 +103,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
 
                 logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
-                ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
+                ChannelUID cuid = new ChannelUID(getThing().getUID(), channel);
                 updateState(cuid, new DateTimeType(zdtLocal));
             } catch (IllegalArgumentException e) {
                 logger.warn("Parsing date failed: {}.", e.getMessage(), e);
@@ -160,7 +164,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     }
 
     @Override
-    public void onDeviceStateChanged(@Nullable VerisureThingJSON thing) {
+    public void onDeviceStateChanged(@Nullable VerisureThing thing) {
         logger.trace("onDeviceStateChanged on thing: {}", thing);
         if (thing != null) {
             String deviceId = thing.getDeviceId();
@@ -172,7 +176,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         }
     }
 
-    public synchronized void update(@Nullable VerisureThingJSON thing) {
+    public synchronized void update(@Nullable VerisureThing thing) {
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = thing.getSiteId();
         if (siteId != null) {
@@ -183,12 +187,12 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     }
 
     @Override
-    public void onDeviceRemoved(@Nullable VerisureThingJSON thing) {
+    public void onDeviceRemoved(@Nullable VerisureThing thing) {
         logger.trace("onDeviceRemoved on thing: {}", thing);
     }
 
     @Override
-    public void onDeviceAdded(@Nullable VerisureThingJSON thing) {
+    public void onDeviceAdded(@Nullable VerisureThing thing) {
         logger.trace("onDeviceAdded on thing: {}", thing);
     }
 }

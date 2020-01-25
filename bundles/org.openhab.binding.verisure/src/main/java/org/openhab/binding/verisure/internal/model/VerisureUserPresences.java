@@ -29,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureUserPresencesJSON extends VerisureBaseThingJSON {
+public class VerisureUserPresences extends VerisureBaseThing {
 
     private @Nullable Data data;
 
@@ -37,10 +37,10 @@ public class VerisureUserPresencesJSON extends VerisureBaseThingJSON {
      * No args constructor for use in serialization
      *
      */
-    public VerisureUserPresencesJSON() {
+    public VerisureUserPresences() {
     }
 
-    public VerisureUserPresencesJSON(Data data) {
+    public VerisureUserPresences(Data data) {
         this.data = data;
     }
 
@@ -68,10 +68,10 @@ public class VerisureUserPresencesJSON extends VerisureBaseThingJSON {
             return true;
         }
 
-        if (!(other instanceof VerisureUserPresencesJSON)) {
+        if (!(other instanceof VerisureUserPresences)) {
             return false;
         }
-        VerisureUserPresencesJSON rhs = ((VerisureUserPresencesJSON) other);
+        VerisureUserPresences rhs = ((VerisureUserPresences) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

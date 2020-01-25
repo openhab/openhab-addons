@@ -21,15 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindowsJSON;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindowsJSON.DoorWindow;
-import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
-
-//import com.google.common.collect.Sets;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.verisure.internal.model.VerisureDoorWindows;
+import org.openhab.binding.verisure.internal.model.VerisureDoorWindows.DoorWindow;
+import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
@@ -47,12 +47,12 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThingJSON thing) {
+    public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
         if (thing != null) {
             updateStatus(ThingStatus.ONLINE);
             if (getThing().getThingTypeUID().equals(THING_TYPE_DOORWINDOW)) {
-                VerisureDoorWindowsJSON obj = (VerisureDoorWindowsJSON) thing;
+                VerisureDoorWindows obj = (VerisureDoorWindows) thing;
                 updateDoorWindowState(obj);
             } else {
                 logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
@@ -62,18 +62,31 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
         }
     }
 
-    private void updateDoorWindowState(VerisureDoorWindowsJSON doorWindowJSON) {
-        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
+    private void updateDoorWindowState(VerisureDoorWindows doorWindowJSON) {
         DoorWindow doorWindow = doorWindowJSON.getData().getInstallation().getDoorWindows().get(0);
-        if ("OPEN".equals(doorWindow.getState())) {
-            updateState(cuid, OpenClosedType.OPEN);
+        if (doorWindow != null) {
+            getThing().getChannels().stream().map(Channel::getUID)
+                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                    .forEach(channelUID -> {
+                        State state = getValue(channelUID.getId(), doorWindow);
+                        updateState(channelUID, state);
+
+                    });
+            updateTimeStamp(doorWindow.getReportTime());
+            super.update(doorWindowJSON);
         } else {
-            updateState(cuid, OpenClosedType.CLOSED);
+            logger.debug("DoorWindow is null for thing {}", thing.getUID());
         }
-        updateTimeStamp(doorWindow.getReportTime());
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
-        updateState(cuid, new StringType(doorWindow.getDevice().getArea()));
-        super.update(doorWindowJSON);
     }
 
+    public State getValue(String channelId, DoorWindow doorWindow) {
+        switch (channelId) {
+            case CHANNEL_STATE:
+                return "OPEN".equals(doorWindow.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case CHANNEL_LOCATION:
+                String location = doorWindow.getDevice().getArea();
+                return location != null ? new StringType(location) : UnDefType.UNDEF;
+        }
+        return UnDefType.UNDEF;
+    }
 }

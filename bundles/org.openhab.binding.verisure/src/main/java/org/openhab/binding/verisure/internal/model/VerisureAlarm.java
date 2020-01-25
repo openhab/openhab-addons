@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class VerisureAlarmJSON extends VerisureBaseThingJSON {
+public class VerisureAlarm extends VerisureBaseThing {
 
     private @Nullable String date;
     private @Nullable String notAllowedReason;
@@ -133,7 +133,7 @@ public class VerisureAlarmJSON extends VerisureBaseThingJSON {
             return false;
         }
 
-        VerisureAlarmJSON other = (VerisureAlarmJSON) obj;
+        VerisureAlarm other = (VerisureAlarm) obj;
         if (changeAllowed == null) {
             if (other != null && other.changeAllowed != null) {
                 return false;

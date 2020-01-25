@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class VerisureBaseThingJSON implements VerisureThingJSON {
+public class VerisureBaseThing implements VerisureThing {
 
     protected String deviceId = "";
     protected @Nullable String name;
@@ -32,10 +32,6 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
     protected @Nullable String status;
     protected @Nullable String siteName;
     protected @Nullable BigDecimal siteId;
-
-    public VerisureBaseThingJSON() {
-        super();
-    }
 
     /**
      *
@@ -81,7 +77,7 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
      * @param deviceId the deviceId to set
      */
     @Override
-    public void setDeviceId(@Nullable String deviceId) {
+    public void setDeviceId(String deviceId) {
         // Make sure device id is normalized, i.e. replace all non character/digits with empty string
         this.deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
     }
@@ -121,7 +117,6 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
         this.siteId = siteId;
     }
 
-    @SuppressWarnings("null")
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -135,21 +130,16 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof VerisureBaseThingJSON)) {
+        if (!(obj instanceof VerisureBaseThing)) {
             return false;
         }
 
-        VerisureBaseThingJSON other = (VerisureBaseThingJSON) obj;
+        VerisureBaseThing other = (VerisureBaseThing) obj;
         if (deviceId == null) {
             if (other.deviceId != null) {
                 return false;
@@ -197,11 +187,6 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

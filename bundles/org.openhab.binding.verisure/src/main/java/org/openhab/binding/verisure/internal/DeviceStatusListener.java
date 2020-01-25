@@ -13,7 +13,7 @@
 package org.openhab.binding.verisure.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
+import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * The {@link DeviceStatusListener} is notified when a device status has changed
@@ -31,7 +31,7 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing that was changed.
      */
-    void onDeviceStateChanged(VerisureThingJSON thing);
+    void onDeviceStateChanged(VerisureThing thing);
 
     /**
      * This method us called whenever a device is removed.
@@ -39,7 +39,7 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing that is removed
      */
-    void onDeviceRemoved(VerisureThingJSON thing);
+    void onDeviceRemoved(VerisureThing thing);
 
     /**
      * This method us called whenever a device is added.
@@ -47,6 +47,6 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing which is added.
      */
-    void onDeviceAdded(VerisureThingJSON thing);
+    void onDeviceAdded(VerisureThing thing);
 
 }

@@ -29,23 +29,23 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureSmartLocksJSON extends VerisureBaseThingJSON {
+public class VerisureSmartLocks extends VerisureBaseThing {
 
     private @Nullable Data data;
-    private @Nullable VerisureSmartLockJSON smartLockJSON;
+    private @Nullable VerisureSmartLock smartLockJSON;
 
     /**
      * No args constructor for use in serialization
      *
      */
-    public VerisureSmartLocksJSON() {
+    public VerisureSmartLocks() {
     }
 
     /**
      *
      * @param data
      */
-    public VerisureSmartLocksJSON(@Nullable Data data) {
+    public VerisureSmartLocks(@Nullable Data data) {
         super();
         this.data = data;
     }
@@ -58,11 +58,11 @@ public class VerisureSmartLocksJSON extends VerisureBaseThingJSON {
         this.data = data;
     }
 
-    public @Nullable VerisureSmartLockJSON getSmartLockJSON() {
+    public @Nullable VerisureSmartLock getSmartLockJSON() {
         return smartLockJSON;
     }
 
-    public void setSmartLockJSON(@Nullable VerisureSmartLockJSON smartLockJSON) {
+    public void setSmartLockJSON(@Nullable VerisureSmartLock smartLockJSON) {
         this.smartLockJSON = smartLockJSON;
     }
 
@@ -81,10 +81,10 @@ public class VerisureSmartLocksJSON extends VerisureBaseThingJSON {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureSmartLocksJSON)) {
+        if (!(other instanceof VerisureSmartLocks)) {
             return false;
         }
-        VerisureSmartLocksJSON rhs = ((VerisureSmartLocksJSON) other);
+        VerisureSmartLocks rhs = ((VerisureSmartLocks) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

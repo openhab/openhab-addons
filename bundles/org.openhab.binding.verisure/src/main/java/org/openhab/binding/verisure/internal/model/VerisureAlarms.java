@@ -30,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureAlarmsJSON extends VerisureBaseThingJSON {
+public class VerisureAlarms extends VerisureBaseThing {
 
     private @Nullable Data data;
 
@@ -38,14 +38,14 @@ public class VerisureAlarmsJSON extends VerisureBaseThingJSON {
      * No args constructor for use in serialization
      *
      */
-    public VerisureAlarmsJSON() {
+    public VerisureAlarms() {
     }
 
     /**
      *
      * @param data
      */
-    public VerisureAlarmsJSON(@Nullable Data data) {
+    public VerisureAlarms(@Nullable Data data) {
         super();
         this.data = data;
     }
@@ -73,10 +73,10 @@ public class VerisureAlarmsJSON extends VerisureBaseThingJSON {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureAlarmsJSON)) {
+        if (!(other instanceof VerisureAlarms)) {
             return false;
         }
-        VerisureAlarmsJSON rhs = ((VerisureAlarmsJSON) other);
+        VerisureAlarms rhs = ((VerisureAlarms) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

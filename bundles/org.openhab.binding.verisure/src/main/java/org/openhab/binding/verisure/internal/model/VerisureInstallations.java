@@ -29,11 +29,11 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureInstallationsJSON extends VerisureBaseThingJSON {
+public class VerisureInstallations extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    VerisureInstallationsJSON() {
+    VerisureInstallations() {
     }
 
     public @Nullable Data getData() {
@@ -62,7 +62,7 @@ public class VerisureInstallationsJSON extends VerisureBaseThingJSON {
         if (!(other instanceof Data)) {
             return false;
         }
-        VerisureInstallationsJSON rhs = ((VerisureInstallationsJSON) other);
+        VerisureInstallations rhs = ((VerisureInstallations) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 

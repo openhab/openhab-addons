@@ -13,7 +13,6 @@
 package org.openhab.binding.verisure.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
 
 /**
@@ -26,9 +25,9 @@ import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
 public class VerisureThingConfiguration {
     public static final String DEVICE_ID_LABEL = "deviceId";
 
-    private @Nullable String deviceId;
+    private @NonNullByDefault({}) String deviceId;
 
-    public @Nullable String getDeviceId() {
+    public String getDeviceId() {
         // Make sure device id is normalized, i.e. replace all non character/digits with empty string
         return deviceId.replaceAll("[^a-zA-Z0-9]+", "");
     }

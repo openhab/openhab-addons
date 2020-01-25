@@ -24,11 +24,11 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public interface VerisureThingJSON {
+public interface VerisureThing {
 
     String getDeviceId();
 
-    void setDeviceId(@Nullable String deviceId);
+    void setDeviceId(String deviceId);
 
     @Nullable
     String getLocation();

@@ -23,13 +23,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The smart plugs of the Verisure System.
+ * The door and window devices of the Verisure System.
  *
  * @author Jan Gustafsson - Initial contribution
  *
  */
 @NonNullByDefault
-public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
+public class VerisureDoorWindows extends VerisureBaseThing {
 
     private @Nullable Data data;
 
@@ -37,14 +37,14 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
      * No args constructor for use in serialization
      *
      */
-    public VerisureSmartPlugsJSON() {
+    public VerisureDoorWindows() {
     }
 
     /**
      *
      * @param data
      */
-    public VerisureSmartPlugsJSON(@Nullable Data data) {
+    public VerisureDoorWindows(@Nullable Data data) {
         super();
         this.data = data;
     }
@@ -72,10 +72,10 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VerisureSmartPlugsJSON)) {
+        if (!(other instanceof VerisureDoorWindows)) {
             return false;
         }
-        VerisureSmartPlugsJSON rhs = ((VerisureSmartPlugsJSON) other);
+        VerisureDoorWindows rhs = ((VerisureDoorWindows) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
@@ -135,7 +135,7 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable List<Smartplug> smartplugs = null;
+        private @Nullable List<DoorWindow> doorWindows = null;
         @SerializedName("__typename")
         private @Nullable String typename;
 
@@ -149,20 +149,20 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
         /**
          *
          * @param typename
-         * @param smartplugs
+         * @param doorWindows
          */
-        public Installation(@Nullable List<Smartplug> smartplugs, @Nullable String typename) {
+        public Installation(@Nullable List<DoorWindow> doorWindows, @Nullable String typename) {
             super();
-            this.smartplugs = smartplugs;
+            this.doorWindows = doorWindows;
             this.typename = typename;
         }
 
-        public @Nullable List<Smartplug> getSmartplugs() {
-            return smartplugs;
+        public @Nullable List<DoorWindow> getDoorWindows() {
+            return doorWindows;
         }
 
-        public void setSmartplugs(@Nullable List<Smartplug> smartplugs) {
-            this.smartplugs = smartplugs;
+        public void setDoorWindows(@Nullable List<DoorWindow> doorWindows) {
+            this.doorWindows = doorWindows;
         }
 
         public @Nullable String getTypename() {
@@ -175,12 +175,12 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("smartplugs", smartplugs).append("typename", typename).toString();
+            return new ToStringBuilder(this).append("doorWindows", doorWindows).append("typename", typename).toString();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(typename).append(smartplugs).toHashCode();
+            return new HashCodeBuilder().append(typename).append(doorWindows).toHashCode();
         }
 
         @Override
@@ -192,18 +192,19 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
                 return false;
             }
             Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(smartplugs, rhs.smartplugs).isEquals();
+            return new EqualsBuilder().append(typename, rhs.typename).append(doorWindows, rhs.doorWindows).isEquals();
         }
 
     }
 
     @NonNullByDefault
-    public static class Smartplug {
+    public static class DoorWindow {
 
         private @Nullable Device device;
-        private @Nullable String currentState;
-        private @Nullable String icon;
-        private @Nullable Boolean isHazardous;
+        private @Nullable String type;
+        private @Nullable String state;
+        private @Nullable Boolean wired;
+        private @Nullable String reportTime;
         @SerializedName("__typename")
         private @Nullable String typename;
 
@@ -211,24 +212,26 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
          * No args constructor for use in serialization
          *
          */
-        public Smartplug() {
+        public DoorWindow() {
         }
 
         /**
          *
-         * @param icon
+         * @param reportTime
          * @param typename
-         * @param currentState
+         * @param state
          * @param device
-         * @param isHazardous
+         * @param wired
+         * @param type
          */
-        public Smartplug(@Nullable Device device, @Nullable String currentState, @Nullable String icon,
-                @Nullable Boolean isHazardous, @Nullable String typename) {
+        public DoorWindow(@Nullable Device device, @Nullable String type, @Nullable String state,
+                @Nullable Boolean wired, @Nullable String reportTime, @Nullable String typename) {
             super();
             this.device = device;
-            this.currentState = currentState;
-            this.icon = icon;
-            this.isHazardous = isHazardous;
+            this.type = type;
+            this.state = state;
+            this.wired = wired;
+            this.reportTime = reportTime;
             this.typename = typename;
         }
 
@@ -240,28 +243,36 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
             this.device = device;
         }
 
-        public @Nullable String getCurrentState() {
-            return currentState;
+        public @Nullable String getType() {
+            return type;
         }
 
-        public void setCurrentState(@Nullable String currentState) {
-            this.currentState = currentState;
+        public void setType(@Nullable String type) {
+            this.type = type;
         }
 
-        public @Nullable String getIcon() {
-            return icon;
+        public @Nullable String getState() {
+            return state;
         }
 
-        public void setIcon(@Nullable String icon) {
-            this.icon = icon;
+        public void setState(@Nullable String state) {
+            this.state = state;
         }
 
-        public @Nullable Boolean isHazardous() {
-            return isHazardous;
+        public @Nullable Boolean getWired() {
+            return wired;
         }
 
-        public void setIsHazardous(@Nullable Boolean isHazardous) {
-            this.isHazardous = isHazardous;
+        public void setWired(@Nullable Boolean wired) {
+            this.wired = wired;
+        }
+
+        public @Nullable String getReportTime() {
+            return reportTime;
+        }
+
+        public void setReportTime(@Nullable String reportTime) {
+            this.reportTime = reportTime;
         }
 
         public @Nullable String getTypename() {
@@ -274,14 +285,14 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("device", device).append("currentState", currentState)
-                    .append("icon", icon).append("isHazardous", isHazardous).append("typename", typename).toString();
+            return new ToStringBuilder(this).append("device", device).append("type", type).append("state", state)
+                    .append("wired", wired).append("reportTime", reportTime).append("typename", typename).toString();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(icon).append(typename).append(currentState).append(device)
-                    .append(isHazardous).toHashCode();
+            return new HashCodeBuilder().append(reportTime).append(typename).append(state).append(device).append(wired)
+                    .append(type).toHashCode();
         }
 
         @Override
@@ -289,13 +300,13 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
             if (other == this) {
                 return true;
             }
-            if (!(other instanceof Smartplug)) {
+            if (!(other instanceof DoorWindow)) {
                 return false;
             }
-            Smartplug rhs = ((Smartplug) other);
-            return new EqualsBuilder().append(icon, rhs.icon).append(typename, rhs.typename)
-                    .append(currentState, rhs.currentState).append(device, rhs.device)
-                    .append(isHazardous, rhs.isHazardous).isEquals();
+            DoorWindow rhs = ((DoorWindow) other);
+            return new EqualsBuilder().append(reportTime, rhs.reportTime).append(typename, rhs.typename)
+                    .append(state, rhs.state).append(device, rhs.device).append(wired, rhs.wired).append(type, rhs.type)
+                    .isEquals();
         }
 
     }
@@ -305,6 +316,7 @@ public class VerisureSmartPlugsJSON extends VerisureBaseThingJSON {
 
         private @Nullable String deviceLabel;
         private @Nullable String area;
+        @SerializedName("__typename")
         private @Nullable String typename;
 
         /**

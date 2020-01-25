@@ -340,6 +340,40 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="miceDetection">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Mice Detection</label>
+		<description>Status of the Verisure mice detection.</description>
+
+		<channels>
+			<channel id="countLatestDetection" typeId="countLatestDetection" />
+			<channel id="countLast24Hours" typeId="countLast24Hours" />
+			<channel id="durationLatestDetection" typeId="durationLatestDetection" />
+			<channel id="durationLast24Hours" typeId="durationLast24Hours" />
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="temperatureTimestamp" typeId="timestamp" />
+			<channel id="location" typeId="location" />
+			<channel id="installationName" typeId="installationName" />
+			<channel id="installationId" typeId="installationId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Current Status</label>
@@ -466,6 +500,12 @@
 		<description>Verisure smart plug status.</description>
 	</channel-type>
 
+	<channel-type id="connected">
+		<item-type>Switch</item-type>
+		<label>Broadband Connection Status</label>
+		<description>Verisure broadband connection status.</description>
+	</channel-type>
+
 	<channel-type id="state">
 		<item-type>Contact</item-type>
 		<label>Door/Window State</label>
@@ -490,10 +530,10 @@
 	</channel-type>
 
 	<channel-type id="humidityEnabled">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Humidity Enabled</label>
 		<description>Is Climate device capable of reporting humidity.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="label">
@@ -510,18 +550,11 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="hasWifi">
-		<item-type>String</item-type>
-		<label>Wifi Connection</label>
-		<description>Is Verisure connected via wifi.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
 	<channel-type id="hazardous">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Hazardous</label>
 		<description>Is Verisure smart plug configured as hazardous.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="installationName">
@@ -536,6 +569,34 @@
 		<label>Installation Site Id</label>
 		<description>ID of the installation site.</description>
 		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="countLatestDetection">
+		<item-type>Number</item-type>
+		<label>Mouse Count Last Detection</label>
+		<description>Mouse count last detection.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="countLast24Hours">
+		<item-type>Number</item-type>
+		<label>Mouse Count Last 24 Hours</label>
+		<description>Mouse count last 24 hours.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="durationLatestDetection">
+		<item-type>Number:Time</item-type>
+		<label>Duration Last Detection</label>
+		<description>Duration last detection.</description>
+		<state readOnly="true" pattern="%d s" />
+	</channel-type>
+
+	<channel-type id="durationLast24Hours">
+		<item-type>Number:Time</item-type>
+		<label>Duration Last 24 Hours</label>
+		<description>Duration last 24 hours.</description>
+		<state readOnly="true" pattern="%d s" />
 	</channel-type>
 
 </thing:thing-descriptions>

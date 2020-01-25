@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class VerisureSmartLockJSON extends VerisureAlarmJSON {
+public class VerisureSmartLock extends VerisureAlarm {
 
     private @Nullable Boolean autoRelockEnabled;
     private @Nullable String deviceLabel;
@@ -229,10 +229,10 @@ public class VerisureSmartLockJSON extends VerisureAlarmJSON {
         if (!super.equals(obj)) {
             return false;
         }
-        if (!(obj instanceof VerisureSmartLockJSON)) {
+        if (!(obj instanceof VerisureSmartLock)) {
             return false;
         }
-        VerisureSmartLockJSON other = (VerisureSmartLockJSON) obj;
+        VerisureSmartLock other = (VerisureSmartLock) obj;
         if (autoRelockEnabled == null) {
             if (other.autoRelockEnabled != null) {
                 return false;

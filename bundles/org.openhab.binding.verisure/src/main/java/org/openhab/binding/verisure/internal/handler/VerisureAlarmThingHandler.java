@@ -22,15 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.verisure.internal.model.VerisureAlarmsJSON;
-import org.openhab.binding.verisure.internal.model.VerisureAlarmsJSON.ArmState;
-import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.verisure.internal.model.VerisureAlarms;
+import org.openhab.binding.verisure.internal.model.VerisureAlarms.ArmState;
+import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Alarm Device thing type that Verisure provides.
@@ -65,41 +68,43 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     private void handleAlarmState(Command command) {
         String deviceId = config.getDeviceId();
         if (session != null && deviceId != null) {
-            VerisureAlarmsJSON alarm = (VerisureAlarmsJSON) session.getVerisureThing(deviceId);
+            VerisureAlarms alarm = (VerisureAlarms) session.getVerisureThing(deviceId);
             if (alarm != null) {
                 BigDecimal installationId = alarm.getSiteId();
                 String pinCode = session.getPinCode(installationId);
 
-                if (deviceId != null && pinCode != null && installationId != null) {
+                if (pinCode != null && installationId != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");
                     String url = START_GRAPHQL;
-                    String queryQLAlarmSetState;
-                    if (command.toString().equals("DISARMED")) {
-                        queryQLAlarmSetState = "[{\"operationName\":\"disarm\",\"variables\":{\"giid\":\""
-                                + installationId + "\",\"code\":\"" + pinCode
-                                + "\"},\"query\":\"mutation disarm($giid: String!, $code: String!) {\\n  armStateDisarm(giid: $giid, code: $code)\\n}\\n\"}]\n"
-                                + "";
-                        logger.debug("Trying to set alarm state to DISARMED with URL {} and data {}", url,
-                                queryQLAlarmSetState);
-                    } else if (command.toString().equals("ARMED_HOME")) {
-                        queryQLAlarmSetState = "[{\"operationName\":\"armHome\",\"variables\":{\"giid\":\""
-                                + installationId + "\",\"code\":\"" + pinCode
-                                + "\"},\"query\":\"mutation armHome($giid: String!, $code: String!) {\\n  armStateArmHome(giid: $giid, code: $code)\\n}\\n\"}]\n"
-                                + "";
-                        logger.debug("Trying to set alarm state to ARMED_HOME with URL {} and data {}", url,
-                                queryQLAlarmSetState);
-                    } else if (command.toString().equals("ARMED_AWAY")) {
-                        queryQLAlarmSetState = "[{\"operationName\":\"armAway\",\"variables\":{\"giid\":\""
-                                + installationId + "\",\"code\":\"" + pinCode
-                                + "\"},\"query\":\"mutation armAway($giid: String!, $code: String!) {\\n  armStateArmAway(giid: $giid, code: $code)\\n}\\n\"}]\n"
-                                + "";
-                        logger.debug("Trying to set alarm state to ARMED_AWAY with URL {} and data {}", url,
-                                queryQLAlarmSetState);
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                        return;
+                    String operation, state = "";
+
+                    switch (command.toString()) {
+                        case "DISARMED":
+                            operation = "disarm";
+                            state = "armStateDisarm";
+                            break;
+                        case "ARMED_HOME":
+                            operation = "armHome";
+                            state = "armStateArmHome";
+                            break;
+                        case "ARMED_AWAY":
+                            operation = "armAway";
+                            state = "armStateArmAway";
+                            break;
+                        default:
+                            logger.warn("Unknown alarm command: {}", command);
+                            return;
                     }
+
+                    String queryQLAlarmSetState = "[{\"operationName\":\"" + operation + "\",\"variables\":{\"giid\":\""
+                            + installationId + "\",\"code\":\"" + pinCode + "\"},\"query\":\"mutation " + operation
+                            + "($giid: String!, $code: String!) {\\n  " + state
+                            + "(giid: $giid, code: $code)\\n}\\n\"}]\n" + "";
+
+                    logger.debug("Trying to set alarm state to {} with URL {} and data {}", operation, url,
+                            queryQLAlarmSetState);
+
                     int httpResultCode = session.sendCommand(url, queryQLAlarmSetState, installationId);
                     if (httpResultCode == HttpStatus.OK_200) {
                         logger.debug("Alarm status successfully changed!");
@@ -114,11 +119,11 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThingJSON thing) {
+    public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         if (getThing().getThingTypeUID().equals(THING_TYPE_ALARM)) {
-            VerisureAlarmsJSON obj = (VerisureAlarmsJSON) thing;
+            VerisureAlarms obj = (VerisureAlarms) thing;
             if (obj != null) {
                 updateAlarmState(obj);
             }
@@ -127,21 +132,33 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         }
     }
 
-    private void updateAlarmState(VerisureAlarmsJSON alarmsJSON) {
+    private void updateAlarmState(VerisureAlarms alarmsJSON) {
         ArmState armState = alarmsJSON.getData().getInstallation().getArmState();
         String alarmStatus = armState.getStatusType();
         if (alarmStatus != null) {
-            ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
-            updateState(cuid, new StringType(alarmStatus));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
-            updateState(cuid, new StringType(armState.getName()));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);
-            updateState(cuid, new StringType(armState.getChangedVia()));
+            getThing().getChannels().stream().map(Channel::getUID)
+                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                    .forEach(channelUID -> {
+                        State state = getValue(channelUID.getId(), armState);
+                        updateState(channelUID, state);
+                    });
             updateTimeStamp(armState.getDate());
             super.update(alarmsJSON);
         } else {
             logger.warn("Alarm status is null!");
         }
+    }
+
+    public State getValue(String channelId, ArmState armState) {
+        switch (channelId) {
+            case CHANNEL_ALARM_STATUS:
+                return new StringType(armState.getStatusType());
+            case CHANNEL_CHANGED_BY_USER:
+                return new StringType(armState.getName());
+            case CHANNEL_CHANGED_VIA:
+                return new StringType(armState.getChangedVia());
+        }
+        return UnDefType.UNDEF;
     }
 
 }

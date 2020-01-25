@@ -19,13 +19,13 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnectionsJSON;
-import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
+import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
+import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Broadband COnnection thing type that Verisure provides.
@@ -44,11 +44,11 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThingJSON thing) {
+    public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         if (getThing().getThingTypeUID().equals(THING_TYPE_BROADBAND_CONNECTION)) {
-            VerisureBroadbandConnectionsJSON obj = (VerisureBroadbandConnectionsJSON) thing;
+            VerisureBroadbandConnections obj = (VerisureBroadbandConnections) thing;
             if (obj != null) {
                 updateBroadbandConnection(obj);
             }
@@ -57,11 +57,15 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
         }
     }
 
-    private void updateBroadbandConnection(VerisureBroadbandConnectionsJSON vbcJSON) {
+    private void updateBroadbandConnection(VerisureBroadbandConnections vbcJSON) {
         updateTimeStamp(vbcJSON.getData().getInstallation().getBroadband().getTestDate());
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
-        updateState(cuid,
-                new StringType(vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected().toString()));
+        Boolean humidityEnabled = vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected();
+        if (humidityEnabled) {
+            updateState(cuid, OnOffType.ON);
+        } else {
+            updateState(cuid, OnOffType.OFF);
+        }
         super.update(vbcJSON);
     }
 

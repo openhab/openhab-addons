@@ -101,7 +101,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | timestamp              | DateTime  | This channel reports the last time the alarm status was changed.                                         |
 | changedVia             | String    | This channel reports the method used to change the status.                                                 |
 | motorJam               | String    | This channel reports if the SmartLock motor has jammed.                                                 |
-| location               | String    | This channel reports the location.                                                                       |
+| location               | String    | This channel reports the location of the device.                                                                       |
 | installationName       | String    | This channel reports the installation name.                                                              |
 | installationId         | Number    | This channel reports the installation ID.                                                                |
 | smartLockStatus        | Switch    | This channel is used to lock/unlock.                                                                     |
@@ -122,8 +122,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 | Channel Type ID    | Item Type | Description                                                       | 
 |--------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
-| hazardous          | Number    | This channel reports if the smart plug is configured as hazardous.|
-| location           | String    | This channel reports the location.                                |
+| hazardous          | Switch    | This channel reports if the smart plug is configured as hazardous.|
+| location           | String    | This channel reports the location of the device.                  |
 | installationName   | String    | This channel reports the installation name.                       |
 | installationId     | Number    | This channel reports the installation ID.                         |
 | smartPlugStatus    | Switch    | This channel is used to turn smart plug on/off.                   |
@@ -139,15 +139,15 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 ([smokeDetector]) supports the following channels:
  
-| Channel Type ID | Item Type             | Description                                                | 
-|-----------------|-----------------------|------------------------------------------------------------|
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |                                                                                                                                          
-| humidity        | Number                | This channel reports the current humidity in percentage.   |
-| humidityEnabled | String                | This channel reports if the Climate is device capable of reporting humidity.     |
-| timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
-| location        | String                | This channel reports the location.                         |
-| installationName| String                | This channel reports the installation name.                |
-| installationId  | Number                | This channel reports the installation ID.                  |
+| Channel Type ID | Item Type             | Description                                                                 | 
+|-----------------|-----------------------|-----------------------------------------------------------------------------|
+| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.                    |                                                                                                                                          
+| humidity        | Number                | This channel reports the current humidity in percentage.                    |
+| humidityEnabled | Switch                | This channel reports if the Climate is device capable of reporting humidity.|
+| timestamp       | DateTime              | This channel reports the last time this sensor was updated.                 |
+| location        | String                | This channel reports the location of the device.                            |
+| installationName| String                | This channel reports the installation name.                                 |
+| installationId  | Number                | This channel reports the installation ID.                                   |
  
 ### Verisure Water Detector
 
@@ -160,13 +160,13 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 ([waterDetector]) supports the following channels:
 
-| Channel Type ID | Item Type             | Description                                                | 
-|-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| timestamp       | DateTime                | This channel reports the last time this sensor was updated.|
-| location        | String                | This channel reports the location.                         |
-| installationName| String                | This channel reports the installation name.                |
-| installationId  | Number                | This channel reports the installation ID.                  |
+| Channel Type ID | Item Type             | Description                                                  | 
+|-----------------|-----------------------|--------------------------------------------------------------|                                                                                                                                          
+| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.     |
+| timestamp       | DateTime              | This channel reports the last time this sensor was updated.  |
+| location        | String                | This channel reports the location of the device.             |
+| installationName| String                | This channel reports the installation name.                  |
+| installationId  | Number                | This channel reports the installation ID.                    |
  
 ### Verisure Siren
 
@@ -220,8 +220,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type | Description                                                                 | 
 |-----------------|-----------|-----------------------------------------------------------------------------|                                                                                                                                          
 | state           | Contact   | This channel reports the if the door/window is open or closed (OPEN/CLOSED).|
-| timestamp       | DateTime  | This channel reports the last time this sensor was updated.|
-| location        | String    | This channel reports the location.                                          |
+| timestamp       | DateTime  | This channel reports the last time this sensor was updated.                 |
+| location        | String    | This channel reports the location of the device.                            |
 | installationName| String    | This channel reports the installation name.                                 |
 | installationId  | Number    | This channel reports the installation ID.                                   |
 
@@ -238,13 +238,13 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID    | Item Type | Description                                                             | 
 |--------------------|-----------|-------------------------------------------------------------------------|                                                                                                                                          
-| userLocationStatus | String    | This channel reports the user presence status (HOME/AWAY).                     |
-| timestamp          | DateTime  | This channel reports the last time the User Presence status was changed.     |
+| userLocationStatus | String    | This channel reports the user presence status (HOME/AWAY).              |
+| timestamp          | DateTime  | This channel reports the last time the User Presence status was changed.|
 | userName           | String    | This channel reports the user's name.                                   |
 | webAccount         | String    | This channel reports the user's email address.                          |
 | userDeviceName     | String    | This channel reports the name of the user device.                       |
 | installationName   | String    | This channel reports the installation name.                             |
-| installationId     | Number    | This channel reports the installation ID.                                |
+| installationId     | Number    | This channel reports the installation ID.                               |
 
 ### Verisure Broadband Connection
 
@@ -259,10 +259,34 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID | Item Type | Description                                                                    | 
 |-----------------|-----------|--------------------------------------------------------------------------------|                                                                                                                                          
-| connected       | String    | This channel reports the broadband connection status (true means connected).       |
+| connected       | String    | This channel reports the broadband connection status (true means connected).   |
 | timestamp       | DateTime  | This channel reports the last time the Broadband connection status was checked.|
 | installationName| String    | This channel reports the installation name.                                    |
 | installationId  | Number    | This channel reports the installation ID.                                      |
+
+### Verisure Mice Detection
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
+([miceDetection]) supports the following channels:
+ 
+| Channel Type ID | Item Type | Description                                                                         | 
+|-----------------|-----------|-------------------------------------------------------------------------------------|                                                                                                                                          
+| countLatestDetection| Number| This channel reports the number of mice counts the latest detection.                | 
+| countLast24Hours| Number    | This channel reports the number of mice counts the last 24 hours.                   |
+| durationLatestDetection| Number:Time | This channel reports the detection duration in min of last detection.      |
+| durationLast24Hours| Number:Time | This channel reports the total detection duration in min for the last 24 hours.|
+| timestamp       | DateTime  | This channel reports time for the last mouse detection.                             |
+| temperature     | Number:Temperature | This channel reports the temperature.                                      |
+| temperatureTimestamp | DateTime  | This channel reports the time for the last temperature reading.                |
+| location        | String    | This channel reports the location of the device.                                    |
+| installationName| String    | This channel reports the installation name.                                         |
+| installationId  | Number    | This channel reports the installation ID.                                           |
 
 ## Example
 
@@ -311,7 +335,7 @@ String UserLocationEmailGlava          "User Location Email Glava"     {channel=
 String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresencetestgmailcom1123456789:userLocationStatus"}
 
 // Broadband Connection
-String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:myverisure:bc123456789:status"}
+String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:myverisure:bc123456789:connected"}
 
 ````
 
