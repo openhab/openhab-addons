@@ -86,11 +86,11 @@
 			<advanced>true</advanced>
 		</parameter>
 
-        <parameter name="trigger" type="boolean">
-            <label>Trigger</label>
-            <description>Setting this to true will define incoming messages as triggers.</description>
-            <default>false</default>
-            <advanced>true</advanced>
-        </parameter>
+		<parameter name="trigger" type="boolean">
+			<label>Trigger</label>
+			<description>Setting this to true will define incoming messages as triggers.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>
