@@ -210,7 +210,7 @@ public class Property implements AttributeChanged {
         }
 
         if (attributes.settable) {
-            b = b.withCommandTopic(commandTopic).withRetain(true);
+            b = b.withCommandTopic(commandTopic).withRetain(false);
         }
 
         final ChannelState channelState = new ChannelState(b.build(), channelUID, value, callback);
