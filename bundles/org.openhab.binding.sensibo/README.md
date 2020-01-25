@@ -58,12 +58,25 @@ Bridge sensibo:account:home "Sensibo account" [apiKey="XYZASDASDAD", refreshInte
 sensibo.items:
 
 ```
-Number:Temperature AC_Office_Room_Current_Temperature "Temperature [%.1f °C]" <temperature>  {channel="sensibo:sensibosky:home:office:currentTemperature"}
+Number:Temperature AC_Office_Room_Current_Temperature "Temperature [%.1f %unit%]" <temperature>  {channel="sensibo:sensibosky:home:office:currentTemperature"}
 Number:Dimensionless AC_Office_Room_Current_Humidity "Relative humidity [%.1f %%]" <humidity  >  {channel="sensibo:sensibosky:home:office:currentHumidity"}
-Number:Temperature AC_Office_Room_Target_Temperature "Target temperature [%d °C]" <temperature>  {channel="sensibo:sensibosky:home:office:targetTemperature"}
+Number:Temperature AC_Office_Room_Target_Temperature "Target temperature [%d %unit%]" <temperature>  {channel="sensibo:sensibosky:home:office:targetTemperature"}
 String AC_Office_Room_Mode "AC mode [%s]" {channel="sensibo:sensibosky:home:office:mode"}
 String AC_Office_Room_Swing_Mode "AC swing mode [%s]" {channel="sensibo:sensibosky:home:office:swingMode"}
 Switch AC_Office_Heater_MasterSwitch "AC power [%s]" <switch>  {channel="sensibo:sensibosky:home:office:masterSwitch"}
 String AC_Office_Heater_Fan_Level "Fan level [%s]" <fan>  {channel="sensibo:sensibosky:home:office:fanLevel"}
 Number AC_Office_Heater_Timer "Timer seconds [%d]" <timer>  {channel="sensibo:sensibosky:home:office:timer"}
 ```
+
+sitemap:
+
+```
+Switch item=AC_Office_Heater_MasterSwitch
+Selection item=AC_Office_Room_Mode 
+Setpoint item=AC_Office_Room_Target_Temperature
+Selection item=AC_Office_Heater_Fan_Level
+Selection item=AC_Office_Room_Swing_Mode
+Text item=AC_Office_Room_Current_Temperature  
+Text item=AC_Office_Room_Current_Humidity
+```
+
