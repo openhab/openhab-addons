@@ -77,6 +77,10 @@ import tec.uom.se.unit.Units;
  */
 @NonNullByDefault
 public class SensiboSkyHandler extends SensiboBaseThingHandler implements ChannelTypeProvider {
+    public static final String SWING_PROPERTY = "swing";
+    public static final String MASTER_SWITCH_PROPERTY = "on";
+    public static final String FAN_LEVEL_PROPERTY = "fanLevel";
+    public static final String MODE_PROPERTY = "mode";
     public static final String TARGET_TEMPERATURE_PROPERTY = "targetTemperature";
     private final Logger logger = LoggerFactory.getLogger(SensiboSkyHandler.class);
     private @NonNullByDefault({}) SensiboSkyConfiguration config;
@@ -130,7 +134,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                         updateState(channelUID, unit.getAcState().isOn() ? OnOffType.ON : OnOffType.OFF);
                     } else if (command instanceof OnOffType) {
                         final OnOffType newValue = (OnOffType) command;
-                        updateAcState(unit, "on", newValue == OnOffType.ON);
+                        updateAcState(unit, MASTER_SWITCH_PROPERTY, newValue == OnOffType.ON);
                     }
                 } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
@@ -166,7 +170,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                         updateState(channelUID, new StringType(unit.getAcState().getMode()));
                     } else if (command instanceof StringType) {
                         final StringType newValue = (StringType) command;
-                        updateAcState(unit, "mode", newValue.toString());
+                        updateAcState(unit, MODE_PROPERTY, newValue.toString());
                         addDynamicChannelsAndProperties(unit);
                     }
                 } else if (CHANNEL_SWING_MODE.equals(channelUID.getId())) {
@@ -179,7 +183,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
                     } else if (command instanceof StringType) {
                         final StringType newValue = (StringType) command;
-                        updateAcState(unit, "swing", newValue.toString());
+                        updateAcState(unit, SWING_PROPERTY, newValue.toString());
                     }
                 } else if (CHANNEL_FAN_LEVEL.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
@@ -190,7 +194,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                         }
                     } else if (command instanceof StringType) {
                         final StringType newValue = (StringType) command;
-                        updateAcState(unit, "fanLevel", newValue.toString());
+                        updateAcState(unit, FAN_LEVEL_PROPERTY, newValue.toString());
                     }
                 } else if (CHANNEL_TIMER.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
@@ -355,6 +359,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     }
 
     public StateChange checkStateChangeValid(SensiboSky sensiboSky, String property, Object value) {
+
         StateChange stateChange = new StateChange(value);
 
         ModeCapability currentModeCapabilities = sensiboSky.getCurrentModeCapabilities();
@@ -368,31 +373,31 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     DecimalType rawValue = (DecimalType) value;
                     stateChange.updateValue(rawValue.intValue());
                     if (!validTemperatures.validValues.contains(rawValue.intValue())) {
-                        stateChange.addError(
-                                String.format("Cannot change targetTemperature to %s, valid targetTemperatures are %s",
-                                        value, ToStringBuilder.reflectionToString(
-                                                validTemperatures.validValues.toArray(), ToStringStyle.SIMPLE_STYLE)));
+                        stateChange.addError(String.format(
+                                "Cannot change targetTemperature to '%d', valid targetTemperatures are one of %s",
+                                rawValue.intValue(), ToStringBuilder.reflectionToString(
+                                        validTemperatures.validValues.toArray(), ToStringStyle.SIMPLE_STYLE)));
                     }
                 }
                 break;
-            case "mode":
+            case MODE_PROPERTY:
                 if (!sensiboSky.getRemoteCapabilities().keySet().contains(value)) {
                     stateChange.addError(String.format("Cannot change mode to %s, valid modes are %s", value,
                             ToStringBuilder.reflectionToString(sensiboSky.getRemoteCapabilities().keySet().toArray(),
                                     ToStringStyle.SIMPLE_STYLE)));
                 }
                 break;
-            case "fanLevel":
+            case FAN_LEVEL_PROPERTY:
                 if (currentModeCapabilities != null && !currentModeCapabilities.fanLevels.contains(value)) {
                     stateChange.addError(String.format("Cannot change fanLevel to %s, valid fanLevels are %s", value,
                             ToStringBuilder.reflectionToString(currentModeCapabilities.fanLevels.toArray(),
                                     ToStringStyle.SIMPLE_STYLE)));
                 }
                 break;
-            case "on":
+            case MASTER_SWITCH_PROPERTY:
                 // Always allowed
                 break;
-            case "swing":
+            case SWING_PROPERTY:
                 if (currentModeCapabilities != null && !currentModeCapabilities.swingModes.contains(value)) {
                     stateChange.addError(String.format("Cannot change swing to %s, valid swings are %s", value,
                             ToStringBuilder.reflectionToString(currentModeCapabilities.swingModes.toArray(),
@@ -402,6 +407,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             default:
                 stateChange.addError(String.format("No such ac state property %s", property));
         }
+
+        logger.debug("State change request {}", stateChange);
 
         return stateChange;
     }
@@ -428,7 +435,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
         @Override
         public String toString() {
-            return "StateChange [valid=" + valid + ", validationMessage=" + validationMessage + "]";
+            return "StateChange [valid=" + valid + ", validationMessage=" + validationMessage + ", value=" + value
+                    + ", value Class=" + value.getClass() + "]";
         }
 
     }
