@@ -48,7 +48,8 @@ without any fading effect.
 
 If you prefer to switch colors smoothly and to turn your light on and off by slightly increasing/decreasing the brightness, you should try the FADING driver.
 If selected, you can also set the number of fading steps and the fading duration in the Thing configuration.
-Each fading step will at least take 10 ms to be processed. This limit comes from the speed of the LED controller and your network speed.
+Each fading step will at least take 10 ms to be processed.
+This limit comes from the speed of the LED controller and your network speed.
 Thus a color fading with a configured fading duration of 0s might still take some time; count on more than 1 second for 100 steps.
 If the FADING driver is chosen, the program and the programSpeed channels will not have any effect.
 
