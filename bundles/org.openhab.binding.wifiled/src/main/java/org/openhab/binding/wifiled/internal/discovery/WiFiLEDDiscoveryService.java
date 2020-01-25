@@ -104,7 +104,7 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
                 // ^-IP..........,^-MAC.......,^-HOSTNAME.....
 
                 String[] ss = s.split(",");
-                if( ss.length < 3 ) {
+                if (ss.length < 3) {
                     logger.debug("Ignoring unparseable discovery response: '{}'", s);
                     continue;
                 }
