@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal.netutils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 
 /**
@@ -23,10 +24,18 @@ import org.openhab.binding.deconz.internal.dto.SensorState;
 @NonNullByDefault
 public interface WebSocketValueUpdateListener {
     /**
+     * A sensor config was updated.
+     *
+     * @param sensorID The sensor ID (API endpoint)
+     * @param newConfig The new config
+     */
+    void websocketConfigUpdate(String sensorID, SensorConfig newConfig);
+
+    /**
      * A sensor state was updated.
      *
      * @param sensorID The sensor ID (API endpoint)
      * @param newState The new state
      */
-    void websocketUpdate(String sensorID, SensorState newState);
+    void websocketStateUpdate(String sensorID, SensorState newState);
 }
