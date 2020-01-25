@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,10 +29,13 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
 import org.openhab.binding.somfytahoma.internal.handler.*;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +53,13 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private final HttpClient httpClient;
+
+    @Activate
+    public SomfyTahomaHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return THING_TYPE_BRIDGE.equals(thingTypeUID) || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -62,7 +73,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Creating handler for {}", thing.getThingTypeUID().getId());
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing);
+            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing, httpClient);
             registerItemDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
@@ -71,6 +82,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_SILENT)) {
             return new SomfyTahomaSilentRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_UNO)) {
+            return new SomfyTahomaUnoRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND) || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
@@ -93,6 +106,10 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaOccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CONTACTSENSOR)) {
             return new SomfyTahomaContactSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_WATERSENSOR)) {
+            return new SomfyTahomaWaterSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HUMIDITYSENSOR)) {
+            return new SomfyTahomaHumiditySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
             return new SomfyTahomaWindowHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_INTERNAL_ALARM)) {
@@ -115,7 +132,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaTemperatureSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GATE)) {
             return new SomfyTahomaGateHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)){
+        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)) {
             return new SomfyTahomaCurtainHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ELECTRICITYSENSOR)) {
             return new SomfyTahomaElectricitySensorHandler(thing);
@@ -123,6 +140,14 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SIREN)) {
             return new SomfyTahomaSirenHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER)) {
+            return new SomfyTahomaAdjustableSlatsRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MYFOX_CAMERA)) {
+            return new SomfyTahomaMyfoxCameraHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MYFOX_ALARM)) {
+            return new SomfyTahomaMyfoxAlarmHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+            return new SomfyTahomaThermostatHandler(thing);
         } else {
             return null;
         }

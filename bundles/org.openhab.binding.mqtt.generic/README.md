@@ -74,7 +74,7 @@ You can add the following channels:
 * __transformationPattern__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 * __transformationPatternOut__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
 * __commandTopic__: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
-* __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". If you want to adjust the precision of a number to for example 4 digits, you would use "%.4f".
+* __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported.
 * __postCommand__: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
@@ -93,6 +93,7 @@ You can connect this channel to a String item.
 * __min__: An optional minimum value.
 * __max__: An optional maximum value.
 * __step__: For decrease, increase commands the step needs to be known
+* __unit__: Unit of measurement (optional). For supported units see [OpenHAB: List of Units](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units). Examples: "°C", "°F"
 
 A decimal value (like 0.2) is send to the MQTT topic if the number has a fractional part.
 If you always require an integer, please use the formatter.
@@ -245,6 +246,23 @@ Here are a few examples:
   - For an output of *May 23, 1995* use "%1$**tb** %1$**te**,%1$**tY**".
   - For an output of *23.05.1995* use "%1$**td**.%1$**tm**.%1$**tY**".
   - For an output of *23:15* use "%1$**tH**:%1$**tM**".
+  
+Default pattern applied for each type:
+| Type             | Parameter                         | Pattern             | Comment |
+| ---------------- | --------------------------------- | ------------------- | ------- |
+| __string__       | String                            | "%s"                | 
+| __number__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
+| __dimmer__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
+| __contact__      | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __switch__       | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __colorRGB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **red**, **green** and **blue** components.
+| __colorHSB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **hue**, **saturation** and **brightness** components.
+| __location__     | BigDecimal, BigDecimal            | "%2$f,%3$f,%1$f"    | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'.
+| __image__        | --                                | --                  | No publishing supported. 
+| __datetime__     | ZonedDateTime                     | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.
+| __rollershutter__| String                            | "%s"                | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.
+
+Any outgoing value transformation will **always** result in a __string__ value.
 
 ## Troubleshooting
 

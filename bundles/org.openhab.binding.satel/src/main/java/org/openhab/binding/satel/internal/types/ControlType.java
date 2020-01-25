@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.satel.internal.types;
 
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for all types of control.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public interface ControlType {
 
     /**

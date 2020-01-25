@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,12 +22,13 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Command {
 
     @SerializedName("write")
-    private Write write;
+    private @Nullable Write write;
 
-    public Write getWrite() {
+    public @Nullable Write getWrite() {
         return write;
     }
 

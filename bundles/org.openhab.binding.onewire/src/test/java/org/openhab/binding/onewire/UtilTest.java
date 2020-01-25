@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.dimension.Density;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.openhab.binding.onewire.internal.Util;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class UtilTest {
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -43,6 +41,10 @@ public class SomfyTahomaBindingConstants {
     // Silent Roller Shutter
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_SILENT = new ThingTypeUID(BINDING_ID,
             "rollershutter_silent");
+
+    // Uno Roller Shutter
+    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_UNO = new ThingTypeUID(BINDING_ID,
+            "rollershutter_uno");
 
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
@@ -84,12 +86,19 @@ public class SomfyTahomaBindingConstants {
     // Occupancy sensor
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
 
+    // Water sensor
+    public static final ThingTypeUID THING_TYPE_WATERSENSOR = new ThingTypeUID(BINDING_ID, "watersensor");
+
+    // Humidity sensor
+    public static final ThingTypeUID THING_TYPE_HUMIDITYSENSOR = new ThingTypeUID(BINDING_ID, "humiditysensor");
+
     // Window
     public static final ThingTypeUID THING_TYPE_WINDOW = new ThingTypeUID(BINDING_ID, "window");
 
     // Alarm
     public static final ThingTypeUID THING_TYPE_INTERNAL_ALARM = new ThingTypeUID(BINDING_ID, "internalalarm");
     public static final ThingTypeUID THING_TYPE_EXTERNAL_ALARM = new ThingTypeUID(BINDING_ID, "externalalarm");
+    public static final ThingTypeUID THING_TYPE_MYFOX_ALARM = new ThingTypeUID(BINDING_ID, "myfoxalarm");
 
     // Pod
     public static final ThingTypeUID THING_TYPE_POD = new ThingTypeUID(BINDING_ID, "pod");
@@ -125,12 +134,24 @@ public class SomfyTahomaBindingConstants {
     // Siren
     public static final ThingTypeUID THING_TYPE_SIREN = new ThingTypeUID(BINDING_ID, "siren");
 
+    // Adjustable slats roller shutter
+    public static final ThingTypeUID THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "adjustableslatsrollershutter");
+
+    // MyFox Camera
+    public static final ThingTypeUID THING_TYPE_MYFOX_CAMERA = new ThingTypeUID(BINDING_ID, "myfoxcamera");
+
+    // Thermostat
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
 
     // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
+
+    // Adjustable slats roller shutter
+    public static final String ROCKER = "rocker";
 
     // Silent roller shutter
     public static final String CONTROL_SILENT = "control_silent";
@@ -148,8 +169,14 @@ public class SomfyTahomaBindingConstants {
     public static final String LOCK = "lock";
     public static final String OPEN = "open";
 
-    // Smoke sensor, Occupancy sensor, Contact sensor
+    // Smoke sensor, Occupancy sensor, Contact sensor, Water sensor
     public static final String CONTACT = "contact";
+
+    // Humidity sensor
+    public static final String HUMIDITY = "humidity";
+
+    // Smoke sensor
+    public static final String ALARM_CHECK = "alarm_check";
 
     // Light sensor
     public static final String LUMINANCE = "luminance";
@@ -175,6 +202,11 @@ public class SomfyTahomaBindingConstants {
     public static final String BATTERY_LEVEL = "battery_level";
     public static final String TARGET_HEATING_LEVEL = "target_heating_level";
 
+    // Thermostat
+    public static final String HEATING_MODE = "heating_mode";
+    public static final String DEROGATION_HEATING_MODE = "derogation_heating_mode";
+    public static final String DEROGATION_ACTIVATION = "derogation_activation";
+
     // Window handle
     public static final String HANDLE_STATE = "handle_state";
 
@@ -196,13 +228,23 @@ public class SomfyTahomaBindingConstants {
     public static final String ONOFF_STATE = "onoff";
     public static final String BATTERY = "battery";
 
-    //Constants
-    private static final String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
-    public static final String TAHOMA_URL = API_URL + "externalAPI/json/";
-    public static final String TAHOMA_EVENT_URL = API_URL + "enduserAPI/events/";
-    public static final String SETUP_URL = API_URL + "enduserAPI/setup/gateways/";
-    public static final String REFRESH_URL = API_URL + "enduserAPI/setup/devices/states/refresh";
-    public static final String EXEC_URL = API_URL + "enduserAPI/exec/";
+    // Myfox Alarm
+    public static final String MYFOX_ALARM_COMMAND = "myfox_alarm_command";
+
+    // Myfox Alarm & Camera
+    public static final String CLOUD_STATUS = "cloud_status";
+
+    // Myfox Camera
+    public static final String SHUTTER = "shutter";
+
+    // Constants
+    public static final String TAHOMA_API_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/";
+    public static final String TAHOMA_EVENTS_URL = TAHOMA_API_URL + "events/";
+    public static final String SETUP_URL = TAHOMA_API_URL + "setup/";
+    public static final String GATEWAYS_URL = SETUP_URL + "gateways/";
+    public static final String DEVICES_URL = SETUP_URL + "devices/";
+    public static final String REFRESH_URL = DEVICES_URL + "states/refresh";
+    public static final String EXEC_URL = TAHOMA_API_URL + "exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
     public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
     public static final int TAHOMA_TIMEOUT = 5;
@@ -211,6 +253,13 @@ public class SomfyTahomaBindingConstants {
     public static final int TYPE_DECIMAL = 2;
     public static final int TYPE_STRING = 3;
     public static final int TYPE_BOOLEAN = 6;
+    public static final String UNAVAILABLE = "unavailable";
+    public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
+    public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
+    public static final int SUSPEND_TIME = 120;
+    public static final int RECONCILIATION_TIME = 600;
+
+    // Commands
     public static final String COMMAND_MY = "my";
     public static final String COMMAND_SET_CLOSURE = "setClosure";
     public static final String COMMAND_SET_DEPLOYMENT = "setDeployment";
@@ -218,57 +267,69 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
     public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
     public static final String COMMAND_SET_PEDESTRIANPOSITION = "setPedestrianPosition";
-    public static final String COMMAND_REFRESH_HEATINGLEVEL = "refreshHeatingLevel";
+    public static final String COMMAND_SET_ROCKERPOSITION = "setRockerPosition";
     public static final String COMMAND_UP = "up";
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
     public static final String COMMAND_CLOSE = "close";
     public static final String COMMAND_STOP = "stop";
     public static final String COMMAND_OFF = "off";
+    public static final String COMMAND_CHECK_TRIGGER = "checkEventTrigger";
+
+    // States
     public static final String STATUS_STATE = "core:StatusState";
     public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
     public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";
     public static final String BATTERY_STATUS_STATE = "internal:BatteryStatusState";
-    public static final String UNAVAILABLE = "unavailable";
-    public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
-    public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
-    public static final int SUSPEND_TIME = 120;
+    public static final String SLATE_ORIENTATION_STATE = "core:SlateOrientationState";
+    public static final String CLOSURE_OR_ROCKER_STATE = "core:ClosureOrRockerPositionState";
+    public static final String MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState";
+    public static final String TARGET_CLOSURE_STATE = "core:TargetClosureState";
+    public static final String WATER_DETECTION_STATE = "core:WaterDetectionState";
+    public static final String CLOUD_DEVICE_STATUS_STATE = "core:CloudDeviceStatusState";
+    public static final String BATTERY_LEVEL_STATE = "core:BatteryLevelState";
+    public static final String SIREN_STATUS_STATE = "internal:SirenStatusState";
+    public static final String TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState";
 
     // supported uiClasses
-    public static final String ROLLERSHUTTER = "RollerShutter";
-    public static final String SCREEN = "Screen";
-    public static final String VENETIANBLIND = "VenetianBlind";
-    public static final String EXTERIORSCREEN = "ExteriorScreen";
-    public static final String EXTERIORVENETIANBLIND = "ExteriorVenetianBlind";
-    public static final String GARAGEDOOR = "GarageDoor";
-    public static final String AWNING = "Awning";
-    public static final String ONOFF = "OnOff";
-    public static final String LIGHT = "Light";
-    public static final String LIGHTSENSOR = "LightSensor";
-    public static final String SMOKESENSOR = "SmokeSensor";
-    public static final String CONTACTSENSOR = "ContactSensor";
-    public static final String OCCUPANCYSENSOR = "OccupancySensor";
-    public static final String WINDOW = "Window";
-    public static final String ALARM = "Alarm";
-    public static final String POD = "Pod";
-    public static final String HEATINGSYSTEM = "HeatingSystem";
-    public static final String DOORLOCK = "DoorLock";
-    public static final String PERGOLA = "Pergola";
-    public static final String WINDOWHANDLE = "WindowHandle";
-    public static final String TEMPERATURESENSOR = "TemperatureSensor";
-    public static final String GATE = "Gate";
-    public static final String CURTAIN = "Curtain";
-    public static final String ELECTRICITYSENSOR = "ElectricitySensor";
-    public static final String DOCK = "Dock";
-    public static final String SIREN = "Siren";
+    public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";
+    public static final String CLASS_SCREEN = "Screen";
+    public static final String CLASS_VENETIAN_BLIND = "VenetianBlind";
+    public static final String CLASS_EXTERIOR_SCREEN = "ExteriorScreen";
+    public static final String CLASS_EXTERIOR_VENETIAN_BLIND = "ExteriorVenetianBlind";
+    public static final String CLASS_GARAGE_DOOR = "GarageDoor";
+    public static final String CLASS_AWNING = "Awning";
+    public static final String CLASS_ON_OFF = "OnOff";
+    public static final String CLASS_LIGHT = "Light";
+    public static final String CLASS_LIGHT_SENSOR = "LightSensor";
+    public static final String CLASS_SMOKE_SENSOR = "SmokeSensor";
+    public static final String CLASS_CONTACT_SENSOR = "ContactSensor";
+    public static final String CLASS_OCCUPANCY_SENSOR = "OccupancySensor";
+    public static final String CLASS_HUMIDITY_SENSOR = "HumiditySensor";
+    public static final String CLASS_WINDOW = "Window";
+    public static final String CLASS_ALARM = "Alarm";
+    public static final String CLASS_POD = "Pod";
+    public static final String CLASS_HEATING_SYSTEM = "HeatingSystem";
+    public static final String CLASS_DOOR_LOCK = "DoorLock";
+    public static final String CLASS_PERGOLA = "Pergola";
+    public static final String CLASS_WINDOW_HANDLE = "WindowHandle";
+    public static final String CLASS_TEMPERATURE_SENSOR = "TemperatureSensor";
+    public static final String CLASS_GATE = "Gate";
+    public static final String CLASS_CURTAIN = "Curtain";
+    public static final String CLASS_ELECTRICITY_SENSOR = "ElectricitySensor";
+    public static final String CLASS_DOCK = "Dock";
+    public static final String CLASS_SIREN = "Siren";
+    public static final String CLASS_ADJUSTABLE_SLATS_ROLLER_SHUTTER = "AdjustableSlatsRollerShutter";
+    public static final String CLASS_CAMERA = "Camera";
 
     // unsupported uiClasses
-    public static final String PROTOCOLGATEWAY = "ProtocolGateway";
-    public static final String REMOTECONTROLLER = "RemoteController";
-    public static final String NETWORKCOMPONENT = "NetworkComponent";
+    public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
+    public static final String THING_REMOTE_CONTROLLER = "RemoteController";
+    public static final String THING_NETWORK_COMPONENT = "NetworkComponent";
 
-    // cache timeout
-    public static final int CACHE_EXPIRY = 10000;
+    // Event states
+    public static final String FAILED_EVENT = "FAILED";
+    public static final String COMPLETED_EVENT = "COMPLETED";
 
     // supported thing types for discovery
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(
@@ -279,5 +340,47 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
-            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN));
+            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
+            THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO, THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR,
+            THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT));
+
+    //somfy gateways
+    public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
+        {
+            put(0, "VIRTUAL_KIZBOX");
+            put(2, "KIZBOX_V1");
+            put(15, "TAHOMA");
+            put(20, "VERISURE_ALARM_SYSTEM");
+            put(21, "KIZBOX_MINI");
+            put(24, "KIZBOX_V2");
+            put(25, "MYFOX_ALARM_SYSTEM");
+            put(27, "KIZBOX_MINI_VMBUS");
+            put(28, "KIZBOX_MINI_IO");
+            put(29, "TAHOMA_V2");
+            put(30, "KIZBOX_V2_3H");
+            put(31, "KIZBOX_V2_2H");
+            put(34, "CONNEXOON");
+            put(35, "JSW_CAMERA");
+            put(37, "KIZBOX_MINI_DAUGHTERBOARD");
+            put(38, "KIZBOX_MINI_DAUGHTERBOARD_ZWAVE");
+            put(39, "KIZBOX_MINI_DAUGHTERBOARD_ENOCEAN");
+            put(40, "KIZBOX_MINI_RAILDIN");
+            put(41, "TAHOMA_V2_RTS");
+            put(42, "KIZBOX_MINI_MODBUS");
+            put(43, "KIZBOX_MINI_OVP");
+            put(53, "CONNEXOON_RTS");
+            put(54, "OPENDOORS_LOCK_SYSTEM");
+            put(56, "CONNEXOON_RTS_JAPAN");
+            put(58, "HOME_PROTECT_SYSTEM");
+            put(62, "CONNEXOON_RTS_AUSTRALIA");
+            put(63, "THERMOSTAT_SOMFY_SYSTEM");
+            put(64, "BOX_ULTRA_LOW_COST_RTS");
+            put(65, "SMARTLY_MINI_DAUGHTERBOARD_ZWAVE");
+            put(66, "SMARTLY_MINIBOX_RAILDIN");
+            put(67, "TAHOMA_BEE");
+            put(72, "TAHOMA_RAIL_DIN");
+            put(77, "ELIOT");
+            put(88, "WISER");
+        }
+    };
 }

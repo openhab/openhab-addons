@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,15 +32,15 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
-    final public static ThingUID testHomieThing = new ThingUID(HOMIE300_MQTT_THING, "device123");
+    public static final ThingUID TEST_HOMIE_THING = new ThingUID(HOMIE300_MQTT_THING, "device123");
 
-    final public static ChannelTypeUID unknownChannel = new ChannelTypeUID(BINDING_ID, "unknown");
+    public static final ChannelTypeUID UNKNOWN_CHANNEL = new ChannelTypeUID(BINDING_ID, "unknown");
 
-    final public static String jsonPathJSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
-    final public static String jsonPathPattern = "$.device.status.temperature";
+    public static final String JSON_PATH_JSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
+    public static final String JSON_PATH_PATTERN = "$.device.status.temperature";
 
-    final public static List<Channel> thingChannelList = new ArrayList<>();
-    final public static List<Channel> thingChannelListWithJson = new ArrayList<>();
+    public static final List<Channel> THING_CHANNEL_LIST = new ArrayList<>();
+    public static final List<Channel> THING_CHANNEL_LIST_WITH_JSON = new ArrayList<>();
 
     static Configuration textConfiguration() {
         Map<String, Object> data = new HashMap<>();
@@ -53,7 +53,7 @@ public class ThingChannelConstants {
         Map<String, Object> data = new HashMap<>();
         data.put("stateTopic", "test/state");
         data.put("commandTopic", "test/command");
-        data.put("transformationPattern", "JSONPATH:" + jsonPathPattern);
+        data.put("transformationPattern", "JSONPATH:" + JSON_PATH_PATTERN);
         return new Configuration(data);
     }
 

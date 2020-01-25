@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.satel.internal.event;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Event class describing connection status to Satel module.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ConnectionStatusEvent implements SatelEvent {
 
     private boolean connected;
 
-    private String reason;
+    private @Nullable String reason;
 
     /**
      * Constructs event class with given connection status.
@@ -36,9 +40,9 @@ public class ConnectionStatusEvent implements SatelEvent {
      * Constructs event class with given connection status and disconnection reason.
      *
      * @param connected value describing connection status
-     * @param reason disconnection reason
+     * @param reason    disconnection reason
      */
-    public ConnectionStatusEvent(boolean connected, String reason) {
+    public ConnectionStatusEvent(boolean connected, @Nullable String reason) {
         this.connected = connected;
         this.reason = reason;
     }
@@ -57,7 +61,7 @@ public class ConnectionStatusEvent implements SatelEvent {
      *
      * @return optional text description in case of disconnection
      */
-    public String getReason() {
+    public @Nullable String getReason() {
         return reason;
     }
 

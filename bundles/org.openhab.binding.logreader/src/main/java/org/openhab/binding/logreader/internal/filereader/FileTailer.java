@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,8 @@
 package org.openhab.binding.logreader.internal.filereader;
 
 import java.io.File;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
@@ -34,6 +35,7 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     private final Logger logger = LoggerFactory.getLogger(FileTailer.class);
 
     private Tailer tailer;
+    private ExecutorService executor;
 
     TailerListener logListener = new TailerListenerAdapter() {
 
@@ -59,13 +61,13 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     };
 
     @Override
-    public void start(String filePath, long refreshRate, ScheduledExecutorService scheduler)
-            throws FileReaderException {
+    public void start(String filePath, long refreshRate) throws FileReaderException {
         tailer = new Tailer(new File(filePath), logListener, refreshRate, true, false, true);
-
+        executor = Executors.newSingleThreadExecutor();
         try {
             logger.debug("Start executor");
-            scheduler.execute(tailer);
+            executor.execute(tailer);
+            logger.debug("Executor started");
         } catch (Exception e) {
             throw new FileReaderException(e);
         }
@@ -74,9 +76,12 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     @Override
     public void stop() {
         logger.debug("Shutdown");
-
         if (tailer != null) {
             tailer.stop();
         }
+        if (executor != null) {
+            executor.shutdown();
+        }
+        logger.debug("Shutdown complite");
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,9 +124,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         }
         sensors.clear();
 
-        if (configuration.id != null) {
+        final String id = configuration.id;
+        if (id != null) {
             try {
-                this.sensorId = new SensorId(configuration.id);
+                this.sensorId = new SensorId(id);
             } catch (IllegalArgumentException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "sensor id format mismatch");
                 return false;

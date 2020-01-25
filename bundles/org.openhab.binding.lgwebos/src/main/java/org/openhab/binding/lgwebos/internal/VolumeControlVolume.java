@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,13 +43,15 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
-        PercentType percent = null;
+        final PercentType percent;
         if (command instanceof PercentType) {
             percent = (PercentType) command;
         } else if (command instanceof DecimalType) {
             percent = new PercentType(((DecimalType) command).toBigDecimal());
         } else if (command instanceof StringType) {
             percent = new PercentType(((StringType) command).toString());
+        } else {
+            percent = null;
         }
 
         if (percent != null) {

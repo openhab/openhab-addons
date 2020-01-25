@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,10 +76,12 @@ public class ByteArrayFileCacheTest {
         assertThat(subject.getFileExtension(".hidden"), is(equalTo("hidden")));
         assertThat(subject.getFileExtension("C:\\Program Files (x86)\\java\\bin\\javaw.exe"), is(equalTo("exe")));
         assertThat(subject.getFileExtension("https://www.youtube.com/watch?v=qYrpPrLY868"), is(nullValue()));
+        assertThat(subject.getFileExtension(
+                "a52fc16cca77ab2bf6abe51e463ce501.jpg?response-content-type=image%2Fjpeg&test=1"), is("jpg"));
     }
 
     @Test
-    public void testGetUniqueFileName() {
+    public void testGetUniqueFileNameIsUnique() {
         String mp3UniqueFileName = subject.getUniqueFileName(MP3_FILE_NAME);
         assertThat(mp3UniqueFileName, is(equalTo(subject.getUniqueFileName(MP3_FILE_NAME))));
 

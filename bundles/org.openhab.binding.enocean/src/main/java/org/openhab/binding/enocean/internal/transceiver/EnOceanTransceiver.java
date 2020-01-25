@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -309,8 +309,12 @@ public abstract class EnOceanTransceiver {
                                             logger.debug("{} with RORG {} for {} payload {} received",
                                                     packet.getPacketType().name(), msg.getRORG().name(),
                                                     HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
-
-                                            informListeners(msg);
+                                            
+                                            if(msg.getRORG() != RORG.Unknown) {
+                                                informListeners(msg);
+                                            } else {
+                                                logger.debug("Received unknown RORG, payload {}", HexUtils.bytesToHex(d));
+                                            }
                                         }
                                             break;
                                         case RADIO_ERP2:

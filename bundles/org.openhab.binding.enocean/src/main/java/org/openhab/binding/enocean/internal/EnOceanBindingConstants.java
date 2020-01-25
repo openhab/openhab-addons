@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Power;
+import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
@@ -69,6 +70,8 @@ public class EnOceanBindingConstants {
     public final static ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
             "lightTemperatureOccupancySensor");
     public final static ThingTypeUID THING_TYPE_LIGHTSENSOR = new ThingTypeUID(BINDING_ID, "lightSensor");
+    public final static ThingTypeUID THING_TYPE_ENVIRONMENTALSENSOR = new ThingTypeUID(BINDING_ID,
+            "environmentalSensor");
     public final static ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
     public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
@@ -77,7 +80,7 @@ public class EnOceanBindingConstants {
                     THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE,
                     THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
                     THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
-                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
+                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
                     THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
@@ -100,6 +103,11 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_MOTIONDETECTION = "motionDetection";
     public final static String CHANNEL_VIBRATION = "vibration";
     public final static String CHANNEL_ILLUMINATION = "illumination";
+    public final static String CHANNEL_ILLUMINATIONWEST = "illuminationWest";
+    public final static String CHANNEL_ILLUMINATIONSOUTHNORTH = "illuminationSouthNorth";
+    public final static String CHANNEL_ILLUMINATIONEAST = "illuminationEast";
+    public final static String CHANNEL_WINDSPEED = "windspeed";
+    public final static String CHANNEL_RAINSTATUS = "rainStatus";
     public final static String CHANNEL_COUNTER = "counter";
     public final static String CHANNEL_CURRENTNUMBER = "currentNumber";
 
@@ -185,12 +193,21 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE), CoreItemFactory.STRING));
                     put(CHANNEL_OCCUPANCY, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY), CoreItemFactory.SWITCH));
-                    put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_MOTIONDETECTION), CoreItemFactory.SWITCH));
+                    put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_MOTION.getUID(), CoreItemFactory.SWITCH));
                     put(CHANNEL_VIBRATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_VIBRATION), CoreItemFactory.SWITCH));
                     put(CHANNEL_ILLUMINATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
+                    put(CHANNEL_ILLUMINATIONWEST, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONWEST), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
+                    put(CHANNEL_ILLUMINATIONSOUTHNORTH, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONSOUTHNORTH), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
+                    put(CHANNEL_ILLUMINATIONEAST, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONEAST), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
+                    put(CHANNEL_WINDSPEED, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_WIND_SPEED.getUID(), 
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Speed.class.getSimpleName()));
+                    put(CHANNEL_RAINSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_RAINSTATUS), CoreItemFactory.SWITCH));
                     put(CHANNEL_COUNTER, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_CURRENTNUMBER, new EnOceanChannelDescription(

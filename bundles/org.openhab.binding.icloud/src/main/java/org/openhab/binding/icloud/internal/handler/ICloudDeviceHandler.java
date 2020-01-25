@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,6 +127,11 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
                 try {
+                    final String deviceId = this.deviceId;
+                    if(deviceId == null) {
+                        logger.debug("Can't send Find My Device request, because deviceId is null!");
+                        return;
+                    }
                     bridge.findMyDevice(deviceId);
                 } catch (IOException e) {
                     logger.warn("Unable to execute find my device request", e);

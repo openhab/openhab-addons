@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  *
  */
 public class HueStateBulb extends HueStatePlug {
-    // https://github.com/openhab/openhab2-addons/issues/2881
+    // https://github.com/openhab/openhab-addons/issues/2881
     // Apparently the maximum brightness is 254
     public static int MAX_BRI = 254;
     public int bri = 0;

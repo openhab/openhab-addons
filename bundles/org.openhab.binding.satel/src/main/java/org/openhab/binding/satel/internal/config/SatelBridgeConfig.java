@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,17 +14,21 @@ package org.openhab.binding.satel.internal.config;
 
 import java.nio.charset.Charset;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SatelBridgeConfig} contains common configuration values for Satel bridge things.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class SatelBridgeConfig {
 
     private int timeout;
     private int refresh;
-    private String userCode;
-    private String encoding;
+    private @Nullable String userCode;
+    private @Nullable String encoding;
 
     /**
      * @return value of timeout in milliseconds
@@ -44,14 +48,16 @@ public class SatelBridgeConfig {
      * @return user code in behalf of all the commands will be executed
      */
     public String getUserCode() {
-        return userCode;
+        final String userCode = this.userCode;
+        return userCode == null ? "" : userCode;
     }
 
     /**
      * @return encoding for texts received from the bridge (names, descriptions)
      */
     public Charset getEncoding() {
-        return Charset.forName(encoding);
+        final String encoding = this.encoding;
+        return encoding == null ? Charset.defaultCharset() : Charset.forName(encoding);
     }
 
 }

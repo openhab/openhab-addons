@@ -3,19 +3,19 @@
 This binding integrates with [Lutron](http://www.lutron.com) lighting control and home automation systems.
 It contains separate binding support for four different types of Lutron systems:
 
-* RadioRA 2 and other systems that can be controlled by Lutron Integration Protocol, such as Homeworks QS, RA2 Select, and Caseta PRO
+* RadioRA 2, HomeWorks QS, and other systems that can be controlled by Lutron Integration Protocol, such as RA2 Select, and Caseta Pro
 * The original RadioRA system, referred to here as RadioRA Classic
 * Legacy HomeWorks RS232 Processors
 * Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
 
 Each is described in a separate section below.
 
-# Lutron RadioRA 2 Binding
+# Lutron RadioRA 2/HomeWorks QS Binding
 
-**Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2 and Caseta.
-Homeworks QS support is still a work in progress.
-RA2 Select is believed to work, but it is unconfirmed.
-It has not yet been tested with Quantum, QS Standalone, or myRoom plus systems.
+**Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2, HomeWorks QS, and Caseta with Smart Bridge Pro.
+Homeworks QS support is still a work in progress, since not all features/devices are supported yet.
+RA2 Select has been reported to work with the binding, but support is unconfirmed.
+The binding has not been tested with Quantum, QS Standalone, or myRoom Plus systems.
 
 **Note:** Caseta support is only possible with the Smart Bridge **Pro** hub.
 The standard Caseta hub does not support Lutron Integration Protocol.
@@ -81,7 +81,9 @@ It also defaults to 5.
 The optional advanced parameter `delay` can be used to set a delay (in milliseconds) between transmission of integration commands to the bridge device.
 This may be used for command send rate throttling.
 It can be set to an integer value between 0 and 250 ms, and defaults to 0 (no delay).
-It is recommended to leave it set to 0 unless you experience problems with commands sent to Caseta hubs being dropped/ignored.
+It is recommended that this parameter be left at the default unless you experience problems with sent commands being dropped/ignored.
+This has been reported in some rare cases when large numbers of commands were sent in short periods to Caseta hubs.
+If you experience this problem, try setting a delay value of around 100 ms as a starting point.
 
 The optional advanced parameter `discoveryFile` can be set to force the device discovery service to read the Lutron configuration XML from a local file rather than retrieving it via HTTP from the RadioRA 2 or HomeWorks QS bridge device.
 This is useful in the case of some older Lutron software versions, where the discovery service may have problems retrieving the file from the bridge device.
@@ -311,8 +313,9 @@ Supported options are `integrationId` and `autorelease`.
 Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
-They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
+The VCRX security (Full/Flash) input controls both the cci1 and cci2 channels, while input connections 1 and 2 map to the cci3 and cci4 channels respectively.
+The cci channels are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
 Thing configuration file example:

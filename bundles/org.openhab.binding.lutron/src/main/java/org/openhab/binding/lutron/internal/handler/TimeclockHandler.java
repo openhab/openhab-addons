@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.util.Calendar;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution
  */
+@NonNullByDefault
 public class TimeclockHandler extends LutronHandler {
     private static final Integer ACTION_CLOCKMODE = 1;
     private static final Integer ACTION_SUNRISE = 2;
@@ -142,7 +145,7 @@ public class TimeclockHandler extends LutronHandler {
         }
     }
 
-    private Calendar parseLutronTime(final String timeString) {
+    private @Nullable Calendar parseLutronTime(final String timeString) {
         Integer hour, minute;
         Calendar calendar = Calendar.getInstance();
         try {

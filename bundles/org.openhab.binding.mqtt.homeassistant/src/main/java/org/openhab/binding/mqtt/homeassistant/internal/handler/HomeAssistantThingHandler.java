@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -126,7 +124,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         started = false;
 
         config = getConfigAs(HandlerConfiguration.class);
-        if (CollectionUtils.isEmpty(config.topics)) {
+        if (config.topics == null || config.topics.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device topics unknown");
             return;
         }
@@ -333,7 +331,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
 
-        if (StringUtils.equals(channelUID.getIdWithoutGroup(), AVAILABILITY_CHANNEL)) {
+        if (AVAILABILITY_CHANNEL.equals(channelUID.getIdWithoutGroup())) {
             updateThingStatus();
             return;
         }

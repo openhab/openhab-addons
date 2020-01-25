@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
     private synchronized void discover() {
         logger.debug("Try to discover all WiFi LED devices");
 
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(DEFAULT_BROADCAST_PORT)) {
             socket.setBroadcast(true);
             socket.setSoTimeout(5000);
 

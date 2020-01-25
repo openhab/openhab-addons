@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_OPENCLOSE_SENSOR = new ThingTypeUID(BINDING_ID, "openclosesensor");
     public static final ThingTypeUID THING_TYPE_WATERLEAKAGE_SENSOR = new ThingTypeUID(BINDING_ID,
             "waterleakagesensor");
+    public static final ThingTypeUID THING_TYPE_FIRE_SENSOR = new ThingTypeUID(BINDING_ID, "firesensor");
     public static final ThingTypeUID THING_TYPE_ALARM_SENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
     public static final ThingTypeUID THING_TYPE_VIBRATION_SENSOR = new ThingTypeUID(BINDING_ID, "vibrationsensor");
 
@@ -64,6 +65,7 @@ public class BindingConstants {
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
     public static final String CHANNEL_OPENCLOSE = "open";
     public static final String CHANNEL_WATERLEAKAGE = "waterleakage";
+    public static final String CHANNEL_FIRE = "fire";
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_TAMPERED = "tampered";
     public static final String CHANNEL_VIBRATION = "vibration";

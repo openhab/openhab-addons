@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,15 +14,11 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaRollerShutterHandler} is responsible for handling commands,
@@ -34,8 +30,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaRollerShutterHandler.class);
-
     public SomfyTahomaRollerShutterHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL, "core:ClosureState");
@@ -43,22 +37,24 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (!CONTROL.equals(channelUID.getId())) {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+        if (command instanceof RefreshType) {
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_MY.equals(cmd)) {
+                sendCommand(COMMAND_MY);
+            } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the roller shutter is moving and MY is sent => STOP it
+                    //Check if the roller shutter is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
-                    sendCommand(COMMAND_MY, "[]");
+                    sendCommand(COMMAND_MY);
                 }
             } else {
                 String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
@@ -77,9 +73,11 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
             case "UP":
             case "OPEN":
                 return COMMAND_UP;
+            case "MOVE":
             case "MY":
-            case "STOP":
                 return COMMAND_MY;
+            case "STOP":
+                return COMMAND_STOP;
             default:
                 return COMMAND_SET_CLOSURE;
         }

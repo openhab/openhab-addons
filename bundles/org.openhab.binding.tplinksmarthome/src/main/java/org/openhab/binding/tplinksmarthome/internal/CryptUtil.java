@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -72,15 +73,16 @@ public final class CryptUtil {
      * @throws IOException exception in case device not reachable
      */
     private static String decrypt(InputStream inputStream, int length) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        final byte[] decryptedData = new byte[length];
         int in;
         int key = KEY;
-        while (sb.length() < length && (in = inputStream.read()) != -1) {
-            int nextKey = in;
-            sb.append((char) (in ^ key));
+        int i = 0;
+        while (i < length && (in = inputStream.read()) != -1) {
+            final int nextKey = in;
+            decryptedData[i++] = (byte) (in ^ key);
             key = nextKey;
         }
-        return sb.toString();
+        return new String(decryptedData, StandardCharsets.UTF_8);
     }
 
     /**

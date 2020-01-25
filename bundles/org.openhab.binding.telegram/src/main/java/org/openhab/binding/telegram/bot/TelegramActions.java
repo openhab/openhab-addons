@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.telegram.bot;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -75,6 +74,7 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
+    @NonNullByDefault
     private static class BasicResult implements Authentication.Result {
 
         private final HttpHeader header;
@@ -142,7 +142,6 @@ public class TelegramActions implements ThingActions {
                 return false;
             }
             return message != null ? sendTelegram(chatId, message) : true;
-
         }
         return false;
     }
@@ -255,18 +254,18 @@ public class TelegramActions implements ThingActions {
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
-            @ActionInput(name = "message") @Nullable String format,
+            @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
-        return sendTelegram(chatId, String.format(format, args));
+        return sendTelegram(chatId, args == null || args.length == 0 ? message : String.format(message, args));
     }
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
-    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String format,
+    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             for (Long chatId : localHandler.getChatIds()) {
-                if (!sendTelegram(chatId, format, args)) {
+                if (!sendTelegram(chatId, message, args)) {
                     return false;
                 }
             }
@@ -340,17 +339,25 @@ public class TelegramActions implements ThingActions {
             } else {
                 // Load image from provided base64 image
                 logger.debug("Photo base64 provided; converting to binary.");
-                try {
-                    InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(photoURL.getBytes("UTF-8")));
-                    try {
-                        byte[] photoBytes = IOUtils.toByteArray(is);
-                        sendPhoto = new SendPhoto(chatId, photoBytes);
-                    } catch (IOException e) {
-                        logger.warn("Malformed base64 string: {}", e.getMessage());
+                final String photoB64Data;
+                if (photoURL.startsWith("data:")) { // support data URI scheme
+                    String[] photoURLParts = photoURL.split(",");
+                    if (photoURLParts.length > 1) {
+                        photoB64Data = photoURLParts[1];
+                    } else {
+                        logger.warn("The provided base64 string is not a valid data URI scheme");
                         return false;
                     }
-                } catch (UnsupportedEncodingException e) {
-                    logger.warn("Cannot parse data fetched from photo URL as an image. Error: {}", e.getMessage());
+                } else {
+                    photoB64Data = photoURL;
+                }
+                InputStream is = Base64.getDecoder()
+                        .wrap(new ByteArrayInputStream(photoB64Data.getBytes(StandardCharsets.UTF_8)));
+                try {
+                    byte[] photoBytes = IOUtils.toByteArray(is);
+                    sendPhoto = new SendPhoto(chatId, photoBytes);
+                } catch (IOException e) {
+                    logger.warn("Malformed base64 string: {}", e.getMessage());
                     return false;
                 }
             }
@@ -387,10 +394,10 @@ public class TelegramActions implements ThingActions {
 
     // legacy delegate methods
     /* APIs without chatId parameter */
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String format,
+    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String message,
             @Nullable Object... args) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(format, args);
+            return ((TelegramActions) actions).sendTelegram(message, args);
         } else {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
@@ -434,10 +441,10 @@ public class TelegramActions implements ThingActions {
 
     /* APIs with chatId parameter */
 
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String format,
+    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String message,
             @Nullable Object... args) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(chatId, format, args);
+            return ((TelegramActions) actions).sendTelegram(chatId, message, args);
         } else {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }

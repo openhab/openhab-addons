@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -47,13 +46,9 @@ public class IntRSModule extends SatelModule {
     /**
      * Creates new instance with port and timeout set to specified values.
      *
-     * @param port
-     *                              serial port the module is connected to
-     * @param serialPortManager
-     *                              serial port manager object
-     * @param timeout
-     *                              timeout value in milliseconds for connect/read/write
-     *                              operations
+     * @param port              serial port the module is connected to
+     * @param serialPortManager serial port manager object
+     * @param timeout           timeout value in milliseconds for connect/read/write operations
      */
     public IntRSModule(String port, SerialPortManager serialPortManager, int timeout) {
         super(timeout);
@@ -109,15 +104,21 @@ public class IntRSModule extends SatelModule {
         }
 
         @Override
-        @Nullable
         public InputStream getInputStream() throws IOException {
-            return this.serialPort.getInputStream();
+            final InputStream stream = this.serialPort.getInputStream();
+            if (stream != null) {
+                return stream;
+            }
+            throw new IOException("Selected port doesn't support receiving data: " + this.serialPort.getName());
         }
 
         @Override
-        @Nullable
         public OutputStream getOutputStream() throws IOException {
-            return this.serialPort.getOutputStream();
+            final OutputStream stream = this.serialPort.getOutputStream();
+            if (stream != null) {
+                return stream;
+            }
+            throw new IOException("Selected port doesn't support sending data: " + this.serialPort.getName());
         }
 
         @Override

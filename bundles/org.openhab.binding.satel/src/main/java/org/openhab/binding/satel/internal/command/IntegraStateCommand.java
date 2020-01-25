@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.satel.internal.command;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraStateEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraStateCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(IntegraStateCommand.class);
@@ -37,11 +39,8 @@ public class IntegraStateCommand extends SatelCommandBase {
     /**
      * Constructs new command instance for specified type of state.
      *
-     * @param stateType
-     *            type of state
-     * @param extended
-     *            if <code>true</code> command will be sent as extended (256
-     *            zones or outputs)
+     * @param stateType type of state
+     * @param extended  if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public IntegraStateCommand(StateType stateType, boolean extended) {
         super(stateType.getRefreshCommand(), extended);
@@ -49,8 +48,7 @@ public class IntegraStateCommand extends SatelCommandBase {
     }
 
     /**
-     * @return <code>true</code> if current command is extended (256
-     *         zones/outputs)
+     * @return <code>true</code> if current command is extended (256 zones/outputs)
      */
     public boolean isExtended() {
         return Arrays.equals(EXTENDED_CMD_PAYLOAD, this.getPayload());

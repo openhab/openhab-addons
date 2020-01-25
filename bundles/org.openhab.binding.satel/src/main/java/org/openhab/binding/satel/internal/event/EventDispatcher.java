@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.satel.internal.event;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class EventDispatcher {
 
     private final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
@@ -33,8 +35,7 @@ public class EventDispatcher {
     /**
      * Add a listener for Satel events.
      *
-     * @param eventListener
-     *            the event listener to add.
+     * @param eventListener the event listener to add.
      */
     public void addEventListener(SatelEventListener eventListener) {
         this.eventListeners.add(eventListener);
@@ -43,8 +44,7 @@ public class EventDispatcher {
     /**
      * Remove a listener for Satel events.
      *
-     * @param eventListener
-     *            the event listener to remove.
+     * @param eventListener the event listener to remove.
      */
     public void removeEventListener(SatelEventListener eventListener) {
         this.eventListeners.remove(eventListener);
@@ -53,8 +53,7 @@ public class EventDispatcher {
     /**
      * Dispatch incoming event to all listeners.
      *
-     * @param event
-     *            the event to distribute.
+     * @param event the event to distribute.
      */
     public void dispatchEvent(SatelEvent event) {
         logger.debug("Distributing event: {}", event);
@@ -63,4 +62,5 @@ public class EventDispatcher {
             listener.incomingEvent(event);
         }
     }
+
 }

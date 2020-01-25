@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,9 +57,10 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
     public void initialize() {
         logger.debug("Initializing handler");
 
-        IntRSConfig config = getConfigAs(IntRSConfig.class);
-        if (StringUtils.isNotBlank(config.getPort())) {
-            SatelModule satelModule = new IntRSModule(config.getPort(), serialPortManager, config.getTimeout());
+        final IntRSConfig config = getConfigAs(IntRSConfig.class);
+        final String port = config.getPort();
+        if (port != null && StringUtils.isNotBlank(port)) {
+            SatelModule satelModule = new IntRSModule(port, serialPortManager, config.getTimeout());
             super.initialize(satelModule);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,

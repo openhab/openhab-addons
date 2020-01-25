@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.satel.internal.command;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 
 /**
@@ -20,14 +21,14 @@ import org.openhab.binding.satel.internal.protocol.SatelMessage;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public abstract class ControlCommand extends SatelCommandBase {
 
     /**
      * Creates new command class instance.
      *
-     * @param commandCode
-     *            command code
-     * @param payload
+     * @param commandCode command code
+     * @param payload     command bytes
      */
     public ControlCommand(byte commandCode, byte[] payload) {
         super(commandCode, payload);

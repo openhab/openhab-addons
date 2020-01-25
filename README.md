@@ -1,22 +1,22 @@
-# openHAB 2 Add-ons
+# openHAB Add-ons
 
 <img align="right" width="220" src="./logo.png" />
 
-[![Build Status](https://travis-ci.org/openhab/openhab2-addons.svg)](https://travis-ci.org/openhab/openhab2-addons)
+[![Build Status](https://travis-ci.org/openhab/openhab-addons.svg)](https://travis-ci.org/openhab/openhab-addons)
 [![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
 [![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
 
-This repository contains the official set of add-ons that are implemented on top of openHAB 2 Core APIs.
+This repository contains the official set of add-ons that are implemented on top of openHAB Core APIs.
 Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
-by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons-maintainers).
+by the [openHAB Add-on maintainers](https://github.com/orgs/openhab/teams/add-ons-maintainers).
 
 To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer.
 
-If you are interested in openHAB 2 Core development, we invite you to come by on https://github.com/openhab/openhab-core.
+If you are interested in openHAB Core development, we invite you to come by on https://github.com/openhab/openhab-core.
 
 ## Add-ons in other repositories
 
-Some add-ons are not in this repository, but still part of the official [openHAB 2 distribution](https://github.com/openhab/openhab-distro).
+Some add-ons are not in this repository, but still part of the official [openHAB distribution](https://github.com/openhab/openhab-distro).
 An incomplete list of other repositories follows below:
 
 * https://github.com/openhab/org.openhab.binding.zwave
@@ -25,9 +25,9 @@ An incomplete list of other repositories follows below:
 
 ## Development / Repository Organization
 
-openHAB 2 add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
+openHAB add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
 
-The openHAB 2 build system is based on [Maven](https://maven.apache.org/what-is-maven.html).
+The openHAB build system is based on [Maven](https://maven.apache.org/what-is-maven.html).
 The official IDE (Integrated development environment) is Eclipse.
 
 You find the following repository structure:
@@ -63,7 +63,12 @@ To build all add-ons from the command-line, type in:
 
 `mvn clean install`
 
-Optionally you can skip tests (`-DskipTests`) or skip some static analysis (`-DskipChecks`) this does  improve the build time but could hide problems in your code. For binding development you want to run that command without skipping checks and tests.
+Optionally you can skip tests (`-DskipTests`) or skip some static analysis (`-DskipChecks`).
+This does improve the build time but could hide problems in your code.
+For binding development you want to run that command without skipping checks and tests.
+To check if your code is following the [code style](https://www.openhab.org/docs/developer/guidelines.html#b-code-formatting-rules-style) run `mvn spotless:check`.
+If Maven prints `[INFO] Spotless check skipped` then run `mvn spotless:check -Dspotless.check.skip=false` instead as the check is not mandatory yet.
+To reformat you code run `mvn spotless:apply`.
 
 Subsequent calls can include the `-o` for offline as in: `mvn clean install -DskipChecks -o` which will be a bit faster.
 

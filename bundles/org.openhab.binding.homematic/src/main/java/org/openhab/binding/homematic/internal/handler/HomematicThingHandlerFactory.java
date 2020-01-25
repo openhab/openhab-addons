@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,6 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomematicThingHandlerFactory} is responsible for creating thing and bridge handlers.
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.homematic")
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(HomematicThingHandlerFactory.class);
 
     private HomematicTypeGenerator typeGenerator;
     private NetworkAddressService networkAddressService;

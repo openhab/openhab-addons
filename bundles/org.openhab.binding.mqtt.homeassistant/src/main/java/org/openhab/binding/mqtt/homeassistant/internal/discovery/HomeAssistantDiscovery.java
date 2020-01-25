@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,6 +129,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     @Override
     public void receivedMessage(ThingUID connectionBridge, MqttBrokerConnection connection, String topic,
             byte[] payload) {
+        resetTimeout();
+
         // For HomeAssistant we need to subscribe to a wildcard topic, because topics can either be:
         // homeassistant/<component>/<node_id>/<object_id>/config OR
         // homeassistant/<component>/<object_id>/config.

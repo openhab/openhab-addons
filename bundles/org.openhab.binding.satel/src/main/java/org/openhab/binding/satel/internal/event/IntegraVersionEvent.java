@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.event;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.types.IntegraType;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.satel.internal.types.IntegraType;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraVersionEvent implements SatelEvent {
 
     private byte type;
@@ -29,14 +31,10 @@ public class IntegraVersionEvent implements SatelEvent {
     /**
      * Constructs new event class.
      *
-     * @param type
-     *            Integra type
-     * @param version
-     *            string describing version number and firmware revision
-     * @param language
-     *            firmware language: 1 - english
-     * @param settingsInFlash
-     *            settings stored in flash memory
+     * @param type            Integra type
+     * @param version         string describing version number and firmware revision
+     * @param language        firmware language: 1 - english
+     * @param settingsInFlash settings stored in flash memory
      */
     public IntegraVersionEvent(byte type, String version, byte language, boolean settingsInFlash) {
         this.type = type;

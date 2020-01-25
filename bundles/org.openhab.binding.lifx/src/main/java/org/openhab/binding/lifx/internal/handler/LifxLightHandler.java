@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -407,6 +407,9 @@ public class LifxLightHandler extends BaseThingHandler {
 
     private Product getProduct() {
         Object propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
+        if (propertyValue == null) {
+            return Product.getLikelyProduct(getThing().getThingTypeUID());
+        }
         try {
             // Without first conversion to double, on a very first thing creation from discovery inbox,
             // the product type is incorrectly parsed, as framework passed it as a floating point number

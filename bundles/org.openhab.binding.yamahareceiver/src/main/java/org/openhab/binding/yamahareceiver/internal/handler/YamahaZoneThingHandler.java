@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -722,6 +722,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
             try {
                 stateUpdatable.update();
             } catch (IOException e) {
+                logger.debug("State update error. Changing thing to offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (ReceivedMessageParseException e) {
                 updateProperty(PROPERTY_LAST_PARSE_ERROR, e.getMessage());

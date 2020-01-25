@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,12 +21,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tec.uom.se.AbstractUnit;
 
 /**
  * Implements a number value.
@@ -46,13 +48,16 @@ public class NumberValue extends Value {
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
     private final BigDecimal step;
+    private final String unit;
 
-    public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step) {
-        super(CoreItemFactory.NUMBER, Stream.of(DecimalType.class, IncreaseDecreaseType.class, UpDownType.class)
+    public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
+            @Nullable String unit) {
+        super(CoreItemFactory.NUMBER, Stream.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class)
                 .collect(Collectors.toList()));
         this.min = min;
         this.max = max;
-        this.step = step == null ? new BigDecimal(1.0) : step;
+        this.step = step == null ? BigDecimal.ONE : step;
+        this.unit = unit == null ? "" : unit;
     }
 
     protected boolean checkConditions(BigDecimal newValue, DecimalType oldvalue) {
@@ -69,9 +74,23 @@ public class NumberValue extends Value {
     }
 
     @Override
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        if (state == UnDefType.UNDEF) {
+            return "";
+        }
+
+        String formatPattern = pattern;
+        if (formatPattern == null || "%s".equals(formatPattern)) {
+            formatPattern = "%f";
+        }
+
+        return state.format(formatPattern);
+    }
+
+    @Override
     public void update(Command command) throws IllegalArgumentException {
         DecimalType oldvalue = (state == UnDefType.UNDEF) ? new DecimalType() : (DecimalType) state;
-        BigDecimal newValue;
+        BigDecimal newValue = null;
         if (command instanceof DecimalType) {
             if (!checkConditions(((DecimalType) command).toBigDecimal(), oldvalue)) {
                 return;
@@ -87,6 +106,23 @@ public class NumberValue extends Value {
                 return;
             }
             state = new DecimalType(newValue);
+        } else if (command instanceof QuantityType<?>) {
+            QuantityType<?> qType = (QuantityType<?>) command;
+
+            if (qType.getUnit().isCompatible(AbstractUnit.ONE)) {
+                newValue = qType.toBigDecimal();
+            } else {
+                qType = qType.toUnit(unit);
+                if (qType != null) {
+                    newValue = qType.toBigDecimal();
+                }
+            }
+            if (newValue != null) {
+                if (!checkConditions(newValue, oldvalue)) {
+                    return;
+                }
+                state = new DecimalType(newValue);
+            }
         } else {
             newValue = new BigDecimal(command.toString());
             if (!checkConditions(newValue, oldvalue)) {
@@ -97,7 +133,20 @@ public class NumberValue extends Value {
     }
 
     @Override
-    public StateDescription createStateDescription(String unit, boolean readOnly) {
-        return new StateDescription(min, max, step, "%s " + unit.replace("%", "%%"), readOnly, Collections.emptyList());
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        StateDescriptionFragmentBuilder builder = super.createStateDescription(readOnly);
+        BigDecimal max = this.max;
+        if (max != null) {
+            builder = builder.withMaximum(max);
+        }
+        BigDecimal min = this.min;
+        if (min != null) {
+            builder = builder.withMinimum(min);
+        }
+        builder = builder.withStep(step);
+        if (this.unit.length() > 0) {
+            builder = builder.withPattern("%s " + this.unit.replace("%", "%%"));
+        }
+        return builder;
     }
 }

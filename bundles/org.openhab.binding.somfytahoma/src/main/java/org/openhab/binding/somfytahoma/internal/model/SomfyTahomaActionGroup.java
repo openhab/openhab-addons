@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,7 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaActionGroup {
     private String oid = "";
     private String label = "";
-    private ArrayList<SomfyTahomaAction> actions = new ArrayList<>();
 
     public String getOid() {
         return oid;
@@ -34,9 +34,5 @@ public class SomfyTahomaActionGroup {
 
     public String getLabel() {
         return label;
-    }
-
-    public ArrayList<SomfyTahomaAction> getActions() {
-        return actions;
     }
 }

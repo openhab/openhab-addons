@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.generic.values.Value;
 
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
@@ -33,7 +36,7 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
             super("MQTT Sensor");
         }
 
-        protected String unit_of_measurement = "";
+        protected @Nullable String unit_of_measurement;
         protected @Nullable String device_class;
         protected boolean force_update = false;
         protected int expire_after = 0;
@@ -48,11 +51,19 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
-        buildChannel(sensorChannelID, new TextValue(), channelConfiguration.name,
-                componentConfiguration.getUpdateListener())//
-                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                        .unit(channelConfiguration.unit_of_measurement)//
-                        .build();
+        Value value;
+
+        String uom = channelConfiguration.unit_of_measurement;
+
+        if (uom != null && StringUtils.isNotBlank(uom)) {
+            value = new NumberValue(null, null, null, uom);
+        } else {
+            value = new TextValue();
+        }
+
+        buildChannel(sensorChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                .build();
     }
 
 }

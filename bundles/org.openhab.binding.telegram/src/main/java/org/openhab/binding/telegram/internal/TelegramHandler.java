@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,9 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
-import java.time.ZonedDateTime;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +35,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -58,10 +60,12 @@ import okhttp3.OkHttpClient;
  * sent to one of the channels.
  *
  * @author Jens Runge - Initial contribution
+ * @author Alexander Krasnogolowy - using Telegram library from pengrad
  */
 @NonNullByDefault
 public class TelegramHandler extends BaseThingHandler {
 
+    @NonNullByDefault
     private class ReplyKey {
 
         final Long chatId;
@@ -95,15 +99,17 @@ public class TelegramHandler extends BaseThingHandler {
 
     private final List<Long> chatIds = new ArrayList<Long>();
     private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
+    private @Nullable ScheduledFuture<?> thingOnlineStatusJob;
 
-    // Keep track of the callback id created by Telegram. This must be sent back in the answerCallbackQuery
+    // Keep track of the callback id created by Telegram. This must be sent back in
+    // the answerCallbackQuery
     // to stop the progress bar in the Telegram client
     private final Map<ReplyKey, String> replyIdToCallbackId = new HashMap<>();
-    // Keep track of message id sent with reply markup because we want to remove the markup after the user provided an
+    // Keep track of message id sent with reply markup because we want to remove the
+    // markup after the user provided an
     // answer and need the id of the original message
     private final Map<ReplyKey, Integer> replyIdToMessageId = new HashMap<>();
 
-    
     private @Nullable TelegramBot bot;
     private @Nullable OkHttpClient botLibClient;
     private @Nullable HttpClient downloadDataClient;
@@ -142,90 +148,115 @@ public class TelegramHandler extends BaseThingHandler {
 
         botLibClient = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS)
                 .build();
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
+        delayThingOnlineStatus();
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
         localBot.setUpdatesListener(updates -> {
-                for (Update update : updates) {
-                    String lastMessageText = null;
-                    Integer lastMessageDate = null;
-                    String lastMessageFirstName = null;
-                    String lastMessageLastName = null;
-                    String lastMessageUsername = null;
-                    Long chatId = null;
-                    String replyId = null;
-                    if (update.message() != null && update.message().text() != null) {
-                        Message message = update.message();
-                        chatId = message.chat().id();
-                        if (!chatIds.contains(chatId)) {
-                            logger.warn(
-                                    "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
-                                    chatId);
-                            continue; // this is very important regarding security to avoid commands from an unknown
-                                      // chat
-                        }
-
-                        lastMessageText = message.text();
-                        lastMessageDate = message.date();
-                        lastMessageFirstName = message.from().firstName();
-                        lastMessageLastName = message.from().lastName();
-                        lastMessageUsername = message.from().username();
-                    } else if (update.callbackQuery() != null && update.callbackQuery().message() != null
-                            && update.callbackQuery().message().text() != null) {
-                        String[] callbackData = update.callbackQuery().data().split(" ", 2);
-
-                        if (callbackData.length == 2) {
-                            replyId = callbackData[0];
-                            lastMessageText = callbackData[1];
-                            lastMessageDate = update.callbackQuery().message().date();
-                            lastMessageFirstName = update.callbackQuery().from().firstName();
-                            lastMessageLastName = update.callbackQuery().from().lastName();
-                            lastMessageUsername = update.callbackQuery().from().username();
-                            chatId = update.callbackQuery().message().chat().id();
-                            replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
-                            logger.debug("Received callbackId {} for chatId {} and replyId {}",
-                                    update.callbackQuery().id(), chatId, replyId);
-                        } else {
-                            logger.warn(
-                                    "The received callback query {} has not the right format (must be seperated by spaces)",
-                                    update.callbackQuery().data());
-                        }
+            cancelThingOnlineStatusJob();
+            updateStatus(ThingStatus.ONLINE);
+            for (Update update : updates) {
+                String lastMessageText = null;
+                Integer lastMessageDate = null;
+                String lastMessageFirstName = null;
+                String lastMessageLastName = null;
+                String lastMessageUsername = null;
+                Long chatId = null;
+                String replyId = null;
+                if (update.message() != null && update.message().text() != null) {
+                    Message message = update.message();
+                    chatId = message.chat().id();
+                    if (!chatIds.contains(chatId)) {
+                        logger.warn(
+                                "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
+                                chatId);
+                        continue; // this is very important regarding security to avoid commands from an unknown
+                                  // chat
                     }
-                    updateChannel(LASTMESSAGETEXT,
-                            lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
-                    updateChannel(LASTMESSAGEDATE,
-                            lastMessageDate != null
-                                    ? new DateTimeType(ZonedDateTime.ofInstant(
-                                            Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
-                                    : UnDefType.NULL);
-                    updateChannel(LASTMESSAGENAME,
-                            (lastMessageFirstName != null || lastMessageLastName != null)
-                                    ? new StringType((lastMessageFirstName != null ? lastMessageFirstName + " " : "")
-                                            + (lastMessageLastName != null ? lastMessageLastName : ""))
-                                    : UnDefType.NULL);
-                    updateChannel(LASTMESSAGEUSERNAME,
-                            lastMessageUsername != null ? new StringType(lastMessageUsername) : UnDefType.NULL);
-                    updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
-                    updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
+
+                    lastMessageText = message.text();
+                    lastMessageDate = message.date();
+                    lastMessageFirstName = message.from().firstName();
+                    lastMessageLastName = message.from().lastName();
+                    lastMessageUsername = message.from().username();
+                } else if (update.callbackQuery() != null && update.callbackQuery().message() != null
+                        && update.callbackQuery().message().text() != null) {
+                    String[] callbackData = update.callbackQuery().data().split(" ", 2);
+
+                    if (callbackData.length == 2) {
+                        replyId = callbackData[0];
+                        lastMessageText = callbackData[1];
+                        lastMessageDate = update.callbackQuery().message().date();
+                        lastMessageFirstName = update.callbackQuery().from().firstName();
+                        lastMessageLastName = update.callbackQuery().from().lastName();
+                        lastMessageUsername = update.callbackQuery().from().username();
+                        chatId = update.callbackQuery().message().chat().id();
+                        replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
+                        logger.debug("Received callbackId {} for chatId {} and replyId {}", update.callbackQuery().id(),
+                                chatId, replyId);
+                    } else {
+                        logger.warn(
+                                "The received callback query {} has not the right format (must be seperated by spaces)",
+                                update.callbackQuery().data());
+                    }
                 }
-                return UpdatesListener.CONFIRMED_UPDATES_ALL;
+                updateChannel(LASTMESSAGETEXT,
+                        lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
+                updateChannel(LASTMESSAGEDATE,
+                        lastMessageDate != null
+                                ? new DateTimeType(ZonedDateTime
+                                        .ofInstant(Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
+                                : UnDefType.NULL);
+                updateChannel(LASTMESSAGENAME, (lastMessageFirstName != null || lastMessageLastName != null)
+                        ? new StringType((lastMessageFirstName != null ? lastMessageFirstName + " " : "")
+                                + (lastMessageLastName != null ? lastMessageLastName : ""))
+                        : UnDefType.NULL);
+                updateChannel(LASTMESSAGEUSERNAME,
+                        lastMessageUsername != null ? new StringType(lastMessageUsername) : UnDefType.NULL);
+                updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
+                updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
+            }
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
         }, exception -> {
-                if (exception != null) {
-                    logger.warn("Telegram exception: {}", exception.getMessage());
-                    if (exception.response() != null) {
-                        BaseResponse localResponse = exception.response();
-                        if (localResponse.errorCode() == 401) {
-                            logger.error("Bot token invalid, disable thing {}", getThing().getUID());
-                            localBot.removeGetUpdatesListener();
-                            updateStatus(ThingStatus.OFFLINE);
-                        }
+            if (exception != null) {
+                if (exception.response() != null) {
+                    BaseResponse localResponse = exception.response();
+                    if (localResponse.errorCode() == 401) { // unauthorized
+                        cancelThingOnlineStatusJob();
+                        localBot.removeGetUpdatesListener();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
+                        return;
                     }
+                }
+                if (exception.getCause() != null) { // cause is only non-null in case of an IOException
+                    cancelThingOnlineStatusJob();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
+                    delayThingOnlineStatus();
+                    return;
+                }
+                logger.warn("Telegram exception: {}", exception.getMessage());
             }
         });
+    }
+
+    private synchronized void delayThingOnlineStatus() {
+        thingOnlineStatusJob = scheduler.schedule(() -> {
+            // if no error was returned within 10s, we assume the initialization went well
+            updateStatus(ThingStatus.ONLINE);
+        }, 10, TimeUnit.SECONDS);
+    }
+
+    private synchronized void cancelThingOnlineStatusJob() {
+        if (thingOnlineStatusJob != null) {
+            thingOnlineStatusJob.cancel(true);
+            thingOnlineStatusJob = null;
+        }
     }
 
     @Override
     public void dispose() {
         logger.debug("Trying to dispose Telegram client");
+        cancelThingOnlineStatusJob();
         OkHttpClient localClient = botLibClient;
         TelegramBot localBot = bot;
         if (localClient != null && localBot != null) {
@@ -276,8 +307,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     @Nullable
-    public HttpClient getClient()
-    {
+    public HttpClient getClient() {
         return downloadDataClient;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
-import java.util.Locale;
-
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.homematic.type.HomematicThingTypeExcluder;
 
 /**
  * Extends the ChannelTypeProvider to manually add a ChannelType.

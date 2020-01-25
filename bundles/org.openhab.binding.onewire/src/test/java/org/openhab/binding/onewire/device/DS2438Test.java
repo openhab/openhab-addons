@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.DS2438;
@@ -32,12 +34,12 @@ import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class DS2438Test extends DeviceTestParent {
+@NonNullByDefault
+public class DS2438Test extends DeviceTestParent<DS2438> {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_MS_TH);
-        deviceTestClazz = DS2438.class;
+        setupMocks(THING_TYPE_MS_TX, DS2438.class);
 
         addChannel(CHANNEL_TEMPERATURE, "Number:Temperature");
         addChannel(CHANNEL_HUMIDITY, "Number:Dimensionless");
@@ -51,7 +53,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -73,7 +76,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -101,7 +105,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void voltageChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -123,7 +128,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void currentChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -146,7 +152,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void lightChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -155,13 +162,13 @@ public class DS2438Test extends DeviceTestParent {
             testDevice.enableChannel(CHANNEL_LIGHT);
             testDevice.configureChannels();
             inOrder.verify(mockThingHandler).getThing();
-            ((DS2438) testDevice).setLightSensorType(LightSensorType.ELABNET_V1);
+            testDevice.setLightSensorType(LightSensorType.ELABNET_V1);
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
             inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_LIGHT), eq(new QuantityType<>("97442 lx")));
 
-            ((DS2438) testDevice).setLightSensorType(LightSensorType.ELABNET_V2);
+            testDevice.setLightSensorType(LightSensorType.ELABNET_V2);
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
@@ -175,7 +182,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void supplyVoltageChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -197,7 +205,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void noChannel() {
-        instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

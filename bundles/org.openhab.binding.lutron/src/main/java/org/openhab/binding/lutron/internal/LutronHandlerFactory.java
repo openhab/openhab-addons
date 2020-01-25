@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
                 || HW_DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+    // Marked as Nullable only to fix incorrect redundant null check complaints after adding null annotations
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
@@ -209,7 +210,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Register a discovery service for an IP bridge handler.
      *
-     * @param thingHandler bridge handler for which to register the discovery service
+     * @param bridgeHandler bridge handler for which to register the discovery service
      */
     private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
         logger.debug("Registering discovery service.");

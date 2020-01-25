@@ -10,6 +10,7 @@
 		<label>Somfy Smoke Sensor</label>
 		<channels>
 			<channel id="contact" typeId="contact"></channel>
+			<channel id="alarm_check" typeId="alarm_check"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,10 +78,18 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
         if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("SONOS")) {
                 String modelName = getModelName(device);
-                if (modelName.equals("ZP80")) {
-                    modelName = "CONNECT";
-                } else if (modelName.equals("ZP100")) {
-                    modelName = "CONNECTAMP";
+                switch (modelName) {
+                    case "ZP80":
+                        modelName = "CONNECT";
+                        break;
+                    case "ZP100":
+                        modelName = "CONNECTAMP";
+                        break;
+                    case "One SL":
+                        modelName = "One";
+                        break;
+                    default:
+                        break;
                 }
                 ThingTypeUID thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
                 if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {

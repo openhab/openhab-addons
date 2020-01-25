@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,15 +121,21 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         }
 
         if (data.isReadOnly()) {
-            logger.warn("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
+            logger.trace("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 
         final CompletableFuture<Boolean> future = data.publishValue(command);
-        future.exceptionally(e -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            return false;
-        }).thenRun(() -> logger.debug("Successfully published value {} to topic {}", command, data.getCommandTopic()));
+        future.handle((v, ex) -> {
+            if (ex != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getLocalizedMessage());
+                logger.debug("Failed publishing value {} to topic {}: {}", command, data.getCommandTopic(),
+                        ex.getMessage());
+            } else {
+                logger.debug("Successfully published value {} to topic {}", command, data.getCommandTopic());
+            }
+            return null;
+        });
     }
 
     @Override
@@ -216,7 +222,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         try {
             unsubscribeAll().get(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.warn("unsubcription on disposal failed for {}: ", thing.getUID(), e);
+            logger.warn("unsubscription on disposal failed for {}: ", thing.getUID(), e);
         }
         connection = null;
         super.dispose();

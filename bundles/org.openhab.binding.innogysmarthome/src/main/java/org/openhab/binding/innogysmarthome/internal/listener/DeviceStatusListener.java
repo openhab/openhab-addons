@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
 
@@ -20,6 +21,7 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 public interface DeviceStatusListener {
 
     /**

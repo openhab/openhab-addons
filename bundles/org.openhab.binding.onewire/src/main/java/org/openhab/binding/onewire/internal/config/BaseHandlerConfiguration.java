@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link BaseHandlerConfiguration} is a helper class for the base thing handler configuration
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class BaseHandlerConfiguration {
-    public String id;
+    public @Nullable String id;
     public int refresh = 300;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,35 +15,36 @@ package org.openhab.binding.onewire.test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_OWSERVER;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
+import org.junit.Assert;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 
 /**
  * Base class for thing handler tests.
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractThingHandlerTest extends JavaTest {
 
     protected Map<String, Object> bridgeProperties = new HashMap<>();
@@ -52,34 +53,48 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
     protected Map<String, Object> channelProperties = new HashMap<>();
 
     @Mock
+    @NonNullByDefault({})
     protected ThingHandlerCallback thingHandlerCallback;
 
     @Mock
+    @NonNullByDefault({})
     protected OwDynamicStateDescriptionProvider stateProvider;
 
     @Mock
+    @NonNullByDefault({})
     protected ThingHandlerCallback bridgeHandlerCallback;
 
     @Mock
+    @NonNullByDefault({})
     protected OwserverBridgeHandler bridgeHandler;
 
     @Mock
+    @NonNullByDefault({})
     protected OwserverBridgeHandler secondBridgeHandler;
 
     protected List<Channel> channels = new ArrayList<Channel>();
 
-    protected Bridge bridge;
-    protected Thing thing;
-    protected OwBaseThingHandler thingHandler;
+    protected @Nullable Bridge bridge;
+    protected @Nullable Thing thing;
+    protected @Nullable OwBaseThingHandler thingHandler;
 
-    protected InOrder inOrder;
+    protected @Nullable InOrder inOrder;
 
     @After
     public void tearDown() {
-        thingHandler.dispose();
+        final ThingHandler thingHandler = this.thingHandler;
+        if (thingHandler != null) {
+            thingHandler.dispose();
+        }
     }
 
     protected void initializeHandlerMocks() {
+        final ThingHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
+            Assert.fail("thingHandler is null");
+            return;
+        }
+
         thingHandler.getThing().setHandler(thingHandler);
         thingHandler.setCallback(thingHandlerCallback);
 
@@ -93,29 +108,29 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
 
     public void initializeBridge() throws OwException {
         bridgeProperties = new HashMap<>();
-        bridge = BridgeBuilder.create(THING_TYPE_OWSERVER, "testbridge").withLabel("Test Bridge")
+        final Bridge bridge = BridgeBuilder.create(THING_TYPE_OWSERVER, "testbridge").withLabel("Test Bridge")
                 .withConfiguration(new Configuration(bridgeProperties)).build();
-
         bridge.setHandler(bridgeHandler);
+        this.bridge = bridge;
 
         Mockito.doAnswer(answer -> {
             ((Thing) answer.getArgument(0)).setStatusInfo(answer.getArgument(1));
             return null;
         }).when(bridgeHandlerCallback).statusUpdated(any(), any());
 
-        Mockito.doAnswer(answer -> {
-            return OnOffType.ON;
-        }).when(bridgeHandler).checkPresence(any());
+        Mockito.doAnswer(answer -> OnOffType.ON).when(bridgeHandler).checkPresence(any());
+
+        Mockito.doAnswer(answer -> new DecimalType(10)).when(bridgeHandler).readDecimalType(any(), any());
+
+        Mockito.doAnswer(answer -> new BitSet(8)).when(bridgeHandler).readBitSet(any(), any());
 
         Mockito.doAnswer(answer -> {
-            return new DecimalType(10);
-        }).when(bridgeHandler).readDecimalType(any(), any());
+            final OwBaseThingHandler thingHandler = this.thingHandler;
+            if (thingHandler == null) {
+                Assert.fail("thingHandler is null");
+                return null;
+            }
 
-        Mockito.doAnswer(answer -> {
-            return new BitSet(8);
-        }).when(bridgeHandler).readBitSet(any(), any());
-
-        Mockito.doAnswer(answer -> {
             thingHandler.updateSensorProperties(secondBridgeHandler);
             thingHandler.initialize();
             return null;

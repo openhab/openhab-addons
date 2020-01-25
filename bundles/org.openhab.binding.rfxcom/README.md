@@ -765,10 +765,10 @@ end
 
 | Brand | What          | Action      | Command ID | Supported | Source | 
 |-------|---------------|-------------|------------|-----------|--------|
-| Kerui | Motion Sensor | Motion      | 10         | as ON     | [#3103](https://github.com/openhab/openhab2-addons/issues/3103) |
-| Kerui | Door Contact  | door open   | 14         | as OFF    | [#3103](https://github.com/openhab/openhab2-addons/issues/3103) |
-| Kerui | Door Contact  | door closed | 7          | as ON     | [#3103](https://github.com/openhab/openhab2-addons/issues/3103) |
-| Kerui | Door Contact  | tamper      | 7          | as ON     | [#3103](https://github.com/openhab/openhab2-addons/issues/3103) |
+| Kerui | Motion Sensor | Motion      | 10         | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | door open   | 14         | as OFF    | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | door closed | 7          | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | tamper      | 7          | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
 
 ### lighting5 - RFXCOM Lighting5 Actuator
 

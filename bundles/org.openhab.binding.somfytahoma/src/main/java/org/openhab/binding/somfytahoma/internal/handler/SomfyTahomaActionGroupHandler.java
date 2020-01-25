@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaActionGroupHandler} is responsible for handling commands,
@@ -31,8 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaActionGroupHandler.class);
 
     public SomfyTahomaActionGroupHandler(Thing thing) {
         super(thing);
@@ -50,7 +46,6 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Action group: {} received command: {}", channelUID.getId(), command);
         if (EXECUTE_ACTION.equals(channelUID.getId()) && command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
                 executeActionGroup();

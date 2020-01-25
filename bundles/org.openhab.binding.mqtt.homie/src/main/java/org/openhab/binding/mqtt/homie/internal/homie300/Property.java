@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -138,8 +138,8 @@ public class Property implements AttributeChanged {
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                    .withStateDescription(
-                            channelState.getCache().createStateDescription(attributes.unit, !attributes.settable))
+                    .withStateDescription(channelState.getCache().createStateDescription(!attributes.settable).build()
+                            .toStateDescription())
                     .build();
         } else {
             if (attributes.datatype.equals(DataTypeEnum.enum_)) {
@@ -193,7 +193,7 @@ public class Property implements AttributeChanged {
                     step = new BigDecimal(1);
                 }
 
-                value = new NumberValue(min, max, step);
+                value = new NumberValue(min, max, step, attributes.unit);
                 break;
             case string_:
             case unknown:

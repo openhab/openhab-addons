@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,15 +37,16 @@ public class P1TelegramParserTest {
     @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "ace4000", 57, },
+            { "ace4000", 59, },
             { "dsmr_40", 39, },
             { "dsmr_42", 39, },
             { "dsmr_50", 41, },
+            { "flu5", 21, },
             { "Iskra_AM550", 41, },
             { "Landis_Gyr_E350", 10, },
             { "Landis_Gyr_ZCF110", 25, },
             { "Sagemcom_XS210", 41, },
-            { "smarty", 24, },
+            { "smarty", 28, },
         });
     }
     // @formatter:on

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -176,7 +176,6 @@ public abstract class RpcClient<T> {
             // The configuration channel only has a MASTER Paramset, so there is nothing to load
             return;
         }
-
         RpcRequest<T> request = createRpcRequest("getParamsetDescription");
         request.addArg(getRpcAddress(channel.getDevice().getAddress()) + getChannelSuffix(channel));
         request.addArg(paramsetType.toString());
@@ -327,7 +326,7 @@ public abstract class RpcClient<T> {
             request = createRpcRequest("putParamset");
             request.addArg(getRpcAddress(dp.getChannel().getDevice().getAddress()) + getChannelSuffix(dp.getChannel()));
             request.addArg(HmParamsetType.MASTER.toString());
-            Map<String, Object> paramSet = new HashMap<String, Object>();
+            Map<String, Object> paramSet = new HashMap<>();
             paramSet.put(dp.getName(), value);
             request.addArg(paramSet);
             configureRxMode(request, rxMode);

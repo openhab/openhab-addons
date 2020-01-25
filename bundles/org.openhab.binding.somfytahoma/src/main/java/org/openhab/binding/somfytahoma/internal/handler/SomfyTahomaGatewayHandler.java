@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,13 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
@@ -33,36 +34,29 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGatewayHandler.class);
-
     public SomfyTahomaGatewayHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void initialize() {
-        updateStatus(getBridge().getStatus());
+    public void refresh(String channel) {
+        String id = getGateWayId();
+        SomfyTahomaStatus status = getTahomaStatus(id);
+        String tahomaStatus = status.getStatus();
+        Channel ch = thing.getChannel(channel);
+        if (ch != null) {
+            updateState(ch.getUID(), new StringType(tahomaStatus));
+        }
+        //update the firmware property
+        String fw = status.getProtocolVersion();
+        if (fw != null) {
+            updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
+        }
+        updateStatus("DISCONNECTED".equals(tahomaStatus) ? ThingStatus.OFFLINE : ThingStatus.ONLINE);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
-        if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
-        }
-    }
-
-    @Override
-    public void updateChannelState(ChannelUID channelUID) {
-        if (STATUS.equals(channelUID.getId())) {
-            String id = getThing().getConfiguration().get("id").toString();
-            updateState(channelUID, new StringType(getTahomaStatus(id)));
-            //update the firmware property
-            String fw = getTahomaVersion(id);
-            if (fw != null) {
-                updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
-            }
-        }
+    public String getGateWayId() {
+        return getThing().getConfiguration().get("id").toString();
     }
 
 }

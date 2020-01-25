@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 /*
  * This file is based on:
  *
@@ -60,8 +59,6 @@ public class ServiceCommand<T> {
     protected String target;
     protected Function<JsonObject, T> converter;
 
-    int requestId;
-
     ResponseListener<T> responseListener;
 
     public ServiceCommand(String targetURL, JsonObject payload, Function<JsonObject, T> converter,
@@ -71,8 +68,6 @@ public class ServiceCommand<T> {
         this.converter = converter;
         this.responseListener = listener;
         this.type = Type.request;
-        requestId = -1;
-
     }
 
     public JsonElement getPayload() {
@@ -101,8 +96,7 @@ public class ServiceCommand<T> {
 
     @Override
     public String toString() {
-        return "ServiceCommand [requestId=" + requestId + ", type=" + type + ", target=" + target + ", payload="
-                + payload + "]";
+        return "ServiceCommand [type=" + type + ", target=" + target + ", payload=" + payload + "]";
     }
 
 }

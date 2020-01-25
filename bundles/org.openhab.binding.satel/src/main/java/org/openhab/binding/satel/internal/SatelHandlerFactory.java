@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -30,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
@@ -54,6 +57,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Krzysztof Goworek - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.satel")
+@NonNullByDefault
 public class SatelHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
@@ -62,7 +66,7 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
 
-    private SerialPortManager serialPortManager;
+    private @Nullable SerialPortManager serialPortManager;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -70,8 +74,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         ThingUID effectiveUID = thingUID;
         if (effectiveUID == null) {
             if (DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -84,7 +88,7 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (Ethm1BridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -92,9 +96,15 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (IntRSBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            SatelBridgeHandler bridgeHandler = new IntRSBridgeHandler((Bridge) thing, serialPortManager);
-            registerDiscoveryService(bridgeHandler);
-            return bridgeHandler;
+            final SerialPortManager serialPortManager = this.serialPortManager;
+            if (serialPortManager != null) {
+                SatelBridgeHandler bridgeHandler = new IntRSBridgeHandler((Bridge) thing, serialPortManager);
+                registerDiscoveryService(bridgeHandler);
+                return bridgeHandler;
+            } else {
+                throw new IllegalStateException(
+                        "Unable to create INT-RS bridge thing. The serial port manager is missing.");
+            }
         } else if (SatelZoneHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SatelZoneHandler(thing);
         } else if (SatelOutputHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -114,6 +124,7 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @SuppressWarnings("null")
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         super.removeHandler(thingHandler);
@@ -136,14 +147,14 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDiscoveryService(SatelBridgeHandler bridgeHandler) {
         SatelDeviceDiscoveryService discoveryService = new SatelDeviceDiscoveryService(bridgeHandler,
-                (thingTypeUID) -> getThingTypeByUID(thingTypeUID));
+                this::resolveThingType);
         ServiceRegistration<?> discoveryServiceRegistration = bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceRegistration);
     }
 
-    private ThingUID getDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
-            ThingUID bridgeUID) {
+    private ThingUID getDeviceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration,
+            @Nullable ThingUID bridgeUID) {
         String deviceId;
         if (THING_TYPE_SHUTTER.equals(thingTypeUID)) {
             deviceId = String.format("%s-%s", configuration.get(SatelThingConfig.UP_ID),
@@ -151,7 +162,15 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
         } else {
             deviceId = String.valueOf(configuration.get(SatelThingConfig.ID));
         }
-        return new ThingUID(thingTypeUID, deviceId, bridgeUID.getId());
+        return bridgeUID != null ? new ThingUID(thingTypeUID, deviceId, bridgeUID.getId())
+                : new ThingUID(thingTypeUID, deviceId);
     }
 
+    private ThingType resolveThingType(ThingTypeUID thingTypeUID) {
+        final ThingType result = super.getThingTypeByUID(thingTypeUID);
+        if (result != null) {
+            return result;
+        }
+        throw new IllegalArgumentException("Invalid thing type provided: " + thingTypeUID);
+    }
 }

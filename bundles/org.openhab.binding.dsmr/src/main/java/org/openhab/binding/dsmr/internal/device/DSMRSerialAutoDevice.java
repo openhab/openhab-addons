@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,18 +40,18 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      * Enum to keep track of the internal state of {@link DSMRSerialAutoDevice}.
      */
     enum DeviceState {
-    /**
-     * Discovers the settings of the serial port.
-     */
-    DISCOVER_SETTINGS,
-    /**
-     * Device is receiving telegram data from the serial port.
-     */
-    NORMAL,
-    /**
-     * Communication with serial port isn't working.
-     */
-    ERROR
+        /**
+         * Discovers the settings of the serial port.
+         */
+        DISCOVER_SETTINGS,
+        /**
+         * Device is receiving telegram data from the serial port.
+         */
+        NORMAL,
+        /**
+         * Communication with serial port isn't working.
+         */
+        ERROR
     }
 
     /**

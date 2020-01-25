@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.types.StateType;
 
 /**
@@ -23,6 +24,7 @@ import org.openhab.binding.satel.internal.types.StateType;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraStateEvent implements SatelEvent {
 
     private byte command;
@@ -33,8 +35,8 @@ public class IntegraStateEvent implements SatelEvent {
     /**
      * Constructs new event instance from given state type and state bits.
      *
-     * @param command the command byte
-     * @param stateBits state bits as byte array
+     * @param command      the command byte
+     * @param stateBits    state bits as byte array
      * @param extendedData whether state bits are for extended command
      */
     public IntegraStateEvent(byte command, byte[] stateBits, boolean extendedData) {
@@ -69,20 +71,17 @@ public class IntegraStateEvent implements SatelEvent {
         if (stateType.getStartByte() == 0 && bitsCount == stateBits.size()) {
             return stateBits;
         }
-        BitSet result = stateBitsMap.get(stateType);
-        if (result == null) {
-            int startBit = stateType.getStartByte() * 8;
-            result = stateBits.get(startBit, startBit + bitsCount);
-            stateBitsMap.put(stateType, result);
-        }
-        return result;
+        return stateBitsMap.computeIfAbsent(stateType, k -> {
+            int startBit = k.getStartByte() * 8;
+            return stateBits.get(startBit, startBit + bitsCount);
+        });
     }
 
     /**
      * Returns <code>true</code> if specified state bit is set for given state.
      *
      * @param stateType type of state
-     * @param nbr state bit number
+     * @param nbr       state bit number
      * @return <code>true</code> if state bit is set
      */
     public boolean isSet(StateType stateType, int nbr) {

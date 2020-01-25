@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,14 @@ import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
  *
  * @author Martin Raepple - Initial contribution
  */
+
 @NonNullByDefault
 public interface NanoleafControllerListener {
 
     /**
      * This method is called after the bridge thing handler fetched the controller info
      *
-     * @param bridge         the Nanoleaf controller.
+     * @param bridge the Nanoleaf controller.
      * @param controllerInfo the controller data with panel information
      */
     void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -277,7 +277,7 @@ public class ByteArrayFileCache {
     String getFileExtension(String fileName) {
         int extensionPos = fileName.lastIndexOf(EXTENSION_SEPARATOR);
         int lastSeparatorPos = Math.max(fileName.lastIndexOf(UNIX_SEPARATOR), fileName.lastIndexOf(WINDOWS_SEPARATOR));
-        return lastSeparatorPos > extensionPos ? null : fileName.substring(extensionPos + 1);
+        return lastSeparatorPos > extensionPos ? null : fileName.substring(extensionPos + 1).replaceFirst("\\?.*$", "");
     }
 
     /**
@@ -293,7 +293,7 @@ public class ByteArrayFileCache {
             byte[] md5Hash = md.digest(bytesOfKey);
             BigInteger bigInt = new BigInteger(1, md5Hash);
             String fileNameHash = bigInt.toString(16);
-            // Now we need to zero pad it if you actually want the full 32 chars
+            // We need to zero pad it if you actually want the full 32 chars
             while (fileNameHash.length() < 32) {
                 fileNameHash = "0" + fileNameHash;
             }

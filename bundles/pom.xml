@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>2.5.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -17,8 +16,6 @@
 
   <modules>
     <!-- io -->
-    <!-- temporarily disabled due to malfunction -->
-    <!--module>org.openhab.io.azureiothub</module-->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
@@ -116,6 +113,7 @@
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lametrictime</module>
     <module>org.openhab.binding.leapmotion</module>
+    <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
@@ -128,11 +126,13 @@
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcp23017</module>
+    <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.miio</module>
+    <module>org.openhab.binding.millheat</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
@@ -169,6 +169,7 @@
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
+    <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
@@ -187,6 +188,7 @@
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
+    <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sinope</module>
@@ -209,7 +211,6 @@
     <module>org.openhab.binding.telegram</module>    
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
-    <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
@@ -219,6 +220,7 @@
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
+    <module>org.openhab.binding.weathercompany</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
@@ -289,7 +291,7 @@
   </dependencies>
 
   <properties>
-    <dep.noembedding></dep.noembedding>
+    <dep.noembedding/>
   </properties>
 
   <build>

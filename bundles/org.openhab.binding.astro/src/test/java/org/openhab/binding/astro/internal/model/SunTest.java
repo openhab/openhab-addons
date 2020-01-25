@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,9 +27,9 @@ import org.openhab.binding.astro.internal.util.PropertyUtils;
 /***
  * A set of standard unit test of {@link Sun} class. In particular it checks if
  * {@link Sun#getAllRanges()} contains a correct {@link SunPhaseName}.
- * 
+ *
  * @author Witold Markowski - Initial contribution
- * @see <a href="https://github.com/openhab/openhab2-addons/issues/5006">[astro]
+ * @see <a href="https://github.com/openhab/openhab-addons/issues/5006">[astro]
  *      Sun Phase returns UNDEF</a>
  */
 public class SunTest {
