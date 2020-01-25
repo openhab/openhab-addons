@@ -46,19 +46,17 @@ While the CLASSIC driver lets you choose and run device internal programs (e.g. 
 all normal operations (e.g. turn on or off, switch color, etc.) are performed immediately and
 without any fading effect.
 
-If you prefer to switch colors smoothly and to turn your light on and off by slightly increasing/decreasing the brightness,
-you should try the FADING driver.  If selected, you can also set the number of fading steps and the fading duration in the
-Thing configuration.  Each fading step will at least take 10 ms to be processed. This limit comes from the speed of the LED
-controller and your network speed. Thus a color fading with a configured fading duration of 0s might still take some time;
-count on more than 1 second for 100 steps.  If the FADING driver is chosen, the program and the programSpeed channels will
-not have any effect.
+If you prefer to switch colors smoothly and to turn your light on and off by slightly increasing/decreasing the brightness, you should try the FADING driver.
+If selected, you can also set the number of fading steps and the fading duration in the Thing configuration.
+Each fading step will at least take 10 ms to be processed. This limit comes from the speed of the LED controller and your network speed.
+Thus a color fading with a configured fading duration of 0s might still take some time; count on more than 1 second for 100 steps.
+If the FADING driver is chosen, the program and the programSpeed channels will not have any effect.
 
-The polling period is a parameter only used by the CLASSIC driver and specifies the time in seconds after the LED state is
-refreshed in openHAB.
+The polling period is a parameter only used by the CLASSIC driver and specifies the time in seconds after the LED state is refreshed in openHAB.
 
 ### Device Discovery
 
-If the automatic discovery fails, you have to set the IP address and the port of your device manually.  Make sure that the
+If the automatic discovery fails, you have to set the IP address and the port of your device manually.  Make sure that the 
 device protocol matches your device type.
 
 ## Channels
