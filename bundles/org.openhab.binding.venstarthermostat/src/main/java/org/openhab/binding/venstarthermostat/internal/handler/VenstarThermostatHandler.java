@@ -37,7 +37,6 @@ import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
-import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -101,8 +101,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         super(thing);
         httpClient = new HttpClient(new SslContextFactory(true));
         gson = new GsonBuilder().registerTypeAdapter(VenstarSystemState.class, new VenstarSystemStateSerializer())
-                .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer())
-                .create();
+                .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer()).create();
 
         log.trace("VenstarThermostatHandler for thing {}", getThing().getUID());
     }
@@ -163,10 +162,10 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             } else if (channelUID.getId().equals(CHANNEL_SYSTEM_MODE)) {
                 VenstarSystemMode value;
                 if (command instanceof StringType) {
-                    value = VenstarSystemMode.valueOf(((StringType)command).toString().toUpperCase());
+                    value = VenstarSystemMode.valueOf(((StringType) command).toString().toUpperCase());
 
                 } else {
-                    value = VenstarSystemMode.fromInt(((DecimalType)command).intValue());
+                    value = VenstarSystemMode.fromInt(((DecimalType) command).intValue());
                 }
                 log.debug("Setting system mode to  {}", value);
                 setSystemMode(value);

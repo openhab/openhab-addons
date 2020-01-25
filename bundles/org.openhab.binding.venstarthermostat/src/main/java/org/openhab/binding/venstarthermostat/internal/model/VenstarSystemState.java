@@ -13,7 +13,7 @@
 package org.openhab.binding.venstarthermostat.internal.model;
 
 /**
- * The {@link VenstarSystemState} represents the value of the system state 
+ * The {@link VenstarSystemState} represents the value of the system state
  * returneda from the REST API.
  *
  * @author William Welliver - Initial contribution
@@ -48,13 +48,13 @@ public enum VenstarSystemState {
     }
 
     public static VenstarSystemState fromInt(int state) {
-        for(VenstarSystemState ss: values()) {
+        for (VenstarSystemState ss : values()) {
             if (ss.state == state) {
                 return ss;
             }
         }
 
-        throw(new IllegalArgumentException("Invalid system state " + state));
+        throw (new IllegalArgumentException("Invalid system state " + state));
 
     }
 }

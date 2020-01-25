@@ -62,7 +62,7 @@
 		<item-type>Number</item-type>
 		<label>System Mode (Raw)</label>
 		<description>Current System Operating Mode, as an integer number</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="systemState">
@@ -84,7 +84,7 @@
 		<item-type>Number</item-type>
 		<label>System State (Raw)</label>
 		<description>Current System Operating State, as an integer</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="heatingSetpoint">

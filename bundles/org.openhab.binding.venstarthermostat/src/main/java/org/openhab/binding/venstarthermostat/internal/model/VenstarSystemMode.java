@@ -13,7 +13,7 @@
 package org.openhab.binding.venstarthermostat.internal.model;
 
 /**
- * The {@link VenstarSystemMode} represents the value of the system mode returned 
+ * The {@link VenstarSystemMode} represents the value of the system mode returned
  * from the REST API.
  *
  * @author William Welliver - Initial contribution
@@ -47,12 +47,12 @@ public enum VenstarSystemMode {
     }
 
     public static VenstarSystemMode fromInt(int mode) {
-        for (VenstarSystemMode sm: values()) {
+        for (VenstarSystemMode sm : values()) {
             if (sm.mode == mode) {
                 return sm;
             }
         }
 
-        throw(new IllegalArgumentException("Invalid system mode " + mode));
+        throw (new IllegalArgumentException("Invalid system mode " + mode));
     }
 }

@@ -65,7 +65,8 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Background Scan");
         stopBackgroundDiscovery();
-        scheduledFuture = scheduler.scheduleAtFixedRate(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        scheduledFuture = scheduler.scheduleAtFixedRate(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     @Override
