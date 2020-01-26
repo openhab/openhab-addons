@@ -21,4 +21,5 @@ package org.openhab.binding.xmltv.internal.configuration;
 public class XmlTVConfiguration {
     public String filePath;
     public Integer refresh;
+    public String encoding;
 }
