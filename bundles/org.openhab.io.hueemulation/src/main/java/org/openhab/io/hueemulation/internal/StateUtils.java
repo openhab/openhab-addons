@@ -413,4 +413,48 @@ public class StateUtils {
         }
         return t;
     }
+
+    /**
+     * Compute the hue state from a given item state and a device type.
+     * If the item state matches the last command. the hue state is adjusted
+     * to use the values from the last hue state change. This is done to prevent
+     * Alexa reporting device errors.
+     * 
+     * @param itemState The item state
+     * @param deviceType The device type
+     * @param lastCommand The last command
+     * @param lastHueChange The last hue state change
+     * @return A hue light state
+     */
+    public static AbstractHueState adjustedColorStateFromItemState(State itemState, @Nullable DeviceType deviceType,
+            @Nullable Command lastCommand, @Nullable HueStateChange lastHueChange) {
+
+        AbstractHueState hueState = colorStateFromItemState(itemState, deviceType);
+
+        if (lastCommand != null && lastHueChange != null) {
+            if (lastCommand instanceof HSBType) {
+                if (itemState.as(HSBType.class).equals(lastCommand)) {
+                    HueStateColorBulb c = hueState.as(HueStateColorBulb.class);
+
+                    if (lastHueChange.bri != null) {
+                        c.bri = lastHueChange.bri;
+                    }
+                    if (lastHueChange.hue != null) {
+                        c.hue = lastHueChange.hue;
+                    }
+                    if (lastHueChange.sat != null) {
+                        c.sat = lastHueChange.sat;
+                    }
+                }
+            } else if (lastCommand instanceof PercentType) {
+                if (itemState.as(PercentType.class).equals(lastCommand)) {
+                    if (lastHueChange.bri != null) {
+                        hueState.as(HueStateBulb.class).bri = lastHueChange.bri;
+                    }
+                }
+            }
+        }
+
+        return hueState;
+    }
 }

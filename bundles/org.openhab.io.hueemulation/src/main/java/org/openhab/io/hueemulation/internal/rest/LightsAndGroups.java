@@ -380,6 +380,8 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }
+            hueDevice.lastCommand = command;
+            hueDevice.lastHueChange = newState;
         }
 
         return Response.ok(cs.gson.toJson(responses, new TypeToken<List<?>>() {

@@ -18,8 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.io.hueemulation.internal.DeviceType;
 import org.openhab.io.hueemulation.internal.StateUtils;
+import org.openhab.io.hueemulation.internal.dto.changerequest.HueStateChange;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
@@ -52,6 +54,8 @@ public class HueLightEntry {
     /** Associated item UID */
     public @NonNullByDefault({}) transient GenericItem item;
     public transient DeviceType deviceType;
+    public transient @Nullable Command lastCommand = null;
+    public transient @Nullable HueStateChange lastHueChange = null;
 
     public static class Config {
         public final String archetype = "classicbulb";
@@ -166,7 +170,8 @@ public class HueLightEntry {
         @Override
         public JsonElement serialize(HueLightEntry product, Type type, JsonSerializationContext context) {
 
-            product.state = StateUtils.colorStateFromItemState(product.item.getState(), product.deviceType);
+            product.state = StateUtils.adjustedColorStateFromItemState(product.item.getState(), product.deviceType,
+                    product.lastCommand, product.lastHueChange);
             String label = product.item.getLabel();
             if (label != null) {
                 product.name = label;
@@ -186,6 +191,9 @@ public class HueLightEntry {
     public void updateItem(GenericItem element) {
         item = element;
         state = StateUtils.colorStateFromItemState(item.getState(), deviceType);
+        
+        lastCommand = null;
+        lastHueChange = null;
 
         String label = element.getLabel();
         if (label != null) {
