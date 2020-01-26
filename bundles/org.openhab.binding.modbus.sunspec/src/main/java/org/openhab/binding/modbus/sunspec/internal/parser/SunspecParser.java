@@ -38,5 +38,5 @@ public interface SunspecParser<T> {
      * This method should parser an incoming register array and
      * return a not-null sunspec block
      */
-    public T parse(ModbusRegisterArray raw);
+    T parse(ModbusRegisterArray raw);
 }

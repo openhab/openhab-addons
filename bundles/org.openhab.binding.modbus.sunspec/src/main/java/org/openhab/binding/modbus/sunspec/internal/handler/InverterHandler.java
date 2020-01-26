@@ -53,7 +53,11 @@ public class InverterHandler extends AbstractSunSpecHandler {
     }
 
     /**
-     *
+     * This method is called each time new data has been polled from the modbus slave
+     * The register array is first parsed, then each of the channels are updated
+     * to the new values
+     * 
+     * @param registers byte array read from the modbus slave
      */
     @Override
     protected void handlePolledData(ModbusRegisterArray registers) {

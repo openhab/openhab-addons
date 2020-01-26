@@ -104,7 +104,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     protected Supplier<ModbusManager> managerRef;
 
     /**
-     * Instances of this handler should get a reference to the modbus managet
+     * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
      * @param managerRef the modbus manager
@@ -115,7 +115,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     }
 
     /**
-     * Handle incoming commands. This binding is read-only be default
+     * Handle incoming commands. This binding is read-only by default
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
