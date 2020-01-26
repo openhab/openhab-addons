@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.joda.time.DateTime;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
@@ -73,6 +74,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
     // The connection handle if the device is connected
     private int connection = -1;
+
+    private DateTime lastCommunication = DateTime.now();
 
     /**
      * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BluetoothDevice} for the BlueGiga
@@ -176,6 +179,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             if (!address.equals(new BluetoothAddress(scanEvent.getSender()))) {
                 return;
             }
+
+            lastCommunication = DateTime.now();
 
             // Set device properties
             rssi = scanEvent.getRssi();
@@ -440,5 +445,14 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, characteristic);
             }
         }
+    }
+
+    /**
+     * Return last communication Time
+     *
+     * @return last communication Time
+     */
+    public DateTime getLastCommunicationTime() {
+        return lastCommunication;
     }
 }

@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +39,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
+import org.joda.time.DateTime;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
@@ -149,6 +152,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     protected final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
     private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
+
+    private @NonNullByDefault({}) ScheduledFuture<?> removeOldDevicesTask;
 
     // List of device listeners
     protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
@@ -264,11 +269,25 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private void startScheduledTasks() {
         passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        removeOldDevicesTask = scheduler.scheduleWithFixedDelay(this::removeOldDevices, 1, 1, TimeUnit.HOURS);
     }
 
     private void stopScheduledTasks() {
         passiveScanIdleTimer.cancel();
         passiveScanIdleTimer = null;
+        removeOldDevicesTask.cancel(true);
+    }
+
+    private void removeOldDevices() {
+        logger.debug("Check old devices, count {}", devices.size());
+        devices.forEach((address, device) -> {
+            DateTime lastCommunicationTime = ((BlueGigaBluetoothDevice) device).getLastCommunicationTime();
+            logger.debug(" Device {} last communication time {}", address, lastCommunicationTime);
+            if (lastCommunicationTime.plusDays(1).isBeforeNow()) {
+                logger.debug("Remove old device {}", address);
+                devices.remove(address);
+            }
+        });
     }
 
     private boolean openSerialPort(final String serialPortName, int baudRate) {
