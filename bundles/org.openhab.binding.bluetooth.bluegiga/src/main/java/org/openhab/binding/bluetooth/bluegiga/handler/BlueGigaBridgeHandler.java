@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,12 +71,14 @@ import org.openhab.binding.bluetooth.bluegiga.internal.command.connection.BlueGi
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaConnectDirectCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaConnectDirectResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaDiscoverCommand;
+import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaDiscoverResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaEndProcedureCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaEndProcedureResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaScanResponseEvent;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaSetModeCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaSetModeResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaSetScanParametersCommand;
+import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaSetScanParametersResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.system.BlueGigaAddressGetCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.system.BlueGigaAddressGetResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.system.BlueGigaGetConnectionsCommand;
@@ -110,6 +113,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         implements BluetoothAdapter, BlueGigaEventListener, BlueGigaHandlerListener {
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBridgeHandler.class);
+
+    private final int COMMAND_TIMEOUT_MS = 1000;
 
     private final SerialPortManager serialPortManager;
 
@@ -190,25 +195,23 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
         if (openSerialPort(configuration.port, 115200)) {
             BlueGigaSerialHandler bgh = new BlueGigaSerialHandler(inputStream, outputStream);
-            // Create and send the reset command to the dongle
-            bgh.addEventListener(this);
-            bgh.addHandlerListener(this);
-            this.setBgHandler(bgh);
+            setBgHandler(bgh);
 
             updateStatus(ThingStatus.UNKNOWN);
             passiveScanIdleTimer = new BlueGigaReschedulableTimer("PassiveScanIdleTimer", bgScanTask);
 
-            scheduler.submit(() -> {
+            try {
                 // Stop any procedures that are running
-                bgStopProcedure();
+                bgEndProcedure();
 
-                // Close all transactions
-                BlueGigaCommand command = new BlueGigaGetConnectionsCommand();
-                BlueGigaGetConnectionsResponse connectionsResponse = (BlueGigaGetConnectionsResponse) bgh
-                        .sendTransaction(command);
-                if (connectionsResponse != null) {
-                    maxConnections = connectionsResponse.getMaxconn();
-                }
+                // Set mode to non-discoverable etc.
+                bgSetMode();
+
+                bgh.addEventListener(this);
+                bgh.addHandlerListener(this);
+
+                // Get maximum parallel connections
+                maxConnections = readMaxConnections().getMaxconn();
 
                 // Close all connections so we start from a known position
                 for (int connection = 0; connection < maxConnections; connection++) {
@@ -216,37 +219,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 }
 
                 // Get our Bluetooth address
-                command = new BlueGigaAddressGetCommand();
-                BlueGigaAddressGetResponse addressResponse = (BlueGigaAddressGetResponse) bgh.sendTransaction(command);
-                if (addressResponse != null) {
-                    address = new BluetoothAddress(addressResponse.getAddress());
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
+                address = new BluetoothAddress(readAddress().getAddress());
 
-                command = new BlueGigaGetInfoCommand();
-                BlueGigaGetInfoResponse infoResponse = (BlueGigaGetInfoResponse) bgh.sendTransaction(command);
+                updateThingProperties();
 
-                // Set mode to non-discoverable etc.
-                // Not doing this will cause connection failures later
-                bgSetMode();
-
-                // Start passive scan
-                bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
-
-                Map<String, String> properties = editProperties();
-                properties.put(BluetoothBindingConstants.PROPERTY_MAXCONNECTIONS, Integer.toString(maxConnections));
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
-                        String.format("%d.%d", infoResponse.getMajor(), infoResponse.getMinor()));
-                properties.put(Thing.PROPERTY_HARDWARE_VERSION, Integer.toString(infoResponse.getHardware()));
-                properties.put(BlueGigaAdapterConstants.PROPERTY_PROTOCOL,
-                        Integer.toString(infoResponse.getProtocolVersion()));
-                properties.put(BlueGigaAdapterConstants.PROPERTY_LINKLAYER,
-                        Integer.toString(infoResponse.getLlVersion()));
-                updateProperties(properties);
+                updateStatus(ThingStatus.ONLINE);
                 startScheduledTasks();
-            });
+            } catch (TimeoutException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Command timeout");
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Failed opening serial port.");
@@ -288,6 +269,34 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 devices.remove(address);
             }
         });
+    }
+
+    private BlueGigaGetConnectionsResponse readMaxConnections() throws TimeoutException {
+        BlueGigaCommand command = new BlueGigaGetConnectionsCommand();
+        return getBgHandler().sendTransaction(command, BlueGigaGetConnectionsResponse.class, COMMAND_TIMEOUT_MS);
+    }
+
+    private BlueGigaAddressGetResponse readAddress() throws TimeoutException {
+        BlueGigaAddressGetCommand command = new BlueGigaAddressGetCommand();
+        return getBgHandler().sendTransaction(command, BlueGigaAddressGetResponse.class, COMMAND_TIMEOUT_MS);
+    }
+
+    private BlueGigaGetInfoResponse readInfo() throws TimeoutException {
+        BlueGigaGetInfoCommand command = new BlueGigaGetInfoCommand();
+        return getBgHandler().sendTransaction(command, BlueGigaGetInfoResponse.class, COMMAND_TIMEOUT_MS);
+    }
+
+    private void updateThingProperties() throws TimeoutException {
+        BlueGigaGetInfoResponse infoResponse = readInfo();
+
+        Map<String, String> properties = editProperties();
+        properties.put(BluetoothBindingConstants.PROPERTY_MAXCONNECTIONS, Integer.toString(maxConnections));
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                String.format("%d.%d", infoResponse.getMajor(), infoResponse.getMinor()));
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, Integer.toString(infoResponse.getHardware()));
+        properties.put(BlueGigaAdapterConstants.PROPERTY_PROTOCOL, Integer.toString(infoResponse.getProtocolVersion()));
+        properties.put(BlueGigaAdapterConstants.PROPERTY_LINKLAYER, Integer.toString(infoResponse.getLlVersion()));
+        updateProperties(properties);
     }
 
     private boolean openSerialPort(final String serialPortName, int baudRate) {
@@ -393,7 +402,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public void scanStart() {
         // Stop the passive scan
         passiveScanIdleTimer.cancel();
-        bgStopProcedure();
+        bgEndProcedure();
 
         // Start a active scan
         bgStartScanning(true, configuration.activeScanInterval, configuration.activeScanWindow);
@@ -406,7 +415,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void scanStop() {
         // Stop the active scan
-        bgStopProcedure();
+        bgEndProcedure();
 
         // Start a passive scan
         passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -482,22 +491,27 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             return false;
         }
 
-        bgSetMode();
+        logger.debug("BlueGiga Connect: address {}.", address);
         passiveScanIdleTimer.cancel();
 
+        // Connect...
+        BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
+        connect.setAddress(address.toString());
+        connect.setAddrType(addressType);
+        connect.setConnIntervalMin(configuration.connIntervalMin);
+        connect.setConnIntervalMax(configuration.connIntervalMax);
+        connect.setLatency(configuration.connLatency);
+        connect.setTimeout(configuration.connTimeout);
+
         try {
-            BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
-            connect.setAddress(address.toString());
-            connect.setAddrType(addressType);
-            connect.setConnIntervalMin(configuration.connIntervalMin);
-            connect.setConnIntervalMax(configuration.connIntervalMax);
-            connect.setLatency(configuration.connLatency);
-            connect.setTimeout(configuration.connTimeout);
-            BlueGigaConnectDirectResponse connectResponse = (BlueGigaConnectDirectResponse) getBgHandler()
-                    .sendTransaction(connect);
+            BlueGigaConnectDirectResponse connectResponse = getBgHandler().sendTransaction(connect,
+                    BlueGigaConnectDirectResponse.class, COMMAND_TIMEOUT_MS);
             if (connectResponse.getResult() != BgApiResponse.SUCCESS) {
                 return false;
             }
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending connect command to device {}.", address);
+            return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
@@ -511,13 +525,18 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @return
      */
     public boolean bgDisconnect(int connectionHandle) {
+        logger.debug("BlueGiga Disconnect: connection {}", connectionHandle);
         passiveScanIdleTimer.cancel();
-        try {
-            BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand();
-            command.setConnection(connectionHandle);
-            BlueGigaDisconnectResponse response = (BlueGigaDisconnectResponse) getBgHandler().sendTransaction(command);
+        BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand();
+        command.setConnection(connectionHandle);
 
+        try {
+            BlueGigaDisconnectResponse response = getBgHandler().sendTransaction(command,
+                    BlueGigaDisconnectResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending disconnect command to device {}.", address);
+            return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
@@ -527,7 +546,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * Device discovered. This simply passes the discover information to the discovery service for processing.
      */
     public void deviceDiscovered(BluetoothDevice device) {
-        if (discoveryActive) {
+        if (configuration.discovery) {
             for (BluetoothDiscoveryListener listener : discoveryListeners) {
                 listener.deviceDiscovered(device);
             }
@@ -543,15 +562,19 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgFindPrimaryServices(int connectionHandle) {
         logger.debug("BlueGiga FindPrimary: connection {}", connectionHandle);
         passiveScanIdleTimer.cancel();
+        BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand();
+        command.setConnection(connectionHandle);
+        command.setStart(1);
+        command.setEnd(65535);
+        command.setUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"));
+
         try {
-            BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand();
-            command.setConnection(connectionHandle);
-            command.setStart(1);
-            command.setEnd(65535);
-            command.setUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"));
-            BlueGigaReadByGroupTypeResponse response = (BlueGigaReadByGroupTypeResponse) getBgHandler()
-                    .sendTransaction(command);
+            BlueGigaReadByGroupTypeResponse response = getBgHandler().sendTransaction(command,
+                    BlueGigaReadByGroupTypeResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending read primary services command to device {}.", address);
+            return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
@@ -566,15 +589,18 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgFindCharacteristics(int connectionHandle) {
         logger.debug("BlueGiga Find: connection {}", connectionHandle);
         passiveScanIdleTimer.cancel();
-        try {
-            BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand();
-            command.setConnection(connectionHandle);
-            command.setStart(1);
-            command.setEnd(65535);
-            BlueGigaFindInformationResponse response = (BlueGigaFindInformationResponse) getBgHandler()
-                    .sendTransaction(command);
+        BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand();
+        command.setConnection(connectionHandle);
+        command.setStart(1);
+        command.setEnd(65535);
 
+        try {
+            BlueGigaFindInformationResponse response = getBgHandler().sendTransaction(command,
+                    BlueGigaFindInformationResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending read characteristics command to device {}.", address);
+            return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
@@ -590,14 +616,17 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgReadCharacteristic(int connectionHandle, int handle) {
         logger.debug("BlueGiga Read: connection {}, handle {}", connectionHandle, handle);
         passiveScanIdleTimer.cancel();
-        try {
-            BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand();
-            command.setConnection(connectionHandle);
-            command.setChrHandle(handle);
-            BlueGigaReadByHandleResponse response = (BlueGigaReadByHandleResponse) getBgHandler()
-                    .sendTransaction(command);
+        BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand();
+        command.setConnection(connectionHandle);
+        command.setChrHandle(handle);
 
+        try {
+            BlueGigaReadByHandleResponse response = getBgHandler().sendTransaction(command,
+                    BlueGigaReadByHandleResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending read characteristics command to device {}.", address);
+            return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
@@ -614,15 +643,18 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgWriteCharacteristic(int connectionHandle, int handle, int[] value) {
         logger.debug("BlueGiga Write: connection {}, handle {}", connectionHandle, handle);
         passiveScanIdleTimer.cancel();
-        try {
-            BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand();
-            command.setConnection(connectionHandle);
-            command.setAttHandle(handle);
-            command.setData(value);
-            BlueGigaAttributeWriteResponse response = (BlueGigaAttributeWriteResponse) getBgHandler()
-                    .sendTransaction(command);
+        BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand();
+        command.setConnection(connectionHandle);
+        command.setAttHandle(handle);
+        command.setData(value);
 
+        try {
+            BlueGigaAttributeWriteResponse response = getBgHandler().sendTransaction(command,
+                    BlueGigaAttributeWriteResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending write characteristics command to device {}.", address);
+            return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
@@ -631,20 +663,31 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     /*
      * The following methods are private methods for handling the BlueGiga protocol
      */
-    private boolean bgStopProcedure() {
-        BlueGigaCommand command = new BlueGigaEndProcedureCommand();
-        BlueGigaEndProcedureResponse response = (BlueGigaEndProcedureResponse) getBgHandler().sendTransaction(command);
+    private boolean bgEndProcedure() {
+        try {
+            BlueGigaCommand command = new BlueGigaEndProcedureCommand();
+            BlueGigaEndProcedureResponse response = getBgHandler().sendTransaction(command,
+                    BlueGigaEndProcedureResponse.class, COMMAND_TIMEOUT_MS);
 
-        return response.getResult() == BgApiResponse.SUCCESS;
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending end procedure command.");
+            return false;
+        }
     }
 
     private boolean bgSetMode() {
-        BlueGigaSetModeCommand command = new BlueGigaSetModeCommand();
-        command.setConnect(GapConnectableMode.GAP_NON_CONNECTABLE);
-        command.setDiscover(GapDiscoverableMode.GAP_NON_DISCOVERABLE);
-        BlueGigaSetModeResponse response = (BlueGigaSetModeResponse) getBgHandler().sendTransaction(command);
-
-        return response.getResult() == BgApiResponse.SUCCESS;
+        try {
+            BlueGigaSetModeCommand command = new BlueGigaSetModeCommand();
+            command.setConnect(GapConnectableMode.GAP_NON_CONNECTABLE);
+            command.setDiscover(GapDiscoverableMode.GAP_NON_DISCOVERABLE);
+            BlueGigaSetModeResponse response = getBgHandler().sendTransaction(command, BlueGigaSetModeResponse.class,
+                    COMMAND_TIMEOUT_MS);
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending set mode command.");
+            return false;
+        }
     }
 
     /**
@@ -652,16 +695,29 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      *
      * @param active true for active scanning
      */
-    private void bgStartScanning(boolean active, int interval, int window) {
-        BlueGigaSetScanParametersCommand scanCommand = new BlueGigaSetScanParametersCommand();
-        scanCommand.setActiveScanning(active);
-        scanCommand.setScanInterval(interval);
-        scanCommand.setScanWindow(window);
-        getBgHandler().sendTransaction(scanCommand);
-
-        BlueGigaDiscoverCommand discoverCommand = new BlueGigaDiscoverCommand();
-        discoverCommand.setMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION);
-        getBgHandler().sendTransaction(discoverCommand);
+    private boolean bgStartScanning(boolean active, int interval, int window) {
+        try {
+            BlueGigaSetScanParametersCommand scanCommand = new BlueGigaSetScanParametersCommand();
+            scanCommand.setActiveScanning(active);
+            scanCommand.setScanInterval(interval);
+            scanCommand.setScanWindow(window);
+            BlueGigaSetScanParametersResponse resp1 = getBgHandler().sendTransaction(scanCommand,
+                    BlueGigaSetScanParametersResponse.class, COMMAND_TIMEOUT_MS);
+            if (resp1.getResult() == BgApiResponse.SUCCESS) {
+                BlueGigaDiscoverCommand discoverCommand = new BlueGigaDiscoverCommand();
+                discoverCommand.setMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION);
+                BlueGigaDiscoverResponse resp2 = getBgHandler().sendTransaction(discoverCommand,
+                        BlueGigaDiscoverResponse.class, COMMAND_TIMEOUT_MS);
+                if (resp2.getResult() == BgApiResponse.SUCCESS) {
+                    logger.debug("{} scanning succesfully started.", active ? "Active" : "Passive");
+                    return true;
+                }
+            }
+        } catch (TimeoutException e) {
+            logger.debug("Timeout occured when sending start scan command.");
+        }
+        logger.debug("Scan start failed.");
+        return false;
     }
 
     /**
@@ -696,5 +752,4 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public void bluegigaClosed(Exception reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
     }
-
 }

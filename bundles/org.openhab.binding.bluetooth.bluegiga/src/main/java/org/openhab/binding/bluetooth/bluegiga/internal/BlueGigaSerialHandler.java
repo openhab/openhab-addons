@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * queuing of of data, and conversion of packets from the serial stream into command and response classes.
  *
  * @author Chris Jackson - Initial contribution and API
+ * @author Pauli Anttila - Message correlation
  *
  */
 public class BlueGigaSerialHandler {
@@ -206,8 +207,7 @@ public class BlueGigaSerialHandler {
         return parserThread != null && parserThread.isAlive() && !close;
     }
 
-    // Synchronize this method to ensure a packet gets sent as a block
-    private synchronized void sendFrame(BlueGigaCommand bleFrame) {
+    private void sendFrame(BlueGigaCommand bleFrame) {
         // Send the data
         try {
             int[] payload = bleFrame.serialize();
@@ -218,20 +218,14 @@ public class BlueGigaSerialHandler {
         } catch (IOException e) {
             throw new BlueGigaException("Error sending BLE frame", e);
         }
-
-        logger.trace("--> TX BLE frame: {}", bleFrame);
     }
 
-    // Synchronize this method so we can do the window check without interruption.
-    // Otherwise this method could be called twice from different threads that could end up with
-    // more than the TX_WINDOW number of frames sent.
-    private synchronized void sendNextFrame() {
+    private void sendNextFrame() {
         BlueGigaCommand nextFrame = sendQueue.poll();
         if (nextFrame == null) {
             // Nothing to send
             return;
         }
-
         sendFrame(nextFrame);
     }
 
@@ -294,7 +288,7 @@ public class BlueGigaSerialHandler {
      * @param bleCommand {@link BlueGigaCommand}
      * @return response {@link Future} {@link BlueGigaResponse}
      */
-    public <T extends BlueGigaResponse> Future<T> sendBleRequestAsync(final BlueGigaCommand bleCommand,
+    private <T extends BlueGigaResponse> Future<T> sendBleRequestAsync(final BlueGigaCommand bleCommand,
             final Class<T> expected) {
         checkIfAlive();
         class TransactionWaiter implements Callable<T>, BluetoothListener<T> {
@@ -334,13 +328,28 @@ public class BlueGigaSerialHandler {
                     return false;
                 }
 
+                logger.trace("Expected response: {}, Received response: {}", expected.getSimpleName(), bleResponse);
+
+                if (bleCommand instanceof BlueGigaDeviceCommand && bleResponse instanceof BlueGigaDeviceResponse) {
+                    BlueGigaDeviceCommand devCommand = (BlueGigaDeviceCommand) bleCommand;
+                    BlueGigaDeviceResponse devResponse = (BlueGigaDeviceResponse) bleResponse;
+
+                    logger.trace("Expected connection id: {}, Response connection id: {}", devCommand.getConnection(),
+                            devResponse.getConnection());
+
+                    if (devCommand.getConnection() != devResponse.getConnection()) {
+                        logger.debug("Ignore response as response connection id {} doesn't match expected id {}.",
+                                devResponse.getConnection(), devCommand.getConnection());
+                        return false;
+                    }
+                }
+
                 if (!expected.isInstance(bleResponse)) {
                     // ignoring response if it was not requested
-                    logger.warn("Ignoring {} response which has not been requested.",
+                    logger.debug("Ignoring {} response which has not been requested.",
                             bleResponse.getClass().getSimpleName());
                     return false;
                 }
-
                 response = bleResponse;
                 complete = true;
                 synchronized (this) {
@@ -356,24 +365,6 @@ public class BlueGigaSerialHandler {
     }
 
     /**
-     * Sends a {@link BlueGigaCommand} request to the NCP and waits for the response. The response is correlated with
-     * the request and the returned {@link BlueGigaResponse} contains the request and response data.
-     *
-     * @param bleCommand {@link BlueGigaCommand}
-     * @return response {@link BlueGigaResponse}
-     */
-    public BlueGigaResponse sendTransaction(BlueGigaCommand bleCommand) {
-        checkIfAlive();
-        Future<BlueGigaResponse> futureResponse = sendBleRequestAsync(bleCommand, BlueGigaResponse.class);
-
-        try {
-            return futureResponse.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new BlueGigaException("Error sending BLE transaction to listeners.", e);
-        }
-    }
-
-    /**
      * Sends a {@link BlueGigaCommand} request to the NCP and waits for the response for specified period of time.
      * The response is correlated with the request and the returned {@link BlueGigaResponse}
      * contains the request and response data.
@@ -383,8 +374,8 @@ public class BlueGigaSerialHandler {
      * @return response {@link BlueGigaResponse}
      * @throws TimeoutException when specified timeout exceeds
      */
-    public <T extends BlueGigaResponse> T sendTransaction(BlueGigaCommand bleCommand, Class<T> expected, long timeout)
-            throws TimeoutException {
+    public synchronized <T extends BlueGigaResponse> T sendTransaction(BlueGigaCommand bleCommand, Class<T> expected,
+            long timeout) throws TimeoutException {
         Future<T> futureResponse = sendBleRequestAsync(bleCommand, expected);
         try {
             return futureResponse.get(timeout, TimeUnit.MILLISECONDS);
@@ -426,7 +417,7 @@ public class BlueGigaSerialHandler {
      * @return true if the response was processed
      */
     private void notifyEventListeners(final BlueGigaResponse response) {
-        synchronized (this) {
+        synchronized (eventListeners) {
             // Notify the listeners
             for (final BlueGigaEventListener listener : eventListeners) {
                 executor.submit(() -> listener.bluegigaEventReceived(response));
