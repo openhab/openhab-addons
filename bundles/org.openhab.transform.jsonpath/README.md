@@ -1,8 +1,8 @@
 # JsonPath Transformation Service
 
-Extracts values from a JSON structure using a [JsonPath](https://github.com/jayway/JsonPath#jayway-jsonpath) expression.
+Extracts values from a JSON string using a [JsonPath](https://github.com/jayway/JsonPath#jayway-jsonpath) expression.
 
-Given the following JSON:
+Given the following JSON string:
 
 ```
 [{ "device": { "location": "Outside", "status": { "temperature": 23.2 }}}]
@@ -41,7 +41,10 @@ Now the resulting Number can also be used in the label to [change the color](htt
 ## Differences to standard JsonPath
 
 Compared to standard JsonPath, the transformation returns single values instead of arrays.
+The transformation also will not ever return `null`.
 This makes it possible to use the transform in labels or output channels of Things.
+
+Because the transformation will not return arrays or null values, if the JsonPath expression provided results in no matches, the transformation will return the entire original JSON string.
 
 ## Usage as a Profile
 
@@ -53,7 +56,7 @@ One example for configuring it in the `.items` file:
 String <itemName> { channel="<channelUID>"[profile="transform:JSONPATH", function="<jsonPath>", sourceFormat="<valueFormat>"]}
 ```
 
-The JSONPath expression to be used has to be set in the `function` parameter.
+The JsonPath expression to be used has to be set in the `function` parameter.
 The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, i.e. `%.3f`.
 If omitted, the default is `%s`, so the input value will be returned from the transformation without any format changes.
 
