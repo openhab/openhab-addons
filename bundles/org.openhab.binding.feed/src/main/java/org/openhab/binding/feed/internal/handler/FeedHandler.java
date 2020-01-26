@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,33 +125,48 @@ public class FeedHandler extends BaseThingHandler {
 
         if (currentFeedState == null) {
             // This will happen if the binding could not download data from the server
-            logger.info("Cannot update channel with ID {}; no data has been downloaded from the server!", channelID);
+            logger.trace("Cannot update channel with ID {}; no data has been downloaded from the server!", channelID);
             return;
         }
 
         if (!isLinked(channelUID)) {
+            logger.trace("Cannot update channel with ID {}; not linked!", channelID);
             return;
         }
 
         State state = null;
+        SyndEntry latestEntry = getLatestEntry(currentFeedState);
+
         switch (channelID) {
             case CHANNEL_LATEST_TITLE:
-                String title = getLatestEntry(currentFeedState).getTitle();
-                state = new StringType(getValueSafely(title));
+                if (latestEntry == null || latestEntry.getTitle() == null) {
+                    state = UnDefType.UNDEF;
+                }
+                else {
+                    String title = latestEntry.getTitle();
+                    state = new StringType(getValueSafely(title));
+                }
                 break;
             case CHANNEL_LATEST_DESCRIPTION:
-                String description = getLatestEntry(currentFeedState).getDescription().getValue();
-                state = new StringType(getValueSafely(description));
+                if (latestEntry == null || latestEntry.getDescription() == null) {
+                    state = UnDefType.UNDEF;
+                }
+                else {
+                    String description = latestEntry.getDescription().getValue();
+                    state = new StringType(getValueSafely(description));
+                }
                 break;
             case CHANNEL_LATEST_PUBLISHED_DATE:
             case CHANNEL_LAST_UPDATE:
-                Date date = getLatestEntry(currentFeedState).getPublishedDate();
-                if (date == null) {
+                if (latestEntry == null || latestEntry.getPublishedDate() == null) {
                     logger.debug("Cannot update date channel. No date found in feed.");
                     return;
                 }
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-                state = new DateTimeType(zdt);
+                else {
+                    Date date = latestEntry.getPublishedDate();
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+                    state = new DateTimeType(zdt);
+                }
                 break;
             case CHANNEL_AUTHOR:
                 String author = currentFeedState.getAuthor();
@@ -175,7 +191,7 @@ public class FeedHandler extends BaseThingHandler {
         if (state != null) {
             updateState(channelID, state);
         } else {
-            logger.debug("Cannot update channel with ID {}", channelID);
+            logger.debug("Cannot update channel with ID {}; state not defined!", channelID);
         }
     }
 
