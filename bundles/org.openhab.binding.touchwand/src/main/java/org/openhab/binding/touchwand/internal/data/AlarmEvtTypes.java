@@ -13,9 +13,6 @@
 
 package org.openhab.binding.touchwand.internal.data;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link AlarmEvtTypes} implements CurrStatus data class.
  *
@@ -23,28 +20,5 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class AlarmEvtTypes {
-
-    @SerializedName("5")
-    @Expose
-    private _5 _5;
-    @SerializedName("7")
-    @Expose
-    private _7 _7;
-
-    public _5 get5() {
-        return _5;
-    }
-
-    public void set5(_5 _5) {
-        this._5 = _5;
-    }
-
-    public _7 get7() {
-        return _7;
-    }
-
-    public void set7(_7 _7) {
-        this._7 = _7;
-    }
 
 }
