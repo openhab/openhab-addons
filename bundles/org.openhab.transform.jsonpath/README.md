@@ -1,39 +1,26 @@
 # JsonPath Transformation Service
 
-Transforms a JSON structure on basis of the [JsonPath](https://github.com/jayway/JsonPath#jayway-jsonpath) expression to an JSON containing the requested data.
+Extracts values from a JSON structure using a [JsonPath](https://github.com/jayway/JsonPath#jayway-jsonpath) expression.
 
-## Examples
-
-### Basic Example
-
-Given the JSON
+Given the following JSON:
 
 ```
 [{ "device": { "location": "Outside", "status": { "temperature": 23.2 }}}]
 ```
 
-the JsonPath expression `$.device.location` exstracts the string instead a valid JSON `[ "Outside" ]`, see [differences](#differences-to-standard-jsonpath).
+The expression `$.device.location` extracts the string `Outside`.
+The JsonPath expression `$.device.status.temperature` extracts the number `23.2`.
+
+## Examples
+
+### Items
 
 ```
-Outside
-```
-
-the JsonPath expression `$.device.status.temperature` exstracts the number instead a valid JSON `[ 23.2 ]`, see [differences](#differences-to-standard-jsonpath).
-
-```
-23.2
-```
-
-### In Setup
-
-**Item**
-
-```csv
 String  Temperature_json "Temperature [JSONPATH($.device.status.temperature):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
 
-**Rule**
+### Rules
 
 ```php
 rule "Convert JSON to Item Type Number"
@@ -48,19 +35,19 @@ rule "Convert JSON to Item Type Number"
  end
 ```
 
-Now the resulting Number can also be used in the label to [change the color](https://docs.openhab.org/configuration/sitemaps.html#label-and-value-colors) or in a rule as value to compare.
+Now the resulting Number can also be used in the label to [change the color](https://docs.openhab.org/configuration/sitemaps.html#label-and-value-colors) or in a rule as a value to compare.
+
 
 ## Differences to standard JsonPath
 
-Compared to standard JSON the transformation it returns evaluated values when a single alement is retrieved from the query.
-Means it does not return a valid JSON `[ 23.2 ]` but `23.2`, `[ "Outside" ]` but `Outside`.
-This makes it possible to use it in labels or output channel of things and get Numbers or Strings instead of JSON arrays.
-A query which returns multiple elements as list is not supported.
+Compared to standard JsonPath, the transformation returns single values instead of arrays.
+This makes it possible to use the transform in labels or output channels of Things.
 
 ## Usage as a Profile
 
-The functionality of this `TransformationService` can be used in a `Profile` on an `ItemChannelLink` too.
-To do so, it can be configured in the `.items` file as follows:
+The transformation can be used in a `Profile` on an `ItemChannelLink` too.
+
+One example for configuring it in the `.items` file:
 
 ```java
 String <itemName> { channel="<channelUID>"[profile="transform:JSONPATH", function="<jsonPath>", sourceFormat="<valueFormat>"]}
@@ -68,11 +55,11 @@ String <itemName> { channel="<channelUID>"[profile="transform:JSONPATH", functio
 
 The JSONPath expression to be used has to be set in the `function` parameter.
 The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, i.e. `%.3f`.
-If omitted the default is `%s`, so the input value will be put into the transformation without any format changes.
+If omitted, the default is `%s`, so the input value will be returned from the transformation without any format changes.
 
-Please note: This profile is a one-way transformation, i.e. only values from a device towards the item are changed, the other direction is left untouched.
+This profile is a one-way transformation; only values from a device toward the item are changed.
 
 ## Further Reading
 
 * An extended [introduction](https://www.w3schools.com/js/js_json_intro.asp) can be found at W3School.
-* As JsonPath transformation is based on [Jayway](https://github.com/json-path/JsonPath) using a [online validator](https://jsonpath.herokuapp.com/) which also uses Jaway will give most similar results. 
+* As JsonPath transformation is based on [Jayway](https://github.com/json-path/JsonPath), using an [online validator](https://jsonpath.herokuapp.com/) which also uses Jayway will give the most similar results. 
