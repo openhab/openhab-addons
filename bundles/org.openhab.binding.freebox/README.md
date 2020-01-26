@@ -129,7 +129,7 @@ The following channels are supported:
 | server        | sambafileshare_status    | Switch    | RW          | Indicates whether Window File Sharing  is enabled                               |
 | server        | sambaprintershare_status | Switch    | RW          | Indicates whether Window Printer Sharing  is enabled                            |
 | server        | xdsl_status              | String    | R           | Status of the xDSL line                                                         |
-| server        | ftth_status              | String    | R           | Status of the Ftth line                                                         |
+| server        | ftth_status              | Switch    | R           | Status of the Ftth line                                                         |
 | server        | line_status              | String    | R           | Status of network line connexion                                                |
 | server        | ipv4                     | String    | R           | Public IP Address of the Freebox Server                                         |
 | server        | rate_up                  | Number    | R           | Current upload rate in byte/s                                                   |
@@ -190,8 +190,8 @@ Bridge freebox:server:fb "Freebox Revolution" [ fqdn="abcdefgh.fbxos.fr", appTok
 ### Items
 
 ```java
-String Freebox_xdsl_status "Freebox ADSL state [%s]" {channel="freebox:server:fb:xdsl_status"}
-String Freebox_ftth_status "Freebox Fiber Optic state [%s]" {channel="freebox:server:fb:ftth_status"}
+String Freebox_xdsl_status "Freebox xDSL state [%s]" {channel="freebox:server:fb:xdsl_status"}
+Switch Freebox_ftth_status "Freebox Fiber Optic state" {channel="freebox:server:fb:ftth_status"}
 String Freebox_cs_state "State [%s]" {channel="freebox:server:fb:line_status"}
 String Freebox_cs_ipv4 "ipV4 [%s]" {channel="freebox:server:fb:ipv4"}
 Number Freebox_cs_rate_up "Upload rate [%d b/s]" {channel="freebox:server:fb:rate_up"}
