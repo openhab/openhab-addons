@@ -9,7 +9,7 @@ Given the following JSON:
 ```
 
 The expression `$.device.location` extracts the string `Outside`.
-The JsonPath expression `$.device.status.temperature` extracts the number `23.2`.
+The JsonPath expression `$.device.status.temperature` extracts the string `23.2`.
 
 ## Examples
 
