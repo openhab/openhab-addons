@@ -180,6 +180,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
+            logger.trace("scanEvent: {}", scanEvent);
             lastCommunication = DateTime.now();
 
             // Set device properties
@@ -192,6 +193,9 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             if (scanEvent.getData() != null) {
                 EirPacket eir = new EirPacket(scanEvent.getData());
                 for (EirDataType record : eir.getRecords().keySet()) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("  EirDataType: {}={}", record, eir.getRecord(record));
+                    }
                     switch (record) {
                         case EIR_FLAGS:
                             break;
@@ -425,6 +429,11 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         if (event instanceof BlueGigaAttributeValueEvent) {
             // A read request has completed - update the characteristic
             BlueGigaAttributeValueEvent valueEvent = (BlueGigaAttributeValueEvent) event;
+
+            // If this is not our connection handle then ignore.
+            if (connection != valueEvent.getConnection()) {
+                return;
+            }
 
             BluetoothCharacteristic characteristic = getCharacteristicByHandle(valueEvent.getAttHandle());
             if (characteristic == null) {
