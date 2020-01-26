@@ -30,7 +30,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ScanResponseT
  * @author Chris Jackson - Initial contribution and API
  *
  */
-public class BlueGigaResponse extends BlueGigaPacket {
+public abstract class BlueGigaResponse extends BlueGigaPacket {
     private int[] buffer = new int[131];
     private int position = 0;
     protected boolean event = false;

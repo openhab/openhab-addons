@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
  * Class to implement the BlueGiga command <b>sendAttributes</b>.
@@ -29,18 +29,9 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaSendAttributesCommand extends BlueGigaCommand {
+public class BlueGigaSendAttributesCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x02;
-
-    /**
-     * Connection handle to send to. Use 0xFF to send to all connected clients which have subscribed
-     * to receive the notifications or indications. An error is returned as soon as the first failed
-     * transmission occurs.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Attribute handle to send.
@@ -57,16 +48,6 @@ public class BlueGigaSendAttributesCommand extends BlueGigaCommand {
     private int[] value;
 
     /**
-     * Connection handle to send to. Use 0xFF to send to all connected clients which have subscribed
-     * to receive the notifications or indications. An error is returned as soon as the first failed
-     * transmission occurs.
-     *
-     * @param connection the connection to set as {@link int}
-     */
-    public void setConnection(int connection) {
-        this.connection = connection;
-    }
-    /**
      * Attribute handle to send.
      *
      * @param handle the handle to set as {@link int}
@@ -74,6 +55,7 @@ public class BlueGigaSendAttributesCommand extends BlueGigaCommand {
     public void setHandle(int handle) {
         this.handle = handle;
     }
+
     /**
      * Data to send
      *

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
 /**
@@ -32,7 +32,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaUpdateResponse extends BlueGigaResponse {
+public class BlueGigaUpdateResponse extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x02;
 
@@ -44,7 +44,7 @@ public class BlueGigaUpdateResponse extends BlueGigaResponse {
     private int connection;
 
     /**
-     *  0 : the update was successful. Non-zero: An error occurred.
+     * 0 : the update was successful. Non-zero: An error occurred.
      * <p>
      * BlueGiga API type is <i>BgApiResponse</i> - Java type is {@link BgApiResponse}
      */
@@ -65,17 +65,7 @@ public class BlueGigaUpdateResponse extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
-     *  0 : the update was successful. Non-zero: An error occurred.
+     * 0 : the update was successful. Non-zero: An error occurred.
      * <p>
      * BlueGiga API type is <i>BgApiResponse</i> - Java type is {@link BgApiResponse}
      *

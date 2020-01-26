@@ -14,7 +14,7 @@ package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
 import java.util.UUID;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
  * Class to implement the BlueGiga command <b>groupFoundEvent</b>.
@@ -28,16 +28,9 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaGroupFoundEvent extends BlueGigaResponse {
+public class BlueGigaGroupFoundEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x02;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Starting handle
@@ -77,16 +70,6 @@ public class BlueGigaGroupFoundEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * Starting handle
      * <p>
      * BlueGiga API type is <i>uint16</i> - Java type is {@link int}
@@ -96,6 +79,7 @@ public class BlueGigaGroupFoundEvent extends BlueGigaResponse {
     public int getStart() {
         return start;
     }
+
     /**
      * Ending handle
      * <p>
@@ -106,6 +90,7 @@ public class BlueGigaGroupFoundEvent extends BlueGigaResponse {
     public int getEnd() {
         return end;
     }
+
     /**
      * UUID of a service. Length is 0 if no services are found.
      * <p>

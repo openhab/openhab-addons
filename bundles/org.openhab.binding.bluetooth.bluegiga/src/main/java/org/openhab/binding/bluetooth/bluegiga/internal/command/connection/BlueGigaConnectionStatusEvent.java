@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddressType;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ConnectionStatusFlag;
 
@@ -30,16 +30,9 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ConnectionSta
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
+public class BlueGigaConnectionStatusEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x00;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Connection status flags use connstatus-enumerator
@@ -112,16 +105,6 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * Connection status flags use connstatus-enumerator
      * <p>
      * BlueGiga API type is <i>ConnectionStatusFlag</i> - Java type is {@link ConnectionStatusFlag}
@@ -131,6 +114,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     public Set<ConnectionStatusFlag> getFlags() {
         return flags;
     }
+
     /**
      * Remote devices Bluetooth address
      * <p>
@@ -141,6 +125,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     public String getAddress() {
         return address;
     }
+
     /**
      * Remote address type see: Bluetooth Address Types--gap
      * <p>
@@ -151,6 +136,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     public BluetoothAddressType getAddressType() {
         return addressType;
     }
+
     /**
      * Current connection interval (units of 1.25ms)
      * <p>
@@ -161,6 +147,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     public int getConnInterval() {
         return connInterval;
     }
+
     /**
      * Current supervision timeout (units of 10ms)
      * <p>
@@ -171,6 +158,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     public int getTimeout() {
         return timeout;
     }
+
     /**
      * Slave latency which tells how many connection intervals the slave may skip.
      * <p>
@@ -181,6 +169,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaResponse {
     public int getLatency() {
         return latency;
     }
+
     /**
      * Bonding handle if the device has been bonded with. Otherwise: 0xFF
      * <p>
