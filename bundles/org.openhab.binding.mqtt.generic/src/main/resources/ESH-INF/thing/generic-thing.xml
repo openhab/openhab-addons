@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="topic"
-		extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,datetime,image,location,rollershutter">
+		extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,datetime,image,location,rollershutter,trigger">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker" />
 			<bridge-type-ref id="systemBroker" />

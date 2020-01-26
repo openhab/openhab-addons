@@ -76,4 +76,11 @@
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
+	<channel-type id="trigger">
+		<item-type>Trigger</item-type>
+		<label>Trigger</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:trigger_channel"></config-description-ref>
+	</channel-type>
+
 </thing:thing-descriptions>
