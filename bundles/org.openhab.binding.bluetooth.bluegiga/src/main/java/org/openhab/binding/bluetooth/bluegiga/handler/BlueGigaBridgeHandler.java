@@ -49,6 +49,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaConfiguration;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaEventListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaHandlerListener;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaReschedulableTimer;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaSerialHandler;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaAttributeWriteCommand;
@@ -147,6 +148,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // Set of discovery listeners
     protected final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
+    private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
+
     // List of device listeners
     protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
 
@@ -154,6 +157,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         super(bridge);
         this.serialPortManager = serialPortManager;
     }
+
+    Runnable bgScanTask = new Runnable() {
+
+        @Override
+        public void run() {
+            logger.debug("Activate passive scan");
+            bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
+        }
+    };
 
     @Override
     public ThingUID getUID() {
@@ -179,6 +191,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             this.setBgHandler(bgh);
 
             updateStatus(ThingStatus.UNKNOWN);
+            passiveScanIdleTimer = new BlueGigaReschedulableTimer("PassiveScanIdleTimer", bgScanTask);
 
             scheduler.submit(() -> {
                 // Stop any procedures that are running
@@ -227,6 +240,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 properties.put(BlueGigaAdapterConstants.PROPERTY_LINKLAYER,
                         Integer.toString(infoResponse.getLlVersion()));
                 updateProperties(properties);
+                startScheduledTasks();
             });
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -237,6 +251,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         try {
+            stopScheduledTasks();
             BlueGigaSerialHandler bgh = getBgHandler();
             bgh.removeEventListener(this);
             bgh.removeHandlerListener(this);
@@ -245,6 +260,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             // ignore if handler wasn't set at all
         }
         closeSerialPort();
+    }
+
+    private void startScheduledTasks() {
+        passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+    }
+
+    private void stopScheduledTasks() {
+        passiveScanIdleTimer.cancel();
+        passiveScanIdleTimer = null;
     }
 
     private boolean openSerialPort(final String serialPortName, int baudRate) {
@@ -349,6 +373,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void scanStart() {
         // Stop the passive scan
+        passiveScanIdleTimer.cancel();
         bgStopProcedure();
 
         // Start a active scan
@@ -365,7 +390,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         bgStopProcedure();
 
         // Start a passive scan
-        bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
+        passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
     }
 
     @Override
@@ -439,20 +464,24 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         }
 
         bgSetMode();
+        passiveScanIdleTimer.cancel();
 
-        BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
-        connect.setAddress(address.toString());
-        connect.setAddrType(addressType);
-        connect.setConnIntervalMin(configuration.connIntervalMin);
-        connect.setConnIntervalMax(configuration.connIntervalMax);
-        connect.setLatency(configuration.connLatency);
-        connect.setTimeout(configuration.connTimeout);
-        BlueGigaConnectDirectResponse connectResponse = (BlueGigaConnectDirectResponse) getBgHandler()
-                .sendTransaction(connect);
-        if (connectResponse.getResult() != BgApiResponse.SUCCESS) {
-            return false;
+        try {
+            BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
+            connect.setAddress(address.toString());
+            connect.setAddrType(addressType);
+            connect.setConnIntervalMin(configuration.connIntervalMin);
+            connect.setConnIntervalMax(configuration.connIntervalMax);
+            connect.setLatency(configuration.connLatency);
+            connect.setTimeout(configuration.connTimeout);
+            BlueGigaConnectDirectResponse connectResponse = (BlueGigaConnectDirectResponse) getBgHandler()
+                    .sendTransaction(connect);
+            if (connectResponse.getResult() != BgApiResponse.SUCCESS) {
+                return false;
+            }
+        } finally {
+            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
         }
-
         return true;
     }
 
@@ -463,11 +492,16 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @return
      */
     public boolean bgDisconnect(int connectionHandle) {
-        BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand();
-        command.setConnection(connectionHandle);
-        BlueGigaDisconnectResponse response = (BlueGigaDisconnectResponse) getBgHandler().sendTransaction(command);
+        passiveScanIdleTimer.cancel();
+        try {
+            BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand();
+            command.setConnection(connectionHandle);
+            BlueGigaDisconnectResponse response = (BlueGigaDisconnectResponse) getBgHandler().sendTransaction(command);
 
-        return response.getResult() == BgApiResponse.SUCCESS;
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } finally {
+            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        }
     }
 
     /**
@@ -489,14 +523,19 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgFindPrimaryServices(int connectionHandle) {
         logger.debug("BlueGiga FindPrimary: connection {}", connectionHandle);
-        BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand();
-        command.setConnection(connectionHandle);
-        command.setStart(1);
-        command.setEnd(65535);
-        command.setUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"));
-        BlueGigaReadByGroupTypeResponse response = (BlueGigaReadByGroupTypeResponse) getBgHandler()
-                .sendTransaction(command);
-        return response.getResult() == BgApiResponse.SUCCESS;
+        passiveScanIdleTimer.cancel();
+        try {
+            BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand();
+            command.setConnection(connectionHandle);
+            command.setStart(1);
+            command.setEnd(65535);
+            command.setUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"));
+            BlueGigaReadByGroupTypeResponse response = (BlueGigaReadByGroupTypeResponse) getBgHandler()
+                    .sendTransaction(command);
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } finally {
+            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        }
     }
 
     /**
@@ -507,14 +546,19 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgFindCharacteristics(int connectionHandle) {
         logger.debug("BlueGiga Find: connection {}", connectionHandle);
-        BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand();
-        command.setConnection(connectionHandle);
-        command.setStart(1);
-        command.setEnd(65535);
-        BlueGigaFindInformationResponse response = (BlueGigaFindInformationResponse) getBgHandler()
-                .sendTransaction(command);
+        passiveScanIdleTimer.cancel();
+        try {
+            BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand();
+            command.setConnection(connectionHandle);
+            command.setStart(1);
+            command.setEnd(65535);
+            BlueGigaFindInformationResponse response = (BlueGigaFindInformationResponse) getBgHandler()
+                    .sendTransaction(command);
 
-        return response.getResult() == BgApiResponse.SUCCESS;
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } finally {
+            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        }
     }
 
     /**
@@ -526,12 +570,18 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgReadCharacteristic(int connectionHandle, int handle) {
         logger.debug("BlueGiga Read: connection {}, handle {}", connectionHandle, handle);
-        BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand();
-        command.setConnection(connectionHandle);
-        command.setChrHandle(handle);
-        BlueGigaReadByHandleResponse response = (BlueGigaReadByHandleResponse) getBgHandler().sendTransaction(command);
+        passiveScanIdleTimer.cancel();
+        try {
+            BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand();
+            command.setConnection(connectionHandle);
+            command.setChrHandle(handle);
+            BlueGigaReadByHandleResponse response = (BlueGigaReadByHandleResponse) getBgHandler()
+                    .sendTransaction(command);
 
-        return response.getResult() == BgApiResponse.SUCCESS;
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } finally {
+            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        }
     }
 
     /**
@@ -544,14 +594,19 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgWriteCharacteristic(int connectionHandle, int handle, int[] value) {
         logger.debug("BlueGiga Write: connection {}, handle {}", connectionHandle, handle);
-        BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand();
-        command.setConnection(connectionHandle);
-        command.setAttHandle(handle);
-        command.setData(value);
-        BlueGigaAttributeWriteResponse response = (BlueGigaAttributeWriteResponse) getBgHandler()
-                .sendTransaction(command);
+        passiveScanIdleTimer.cancel();
+        try {
+            BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand();
+            command.setConnection(connectionHandle);
+            command.setAttHandle(handle);
+            command.setData(value);
+            BlueGigaAttributeWriteResponse response = (BlueGigaAttributeWriteResponse) getBgHandler()
+                    .sendTransaction(command);
 
-        return response.getResult() == BgApiResponse.SUCCESS;
+            return response.getResult() == BgApiResponse.SUCCESS;
+        } finally {
+            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        }
     }
 
     /*
