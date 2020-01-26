@@ -312,7 +312,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         if (ch != null && isChannelLinked(ch)) {
             logger.debug("updating RSSI channel with value: {}", state.getValue());
             State newState = parseTahomaState(ch.getAcceptedItemType(), state);
-            updateState(ch.getUID(), newState);
+            if (newState != null) {
+                updateState(ch.getUID(), newState);
+            }
         }
     }
 
@@ -323,7 +325,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 if (ch != null && isChannelLinked(ch)) {
                     logger.debug("updating channel: {} with value: {}", k, v);
                     State newState = parseTahomaState(ch.getAcceptedItemType(), state);
-                    updateState(ch.getUID(), newState);
+                    if (newState != null) {
+                        updateState(ch.getUID(), newState);
+                    }
                 }
             }
         });

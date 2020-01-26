@@ -530,7 +530,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
                 SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
-                if (gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
+                if (gatewayHandler != null && gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
                     gatewayHandler.refresh(STATUS);
                 }
             }
