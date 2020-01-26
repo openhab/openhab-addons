@@ -160,25 +160,25 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | enoceanId         | | |
-| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09, D0_06_00 |
+| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
-| contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO, D0_06_00 |
+| contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | Adds a batteryLevel channel to thing and let thing interpret SIG messages | true, false |
-| temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30, D0_06_00 |
+| temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
-| temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03, D0_06_00 |
+| temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
-| occupancySensor                 | receivingEEPId    |                             | A5_07_01-03, D0_06_00 |
+| occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
-| lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH, D0_06_00 |
+| lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
-| lightSensor                     | receivingEEPId    |                             | A5_06_01, A5_06_01_ELTAKO, D0_06_00 |
+| lightSensor                     | receivingEEPId    |                             | A5_06_01, A5_06_01_ELTAKO |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
 | roomOperatingPanel              | receivingEEPId    |                             | A5_10_01-0D, A5_10_10-1F, A5_10_20-23 |
