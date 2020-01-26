@@ -198,8 +198,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             return;
         }
         // store panel's new HSB value
-        panelInfo.put(getThing().getConfiguration().get(CONFIG_PANEL_ID).toString(),
-                newPanelColor);
+        panelInfo.put(getThing().getConfiguration().get(CONFIG_PANEL_ID).toString(), newPanelColor);
         // transform to RGB
         PercentType[] rgbPercent = newPanelColor.toRGB();
         int red = rgbPercent[0].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)

@@ -136,8 +136,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     && !OpenAPIUtils.checkRequiredFirmware(getThing().getProperties().get(Thing.PROPERTY_MODEL_ID),
                             getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))) {
                 logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                        getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION),
-                        API_MIN_FW_VER_LIGHTPANELS);
+                        getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.nanoleaf.controller.incompatibleFirmware");
                 stopAllJobs();
@@ -541,7 +540,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
      */
     private void handleTouchEvents(TouchEvents touchEvents) {
         touchEvents.getEvents().forEach(event -> {
-            logger.debug("panel: {} gesture: {}", event.getPanelId(), event.getGesture());
+            logger.info("panel: {} gesture id: {}", event.getPanelId(), event.getGesture());
 
             // Iterate over all child things = all panels of that controller
             this.getThing().getThings().forEach(child -> {
@@ -550,9 +549,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     logger.trace("Checking available panel -{}- versus event panel -{}-", panelHandler.getPanelID(),
                             event.getPanelId());
                     if (panelHandler.getPanelID().equals(event.getPanelId())) {
+                        logger.debug("Panel {} found. Triggering item with gesture {}.", panelHandler.getPanelID(),
+                                event.getGesture());
                         panelHandler.updatePanelGesture(event.getGesture());
                     }
-
                 }
             });
         });
@@ -633,7 +633,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         });
 
         getThing().getProperties().forEach((key, value) -> {
-            logger.info("Thing property:  key {} value {}", key, value);
+            logger.debug("Thing property:  key {} value {}", key, value);
         });
 
         // update the color channels of each panel
