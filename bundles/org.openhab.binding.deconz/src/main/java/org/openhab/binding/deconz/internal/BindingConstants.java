@@ -63,6 +63,8 @@ public class BindingConstants {
     public static final String CHANNEL_DAYLIGHT = "daylight";
     public static final String CHANNEL_BUTTON = "button";
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
+    public static final String CHANNEL_GESTURE = "gesture";
+    public static final String CHANNEL_GESTUREEVENT = "gestureevent";
     public static final String CHANNEL_OPENCLOSE = "open";
     public static final String CHANNEL_WATERLEAKAGE = "waterleakage";
     public static final String CHANNEL_FIRE = "fire";

@@ -137,6 +137,32 @@
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
+	<channel-type id="gestureevent">
+		<kind>Trigger</kind>
+		<label>Gesture Trigger</label>
+		<description>This channel is triggered on a gesture event. The trigger payload consists of the gesture event number.</description>
+		<event></event>
+	</channel-type>
+
+	<channel-type id="gesture">
+		<item-type>Number</item-type>
+		<label>Gesture</label>
+		<description>A gesture that was performed with the switch.</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">None</option>
+				<option value="1">Shake</option>
+				<option value="2">Drop</option>
+				<option value="3">Flip 90</option>
+				<option value="4">Flip 180</option>
+				<option value="5">Push</option>
+				<option value="6">Double Tap</option>
+				<option value="7">Rotate Clockwise</option>
+				<option value="8">Rotate Counter Clockwise</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<thing-type id="lightsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
