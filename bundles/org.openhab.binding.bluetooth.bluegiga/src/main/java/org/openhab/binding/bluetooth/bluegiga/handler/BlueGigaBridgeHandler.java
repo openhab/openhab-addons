@@ -46,6 +46,7 @@ import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.bluegiga.BlueGigaAdapterConstants;
 import org.openhab.binding.bluetooth.bluegiga.BlueGigaBluetoothDevice;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaConfiguration;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaEventListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaHandlerListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
@@ -112,6 +113,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Nullable
     private SerialPort serialPort;
 
+    private @NonNullByDefault({}) BlueGigaConfiguration configuration;
+
     // The serial port input stream.
     @Nullable
     private InputStream inputStream;
@@ -126,12 +129,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     // The maximum number of connections this interface supports
     private int maxConnections = 0;
-
-    private final int passiveScanInterval = 0x40;
-    private final int passiveScanWindow = 0x08;
-
-    private final int activeScanInterval = 0x40;
-    private final int activeScanWindow = 0x20;
 
     // Our BT address
     @Nullable
@@ -171,19 +168,10 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
-        Object discovery = getConfig().get(BlueGigaAdapterConstants.PROPERTY_DISCOVERY);
-        if (discovery != null && discovery.toString().equalsIgnoreCase(Boolean.FALSE.toString())) {
-            discoveryActive = false;
-            logger.debug("Deactivated discovery participation.");
-        }
+        configuration = getConfigAs(BlueGigaConfiguration.class);
+        logger.debug("Using configuration: {}", configuration);
 
-        final String portId = (String) getConfig().get(BlueGigaAdapterConstants.CONFIGURATION_PORT);
-
-        if (portId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port must be configured!");
-            return;
-        }
-        if (openSerialPort(portId, 115200)) {
+        if (openSerialPort(configuration.port, 115200)) {
             BlueGigaSerialHandler bgh = new BlueGigaSerialHandler(inputStream, outputStream);
             // Create and send the reset command to the dongle
             bgh.addEventListener(this);
@@ -227,7 +215,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 bgSetMode();
 
                 // Start passive scan
-                bgStartScanning(false, passiveScanInterval, passiveScanWindow);
+                bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
 
                 Map<String, String> properties = editProperties();
                 properties.put(BluetoothBindingConstants.PROPERTY_MAXCONNECTIONS, Integer.toString(maxConnections));
@@ -364,7 +352,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         bgStopProcedure();
 
         // Start a active scan
-        bgStartScanning(true, activeScanInterval, activeScanWindow);
+        bgStartScanning(true, configuration.activeScanInterval, configuration.activeScanWindow);
 
         for (BluetoothDevice device : devices.values()) {
             deviceDiscovered(device);
@@ -377,7 +365,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         bgStopProcedure();
 
         // Start a passive scan
-        bgStartScanning(false, passiveScanInterval, passiveScanWindow);
+        bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
     }
 
     @Override
@@ -452,19 +440,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
         bgSetMode();
 
-        // Connect...
-        int connIntervalMin = 60;
-        int connIntervalMax = 100;
-        int latency = 0;
-        int timeout = 100;
-
         BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
         connect.setAddress(address.toString());
         connect.setAddrType(addressType);
-        connect.setConnIntervalMin(connIntervalMin);
-        connect.setConnIntervalMax(connIntervalMax);
-        connect.setLatency(latency);
-        connect.setTimeout(timeout);
+        connect.setConnIntervalMin(configuration.connIntervalMin);
+        connect.setConnIntervalMax(configuration.connIntervalMax);
+        connect.setLatency(configuration.connLatency);
+        connect.setTimeout(configuration.connTimeout);
         BlueGigaConnectDirectResponse connectResponse = (BlueGigaConnectDirectResponse) getBgHandler()
                 .sendTransaction(connect);
         if (connectResponse.getResult() != BgApiResponse.SUCCESS) {
