@@ -107,6 +107,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Made handler implement BlueGigaHandlerListener
+ * @author Pauli Anttila - Many improvements
  */
 @NonNullByDefault
 public class BlueGigaBridgeHandler extends BaseBridgeHandler
@@ -143,9 +144,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Nullable
     private BluetoothAddress address;
 
-    // internal flag for the discovery configuration
-    private boolean discoveryActive = true;
-
     // Map of Bluetooth devices known to this bridge.
     // This is all devices we have heard on the network - not just things bound to the bridge
     private final Map<BluetoothAddress, BluetoothDevice> devices = new ConcurrentHashMap<>();
@@ -156,12 +154,14 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // Set of discovery listeners
     protected final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
-    private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
-
-    private @NonNullByDefault({}) ScheduledFuture<?> removeOldDevicesTask;
-
     // List of device listeners
     protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
+
+    private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
+
+    private boolean initComplite = false;
+
+    private @NonNullByDefault({}) ScheduledFuture<?> removeOldDevicesTask;
 
     public BlueGigaBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
@@ -223,6 +223,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
                 updateThingProperties();
 
+                initComplite = true;
                 updateStatus(ThingStatus.ONLINE);
                 startScheduledTasks();
             } catch (TimeoutException e) {
@@ -242,6 +243,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             bgh.removeEventListener(this);
             bgh.removeHandlerListener(this);
             bgh.close();
+            initComplite = false;
         } catch (IllegalStateException e) {
             // ignore if handler wasn't set at all
         }
@@ -250,6 +252,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private void startScheduledTasks() {
         passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        logger.debug("Start scheduled task to remove old devices ones per every hour");
         removeOldDevicesTask = scheduler.scheduleWithFixedDelay(this::removeOldDevices, 1, 1, TimeUnit.HOURS);
     }
 
@@ -370,20 +373,22 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void bluegigaEventReceived(@Nullable BlueGigaResponse event) {
         if (event instanceof BlueGigaScanResponseEvent) {
-            BlueGigaScanResponseEvent scanEvent = (BlueGigaScanResponseEvent) event;
+            if (initComplite) {
+                BlueGigaScanResponseEvent scanEvent = (BlueGigaScanResponseEvent) event;
 
-            // We use the scan event to add any devices we hear to the devices list
-            // The device gets created, and then manages itself for discovery etc.
-            BluetoothAddress sender = new BluetoothAddress(scanEvent.getSender());
-            BlueGigaBluetoothDevice device;
-            if (devices.get(sender) == null) {
-                logger.debug("BlueGiga adding new device to adaptor {}: {}", address, sender);
-                device = new BlueGigaBluetoothDevice(this, new BluetoothAddress(scanEvent.getSender()),
-                        scanEvent.getAddressType());
-                devices.put(sender, device);
-                deviceDiscovered(device);
+                // We use the scan event to add any devices we hear to the devices list
+                // The device gets created, and then manages itself for discovery etc.
+                BluetoothAddress sender = new BluetoothAddress(scanEvent.getSender());
+                BlueGigaBluetoothDevice device;
+                if (devices.get(sender) == null) {
+                    logger.debug("BlueGiga adding new device to adaptor {}: {}", address, sender);
+                    device = new BlueGigaBluetoothDevice(this, new BluetoothAddress(scanEvent.getSender()),
+                            scanEvent.getAddressType());
+                    devices.put(sender, device);
+                }
+            } else {
+                logger.trace("Ignore BlueGigaScanResponseEvent as initialization is not complite");
             }
-
             return;
         }
 
@@ -417,7 +422,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         // Stop the active scan
         bgEndProcedure();
 
-        // Start a passive scan
+        // Start a passive scan after idle delay
         passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
     }
 

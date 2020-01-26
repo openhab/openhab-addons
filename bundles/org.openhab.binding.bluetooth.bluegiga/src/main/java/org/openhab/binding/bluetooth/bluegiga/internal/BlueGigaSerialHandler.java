@@ -127,8 +127,10 @@ public class BlueGigaSerialHandler {
                             // End of packet reached - process
                             BlueGigaResponse responsePacket = BlueGigaResponsePackets.getPacket(inputBuffer);
 
-                            logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
-                            logger.trace("BLE RX: {}", responsePacket);
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
+                                logger.trace("BLE RX: {}", responsePacket);
+                            }
                             if (responsePacket != null) {
                                 if (responsePacket.isEvent()) {
                                     notifyEventListeners(responsePacket);
@@ -211,7 +213,9 @@ public class BlueGigaSerialHandler {
         // Send the data
         try {
             int[] payload = bleFrame.serialize();
-            logger.trace("TX BLE frame: {}", printHex(payload, payload.length));
+            if (logger.isTraceEnabled()) {
+                logger.trace("BLE TX: {}", printHex(payload, payload.length));
+            }
             for (int b : payload) {
                 outputStream.write(b);
             }
