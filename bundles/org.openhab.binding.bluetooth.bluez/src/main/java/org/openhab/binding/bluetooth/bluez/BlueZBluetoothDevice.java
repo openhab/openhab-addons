@@ -53,7 +53,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
-    private final InactiveCleanupJob inactiveCleanupJob = new InactiveCleanupJob();
+    private InactiveCleanupJob inactiveCleanupJob;
 
     /**
      * Constructor
@@ -88,6 +88,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * This method should always be called directly after creating a new object instance.
      */
     public void initialize() {
+        inactiveCleanupJob = new InactiveCleanupJob();
         scheduler.submit(this::initializeDevice);
     }
 
@@ -431,6 +432,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      */
     public void dispose() {
         inactiveCleanupJob.cancel();
+        inactiveCleanupJob = null;
         disableNotifications();
     }
 
