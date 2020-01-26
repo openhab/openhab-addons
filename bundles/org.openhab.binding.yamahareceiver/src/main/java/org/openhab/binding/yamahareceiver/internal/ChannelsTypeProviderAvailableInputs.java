@@ -133,7 +133,7 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider,
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return handler;
     }
 }
