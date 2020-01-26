@@ -275,11 +275,7 @@ public class SonyPS4Handler extends BaseThingHandler {
 
         int responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
-            byte[] respBuff = new byte[responseLength];
-            readBuffer.rewind();
-            readBuffer.get(respBuff);
-            ps4PacketHandler.handleHelloResponse(readBuffer);
-            logger.debug("PS4 hello response received: {}", respBuff);
+            ps4PacketHandler.parseResponsePacket(readBuffer);
         } else {
             return false;
         }
@@ -297,11 +293,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         readBuffer.clear();
         responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
-            byte[] respBuff = new byte[responseLength];
-            readBuffer.rewind();
-            readBuffer.get(respBuff);
-            byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
-            logger.debug("PS4 login response: {}", loginDecrypt);
+            ps4PacketHandler.parseEncryptedPacket(readBuffer);
             // TODO Here we should probably do some checks that we are actually logged in.
             return true;
         } else {
@@ -352,11 +344,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             final ByteBuffer readBuffer = ByteBuffer.allocate(512);
             int responseLength = channel.read(readBuffer);
             if (responseLength > 0) {
-                byte[] respBuff = new byte[responseLength];
-                readBuffer.position(0);
-                readBuffer.get(respBuff, 0, responseLength);
-                byte[] standbyDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
-                logger.debug("PS4 standby response: {}", standbyDecrypt);
+                ps4PacketHandler.parseEncryptedPacket(readBuffer);
             } else {
                 logger.warn("PS4 no standby response!");
             }
@@ -404,11 +392,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             final ByteBuffer readBuffer = ByteBuffer.allocate(512);
             int responseLength = channel.read(readBuffer);
             if (responseLength > 0) {
-                byte[] respBuff = new byte[responseLength];
-                readBuffer.position(0);
-                readBuffer.get(respBuff, 0, responseLength);
-                byte[] appDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
-                logger.debug("PS4 application response: {}", appDecrypt);
+                ps4PacketHandler.parseEncryptedPacket(readBuffer);
             } else {
                 logger.debug("PS4 no application response!");
             }

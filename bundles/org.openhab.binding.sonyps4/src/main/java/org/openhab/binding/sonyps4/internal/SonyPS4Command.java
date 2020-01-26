@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.sonyps4.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Enum of the possible commands.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
-enum SonyPS4Commands {
+@NonNullByDefault
+enum SonyPS4Command {
     HELLO_REQ(0x6f636370),
     BYEBYE_REQ(0x04),
     LOGIN_RSP(0x07),
@@ -42,10 +49,27 @@ enum SonyPS4Commands {
     COMMENT_VIEWER_NEW_COMMENT2(0x2e),
     COMMENT_VIEWER_EVENT(0x30);
 
+    private static final Map<Integer, SonyPS4Command> TAG_MAP = new HashMap<>();
+
+    static {
+        for (SonyPS4Command cmd : SonyPS4Command.values()) {
+            TAG_MAP.put(cmd.value, cmd);
+        }
+    }
+
     public final int value;
 
-    private SonyPS4Commands(int value) {
+    private SonyPS4Command(int value) {
         this.value = value;
     }
 
+    /**
+     * get command from int
+     *
+     * @param tag the tag string
+     * @return accessoryType or null if not found
+     */
+    public static @Nullable SonyPS4Command valueOfTag(int value) {
+        return TAG_MAP.get(value);
+    }
 }

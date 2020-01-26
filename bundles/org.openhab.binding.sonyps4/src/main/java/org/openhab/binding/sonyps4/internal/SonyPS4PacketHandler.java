@@ -64,7 +64,6 @@ public class SonyPS4PacketHandler {
 
     private final byte[] remoteSeed = new byte[16];
     private final byte[] randomSeed = new byte[16];
-    // private IvParameterSpec ivSpec = new IvParameterSpec(remoteSeed);
     private @Nullable Cipher aesEncryptCipher;
     private @Nullable Cipher aesDecryptCipher;
     private @Nullable Cipher ps4Cipher;
@@ -117,24 +116,10 @@ public class SonyPS4PacketHandler {
         return packet;
     }
 
-    void handleHelloResponse(ByteBuffer helloBuffer) {
-        helloBuffer.position(20);
-        helloBuffer.get(remoteSeed, 0, 16);
-        initCiphers();
-    }
-
     private byte[] encryptPacket(ByteBuffer packet) {
         Cipher encCipher = aesEncryptCipher;
         if (encCipher != null) {
             return encCipher.update(packet.array());
-        }
-        return new byte[0];
-    }
-
-    byte[] decryptResponsePacket(byte[] input) {
-        Cipher decCipher = aesDecryptCipher;
-        if (decCipher != null) {
-            return decCipher.update(input);
         }
         return new byte[0];
     }
@@ -151,16 +136,49 @@ public class SonyPS4PacketHandler {
         return new byte[0];
     }
 
+    void parseEncryptedPacket(ByteBuffer encBuffer) {
+        Cipher decCipher = aesDecryptCipher;
+        if (decCipher != null) {
+            byte[] result = decCipher.update(encBuffer.array());
+            if (result != null) {
+                parseResponsePacket(ByteBuffer.wrap(result));
+            }
+        }
+    }
+
     void parseResponsePacket(ByteBuffer rBuffer) {
-        int size = rBuffer.getInt();
+        rBuffer.rewind();
+        final int size = rBuffer.getInt();
         if (size != rBuffer.limit()) {
+            logger.info("Response size ({}) not matching buffer size ({}).", size, rBuffer.limit());
             return;
         }
-        int command = rBuffer.getInt();
-        if (command == SonyPS4Commands.HELLO_REQ.value) {
-            rBuffer.position(20);
-            rBuffer.get(remoteSeed, 0, 16);
-            initCiphers();
+        int cmdValue = rBuffer.getInt();
+        SonyPS4Command command = SonyPS4Command.valueOfTag(cmdValue);
+        byte[] respBuff = new byte[size];
+        rBuffer.rewind();
+        rBuffer.get(respBuff);
+        if (command != null) {
+            logger.debug("Response size:{}, command:{}, data:{}.", size, command, respBuff);
+            switch (command) {
+                case HELLO_REQ:
+                    rBuffer.position(20);
+                    rBuffer.get(remoteSeed, 0, 16);
+                    initCiphers();
+                    break;
+                case LOGIN_RSP:
+                case APP_START_RSP:
+                case SERVER_STATUS_RSP:
+                case STANDBY_RSP:
+                case LOGOUT_RSP:
+                case APP_START2_RSP:
+                    break;
+                default:
+                    logger.info("Unknown response command: {}. Missing case.", cmdValue);
+                    break;
+            }
+        } else {
+            logger.info("Unknown response command: {}. Not in enum", cmdValue);
         }
     }
 
@@ -188,7 +206,7 @@ public class SonyPS4PacketHandler {
 
     byte[] makeHelloPacket() {
         ByteBuffer packet = newPacketOfSize(28);
-        packet.putInt(SonyPS4Commands.HELLO_REQ.value);
+        packet.putInt(SonyPS4Command.HELLO_REQ.value);
         packet.putInt(REQ_VERSION);
         packet.put(new byte[16]); // Seed = 16 bytes
         return packet.array();
@@ -208,7 +226,7 @@ public class SonyPS4PacketHandler {
             return new byte[0];
         }
         ByteBuffer packet = newPacketOfSize(8 + 256 + 16);
-        packet.putInt(SonyPS4Commands.HANDSHAKE_REQ.value);
+        packet.putInt(SonyPS4Command.HANDSHAKE_REQ.value);
         packet.put(msg);
         packet.put(remoteSeed); // Seed = 16 bytes
         return packet.array();
@@ -216,7 +234,7 @@ public class SonyPS4PacketHandler {
 
     byte[] makeLoginPacket(String userCredential, String pinCode, String pairingCode) {
         ByteBuffer packet = newPacketForEncryption(16 + 64 + 256 + 16 + 16 + 16);
-        packet.putInt(SonyPS4Commands.LOGIN_REQ.value);
+        packet.putInt(SonyPS4Command.LOGIN_REQ.value);
         packet.put(pinCode.getBytes(), 0, 4); // pin Code
         packet.putInt(0x0201); // Magic number
         packet.put(userCredential.getBytes(StandardCharsets.US_ASCII), 0, 64);
@@ -227,40 +245,40 @@ public class SonyPS4PacketHandler {
         packet.put("Mac mini 2012".getBytes(StandardCharsets.UTF_8)); // Model, name of paired unit, shown on the PS4 in
                                                                       // the settings view.
         packet.position(16 + 64 + 256 + 16 + 16);
-        packet.put(pairingCode.getBytes(), 0, 8); // Pairing code?
+        packet.put(pairingCode.getBytes(), 0, 8); // Pairing code
 
         return encryptPacket(packet);
     }
 
     byte[] makeStatusPacket(int status) {
         ByteBuffer packet = newPacketForEncryption(16);
-        packet.putInt(SonyPS4Commands.STATUS_REQ.value);
+        packet.putInt(SonyPS4Command.STATUS_REQ.value);
         packet.putInt(status); // status
         return encryptPacket(packet);
     }
 
     byte[] makeStandbyPacket() {
         ByteBuffer packet = newPacketForEncryption(8);
-        packet.putInt(SonyPS4Commands.STANDBY_REQ.value);
+        packet.putInt(SonyPS4Command.STANDBY_REQ.value);
         return encryptPacket(packet);
     }
 
     byte[] makeApplicationPacket(String applicationName) {
         ByteBuffer packet = newPacketForEncryption(8 + 16 + 8);
-        packet.putInt(SonyPS4Commands.APP_START_REQ.value);
+        packet.putInt(SonyPS4Command.APP_START_REQ.value);
         packet.put(applicationName.getBytes()); // AppName
         return encryptPacket(packet);
     }
 
     byte[] makeByebyePacket() {
         ByteBuffer packet = newPacketForEncryption(8);
-        packet.putInt(SonyPS4Commands.BYEBYE_REQ.value);
+        packet.putInt(SonyPS4Command.BYEBYE_REQ.value);
         return encryptPacket(packet);
     }
 
     byte[] makeRemoteControlPacket(int pushedKey) {
         ByteBuffer packet = newPacketForEncryption(16);
-        packet.putInt(SonyPS4Commands.REMOTE_CONTROL_REQ.value);
+        packet.putInt(SonyPS4Command.REMOTE_CONTROL_REQ.value);
         packet.putInt(pushedKey);
         packet.putInt(0); // HoldTime
         return encryptPacket(packet);
@@ -279,7 +297,7 @@ public class SonyPS4PacketHandler {
             logger.debug("Initialized RSA public key cipher");
             return cipher;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException e) {
-            logger.error("Exception enabling RSA cipher.", e);
+            logger.warn("Exception enabling RSA cipher.", e);
             return null;
         }
     }
