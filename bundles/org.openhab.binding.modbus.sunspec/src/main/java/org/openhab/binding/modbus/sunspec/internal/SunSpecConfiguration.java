@@ -39,19 +39,19 @@ public class SunSpecConfiguration {
      */
     private int length;
 
-    public Integer getAddress() {
+    public int getAddress() {
         return address;
     }
 
-    public void setAddress(Integer address) {
+    public void setAddress(int address) {
         this.address = address;
     }
 
-    public Integer getLength() {
+    public int getLength() {
         return length;
     }
 
-    public void setLength(Integer length) {
+    public void setLength(int length) {
         this.length = length;
     }
 
@@ -60,13 +60,6 @@ public class SunSpecConfiguration {
      */
     public long getRefreshMillis() {
         return refresh * 1000;
-    }
-
-    /**
-     * Sets refresh period in milliseconds
-     */
-    public void setRefreshMillis(long refresh) {
-        this.refresh = refresh / 1000;
     }
 
     public int getMaxTries() {

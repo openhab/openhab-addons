@@ -41,7 +41,7 @@ public class InverterHandler extends AbstractSunSpecHandler {
     /**
      * Parser used to convert incoming raw messages into model blocks
      */
-    private InverterModelParser parser = new InverterModelParser();
+    private final InverterModelParser parser = new InverterModelParser();
 
     /**
      * Logger instance
@@ -56,7 +56,7 @@ public class InverterHandler extends AbstractSunSpecHandler {
      * This method is called each time new data has been polled from the modbus slave
      * The register array is first parsed, then each of the channels are updated
      * to the new values
-     * 
+     *
      * @param registers byte array read from the modbus slave
      */
     @Override
