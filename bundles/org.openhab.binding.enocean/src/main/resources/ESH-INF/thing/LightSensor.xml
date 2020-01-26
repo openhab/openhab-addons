@@ -18,17 +18,19 @@
 				<description>EnOceanId of device this thing belongs to</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text" multiple="true">
+			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
 					<option value="A5_06_01">A5-06-01</option>
 					<option value="A5_06_01_ELTAKO">A5-06-01 ELTAKO</option>
-					<option value="D0_06_00">D0-06 signal message for battery status</option>
 				</options>
-				<multipleLimit>2</multipleLimit>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
+			</parameter>
+			<parameter name="receivingSIGEEP" type="boolean">
+				<label>Receive Battery Status Signal Messages</label>
+				<default>false</default>
 			</parameter>
 		</config-description>
 

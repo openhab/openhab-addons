@@ -78,8 +78,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 }
             });
             if (config.receivingSIGEEP) {
-                EEPType receivingEEPType = EEPType.getType("D_06_00");
-                receivingEEPTypes.put(receivingEEPType.getRORG(), receivingEEPType);
+                receivingEEPTypes.put(EEPType.SigBatteryStatus.getRORG(), EEPType.SigBatteryStatus);
             }
         } catch (IllegalArgumentException e) {
             configurationErrorDescription = e.getMessage();

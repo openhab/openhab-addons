@@ -19,7 +19,7 @@
 				<description>EnOceanId of device this thing belongs to</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text" multiple="true">
+			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by handle</description>
 				<options>
@@ -27,11 +27,13 @@
 					<option value="F6_10_01">F6-10-01</option>
 					<option value="A5_14_09">A5-14-09</option>
 					<option value="A5_14_0A">A5-14-0A</option>
-					<option value="D0_06_00">D0-06 signal message for battery status</option>
 				</options>
-				<multipleLimit>2</multipleLimit>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
+			</parameter>
+			<parameter name="receivingSIGEEP" type="boolean">
+				<label>Receive Battery Status Signal Messages</label>
+				<default>false</default>
 			</parameter>
 		</config-description>
 
