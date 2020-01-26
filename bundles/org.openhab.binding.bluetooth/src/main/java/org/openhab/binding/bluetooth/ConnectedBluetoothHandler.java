@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic.GattCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
@@ -192,7 +193,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                 updateBatteryLevel(characteristic);
             } else {
                 logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(), address,
-                        characteristic.getValue());
+                        HexUtils.bytesToHex(characteristic.getByteValue()));
             }
         } else {
             logger.debug("Characteristic {} from {} has been read - ERROR", characteristic.getUuid(), address);
@@ -203,12 +204,14 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
             BluetoothCompletionStatus status) {
-        logger.debug("Wrote {} to characteristic {} of device {}: {}", characteristic.getByteValue(),
-                characteristic.getUuid(), address, status);
+        logger.debug("Wrote {} to characteristic {} of device {}: {}",
+                HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
     }
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+        logger.debug("Received new value '{}' for characteristic '{}' of device '{}'",
+                HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
         if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
             updateBatteryLevel(characteristic);
         }

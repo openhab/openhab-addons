@@ -12,18 +12,16 @@
  */
 package org.openhab.binding.bluetooth.bluez.handler;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -58,19 +56,21 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
     private @NonNullByDefault({}) tinyb.BluetoothAdapter adapter;
 
-    private final Map<String, tinyb.BluetoothDevice> tinybDeviceCache = new ConcurrentHashMap<>();
-
     // Our BT address
-    private @NonNullByDefault({}) BluetoothAddress address;
+    private @NonNullByDefault({}) BluetoothAddress adapterAddress;
 
     // Internal flag for the discovery configuration
     private boolean discoveryConfigActive = true;
     // Actual discovery status.
-    private boolean discoveryActive = true;
+    private volatile boolean discoveryActive = true;
+
+    // private final @NonNullByDefault({
+    // DefaultLocation.RETURN_TYPE }) Map<String, BlueZBluetoothDevice> trackedDevices = new ConcurrentHashMap<>();
 
     // Map of Bluetooth devices known to this bridge.
-    // This is all devices we have heard on the network - not just things bound to the bridge
-    private final Map<String, BluetoothDevice> devices = new ConcurrentHashMap<>();
+    // This contains the devices from the most recent scan
+    private final @NonNullByDefault({
+            DefaultLocation.RETURN_TYPE }) Map<BluetoothAddress, BlueZBluetoothDevice> devices = new ConcurrentHashMap<>();
 
     // Set of discovery listeners
     protected final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
@@ -108,7 +108,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
         final BlueZAdapterConfiguration configuration = getConfigAs(BlueZAdapterConfiguration.class);
         if (configuration.address != null) {
-            address = new BluetoothAddress(configuration.address);
+            adapterAddress = new BluetoothAddress(configuration.address);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
@@ -119,17 +119,16 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             logger.debug("Deactivated discovery participation.");
         }
 
-        logger.debug("Creating BlueZ adapter with address '{}'", address);
+        logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
 
         for (tinyb.BluetoothAdapter adapter : manager.getAdapters()) {
             if (adapter == null) {
                 logger.warn("got null adapter from bluetooth manager");
                 continue;
             }
-            if (adapter.getAddress().equals(address.toString())) {
+            if (adapter.getAddress().equals(adapterAddress.toString())) {
                 this.adapter = adapter;
                 updateStatus(ThingStatus.ONLINE);
-                startDiscovery();
                 discoveryJob = scheduler.scheduleWithFixedDelay(this::refreshDevices, 0, 10, TimeUnit.SECONDS);
                 return;
             }
@@ -165,34 +164,27 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
     private void refreshDevices() {
         logger.debug("Refreshing Bluetooth device list...");
-        Set<String> newAddresses = new HashSet<>();
         List<tinyb.BluetoothDevice> tinybDevices = adapter.getDevices();
         logger.debug("Found {} Bluetooth devices.", tinybDevices.size());
-        synchronized (tinybDeviceCache) {
-            tinybDeviceCache.clear();
-            tinybDevices.stream().forEach(d -> tinybDeviceCache.put(d.getAddress(), d));
-        }
+        Set<BlueZBluetoothDevice> scannedDevices = new HashSet<>();
         for (tinyb.BluetoothDevice tinybDevice : tinybDevices) {
-            synchronized (devices) {
-                newAddresses.add(tinybDevice.getAddress());
-                BlueZBluetoothDevice device = (BlueZBluetoothDevice) devices.get(tinybDevice.getAddress());
-                if (device == null) {
-                    createAndRegisterBlueZDevice(tinybDevice);
-                } else {
-                    device.updateTinybDevice(tinybDevice);
-                    notifyDiscoveryListeners(device);
-                }
-            }
+            BlueZBluetoothDevice device = getDevice(new BluetoothAddress(tinybDevice.getAddress()));
+            scannedDevices.add(device);
+
+            device.updateTinybDevice(tinybDevice);
+            notifyDiscoveryListeners(device);
         }
         // clean up orphaned entries
         synchronized (devices) {
-            Set<String> oldAdresses = devices.keySet();
-            for (String address : oldAdresses) {
-                if (!newAddresses.contains(address)) {
-                    devices.remove(address);
+            for (BlueZBluetoothDevice device : devices.values()) {
+                if (!scannedDevices.contains(device) && !device.hasListeners()) {
+                    device.dispose();
+                    devices.remove(device.getAddress());
                 }
             }
         }
+        // For whatever reason, the OS will sometimes turn off scanning. So we just make sure it keeps running.
+        startDiscovery();
     }
 
     @Override
@@ -210,21 +202,18 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
     @Override
     public BluetoothAddress getAddress() {
-        return address;
+        return adapterAddress;
     }
 
     @Override
-    public BluetoothDevice getDevice(BluetoothAddress bluetoothAddress) {
-        String address = bluetoothAddress.toString();
+    public BlueZBluetoothDevice getDevice(BluetoothAddress bluetoothAddress) {
         synchronized (devices) {
-            if (devices.containsKey(address)) {
-                return devices.get(address);
-            } else {
-                BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, bluetoothAddress, "");
-                device.initialize();
-                devices.put(address, device);
-                return device;
+            BlueZBluetoothDevice device = devices.get(bluetoothAddress);
+            if (device == null) {
+                device = new BlueZBluetoothDevice(this, bluetoothAddress);
             }
+            devices.put(bluetoothAddress, device);
+            return device;
         }
     }
 
@@ -234,37 +223,27 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             discoveryJob.cancel(true);
             discoveryJob = null;
         }
-        for (BluetoothDevice device : devices.values()) {
-            ((BlueZBluetoothDevice) device).dispose();
+        if (adapter.getDiscovering()) {
+            adapter.stopDiscovery();
         }
-        devices.clear();
-    }
-
-    public Collection<tinyb.BluetoothDevice> getTinyBDevices() {
-        synchronized (tinybDeviceCache) {
-            return Collections.unmodifiableCollection(tinybDeviceCache.values());
+        synchronized (devices) {
+            for (BlueZBluetoothDevice device : devices.values()) {
+                device.dispose();
+            }
+            devices.clear();
         }
-    }
-
-    private BlueZBluetoothDevice createAndRegisterBlueZDevice(tinyb.BluetoothDevice tinybDevice) {
-        BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, tinybDevice);
-        tinybDevice.getManufacturerData().entrySet().stream().map(Map.Entry::getKey).filter(Objects::nonNull)
-                .findFirst().ifPresent(manufacturerId ->
-                // Convert to unsigned int to match the convention in BluetoothCompanyIdentifiers
-                device.setManufacturerId(manufacturerId & 0xFFFF));
-        device.initialize();
-        devices.put(tinybDevice.getAddress(), device);
-        notifyDiscoveryListeners(device);
-        return device;
     }
 
     private void notifyDiscoveryListeners(BluetoothDevice device) {
-        if (discoveryActive && deviceReachable(device)) {
-            for (BluetoothDiscoveryListener listener : discoveryListeners) {
-                listener.deviceDiscovered(device);
+        if (discoveryActive) {
+            if (deviceReachable(device)) {
+                for (BluetoothDiscoveryListener listener : discoveryListeners) {
+                    listener.deviceDiscovered(device);
+                }
+            } else {
+                logger.trace("Not notifying listeners for device '{}', because it is not reachable.",
+                        device.getAddress());
             }
-        } else {
-            logger.trace("Not notifying listeners for device '{}', because it is not reachable.", device.getAddress());
         }
     }
 

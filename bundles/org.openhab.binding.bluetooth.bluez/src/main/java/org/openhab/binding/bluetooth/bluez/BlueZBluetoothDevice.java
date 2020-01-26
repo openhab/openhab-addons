@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.bluetooth.bluez;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.BluetoothAddress;
@@ -62,45 +61,9 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * @param address the Bluetooth address of the device
      * @param name the name of the device
      */
-    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address, String name) {
+    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
-        this.name = name;
         logger.debug("Creating BlueZ device with address '{}'", address);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param adapter the bridge handler through which this device is connected
-     * @param tinybDevice the tinyB device to use internally (which already contains address and name information)
-     */
-    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, tinyb.BluetoothDevice tinybDevice) {
-        super(adapter, new BluetoothAddress(tinybDevice.getAddress()));
-        this.name = tinybDevice.getName();
-        this.device = tinybDevice;
-    }
-
-    /**
-     * Initializes a newly created instance of this class.
-     * It tries to set the internal tinyB device, if it isn't yet available, which is done asynchronously as
-     * BlueZ can take a while (it seems to do an active scan for the physical device).
-     *
-     * This method should always be called directly after creating a new object instance.
-     */
-    public void initialize() {
-        scheduler.submit(this::initializeDevice);
-    }
-
-    private synchronized void initializeDevice() {
-        if (this.device == null) {
-            tinyb.BluetoothDevice tinybDevice = findTinybDevice(address.toString());
-            if (tinybDevice != null) {
-                device = tinybDevice;
-                enableNotifications();
-            }
-        } else {
-            enableNotifications();
-        }
     }
 
     /**
@@ -110,31 +73,36 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * @param tinybDevice the new device instance to use for communication
      */
     public synchronized void updateTinybDevice(tinyb.BluetoothDevice tinybDevice) {
-        inactiveCleanupJob.onDeviceUpdate();
+        if (Objects.equals(device, tinybDevice)) {
+            return;
+        }
 
-        if (device != null && !tinybDevice.equals(device)) {
+        if (device != null) {
             // we need to replace the instance - let's deactivate notifications on the old one
             disableNotifications();
         }
-        if (this.device == null || !tinybDevice.equals(device)) {
-            this.device = tinybDevice;
-            enableNotifications();
-        }
-        tinyb.BluetoothDevice dev = this.device;
-        if (dev != null) {
-            this.rssi = (int) dev.getRSSI();
-            this.txPower = (int) dev.getTxPower();
-            if (dev.getConnected()) {
-                this.connectionState = ConnectionState.CONNECTED;
-            }
-        }
-        refreshServices();
-    }
+        this.device = tinybDevice;
 
-    private tinyb.@Nullable BluetoothDevice findTinybDevice(String address) {
-        Collection<tinyb.BluetoothDevice> deviceList = ((BlueZBridgeHandler) getAdapter()).getTinyBDevices();
-        logger.trace("Searching for '{}' in {} devices.", address, deviceList.size());
-        return deviceList.stream().filter(d -> d.getAddress().equals(address)).findFirst().orElse(null);
+        if (this.device == null) {
+            return;
+        }
+        inactiveCleanupJob.onDeviceUpdate();
+
+        this.name = device.getName();
+        this.rssi = (int) device.getRSSI();
+        this.txPower = (int) device.getTxPower();
+
+        device.getManufacturerData().entrySet().stream().map(Map.Entry::getKey).filter(Objects::nonNull).findFirst()
+                .ifPresent(manufacturerId ->
+                // Convert to unsigned int to match the convention in BluetoothCompanyIdentifiers
+                this.manufacturer = manufacturerId & 0xFFFF);
+
+        if (device.getConnected()) {
+            this.connectionState = ConnectionState.CONNECTED;
+        }
+
+        enableNotifications();
+        refreshServices();
     }
 
     private void enableNotifications() {
@@ -185,7 +153,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     }
 
     private void disableNotifications() {
-        logger.debug("Disabling notifications for device '{}'", device.getAddress());
+        if (device == null) {
+            return;
+        }
+        logger.debug("Disabling notifications for device '{}'", address);
         device.disableBlockedNotifications();
         device.disableManufacturerDataNotifications();
         device.disablePairedNotifications();
@@ -195,6 +166,18 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     }
 
     protected void refreshServices() {
+        String[] uuids = device.getUUIDs();
+        if (uuids != null) {
+            for (String uuid : uuids) {
+                UUID sid = UUID.fromString(uuid);
+                if (!supportedServices.containsKey(sid)) {
+                    // we want it known that a service is being broadcast
+                    // but we don't know what it is yet so we put null into the map
+                    supportedServices.put(sid, null);
+                }
+            }
+        }
+
         if (device.getServices().size() > getServices().size()) {
             for (BluetoothGattService tinybService : device.getServices()) {
                 BluetoothService service = new BluetoothService(UUID.fromString(tinybService.getUUID()),
@@ -226,10 +209,9 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                             new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
                 } else if (e.getMessage() != null && e.getMessage().contains("Protocol not available")) {
                     // this device does not seem to be connectable at all - let's log a warning and ignore it.
-                    logger.warn("Bluetooth device '{}' does not allow a connection.", device.getAddress());
+                    logger.warn("Bluetooth device '{}' does not allow a connection.", address);
                 } else {
-                    logger.debug("Exception occurred when trying to connect device '{}': {}", device.getAddress(),
-                            e.getMessage());
+                    logger.debug("Exception occurred when trying to connect device '{}': {}", address, e.getMessage());
                 }
             }
         }
@@ -243,8 +225,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             try {
                 return device.disconnect();
             } catch (BluetoothException e) {
-                logger.debug("Exception occurred when trying to disconnect device '{}': {}", device.getAddress(),
-                        e.getMessage());
+                logger.debug("Exception occurred when trying to disconnect device '{}': {}", address, e.getMessage());
             }
         }
         return false;
@@ -311,8 +292,6 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         if (c != null) {
             try {
                 c.enableValueNotifications(value -> {
-                    logger.debug("Received new value '{}' for characteristic '{}' of device '{}'", value,
-                            characteristic.getUuid(), address);
                     characteristic.setValue(value);
                     notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, characteristic);
                 });
@@ -356,8 +335,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
         if (d != null) {
             d.enableValueNotifications(value -> {
-                logger.debug("Received new value '{}' for descriptor '{}' of device '{}'", value, descriptor.getUuid(),
-                        address);
+                logger.debug("Received new value '{}' for descriptor '{}' of device '{}'", HexUtils.bytesToHex(value),
+                        descriptor.getUuid(), address);
                 descriptor.setValue(value);
                 notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor);
             });

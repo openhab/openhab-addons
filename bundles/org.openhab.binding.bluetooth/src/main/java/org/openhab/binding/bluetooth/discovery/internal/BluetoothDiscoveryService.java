@@ -73,7 +73,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     protected void activate(Map<String, Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
-        startScan();
     }
 
     @Override

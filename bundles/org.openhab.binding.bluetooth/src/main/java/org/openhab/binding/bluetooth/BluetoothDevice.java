@@ -410,7 +410,8 @@ public abstract class BluetoothDevice {
      * @return true if the service was added or false if the service was already supported
      */
     protected boolean addService(BluetoothService service) {
-        if (supportedServices.containsKey(service.getUuid())) {
+        BluetoothService oldService = supportedServices.get(service.getUuid());
+        if (oldService != null) {
             return false;
         }
         logger.trace("Adding new service to device {}: {}", address, service);
@@ -487,6 +488,10 @@ public abstract class BluetoothDevice {
      */
     public void removeListener(BluetoothDeviceListener listener) {
         eventListeners.remove(listener);
+    }
+
+    public boolean hasListeners() {
+        return !eventListeners.isEmpty();
     }
 
     /**
