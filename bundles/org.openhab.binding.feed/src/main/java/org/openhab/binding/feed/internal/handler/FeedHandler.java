@@ -21,8 +21,8 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.ZonedDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -41,8 +41,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,8 +141,7 @@ public class FeedHandler extends BaseThingHandler {
             case CHANNEL_LATEST_TITLE:
                 if (latestEntry == null || latestEntry.getTitle() == null) {
                     state = UnDefType.UNDEF;
-                }
-                else {
+                } else {
                     String title = latestEntry.getTitle();
                     state = new StringType(getValueSafely(title));
                 }
@@ -150,8 +149,7 @@ public class FeedHandler extends BaseThingHandler {
             case CHANNEL_LATEST_DESCRIPTION:
                 if (latestEntry == null || latestEntry.getDescription() == null) {
                     state = UnDefType.UNDEF;
-                }
-                else {
+                } else {
                     String description = latestEntry.getDescription().getValue();
                     state = new StringType(getValueSafely(description));
                 }
@@ -161,8 +159,7 @@ public class FeedHandler extends BaseThingHandler {
                 if (latestEntry == null || latestEntry.getPublishedDate() == null) {
                     logger.debug("Cannot update date channel. No date found in feed.");
                     return;
-                }
-                else {
+                } else {
                     Date date = latestEntry.getPublishedDate();
                     ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
                     state = new DateTimeType(zdt);

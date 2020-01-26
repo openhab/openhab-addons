@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="feed" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="feed"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- DEFINITIONS of terms used in the binding: Feed is a XML document used for providing users with frequently updated content. 
-		The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains reference (link), short 
-		description and other information like images, comments and etc. Entry in this binding is abstraction for RSS item element 
+	<!-- DEFINITIONS of terms used in the binding: Feed is a XML document used for providing users with frequently updated content.
+		The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains reference (link), short
+		description and other information like images, comments and etc. Entry in this binding is abstraction for RSS item element
 		and Atom entry element. -->
 
 	<!-- Feed Thing Type -->
@@ -30,7 +31,7 @@
 				<description>The URL of the feed</description>
 			</parameter>
 
-			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not 
+			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not
 				up to date, updates the feed content stored in the channel -->
 
 			<parameter name="refresh" type="integer">
