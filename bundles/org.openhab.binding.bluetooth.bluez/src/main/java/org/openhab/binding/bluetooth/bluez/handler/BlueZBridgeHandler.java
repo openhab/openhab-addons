@@ -64,9 +64,6 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
     // Actual discovery status.
     private volatile boolean discoveryActive = true;
 
-    // private final @NonNullByDefault({
-    // DefaultLocation.RETURN_TYPE }) Map<String, BlueZBluetoothDevice> trackedDevices = new ConcurrentHashMap<>();
-
     // Map of Bluetooth devices known to this bridge.
     // This contains the devices from the most recent scan
     private final @NonNullByDefault({
@@ -223,8 +220,8 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             if (device == null) {
                 device = new BlueZBluetoothDevice(this, bluetoothAddress);
                 device.initialize();
+                devices.put(bluetoothAddress, device);
             }
-            devices.put(bluetoothAddress, device);
             return device;
         }
     }
