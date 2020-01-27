@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
@@ -50,9 +49,9 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBluetoothDevice.class);
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth.bluez");
 
-    private final InactiveCleanupJob inactiveCleanupJob = new InactiveCleanupJob();
+    private long lastSeenTime;
 
     /**
      * Constructor
@@ -64,6 +63,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
         logger.debug("Creating BlueZ device with address '{}'", address);
+    }
+
+    public void initialize() {
+        updateLastSeenTime();
     }
 
     /**
@@ -86,7 +89,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         if (this.device == null) {
             return;
         }
-        inactiveCleanupJob.onDeviceUpdate();
+        updateLastSeenTime();
 
         this.name = device.getName();
         this.rssi = (int) device.getRSSI();
@@ -108,14 +111,14 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     private void enableNotifications() {
         logger.debug("Enabling notifications for device '{}'", device.getAddress());
         device.enableRSSINotifications(n -> {
-            inactiveCleanupJob.onActivity();
+            updateLastSeenTime();
             rssi = (int) n;
             BluetoothScanNotification notification = new BluetoothScanNotification();
             notification.setRssi(n);
             notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
         });
         device.enableManufacturerDataNotifications(n -> {
-            inactiveCleanupJob.onActivity();
+            updateLastSeenTime();
             for (Map.Entry<Short, byte[]> entry : n.entrySet()) {
                 BluetoothScanNotification notification = new BluetoothScanNotification();
                 byte[] data = new byte[entry.getValue().length + 2];
@@ -153,9 +156,6 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     }
 
     private void disableNotifications() {
-        if (device == null) {
-            return;
-        }
         logger.debug("Disabling notifications for device '{}'", address);
         device.disableBlockedNotifications();
         device.disableManufacturerDataNotifications();
@@ -386,60 +386,32 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return null;
     }
 
-    private synchronized void removeForInactivity() {
-        if (device != null && !device.getConnected()) {
-            logger.debug("Removing device '{}' due to inactivity", device.getAddress());
-            try {
-                disableNotifications();
-                device.remove();
-            } catch (BluetoothException ex) {
-                if (ex.getMessage().contains("Does Not Exist")) {
-                    // this happens when the underlying device has already been removed
-                    // but we don't have a way to check if that is the case beforehand so
-                    // we will just eat the error here.
-                } else {
-                    logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
-                            ex.getMessage());
-                }
-            }
-        }
+    private void updateLastSeenTime() {
+        this.lastSeenTime = System.currentTimeMillis();
+    }
+
+    public long getTimeSinceSeen(TimeUnit unit) {
+        return unit.convert(System.currentTimeMillis() - this.lastSeenTime, TimeUnit.MILLISECONDS);
     }
 
     /**
      * Clean up and release memory.
      */
     public void dispose() {
-        inactiveCleanupJob.cancel();
+        if (device == null) {
+            return;
+        }
         disableNotifications();
-    }
-
-    /**
-     * Handler for the pending removal job which will trigger after a set period of inactivity.
-     * Every time the device is scanned again the timer will reset.
-     *
-     * Note: this will not remove connected devices since connected devices typically won't receive
-     * scan notifications.
-     */
-    private class InactiveCleanupJob {
-
-        private ScheduledFuture<?> pendingRemovalJob;
-
-        public synchronized void cancel() {
-            if (pendingRemovalJob != null) {
-                pendingRemovalJob.cancel(true);
-                pendingRemovalJob = null;
-            }
-        }
-
-        public synchronized void onActivity() {
-            logger.trace("resetting inactivity timer for device: {}", address);
-            cancel();
-            pendingRemovalJob = scheduler.schedule(BlueZBluetoothDevice.this::removeForInactivity, 5, TimeUnit.MINUTES);
-        }
-
-        public synchronized void onDeviceUpdate() {
-            if (pendingRemovalJob == null || pendingRemovalJob.isDone()) {
-                onActivity();
+        try {
+            device.remove();
+        } catch (BluetoothException ex) {
+            if (ex.getMessage().contains("Does Not Exist")) {
+                // this happens when the underlying device has already been removed
+                // but we don't have a way to check if that is the case beforehand so
+                // we will just eat the error here.
+            } else {
+                logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
+                        ex.getMessage());
             }
         }
     }

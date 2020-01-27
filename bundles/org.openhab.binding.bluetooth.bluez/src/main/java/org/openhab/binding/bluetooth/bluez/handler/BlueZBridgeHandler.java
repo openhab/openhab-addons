@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.bluez.handler;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.bluez.BlueZBluetoothDevice;
 import org.slf4j.Logger;
@@ -166,25 +166,36 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         logger.debug("Refreshing Bluetooth device list...");
         List<tinyb.BluetoothDevice> tinybDevices = adapter.getDevices();
         logger.debug("Found {} Bluetooth devices.", tinybDevices.size());
-        Set<BlueZBluetoothDevice> scannedDevices = new HashSet<>();
         for (tinyb.BluetoothDevice tinybDevice : tinybDevices) {
             BlueZBluetoothDevice device = getDevice(new BluetoothAddress(tinybDevice.getAddress()));
-            scannedDevices.add(device);
-
             device.updateTinybDevice(tinybDevice);
             notifyDiscoveryListeners(device);
         }
         // clean up orphaned entries
         synchronized (devices) {
             for (BlueZBluetoothDevice device : devices.values()) {
-                if (!scannedDevices.contains(device) && !device.hasListeners()) {
+                if (shouldRemove(device)) {
+                    logger.debug("Removing device '{}' due to inactivity", device.getAddress());
                     device.dispose();
                     devices.remove(device.getAddress());
                 }
             }
         }
-        // For whatever reason, the OS will sometimes turn off scanning. So we just make sure it keeps running.
+        // For whatever reason, bluez will sometimes turn off scanning. So we just make sure it keeps running.
         startDiscovery();
+    }
+
+    private boolean shouldRemove(BlueZBluetoothDevice device) {
+        // we can't remove devices with listeners since that means they have a handler.
+        if (device.hasListeners()) {
+            return false;
+        }
+        // devices that are connected won't receive any scan notifications so we can't remove them for being idle
+        if (device.getConnectionState() == ConnectionState.CONNECTED) {
+            return false;
+        }
+        // we remove devices we haven't seen in a while
+        return device.getTimeSinceSeen(TimeUnit.MINUTES) > 5;
     }
 
     @Override
@@ -211,6 +222,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             BlueZBluetoothDevice device = devices.get(bluetoothAddress);
             if (device == null) {
                 device = new BlueZBluetoothDevice(this, bluetoothAddress);
+                device.initialize();
             }
             devices.put(bluetoothAddress, device);
             return device;
@@ -223,7 +235,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             discoveryJob.cancel(true);
             discoveryJob = null;
         }
-        if (adapter.getDiscovering()) {
+        if (adapter != null && adapter.getDiscovering()) {
             adapter.stopDiscovery();
         }
         synchronized (devices) {

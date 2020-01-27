@@ -16,8 +16,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
@@ -179,9 +181,9 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Returns a {@link BluetoothService} if the requested service is supported
+     * Returns a {@link BluetoothService} if the requested service has been discovered
      *
-     * @return the {@link BluetoothService} or null if the service is not supported.
+     * @return the {@link BluetoothService} or null if the service has not been discovered
      */
     public BluetoothService getServices(UUID uuid) {
         return supportedServices.get(uuid);
@@ -193,7 +195,7 @@ public abstract class BluetoothDevice {
      * @return list of supported {@link BluetoothService}s.
      */
     public Collection<BluetoothService> getServices() {
-        return supportedServices.values();
+        return supportedServices.values().stream().filter(obj -> Objects.nonNull(obj)).collect(Collectors.toList());
     }
 
     /**
@@ -313,7 +315,7 @@ public abstract class BluetoothDevice {
      */
     public BluetoothCharacteristic getCharacteristic(UUID uuid) {
         for (BluetoothService service : supportedServices.values()) {
-            if (service.providesCharacteristic(uuid)) {
+            if (service != null && service.providesCharacteristic(uuid)) {
                 return service.getCharacteristic(uuid);
             }
         }
