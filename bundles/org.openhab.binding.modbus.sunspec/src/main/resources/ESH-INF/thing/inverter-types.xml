@@ -10,7 +10,7 @@
 			<bridge-type-ref id="serial" />
 		</supported-bridge-type-refs>
 
-		<label>Single phase inverter</label>
+		<label>Single Phase Inverter</label>
 		<description>Single phase inverter supporting SunSpec mapping over tcp modbus connection</description>
 		<category>Inverter</category>
 

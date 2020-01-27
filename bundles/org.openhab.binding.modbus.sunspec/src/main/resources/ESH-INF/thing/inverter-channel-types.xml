@@ -5,31 +5,31 @@
 
 	<channel-type id="ac-total-current-type">
 		<item-type>Number</item-type>
-		<label>AC Total Current value (A)</label>
+		<label>AC Total Current Value (A)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="ac-power-type">
 		<item-type>Number</item-type>
-		<label>AC Power value (W)</label>
+		<label>AC Power Value (W)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="ac-frequency-type">
 		<item-type>Number</item-type>
-		<label>AC Frequency value (Hz)</label>
+		<label>AC Frequency Value (Hz)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="ac-apparent-power-type" advanced="true">
 		<item-type>Number</item-type>
-		<label>AC Apparent Power value</label>
+		<label>AC Apparent Power Value</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="ac-reactive-power-type" advanced="true">
 		<item-type>Number</item-type>
-		<label>AC Reactive Power value</label>
+		<label>AC Reactive Power Value</label>
 		<state readOnly="true" />
 	</channel-type>
 	
@@ -41,31 +41,31 @@
 	
 	<channel-type id="ac-lifetime-energy-type">
 		<item-type>Number</item-type>
-		<label>AC Lifetime Energy production (Wh)</label>
+		<label>AC Lifetime Energy Production (Wh)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="cabinet-temperature-type">
 		<item-type>Number</item-type>
-		<label>Cabinet temperature (C)</label>
+		<label>Cabinet Temperature (C)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="heatsink-temperature-type">
 		<item-type>Number</item-type>
-		<label>Heat Sink temperature (C)</label>
+		<label>Heat Sink Temperature (C)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="transformer-temperature-type">
 		<item-type>Number</item-type>
-		<label>Transformer temperature (C)</label>
+		<label>Transformer Temperature (C)</label>
 		<state readOnly="true" />
 	</channel-type>
 	
 	<channel-type id="other-temperature-type">
 		<item-type>Number</item-type>
-		<label>Other temperature (C)</label>
+		<label>Other Temperature (C)</label>
 		<state readOnly="true" />
 	</channel-type>
 

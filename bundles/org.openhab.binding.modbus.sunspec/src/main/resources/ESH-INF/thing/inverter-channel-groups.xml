@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="device-information">
-		<label>Device information</label>
+		<label>Device Information</label>
 		<channels>
 			<channel id="cabinet-temperature" typeId="cabinet-temperature-type"/>
 			<channel id="heatsink-temperature" typeId="heatsink-temperature-type"/>
@@ -15,7 +15,7 @@
 	</channel-group-type>
 	
 	<channel-group-type id="ac-general">
-		<label>AC summary</label>
+		<label>AC Summary</label>
 		<channels>
 			<channel id="ac-total-current" typeId="ac-total-current-type"/>
 			<channel id="ac-power" typeId="ac-power-type"/>
