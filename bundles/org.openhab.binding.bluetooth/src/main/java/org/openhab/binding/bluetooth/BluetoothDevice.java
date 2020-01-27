@@ -179,9 +179,9 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Returns a {@link BluetoothService} if the requested service has been discovered
+     * Returns a {@link BluetoothService} if the requested service is supported
      *
-     * @return the {@link BluetoothService} or null if the service has not been discovered
+     * @return the {@link BluetoothService} or null if the service is not supported.
      */
     public BluetoothService getServices(UUID uuid) {
         return supportedServices.get(uuid);
@@ -489,6 +489,11 @@ public abstract class BluetoothDevice {
         eventListeners.remove(listener);
     }
 
+    /**
+     * Checks if this device has any listeners
+     *
+     * @return true if this device has listeners
+     */
     public boolean hasListeners() {
         return !eventListeners.isEmpty();
     }
