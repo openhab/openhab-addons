@@ -17,6 +17,7 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+    <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
     <module>org.openhab.persistence.jdbc</module>

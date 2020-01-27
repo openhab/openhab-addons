@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="epsonprojector"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="projector">
+		<label>Epson Projector</label>
+		<description>An Epson projector which supports the ESC/VP21 protocol over a serial port</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="powerstate" typeId="powerstate" />
+			<channel id="lamptime" typeId="lamptime" />
+			<channel id="keycode" typeId="keycode" />
+			<channel id="verticalkeystone" typeId="verticalkeystone" />
+			<channel id="horizontalkeystone" typeId="horizontalkeystone" />
+			<channel id="autokeystone" typeId="autokeystone" />
+			<channel id="aspectratio" typeId="aspectratio" />
+			<channel id="luminance" typeId="luminance" />
+			<channel id="source" typeId="source" />
+			<channel id="directsource" typeId="directsource" />
+			<channel id="brightness" typeId="brightness" />
+			<channel id="contrast" typeId="contrast" />
+			<channel id="density" typeId="density" />
+			<channel id="tint" typeId="tint" />
+			<channel id="sharpness" typeId="sharpness" />
+			<channel id="colortemperature" typeId="colortemperature" />
+			<channel id="fleshtemperature" typeId="fleshtemperature" />
+			<channel id="colormode" typeId="colormode" />
+			<channel id="horizontalposition" typeId="horizontalposition" />
+			<channel id="verticalposition" typeId="verticalposition" />
+			<channel id="tracking" typeId="tracking" />
+			<channel id="sync" typeId="sync" />
+			<channel id="offsetred" typeId="offsetred" />
+			<channel id="offsetgreen" typeId="offsetgreen" />
+			<channel id="offsetblue" typeId="offsetblue" />
+			<channel id="gainred" typeId="gainred" />
+			<channel id="gaingreen" typeId="gaingreen" />
+			<channel id="gainblue" typeId="gainblue" />
+			<channel id="gamma" typeId="gamma" />
+			<channel id="gammastep" typeId="gammastep" />
+			<channel id="color" typeId="color" />
+			<channel id="mute" typeId="mute" />
+			<channel id="horizontalreverse" typeId="horizontalreverse" />
+			<channel id="verticalreverse" typeId="verticalreverse" />
+			<channel id="background" typeId="background" />
+			<channel id="errcode" typeId="errcode" />
+			<channel id="errmessage" typeId="errmessage" />
+		</channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="false">
+				<label>Serial Port</label>
+				<description>Serial port device name that is connected to the Epson projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<label>Host</label>
+				<description>IP address (for serial communication over TCP, leave the serial port parameter blank)</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>Port (for serial communication over TCP, leave the serial port parameter blank)</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false">
+				<label>Polling interval</label>
+				<description>Polling interval in milliseconds to update channel states</description>
+				<default>10000</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Powers the device on or off.</description>
+	</channel-type>
+	<channel-type id="powerstate">
+		<item-type>String</item-type>
+		<label>Power State</label>
+		<description>Retrieves the actual power state of the device.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="lamptime">
+		<item-type>Number</item-type>
+		<label>Lamp Time</label>
+		<description>Retrieves the lamp hours.</description>
+		<state readOnly="true" pattern="%d h" />
+	</channel-type>
+	<channel-type id="keycode" advanced="true">
+		<item-type>Number</item-type>
+		<label>KeyCode</label>
+		<description>Handles the KeyCode Epson command</description>
+	</channel-type>
+	<channel-type id="verticalkeystone" advanced="true">
+		<item-type>Number</item-type>
+		<label>VerticalKeystone</label>
+		<description>Handles the VerticalKeystone Epson command</description>
+	</channel-type>
+	<channel-type id="horizontalkeystone" advanced="true">
+		<item-type>Number</item-type>
+		<label>HorizontalKeystone</label>
+		<description>Handles the HorizontalKeystone Epson command</description>
+	</channel-type>
+	<channel-type id="autokeystone" advanced="true">
+		<item-type>Number</item-type>
+		<label>AutoKeystone</label>
+		<description>Handles the AutoKeystone Epson command</description>
+	</channel-type>
+	<channel-type id="aspectratio" advanced="true">
+		<item-type>String</item-type>
+		<label>Aspect Ratio</label>
+		<description>Retrieves or set the aspect ratio.</description>
+		<state>
+			<options>
+				<option value="NORMAL">NORMAL</option>
+				<option value="AUTO">AUTO</option>
+				<option value="FULL">FULL</option>
+				<option value="ZOOM">ZOOM</option>
+				<option value="WIDE">WIDE</option>
+				<option value="ANAMORPHIC">ANAMORPHIC</option>
+				<option value="SQUEEZE">SQUEEZE</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="luminance">
+		<item-type>String</item-type>
+		<label>Luminance</label>
+		<description>Retrieves or set the ECO mode.</description>
+		<state>
+			<options>
+				<option value="NORMAL">NORMAL</option>
+				<option value="ECO">ECO</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>Retrieves or select the input source.</description>
+		<state>
+			<options>
+				<option value="HDMI1">HDMI1</option>
+				<option value="HDMI2">HDMI2</option>
+				<option value="COMPONENT">COMPONENT</option>
+				<option value="PC_DSUB">PC_DSUB</option>
+				<option value="VIDEO">VIDEO</option>
+				<option value="SVIDEO">SVIDEO</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="directsource" advanced="true">
+		<item-type>Number</item-type>
+		<label>DirectSource</label>
+		<description>Handles the DirectSource Epson command</description>
+	</channel-type>
+	<channel-type id="brightness" advanced="true">
+		<item-type>Number</item-type>
+		<label>Brightness</label>
+		<description>Handles the Brightness Epson command</description>
+	</channel-type>
+	<channel-type id="contrast" advanced="true">
+		<item-type>Number</item-type>
+		<label>Contrast</label>
+		<description>Handles the Contrast Epson command</description>
+	</channel-type>
+	<channel-type id="density" advanced="true">
+		<item-type>Number</item-type>
+		<label>Density</label>
+		<description>Handles the Density Epson command</description>
+	</channel-type>
+	<channel-type id="tint" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tint</label>
+		<description>Handles the Tint Epson command</description>
+	</channel-type>
+	<channel-type id="sharpness" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sharpness</label>
+		<description>Handles the Sharpness Epson command</description>
+	</channel-type>
+	<channel-type id="colortemperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>ColorTemperature</label>
+		<description>Handles the ColorTemperature Epson command</description>
+	</channel-type>
+	<channel-type id="fleshtemperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>FleshTemperature</label>
+		<description>Handles the FleshTemperature Epson command</description>
+	</channel-type>
+	<channel-type id="colormode">
+		<item-type>String</item-type>
+		<label>Color Mode</label>
+		<description>Retrieves or set the color mode.</description>
+		<state>
+			<options>
+				<option value="DYNAMIC">DYNAMIC</option>
+				<option value="LIVINGROOM">LIVINGROOM</option>
+				<option value="NATURAL">NATURAL</option>
+				<option value="CINEMA">CINEMA</option>
+				<option value="CINEMANIGHT">CINEMANIGHT</option>
+				<option value="BWCINEMA">BWCINEMA</option>
+				<option value="HD">HD</option>
+				<option value="THX">THX</option>
+				<option value="CINEMA3D">CINEMA3D</option>
+				<option value="DYNAMIC3D">DYNAMIC3D</option>
+				<option value="THX3D">THX3D</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="horizontalposition" advanced="true">
+		<item-type>Number</item-type>
+		<label>HorizontalPosition</label>
+		<description>Handles the HorizontalPosition Epson command</description>
+	</channel-type>
+	<channel-type id="verticalposition" advanced="true">
+		<item-type>Number</item-type>
+		<label>VerticalPosition</label>
+		<description>Handles the VerticalPosition Epson command</description>
+	</channel-type>
+	<channel-type id="tracking" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tracking</label>
+		<description>Handles the Tracking Epson command</description>
+	</channel-type>
+	<channel-type id="sync" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sync</label>
+		<description>Handles the Sync Epson command</description>
+	</channel-type>
+	<channel-type id="offsetred" advanced="true">
+		<item-type>Number</item-type>
+		<label>OffsetRed</label>
+		<description>Handles the OffsetRed Epson command</description>
+	</channel-type>
+	<channel-type id="offsetgreen" advanced="true">
+		<item-type>Number</item-type>
+		<label>OffsetGreen</label>
+		<description>Handles the OffsetGreen Epson command</description>
+	</channel-type>
+	<channel-type id="offsetblue" advanced="true">
+		<item-type>Number</item-type>
+		<label>OffsetBlue</label>
+		<description>Handles the OffsetBlue Epson command</description>
+	</channel-type>
+	<channel-type id="gainred" advanced="true">
+		<item-type>Number</item-type>
+		<label>GainRed</label>
+		<description>Handles the GainRed Epson command</description>
+	</channel-type>
+	<channel-type id="gaingreen" advanced="true">
+		<item-type>Number</item-type>
+		<label>GainGreen</label>
+		<description>Handles the GainGreen Epson command</description>
+	</channel-type>
+	<channel-type id="gainblue" advanced="true">
+		<item-type>Number</item-type>
+		<label>GainBlue</label>
+		<description>Handles the GainBlue Epson command</description>
+	</channel-type>
+	<channel-type id="gamma" advanced="true">
+		<item-type>String</item-type>
+		<label>Gamma</label>
+		<description>Handles the Gamma Epson command</description>
+	</channel-type>
+	<channel-type id="gammastep" advanced="true">
+		<item-type>Number</item-type>
+		<label>GammaStep</label>
+		<description>Handles the GammaStep Epson command</description>
+	</channel-type>
+	<channel-type id="color" advanced="true">
+		<item-type>String</item-type>
+		<label>Color</label>
+		<description>Handles the Color Epson command</description>
+	</channel-type>
+	<channel-type id="mute" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Handles the Mute Epson command</description>
+	</channel-type>
+	<channel-type id="horizontalreverse" advanced="true">
+		<item-type>Switch</item-type>
+		<label>HorizontalReverse</label>
+		<description>Handles the HorizontalReverse Epson command</description>
+	</channel-type>
+	<channel-type id="verticalreverse" advanced="true">
+		<item-type>Switch</item-type>
+		<label>VerticalReverse</label>
+		<description>Handles the VerticalReverse Epson command</description>
+	</channel-type>
+	<channel-type id="background" advanced="true">
+		<item-type>String</item-type>
+		<label>Background</label>
+		<description>Handles the Background Epson command</description>
+		<state>
+			<options>
+				<option value="BLACK">BLACK</option>
+				<option value="BLUE">BLUE</option>
+				<option value="LOGO">LOGO</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="errcode" advanced="true">
+		<item-type>Number</item-type>
+		<label>ErrCode</label>
+		<description>Retrieves the last error code.</description>
+	</channel-type>
+	<channel-type id="errmessage" advanced="true">
+		<item-type>String</item-type>
+		<label>ErrMessage</label>
+		<description>Retrieves the description of the last error.</description>
+	</channel-type>
+
+</thing:thing-descriptions>
