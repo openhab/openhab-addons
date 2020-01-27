@@ -166,18 +166,6 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     }
 
     protected void refreshServices() {
-        String[] uuids = device.getUUIDs();
-        if (uuids != null) {
-            for (String uuid : uuids) {
-                UUID sid = UUID.fromString(uuid);
-                if (!supportedServices.containsKey(sid)) {
-                    // we want it known that a service is being broadcast
-                    // but we don't know what it is yet so we put null into the map
-                    supportedServices.put(sid, null);
-                }
-            }
-        }
-
         if (device.getServices().size() > getServices().size()) {
             for (BluetoothGattService tinybService : device.getServices()) {
                 BluetoothService service = new BluetoothService(UUID.fromString(tinybService.getUUID()),

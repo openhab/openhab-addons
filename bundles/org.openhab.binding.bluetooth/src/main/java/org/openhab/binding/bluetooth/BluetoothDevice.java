@@ -16,10 +16,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
@@ -195,7 +193,7 @@ public abstract class BluetoothDevice {
      * @return list of supported {@link BluetoothService}s.
      */
     public Collection<BluetoothService> getServices() {
-        return supportedServices.values().stream().filter(obj -> Objects.nonNull(obj)).collect(Collectors.toList());
+        return supportedServices.values();
     }
 
     /**
@@ -315,7 +313,7 @@ public abstract class BluetoothDevice {
      */
     public BluetoothCharacteristic getCharacteristic(UUID uuid) {
         for (BluetoothService service : supportedServices.values()) {
-            if (service != null && service.providesCharacteristic(uuid)) {
+            if (service.providesCharacteristic(uuid)) {
                 return service.getCharacteristic(uuid);
             }
         }
@@ -412,8 +410,7 @@ public abstract class BluetoothDevice {
      * @return true if the service was added or false if the service was already supported
      */
     protected boolean addService(BluetoothService service) {
-        BluetoothService oldService = supportedServices.get(service.getUuid());
-        if (oldService != null) {
+        if (supportedServices.containsKey(service.getUuid())) {
             return false;
         }
         logger.trace("Adding new service to device {}: {}", address, service);
