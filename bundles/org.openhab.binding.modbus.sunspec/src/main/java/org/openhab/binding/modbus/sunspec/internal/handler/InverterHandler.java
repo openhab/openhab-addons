@@ -17,10 +17,11 @@ import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.modbus.sunspec.internal.InverterStatus;
 import org.openhab.binding.modbus.sunspec.internal.dto.InverterModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.InverterModelParser;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -77,9 +78,9 @@ public class InverterHandler extends AbstractSunSpecHandler {
         updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_OTHER_TEMPERATURE),
                 getScaled(block.temperatureOther, Optional.of(block.temperatureSF)));
 
-        Integer status = block.status;
+        InverterStatus status = InverterStatus.getByCode(block.status);
         updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_STATUS),
-                status == null ? UnDefType.UNDEF : new DecimalType(status));
+                status == null ? UnDefType.UNDEF : new StringType(status.name()));
 
         // AC General group
         updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_TOTAL_CURRENT),

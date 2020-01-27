@@ -71,14 +71,14 @@
 
 
 	<channel-type id="status-type">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Device status</description>
 		<state readOnly="true">
 			<options>
-				<option value="1">Off</option>
-				<option value="2">Sleeping / Night mode</option>
-				<option value="4">On - producing power</option>
+				<option value="OFF">Off</option>
+				<option value="SLEEP">Sleeping / Night mode</option>
+				<option value="ON">On - producing power</option>
 			</options>
 		</state>
 	</channel-type>

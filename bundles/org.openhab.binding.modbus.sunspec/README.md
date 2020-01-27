@@ -290,8 +290,8 @@ If you want to extend the bundle yourself, you have to do the followings:
  - The parser should only retrieve the data from the register array and return them in a block descriptor class.
  Scaling and other higher level transformation should be done by the handler itself.
  
- - To include your block type in auto discovery you have to add its id to the `SUPPORTED_THING_TYPES_UIDS` map in `SunSpecConstants`.
- This is enough for our discovery process to include your thing type in the results.
+ - To include your block type in auto discovery you have to add its id to the `SUPPORTED_THING_TYPES_UIDS` map in `SunSpecConstants`. This is enough for our discovery process to include your thing type in the results.
+
 
 If you have questions or need help don't hesitate to contact us.
  
