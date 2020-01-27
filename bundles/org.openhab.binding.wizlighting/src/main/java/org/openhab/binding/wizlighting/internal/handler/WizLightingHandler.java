@@ -438,13 +438,13 @@ public class WizLightingHandler extends BaseThingHandler {
         // update signal strength
         if (receivedParam.rssi != 0) {
             int strength = -1;
-            if (receivedParam.rssi > -60) {
+            if (receivedParam.rssi < -90) {
                 strength = 4;
-            } else if (receivedParam.rssi > -70) {
+            } else if (receivedParam.rssi < -80) {
                 strength = 3;
-            } else if (receivedParam.rssi > -80) {
+            } else if (receivedParam.rssi < -70) {
                 strength = 2;
-            } else if (receivedParam.rssi > -90) {
+            } else if (receivedParam.rssi < -60) {
                 strength = 1;
             } else {
                 strength = 0;
