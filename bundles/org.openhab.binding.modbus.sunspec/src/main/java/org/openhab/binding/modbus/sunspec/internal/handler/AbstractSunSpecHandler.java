@@ -17,7 +17,6 @@ import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.PROPE
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -101,7 +100,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Reference to the modbus manager
      */
-    protected Supplier<ModbusManager> managerRef;
+    protected ModbusManager managerRef;
 
     /**
      * Instances of this handler should get a reference to the modbus manager
@@ -109,7 +108,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @param thing the thing to handle
      * @param managerRef the modbus manager
      */
-    public AbstractSunSpecHandler(Thing thing, Supplier<ModbusManager> managerRef) {
+    public AbstractSunSpecHandler(Thing thing, ModbusManager managerRef) {
         super(thing);
         this.managerRef = managerRef;
     }
@@ -346,7 +345,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             }
         }));
 
-        managerRef.get().registerRegularPoll(pollTask.get(), config.get().getRefreshMillis(), 1000);
+        managerRef.registerRegularPoll(pollTask.get(), config.get().getRefreshMillis(), 1000);
     }
 
     /**
@@ -377,7 +376,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         }
 
         logger.debug("Unregistering polling from ModbusManager");
-        managerRef.get().unregisterRegularPoll(pollTask.get());
+        managerRef.unregisterRegularPoll(pollTask.get());
 
         pollTask = Optional.empty();
     }

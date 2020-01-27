@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.sunspec.internal;
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.THING_TYPE_INVERTER_SINGLE_PHASE;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,10 +26,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.modbus.sunspec.internal.handler.InverterHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,11 +50,24 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Reference to the modbus manager
      */
-    private Optional<ModbusManager> manager = Optional.empty();
+    private ModbusManager manager;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_INVERTER_SINGLE_PHASE);
+    }
+
+    /**
+     * This factory needs a reference to the ModbusManager wich is provided
+     * by the org.openhab.io.transport.modbus bundle. Please make
+     * sure it's installed and enabled before using this bundle
+     *
+     * @param manager reference to the ModbusManager. We use this for modbus communication
+     */
+    @Activate
+    public SunSpecHandlerFactory(@Reference ModbusManager manager) {
+
+        this.manager = manager;
     }
 
     @Override
@@ -68,35 +79,11 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (manager.isPresent()) {
-            if (thingTypeUID.equals(THING_TYPE_INVERTER_SINGLE_PHASE)) {
-                return new InverterHandler(thing, () -> manager.get());
-            }
-        } else {
-            logger.debug("Modbus manager not found, can't continue");
-            return null;
+        if (thingTypeUID.equals(THING_TYPE_INVERTER_SINGLE_PHASE)) {
+            logger.debug("New InverterHandler created");
+            return new InverterHandler(thing, manager);
         }
 
         return null;
-    }
-
-    /**
-     * Setter to accept the ModbusManager
-     *
-     * @param manager the modbus manager from org.openhab.io.transport.modbus package
-     */
-    @Reference(service = ModbusManager.class, cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC, unbind = "unsetManager")
-    public void setManager(ModbusManager manager) {
-        logger.debug("Setting manager: {}", manager);
-        this.manager = Optional.of(manager);
-    }
-
-    /**
-     * Remove the modbus manager
-     *
-     * @param manager the modbus manager from org.openhab.io.transport.modbus package
-     */
-    public void unsetManager(ModbusManager manager) {
-        this.manager = Optional.empty();
     }
 }

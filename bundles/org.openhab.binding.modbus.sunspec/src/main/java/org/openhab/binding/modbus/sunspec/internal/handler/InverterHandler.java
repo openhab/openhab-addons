@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.sunspec.internal.handler;
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -48,7 +47,7 @@ public class InverterHandler extends AbstractSunSpecHandler {
      */
     private final Logger logger = LoggerFactory.getLogger(InverterHandler.class);
 
-    public InverterHandler(Thing thing, Supplier<ModbusManager> managerRef) {
+    public InverterHandler(Thing thing, ModbusManager managerRef) {
         super(thing, managerRef);
     }
 
