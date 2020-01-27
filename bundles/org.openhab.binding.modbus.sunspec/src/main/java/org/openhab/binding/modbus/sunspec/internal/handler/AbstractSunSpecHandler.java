@@ -252,7 +252,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Get a reference to the modbus endpoint
      */
     @SuppressWarnings("null")
-    private synchronized void connectEndpoint() {
+    private void connectEndpoint() {
         if (endpoint.isPresent()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             throw new IllegalStateException("endpoint should be unregistered before registering a new one!");
