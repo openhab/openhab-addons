@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
-import org.openhab.binding.enocean.internal.transceiver.Helper;
+import org.openhab.binding.enocean.internal.Helper;
 
 /**
  *
