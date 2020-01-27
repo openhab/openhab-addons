@@ -384,4 +384,5 @@ public class EnOceanBindingConstants {
 
     public static final String EMPTYENOCEANID = "00000000";
 
+    public static final byte ZERO = (byte) 0;
 }

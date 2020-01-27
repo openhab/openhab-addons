@@ -27,10 +27,10 @@ import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
-import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
+import org.openhab.binding.enocean.internal.transceiver.PacketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Weber - Initial contribution
  */
 
-public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService implements ESP3PacketListener {
+public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService implements PacketListener {
     private final Logger logger = LoggerFactory.getLogger(EnOceanDeviceDiscoveryService.class);
 
     private EnOceanBridgeHandler bridgeHandler;
@@ -89,7 +89,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
     }
 
     @Override
-    public void espPacketReceived(ESP3Packet packet) {
+    public void packetReceived(BasePacket packet) {
         ERP1Message msg = (ERP1Message) packet;
 
         logger.info("EnOcean Package discovered, RORG {}, payload {}, additional {}", msg.getRORG().name(),
@@ -97,6 +97,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
         EEP eep = EEPFactory.buildEEPFromTeachInERP1(msg);
         if (eep == null) {
+            logger.debug("Could not build EEP for received package");
             return;
         }
 

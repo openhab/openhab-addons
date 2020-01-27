@@ -45,7 +45,7 @@ import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSw
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 
 /**
  *
@@ -237,7 +237,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             EEP eep = EEPFactory.createEEP(sendingEEPType);
             if (eep.setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId, channelTypeId,
                     result, id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
-                ESP3Packet press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+                BasePacket press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
                 getBridgeHandler().sendMessage(press, null);
 
@@ -245,7 +245,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                     releaseFuture = scheduler.schedule(() -> {
                         if (eep.convertFromCommand(channelId, channelTypeId, convertToReleasedCommand(lastTriggerEvent),
                                 id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
-                            ESP3Packet release = eep.getERP1Message();
+                            BasePacket release = eep.getERP1Message();
                             getBridgeHandler().sendMessage(release, null);
                         }
                     }, channelConfig.duration, TimeUnit.MILLISECONDS);
