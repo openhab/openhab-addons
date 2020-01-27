@@ -25,7 +25,7 @@ public abstract class BlueGigaDeviceCommand extends BlueGigaCommand {
      * <p>
      * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
      */
-    protected Integer connection = null;
+    protected int connection;
 
     /**
      * Set connection handle.
@@ -43,7 +43,7 @@ public abstract class BlueGigaDeviceCommand extends BlueGigaCommand {
      *
      * @return the current connection as {@link int}
      */
-    public final Integer getConnection() {
+    public final int getConnection() {
         return connection;
     }
 
