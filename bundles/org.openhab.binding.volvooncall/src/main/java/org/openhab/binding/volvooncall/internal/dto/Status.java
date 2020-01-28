@@ -38,7 +38,7 @@ public class Status {
 
     public @NonNullByDefault({}) OnOffType carLocked;
     public @NonNullByDefault({}) OnOffType engineRunning;
-    public @NonNullByDefault({}) String brakeFluidLevel;
+    public @NonNullByDefault({}) String brakeFluid;
     public @NonNullByDefault({}) String washerFluidLevel;
     public @Nullable WindowsStatus windows;
     public @Nullable DoorsStatus doors;

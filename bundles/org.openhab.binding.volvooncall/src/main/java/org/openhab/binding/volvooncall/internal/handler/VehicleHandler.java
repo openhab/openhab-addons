@@ -407,7 +407,7 @@ public class VehicleHandler extends BaseThingHandler {
             case ENGINE_RUNNING:
                 return status.engineRunning;
             case BRAKE_FLUID_LEVEL:
-                return new StringType(status.brakeFluidLevel);
+                return new StringType(status.brakeFluid);
             case WASHER_FLUID_LEVEL:
                 return new StringType(status.washerFluidLevel);
             case AVERAGE_SPEED:
