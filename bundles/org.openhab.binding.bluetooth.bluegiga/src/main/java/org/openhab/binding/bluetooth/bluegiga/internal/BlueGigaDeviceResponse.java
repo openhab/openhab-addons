@@ -25,7 +25,7 @@ public abstract class BlueGigaDeviceResponse extends BlueGigaResponse {
      * <p>
      * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
      */
-    protected Integer connection = null;
+    protected int connection;
 
     protected BlueGigaDeviceResponse(int[] inputBuffer) {
         super(inputBuffer);
@@ -38,7 +38,7 @@ public abstract class BlueGigaDeviceResponse extends BlueGigaResponse {
      *
      * @return the current connection as {@link int}
      */
-    public final Integer getConnection() {
+    public final int getConnection() {
         return connection;
     }
 }

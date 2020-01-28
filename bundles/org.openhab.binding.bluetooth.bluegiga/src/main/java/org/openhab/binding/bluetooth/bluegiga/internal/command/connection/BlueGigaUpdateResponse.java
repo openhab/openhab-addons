@@ -37,13 +37,6 @@ public class BlueGigaUpdateResponse extends BlueGigaDeviceResponse {
     public static int COMMAND_METHOD = 0x02;
 
     /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
-
-    /**
      * 0 : the update was successful. Non-zero: An error occurred.
      * <p>
      * BlueGiga API type is <i>BgApiResponse</i> - Java type is {@link BgApiResponse}

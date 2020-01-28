@@ -198,7 +198,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             setBgHandler(bgh);
 
             updateStatus(ThingStatus.UNKNOWN);
-            passiveScanIdleTimer = new BlueGigaReschedulableTimer("PassiveScanIdleTimer", bgScanTask);
+            passiveScanIdleTimer = new BlueGigaReschedulableTimer("BlueGigaPassiveScanIdleTimer", bgScanTask);
 
             try {
                 // Stop any procedures that are running
