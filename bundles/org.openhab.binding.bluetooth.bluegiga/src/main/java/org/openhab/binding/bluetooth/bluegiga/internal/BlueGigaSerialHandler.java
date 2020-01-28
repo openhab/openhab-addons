@@ -259,11 +259,9 @@ public class BlueGigaSerialHandler {
     private boolean notifyTransactionComplete(final BlueGigaResponse response) {
         boolean processed = false;
 
-        synchronized (transactionListeners) {
-            for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
-                if (listener.transactionEvent(response)) {
-                    processed = true;
-                }
+        for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
+            if (listener.transactionEvent(response)) {
+                processed = true;
             }
         }
 
@@ -271,19 +269,15 @@ public class BlueGigaSerialHandler {
     }
 
     private void addTransactionListener(BluetoothListener<? extends BlueGigaResponse> listener) {
-        synchronized (transactionListeners) {
-            if (transactionListeners.contains(listener)) {
-                return;
-            }
-
-            transactionListeners.add(listener);
+        if (transactionListeners.contains(listener)) {
+            return;
         }
+
+        transactionListeners.add(listener);
     }
 
     private void removeTransactionListener(BluetoothListener<?> listener) {
-        synchronized (transactionListeners) {
-            transactionListeners.remove(listener);
-        }
+        transactionListeners.remove(listener);
     }
 
     /**
@@ -421,18 +415,14 @@ public class BlueGigaSerialHandler {
      * @return true if the response was processed
      */
     private void notifyEventListeners(final BlueGigaResponse response) {
-        synchronized (eventListeners) {
-            // Notify the listeners
-            for (final BlueGigaEventListener listener : eventListeners) {
-                executor.submit(() -> listener.bluegigaEventReceived(response));
-            }
+        // Notify the listeners
+        for (final BlueGigaEventListener listener : eventListeners) {
+            executor.submit(() -> listener.bluegigaEventReceived(response));
         }
     }
 
     public void addEventListener(BlueGigaEventListener listener) {
-        synchronized (eventListeners) {
-            eventListeners.add(listener);
-        }
+        eventListeners.add(listener);
     }
 
     /**
