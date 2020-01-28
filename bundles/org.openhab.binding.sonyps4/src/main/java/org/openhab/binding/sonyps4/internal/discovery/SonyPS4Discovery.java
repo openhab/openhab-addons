@@ -187,6 +187,9 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
             String ethId = hostId.substring(6, 8).toLowerCase();
             switch (manufacturer) {
                 // Ethernet
+                case "2ccc44":
+                    hwVersion = PS4HW_CUH7100;
+                    break;
                 case "709e29":
                     hwVersion = PS4HW_CUH1000;
                     break;
@@ -219,6 +222,9 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
                 case "5cea1d":
                 case "f8da0c":
                     hwVersion = PS4HW_CUH2000;
+                    break;
+                case "dca266":
+                    hwVersion = PS4HW_CUH7100;
                     break;
 
                 default:

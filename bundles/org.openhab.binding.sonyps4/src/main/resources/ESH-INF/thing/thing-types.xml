@@ -30,23 +30,6 @@
 		<representation-property>deviceId</representation-property>
 
 		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>IP address</label>
-				<description>The local IP address or hostname of the PlayStation 4.</description>
-			</parameter>
-			<parameter name="ipPort" type="integer">
-				<label>IP port</label>
-				<description>The TCP port used to communicate with the PlayStation 4.</description>
-				<default>997</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="artworkSize" type="integer" min="128" max="1024">
-				<label>Artwork size</label>
-				<description>The width and height of the downloaded artwork.</description>
-				<default>320</default>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="userCredential" type="text" required="true">
 				<label>User credential</label>
 				<description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
@@ -57,7 +40,24 @@
 			</parameter>
 			<parameter name="pairingCode" type="text">
 				<label>Pairing code</label>
-				<description>Pairing code to pair OpenHAB device to PlayStation 4, only needed first time, 8 digits.</description>
+				<description>Pairing code to pair OpenHAB device to PlayStation 4, only needed during pairing, 8 digits.</description>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The local IP address or hostname of the PlayStation 4.</description>
+			</parameter>
+			<parameter name="artworkSize" type="integer" min="128" max="1024">
+				<label>Artwork size</label>
+				<description>The width and height of the downloaded artwork.</description>
+				<default>320</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ipPort" type="integer">
+				<label>IP port</label>
+				<description>The TCP port used to communicate with the PlayStation 4.</description>
+				<default>997</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 

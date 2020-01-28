@@ -85,8 +85,9 @@ public class SonyPS4PacketHandler {
             decCipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | InvalidAlgorithmParameterException e) {
-            logger.error("Can not initialize ciphers.", e);
+            logger.warn("Can not initialize ciphers.", e);
         }
+        logger.debug("Ciphers initialized.");
         aesEncryptCipher = encCipher;
         aesDecryptCipher = decCipher;
     }
@@ -124,47 +125,66 @@ public class SonyPS4PacketHandler {
         return new byte[0];
     }
 
-    byte[] handleLoginResponse(byte[] input) {
+    int parseEncryptedPacketFinal(ByteBuffer encBuffer) {
+        int result = 0;
         Cipher decCipher = aesDecryptCipher;
         if (decCipher != null) {
+            logger.debug("Decrypting response.");
+            byte[] data = null;
             try {
-                return decCipher.doFinal(input);
+                data = decCipher.doFinal(encBuffer.array());
             } catch (IllegalBlockSizeException | BadPaddingException e) {
-                logger.warn("Can not decrypt PS4 response.", e);
+                logger.warn("Can not decrypt response.", e);
+            }
+            if (data != null) {
+                result = parseResponsePacket(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+            } else {
+                logger.debug("Not decrypting response.");
             }
         }
-        return new byte[0];
+        return result;
     }
 
-    void parseEncryptedPacket(ByteBuffer encBuffer) {
+    int parseEncryptedPacket(ByteBuffer encBuffer) {
+        int result = 0;
         Cipher decCipher = aesDecryptCipher;
         if (decCipher != null) {
-            byte[] result = decCipher.update(encBuffer.array());
-            if (result != null) {
-                parseResponsePacket(ByteBuffer.wrap(result));
+            logger.debug("Decrypting response.");
+            byte[] data = decCipher.update(encBuffer.array());
+            if (data != null) {
+                result = parseResponsePacket(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+            } else {
+                logger.debug("Not decrypting response.");
             }
         }
+        return result;
     }
 
-    void parseResponsePacket(ByteBuffer rBuffer) {
+    int parseResponsePacket(ByteBuffer rBuffer) {
+        int result = -1;
         rBuffer.rewind();
+        final int buffSize = rBuffer.remaining();
         final int size = rBuffer.getInt();
-        if (size != rBuffer.limit()) {
-            logger.info("Response size ({}) not matching buffer size ({}).", size, rBuffer.limit());
-            return;
+        if (size > buffSize || size < 12) {
+            logger.info("Response size ({}) not good, buffer size ({}).", size, buffSize);
+            return result;
         }
         int cmdValue = rBuffer.getInt();
+        int statusValue = rBuffer.getInt();
         SonyPS4Command command = SonyPS4Command.valueOfTag(cmdValue);
         byte[] respBuff = new byte[size];
         rBuffer.rewind();
         rBuffer.get(respBuff);
         if (command != null) {
-            logger.debug("Response size:{}, command:{}, data:{}.", size, command, respBuff);
+            logger.debug("Response size:{}, command:{}, status:{}, data:{}.", size, command, statusValue, respBuff);
             switch (command) {
                 case HELLO_REQ:
                     rBuffer.position(20);
                     rBuffer.get(remoteSeed, 0, 16);
                     initCiphers();
+                    if (statusValue == REQ_VERSION) {
+                        result = 0;
+                    }
                     break;
                 case LOGIN_RSP:
                 case APP_START_RSP:
@@ -172,14 +192,17 @@ public class SonyPS4PacketHandler {
                 case STANDBY_RSP:
                 case LOGOUT_RSP:
                 case APP_START2_RSP:
+                    result = statusValue;
                     break;
                 default:
+                    result = statusValue;
                     logger.info("Unknown response command: {}. Missing case.", cmdValue);
                     break;
             }
         } else {
             logger.info("Unknown response command: {}. Not in enum", cmdValue);
         }
+        return result;
     }
 
     byte[] makeSearchPacket() {
@@ -245,8 +268,9 @@ public class SonyPS4PacketHandler {
         packet.put("Mac mini 2012".getBytes(StandardCharsets.UTF_8)); // Model, name of paired unit, shown on the PS4 in
                                                                       // the settings view.
         packet.position(16 + 64 + 256 + 16 + 16);
-        packet.put(pairingCode.getBytes(), 0, 8); // Pairing code
-
+        if (!pairingCode.isEmpty()) {
+            packet.put(pairingCode.getBytes(), 0, 8); // Pairing code
+        }
         return encryptPacket(packet);
     }
 
@@ -273,6 +297,12 @@ public class SonyPS4PacketHandler {
     byte[] makeByebyePacket() {
         ByteBuffer packet = newPacketForEncryption(8);
         packet.putInt(SonyPS4Command.BYEBYE_REQ.value);
+        return encryptPacket(packet);
+    }
+
+    byte[] makeLogoutPacket() {
+        ByteBuffer packet = newPacketForEncryption(8);
+        packet.putInt(SonyPS4Command.LOGOUT_REQ.value);
         return encryptPacket(packet);
     }
 
