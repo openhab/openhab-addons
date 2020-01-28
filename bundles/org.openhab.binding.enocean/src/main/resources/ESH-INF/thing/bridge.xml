@@ -20,10 +20,26 @@
 				<description>Path to the EnOcean gateway</description>
 				<required>true</required>
 			</parameter>
+			<parameter name="espVersion" type="text">
+				<advanced>true</advanced>
+				<label>ESP version of received and transmitting messages</label>
+				<options>
+					<option value="ESP3">ESP3</option>
+					<option value="ESP2">ESP2</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+				<default>ESP3</default>
+			</parameter>
 			<parameter name="rs485" type="boolean">
 				<advanced>true</advanced>
 				<label>Gateway Connected Directly to RS485 BUS</label>
 				<default>false</default>
+			</parameter>
+			<parameter name="rs485BaseId" type="text">
+				<advanced>true</advanced>
+				<label>Use following BaseId when connected directly to RS485 BUS</label>
+				<default>00000000</default>
 			</parameter>
 			<parameter name="nextSenderId" type="integer">
 				<advanced>true</advanced>

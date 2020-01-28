@@ -14,11 +14,14 @@ package org.openhab.binding.satel.internal.types;
 
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Base of all kinds of Integra state.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public interface StateType {
 
     /**
@@ -71,5 +74,37 @@ public interface StateType {
         }
         return stateBits;
     }
+
+    /**
+     * Marker instance for lack of state type.
+     */
+    public static final StateType NONE = new StateType() {
+
+        @Override
+        public byte getRefreshCommand() {
+            throw new UnsupportedOperationException("Illegal use of NONE state type");
+        }
+
+        @Override
+        public int getPayloadLength(boolean extendedCmd) {
+            throw new UnsupportedOperationException("Illegal use of NONE state type");
+        }
+
+        @Override
+        public ObjectType getObjectType() {
+            throw new UnsupportedOperationException("Illegal use of NONE state type");
+        }
+
+        @Override
+        public int getStartByte() {
+            throw new UnsupportedOperationException("Illegal use of NONE state type");
+        }
+
+        @Override
+        public int getBytesCount(boolean extendedCmd) {
+            throw new UnsupportedOperationException("Illegal use of NONE state type");
+        }
+
+    };
 
 }

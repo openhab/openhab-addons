@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.ZoneTemperatureEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ReadZoneTemperature extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -44,7 +46,8 @@ public class ReadZoneTemperature extends SatelCommandBase {
      * @return zone temperature
      */
     public float getTemperature() {
-        int temp = ((response.getPayload()[1] & 0xff) << 8) + (response.getPayload()[2] & 0xff);
+        final byte[] payload = getResponse().getPayload();
+        int temp = ((payload[1] & 0xff) << 8) + (payload[2] & 0xff);
         return (temp - 110) / 2.0f;
     }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.dsmr.internal.device.p1telegram;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -283,7 +284,8 @@ public class P1TelegramParser implements TelegramParser {
         final List<CosemObject> cosemObjectsCopy = new ArrayList<>(cosemObjects);
 
         if (lenientMode) {
-            return new P1Telegram(cosemObjectsCopy, telegramState, rawData.toString(), unknownCosemObjects);
+            return new P1Telegram(cosemObjectsCopy, telegramState, rawData.toString(),
+                    unknownCosemObjects.isEmpty() ? Collections.emptyList() : new ArrayList<>(unknownCosemObjects));
         } else {
             return new P1Telegram(cosemObjectsCopy, telegramState);
         }

@@ -67,9 +67,9 @@ public class A5_38_08_Blinds extends _4BSMessage {
 
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
-                byte db0 = Zero | SEND_NEW_STATE | TeachInBit;
-                byte db1 = Zero;
-                byte db2 = Zero;
+                byte db0 = ZERO | SEND_NEW_STATE | TeachInBit;
+                byte db1 = ZERO;
+                byte db2 = ZERO;
 
                 byte position;
                 byte angle = 0; // for now, no angle configuration supported
@@ -80,7 +80,7 @@ public class A5_38_08_Blinds extends _4BSMessage {
                 } else if (outputCommand instanceof OnOffType) {
                     position = (byte) (((OnOffType) outputCommand == OnOffType.ON) ? 0 : 100);
                 } else if (outputCommand instanceof StopMoveType) {
-                    position = Zero;
+                    position = ZERO;
                     doStop = true;
                 } else if (outputCommand instanceof UpDownType) {
                     position = (byte) (((UpDownType) outputCommand == UpDownType.UP) ? 0 : 100);

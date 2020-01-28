@@ -68,6 +68,8 @@ public class SensorState {
     public @Nullable Integer status;
     /** Switches provide this value. */
     public @Nullable Integer buttonevent;
+    /** Switches may provide this value. */
+    public @Nullable Integer gesture;
     /** deCONZ sends a last update string with every event. */
     public @Nullable String lastupdated;
 }
