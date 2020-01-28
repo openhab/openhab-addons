@@ -12,8 +12,13 @@
 		</description>
 		
 		<channel-groups>
+<<<<<<< HEAD
 			<channel-group typeId="daily" id="daily" />
 			<channel-group typeId="weekly" id="weekly" />
+=======
+			<channel-group typeId="hourly" id="hourly" />
+			<channel-group typeId="daily" id="daily" />
+>>>>>>> Satisfaction of Travis SAT
 			<channel-group typeId="monthly" id="monthly" />
 			<channel-group typeId="yearly" id="yearly" />
 		</channel-groups>
@@ -77,6 +82,7 @@
 		</channels>
 	</channel-group-type>	
 
+
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
@@ -85,4 +91,3 @@
 	</channel-type>
 
 </thing:thing-descriptions>
-
