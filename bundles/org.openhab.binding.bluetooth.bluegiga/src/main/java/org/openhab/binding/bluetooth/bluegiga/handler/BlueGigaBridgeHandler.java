@@ -173,6 +173,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         @Override
         public void run() {
             logger.debug("Activate passive scan");
+            bgEndProcedure();
             bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
         }
     };
