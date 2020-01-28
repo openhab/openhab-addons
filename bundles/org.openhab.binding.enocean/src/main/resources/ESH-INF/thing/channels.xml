@@ -449,4 +449,86 @@
 		<category>thermostat</category>
 	</channel-type>
 
+	<channel-type id="smokeDetection">
+		<item-type>Switch</item-type>
+		<label>Smoke Detected</label>
+		<description>Smoke detection sensor state.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="sensorFault">
+		<item-type>Switch</item-type>
+		<label>Sensor Fault Mode</label>
+		<description>Sensor activated fault mode.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="maintenanceStatus">
+		<item-type>Switch</item-type>
+		<label>Maintenance neccessary</label>
+		<description>Sensor maintenance status.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="saHumidityRange">
+		<item-type>Switch</item-type>
+		<label>Out of Humidity Range</label>
+		<description>Sensor analysis status: humidity out of range</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="saTemperatureRange">
+		<item-type>Switch</item-type>
+		<label>Out of Temperature Range</label>
+		<description>Sensor analysis status: temperature out of range</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="timeSinceLastMaintenance">
+		<item-type>Number</item-type>
+		<label>Weeks Since Last Maintenance</label>
+		<description>Time since last maintenance was done in weeks.</description>		
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="remainingPLT">
+		<item-type>Number</item-type>
+		<label>Remaining Product Life Time in Months</label>
+		<description>Countdown time until product end of life.</description>		
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="hygroComfortIndex">
+		<item-type>Number</item-type>
+		<label>Hygrothermal Comfort Index</label>
+		<description>Comfort index based on temperature and humidity</description>
+		<state>
+			<options>
+				<option value="0">Good</option>
+				<option value="1">Medium</option>
+				<option value="2">Bad</option>
+				<option value="3">Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="indoorAirAnalysis">
+		<item-type>Number</item-type>
+		<label>Indoor Air Analysis</label>
+		<description>Indoor air quality analysis based on temperature and humidity</description>
+		<state>
+			<options>
+				<option value="0">Optimal air range</option>
+				<option value="1">Dry air range</option>
+				<option value="2">High humidity range</option>
+				<option value="3">High humidity and temperature range</option>
+				<option value="4">Humidity or temperature out of range</option>
+				<option value="5">Reserved1</option>
+				<option value="6">Reserved2</option>
+				<option value="7">Error</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
+
