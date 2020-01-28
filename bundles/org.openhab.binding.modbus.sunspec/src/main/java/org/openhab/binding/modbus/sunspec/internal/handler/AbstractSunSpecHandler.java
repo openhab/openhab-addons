@@ -93,11 +93,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     private volatile int slaveId;
 
     /**
-     * Set to true after we're disposed
-     */
-    private volatile boolean disposed = false;
-
-    /**
      * Reference to the modbus manager
      */
     protected ModbusManager managerRef;
@@ -130,14 +125,27 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = Optional.of(getConfigAs(SunSpecConfiguration.class));
-
-        disposed = false;
-
-        connectEndpoint();
         logger.debug("Initializing thing with properties: {}", thing.getProperties());
 
+        startUp();
+    }
+
+    /*
+     * This method starts the operation of this handler
+     * Load the config object of the block
+     * Connect to the slave bridge
+     * Start the periodic polling
+     */
+    private void startUp() {
+
+        connectEndpoint();
+
         if (!endpoint.isPresent() || !config.isPresent()) {
-            logger.debug("Invalid enpoint/config/manager ref for sunspec handler");
+            logger.debug("Invalid endpoint/config/manager ref for sunspec handler");
+            return;
+        }
+
+        if (pollTask.isPresent()) {
             return;
         }
 
@@ -187,26 +195,16 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Dispose the binding correctly
      */
     @Override
-    public synchronized void dispose() {
-        dispose(Optional.empty());
+    public void dispose() {
+        tearDown();
     }
 
     /**
-     * Dispose the binding correctly
-     *
-     * @param reason status detail to be set
+     * Unregister the poll task and release the endpoint reference
      */
-    private synchronized void dispose(Optional<ThingStatusDetail> reason) {
-        logger.debug("dispose()");
-        // Mark handler as disposed as soon as possible to halt processing of callbacks
-        disposed = true;
+    private void tearDown() {
         unregisterPollTask();
         unregisterEndpoint();
-        if (reason.isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, reason.get());
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
-        }
     }
 
     /**
@@ -254,8 +252,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     private void connectEndpoint() {
         if (endpoint.isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            throw new IllegalStateException("endpoint should be unregistered before registering a new one!");
+            return;
         }
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
@@ -356,11 +353,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
     @Override
     public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && getThing().getStatus() == ThingStatus.OFFLINE) {
-            initialize();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            dispose(Optional.of(ThingStatusDetail.BRIDGE_OFFLINE));
+        super.bridgeStatusChanged(bridgeStatusInfo);
+
+        logger.debug("Thing status changed to {}", this.getThing().getStatus().name());
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            startUp();
+        } else if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            tearDown();
         }
     }
 
@@ -386,7 +385,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      */
     protected void handleError(@Nullable Exception error) {
         // Ignore all incoming data and errors if configuration is not correct
-        if (hasConfigurationError() || disposed) {
+        if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
         String msg = "";
