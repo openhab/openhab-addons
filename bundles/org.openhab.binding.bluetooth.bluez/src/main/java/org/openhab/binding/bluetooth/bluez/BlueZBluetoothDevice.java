@@ -403,5 +403,4 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             }
         }
     }
-
 }
