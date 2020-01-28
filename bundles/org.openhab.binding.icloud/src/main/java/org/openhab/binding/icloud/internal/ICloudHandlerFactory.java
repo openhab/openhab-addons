@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.ExtensibleTrustManager;
 import org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery;
 import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.handler.ICloudDeviceHandler;
@@ -47,6 +48,8 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private LocaleProvider localeProvider;
     private TranslationProvider i18nProvider;
+    private ExtensibleTrustManager extensibleTrustManager;
+    private ICloudTlsCertificateProvider iCloudTlsCertificateProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,7 +61,7 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
-            ICloudAccountBridgeHandler bridgeHandler = new ICloudAccountBridgeHandler((Bridge) thing);
+            ICloudAccountBridgeHandler bridgeHandler = new ICloudAccountBridgeHandler((Bridge) thing, extensibleTrustManager, iCloudTlsCertificateProvider);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
@@ -110,6 +113,16 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     @Reference
     public void setTranslationProvider(TranslationProvider i18nProvider) {
         this.i18nProvider = i18nProvider;
+    }
+
+    @Reference
+    public void setExtensibleTrustManager(ExtensibleTrustManager extensibleTrustManager) {
+        this.extensibleTrustManager = extensibleTrustManager;
+    }
+
+    @Reference
+    public void setICloudTlsCertificateProvider(ICloudTlsCertificateProvider iCloudTlsCertificateProvider) {
+        this.iCloudTlsCertificateProvider = iCloudTlsCertificateProvider;
     }
 
     public void unsetTranslationProvider(TranslationProvider i18nProvider) {

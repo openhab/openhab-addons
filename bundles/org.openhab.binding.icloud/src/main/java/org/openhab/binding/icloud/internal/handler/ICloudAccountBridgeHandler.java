@@ -31,9 +31,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.ExtensibleTrustManager;
 import org.openhab.binding.icloud.internal.ICloudConnection;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
+import org.openhab.binding.icloud.internal.ICloudTlsCertificateProvider;
 import org.openhab.binding.icloud.internal.configuration.ICloudAccountThingConfiguration;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
@@ -43,6 +45,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
+import javax.net.ssl.SSLHandshakeException;
+
 /**
  * Retrieves the data for a given account from iCloud and passes the
  * information to {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the
@@ -51,7 +55,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Extended support with initial Contribution
  */
-@NonNullByDefault
+//@NonNullByDefault
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
@@ -62,19 +66,24 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private @Nullable ICloudConnection connection;
     private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
-    @Nullable
-    ServiceRegistration<?> service;
-
     private Object synchronizeRefresh = new Object();
 
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
-            .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
+            .synchronizedList(new ArrayList<>());
 
     @Nullable
     ScheduledFuture<?> refreshJob;
+    @Nullable
+    ExtensibleTrustManager extensibleTrustManager;
+    @Nullable
+    ICloudTlsCertificateProvider iCloudTlsCertificateProvider;
 
-    public ICloudAccountBridgeHandler(Bridge bridge) {
+    public ICloudAccountBridgeHandler(Bridge bridge,
+                                      @Nullable ExtensibleTrustManager extensibleTrustManager,
+                                      @Nullable ICloudTlsCertificateProvider iCloudTlsCertificateProvider) {
         super(bridge);
+        this.extensibleTrustManager = extensibleTrustManager;
+        this.iCloudTlsCertificateProvider = iCloudTlsCertificateProvider;
     }
 
     @Override
@@ -89,18 +98,31 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("iCloud bridge handler initializing ...");
-        iCloudDeviceInformationCache = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                return connection.requestDeviceStatusJSON();
-            } catch (IOException e) {
-                logger.warn("Unable to refresh device data", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                return null;
-            }
-        });
+        iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> requestStatus(true));
 
         startHandler();
         logger.debug("iCloud bridge initialized.");
+    }
+
+    private String requestStatus(boolean updateCertificateAndRetryOnFailure) {
+        try {
+            return connection.requestDeviceStatusJSON();
+        } catch (SSLHandshakeException e) {
+            if(updateCertificateAndRetryOnFailure) {
+                logger.warn("SSL exception during handshake, attempting to refresh certificate automatically");
+                this.extensibleTrustManager.removeTlsCertificateProvider(iCloudTlsCertificateProvider);
+                iCloudTlsCertificateProvider.updateCertificate();
+                this.extensibleTrustManager.addTlsCertificateProvider(iCloudTlsCertificateProvider);
+                requestStatus(false);
+            } else {
+                logger.error("Failed to connect using retrieved certificate");
+            }
+            return null;
+        } catch (IOException e) {
+            logger.warn("Unable to refresh device data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return null;
+        }
     }
 
     @Override
