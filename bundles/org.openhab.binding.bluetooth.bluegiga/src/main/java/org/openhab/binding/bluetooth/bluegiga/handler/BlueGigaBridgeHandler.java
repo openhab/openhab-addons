@@ -115,7 +115,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBridgeHandler.class);
 
-    private final int COMMAND_TIMEOUT_MS = 1000;
+    private final int COMMAND_TIMEOUT_MS = 5000;
 
     private final SerialPortManager serialPortManager;
 
