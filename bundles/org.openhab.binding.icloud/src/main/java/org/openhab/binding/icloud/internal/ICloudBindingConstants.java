@@ -66,5 +66,5 @@ public class ICloudBindingConstants {
 
     // Miscellaneous
     public static final String FIND_MY_DEVICE_REQUEST_SUBJECT = "Find My Device alert";
-    public static final Path CERTIFICATE_TMP_PATH = Paths.get(System.getProperty("java.io.tmpdir")).resolve("icloud.cert");
+    public static final Path CERTIFICATE_TMP_PATH = Paths.get(System.getProperty("java.io.tmpdir")).resolve("fmipmobile.crt");
 }

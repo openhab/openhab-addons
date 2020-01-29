@@ -30,6 +30,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.ExtensibleTrustManager;
+import org.eclipse.smarthome.io.net.http.TlsCertificateProvider;
+import org.eclipse.smarthome.io.net.http.internal.ExtensibleTrustManagerImpl;
 import org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery;
 import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.handler.ICloudDeviceHandler;
@@ -122,18 +124,26 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = i18nProvider;
     }
 
+    public void unsetTranslationProvider(TranslationProvider i18nProvider) {
+        this.i18nProvider = null;
+    }
+
+    @Reference
+    public void setiCloudTlsCertificateProvider(TlsCertificateProvider iCloudTlsCertificateProvider) {
+        this.iCloudTlsCertificateProvider = (ICloudTlsCertificateProvider)iCloudTlsCertificateProvider;
+    }
+
+    public void unseticloudTlsCertificateProvider(TlsCertificateProvider iCloudTlsCertificateProvider) {
+        this.iCloudTlsCertificateProvider = null;
+    }
+
     @Reference
     public void setExtensibleTrustManager(ExtensibleTrustManager extensibleTrustManager) {
         this.extensibleTrustManager = extensibleTrustManager;
     }
 
-    @Reference
-    public void setICloudTlsCertificateProvider(ICloudTlsCertificateProvider iCloudTlsCertificateProvider) {
-        this.iCloudTlsCertificateProvider = iCloudTlsCertificateProvider;
-    }
-
-    public void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
+    public void unsetExtensibleTrustManager(ExtensibleTrustManager extensibleTrustManager) {
+        this.extensibleTrustManager = null;
     }
 
 }
