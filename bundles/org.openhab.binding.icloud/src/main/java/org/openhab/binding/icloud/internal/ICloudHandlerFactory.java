@@ -36,6 +36,8 @@ import org.openhab.binding.icloud.internal.handler.ICloudDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ICloudHandlerFactory} is responsible for creating things and thing
@@ -45,6 +47,8 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.icloud")
 public class ICloudHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(ICloudHandlerFactory.class);
+
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private LocaleProvider localeProvider;
     private TranslationProvider i18nProvider;
@@ -59,14 +63,17 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        logger.debug("Creating handler");
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
+            logger.debug("Creating handler for type icloud");
             ICloudAccountBridgeHandler bridgeHandler = new ICloudAccountBridgeHandler((Bridge) thing, extensibleTrustManager, iCloudTlsCertificateProvider);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUDDEVICE)) {
+            logger.debug("Creating handler for type device");
             return new ICloudDeviceHandler(thing);
         }
         return null;

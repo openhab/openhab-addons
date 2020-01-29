@@ -54,6 +54,8 @@ public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
 
     @Override
     public URL getCertificate() {
+        logger.debug("Getting certificate");
+
         //If the certificate already exists in the expected location, it's been actively pulled retrieved in the past.
         //Try to use that certificate; if it's not valid, the binding will automatically refresh it on the next query cycle.
         URL resource = getCertificateURL();

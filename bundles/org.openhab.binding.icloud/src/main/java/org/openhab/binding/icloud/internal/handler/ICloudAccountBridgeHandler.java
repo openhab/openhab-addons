@@ -82,6 +82,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         super(bridge);
         this.extensibleTrustManager = extensibleTrustManager;
         this.iCloudTlsCertificateProvider = iCloudTlsCertificateProvider;
+
+        logger.debug("Instantiating ICloudAccountBridgeHandler");
     }
 
     @Override
@@ -103,6 +105,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private @Nullable String requestStatus(boolean retryOnCertFail) {
+        logger.debug("Requesting status from iCloud");
         try {
             return connection.requestDeviceStatusJSON();
         } catch (IOException e) {
@@ -128,6 +131,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing bridge");
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
@@ -173,6 +177,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     public void refreshData() {
+        logger.debug("Obtaining lock to refresh data");
         synchronized (synchronizeRefresh) {
             logger.debug("iCloud bridge refreshing data ...");
 
