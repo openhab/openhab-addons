@@ -56,7 +56,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     /**
      * The default refresh interval in Seconds.
      */
-    private final int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
+    private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
     private final Map<String, Boolean> subscriptionState = new HashMap<>();
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -283,7 +283,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 }
             }
         } catch (RuntimeException e) {
-            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
