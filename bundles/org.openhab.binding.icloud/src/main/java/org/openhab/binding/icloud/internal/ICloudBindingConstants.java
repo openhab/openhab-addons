@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icloud.internal;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,4 +66,5 @@ public class ICloudBindingConstants {
 
     // Miscellaneous
     public static final String FIND_MY_DEVICE_REQUEST_SUBJECT = "Find My Device alert";
+    public static final Path CERTIFICATE_TMP_PATH = Paths.get(System.getProperty("java.io.tmpdir")).resolve("icloud.cert");
 }

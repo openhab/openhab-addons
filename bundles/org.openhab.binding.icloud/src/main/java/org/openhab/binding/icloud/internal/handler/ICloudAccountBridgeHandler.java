@@ -12,15 +12,7 @@
  */
 package org.openhab.binding.icloud.internal.handler;
 
-import static java.util.concurrent.TimeUnit.*;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-
+import com.google.gson.JsonSyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -43,7 +35,15 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonSyntaxException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -55,7 +55,7 @@ import javax.net.ssl.SSLHandshakeException;
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Extended support with initial Contribution
  */
-//@NonNullByDefault
+@NonNullByDefault
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
@@ -73,14 +73,12 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Nullable
     ScheduledFuture<?> refreshJob;
-    @Nullable
-    ExtensibleTrustManager extensibleTrustManager;
-    @Nullable
-    ICloudTlsCertificateProvider iCloudTlsCertificateProvider;
+    private ExtensibleTrustManager extensibleTrustManager;
+    private ICloudTlsCertificateProvider iCloudTlsCertificateProvider;
 
     public ICloudAccountBridgeHandler(Bridge bridge,
-                                      @Nullable ExtensibleTrustManager extensibleTrustManager,
-                                      @Nullable ICloudTlsCertificateProvider iCloudTlsCertificateProvider) {
+                                      ExtensibleTrustManager extensibleTrustManager,
+                                      ICloudTlsCertificateProvider iCloudTlsCertificateProvider) {
         super(bridge);
         this.extensibleTrustManager = extensibleTrustManager;
         this.iCloudTlsCertificateProvider = iCloudTlsCertificateProvider;
@@ -104,24 +102,22 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         logger.debug("iCloud bridge initialized.");
     }
 
-    private String requestStatus(boolean updateCertificateAndRetryOnFailure) {
+    private @Nullable String requestStatus(boolean retryOnCertFail) {
         try {
             return connection.requestDeviceStatusJSON();
-        } catch (SSLHandshakeException e) {
-            if(updateCertificateAndRetryOnFailure) {
+        } catch (IOException e) {
+            if(retryOnCertFail) {
                 logger.warn("SSL exception during handshake, attempting to refresh certificate automatically");
                 this.extensibleTrustManager.removeTlsCertificateProvider(iCloudTlsCertificateProvider);
                 iCloudTlsCertificateProvider.updateCertificate();
                 this.extensibleTrustManager.addTlsCertificateProvider(iCloudTlsCertificateProvider);
-                requestStatus(false);
+                return requestStatus(false);
             } else {
-                logger.error("Failed to connect using retrieved certificate");
+                logger.warn("Failed to connect using retrieved certificate");
+                logger.warn("Unable to refresh device data", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return null;
             }
-            return null;
-        } catch (IOException e) {
-            logger.warn("Unable to refresh device data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return null;
         }
     }
 
