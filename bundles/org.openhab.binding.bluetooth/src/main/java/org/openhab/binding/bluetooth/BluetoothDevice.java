@@ -490,6 +490,15 @@ public abstract class BluetoothDevice {
     }
 
     /**
+     * Checks if this device has any listeners
+     * 
+     * @return true if this device has listeners
+     */
+    public boolean hasListeners() {
+        return !eventListeners.isEmpty();
+    }
+
+    /**
      * Notify the listeners of an event
      *
      * @param event the {@link BluetoothEventType} of this event
