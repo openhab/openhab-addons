@@ -817,8 +817,6 @@ public class LGWebOSTVSocket {
         executeMouse(s -> s.button(rcButton));
     }
 
-    //
-
     public interface ConfigProvider {
         void storeKey(String key);
 

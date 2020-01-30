@@ -65,6 +65,7 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 | rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
 
 ### Remote Control Buttons
+
 The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
 This list has been compiled mostly through trial and error. Your mileage may vary.
 
