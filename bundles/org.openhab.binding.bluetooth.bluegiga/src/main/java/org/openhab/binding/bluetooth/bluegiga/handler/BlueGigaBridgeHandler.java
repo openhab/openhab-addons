@@ -159,7 +159,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
 
-    private boolean initComplite = false;
+    private boolean initComplete = false;
 
     private @NonNullByDefault({}) ScheduledFuture<?> removeOldDevicesTask;
 
@@ -224,7 +224,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
                 updateThingProperties();
 
-                initComplite = true;
+                initComplete = true;
                 updateStatus(ThingStatus.ONLINE);
                 startScheduledTasks();
             } catch (BlueGigaException e) {
@@ -245,7 +245,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             bgh.removeEventListener(this);
             bgh.removeHandlerListener(this);
             bgh.close();
-            initComplite = false;
+            initComplete = false;
         } catch (IllegalStateException e) {
             // ignore if handler wasn't set at all
         }
@@ -375,7 +375,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void bluegigaEventReceived(@Nullable BlueGigaResponse event) {
         if (event instanceof BlueGigaScanResponseEvent) {
-            if (initComplite) {
+            if (initComplete) {
                 BlueGigaScanResponseEvent scanEvent = (BlueGigaScanResponseEvent) event;
 
                 // We use the scan event to add any devices we hear to the devices list
