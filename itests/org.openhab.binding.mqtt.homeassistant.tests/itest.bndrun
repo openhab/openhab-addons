@@ -40,10 +40,10 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 	org.eclipse.jetty.util;version='[9.4.11,9.4.12)',\
 	org.eclipse.paho.client.mqttv3;version='[1.2.1,1.2.2)',\
 	org.objenesis;version='[2.6.0,2.6.1)',\
-	org.openhab.binding.mqtt;version='[2.5.1,2.5.2)',\
-	org.openhab.binding.mqtt.generic;version='[2.5.1,2.5.2)',\
-	org.openhab.binding.mqtt.homeassistant;version='[2.5.1,2.5.2)',\
-	org.openhab.binding.mqtt.homeassistant.tests;version='[2.5.1,2.5.2)',\
+	org.openhab.binding.mqtt;version='[2.5.2,2.5.3)',\
+	org.openhab.binding.mqtt.generic;version='[2.5.2,2.5.3)',\
+	org.openhab.binding.mqtt.homeassistant;version='[2.5.2,2.5.3)',\
+	org.openhab.binding.mqtt.homeassistant.tests;version='[2.5.2,2.5.3)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.binding.xml;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\

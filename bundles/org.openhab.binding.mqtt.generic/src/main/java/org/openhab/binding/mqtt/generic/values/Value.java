@@ -93,8 +93,11 @@ public abstract class Value {
         return state;
     }
 
-    public String getMQTTpublishValue() {
-        return state.toString();
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        if (pattern == null) {
+            return state.format("%s");
+        }
+        return state.format(pattern);
     }
 
     /**

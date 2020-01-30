@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for settings with integer value
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public interface IntegerState {
 
     void setValue(int value);

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.telegram.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.List;
 
 /**
  * The {@link TelegramConfiguration} class contains fields mapping thing configuration parameters.

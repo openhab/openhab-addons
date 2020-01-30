@@ -246,6 +246,23 @@ Here are a few examples:
   - For an output of *May 23, 1995* use "%1$**tb** %1$**te**,%1$**tY**".
   - For an output of *23.05.1995* use "%1$**td**.%1$**tm**.%1$**tY**".
   - For an output of *23:15* use "%1$**tH**:%1$**tM**".
+  
+Default pattern applied for each type:
+| Type             | Parameter                         | Pattern             | Comment |
+| ---------------- | --------------------------------- | ------------------- | ------- |
+| __string__       | String                            | "%s"                | 
+| __number__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
+| __dimmer__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
+| __contact__      | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __switch__       | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __colorRGB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **red**, **green** and **blue** components.
+| __colorHSB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **hue**, **saturation** and **brightness** components.
+| __location__     | BigDecimal, BigDecimal            | "%2$f,%3$f,%1$f"    | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'.
+| __image__        | --                                | --                  | No publishing supported. 
+| __datetime__     | ZonedDateTime                     | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.
+| __rollershutter__| String                            | "%s"                | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.
+
+Any outgoing value transformation will **always** result in a __string__ value.
 
 ## Troubleshooting
 

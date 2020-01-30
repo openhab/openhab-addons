@@ -65,22 +65,22 @@ And **FROM** the gateway to the binding:
 
 CCU Autodiscovery:
 
-* UDP 43439
+- UDP 43439
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
 
--   **CCU**
-    - **RF**: XML-RPC
-    - **WIRED**: XML-RPC
-    - **HMIP**: XML-RPC
-    - **CUxD**: BIN-RPC (CUxD version >= 1.6 required)
-    - **Groups**: XML-RPC
+- **CCU**
+  - **RF**: XML-RPC
+  - **WIRED**: XML-RPC
+  - **HMIP**: XML-RPC
+  - **CUxD**: BIN-RPC (CUxD version >= 1.6 required)
+  - **Groups**: XML-RPC
 
--   **Homegear**
-    - BIN-RPC
+- **Homegear**
+  - BIN-RPC
 
--   **Other**
-    - XML-RPC
+- **Other**
+  - XML-RPC
 
 ## Supported Things
 
@@ -92,10 +92,10 @@ With Homegear or a CCU, variables and scripts are supported too.
 
 Gateway discovery is available:
 
-* CCU
-* RaspberryMatic >= 2.29.23.20171022
-* Homegear >= 0.6.x
-* piVCCU
+- CCU
+- RaspberryMatic >= 2.29.23.20171022
+- Homegear >= 0.6.x
+- piVCCU
 
 For all other gateways you have to manually add a bridge in a things file. Device discovery is supported for all gateways.
 
@@ -121,65 +121,65 @@ However, the install mode is not automatically enabled in this situation because
 
 There are several settings for a bridge:
 
--   **gatewayAddress** (required)
+- **gatewayAddress** (required)
 Network address of the Homematic gateway
 
--   **gatewayType**
+- **gatewayType**
 Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "auto").
 
--   **callbackHost**
+- **callbackHost**
 Callback network address of the system runtime, default is auto-discovery
 
--   **bindAddress**
+- **bindAddress**
 The address the XML-/BINRPC server binds to, default is value of "callbackHost"
 
--   **callbackPort** (DEPRECATED, use "binCallbackPort" resp. "xmlCallbackPort")
+- **callbackPort** (DEPRECATED, use "binCallbackPort" resp. "xmlCallbackPort")
 Callback port of the binding's server, default is 9125 and counts up for each additional bridge
 
--   **xmlCallbackPort**
+- **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
 
--   **binCallbackPort**
+- **binCallbackPort**
 Callback port of the binding's BIN-RPC server, default is 9126 and counts up for each additional bridge
 
--   **aliveInterval** (DEPRECATED, not necessary anymore)
+- **aliveInterval** (DEPRECATED, not necessary anymore)
 The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
 
--   **reconnectInterval** (DEPRECATED, not necessary anymore)
+- **reconnectInterval** (DEPRECATED, not necessary anymore)
 The interval in seconds to force a reconnect to the Homematic gateway, disables "aliveInterval"! (0 = disabled, default = disabled).
 If you have no sensors which sends messages in regular intervals and/or you have low communication, the "aliveInterval" may restart the connection to the Homematic gateway to often.
 The "reconnectInterval" disables the "aliveInterval" and reconnects after a fixed period of time.
 Think in hours when configuring (one hour = 3600)
 
--   **timeout**
+- **timeout**
 The timeout in seconds for connections to a Homematic gateway (default = 15)
 
--   **discoveryTimeToLive**
+- **discoveryTimeToLive**
 The time to live in seconds for discovery results of a Homematic gateway (default = -1, which means infinite)
 
--   **socketMaxAlive**
+- **socketMaxAlive**
 The maximum lifetime of a socket connection to and from a Homematic gateway in seconds (default = 900)
 
--   **rfPort**
+- **rfPort**
 The port number of the RF daemon (default = 2001)
 
--   **wiredPort**
+- **wiredPort**
 The port number of the HS485 daemon (default = 2000)
 
--   **hmIpPort**
+- **hmIpPort**
 The port number of the HMIP server (default = 2010)
 
--   **cuxdPort**
+- **cuxdPort**
 The port number of the CUxD daemon (default = 8701)
 
--   **installModeDuration**
+- **installModeDuration**
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 
--   **unpairOnDeletion**
-If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.
-**Warning!** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
+- **unpairOnDeletion**
+If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.  
+**Warning:** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
 
--   **factoryResetOnDeletion**
+- **factoryResetOnDeletion**
 If set to true, devices are automatically factory reset when their corresponding things are removed.
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
 
@@ -279,7 +279,7 @@ Example without channel configs
 
 ### Items
 
-In the items file, you can map the datapoints, the syntax is:
+In the items file, you can map the datapoints. The syntax is:
 
 ```java
 homematic:TYPE:BRIDGE:SERIAL:CHANNELNUMBER#DATAPOINTNAME
@@ -299,16 +299,11 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 **Note:** don't forget to add the `HG-` type prefix for Homegear devices
 
-## Virtual device and datapoints
-
-The binding supports one virtual device and some virtual datapoints.
-Virtual datapoints are generated by the binding and provides special functionality.
-
-### GATEWAY-EXTRAS
+## Virtual device GATEWAY-EXTRAX
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
-The type is generated: GATEWAY-EXTRAS-&lsqb;BRIDGE_ID&rsqb;.
+The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
 
 **Example:** bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
 Address: fixed GWE00000000
@@ -321,10 +316,6 @@ A virtual datapoint (Switch) to reload all values for all devices, available in 
 
 A virtual datapoint (Switch) to reload all RSSI values for all devices, available in channel 0 in GATEWAY-EXTRAS
 
-### RSSI
-
-A virtual datapoint (Number) with the unified RSSI value from RSSI_DEVICE and RSSI_PEER, available in channel 0 for all wireless devices
-
 ### INSTALL_MODE
 
 A virtual datapoint (Switch) to start the install mode on the gateway, available in channel 0 in GATEWAY-EXTRAS
@@ -332,6 +323,14 @@ A virtual datapoint (Switch) to start the install mode on the gateway, available
 ### INSTALL_MODE_DURATION
 
 A virtual datapoint (Integer) to hold the duration for the install mode, available in channel 0 in GATEWAY-EXTRAS (max 300 seconds, default = 60)
+
+## Virtual datapoints
+
+Virtual datapoints are generated by the binding and provide special functionality for several device types.
+
+### RSSI
+
+A virtual datapoint (Number) with the unified RSSI value from RSSI_DEVICE and RSSI_PEER, available in channel 0 for all wireless devices
 
 ### DELETE_MODE
 
@@ -353,7 +352,28 @@ A virtual datapoint (Enum) to configure the device deletion with DELETE_MODE, av
 A virtual datapoint (Number) to automatically set the ON_TIME datapoint before the STATE or LEVEL datapoint is sent to the gateway, available for all devices which supports the ON_TIME datapoint.
 This is useful to automatically turn off the datapoint after the specified time.
 
-### DISPLAY_OPTIONS
+### BUTTON
+
+A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.
+
+Available values:
+
+- `SHORT_PRESS`: triggered on a short key press
+- `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
+- `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
+
+**Example:** to capture a short key press on the 19 button remote control in a rule
+
+```javascript
+rule "example trigger rule"
+when
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESS
+then
+    ...
+end
+```
+
+### DISPLAY_OPTIONS (only HM-RC-19)
 
 A virtual datapoint (String) to control the display of a 19 button Homematic remote control (HM-RC-19), available on channel 18
 
@@ -371,7 +391,7 @@ If you specify more than one option for BEEP, BACKLIGHT and UNIT, only the first
 
 **Examples:**
 
-Assumed you mapped the virtual datapoint to a String item called Display_Options
+Assumed you mapped the virtual datapoint to a String item called `Display_Options`.
 
 ```java
 String Display_Options "Display_Options" { channel="homematic:HM-RC-19-B:ccu:KEQ0099999:18#DISPLAY_OPTIONS" }
@@ -407,7 +427,7 @@ Duplicate options: TONE3 is ignored, because TONE1 is specified previously.
 smarthome send Display_Options "TEXT, TONE1, BLINK_FAST, TONE3"
 ```
 
-### DISPLAY_SUBMIT
+### DISPLAY_SUBMIT (only HM-Dis-WM55 and HM-Dis-EP-WM55)
 
 Adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55 devices to easily send (colored) text and icons to the display.
 
@@ -458,28 +478,6 @@ then
     Display_submit.sendCommand(ON)
 end
 ```
-
-### BUTTON
-
-A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.
-
-Available values:
-
-* `SHORT_PRESS`: triggered on a short key press
-* `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
-* `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
-
-**Example:** to capture a short key press on the 19 button remote control in a rule
-
-```javascript
-rule "example trigger rule"
-when
-    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESS
-then
-    ...
-end
-```
-
 ## Troubleshooting
 
 **SHORT & LONG_PRESS events of push buttons do not occur on the event bus**
@@ -492,7 +490,7 @@ After the creation of this program, the button device will receive configuration
 
 **INSTALL_TEST**
 
-If a button is still not working and you do not see any PRESS_LONG / SHORT in your log file (loglevel DEBUG), it could be because of enabled security.
+If a button is still not working and you do not see any PRESS_LONG / SHORT in your log file (log level DEBUG), it could be because of enabled security.
 Try to disable security of your buttons in the HomeMatic Web GUI and try again.
 If you can't disable security try to use key INSTALL_TEST which gets updated to ON for each key press
 
@@ -517,7 +515,8 @@ Use the ```gatewayType=ccu``` config to force the binding to use the CCU impleme
 The CCU only sends an event if a datapoint of a device has changed.
 There is (currently) no way to receive an event automatically when a variable has changed.
 To reload all variable values, send a REFRESH command to any variable.
-e.g you have an item linked to a variable with the name Var_1
+E.g you have an item linked to a variable with the name `Var_1`.
+
 In the console:
 
 ```shell
@@ -532,12 +531,12 @@ import org.eclipse.smarthome.core.types.RefreshType
 Var_1.sendCommand(RefreshType.REFRESH)
 ```
 
-**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported.
-You have to delete the Thing, start a scan and add it again.
+**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
+You have to delete the thing, start a scan and add it again.
 
 ### Debugging and Tracing
 
-If you want to see what's going on in the binding, switch the loglevel to DEBUG in the Karaf console
+If you want to see what's going on in the binding, switch the log level to DEBUG in the Karaf console
 
 ```shell
 log:set DEBUG org.openhab.binding.homematic

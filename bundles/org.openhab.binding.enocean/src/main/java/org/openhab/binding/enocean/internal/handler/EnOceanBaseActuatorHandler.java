@@ -39,7 +39,7 @@ import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 
 /**
  *
@@ -249,7 +249,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             EEP eep = EEPFactory.createEEP(sendingEEPType);
             if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
                    .hasData()) {
-                ESP3Packet msg = eep.setSenderId(senderId)
+                BasePacket msg = eep.setSenderId(senderId)
                                     .setDestinationId(destinationId)
                                     .setSuppressRepeating(getConfiguration().suppressRepeating)
                                     .getERP1Message();

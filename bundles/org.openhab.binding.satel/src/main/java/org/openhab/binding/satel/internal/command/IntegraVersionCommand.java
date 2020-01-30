@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraVersionEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraVersionCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(IntegraVersionCommand.class);
@@ -47,21 +49,21 @@ public class IntegraVersionCommand extends SatelCommandBase {
      * @return Integra type
      */
     public byte getType() {
-        return response.getPayload()[0];
+        return getResponse().getPayload()[0];
     }
 
     /**
      * @return firmware language
      */
     public byte getLanguage() {
-        return response.getPayload()[12];
+        return getResponse().getPayload()[12];
     }
 
     /**
      * @return <code>true</code> if alarm settings are stored in flash memory
      */
     public boolean areSettingsInFlash() {
-        return response.getPayload()[13] == (byte) 0xFF;
+        return getResponse().getPayload()[13] == (byte) 0xFF;
     }
 
     @Override

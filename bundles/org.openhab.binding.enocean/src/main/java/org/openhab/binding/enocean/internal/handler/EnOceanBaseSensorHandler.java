@@ -39,17 +39,17 @@ import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
-import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
+import org.openhab.binding.enocean.internal.transceiver.PacketListener;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  *         This class defines base functionality for receiving eep messages.
  */
-public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements ESP3PacketListener {
+public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements PacketListener {
 
     // List of all thing types which support receiving of eep messages
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
@@ -151,7 +151,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     @Override
-    public void espPacketReceived(ESP3Packet packet) {
+    public void packetReceived(BasePacket packet) {
 
         if (receivingEEPTypes == null) {
             return;

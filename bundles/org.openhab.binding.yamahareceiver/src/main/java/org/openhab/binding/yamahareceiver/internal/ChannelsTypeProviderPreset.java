@@ -101,7 +101,7 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider, ThingHan
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return this.handler;
     }
 

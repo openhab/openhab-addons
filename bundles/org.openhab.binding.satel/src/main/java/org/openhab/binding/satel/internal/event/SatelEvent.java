@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.satel.internal.event;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Simple interface that all event classes must implement.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public interface SatelEvent {
 }

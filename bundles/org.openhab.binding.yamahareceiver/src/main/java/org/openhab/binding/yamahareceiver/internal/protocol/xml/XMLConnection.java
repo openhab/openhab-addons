@@ -47,6 +47,8 @@ public class XMLConnection extends AbstractConnection {
     private static final String XML_END = "</YAMAHA_AV>";
     private static final String HEADER_CHARSET_PART = "charset=";
 
+    private static final int CONNECTION_TIMEOUT_MS = 5000;
+
     public XMLConnection(String host) {
         super(host);
     }
@@ -74,7 +76,7 @@ public class XMLConnection extends AbstractConnection {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
 
-            connection.setConnectTimeout(5); // set a timeout in case the device is not reachable (went offline)
+            connection.setConnectTimeout(CONNECTION_TIMEOUT_MS); // set a timeout in case the device is not reachable (went offline)
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);

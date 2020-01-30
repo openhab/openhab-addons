@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.onewire.internal.device.OwSensorType;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class MstxHandlerConfiguration extends BaseHandlerConfiguration {
-    public OwSensorType manualsensor;
+    public @Nullable OwSensorType manualsensor;
 }

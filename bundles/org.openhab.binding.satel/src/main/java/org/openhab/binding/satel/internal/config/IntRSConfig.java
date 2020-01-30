@@ -12,21 +12,25 @@
  */
 package org.openhab.binding.satel.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link IntRSConfig} contains configuration values for Satel INT-RS bridge.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntRSConfig extends SatelBridgeConfig {
 
     public static final String PORT = "port";
 
-    private String port;
+    private @Nullable String port;
 
     /**
      * @return serial port to which the module is connected
      */
-    public String getPort() {
+    public @Nullable String getPort() {
         return port;
     }
 

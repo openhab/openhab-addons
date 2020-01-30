@@ -13,8 +13,14 @@ This binding can enable the repeater function (level 1 or 2) of these gateways a
 First of all you have to configure an EnOcean transceiver (gateway).
 A directly connected USB300 can be auto discovered, an EnOceanPi has to be added manually to openHAB.
 Both gateways are represented by an _EnOcean gateway_ in openHAB.
-If you want to place the gateway for better reception apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_). In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001.
+If you want to place the gateway for better reception apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
+In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001.
 If everything is running fine you should see the _base id_ of your gateway in the properties of your bridge.
+
+Another way to improve sending and reception reliability is to setup a wired connection.
+In this case you directly connect to your RS485 EnOcean bus (use USB connection of an Eltako FAM14 e.g.).
+However communication on RS485 bus is mostly done with an older ESP2 protocol which does not support advanced telegrams like VLD.
+Furthermore you have to be aware that not all radio telegrams are published on the bus.
 
 The vast majority of EnOcean messages are sent as broadcast messages without an explicit receiver address.
 However each EnOcean device is identified by an unique id, called EnOceanId, which is used as the sender address in these messages.
@@ -92,7 +98,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status) and 0x04 (extended light status).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
-A `classicDevice` is used to for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
+A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
 As these devices do not send their current status, you have to add additional listener channels for each physical Rocker Switch to your thing.
 In this way you can still sync your item status with the physical status of your device whenever it gets modified by a physical rocker switch.
 The classic device simulates a physical Rocker Switch.
@@ -147,6 +153,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |---------------------------------|-------------------|-----------------------------|---|
 | bridge                          | path              | Path to the EnOcean Gateway | COM3, /dev/ttyAMA0, rfc2217://x.x.x.x:3001 |
 |                                 | nextSenderId      | Set SenderId of next created thing.<br/>If omitted, the next unused SenderId is taken | 1-127 |
+|                                 | espVersion        | ESP Version of gateway | ESP3, ESP2 |
+|                                 | rs485             | If gateway is directly connected to a RS485 bus the BaseId is set to 0x00 | true, false
+|                                 | rs485BaseId       | Override BaseId 0x00 if your bus contains a telegram duplicator (FTD14 for ex) | 4 byte hex value |
 | pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01, D2_03_0A |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
