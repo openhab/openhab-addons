@@ -344,10 +344,11 @@ public abstract class BluetoothDevice {
      * This is an asynchronous method. Once the write is complete
      * {@link BluetoothDeviceListener.onCharacteristicWriteComplete} method will be called with the completion state.
      *
-     * @param characteristic the {@link BluetoothCharacteristic} to read.
+     * @param characteristic the {@link BluetoothCharacteristic} to write.
+     * @param value the value to be written.
      * @return true if the characteristic write is started successfully
      */
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] payload) {
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
         return false;
     }
 

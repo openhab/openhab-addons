@@ -50,33 +50,37 @@ public interface BluetoothDeviceListener {
      * Called when a read request completes
      *
      * @param characteristic the {@link BluetoothCharacteristic} that has completed the read request
+     * @param value the value that was read, null if error occurred.
      * @param status the {@link BluetoothCompletionStatus} of the read request
      */
-    void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, byte[] payload,
+    void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, byte[] value,
             BluetoothCompletionStatus status);
 
     /**
      * Called when a write request completes
      *
      * @param characteristic the {@link BluetoothCharacteristic} that has completed the write request
+     * @param value the to be written to the {@link BluetoothCharacteristic}
      * @param status the {@link BluetoothCompletionStatus} of the write request
      */
-    void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, byte[] payload,
+    void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, byte[] value,
             BluetoothCompletionStatus status);
 
     /**
      * Called when a characteristic value is received. Implementations should call this whenever a value
      * is received from the BLE device even if there is no change to the value.
      *
-     * @param characteristic the updated {@link BluetoothCharacteristic}
+     * @param characteristic the {@link BluetoothCharacteristic} that received an update
+     * @param value the new value for the {@link BluetoothCharacteristic}
      */
-    void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] payload);
+    void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value);
 
     /**
      * Called when a descriptor value is received. Implementations should call this whenever a value
      * is received from the BLE device even if there is no change to the value.
      *
-     * @param characteristic the updated {@link BluetoothCharacteristic}
+     * @param bluetoothDescriptor the {@link BluetoothDescriptor} that received an update
+     * @param value the new value for the {@link BluetoothDescriptor}
      */
-    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] payload);
+    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value);
 }

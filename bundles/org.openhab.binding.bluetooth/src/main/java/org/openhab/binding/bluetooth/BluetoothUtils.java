@@ -21,8 +21,9 @@ import org.slf4j.LoggerFactory;
  * This a utility class for Bluetooth bindings.
  * It contains useful utilities for writing to and from byte arrays.
  *
+ * @author Chris Jackson - Initial contribution
+ * @author Kai Kreuzer - Cleaned up code
  * @author Connor Petty - API improvements
- *
  */
 public class BluetoothUtils {
 
@@ -55,8 +56,9 @@ public class BluetoothUtils {
     }
 
     /**
-     * Converts an int array to a byte array
-     *
+     * Converts an int array to a byte array.
+     * This only saves the last 8 bits of each int.
+     * 
      * @param value an int array
      * @return a byte array
      */
@@ -72,8 +74,12 @@ public class BluetoothUtils {
     }
 
     /**
-     * Return the stored value of this characteristic.
+     * Parse a Float value from a byte array.
      *
+     * @param value the byte array to be parsed
+     * @param formatType the format of the value (as one of the FORMAT_* constants in this class)
+     * @param offset the offset to use when reading the value
+     * @return a Integer parsed from {@code value}, null if it could not be parsed
      */
     public static Integer getIntegerValue(byte[] value, int formatType, int offset) {
         if ((offset + getTypeLen(formatType)) > value.length) {
@@ -107,8 +113,12 @@ public class BluetoothUtils {
     }
 
     /**
-     * Return the stored value of this characteristic. This doesn't read the remote data.
+     * Parse a Float value from a byte array.
      *
+     * @param value the byte array to be parsed
+     * @param formatType the format of the value (as one of the FORMAT_* constants in this class)
+     * @param offset the offset to use when reading the value
+     * @return a Float parsed from {@code value}, null if it could not be parsed
      */
     public static Float getFloatValue(byte[] value, int formatType, int offset) {
         if ((offset + getTypeLen(formatType)) > value.length) {
@@ -128,8 +138,11 @@ public class BluetoothUtils {
     }
 
     /**
-     * Return the stored value of this characteristic. This doesn't read the remote data.
+     * Parse a String from a byte array.
      *
+     * @param value the byte array to be parsed
+     * @param offset the offset to use when reading the value
+     * @return a String parsed from {@code value}, null if it could not be parsed
      */
     public static String getStringValue(byte[] value, int offset) {
         if (value == null || offset > value.length) {
@@ -143,11 +156,12 @@ public class BluetoothUtils {
     }
 
     /**
-     * Set the local value of this characteristic.
+     * Inserts an integer into a byte array.
      *
+     * @param dest the byte array to insert the value into
      * @param value the value to set
      * @param formatType the format of the value (as one of the FORMAT_* constants in this class)
-     * @param offset the offset to use when interpreting the value
+     * @param offset the offset to use when inserting the value
      * @return true, if it has been set successfully
      */
     public static boolean setValue(byte[] dest, int value, int formatType, int offset) {
@@ -189,14 +203,14 @@ public class BluetoothUtils {
     }
 
     /**
-     * Set the local value of this characteristic.
+     * Inserts a float into a byte array.
      *
+     * @param dest the byte array to insert the value into
      * @param mantissa the mantissa of the value
      * @param exponent the exponent of the value
      * @param formatType the format of the value (as one of the FORMAT_* constants in this class)
-     * @param offset the offset to use when interpreting the value
+     * @param offset the offset to use when inserting the value
      * @return true, if it has been set successfully
-     *
      */
     public static boolean setValue(byte[] dest, int mantissa, int exponent, int formatType, int offset) {
         int len = offset + getTypeLen(formatType);
