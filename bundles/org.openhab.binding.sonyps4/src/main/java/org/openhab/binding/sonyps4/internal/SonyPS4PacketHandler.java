@@ -287,10 +287,10 @@ public class SonyPS4PacketHandler {
         return encryptPacket(packet);
     }
 
-    byte[] makeApplicationPacket(String applicationName) {
+    byte[] makeApplicationPacket(String applicationId) {
         ByteBuffer packet = newPacketForEncryption(8 + 16 + 8);
         packet.putInt(SonyPS4Command.APP_START_REQ.value);
-        packet.put(applicationName.getBytes()); // AppName
+        packet.put(applicationId.getBytes()); // AppName
         return encryptPacket(packet);
     }
 

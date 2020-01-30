@@ -62,7 +62,8 @@ public class SonyPS4Handler extends BaseThingHandler {
     private final SonyPS4ArtworkHandler ps4ArtworkHandler = new SonyPS4ArtworkHandler();
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
-    private static final int MIN_SENDKEY_DELAY = 200; // min delay between sendKey sends
+    private static final int MIN_SENDKEY_DELAY = 250; // min delay between sendKey sends
+    private static final int MIN_HOLDKEY_DELAY = 300; // min delay after Key set
     private static final boolean SHOULD_LOGIN = true;
 
     private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
@@ -222,6 +223,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     private void wakeUpPS4() {
+        logger.debug("Waking up PS4.");
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
@@ -297,16 +299,10 @@ public class SonyPS4Handler extends BaseThingHandler {
             if (result == 0) {
                 return true;
             } else {
-                if (result == -1) {
-                    logger.info("Error in comunication with PS4!");
-                } else if (result == 14) {
-                    logger.info("Not paired to PS4!");
-                } else if (result == 21) {
-                    logger.info("Wrong user-credential!");
-                } else if (result == 23) {
-                    logger.info("Wrong pairing-code to PS4!");
-                } else if (result == 24) {
-                    logger.info("Wrong pin-code!");
+                SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(result);
+                if (status != null) {
+                    logger.info("{}", status.message);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
                 } else {
                     logger.info("Error code in response:{}", result);
                 }
@@ -357,13 +353,17 @@ public class SonyPS4Handler extends BaseThingHandler {
             channel.write(ByteBuffer.wrap(outPacket));
 
             // Read standby response
-            // final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
-            // int responseLength = channel.read(readBuffer);
-            // if (responseLength > 0) {
-            // ps4PacketHandler.parseEncryptedPacket(readBuffer);
-            // } else {
-            // logger.warn("PS4 no standby response!");
-            // }
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                logger.debug("Standby response: {}", respBuff);
+                ps4PacketHandler.parseEncryptedPacket(readBuffer);
+            } else {
+                logger.warn("No standby response!");
+            }
 
         } catch (SocketTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -390,7 +390,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         return false;
     }
 
-    private void startApplication(String application) {
+    private void startApplication(String applicationId) {
         if (!openComs()) {
             return;
         }
@@ -401,18 +401,21 @@ public class SonyPS4Handler extends BaseThingHandler {
 
             // Send application request
             logger.debug("PS4 sending application packet");
-            byte[] outPacket = ps4PacketHandler.makeApplicationPacket(application);
+            byte[] outPacket = ps4PacketHandler.makeApplicationPacket(applicationId);
             channel.write(ByteBuffer.wrap(outPacket));
 
             // Read application response
-            // final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
-            // int responseLength = channel.read(readBuffer);
-            // if (responseLength > 0) {
-            // logger.debug("App start response: {}", readBuffer.array());
-            // ps4PacketHandler.parseEncryptedPacket(readBuffer);
-            // } else {
-            // logger.debug("PS4 no application response!");
-            // }
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                logger.debug("App start response: {}", respBuff);
+                ps4PacketHandler.parseEncryptedPacket(readBuffer);
+            } else {
+                logger.debug("PS4 no application response!");
+            }
 
         } catch (SocketTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -437,32 +440,32 @@ public class SonyPS4Handler extends BaseThingHandler {
                 logger.debug("Sending remoteKey");
                 byte[] outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
                 channel.write(ByteBuffer.wrap(outPacket));
-
                 Thread.sleep(MIN_SENDKEY_DELAY);
+
                 // Send remote key
                 outPacket = ps4PacketHandler.makeRemoteControlPacket(pushedKey);
                 channel.write(ByteBuffer.wrap(outPacket));
+                Thread.sleep(MIN_HOLDKEY_DELAY);
 
-                Thread.sleep(MIN_SENDKEY_DELAY);
                 outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
                 channel.write(ByteBuffer.wrap(outPacket));
-
                 Thread.sleep(MIN_SENDKEY_DELAY);
+
                 outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
                 channel.write(ByteBuffer.wrap(outPacket));
 
-                // // Read remoteKey response
-                // final ByteBuffer readBuffer = ByteBuffer.allocate(512);
-                // int responseLength = channel.read(readBuffer);
-                // if (responseLength > 0) {
-                // byte[] respBuff = new byte[responseLength];
-                // readBuffer.position(0);
-                // readBuffer.get(respBuff, 0, responseLength);
-                // byte[] appDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
-                // logger.debug("PS4 remoteKey response: {}", appDecrypt);
-                // } else {
-                // logger.warn("PS4 no remoteKey response!");
-                // }
+                // Read remoteKey response
+                final ByteBuffer readBuffer = ByteBuffer.allocate(512);
+                int responseLength = channel.read(readBuffer);
+                if (responseLength > 0) {
+                    byte[] respBuff = new byte[responseLength];
+                    readBuffer.position(0);
+                    readBuffer.get(respBuff, 0, responseLength);
+                    logger.debug("RemoteKey response: {}", respBuff);
+                    ps4PacketHandler.parseEncryptedPacket(readBuffer);
+                } else {
+                    logger.warn("No remoteKey response!");
+                }
 
             } catch (InterruptedException e1) {
                 logger.debug("RemoteKey interrupted: {}", e1);
