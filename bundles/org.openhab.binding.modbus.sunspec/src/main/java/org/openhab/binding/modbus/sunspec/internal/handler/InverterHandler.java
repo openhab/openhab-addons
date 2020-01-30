@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import java.util.Optional;
@@ -66,43 +68,44 @@ public class InverterHandler extends AbstractSunSpecHandler {
         InverterModelBlock block = parser.parse(registers);
 
         // Device information group
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_CABINET_TEMPERATURE),
-                getScaled(block.temperatureCabinet, block.temperatureSF));
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_CABINET_TEMPERATURE),
+                getScaled(block.temperatureCabinet, block.temperatureSF, CELSIUS));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_HEATSINK_TEMPERATURE),
-                getScaled(block.temperatureHeatsink, Optional.of(block.temperatureSF)));
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_HEATSINK_TEMPERATURE),
+                getScaled(block.temperatureHeatsink, Optional.of(block.temperatureSF), CELSIUS));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_TRANSFORMER_TEMPERATURE),
-                getScaled(block.temperatureTransformer, Optional.of(block.temperatureSF)));
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_TRANSFORMER_TEMPERATURE),
+                getScaled(block.temperatureTransformer, Optional.of(block.temperatureSF), CELSIUS));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_OTHER_TEMPERATURE),
-                getScaled(block.temperatureOther, Optional.of(block.temperatureSF)));
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_OTHER_TEMPERATURE),
+                getScaled(block.temperatureOther, Optional.of(block.temperatureSF), CELSIUS));
 
         InverterStatus status = InverterStatus.getByCode(block.status);
         updateState(new ChannelUID(getThing().getUID(), GROUP_DEVICE_INFO, CHANNEL_STATUS),
                 status == null ? UnDefType.UNDEF : new StringType(status.name()));
 
         // AC General group
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_TOTAL_CURRENT),
-                getScaled(block.acCurrentTotal, block.acCurrentSF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_TOTAL_CURRENT),
+                getScaled(block.acCurrentTotal, block.acCurrentSF, AMPERE));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_POWER),
-                getScaled(block.acPower, block.acPowerSF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER), getScaled(block.acPower, block.acPowerSF, WATT));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_FREQUENCY),
-                getScaled(block.acFrequency, block.acFrequencySF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_FREQUENCY),
+                getScaled(block.acFrequency, block.acFrequencySF, HERTZ));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_APPARENT_POWER),
-                getScaled(block.acApparentPower, block.acApparentPowerSF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_APPARENT_POWER),
+                getScaled(block.acApparentPower, block.acApparentPowerSF)); // TODO: VA currently not supported, see:
+                                                                            // https://github.com/openhab/openhab-core/pull/1347
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePower, block.acReactivePowerSF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_REACTIVE_POWER),
+                getScaled(block.acReactivePower, block.acReactivePowerSF)); // TODO: var currently not supported, see:
+                                                                            // https://github.com/openhab/openhab-core/pull/1347
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
-                getScaled(block.acPowerFactor, block.acPowerFactorSF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
+                getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));
 
-        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_GENERAL, CHANNEL_AC_LIFETIME_ENERGY),
-                getScaled(block.acEnergyLifetime, block.acEnergyLifetimeSF));
+        updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_LIFETIME_ENERGY),
+                getScaled(block.acEnergyLifetime, block.acEnergyLifetimeSF, WATT_HOUR));
 
         resetCommunicationError();
     }

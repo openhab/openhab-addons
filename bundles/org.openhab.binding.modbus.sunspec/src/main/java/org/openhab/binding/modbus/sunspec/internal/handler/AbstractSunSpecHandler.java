@@ -18,9 +18,12 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -421,6 +424,17 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     }
 
     /**
+     * Returns the channel UID for the specified group and channel id
+     * 
+     * @param string the channel group
+     * @param string the channel id in that group
+     * @return the globally unique channel uid
+     */
+    ChannelUID channelUID(String group, String id) {
+        return new ChannelUID(getThing().getUID(), group, id);
+    }
+
+    /**
      * Returns value multiplied by the 10 on the power of scaleFactory
      *
      * @param value the value to alter
@@ -446,5 +460,33 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return new DecimalType(value.longValue());
         }
         return new DecimalType(BigDecimal.valueOf(value.longValue(), scaleFactor * -1));
+    }
+
+    /**
+     * Returns value multiplied by the 10 on the power of scaleFactory
+     *
+     * @param value the value to alter
+     * @param scaleFactor the scale factor to use (may be negative)
+     * @return the scaled value as a DecimalType
+     */
+    protected State getScaled(Optional<? extends Number> value, Optional<Short> scaleFactor, Unit<?> unit) {
+        if (!value.isPresent() || !scaleFactor.isPresent()) {
+            return UnDefType.UNDEF;
+        }
+        return getScaled(value.get().longValue(), scaleFactor.get(), unit);
+    }
+
+    /**
+     * Returns value multiplied by the 10 on the power of scaleFactory
+     *
+     * @param value the value to alter
+     * @param scaleFactor the scale factor to use (may be negative)
+     * @return the scaled value as a DecimalType
+     */
+    protected State getScaled(Number value, Short scaleFactor, Unit<?> unit) {
+        if (scaleFactor == 1) {
+            return new QuantityType<>(value.longValue(), unit);
+        }
+        return new QuantityType<>(BigDecimal.valueOf(value.longValue(), scaleFactor * -1), unit);
     }
 }

@@ -4,21 +4,21 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="ac-total-current-type">
-		<item-type>Number</item-type>
-		<label>AC Total Current Value (A)</label>
-		<state readOnly="true" />
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Total Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	
 	<channel-type id="ac-power-type">
-		<item-type>Number</item-type>
-		<label>AC Power Value (W)</label>
-		<state readOnly="true" />
+		<item-type>Number:Power</item-type>
+		<label>AC Power Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="ac-frequency-type">
-		<item-type>Number</item-type>
-		<label>AC Frequency Value (Hz)</label>
-		<state readOnly="true" />
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	
 	<channel-type id="ac-apparent-power-type" advanced="true">
@@ -34,39 +34,39 @@
 	</channel-type>
 	
 	<channel-type id="ac-power-factor-type">
-		<item-type>Number</item-type>
-		<label>AC Power Factor (%)</label>
-		<state readOnly="true" />
+		<item-type>Number:Dimensionless</item-type>
+		<label>AC Power Factor</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	
 	<channel-type id="ac-lifetime-energy-type">
-		<item-type>Number</item-type>
-		<label>AC Lifetime Energy Production (Wh)</label>
-		<state readOnly="true" />
+		<item-type>Number:Energy</item-type>
+		<label>AC Lifetime Energy Production</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="cabinet-temperature-type">
-		<item-type>Number</item-type>
-		<label>Cabinet Temperature (C)</label>
-		<state readOnly="true" />
+		<item-type>Number:Temperature</item-type>
+		<label>Cabinet Temperature</label>
+		<state readOnly="true"  pattern="%.1f %unit%"/>
 	</channel-type>
 	
 	<channel-type id="heatsink-temperature-type">
-		<item-type>Number</item-type>
-		<label>Heat Sink Temperature (C)</label>
-		<state readOnly="true" />
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Sink Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	
 	<channel-type id="transformer-temperature-type">
-		<item-type>Number</item-type>
-		<label>Transformer Temperature (C)</label>
-		<state readOnly="true" />
+		<item-type>Number:Temperature</item-type>
+		<label>Transformer Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	
 	<channel-type id="other-temperature-type">
-		<item-type>Number</item-type>
-		<label>Other Temperature (C)</label>
-		<state readOnly="true" />
+		<item-type>Number:Temperature</item-type>
+		<label>Other Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 
