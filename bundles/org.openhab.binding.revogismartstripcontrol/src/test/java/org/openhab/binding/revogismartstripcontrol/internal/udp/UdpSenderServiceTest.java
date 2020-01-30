@@ -1,5 +1,6 @@
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
@@ -20,8 +20,6 @@ import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class UdpSenderServiceTest {
 
@@ -61,26 +59,20 @@ public class UdpSenderServiceTest {
     public void testOneAnswer() throws IOException {
         // given
         byte[] receivedBuf = "valid answer".getBytes();
-        doAnswer(new Answer<DatagramSocket>() {
-            @Override
-            public DatagramSocket answer(final InvocationOnMock invocation) throws Throwable {
-                DatagramPacket datagramPacket = new DatagramPacket(receivedBuf, receivedBuf.length);
-                return null;
-            }
+        doAnswer( invocation -> {
+            DatagramPacket argument = invocation.getArgument(0);
+            argument.setData(receivedBuf);
+            return null;
         }).doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
-        when(datagramSocketWrapper.receiveAnswer(any(DatagramPacket.class))).thenReturn()
-        every { datagramSocketWrapper.receiveAnswer(any()) } answers {
-            firstArg<DatagramPacket>().data = receivedBuf
-        } andThenThrows SocketTimeoutException().fillInStackTrace()
 
 
         // when
         List<String> list = udpSenderService.broadcastUpdDatagram("send something");
 
         // then
-        assertThat(list).contains("valid answer")
-        verify(exactly = 1 + 2 * numberOfInterfaces) {datagramSocketWrapper.receiveAnswer(any())}
-    }*/
+        assertThat(list.contains("valid answer"), is(true));
+        verify(datagramSocketWrapper, times(1 + 2 * numberOfInterfaces)).receiveAnswer(any());
+    }
 
 
 }
