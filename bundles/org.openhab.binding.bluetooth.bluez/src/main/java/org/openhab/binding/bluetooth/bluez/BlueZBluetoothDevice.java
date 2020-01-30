@@ -250,13 +250,12 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         scheduler.submit(() -> {
             try {
                 byte[] value = c.readValue();
-                characteristic.setValue(value);
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic, value,
                         BluetoothCompletionStatus.SUCCESS);
             } catch (BluetoothException e) {
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
                         e.getMessage());
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic, null,
                         BluetoothCompletionStatus.ERROR);
             }
         });
@@ -264,21 +263,20 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
         if (device == null) {
             throw new IllegalStateException("TinyB device is not yet set");
         }
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
         scheduler.submit(() -> {
             try {
-                BluetoothCompletionStatus successStatus = c.writeValue(characteristic.getByteValue())
-                        ? BluetoothCompletionStatus.SUCCESS
+                BluetoothCompletionStatus successStatus = c.writeValue(value) ? BluetoothCompletionStatus.SUCCESS
                         : BluetoothCompletionStatus.ERROR;
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic, successStatus);
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic, value, successStatus);
             } catch (BluetoothException e) {
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
                         e.getMessage());
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic,
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic, value,
                         BluetoothCompletionStatus.ERROR);
             }
         });
@@ -296,8 +294,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                 c.enableValueNotifications(value -> {
                     logger.debug("Received new value '{}' for characteristic '{}' of device '{}'", value,
                             characteristic.getUuid(), address);
-                    characteristic.setValue(value);
-                    notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, characteristic);
+                    notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, characteristic, value);
                 });
             } catch (BluetoothException e) {
                 if (e.getMessage().contains("Already notifying")) {
@@ -341,8 +338,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             d.enableValueNotifications(value -> {
                 logger.debug("Received new value '{}' for descriptor '{}' of device '{}'", value, descriptor.getUuid(),
                         address);
-                descriptor.setValue(value);
-                notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor);
+                notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor, value);
             });
             return true;
         } else {

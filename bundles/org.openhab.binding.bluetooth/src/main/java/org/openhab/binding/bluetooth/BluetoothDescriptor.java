@@ -30,7 +30,6 @@ public class BluetoothDescriptor {
 
     protected final BluetoothCharacteristic characteristic;
     protected final UUID uuid;
-    protected byte[] value;
 
     /**
      * The main constructor
@@ -70,24 +69,6 @@ public class BluetoothDescriptor {
     public UUID getUuid() {
         return uuid;
 
-    }
-
-    /**
-     * Returns the stored value for this descriptor. It doesn't read remote data.
-     *
-     * @return the value of the descriptor
-     */
-    public byte[] getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the stored value for this descriptor. It doesn't update remote data.
-     *
-     * @param value the value for this descriptor instance
-     */
-    public void setValue(byte[] value) {
-        this.value = value;
     }
 
     public GattDescriptor getDescriptor() {

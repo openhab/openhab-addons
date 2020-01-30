@@ -14,12 +14,14 @@ package org.openhab.binding.bluetooth.bluegiga;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothService;
+import org.openhab.binding.bluetooth.BluetoothUtils;
 import org.openhab.binding.bluetooth.bluegiga.handler.BlueGigaBridgeHandler;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaEventListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
@@ -71,7 +73,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     private BlueGigaProcedure procedureProgress = BlueGigaProcedure.NONE;
 
     // Somewhere to remember what characteristic we're working on
-    private BluetoothCharacteristic procedureCharacteristic = null;
+    private BlueGigaBluetoothCharacteristic procedureCharacteristic = null;
 
     // The connection handle if the device is connected
     private int connection = -1;
@@ -131,7 +133,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
     @Override
     public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        if (characteristic == null || characteristic.getHandle() == 0) {
+        if (characteristic == null || characteristic.getHandle() == 0
+                || !(characteristic instanceof BlueGigaBluetoothCharacteristic)) {
             return false;
         }
 
@@ -144,14 +147,15 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         procedureProgress = BlueGigaProcedure.CHARACTERISTIC_READ;
-        procedureCharacteristic = characteristic;
+        procedureCharacteristic = (BlueGigaBluetoothCharacteristic) characteristic;
 
         return true;
     }
 
     @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
-        if (characteristic == null || characteristic.getHandle() == 0) {
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
+        if (characteristic == null || characteristic.getHandle() == 0
+                || !(characteristic instanceof BlueGigaBluetoothCharacteristic)) {
             return false;
         }
 
@@ -159,12 +163,14 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             return false;
         }
 
-        if (!bgHandler.bgWriteCharacteristic(connection, characteristic.getHandle(), characteristic.getValue())) {
+        if (!bgHandler.bgWriteCharacteristic(connection, characteristic.getHandle(),
+                BluetoothUtils.toIntArray(value))) {
             return false;
         }
 
         procedureProgress = BlueGigaProcedure.CHARACTERISTIC_WRITE;
-        procedureCharacteristic = characteristic;
+        procedureCharacteristic = (BlueGigaBluetoothCharacteristic) characteristic;
+        procedureCharacteristic.setValue(value);
 
         return true;
     }
@@ -308,7 +314,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
             logger.trace("BlueGiga FindInfo: {} svcs={}", this, supportedServices);
 
-            BluetoothCharacteristic characteristic = new BluetoothCharacteristic(infoEvent.getUuid(),
+            BluetoothCharacteristic characteristic = new BlueGigaBluetoothCharacteristic(infoEvent.getUuid(),
                     infoEvent.getChrHandle());
 
             BluetoothService service = getServiceByHandle(characteristic.getHandle());
@@ -350,7 +356,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                     break;
                 case CHARACTERISTIC_READ:
                     // The read failed
-                    notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, procedureCharacteristic,
+                    notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, procedureCharacteristic, null,
                             BluetoothCompletionStatus.ERROR);
                     procedureProgress = BlueGigaProcedure.NONE;
                     procedureCharacteristic = null;
@@ -360,7 +366,9 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                     BluetoothCompletionStatus result = completedEvent.getResult() == BgApiResponse.SUCCESS
                             ? BluetoothCompletionStatus.SUCCESS
                             : BluetoothCompletionStatus.ERROR;
-                    notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, procedureCharacteristic, result);
+
+                    notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, procedureCharacteristic,
+                            procedureCharacteristic.getValue(), result);
                     procedureProgress = BlueGigaProcedure.NONE;
                     procedureCharacteristic = null;
                     break;
@@ -412,23 +420,40 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         if (event instanceof BlueGigaAttributeValueEvent) {
             // A read request has completed - update the characteristic
             BlueGigaAttributeValueEvent valueEvent = (BlueGigaAttributeValueEvent) event;
-
             BluetoothCharacteristic characteristic = getCharacteristicByHandle(valueEvent.getAttHandle());
             if (characteristic == null) {
                 logger.debug("BlueGiga didn't find characteristic for event {}", event);
             } else {
+                byte[] value = BluetoothUtils.toByteArray(valueEvent.getValue());
                 // If this is the characteristic we were reading, then send a read completion
                 if (procedureProgress == BlueGigaProcedure.CHARACTERISTIC_READ && procedureCharacteristic != null
                         && procedureCharacteristic.getHandle() == valueEvent.getAttHandle()) {
                     procedureProgress = BlueGigaProcedure.NONE;
                     procedureCharacteristic = null;
-                    notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
+                    notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic, value,
                             BluetoothCompletionStatus.SUCCESS);
                 }
 
                 // Notify the user of the updated value
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, procedureCharacteristic);
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, value, procedureCharacteristic);
             }
+        }
+    }
+
+    private class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
+
+        private byte[] value;
+
+        public BlueGigaBluetoothCharacteristic(UUID uuid, int handle) {
+            super(uuid, handle);
+        }
+
+        public void setValue(byte[] value) {
+            this.value = value;
+        }
+
+        public byte[] getValue() {
+            return value;
         }
     }
 }

@@ -347,7 +347,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to read.
      * @return true if the characteristic write is started successfully
      */
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic, byte[] payload) {
         return false;
     }
 
@@ -491,7 +491,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {
@@ -518,18 +518,18 @@ public abstract class BluetoothDevice {
                         listener.onServicesDiscovered();
                         break;
                     case CHARACTERISTIC_READ_COMPLETE:
-                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
+                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0], (byte[]) args[1],
+                                (BluetoothCompletionStatus) args[2]);
                         break;
                     case CHARACTERISTIC_WRITE_COMPLETE:
-                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
+                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0], (byte[]) args[1],
+                                (BluetoothCompletionStatus) args[2]);
                         break;
                     case CHARACTERISTIC_UPDATED:
-                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
+                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0], (byte[]) args[1]);
                         break;
                     case DESCRIPTOR_UPDATED:
-                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
+                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0], (byte[]) args[1]);
                         break;
                 }
             } catch (Exception e) {

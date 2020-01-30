@@ -186,13 +186,14 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
+    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, byte[] value,
+            BluetoothCompletionStatus status) {
         if (status == BluetoothCompletionStatus.SUCCESS) {
             if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
-                updateBatteryLevel(characteristic);
+                updateBatteryLevel(characteristic, value);
             } else {
                 logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(), address,
-                        characteristic.getValue());
+                        value);
             }
         } else {
             logger.debug("Characteristic {} from {} has been read - ERROR", characteristic.getUuid(), address);
@@ -201,22 +202,22 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     }
 
     @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
+    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, byte[] value,
             BluetoothCompletionStatus status) {
-        logger.debug("Wrote {} to characteristic {} of device {}: {}", characteristic.getByteValue(),
-                characteristic.getUuid(), address, status);
+        logger.debug("Wrote {} to characteristic {} of device {}: {}", value, characteristic.getUuid(), address,
+                status);
     }
 
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
-            updateBatteryLevel(characteristic);
+            updateBatteryLevel(characteristic, value);
         }
     }
 
-    protected void updateBatteryLevel(BluetoothCharacteristic characteristic) {
+    protected void updateBatteryLevel(BluetoothCharacteristic characteristic, byte[] value) {
         // the byte has values from 0-255, which we need to map to 0-100
-        Double level = characteristic.getValue()[0] / 2.55;
+        Double level = value[0] / 2.55;
         updateState(characteristic.getGattCharacteristic().name(), new DecimalType(level.intValue()));
     }
 

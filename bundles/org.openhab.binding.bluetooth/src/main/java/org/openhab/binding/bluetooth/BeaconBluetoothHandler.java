@@ -158,20 +158,21 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
+    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, byte[] value,
             BluetoothCompletionStatus status) {
     }
 
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, byte[] value,
+            BluetoothCompletionStatus status) {
     }
 
     @Override
-    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
+    }
+
+    @Override
+    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value) {
     }
 
 }

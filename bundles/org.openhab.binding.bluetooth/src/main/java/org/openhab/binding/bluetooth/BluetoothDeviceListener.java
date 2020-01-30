@@ -52,7 +52,8 @@ public interface BluetoothDeviceListener {
      * @param characteristic the {@link BluetoothCharacteristic} that has completed the read request
      * @param status the {@link BluetoothCompletionStatus} of the read request
      */
-    void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status);
+    void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, byte[] payload,
+            BluetoothCompletionStatus status);
 
     /**
      * Called when a write request completes
@@ -60,7 +61,8 @@ public interface BluetoothDeviceListener {
      * @param characteristic the {@link BluetoothCharacteristic} that has completed the write request
      * @param status the {@link BluetoothCompletionStatus} of the write request
      */
-    void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status);
+    void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, byte[] payload,
+            BluetoothCompletionStatus status);
 
     /**
      * Called when a characteristic value is received. Implementations should call this whenever a value
@@ -68,7 +70,7 @@ public interface BluetoothDeviceListener {
      *
      * @param characteristic the updated {@link BluetoothCharacteristic}
      */
-    void onCharacteristicUpdate(BluetoothCharacteristic characteristic);
+    void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] payload);
 
     /**
      * Called when a descriptor value is received. Implementations should call this whenever a value
@@ -76,5 +78,5 @@ public interface BluetoothDeviceListener {
      *
      * @param characteristic the updated {@link BluetoothCharacteristic}
      */
-    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor);
+    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] payload);
 }
