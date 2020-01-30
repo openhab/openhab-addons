@@ -12,17 +12,6 @@
  */
 package org.openhab.binding.icloud.internal.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.*;
-import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
-
-import java.io.IOException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -44,6 +33,25 @@ import org.openhab.binding.icloud.internal.configuration.ICloudDeviceThingConfig
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.List;
+
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.BATTERY_LEVEL;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.BATTERY_STATUS;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.FIND_MY_PHONE;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.LOCATION;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.LOCATION_ACCURACY;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.LOCATION_LASTUPDATE;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.LOW_BATTERY;
 
 /**
  * Handles updates of an iCloud device Thing.

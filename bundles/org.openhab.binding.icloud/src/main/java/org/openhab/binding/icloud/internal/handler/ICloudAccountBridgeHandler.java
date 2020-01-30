@@ -31,7 +31,6 @@ import org.openhab.binding.icloud.internal.ICloudTlsCertificateProvider;
 import org.openhab.binding.icloud.internal.configuration.ICloudAccountThingConfiguration;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

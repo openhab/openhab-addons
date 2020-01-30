@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.icloud.internal.discovery;
 
-import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
-
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -30,6 +26,14 @@ import org.openhab.binding.icloud.internal.utilities.ICloudTextTranslator;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.DEVICE_PROPERTY_ID;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.DEVICE_PROPERTY_ID_LABEL;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.DEVICE_PROPERTY_OWNER_LABEL;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_TYPE_ICLOUDDEVICE;
 
 /**
  * Device discovery creates a thing in the inbox for each icloud device

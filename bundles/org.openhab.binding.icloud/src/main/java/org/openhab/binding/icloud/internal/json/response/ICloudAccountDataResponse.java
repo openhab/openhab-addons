@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 /**
  * Serializable class to parse the device information json response

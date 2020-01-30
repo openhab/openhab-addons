@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
+import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
+import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,14 +25,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Base64;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
-import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest;
-import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Handles communication with the Apple server. Provides methods to

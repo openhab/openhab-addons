@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
-
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
@@ -31,7 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.ExtensibleTrustManager;
 import org.eclipse.smarthome.io.net.http.TlsCertificateProvider;
-import org.eclipse.smarthome.io.net.http.internal.ExtensibleTrustManagerImpl;
 import org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery;
 import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.handler.ICloudDeviceHandler;
@@ -41,9 +34,20 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_TYPE_ICLOUD;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_TYPE_ICLOUDDEVICE;
+
 /**
  * The {@link ICloudHandlerFactory} is responsible for creating things and thing
  * handlers.
+ *
+ * Note: Adding @NonNullByDefault to this class will not correctly take into account the binding of
+ * the ExtensibleTrustManager and ICloudTlsCertificateProvider using the OSGi @Reference.
  *
  * @author Patrik Gfeller - Initial contribution
  */

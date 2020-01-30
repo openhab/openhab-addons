@@ -12,24 +12,23 @@
  */
 package org.openhab.binding.icloud.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
 /**
  * The {@link ICloudBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrik Gfeller - Initial contribution
- * @author Patrik Gfeller
- *         - Class renamed to be more consistent
- *         - Constant FIND_MY_DEVICE_REQUEST_SUBJECT introduced
+ * @author Patrik Gfeller - Class renamed to be more consistent, - Constant FIND_MY_DEVICE_REQUEST_SUBJECT introduced
  * @author Gaël L'hopital - Added low battery
+ * @author Erwin Hoeckx - Added location where dynamically retrieved certificate can be stored/found
  */
 @NonNullByDefault
 public class ICloudBindingConstants {

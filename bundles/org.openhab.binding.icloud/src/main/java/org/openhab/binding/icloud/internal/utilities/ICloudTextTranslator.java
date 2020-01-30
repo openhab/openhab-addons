@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.icloud.internal.utilities;
 
-import java.util.Locale;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
+
+import java.util.Locale;
 
 /**
  * Utility class to translate strings (i18n).

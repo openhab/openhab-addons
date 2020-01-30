@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 
 /**
  * Extracts iCloud device information from a given JSON string

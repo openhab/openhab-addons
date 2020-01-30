@@ -115,13 +115,13 @@ public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
                 logger.debug("Successfully updated certificate");
                 return certStringBuilder.toString();
             } catch(IOException e) {
-                logger.warn("Error retrieving certificate from server", e.getMessage());
-                throw new IllegalStateException("Failed to retrieve certificate");
+                logger.warn("Error retrieving certificate from server");
+                throw new IllegalStateException("Failed to retrieve certificate", e);
             }
 
         } catch(KeyManagementException | NoSuchAlgorithmException | CertificateEncodingException e) {
-            logger.warn("Error creating SSL environment for retrieving certificate", e.getMessage());
-            throw new IllegalStateException("Failed to create SSL environment while updating certificate");
+            logger.warn("Error creating SSL environment for retrieving certificate");
+            throw new IllegalStateException("Failed to create SSL environment while updating certificate", e);
         }
     }
 
