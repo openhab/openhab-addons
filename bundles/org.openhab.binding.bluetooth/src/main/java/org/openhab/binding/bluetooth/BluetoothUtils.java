@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a handler for generic Bluetooth devices in connected mode, which at the same time can be used
- * as a base implementation for more specific thing handlers.
+ * This a utility class for Bluetooth bindings.
+ * It contains useful utilities for writing to and from byte arrays.
  *
  * @author Connor Petty - API improvements
  *
@@ -40,8 +40,8 @@ public class BluetoothUtils {
     /**
      * Converts a byte array to an int array
      *
-     * @param value
-     * @return
+     * @param value a byte array
+     * @return an int array
      */
     public static int[] toIntArray(byte[] value) {
         if (value == null) {
@@ -54,6 +54,12 @@ public class BluetoothUtils {
         return ret;
     }
 
+    /**
+     * Converts an int array to a byte array
+     *
+     * @param value an int array
+     * @return a byte array
+     */
     public static byte[] toByteArray(int[] value) {
         if (value == null) {
             return null;
