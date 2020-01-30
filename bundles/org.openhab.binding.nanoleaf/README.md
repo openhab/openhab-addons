@@ -64,14 +64,16 @@ Don't worry: the binding comes with some helpful support in the background (this
 - fire up your browser and open the openhab server on port 9001 which shows the logs.
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
 
+Compare the following output with the right picture at the beginning of the article
 ```                                     
-                                    41451                                     
-                               
-                        58086        8134                   39755             
+            31413                    9162       13276     
 
 55836       56093       48111       38724       17870        5164       64279 
 
-            31413                    9162       13276     
+                        58086        8134                   39755             
+
+                                    41451                                     
+                               
 ```                 
 
 
@@ -164,7 +166,7 @@ Note: To generate the `authToken`:
     
 * On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.
 * Send a POST request to the authorization endpoint within 30 seconds of activating pairing, like this:
-
+    
 `http://<address>:16021/api/v1/new`
 
 e.g. via command line `curl --location --request POST 'http://<address>:16021/api/v1/new'`
@@ -192,10 +194,10 @@ Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller
 // note that the next to items use the exact same channel but the two different types Color and Dimmer to control different parameters
 Color Panel1Color "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
 Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
-Color Panel1DoubleTap "Toggle device on and off" { channel="nanoleaf:lightpanel:MyLightPanels:135:doubleTap" }
-Color Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:panelColor" }
-Color Panel2SingleTap "Panel 2 Single Tap" { channel="nanoleaf:lightpanel:MyLightPanels:158:singleTap" }
-Color Panel2DoubleTap "Panel 2 Double Tap" { channel="nanoleaf:lightpanel:MyLightPanels:158:doubleTap" }
+Switch Panel1DoubleTap "Toggle device on and off" { channel="nanoleaf:lightpanel:MyLightPanels:135:doubleTap" }
+Switch Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:panelColor" }
+Switch Panel2SingleTap "Panel 2 Single Tap" { channel="nanoleaf:lightpanel:MyLightPanels:158:singleTap" }
+Switch Panel2DoubleTap "Panel 2 Double Tap" { channel="nanoleaf:lightpanel:MyLightPanels:158:doubleTap" }
 Switch NanoleafRainbowScene "Show Rainbow Scene"
 ```
 
@@ -272,6 +274,7 @@ end
 
 rule "Nanoleaf canvas touch detection Panel 2"
 when
+    Item Panel2SingleTap changed from NULL to ON or
     Item Panel2SingleTap changed from OFF to ON
 then
     logInfo("CanvasTouch", "Nanoleaf Canvas Panel 2 was touched once")
@@ -285,6 +288,7 @@ end
 
 rule "Nanoleaf double tap toggles power of device"
 when
+    Item Panel1DoubleTap changed from NULL to ON or
     Item Panel1DoubleTap changed from OFF to ON
 then
     logInfo("CanvasTouch", "Nanoleaf Canvas Panel 1 was touched twice. Toggle Power of whole canvas.")
