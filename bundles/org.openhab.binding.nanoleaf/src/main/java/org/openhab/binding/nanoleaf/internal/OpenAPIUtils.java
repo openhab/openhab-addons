@@ -112,9 +112,10 @@ public class OpenAPIUtils {
             }
         } catch (ExecutionException | TimeoutException | InterruptedException clientException) {
             if (clientException.getCause() instanceof HttpResponseException
-                    && ((HttpResponseException) clientException.getCause()).getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                    LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
-                    throw new NanoleafUnauthorizedException("Invalid authorization token");
+                    && ((HttpResponseException) clientException.getCause()).getResponse()
+                            .getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
+                throw new NanoleafUnauthorizedException("Invalid authorization token");
             }
             throw new NanoleafException("Failed to send OpenAPI request", clientException);
         }
@@ -126,8 +127,7 @@ public class OpenAPIUtils {
         }
         LOGGER.trace("Sending Request {} {}", request.getURI(),
                 request.getQuery() == null ? "no query parameters" : request.getQuery());
-        LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(),
-                request.getParams());
+        LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(), request.getParams());
         if (request.getContent() != null) {
             Iterator<ByteBuffer> iter = request.getContent().iterator();
             if (iter != null) {
