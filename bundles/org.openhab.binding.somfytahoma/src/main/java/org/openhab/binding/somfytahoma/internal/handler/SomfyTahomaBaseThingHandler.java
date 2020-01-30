@@ -72,7 +72,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     private void createRSSIChannel() {
         if (thing.getChannel(RSSI) == null) {
-            logger.debug("Creating a rssi channel");
+            logger.debug("{} Creating a rssi channel", getURL());
             createChannel(RSSI, "Number","RSSI Level");
         }
     }
@@ -86,7 +86,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        logger.debug("{} Received command {} for channel {}", getURL(), command, channelUID);
         if (command instanceof RefreshType) {
             refresh(channelUID.getId());
         }
@@ -198,7 +198,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             }
 
             if (type == 0) {
-                logger.debug("Cannot recognize the state type for: {}!", state.getValue());
+                logger.debug("{} Cannot recognize the state type for: {}!", getURL(), state.getValue());
                 return null;
             }
 
@@ -222,7 +222,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                     return null;
             }
         } catch (NumberFormatException ex) {
-            logger.debug("Error while parsing Tahoma state! Value: {} type: {}", state.getValue(), type, ex);
+            logger.debug("{} Error while parsing Tahoma state! Value: {} type: {}", getURL(), state.getValue(), type, ex);
         }
         return null;
     }
@@ -256,7 +256,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             case "unknown":
                 return UnDefType.UNDEF;
             default:
-                logger.debug("Unknown thing state returned: {}", value);
+                logger.debug("{} Unknown thing state returned: {}", getURL(), value);
                 return UnDefType.UNDEF;
         }
     }
@@ -294,7 +294,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     public void updateThingChannels(List<SomfyTahomaState> states) {
         Map<String, String> properties = new HashMap<>();
         for (SomfyTahomaState state : states) {
-            logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
+            logger.trace("{} processing state: {} with value: {}", getURL(), state.getName(), state.getValue());
             properties.put(state.getName(), state.getValue().toString());
             if (RSSI_LEVEL_STATE.equals(state.getName())) {
                 // RSSI channel is a dynamic one
@@ -310,7 +310,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         createRSSIChannel();
         Channel ch = thing.getChannel(RSSI);
         if (ch != null && isChannelLinked(ch)) {
-            logger.debug("updating RSSI channel with value: {}", state.getValue());
+            logger.debug("{} updating RSSI channel with value: {}", getURL(), state.getValue());
             State newState = parseTahomaState(ch.getAcceptedItemType(), state);
             if (newState != null) {
                 updateState(ch.getUID(), newState);
@@ -323,7 +323,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             if (v.equals(state.getName())) {
                 Channel ch = thing.getChannel(k);
                 if (ch != null && isChannelLinked(ch)) {
-                    logger.debug("updating channel: {} with value: {}", k, v);
+                    logger.debug("{} updating channel: {} with value: {}", getURL(), k, state.getValue());
                     State newState = parseTahomaState(ch.getAcceptedItemType(), state);
                     if (newState != null) {
                         updateState(ch.getUID(), newState);
