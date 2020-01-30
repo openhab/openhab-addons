@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,6 +51,7 @@ import org.openhab.binding.bluetooth.bluegiga.BlueGigaBluetoothDevice;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaConfiguration;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaEventListener;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaException;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaHandlerListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaReschedulableTimer;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
@@ -227,8 +227,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 initComplite = true;
                 updateStatus(ThingStatus.ONLINE);
                 startScheduledTasks();
-            } catch (TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Command timeout");
+            } catch (BlueGigaException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Command send failed to BlueGiga controller");
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -275,22 +276,22 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         });
     }
 
-    private BlueGigaGetConnectionsResponse readMaxConnections() throws TimeoutException {
+    private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
         BlueGigaCommand command = new BlueGigaGetConnectionsCommand();
         return getBgHandler().sendTransaction(command, BlueGigaGetConnectionsResponse.class, COMMAND_TIMEOUT_MS);
     }
 
-    private BlueGigaAddressGetResponse readAddress() throws TimeoutException {
+    private BlueGigaAddressGetResponse readAddress() throws BlueGigaException {
         BlueGigaAddressGetCommand command = new BlueGigaAddressGetCommand();
         return getBgHandler().sendTransaction(command, BlueGigaAddressGetResponse.class, COMMAND_TIMEOUT_MS);
     }
 
-    private BlueGigaGetInfoResponse readInfo() throws TimeoutException {
+    private BlueGigaGetInfoResponse readInfo() throws BlueGigaException {
         BlueGigaGetInfoCommand command = new BlueGigaGetInfoCommand();
         return getBgHandler().sendTransaction(command, BlueGigaGetInfoResponse.class, COMMAND_TIMEOUT_MS);
     }
 
-    private void updateThingProperties() throws TimeoutException {
+    private void updateThingProperties() throws BlueGigaException {
         BlueGigaGetInfoResponse infoResponse = readInfo();
 
         Map<String, String> properties = editProperties();
@@ -516,8 +517,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             if (connectResponse.getResult() != BgApiResponse.SUCCESS) {
                 return false;
             }
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending connect command to device {}.", address);
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending connect command to device {}.", address);
             return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -541,8 +542,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaDisconnectResponse response = getBgHandler().sendTransaction(command,
                     BlueGigaDisconnectResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending disconnect command to device {}.", address);
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending disconnect command to device {}.", address);
             return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -579,8 +580,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaReadByGroupTypeResponse response = getBgHandler().sendTransaction(command,
                     BlueGigaReadByGroupTypeResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending read primary services command to device {}.", address);
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending read primary services command to device {}.", address);
             return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -605,8 +606,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaFindInformationResponse response = getBgHandler().sendTransaction(command,
                     BlueGigaFindInformationResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending read characteristics command to device {}.", address);
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending read characteristics command to device {}.", address);
             return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -631,8 +632,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaReadByHandleResponse response = getBgHandler().sendTransaction(command,
                     BlueGigaReadByHandleResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending read characteristics command to device {}.", address);
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending read characteristics command to device {}.", address);
             return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -659,8 +660,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaAttributeWriteResponse response = getBgHandler().sendTransaction(command,
                     BlueGigaAttributeWriteResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending write characteristics command to device {}.", address);
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending write characteristics command to device {}.", address);
             return false;
         } finally {
             passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
@@ -677,8 +678,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     BlueGigaEndProcedureResponse.class, COMMAND_TIMEOUT_MS);
 
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending end procedure command.");
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending end procedure command.");
             return false;
         }
     }
@@ -691,8 +692,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaSetModeResponse response = getBgHandler().sendTransaction(command, BlueGigaSetModeResponse.class,
                     COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending set mode command.");
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending set mode command.");
             return false;
         }
     }
@@ -720,8 +721,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     return true;
                 }
             }
-        } catch (TimeoutException e) {
-            logger.debug("Timeout occured when sending start scan command.");
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending start scan command.");
         }
         logger.debug("Scan start failed.");
         return false;
