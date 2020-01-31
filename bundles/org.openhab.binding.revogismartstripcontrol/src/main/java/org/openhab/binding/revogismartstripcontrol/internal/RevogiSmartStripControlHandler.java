@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.*;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,6 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
 public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
+    private final UdpSenderService udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
 
     private @Nullable RevogiSmartStripControlConfiguration config;
 
@@ -78,6 +81,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
+            udpSenderService.broadcastUpdDatagram("");
             boolean thingReachable = true; // <background task with long running initialization here>
             // when done do:
             if (thingReachable) {
