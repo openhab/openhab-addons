@@ -15,7 +15,7 @@ package org.openhab.binding.icloud.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.TlsCertificateProvider;
-import org.eclipse.smarthome.io.net.http.TrustAllTrustMananger;
+import org.openhab.binding.icloud.internal.utilities.AppleCATrustManager;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +25,14 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.security.cert.CertificateEncodingException;
+import javax.security.cert.X509Certificate;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.util.Base64;
 
 import static org.openhab.binding.icloud.internal.ICloudBindingConstants.CERTIFICATE_TMP_PATH;
 
@@ -41,11 +40,18 @@ import static org.openhab.binding.icloud.internal.ICloudBindingConstants.CERTIFI
  * Provides a TrustManager for https://fmipmobile.icloud.com
  *
  * @author Martin van Wingerden - Initial Contribution
+ * @author Erwin Hoeckx - Added functionality for dynamic certificate retrieval
  */
 @Component
 @NonNullByDefault
 public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
     private final Logger logger = LoggerFactory.getLogger(ICloudTlsCertificateProvider.class);
+
+    private AppleCATrustManager appleCaTrustManager;
+
+    public ICloudTlsCertificateProvider() {
+        this.appleCaTrustManager = new AppleCATrustManager();
+    }
 
     @Override
     public String getHostName() {
@@ -77,7 +83,7 @@ public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
             if(CERTIFICATE_TMP_PATH.toFile().exists()) {
                 return CERTIFICATE_TMP_PATH.toUri().toURL();
             } else {
-                logger.debug("Certifiate file not found");
+                logger.debug("Initial certificate file not found, attempt to retrieve latest certificate from server will be made");
             }
         } catch (MalformedURLException e) {
             logger.warn("iCloud certificate URL {} is malformed", CERTIFICATE_TMP_PATH);
@@ -87,45 +93,35 @@ public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
 
     public void updateCertificate() throws IllegalStateException {
         logger.debug("Updating certificate from server");
-        String certificateContent = retrieveCertificateFromService();
+        X509Certificate serverCertificate = retrieveCertificateFromService();
         try {
-            Files.write(CERTIFICATE_TMP_PATH, certificateContent.getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
+            Files.write(CERTIFICATE_TMP_PATH, serverCertificate.getEncoded());
+        } catch (IOException | CertificateEncodingException e) {
             logger.warn("Failed to persist iCloud certificate");
-            throw new IllegalStateException("Failed to refresh iCloud certificate");
+            throw new IllegalStateException("Failed to refresh iCloud certificate", e);
         }
     }
 
-    private String retrieveCertificateFromService() {
+    private X509Certificate retrieveCertificateFromService() {
         try {
-            TrustManager trm = TrustAllTrustMananger.getInstance();
-
             SSLContext sc = SSLContext.getInstance("TLSv1.2");
-            sc.init(null, new TrustManager[]{trm}, null);
+            //The provided certificate is verified by the trustmanager upon connecting
+            sc.init(null, new TrustManager[]{appleCaTrustManager}, null);
             SSLSocketFactory factory = sc.getSocketFactory();
             try(SSLSocket socket = (SSLSocket) factory.createSocket(getHostName(), 443)) {
                 socket.startHandshake();
                 SSLSession session = socket.getSession();
-                java.security.cert.Certificate latestServerCert = session.getPeerCertificates()[0];
-                StringBuilder certStringBuilder = new StringBuilder();
-                certStringBuilder.append("-----BEGIN CERTIFICATE-----\n");
-                String certStr = Base64.getEncoder().encodeToString(latestServerCert.getEncoded());
-                certStringBuilder.append(splitCertString(certStr)).append("\n");
-                certStringBuilder.append("-----END CERTIFICATE-----\n");
-                logger.debug("Successfully updated certificate");
-                return certStringBuilder.toString();
-            } catch(IOException e) {
+                X509Certificate[] allRetrievedCertificates = session.getPeerCertificateChain();
+                X509Certificate serverCertificate = allRetrievedCertificates[0];
+                logger.debug("Successfully retrieved verified certificate");
+                return serverCertificate;
+            } catch(IllegalStateException | IOException e) {
                 logger.warn("Error retrieving certificate from server");
                 throw new IllegalStateException("Failed to retrieve certificate", e);
             }
-
-        } catch(KeyManagementException | NoSuchAlgorithmException | CertificateEncodingException e) {
+        } catch(KeyManagementException | NoSuchAlgorithmException e) {
             logger.warn("Error creating SSL environment for retrieving certificate");
             throw new IllegalStateException("Failed to create SSL environment while updating certificate", e);
         }
-    }
-
-    private static String splitCertString(String cert) {
-        return cert.replaceAll("(.{64})", "$1\n");
     }
 }

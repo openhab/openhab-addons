@@ -110,10 +110,15 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             if(isSslHandshakeException(e) && retryOnCertFail) {
                 logger.warn("SSL exception during handshake, attempting to refresh certificate automatically");
-                this.extensibleTrustManager.removeTlsCertificateProvider(iCloudTlsCertificateProvider);
-                iCloudTlsCertificateProvider.updateCertificate();
-                this.extensibleTrustManager.addTlsCertificateProvider(iCloudTlsCertificateProvider);
-                return requestStatus(false);
+                try {
+                    iCloudTlsCertificateProvider.updateCertificate();
+                    this.extensibleTrustManager.removeTlsCertificateProvider(iCloudTlsCertificateProvider);
+                    this.extensibleTrustManager.addTlsCertificateProvider(iCloudTlsCertificateProvider);
+                    return requestStatus(false);
+                } catch(IllegalStateException ise) {
+                    logger.warn("Failed to update certificate. A retry attempt will be made on the next interval");
+                }
+                return null;
             } else {
                 logger.warn("Unable to refresh device data", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

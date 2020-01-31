@@ -42,7 +42,7 @@ public class ICloudBindingConstants {
     public static final ThingTypeUID THING_TYPE_ICLOUD = new ThingTypeUID(BINDING_ID, BRIDGE_ID);
     public static final ThingTypeUID THING_TYPE_ICLOUDDEVICE = new ThingTypeUID(BINDING_ID, DEVICE_ID);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ICLOUD, THING_TYPE_ICLOUDDEVICE));
 
     // List of all Channel IDs
@@ -65,5 +65,5 @@ public class ICloudBindingConstants {
 
     // Miscellaneous
     public static final String FIND_MY_DEVICE_REQUEST_SUBJECT = "Find My Device alert";
-    public static final Path CERTIFICATE_TMP_PATH = Paths.get(System.getProperty("java.io.tmpdir")).resolve("fmipmobile.crt");
+    public static final Path CERTIFICATE_TMP_PATH = Paths.get(System.getProperty("java.io.tmpdir")).resolve("fmipmobile.cer");
 }
