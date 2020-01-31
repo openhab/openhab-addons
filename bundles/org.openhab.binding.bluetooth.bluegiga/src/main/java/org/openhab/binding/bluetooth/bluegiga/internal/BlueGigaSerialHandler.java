@@ -24,16 +24,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +66,7 @@ public class BlueGigaSerialHandler {
     private final Queue<BlueGigaUniqueCommand> sendQueue = new LinkedList<BlueGigaUniqueCommand>();
     private final Timer timer = new Timer();
     private Thread parserThread = null;
-    private final ExecutorService executor = ThreadPoolManager.getPool("bluegiga");
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     /**
      * Transaction listeners are used internally to correlate the commands and responses
@@ -322,10 +319,9 @@ public class BlueGigaSerialHandler {
             final Class<T> expected) {
         checkIfAlive();
         class TransactionWaiter implements Callable<T>, BluetoothListener<T> {
+            private volatile boolean complete;
             private BlueGigaResponse response;
             BlueGigaUniqueCommand query = new BlueGigaUniqueCommand(bleCommand, transactionId.getAndIncrement());
-            private final Lock lock = new ReentrantLock();
-            private final Condition transactionLock = lock.newCondition();
 
             @SuppressWarnings("unchecked")
             @Override
@@ -336,23 +332,33 @@ public class BlueGigaSerialHandler {
                 // Send the transaction
                 queueFrame(query);
 
-                // Wait for the transaction to complete
-                lock.lock();
-                try {
-                    if (transactionLock.await(TRANSACTION_TIMEOUT_PERIOD_MS * 2, TimeUnit.MILLISECONDS)) {
-                        logger.debug("Transaction {} complited", query.getCorrelationId());
-                    } else {
-                        logger.debug("Timeout, no response received for transaction {}", query.getCorrelationId());
+                // Start transaction timeout timer
+                Future<?> timeout = executor.schedule(() -> {
+                    complete = true;
+                    logger.debug("Timeout, no response received for transaction {}", query.getCorrelationId());
+                    synchronized (this) {
+                        notify();
                     }
-                } catch (InterruptedException e) {
-                    // just exit
-                } finally {
-                    lock.unlock();
+                }, TRANSACTION_TIMEOUT_PERIOD_MS * 2, TimeUnit.MILLISECONDS);
+
+                // Wait transaction completed or timeout
+                synchronized (this) {
+                    while (!complete) {
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                            complete = true;
+                        }
+                    }
                 }
+
+                // Cancel transaction timer (may already occurred)
+                timeout.cancel(true);
 
                 // Remove the listener
                 removeTransactionListener(this);
 
+                // Send next transaction if any
                 executor.submit(new Runnable() {
 
                     @Override
@@ -400,10 +406,13 @@ public class BlueGigaSerialHandler {
                             bleResponse.getClass().getSimpleName());
                     return false;
                 }
+
+                // Response received, notify waiter
                 response = bleResponse;
-                lock.lock();
-                transactionLock.signal();
-                lock.unlock();
+                complete = true;
+                synchronized (this) {
+                    notify();
+                }
                 return true;
             }
         }
