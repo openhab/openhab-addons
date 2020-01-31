@@ -217,7 +217,7 @@ public class BlueGigaSerialHandler {
     private void sendFrame(BlueGigaUniqueCommand bleFrame) {
         // Send the data
         BlueGigaCommand frame = bleFrame.getMessage();
-        ongoingTransactionId = bleFrame.getCorrelationId();
+        ongoingTransactionId = bleFrame.getTransactionId();
 
         logger.debug("sendFrame: ongoingTransactionId = {}, frame={}", ongoingTransactionId, bleFrame);
 
@@ -335,7 +335,7 @@ public class BlueGigaSerialHandler {
                 // Start transaction timeout timer
                 Future<?> timeout = executor.schedule(() -> {
                     complete = true;
-                    logger.debug("Timeout, no response received for transaction {}", query.getCorrelationId());
+                    logger.debug("Timeout, no response received for transaction {}", query.getTransactionId());
                     synchronized (this) {
                         notify();
                     }
@@ -375,12 +375,12 @@ public class BlueGigaSerialHandler {
 
             @Override
             public boolean transactionEvent(BlueGigaResponse bleResponse) {
-                logger.debug("Expected transactionId: {}, ongoingTransactionId: {}", query.getCorrelationId(),
+                logger.debug("Expected transactionId: {}, ongoingTransactionId: {}", query.getTransactionId(),
                         ongoingTransactionId);
 
-                if (ongoingTransactionId != query.getCorrelationId()) {
+                if (ongoingTransactionId != query.getTransactionId()) {
                     logger.debug("Ignore response as ongoingTransactionId {} doesn't match expected transactionId {}.",
-                            ongoingTransactionId, query.getCorrelationId());
+                            ongoingTransactionId, query.getTransactionId());
                     return false;
                 }
 

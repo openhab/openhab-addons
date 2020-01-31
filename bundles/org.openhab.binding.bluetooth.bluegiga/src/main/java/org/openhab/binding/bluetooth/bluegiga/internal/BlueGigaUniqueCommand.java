@@ -22,12 +22,12 @@ public class BlueGigaUniqueCommand {
     private BlueGigaCommand msg;
     private int transactionId;
 
-    BlueGigaUniqueCommand(BlueGigaCommand message, int correlationId) {
+    BlueGigaUniqueCommand(BlueGigaCommand message, int transactionId) {
         this.msg = message;
-        this.transactionId = correlationId;
+        this.transactionId = transactionId;
     }
 
-    int getCorrelationId() {
+    int getTransactionId() {
         return transactionId;
     }
 
