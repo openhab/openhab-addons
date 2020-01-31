@@ -163,6 +163,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private @NonNullByDefault({}) ScheduledFuture<?> removeOldDevicesTask;
 
+    private volatile boolean activeScanEnabled = false;
+
     public BlueGigaBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
@@ -172,9 +174,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
         @Override
         public void run() {
-            logger.debug("Activate passive scan");
-            bgEndProcedure();
-            bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
+            if (!activeScanEnabled) {
+                logger.debug("Activate passive scan");
+                bgEndProcedure();
+                bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
+            } else {
+                logger.debug("Ignore passive scan activation as active scan is active");
+            }
         }
     };
 
@@ -408,6 +414,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void scanStart() {
+        logger.debug("Start active scan");
+        activeScanEnabled = true;
         // Stop the passive scan
         passiveScanIdleTimer.cancel();
         bgEndProcedure();
@@ -422,6 +430,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void scanStop() {
+        logger.debug("Stop active scan");
+        activeScanEnabled = false;
+
         // Stop the active scan
         bgEndProcedure();
 
@@ -554,7 +565,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * Device discovered. This simply passes the discover information to the discovery service for processing.
      */
     public void deviceDiscovered(BluetoothDevice device) {
-        if (configuration.discovery) {
+        if (configuration.discovery || activeScanEnabled) {
             for (BluetoothDiscoveryListener listener : discoveryListeners) {
                 listener.deviceDiscovered(device);
             }
