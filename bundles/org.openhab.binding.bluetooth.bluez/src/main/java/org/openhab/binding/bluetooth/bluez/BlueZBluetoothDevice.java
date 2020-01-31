@@ -241,12 +241,21 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return false;
     }
 
+    private void ensureConnected() {
+        if (device == null || !device.getConnected()) {
+            throw new IllegalStateException("TinyB device is not set or not connected");
+        }
+    }
+
     @Override
     public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        if (device == null) {
-            throw new IllegalStateException("TinyB device is not yet set");
-        }
+        ensureConnected();
+
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
         scheduler.submit(() -> {
             try {
                 byte[] value = c.readValue();
@@ -265,10 +274,13 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     @Override
     public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
-        if (device == null) {
-            throw new IllegalStateException("TinyB device is not yet set");
-        }
+        ensureConnected();
+
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
         scheduler.submit(() -> {
             try {
                 BluetoothCompletionStatus successStatus = c.writeValue(characteristic.getByteValue())
@@ -276,8 +288,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                         : BluetoothCompletionStatus.ERROR;
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic, successStatus);
             } catch (BluetoothException e) {
-                logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
-                        e.getMessage());
+                logger.debug("Exception occurred when trying to write characteristic '{}': {}",
+                        characteristic.getUuid(), e.getMessage());
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic,
                         BluetoothCompletionStatus.ERROR);
             }
@@ -287,9 +299,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     @Override
     public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        if (device == null || !device.getConnected()) {
-            throw new IllegalStateException("TinyB device is not set or not connected");
-        }
+        ensureConnected();
+
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
         if (c != null) {
             try {
@@ -318,9 +329,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     @Override
     public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        if (device == null || !device.getConnected()) {
-            throw new IllegalStateException("TinyB device is not set or not connected");
-        }
+        ensureConnected();
+
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
         if (c != null) {
             c.disableValueNotifications();
@@ -333,9 +343,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     @Override
     public boolean enableNotifications(BluetoothDescriptor descriptor) {
-        if (device == null || !device.getConnected()) {
-            throw new IllegalStateException("TinyB device is not set or not connected");
-        }
+        ensureConnected();
+
         BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
         if (d != null) {
             d.enableValueNotifications(value -> {
@@ -353,9 +362,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     @Override
     public boolean disableNotifications(BluetoothDescriptor descriptor) {
-        if (device == null) {
-            throw new IllegalStateException("TinyB device is not yet set");
-        }
+        ensureConnected();
+
         BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
         if (d != null) {
             d.disableValueNotifications();
