@@ -433,8 +433,8 @@ public class StateUtils {
 
         if (lastCommand != null && lastHueChange != null) {
             if (lastCommand instanceof HSBType) {
-                if (itemState.as(HSBType.class).equals(lastCommand)) {
-                    HueStateColorBulb c = hueState.as(HueStateColorBulb.class);
+                if (hueState instanceof HueStateColorBulb && itemState.as(HSBType.class).equals(lastCommand)) {
+                    HueStateColorBulb c = (HueStateColorBulb) hueState;
 
                     if (lastHueChange.bri != null) {
                         c.bri = lastHueChange.bri;
@@ -445,11 +445,17 @@ public class StateUtils {
                     if (lastHueChange.sat != null) {
                         c.sat = lastHueChange.sat;
                     }
+                    // Although we can't set a colour temperature in OH
+                    // this keeps Alexa happy when asking to turn a light
+                    // to white.
+                    if (lastHueChange.ct != null) {
+                        c.ct = lastHueChange.ct;
+                    }
                 }
             } else if (lastCommand instanceof PercentType) {
-                if (itemState.as(PercentType.class).equals(lastCommand)) {
+                if (hueState instanceof HueStateBulb && itemState.as(PercentType.class).equals(lastCommand)) {
                     if (lastHueChange.bri != null) {
-                        hueState.as(HueStateBulb.class).bri = lastHueChange.bri;
+                        ((HueStateBulb) hueState).bri = lastHueChange.bri;
                     }
                 }
             }
