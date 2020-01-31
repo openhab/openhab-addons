@@ -247,6 +247,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             throw new IllegalStateException("TinyB device is not yet set");
         }
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
         scheduler.submit(() -> {
             try {
                 byte[] value = c.readValue();
@@ -269,6 +273,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             throw new IllegalStateException("TinyB device is not yet set");
         }
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
         scheduler.submit(() -> {
             try {
                 BluetoothCompletionStatus successStatus = c.writeValue(characteristic.getByteValue())
