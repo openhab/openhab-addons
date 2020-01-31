@@ -210,7 +210,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        logger.debug("Recieved update {} to characteristic {} of device '{}'",
+        logger.debug("Recieved update {} to characteristic {} of device {}",
                 HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
         if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
             updateBatteryLevel(characteristic);
