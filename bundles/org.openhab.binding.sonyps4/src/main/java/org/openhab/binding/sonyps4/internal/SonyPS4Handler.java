@@ -267,9 +267,9 @@ public class SonyPS4Handler extends BaseThingHandler {
         channel.connect(new InetSocketAddress(hostName, currentComPort));
         channel.finishConnect();
 
-        byte[] outPacket = ps4PacketHandler.makeHelloPacket();
+        ByteBuffer outPacket = ps4PacketHandler.makeHelloPacket();
         logger.debug("Sending hello packet.");
-        channel.write(ByteBuffer.wrap(outPacket));
+        channel.write(outPacket);
 
         // Read hello response
         final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
@@ -283,35 +283,48 @@ public class SonyPS4Handler extends BaseThingHandler {
 
         outPacket = ps4PacketHandler.makeHandshakePacket();
         logger.debug("Sending handshake packet.");
-        channel.write(ByteBuffer.wrap(outPacket));
+        channel.write(outPacket);
 
         // Send login request
         outPacket = ps4PacketHandler.makeLoginPacket(config.userCredential, config.pinCode, config.pairingCode);
         logger.debug("Sending login packet.");
         // logger.debug("Sending login packet: {}", outPacket);
-        channel.write(ByteBuffer.wrap(outPacket));
+        channel.write(outPacket);
 
         // Read login response
         readBuffer.clear();
         responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
             int result = ps4PacketHandler.parseEncryptedPacket(readBuffer);
-            if (result == 0) {
-                return true;
-            } else {
-                SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(result);
-                if (status != null) {
-                    logger.info("{}", status.message);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
-                } else {
-                    logger.info("Error code in response:{}", result);
+            SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(result);
+            if (status != null) {
+                switch (status) {
+                    case STATUS_OK:
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                        return true;
+                    case STATUS_NOT_PAIRED:
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, status.message);
+                        break;
+                    case STATUS_WRONG_PAIRING_CODE:
+                    case STATUS_WRONG_PIN_CODE:
+                    case STATUS_WRONG_USER_CREDENTIAL:
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
+                        break;
+                    case STATUS_COULD_NOT_LOG_IN:
+                    case STATUS_ERROR_IN_COMMUNICATION:
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, status.message);
+                        break;
+                    default:
+                        logger.info("Unknown response enum {}", status.message);
+                        break;
                 }
-                return false;
+            } else {
+                logger.info("Error code in response:{}", result);
             }
         } else {
             logger.debug("No login response!");
-            return false;
         }
+        return false;
     }
 
     private void turnOnPS4() {
@@ -349,8 +362,8 @@ public class SonyPS4Handler extends BaseThingHandler {
 
             // Send standby request
             logger.debug("PS4 sending standby packet");
-            byte[] outPacket = ps4PacketHandler.makeStandbyPacket();
-            channel.write(ByteBuffer.wrap(outPacket));
+            ByteBuffer outPacket = ps4PacketHandler.makeStandbyPacket();
+            channel.write(outPacket);
 
             // Read standby response
             final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
@@ -401,8 +414,8 @@ public class SonyPS4Handler extends BaseThingHandler {
 
             // Send application request
             logger.debug("PS4 sending application packet");
-            byte[] outPacket = ps4PacketHandler.makeApplicationPacket(applicationId);
-            channel.write(ByteBuffer.wrap(outPacket));
+            ByteBuffer outPacket = ps4PacketHandler.makeApplicationPacket(applicationId);
+            channel.write(outPacket);
 
             // Read application response
             final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
@@ -438,21 +451,21 @@ public class SonyPS4Handler extends BaseThingHandler {
             try {
                 Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
                 logger.debug("Sending remoteKey");
-                byte[] outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
-                channel.write(ByteBuffer.wrap(outPacket));
+                ByteBuffer outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
+                channel.write(outPacket);
                 Thread.sleep(MIN_SENDKEY_DELAY);
 
                 // Send remote key
                 outPacket = ps4PacketHandler.makeRemoteControlPacket(pushedKey);
-                channel.write(ByteBuffer.wrap(outPacket));
+                channel.write(outPacket);
                 Thread.sleep(MIN_HOLDKEY_DELAY);
 
                 outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
-                channel.write(ByteBuffer.wrap(outPacket));
+                channel.write(outPacket);
                 Thread.sleep(MIN_SENDKEY_DELAY);
 
                 outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
-                channel.write(ByteBuffer.wrap(outPacket));
+                channel.write(outPacket);
 
                 // Read remoteKey response
                 final ByteBuffer readBuffer = ByteBuffer.allocate(512);
@@ -543,9 +556,9 @@ public class SonyPS4Handler extends BaseThingHandler {
         }
     }
 
-    private void updateApplicationTitleid(String titleid) {
-        currentApplicationId = titleid;
-        logger.debug("Current application title id: {}", titleid);
+    private void updateApplicationTitleid(String titleId) {
+        currentApplicationId = titleId;
+        logger.debug("Current application title id: {}", titleId);
         if (!isLinked(CHANNEL_APPLICATION_IMAGE)) {
             return;
         }
@@ -553,12 +566,12 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (localeProvider != null) {
             locale = localeProvider.getLocale();
         }
-        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.artworkSize, locale);
+        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleId, config.artworkSize, locale);
         if (artWork != null) {
             currentArtwork = artWork;
             updateState(CHANNEL_APPLICATION_IMAGE, artWork);
-        } else {
-            logger.info("Couldn't fetch artwork for title id: {}", titleid);
+        } else if (!titleId.isEmpty()) {
+            logger.info("Couldn't fetch artwork for title id: {}", titleId);
         }
     }
 }
