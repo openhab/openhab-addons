@@ -32,7 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryService;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 import com.google.gson.JsonObject;
@@ -88,13 +87,15 @@ public class TradfriDiscoveryServiceTest {
 
     @Test
     public void correctSupportedTypes() {
-        assertThat(discovery.getSupportedThingTypes().size(), is(6));
+        assertThat(discovery.getSupportedThingTypes().size(), is(8));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_DIMMABLE_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_COLOR_TEMP_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_COLOR_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_DIMMER));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_MOTION_SENSOR));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_REMOTE_CONTROL));
+        assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_ONOFF_PLUG));
+        assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_BLINDS));
     }
 
     @Test

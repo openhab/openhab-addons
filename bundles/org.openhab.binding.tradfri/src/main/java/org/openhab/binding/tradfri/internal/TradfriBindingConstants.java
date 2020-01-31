@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -27,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Manuel Raffel - Added support for blinds
  */
+@NonNullByDefault
 public class TradfriBindingConstants {
 
     private static final String BINDING_ID = "tradfri";
@@ -41,18 +43,15 @@ public class TradfriBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "0820");
     public static final ThingTypeUID THING_TYPE_REMOTE_CONTROL = new ThingTypeUID(BINDING_ID, "0830");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
-    public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "0999");
+    public static final ThingTypeUID THING_TYPE_BLINDS = new ThingTypeUID(BINDING_ID, "0202");
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_TEMP_LIGHT, THING_TYPE_COLOR_LIGHT)
                     .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_PLUG_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_ONOFF_PLUG).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_PLUG_TYPES_UIDS = Collections.singleton(THING_TYPE_ONOFF_PLUG);
 
-        public static final Set<ThingTypeUID> SUPPORTED_BLIND_TYPES_UIDS = Collections
-                .unmodifiableSet(Stream.of(THING_TYPE_BLIND).collect(Collectors.toSet()));
-
+    public static final Set<ThingTypeUID> SUPPORTED_BLINDS_TYPES_UIDS = Collections.singleton(THING_TYPE_BLINDS);
 
     // List of all Gateway Configuration Properties
     public static final String GATEWAY_CONFIG_HOST = "host";
@@ -64,6 +63,17 @@ public class TradfriBindingConstants {
     // Not yet used - included for future support
     public static final Set<ThingTypeUID> SUPPORTED_CONTROLLER_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(THING_TYPE_DIMMER, THING_TYPE_REMOTE_CONTROL, THING_TYPE_MOTION_SENSOR).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections.singleton(GATEWAY_TYPE_UID);
+
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Stream
+            .of(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream(),
+                    SUPPORTED_PLUG_TYPES_UIDS.stream(), SUPPORTED_BLINDS_TYPES_UIDS.stream())
+            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet());
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(SUPPORTED_BRIDGE_TYPES_UIDS.stream(), SUPPORTED_DEVICE_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
 
     // List of all Channel IDs
     public static final String CHANNEL_POWER = "power";
@@ -77,7 +87,7 @@ public class TradfriBindingConstants {
     // IPSO Objects
     public static final String DEVICES = "15001";
     public static final String AUTH_PATH = "9063";
-    public static final String BLIND = "15015";
+    public static final String BLINDS = "15015";
     public static final String CLIENT_IDENTITY_PROPOSED = "9090";
     public static final String COLOR = "5706";
     public static final String COLOR_X = "5709";
@@ -184,7 +194,7 @@ public class TradfriBindingConstants {
     public static final String TYPE_LIGHT = "2";
     public static final String TYPE_PLUG = "3";
     public static final String TYPE_SENSOR = "4";
-    public static final String TYPE_BLIND = "7";
+    public static final String TYPE_BLINDS = "7";
     public static final String DEVICE_VENDOR = "0";
     public static final String DEVICE_MODEL = "1";
     public static final String DEVICE_FIRMWARE = "3";

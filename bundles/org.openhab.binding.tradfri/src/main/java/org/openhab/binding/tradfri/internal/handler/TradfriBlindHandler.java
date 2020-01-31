@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,11 @@ import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -76,8 +76,7 @@ public class TradfriBlindHandler extends TradfriThingHandler {
 
             logger.debug(
                     "Updating thing for blindId {} to state {position: {}, firmwareVersion: {}, modelId: {}, vendor: {}}",
-                    state.getDeviceId(), position, state.getFirmwareVersion(), state.getModelId(),
-                    state.getVendor());
+                    state.getDeviceId(), position, state.getFirmwareVersion(), state.getModelId(), state.getVendor());
         }
     }
 
@@ -112,11 +111,11 @@ public class TradfriBlindHandler extends TradfriThingHandler {
         } else if (command instanceof StopMoveType) {
             final TradfriBlindData state = this.state;
             if (state != null && state.getPosition() != null) {
-                if(StopMoveType.STOP.equals(command)) {
+                if (StopMoveType.STOP.equals(command)) {
                     // setPosition(state.getPosition());
                 } else {
                     // (what) TODO (?)
-                }            
+                }
             } else {
                 logger.debug("Cannot handle stop/move as current state is not known.");
             }

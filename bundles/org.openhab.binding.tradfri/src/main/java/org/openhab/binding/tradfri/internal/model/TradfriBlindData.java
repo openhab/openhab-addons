@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,11 +29,11 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class TradfriBlindData extends TradfriWirelessDeviceData {
     public TradfriBlindData() {
-        super(BLIND);
+        super(BLINDS);
     }
 
     public TradfriBlindData(JsonElement json) {
-        super(BLIND, json);
+        super(BLINDS, json);
     }
 
     public TradfriBlindData setPosition(PercentType position) {
@@ -46,7 +46,10 @@ public class TradfriBlindData extends TradfriWirelessDeviceData {
 
         JsonElement position = attributes.get(POSITION);
         if (position != null) {
-            result = new PercentType(position.getAsInt());
+            int percent = position.getAsInt();
+            percent = Math.max(percent, 0);
+            percent = Math.min(100, percent);
+            result = new PercentType(percent);
         }
 
         return result;

@@ -22,7 +22,7 @@ These are:
 | Non-Colour Controller           | 0x0820           | 0820       |
 | Non-Colour Scene Controller     | 0x0830           | 0830       |
 | Control Outlet                  | 0x0010           | 0010       |
-| Blind                           | 0x0999           | 0999       |
+| Window Covering Device          | 0x0202           | 0202       |
 
 The following matrix lists the capabilities (channels) for each of the supported lighting device types:
 
@@ -35,7 +35,7 @@ The following matrix lists the capabilities (channels) for each of the supported
 |  0107       |            |       |                   |       X       |      X      |       |          |
 |  0820       |            |       |                   |       X       |      X      |       |          |
 |  0830       |            |       |                   |       X       |      X      |       |          |
-|  0999       |            |       |                   |       X       |      X      |       |     X    |
+|  0202       |            |       |                   |       X       |      X      |       |     X    |
 
 ## Thing Configuration
 
@@ -61,17 +61,19 @@ The remote control and the motion sensor supports the `battery_level` and `batte
 
 The control outlet supports the `power` channel.
 
+A blind or curtain supports beside `battery_level` and `battery_low` channels a `positon` channel.
+
 Refer to the matrix above.
 
-| Channel Type ID   | Item Type     | Description                                      |
-|-------------------|---------------|--------------------------------------------------|
-| brightness        | Dimmer        | The brightness of the bulb in percent            |
-| color_temperature | Dimmer        | color temperature from 0% = cold to 100% = warm  |
-| color             | Color         | full color                                       |
-| battery_level     | Number        | battery level (in %)                             |
-| battery_low       | Switch        | battery low warning (<=10% = ON, >10% = OFF)     |
-| power             | Switch        | power switch                                     |
-| position          | Rollershutter | position of the blind in percent                 |
+| Channel Type ID   | Item Type     | Description                                            |
+|-------------------|---------------|--------------------------------------------------------|
+| brightness        | Dimmer        | The brightness of the bulb in percent                  |
+| color_temperature | Dimmer        | color temperature from 0% = cold to 100% = warm        |
+| color             | Color         | full color                                             |
+| battery_level     | Number        | battery level (in %)                                   |
+| battery_low       | Switch        | battery low warning (<=10% = ON, >10% = OFF)           |
+| power             | Switch        | power switch                                           |
+| position          | Rollershutter | position of the blinds from 0% = open to 100% = closed |
 
 ## Full Example
 
@@ -84,6 +86,7 @@ Bridge tradfri:gateway:mygateway [ host="192.168.0.177", code="EHPW5rIJKyXFgjH3"
     0210 myColorBulb "My Color Bulb" [ id=65539 ]
     0830 myRemoteControl "My Remote Control" [ id=65545 ]
     0010 myControlOutlet "My Control Outlet" [ id=65542 ]
+    0202 myBlinds "My Blinds" [ id=65547 ]
 }
 ```
 
@@ -97,6 +100,7 @@ Color ColorLight { channel="tradfri:0210:mygateway:myColorBulb:color" }
 Number RemoteControlBatteryLevel { channel="tradfri:0830:mygateway:myRemoteControl:battery_level" }
 Switch RemoteControlBatteryLow { channel="tradfri:0830:mygateway:myRemoteControl:battery_low" }
 Switch ControlOutlet { channel="tradfri:0010:mygateway:myControlOutlet:power" }
+Rollershutter BlindPosition { channel="tradfri:0202:mygateway:myBlinds:position" }
 ```
 
 demo.sitemap:
@@ -109,9 +113,10 @@ sitemap demo label="Main Menu"
         Slider item=Light2_Brightness label="Light2 Brightness [%.1f %%]"
         Slider item=Light2_ColorTemperature label="Light2 Color Temperature [%.1f %%]"
         Colorpicker item=ColorLight label="Color"
-        Text item=RemoteControlBatteryLevel label="Battery level [%d %%]"
-        Switch item=RemoteControlBatteryLow label="Battery low warning"
+        Text item=RemoteControlBatteryLevel label="Battery Level [%d %%]"
+        Switch item=RemoteControlBatteryLow label="Battery Low Warning"
         Switch item=ControlOutlet label="Power Switch"
+        Rollershutter item)BlindPosition label="Blind Position"
     }
 }
 ```

@@ -19,8 +19,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,8 +59,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
     private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
     public TradfriDiscoveryService(TradfriGatewayHandler bridgeHandler) {
-        super(Stream.concat(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream())
-                .collect(Collectors.toSet()), 10, true);
+        super(SUPPORTED_DEVICE_TYPES_UIDS, 10, true);
         this.handler = bridgeHandler;
     }
 
@@ -107,7 +104,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                     // concrete model names.
                     // Color light:
                     // As the protocol does not distinguishes between color and full-color lights,
-                    // we check if the "CWS" identifier is given in the model name
+                    // we check if the "CWS" or "CW/S" identifier is given in the model name
                     ThingTypeUID thingType = null;
                     if (model != null && Arrays.stream(COLOR_MODEL_IDENTIFIER_HINTS).anyMatch(model::contains)) {
                         thingType = THING_TYPE_COLOR_LIGHT;
@@ -120,13 +117,12 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                         thingType = THING_TYPE_DIMMABLE_LIGHT;
                     }
                     thingId = new ThingUID(thingType, bridge, Integer.toString(id));
-                } else if(TYPE_BLIND.equals(type) && data.has(BLIND)) {
-                    ThingTypeUID thingType = THING_TYPE_BLIND;
-                    thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                } else if (TYPE_BLINDS.equals(type) && data.has(BLINDS)) {
+                    // Blinds
+                    thingId = new ThingUID(THING_TYPE_BLINDS, bridge, Integer.toString(id));
                 } else if (TYPE_PLUG.equals(type) && data.has(PLUG)) {
                     // Smart plug
-                    ThingTypeUID thingType = THING_TYPE_ONOFF_PLUG;
-                    thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                    thingId = new ThingUID(THING_TYPE_ONOFF_PLUG, bridge, Integer.toString(id));
                 } else if (TYPE_SWITCH.equals(type) && data.has(SWITCH)) {
                     // Remote control and wireless dimmer
                     // As protocol does not distinguishes between remote control and wireless dimmer,
