@@ -65,6 +65,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         logger.debug("Creating BlueZ device with address '{}'", address);
     }
 
+    /**
+     * Initializes a newly created instance of this class.
+     * This method should always be called directly after creating a new object instance.
+     */
     public void initialize() {
         updateLastSeenTime();
     }
