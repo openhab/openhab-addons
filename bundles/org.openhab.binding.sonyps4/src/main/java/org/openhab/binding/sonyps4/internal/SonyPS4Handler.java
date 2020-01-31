@@ -305,6 +305,8 @@ public class SonyPS4Handler extends BaseThingHandler {
                     case STATUS_NOT_PAIRED:
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, status.message);
                         break;
+                    case STATUS_MISSING_PAIRING_CODE:
+                    case STATUS_MISSING_PIN_CODE:
                     case STATUS_WRONG_PAIRING_CODE:
                     case STATUS_WRONG_PIN_CODE:
                     case STATUS_WRONG_USER_CREDENTIAL:
@@ -315,9 +317,10 @@ public class SonyPS4Handler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, status.message);
                         break;
                     default:
-                        logger.info("Unknown response enum {}", status.message);
+                        logger.warn("Unhandled response {}", result);
                         break;
                 }
+                logger.info("Not logged in: {}", status.message);
             } else {
                 logger.info("Error code in response:{}", result);
             }

@@ -96,7 +96,7 @@ public class SonyPS4PacketHandler {
      * Allocates a new ByteBuffer of exactly size.
      *
      * @param size The size of the packet.
-     * @return A ByteBuffer of exactly size.
+     * @return A ByteBuffer of exactly size number of bytes.
      */
     private ByteBuffer newPacketOfSize(int size) {
         ByteBuffer packet = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
@@ -105,10 +105,10 @@ public class SonyPS4PacketHandler {
     }
 
     /**
-     * Allocates a new ByteBuffer of size aligned to be a multiple of 16.
+     * Allocates a new ByteBuffer of size aligned to be a multiple of 16 bytes.
      *
      * @param size The size of the data in the packet.
-     * @return A 16byte aligned ByteBuffer.
+     * @return A ByteBuffer aligned to 16 byte size.
      */
     private ByteBuffer newPacketForEncryption(int size) {
         int realSize = (((size + 15) >> 4) << 4);
@@ -260,9 +260,15 @@ public class SonyPS4PacketHandler {
     ByteBuffer makeLoginPacket(String userCredential, String pinCode, String pairingCode) {
         ByteBuffer packet = newPacketForEncryption(16 + 64 + 256 + 16 + 16 + 16);
         packet.putInt(SonyPS4Command.LOGIN_REQ.value);
-        packet.put(pinCode.getBytes(), 0, 4); // pin Code
+        if (pinCode.length() == 4) {
+            packet.put(pinCode.getBytes(), 0, 4); // pin Code
+        }
+        packet.position(12);
         packet.putInt(0x0201); // Magic number
-        packet.put(userCredential.getBytes(StandardCharsets.US_ASCII), 0, 64);
+        if (userCredential.length() == 64) {
+            packet.put(userCredential.getBytes(StandardCharsets.US_ASCII), 0, 64);
+        }
+        packet.position(16 + 64);
         packet.put(APPLICATION_NAME.getBytes(StandardCharsets.UTF_8)); // app_label
         packet.position(16 + 64 + 256);
         packet.put(OS_VERSION.getBytes()); // os_version
@@ -270,7 +276,7 @@ public class SonyPS4PacketHandler {
         packet.put("Mac mini 2012".getBytes(StandardCharsets.UTF_8)); // Model, name of paired unit, shown on the PS4 in
                                                                       // the settings view.
         packet.position(16 + 64 + 256 + 16 + 16);
-        if (!pairingCode.isEmpty()) {
+        if (pairingCode.length() == 8) {
             packet.put(pairingCode.getBytes(), 0, 8); // Pairing code
         }
         return encryptPacket(packet);

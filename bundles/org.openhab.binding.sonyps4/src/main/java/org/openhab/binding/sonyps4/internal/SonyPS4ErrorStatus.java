@@ -27,10 +27,12 @@ import org.eclipse.jdt.annotation.Nullable;
 enum SonyPS4ErrorStatus {
     STATUS_OK(0x00, "Ok"),
     STATUS_NOT_PAIRED(0x0E, "Not paired to PS4!"),
+    STATUS_MISSING_PAIRING_CODE(0x14, "Missing pairing-code!"), // ??
     STATUS_WRONG_USER_CREDENTIAL(0x15, "Wrong user-credential!"),
-    STATUS_WRONG_PAIRING_CODE(0x17, "Wrong pairing-code to PS4!"),
+    STATUS_MISSING_PIN_CODE(0x16, "Missing pin-code!"),
+    STATUS_WRONG_PAIRING_CODE(0x17, "Wrong pairing-code!"),
     STATUS_WRONG_PIN_CODE(0x18, "Wrong pin-code!"),
-    STATUS_COULD_NOT_LOG_IN(0x1E, "Could not log in!"),
+    STATUS_COULD_NOT_LOG_IN(0x1E, "Someone else is logging in now."),
     STATUS_ERROR_IN_COMMUNICATION(-1, "Error in comunication with PS4!");
 
     private static final Map<Integer, SonyPS4ErrorStatus> TAG_MAP = new HashMap<>();
