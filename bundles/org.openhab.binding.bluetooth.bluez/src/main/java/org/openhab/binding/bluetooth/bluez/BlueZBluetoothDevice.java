@@ -337,8 +337,6 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
         if (d != null) {
             d.enableValueNotifications(value -> {
-                logger.debug("Received new value '{}' for descriptor '{}' of device '{}'", HexUtils.bytesToHex(value),
-                        descriptor.getUuid(), address);
                 descriptor.setValue(value);
                 notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor);
             });
