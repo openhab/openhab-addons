@@ -75,7 +75,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     // The connection handle if the device is connected
     private int connection = -1;
 
-    private DateTime lastCommunication = DateTime.now();
+    private DateTime lastSeenTime;
 
     /**
      * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BluetoothDevice} for the BlueGiga
@@ -95,6 +95,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         this.addressType = addressType;
 
         bgHandler.addEventListener(this);
+        updateLastSeenTime();
     }
 
     @Override
@@ -181,7 +182,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             logger.trace("scanEvent: {}", scanEvent);
-            lastCommunication = DateTime.now();
+            updateLastSeenTime();
 
             // Set device properties
             rssi = scanEvent.getRssi();
@@ -306,6 +307,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             logger.trace("BlueGiga Group: {} svcs={}", this, supportedServices);
+            updateLastSeenTime();
 
             BluetoothService service = new BluetoothService(serviceEvent.getUuid(), true, serviceEvent.getStart(),
                     serviceEvent.getEnd());
@@ -324,6 +326,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             logger.trace("BlueGiga FindInfo: {} svcs={}", this, supportedServices);
+            updateLastSeenTime();
 
             BluetoothCharacteristic characteristic = new BluetoothCharacteristic(infoEvent.getUuid(),
                     infoEvent.getChrHandle());
@@ -352,6 +355,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                         connection, address);
                 return;
             }
+
+            updateLastSeenTime();
 
             // The current procedure is now complete - move on...
             switch (procedureProgress) {
@@ -396,6 +401,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
+            updateLastSeenTime();
+
             // If we're connected, then remember the connection handle
             if (connectionEvent.getFlags().contains(ConnectionStatusFlag.CONNECTION_CONNECTED)) {
                 connectionState = ConnectionState.CONNECTED;
@@ -435,6 +442,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
+            updateLastSeenTime();
+
             BluetoothCharacteristic characteristic = getCharacteristicByHandle(valueEvent.getAttHandle());
             if (characteristic == null) {
                 logger.debug("BlueGiga didn't find characteristic for event {}", event);
@@ -457,11 +466,22 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     }
 
     /**
-     * Return last communication Time
-     *
-     * @return last communication Time
+     * Clean up and release memory.
      */
-    public DateTime getLastCommunicationTime() {
-        return lastCommunication;
+    public void dispose() {
+        bgHandler.removeEventListener(this);
+    }
+
+    /**
+     * Return last seen Time
+     *
+     * @return last seen Time
+     */
+    public DateTime getLastSeenTime() {
+        return lastSeenTime;
+    }
+
+    private void updateLastSeenTime() {
+        this.lastSeenTime = DateTime.now();
     }
 }

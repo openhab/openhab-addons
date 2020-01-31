@@ -39,11 +39,11 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
-import org.joda.time.DateTime;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.BluetoothDeviceListener;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.bluegiga.BlueGigaAdapterConstants;
@@ -146,7 +146,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     // Map of Bluetooth devices known to this bridge.
     // This is all devices we have heard on the network - not just things bound to the bridge
-    private final Map<BluetoothAddress, BluetoothDevice> devices = new ConcurrentHashMap<>();
+    private final Map<BluetoothAddress, BlueGigaBluetoothDevice> devices = new ConcurrentHashMap<>();
 
     // Map of open connections
     private final Map<Integer, BluetoothAddress> connections = new ConcurrentHashMap<>();
@@ -161,7 +161,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private boolean initComplete = false;
 
-    private @NonNullByDefault({}) ScheduledFuture<?> removeOldDevicesTask;
+    private @NonNullByDefault({}) ScheduledFuture<?> removeInactiveDevicesTask;
 
     private volatile boolean activeScanEnabled = false;
 
@@ -260,26 +260,40 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private void startScheduledTasks() {
         passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
-        logger.debug("Start scheduled task to remove old devices ones per every hour");
-        removeOldDevicesTask = scheduler.scheduleWithFixedDelay(this::removeOldDevices, 1, 1, TimeUnit.HOURS);
+        logger.debug("Start scheduled task to remove inactive devices");
+        removeInactiveDevicesTask = scheduler.scheduleWithFixedDelay(this::removeInactiveDevices, 1, 1,
+                TimeUnit.MINUTES);
     }
 
     private void stopScheduledTasks() {
         passiveScanIdleTimer.cancel();
         passiveScanIdleTimer = null;
-        removeOldDevicesTask.cancel(true);
+        removeInactiveDevicesTask.cancel(true);
     }
 
-    private void removeOldDevices() {
-        logger.debug("Check old devices, count {}", devices.size());
+    private void removeInactiveDevices() {
+        logger.debug("Check inactive devices, count {}", devices.size());
         devices.forEach((address, device) -> {
-            DateTime lastCommunicationTime = ((BlueGigaBluetoothDevice) device).getLastCommunicationTime();
-            logger.debug(" Device {} last communication time {}", address, lastCommunicationTime);
-            if (lastCommunicationTime.plusDays(1).isBeforeNow()) {
-                logger.debug("Remove old device {}", address);
+            if (shouldRemove(device)) {
+                logger.debug("Removing device '{}' due to inactivity, last seen: {}", address,
+                        device.getLastSeenTime());
+                device.dispose();
                 devices.remove(address);
             }
         });
+    }
+
+    private boolean shouldRemove(BlueGigaBluetoothDevice device) {
+        // we can't remove devices with listeners since that means they have a handler.
+        if (device.hasListeners()) {
+            return false;
+        }
+        // devices that are connected won't receive any scan notifications so we can't remove them for being idle
+        if (device.getConnectionState() == ConnectionState.CONNECTED) {
+            return false;
+        }
+
+        return device.getLastSeenTime().plusMinutes(5).isBeforeNow();
     }
 
     private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
@@ -453,7 +467,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @SuppressWarnings({ "null", "unused" })
     @Override
     public BluetoothDevice getDevice(BluetoothAddress address) {
-        BluetoothDevice device = devices.get(address);
+        BlueGigaBluetoothDevice device = devices.get(address);
         if (device == null) {
             // This method always needs to return a device, even if we don't currently know about it.
             device = new BlueGigaBluetoothDevice(this, address, BluetoothAddressType.UNKNOWN);
