@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class UdpSenderService {
+public class UdpSenderService {
 
     private static final int MAX_TIMEOUT_COUNT = 2;
     private static final int REVOGI_PORT = 8888;

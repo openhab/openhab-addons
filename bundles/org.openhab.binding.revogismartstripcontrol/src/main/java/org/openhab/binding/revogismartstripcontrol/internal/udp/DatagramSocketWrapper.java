@@ -6,16 +6,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-class DatagramSocketWrapper {
+public class DatagramSocketWrapper {
 
-    private DatagramSocket datagramSocket = new DatagramSocket();
-
-    DatagramSocketWrapper() throws SocketException {
-    }
-
+    DatagramSocket datagramSocket;
 
     public void initSocket() throws SocketException {
-        if (!datagramSocket.isClosed()) {
+        if (datagramSocket != null && !datagramSocket.isClosed()) {
             datagramSocket.close();
         }
         datagramSocket = new DatagramSocket();
