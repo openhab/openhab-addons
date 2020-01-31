@@ -85,108 +85,136 @@ public abstract class DeviceBase {
                     JsonObject propsObject = new JsonParser().parse(params).getAsJsonObject();
                     for (Entry<String, JsonElement> prop : propsObject.entrySet()) {
                         final YeelightDeviceProperty property = YeelightDeviceProperty.fromString(prop.getKey());
-                        if (YeelightDeviceProperty.POWER.equals(property)) {
-                            if (prop.getValue().toString().equals("\"off\"")) {
-                                mDeviceStatus.setPowerOff(true);
-                            } else if (prop.getValue().toString().equals("\"on\"")) {
-                                mDeviceStatus.setPowerOff(false);
-                            }
-                        } else if (YeelightDeviceProperty.BRIGHT.equals(property)) {
-                            mDeviceStatus.setBrightness(prop.getValue().getAsInt());
-                        } else if (YeelightDeviceProperty.CT.equals(property)) {
-                            mDeviceStatus.setCt(prop.getValue().getAsInt());
-                            mDeviceStatus.setMode(DeviceMode.MODE_SUNHINE);
-                        } else if (YeelightDeviceProperty.RGB.equals(property)) {
-                            mDeviceStatus.setMode(DeviceMode.MODE_COLOR);
-                            int color = prop.getValue().getAsInt();
-                            mDeviceStatus.setColor(color);
+                        if (null == property) {
+                            logger.debug("Unhandled property: {}", prop.getKey());
+                            continue;
+                        }
 
-                            mDeviceStatus.setR((color >> 16) & 0xFF);
-                            mDeviceStatus.setG((color >> 8) & 0xFF);
-                            mDeviceStatus.setB(color & 0xFF);
-                        } else if (YeelightDeviceProperty.HUE.equals(property)) {
-                            mDeviceStatus.setMode(DeviceMode.MODE_HSV);
-                            mDeviceStatus.setHue(prop.getValue().getAsInt());
-                        } else if (YeelightDeviceProperty.SAT.equals(property)) {
-                            mDeviceStatus.setMode(DeviceMode.MODE_HSV);
-                            mDeviceStatus.setSat(prop.getValue().getAsInt());
-                        } else if (YeelightDeviceProperty.COLOR_MODE.equals(property)) {
-                            switch (prop.getValue().getAsInt()) {
-                                case DeviceStatus.MODE_COLOR:
-                                    mDeviceStatus.setMode(DeviceMode.MODE_COLOR);
-                                    break;
-                                case DeviceStatus.MODE_COLORTEMPERATURE:
-                                    mDeviceStatus.setMode(DeviceMode.MODE_SUNHINE);
-                                    break;
-                                case DeviceStatus.MODE_HSV:
-                                    mDeviceStatus.setMode(DeviceMode.MODE_HSV);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        } else if (YeelightDeviceProperty.FLOWING.equals(property)) {
-                            mDeviceStatus.setIsFlowing(prop.getValue().getAsInt() == 1);
-                        } else if (YeelightDeviceProperty.FLOW_PARAMS.equals(property)) {
-                            // {"method":"props","params":{"flow_params":"0,0,1000,1,15935488,31,1000,1,13366016,31,1000,1,62370,31,1000,1,7995635,31"}}
-                            String[] flowStrs = prop.getValue().toString().replace("\"", "").split(",");
-                            if (flowStrs.length > 2 && (flowStrs.length - 2) % 4 == 0) {
-                                mDeviceStatus.setFlowCount(Integer.parseInt(flowStrs[0]));
-                                mDeviceStatus.setFlowEndAction(Integer.parseInt(flowStrs[1]));
-                                if (mDeviceStatus.getFlowItems() == null) {
-                                    mDeviceStatus.setFlowItems(new ArrayList<>());
+                        switch (property) {
+                            case POWER:
+                                if (prop.getValue().toString().equals("\"off\"")) {
+                                    mDeviceStatus.setPowerOff(true);
+                                } else if (prop.getValue().toString().equals("\"on\"")) {
+                                    mDeviceStatus.setPowerOff(false);
                                 }
-                                mDeviceStatus.getFlowItems().clear();
-                                for (int i = 0; i < ((flowStrs.length - 2) / 4); i++) {
-                                    ColorFlowItem item = new ColorFlowItem();
-                                    item.duration = Integer.valueOf(flowStrs[4 * i + 2]);
-                                    item.mode = Integer.valueOf(flowStrs[4 * i + 3]);
-                                    item.value = Integer.valueOf(flowStrs[4 * i + 4]);
-                                    item.brightness = Integer.valueOf(flowStrs[4 * i + 5]);
-                                    mDeviceStatus.getFlowItems().add(item);
-                                }
-                            }
-                        } else if (YeelightDeviceProperty.DELAYOFF.equals(property)) {
-                            int delayOff = prop.getValue().getAsInt();
-                            if (delayOff > 0 && delayOff <= 60) {
-                                mDeviceStatus.setDelayOff(delayOff);
-                            } else {
-                                mDeviceStatus.setDelayOff(DeviceStatus.DEFAULT_NO_DELAY);
-                            }
-                        } else if (YeelightDeviceProperty.MUSIC_ON.equals(property)) {
-                            mDeviceStatus.setMusicOn(prop.getValue().getAsInt() == 1);
-                        } else if (YeelightDeviceProperty.NAME.equals(property)) {
-                            mDeviceName = prop.getValue().toString();
-                        } else if (YeelightDeviceProperty.BG_RGB.equals(property)) {
-                            int color = prop.getValue().getAsInt();
-                            mDeviceStatus.setBackgroundR((color >> 16) & 0xFF);
-                            mDeviceStatus.setBackgroundG((color >> 8) & 0xFF);
-                            mDeviceStatus.setBackgroundB(color & 0xFF);
-                        } else if (YeelightDeviceProperty.BG_HUE.equals(property)) {
-                            mDeviceStatus.setBackgroundHue(prop.getValue().getAsInt());
+                                break;
+                            case BRIGHT:
+                                mDeviceStatus.setBrightness(prop.getValue().getAsInt());
+                                break;
+                            case CT:
+                                mDeviceStatus.setCt(prop.getValue().getAsInt());
+                                mDeviceStatus.setMode(DeviceMode.MODE_SUNHINE);
+                                break;
+                            case RGB: {
+                                mDeviceStatus.setMode(DeviceMode.MODE_COLOR);
+                                int color = prop.getValue().getAsInt();
+                                mDeviceStatus.setColor(color);
 
-                        } else if (YeelightDeviceProperty.BG_SAT.equals(property)) {
-                            mDeviceStatus.setBackgroundSat(prop.getValue().getAsInt());
-                        } else if (YeelightDeviceProperty.BG_BRIGHT.equals(property)) {
-                            mDeviceStatus.setBackgroundBrightness(prop.getValue().getAsInt());
-                        } else if (YeelightDeviceProperty.BG_POWER.equals(property)) {
-                            if ("\"off\"".equals(prop.getValue().toString())) {
-                                mDeviceStatus.setBackgroundIsPowerOff(true);
-                            } else if ("\"on\"".equals(prop.getValue().toString())) {
-                                mDeviceStatus.setBackgroundIsPowerOff(false);
+                                mDeviceStatus.setR((color >> 16) & 0xFF);
+                                mDeviceStatus.setG((color >> 8) & 0xFF);
+                                mDeviceStatus.setB(color & 0xFF);
+                                break;
                             }
-                        } else if (YeelightDeviceProperty.NL_BR.equals(property)) {
-                            // when the light is switched from nightlight-mode to sunlight-mode it will send nl_br:0
-                            // therefore we have to ignore the case.
-                            final int intValue = prop.getValue().getAsInt();
-                            if (intValue > 0) {
-                                mDeviceStatus.setBrightness(intValue);
+                            case HUE:
+                                mDeviceStatus.setMode(DeviceMode.MODE_HSV);
+                                mDeviceStatus.setHue(prop.getValue().getAsInt());
+                                break;
+                            case SAT:
+                                mDeviceStatus.setMode(DeviceMode.MODE_HSV);
+                                mDeviceStatus.setSat(prop.getValue().getAsInt());
+                                break;
+                            case COLOR_MODE:
+                                switch (prop.getValue().getAsInt()) {
+                                    case DeviceStatus.MODE_COLOR:
+                                        mDeviceStatus.setMode(DeviceMode.MODE_COLOR);
+                                        break;
+                                    case DeviceStatus.MODE_COLORTEMPERATURE:
+                                        mDeviceStatus.setMode(DeviceMode.MODE_SUNHINE);
+                                        break;
+                                    case DeviceStatus.MODE_HSV:
+                                        mDeviceStatus.setMode(DeviceMode.MODE_HSV);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                break;
+                            case FLOWING:
+                                mDeviceStatus.setIsFlowing(prop.getValue().getAsInt() == 1);
+                                break;
+                            case FLOW_PARAMS:
+                                // {"method":"props","params":{"flow_params":"0,0,1000,1,15935488,31,1000,1,13366016,31,1000,1,62370,31,1000,1,7995635,31"}}
+                                String[] flowStrs = prop.getValue().toString().replace("\"", "").split(",");
+                                if (flowStrs.length > 2 && (flowStrs.length - 2) % 4 == 0) {
+                                    mDeviceStatus.setFlowCount(Integer.parseInt(flowStrs[0]));
+                                    mDeviceStatus.setFlowEndAction(Integer.parseInt(flowStrs[1]));
+                                    if (mDeviceStatus.getFlowItems() == null) {
+                                        mDeviceStatus.setFlowItems(new ArrayList<>());
+                                    }
+                                    mDeviceStatus.getFlowItems().clear();
+                                    for (int i = 0; i < ((flowStrs.length - 2) / 4); i++) {
+                                        ColorFlowItem item = new ColorFlowItem();
+                                        item.duration = Integer.valueOf(flowStrs[4 * i + 2]);
+                                        item.mode = Integer.valueOf(flowStrs[4 * i + 3]);
+                                        item.value = Integer.valueOf(flowStrs[4 * i + 4]);
+                                        item.brightness = Integer.valueOf(flowStrs[4 * i + 5]);
+                                        mDeviceStatus.getFlowItems().add(item);
+                                    }
+                                }
+                                break;
+                            case DELAYOFF:
+                                int delayOff = prop.getValue().getAsInt();
+                                if (delayOff > 0 && delayOff <= 60) {
+                                    mDeviceStatus.setDelayOff(delayOff);
+                                } else {
+                                    mDeviceStatus.setDelayOff(DeviceStatus.DEFAULT_NO_DELAY);
+                                }
+                                break;
+                            case MUSIC_ON:
+                                mDeviceStatus.setMusicOn(prop.getValue().getAsInt() == 1);
+                                break;
+                            case NAME:
+                                mDeviceName = prop.getValue().toString();
+                                break;
+                            case BG_RGB: {
+                                int color = prop.getValue().getAsInt();
+                                mDeviceStatus.setBackgroundR((color >> 16) & 0xFF);
+                                mDeviceStatus.setBackgroundG((color >> 8) & 0xFF);
+                                mDeviceStatus.setBackgroundB(color & 0xFF);
+                                break;
                             }
-                        } else if (YeelightDeviceProperty.ACTIVE_MODE.equals(property)) {
-                            int activeModeInt = prop.getValue().getAsInt();
-                            final ActiveMode activeMode = ActiveMode.values()[activeModeInt];
-                            mDeviceStatus.setActiveMode(activeMode);
-                        } else {
-                            logger.debug("Maybe unsupported property: {} - {}", property, prop.getKey());
+                            case BG_HUE:
+                                mDeviceStatus.setBackgroundHue(prop.getValue().getAsInt());
+
+                                break;
+                            case BG_SAT:
+                                mDeviceStatus.setBackgroundSat(prop.getValue().getAsInt());
+                                break;
+                            case BG_BRIGHT:
+                                mDeviceStatus.setBackgroundBrightness(prop.getValue().getAsInt());
+                                break;
+                            case BG_POWER:
+                                if ("\"off\"".equals(prop.getValue().toString())) {
+                                    mDeviceStatus.setBackgroundIsPowerOff(true);
+                                } else if ("\"on\"".equals(prop.getValue().toString())) {
+                                    mDeviceStatus.setBackgroundIsPowerOff(false);
+                                }
+                                break;
+                            case NL_BR:
+                                // when the light is switched from nightlight-mode to sunlight-mode it will send nl_br:0
+                                // therefore we have to ignore the case.
+                                final int intValue = prop.getValue().getAsInt();
+                                if (intValue > 0) {
+                                    mDeviceStatus.setBrightness(intValue);
+                                }
+                                break;
+                            case ACTIVE_MODE:
+                                int activeModeInt = prop.getValue().getAsInt();
+                                final ActiveMode activeMode = ActiveMode.values()[activeModeInt];
+                                mDeviceStatus.setActiveMode(activeMode);
+                                break;
+                            default:
+                                logger.debug("Maybe unsupported property: {} - {}", property, prop.getKey());
+                                break;
                         }
                     }
                 }

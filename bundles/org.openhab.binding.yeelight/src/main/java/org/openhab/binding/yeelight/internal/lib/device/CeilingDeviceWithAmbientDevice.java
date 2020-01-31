@@ -43,36 +43,32 @@ public class CeilingDeviceWithAmbientDevice extends CeilingDevice
 
         JsonObject result = new JsonParser().parse(msg).getAsJsonObject();
 
-        try {
-            if (result.has("id")) {
-                String id = result.get("id").getAsString();
-                // for cmd transaction.
+        if (result.has("id")) {
+            String id = result.get("id").getAsString();
+            // for cmd transaction.
 
-                if (mQueryList.contains(id)) {
-                    JsonArray status = result.get("result").getAsJsonArray();
+            if (mQueryList.contains(id)) {
+                JsonArray status = result.get("result").getAsJsonArray();
 
-                    final String backgroundPowerState = status.get(4).toString();
-                    if ("\"off\"".equals(backgroundPowerState)) {
-                        mDeviceStatus.setBackgroundIsPowerOff(true);
-                    } else if ("\"on\"".equals(backgroundPowerState)) {
-                        mDeviceStatus.setBackgroundIsPowerOff(false);
-                    }
-
-                    final int backgroundBrightness = status.get(5).getAsInt();
-                    mDeviceStatus.setBackgroundBrightness(backgroundBrightness);
-
-                    final int backgroundHue = status.get(6).getAsInt();
-                    mDeviceStatus.setBackgroundHue(backgroundHue);
-
-                    final int backgroundSaturation = status.get(7).getAsInt();
-                    mDeviceStatus.setBackgroundSat(backgroundSaturation);
-
-                    final int activeMode = status.get(8).getAsInt();
-                    mDeviceStatus.setActiveMode(ActiveMode.values()[activeMode]);
+                final String backgroundPowerState = status.get(4).toString();
+                if ("\"off\"".equals(backgroundPowerState)) {
+                    mDeviceStatus.setBackgroundIsPowerOff(true);
+                } else if ("\"on\"".equals(backgroundPowerState)) {
+                    mDeviceStatus.setBackgroundIsPowerOff(false);
                 }
+
+                final int backgroundBrightness = status.get(5).getAsInt();
+                mDeviceStatus.setBackgroundBrightness(backgroundBrightness);
+
+                final int backgroundHue = status.get(6).getAsInt();
+                mDeviceStatus.setBackgroundHue(backgroundHue);
+
+                final int backgroundSaturation = status.get(7).getAsInt();
+                mDeviceStatus.setBackgroundSat(backgroundSaturation);
+
+                final int activeMode = status.get(8).getAsInt();
+                mDeviceStatus.setActiveMode(ActiveMode.values()[activeMode]);
             }
-        } catch (Exception e) {
-            logger.debug("Problem setting values", e);
         }
 
         super.onNotify(msg);
