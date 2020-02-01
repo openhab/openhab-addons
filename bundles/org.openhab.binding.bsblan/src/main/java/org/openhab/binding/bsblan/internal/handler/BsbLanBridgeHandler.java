@@ -60,7 +60,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
         // To avoid having to wait up to refreshInterval seconds until values are updated
         // for the added thing, we trigger a debounced refresh to shorten the delay.
-        // Alternativly the thing itself could make an additional REST call 
+        // Alternatively the thing itself could make an additional REST call
         // on initialization but this would flood the device when lots of parameters are setup.
         if (debouncedInit == null || debouncedInit.isCancelled() || debouncedInit.isDone()) {
             Runnable runnable = () -> {
@@ -76,7 +76,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
         // validate 'host' configuration
         if (StringUtils.trimToNull(bridgeConfig.host) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, 
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "Parameter 'host' is mandatory and must be configured");
             return;
         }
@@ -136,7 +136,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
                 "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
             // continue processing, so things can go to OFFLINE too
         } else {
-            // resonse received, thread device as reachable, refresh state now
+            // response received, thread device as reachable, refresh state now
             updateStatus(ThingStatus.ONLINE);
         }
 

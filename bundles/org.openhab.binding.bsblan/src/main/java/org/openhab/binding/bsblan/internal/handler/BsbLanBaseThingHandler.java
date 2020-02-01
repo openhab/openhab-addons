@@ -99,7 +99,7 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
     protected abstract void updateChannel(String channelId);
 
     /**
-     * Set new value for channe
+     * Set new value for channel
      *
      * @param channelId the id identifying the channel to be updated
      */

@@ -136,7 +136,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
         String value = BsbLanParameterConverter.getValue(channelId, command);
         if (value == null) {
-            logger.debug("Channel '{}' is read only or convertion failed. Ignoring command", channelId);
+            logger.debug("Channel '{}' is read only or conversion failed. Ignoring command", channelId);
             return;
         }
 

@@ -26,7 +26,7 @@ import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
 import org.junit.Test;
 
 /**
- * The {@link BsbLanParameterConverterTests} class implements tests 
+ * The {@link BsbLanParameterConverterTests} class implements tests
  * for {@link BsbLanParameterConverter}.
  *
  * @author Peter Schraffl - Initial contribution

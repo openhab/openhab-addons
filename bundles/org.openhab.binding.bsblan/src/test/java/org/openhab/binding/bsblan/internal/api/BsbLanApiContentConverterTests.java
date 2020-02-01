@@ -26,7 +26,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link BsbLanApiContentConverterTests} class implements tests 
+ * The {@link BsbLanApiContentConverterTests} class implements tests
  * for {@link BsbLanApiContentConverter}.
  *
  * @author Peter Schraffl - Initial contribution
@@ -35,7 +35,7 @@ public class BsbLanApiContentConverterTests {
 
     @Test
     public void parseBsbLanApiParameterQueryResponse() {
-        String content = 
+        String content =
             "{\r\n" +
                 "\"700\": {\r\n" +
                     "\"name\": \"Betriebsart\",\r\n" +
@@ -65,15 +65,15 @@ public class BsbLanApiContentConverterTests {
         request.value = "Hello World";
         request.type = Type.SET;
 
-        String serialzedRequest = BsbLanApiContentConverter.toJson(request);
+        String serializedRequest = BsbLanApiContentConverter.toJson(request);
 
         // verify serialized content
         JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(serialzedRequest).getAsJsonObject();
+        JsonObject json = parser.parse(serializedRequest).getAsJsonObject();
 
         // Although specifying the parameter as int (which would be nicer) also seems to work,
         // we use a String here as this is the way it is noted in the documentation.
-        // So ensure there is a 'Parameter' and it is serialzed as string.
+        // So ensure there is a 'Parameter' and it is serialized as string.
         assertEquals("1234", json.get("Parameter").getAsString());
 
         // ensure there is a 'Value' and it is serialized as string

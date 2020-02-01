@@ -40,13 +40,13 @@ public class BsbLanApiParameter {
         DT_STRN(7),    // string
         @SerializedName("8")
         DT_DWHM(8);    // PPS time (day of week, hour:minute)
-    
+
         private final int value;
         DataType(int value)
         {
             this.value = value;
         }
-    
+
         public int getValue()
         {
             return value;

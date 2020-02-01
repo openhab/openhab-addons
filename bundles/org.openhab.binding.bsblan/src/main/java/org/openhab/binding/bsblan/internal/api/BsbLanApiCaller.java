@@ -54,7 +54,7 @@ public class BsbLanApiCaller {
     }
 
     public BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
-        // make the request event if parameterIds is empty, thing OFFLINE/ONLINE detection relys on a response
+        // make the request even if parameterIds is empty, thing OFFLINE/ONLINE detection relies on a response
         // if (parameterIds.size() == 0) {
         //     return null;
         // }

@@ -29,12 +29,12 @@ public class BsbLanApiParameterSetResult {
         SUCCESS(1),
         @SerializedName("2")
         READ_ONLY(2);
-    
+
         private final int value;
         Status(int value) {
             this.value = value;
         }
-    
+
         public int getValue() {
             return value;
         }

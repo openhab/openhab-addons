@@ -20,7 +20,7 @@ package org.openhab.binding.bsblan.internal.configuration;
  */
 public class BsbLanBridgeConfiguration {
     /**
-     * Hostname or IP addres of the device
+     * Hostname or IP address of the device
      */
     public String host;
 

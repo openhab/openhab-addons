@@ -118,7 +118,7 @@ public class BsbLanParameterConverter {
      * Converts a Command back to a value which is sent to the BSB-LAN device afterwards.
      * @param channelId
      * @param command
-     * @return null if convertion fails or channel is readonly.
+     * @return null if conversion fails or channel is readonly.
      */
     public static String getValue(String channelId, Command command) {
         if (command == null) {
