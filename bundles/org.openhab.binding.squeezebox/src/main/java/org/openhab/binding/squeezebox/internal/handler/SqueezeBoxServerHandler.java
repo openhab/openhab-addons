@@ -854,8 +854,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             } else if (action.equals("stop")) {
                 mode = "stop";
             } else if ("play".equals(action) && "playlist".equals(messageParts[1])) {
-                String playListUrl = messageParts[3];
-                handleSourceChangeMessage(mac, playListUrl);
+                if (messageParts.length >= 4) {
+                    handleSourceChangeMessage(mac, messageParts[3]);
+                }
                 return;
             } else {
                 // Added so that actions (such as delete, index, jump, open) are not treated as "play"
@@ -876,12 +877,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         private void handleSourceChangeMessage(String mac, String rawSource) {
             String source = URLDecoder.decode(rawSource);
 
-            final String value = source;
             updatePlayer(new PlayerUpdateEvent() {
 
                 @Override
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
-                    listener.sourceChangeEvent(mac, value);
+                    listener.sourceChangeEvent(mac, source);
                 }
 
             });
