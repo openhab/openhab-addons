@@ -49,7 +49,7 @@
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
-			<description>If enabled the Coap protocol will be used to receive status updates.</description>
+			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -57,7 +57,7 @@
 			<label>Update Interval</label>
 			<description>Interval in seconds to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>s</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -112,7 +112,7 @@
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
-			<description>If enabled the Coap protocol will be used to receive status updates.</description>
+			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -154,7 +154,7 @@
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
-			<description>If enabled the Coap protocol will be used to receive status updates.</description>
+			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>

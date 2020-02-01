@@ -131,6 +131,8 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_UPDATE_CURR_VERS = "updateCurrentVersion";
     public static final String PROPERTY_UPDATE_NEW_VERS = "updateNewVersion";
     public static final String PROPERTY_COAP_DESCR = "coapDeviceDescr";
+    public static final String PROPERTY_STATS_TIMEOUTS = "statsTimeoutErrors";
+    public static final String PROPERTY_STATS_TRECOVERED = "statsTimeoutsRecovered";
 
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
@@ -221,8 +223,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
-    public static final String CHANNEL_DEVST_TERRORS = "timeoutErrors";
-    public static final String CHANNEL_DEVST_TRECOVERED = "timeoutsRecovered";
 
     // General
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
@@ -231,7 +231,7 @@ public class ShellyBindingConstants {
 
     public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.5.2";
-    public static final int SHELLY_API_TIMEOUT_MS = 3000;
+    public static final int SHELLY_API_TIMEOUT_MS = 6000;
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";

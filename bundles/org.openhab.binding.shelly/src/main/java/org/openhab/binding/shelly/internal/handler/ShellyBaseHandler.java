@@ -75,6 +75,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private long lastUpdateTs = 0;
     private long lastUptime = 0;
     private long lastAlarmTs = 0;
+    private Integer lastTimeoutErros = -1;
 
     private @Nullable ScheduledFuture<?> statusJob;
     private int skipUpdate = 0;
@@ -407,6 +408,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         String alarm = "";
         boolean force = false;
 
+        Map<String, String> propertyUpdates = new HashMap<String, String>();
+
         // Update uptime and WiFi
         if (updated) {
             lastUpdateTs = now();
@@ -417,10 +420,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
 
-        if (api != null) {
-            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TERRORS, new DecimalType(api.getTimeoutErrors()));
-            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TRECOVERED,
-                    new DecimalType(api.getTimeoutsRecovered()));
+        if ((api != null) && (lastTimeoutErros != api.getTimeoutErrors())) {
+            propertyUpdates.put(PROPERTY_STATS_TIMEOUTS, new Integer(api.getTimeoutErrors()).toString());
+            propertyUpdates.put(PROPERTY_STATS_TRECOVERED, new Integer(api.getTimeoutsRecovered()).toString());
+            lastTimeoutErros = api.getTimeoutErrors();
         }
 
         // Check various device indicators like overheating
@@ -445,6 +448,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
         if (!alarm.isEmpty()) {
             postAlarm(alarm, force);
+        }
+
+        if (!propertyUpdates.isEmpty()) {
+            updateProperties(propertyUpdates);
         }
     }
 
@@ -799,6 +806,20 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             thingProperties.replace(key, value);
         } else {
             thingProperties.put(key, value);
+        }
+        updateProperties(thingProperties);
+        logger.trace("{}: Properties updated", thingName);
+    }
+
+    @Override
+    public void updateProperties(Map<String, String> propertyUpdates) {
+        Map<String, String> thingProperties = editProperties();
+        for (Map.Entry<String, String> property : propertyUpdates.entrySet()) {
+            if (thingProperties.containsKey(property.getKey())) {
+                thingProperties.replace(property.getKey(), property.getValue());
+            } else {
+                thingProperties.put(property.getKey(), property.getValue());
+            }
         }
         updateProperties(thingProperties);
         logger.trace("{}: Properties updated", thingName);
