@@ -59,6 +59,8 @@ public class BlueGigaSerialHandler {
      */
     private volatile Integer ongoingTransactionId = null;
 
+    private Future<?> transactionTimeoutTimer;
+
     /**
      * The portName portName output stream.
      */
@@ -195,6 +197,7 @@ public class BlueGigaSerialHandler {
      */
     public void close(long timeout) {
         close = true;
+        cancelTransactionTimer();
         executor.shutdownNow();
         timer.cancel();
         try {
@@ -218,9 +221,8 @@ public class BlueGigaSerialHandler {
         // Send the data
         BlueGigaCommand frame = bleFrame.getMessage();
         ongoingTransactionId = bleFrame.getTransactionId();
-
         logger.debug("sendFrame: ongoingTransactionId = {}, frame={}", ongoingTransactionId, bleFrame);
-
+        cancelTransactionTimer();
         try {
             int[] payload = frame.serialize();
             if (logger.isTraceEnabled()) {
@@ -229,8 +231,22 @@ public class BlueGigaSerialHandler {
             for (int b : payload) {
                 outputStream.write(b);
             }
+            startTransactionTimer();
+
         } catch (IOException e) {
             throw new BlueGigaException("Error sending BLE frame", e);
+        }
+    }
+
+    private void startTransactionTimer() {
+        transactionTimeoutTimer = executor.schedule(() -> {
+            notifyTransactionTimeout(ongoingTransactionId);
+        }, TRANSACTION_TIMEOUT_PERIOD_MS * 2, TimeUnit.MILLISECONDS);
+    }
+
+    private void cancelTransactionTimer() {
+        if (transactionTimeoutTimer != null) {
+            transactionTimeoutTimer.cancel(true);
         }
     }
 
@@ -297,6 +313,18 @@ public class BlueGigaSerialHandler {
         return processed;
     }
 
+    private boolean notifyTransactionTimeout(final Integer transactionId) {
+        boolean processed = false;
+
+        for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
+            if (listener.transactionTimeout(transactionId)) {
+                processed = true;
+            }
+        }
+
+        return processed;
+    }
+
     private void addTransactionListener(BluetoothListener<? extends BlueGigaResponse> listener) {
         if (transactionListeners.contains(listener)) {
             return;
@@ -332,15 +360,6 @@ public class BlueGigaSerialHandler {
                 // Send the transaction
                 queueFrame(query);
 
-                // Start transaction timeout timer
-                Future<?> timeout = executor.schedule(() -> {
-                    complete = true;
-                    logger.debug("Timeout, no response received for transaction {}", query.getTransactionId());
-                    synchronized (this) {
-                        notify();
-                    }
-                }, TRANSACTION_TIMEOUT_PERIOD_MS * 2, TimeUnit.MILLISECONDS);
-
                 // Wait transaction completed or timeout
                 synchronized (this) {
                     while (!complete) {
@@ -352,8 +371,7 @@ public class BlueGigaSerialHandler {
                     }
                 }
 
-                // Cancel transaction timer (may already occurred)
-                timeout.cancel(true);
+                cancelTransactionTimer();
 
                 // Remove the listener
                 removeTransactionListener(this);
@@ -415,6 +433,19 @@ public class BlueGigaSerialHandler {
                 }
                 return true;
             }
+
+            @Override
+            public boolean transactionTimeout(Integer transactionId) {
+                if (ongoingTransactionId != query.getTransactionId()) {
+                    return false;
+                }
+                logger.debug("Timeout, no response received for transaction {}", query.getTransactionId());
+                complete = true;
+                synchronized (this) {
+                    notify();
+                }
+                return true;
+            }
         }
 
         Callable<T> worker = new TransactionWaiter();
@@ -438,7 +469,7 @@ public class BlueGigaSerialHandler {
             return futureResponse.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             futureResponse.cancel(true);
-            throw new BlueGigaException("Error sending BLE transaction: ", e);
+            throw new BlueGigaException(String.format("Error sending BLE transaction: %s", e.getMessage()), e);
         }
     }
 
@@ -514,6 +545,7 @@ public class BlueGigaSerialHandler {
 
     interface BluetoothListener<T extends BlueGigaResponse> {
         boolean transactionEvent(BlueGigaResponse response);
-    }
 
+        boolean transactionTimeout(Integer transactionId);
+    }
 }
