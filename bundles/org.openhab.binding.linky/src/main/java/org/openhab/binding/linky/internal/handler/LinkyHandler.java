@@ -25,6 +25,9 @@ import java.time.temporal.WeekFields;
 import java.util.Base64;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import javax.xml.ws.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,21 +42,15 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.omg.CORBA.Request;
 import org.openhab.binding.linky.internal.ExpiringDayCache;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.model.LinkyConsumptionData;
 import org.openhab.binding.linky.internal.model.LinkyTimeScale;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
-import okhttp3.FormBody;
-import okhttp3.FormBody.Builder;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * The {@link LinkyHandler} is responsible for handling commands, which are
@@ -67,6 +64,7 @@ public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
     private static final String LOGIN_BASE_URI = "https://espace-client-connexion.enedis.fr/auth/UI/Login";
+    private static final String LOGIN_BODY_BUILDER = "encoded=true&gx_charset=UTF-8&SunQueryParamsString=%s&IDToken1=%s&IDToken2=%s";
     private static final String API_BASE_URI = "https://espace-client-particuliers.enedis.fr/group/espace-particuliers/suivi-de-consommation";
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final Builder LOGIN_BODY_BUILDER = new FormBody.Builder().add("encoded", "true")
@@ -337,7 +335,6 @@ public class LinkyHandler extends BaseThingHandler {
                     result = gson.fromJson(body, LinkyConsumptionData.class);
                 }
             }
-            response.close();
         } catch (IOException e) {
             logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -346,6 +343,10 @@ public class LinkyHandler extends BaseThingHandler {
         }
         if (tryRelog && login()) {
             result = getConsumptionData(timeScale, from, to, false);
+        }
+        try {
+            stream.close();
+        } catch (IOException e) {
         }
         return result;
     }
