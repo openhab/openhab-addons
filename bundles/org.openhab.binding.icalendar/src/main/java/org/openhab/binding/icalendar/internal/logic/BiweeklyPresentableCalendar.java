@@ -32,6 +32,7 @@ import biweekly.io.TimezoneInfo;
 import biweekly.io.text.ICalReader;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
+import biweekly.property.Description;
 import biweekly.property.DurationProperty;
 import biweekly.property.Status;
 import biweekly.property.Summary;
@@ -41,14 +42,17 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 /**
  * Implementation of {@link AbstractPresentableCalendar} with ical4j. Please
  * use {@link AbstractPresentableCalendar#create(InputStream)} for productive
- * instanciation.
+ * instantiation.
  *
  * @author Michael Wodniok - Initial contribution
- */
+ * 
+ * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
+ *  
+*/
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     private final TemporalAmount lookAround;
-    private final ICalendar bakingCalendar;
+    private final ICalendar usedCalendar;
 
     BiweeklyPresentableCalendar(InputStream streamed, TemporalAmount lookAround) throws IOException, CalendarException {
         ICalReader reader = new ICalReader(streamed);
@@ -57,7 +61,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             if (currentCalendar == null) {
                 throw new CalendarException("No calendar was parsed.");
             }
-            this.bakingCalendar = currentCalendar;
+            this.usedCalendar = currentCalendar;
             this.lookAround = lookAround;
         } finally {
             reader.close();
@@ -86,7 +90,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
         List<VEventWPeriod> positiveCandidates = new LinkedList<VEventWPeriod>();
         List<VEventWPeriod> negativeCandidates = new LinkedList<VEventWPeriod>();
-        for (VEvent currentEvent : bakingCalendar.getEvents()) {
+        for (VEvent currentEvent : usedCalendar.getEvents()) {
             @Nullable
             Status eventStatus = currentEvent.getStatus();
             boolean additive = (eventStatus == null
@@ -145,7 +149,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         // DateTime instantDate = new DateTime(instant.getEpochSecond() * 1000);
         List<VEventWPeriod> positiveCandidates = new LinkedList<VEventWPeriod>();
         List<VEventWPeriod> negativeCandidates = new LinkedList<VEventWPeriod>();
-        for (VEvent currentEvent : bakingCalendar.getEvents()) {
+        for (VEvent currentEvent : usedCalendar.getEvents()) {
             @Nullable
             Status eventStatus = currentEvent.getStatus();
             boolean additive = (eventStatus == null
@@ -192,7 +196,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     private DateIterator getRecurredEventDateIterator(VEvent vEvent) {
-        TimezoneInfo tzinfo = this.bakingCalendar.getTimezoneInfo();
+        TimezoneInfo tzinfo = this.usedCalendar.getTimezoneInfo();
 
         DateStart firstStart = vEvent.getDateStart();
         TimeZone tz;
@@ -238,7 +242,88 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             } else {
                 title = "-";
             }
-            return new Event(title, start, end);
+            String description;
+            Description eventDescription = vEvent.getDescription();
+            if (eventDescription != null) {
+                description = eventDescription.getValue();
+            } else {
+                description = "";
+            }
+            return new Event(title, start, end, description);
         }
     }
+
+    /**
+     * 
+     * @param frameBegin   the start of the time frame
+     * @param frameEnd     the start of the time frame
+     * @return             list of iCalendar Events that BEGIN within the time frame 
+     *          
+     */
+    @Override
+    public @Nullable List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
+        List<Event> eventList = null;
+        // process all the events in the iCalendar
+        for (VEvent event : usedCalendar.getEvents()) {
+            // iterate over all begin dates
+            DateIterator begDates = getRecurredEventDateIterator(event);
+            while (begDates.hasNext()) {
+                Instant begInst = begDates.next().toInstant();
+                if (begInst.isBefore(frameBegin)) {
+                    continue;
+                } else if (begInst.isAfter(frameEnd)) {
+                    break;
+                }
+                // fall through => means we are within the time frame
+                Duration duration = getEventLength(event);
+                if (duration == null) {
+                    duration = Duration.ofMinutes(1);
+                }
+                if (eventList == null) {
+                    eventList = new LinkedList<Event>();
+                }
+                eventList.add(new VEventWPeriod(event, begInst, begInst.plus(duration)).toEvent());
+                break;
+            }
+        }
+        return eventList;
+    }
+
+    /**
+     * 
+     * @param frameBegin   the start of the time frame
+     * @param frameEnd     the start of the time frame
+     * @return             list of iCalendar Events that END within the time frame 
+     *          
+     */
+    @Override
+    public @Nullable List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
+        List<Event> eventList = null;
+        // process all the events in the iCalendar
+        for (VEvent event : usedCalendar.getEvents()) {
+            Duration duration = getEventLength(event);
+            if (duration == null) {
+                continue;
+            }
+            // iterate over all begin dates
+            DateIterator begDates = getRecurredEventDateIterator(event);
+            while (begDates.hasNext()) {
+                Instant begInst = begDates.next().toInstant();
+                Instant endInst = begInst.plus(duration);
+                if (endInst.isBefore(frameBegin)) {
+                    continue;
+                } else if (endInst.isAfter(frameEnd)) {
+                    break;
+                }
+                // fall through => means we are within the time frame
+                if (eventList == null) {
+                    eventList = new LinkedList<Event>();
+                }
+                eventList.add(new VEventWPeriod(event, begInst, endInst).toEvent());
+                break;
+            }
+        }
+        return eventList;
+    }
+
 }

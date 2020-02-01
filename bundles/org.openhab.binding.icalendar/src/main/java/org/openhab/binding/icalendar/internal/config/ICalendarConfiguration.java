@@ -18,7 +18,10 @@ import java.math.BigDecimal;
  * The {@link ICalendarConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Wodniok - Initial contribution
- */
+ * 
+ * @author Andrew Fiddian-Green - Support for authorizationCode
+ * 
+*/
 public class ICalendarConfiguration {
 
     public String url;
@@ -26,4 +29,5 @@ public class ICalendarConfiguration {
     public BigDecimal readAroundTime;
     public String username;
     public String password;
+    public String authorizationCode;
 }

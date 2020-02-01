@@ -21,23 +21,27 @@
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>
-				<description>URL to find events for presence</description>
+				<description>URL for downloading iCalendar events</description>
 			</parameter>
 			<parameter name="refreshTime" type="integer" required="true">
-				<label>refresh time</label>
-				<description>interval to scan for changes (minutes)</description>
+				<label>Refresh Time</label>
+				<description>Interval to scan for changes (minutes)</description>
 			</parameter>
 			<parameter name="readAroundTime" type="integer" required="true">
-				<label>read-around time</label>
-				<description>timespan to read around events (minutes)</description>
+				<label>Read-around Time</label>
+				<description>Timespan to read around events (minutes)</description>
 			</parameter>
 			<parameter name="username" type="text" required="false">
-				<label>username</label>
-				<description>username for fetching the calendar (usable in combination with password in HTTP basic auth)</description>
+				<label>User Name</label>
+				<description>User name for fetching the calendar (usable in combination with password in HTTP basic auth)</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
-				<label>password</label>
-				<description>password for fetching the calendar (usable in combination with username in HTTP basic auth)</description>
+				<label>Password</label>
+				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic auth)</description>
+			</parameter>
+			<parameter name="authorizationCode" type="text" required="false">
+				<label>Command Authorization Code</label>
+				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
 			</parameter>
 		</config-description>
 

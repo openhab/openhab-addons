@@ -13,6 +13,8 @@
 package org.openhab.binding.icalendar.internal.logic;
 
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,6 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * Transport class for a single event.
  *
  * @author Michael Wodniok - Initial contribution
+ * 
+ * @author Andrew Fiddian-Green - Added support for event description 
+ * 
  */
 @NonNullByDefault
 public class Event {
@@ -28,10 +33,22 @@ public class Event {
     public Instant start;
     public Instant end;
 
-    public Event(String title, Instant start, Instant end) {
+    public List<CommandTag> commandTags = new LinkedList<CommandTag>();
+
+    public Event(String title, Instant start, Instant end, String description) {
         this.title = title;
         this.start = start;
         this.end = end;
+
+        if (!description.isEmpty()) {
+            String[] lines = description.split("\n");
+            for (String line : lines) {
+                CommandTag tag = CommandTag.createCommandTag(line);
+                if (tag != null) {
+                    commandTags.add(tag);
+                }
+            }
+        }
     }
 
     @Override

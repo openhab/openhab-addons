@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -31,6 +32,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,8 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Michael Wodniok - Initial contribution
+ * @author Andrew Fiddian-Green - EventPublisher code
+ * 
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)
@@ -47,6 +51,8 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CALENDAR);
     private @Nullable HttpClient sharedHttpClient = null;
+
+    private @Nullable EventPublisher eventPublisher = null;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,7 +71,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
                     if (!localHttpClient.isStarted()) {
                         localHttpClient.start();
                     }
-                    return new ICalendarHandler(thing, localHttpClient);
+                    return new ICalendarHandler(thing, localHttpClient, eventPublisher);
                 } else {
                     throw new IllegalStateException("HttpClient could not be created.");
                 }
@@ -100,4 +106,24 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             this.sharedHttpClient = clientFactory.createHttpClient(BINDING_ID);
         }
     }
+
+    /**
+     * Sets the event publisher.
+     *
+     * @param eventPublisher the new event publisher
+     */
+    @Reference
+    public void setEventPublisher(EventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
+
+    /**
+     * Unset event publisher.
+     *
+     * @param eventPublisher the event publisher (ignored)
+     */
+    public void unsetEventPublisher(EventPublisher eventPublisher) {
+        this.eventPublisher = null;
+    }
+    
 }

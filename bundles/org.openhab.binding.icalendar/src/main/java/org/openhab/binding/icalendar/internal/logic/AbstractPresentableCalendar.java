@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,6 +26,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * encapsulating the implementation of the real calendar.
  *
  * @author Michael Wodniok - Initial contribution
+ * 
+ * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
+ * 
  */
 @NonNullByDefault
 public abstract class AbstractPresentableCalendar {
@@ -72,4 +76,21 @@ public abstract class AbstractPresentableCalendar {
      *         further in the calendar.
      */
     public abstract @Nullable Event getNextEvent(Instant instant);
+    
+    /**
+     *  
+     * @return list of Events which have just begin in the time window 
+     *         since the instant when this method was last called
+     * 
+     */
+    public abstract @Nullable List<Event> getJustBegunEvents(Instant from, Instant to);
+
+    /**
+     *  
+     * @return list of Events which have just ended in the time window 
+     *         since the instant when this method was last called
+     * 
+     */
+    public abstract @Nullable List<Event> getJustEndedEvents(Instant from, Instant to);
+
 }

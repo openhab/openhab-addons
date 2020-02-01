@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +30,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.core.events.EventPublisher;
+import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -44,6 +47,8 @@ import org.openhab.binding.icalendar.internal.config.ICalendarConfiguration;
 import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
 import org.openhab.binding.icalendar.internal.logic.CalendarException;
+import org.openhab.binding.icalendar.internal.logic.CommandTagType;
+import org.openhab.binding.icalendar.internal.logic.CommandTag;
 import org.openhab.binding.icalendar.internal.logic.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +58,9 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Michael Wodniok - Initial contribution
+ * 
+ * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
+ * 
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseThingHandler implements CalendarUpdateListener {
@@ -67,12 +75,18 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     private @Nullable ScheduledFuture<?> updateJobFuture;
     private @Nullable ScheduledFuture<?> pullJobFuture;
 
-    public ICalendarHandler(Thing thing, HttpClient httpClient) {
+    @Nullable 
+    private EventPublisher eventPublisherCallback = null;
+    
+    private Instant updateStatesLastCalledTime = Instant.now();
+
+    public ICalendarHandler(Thing thing, HttpClient httpClient, @Nullable EventPublisher eventPublisher) {
         super(thing);
         this.httpClient = httpClient;
         this.calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[^a-zA-Z0-9\\._-]", "_") + ".ical");
         this.runtimeCalendar = null;
+        this.eventPublisherCallback = eventPublisher;
     }
 
     @Override
@@ -94,7 +108,6 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         }
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
@@ -237,7 +250,80 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 this.updateState(nextEventStartChannel.getUID(), UnDefType.NULL);
                 this.updateState(nextEventEndChannel.getUID(), UnDefType.NULL);
             }
+            
+            // FIRSTLY: process all Command Tags in all Calendar Events which ENDED since updateStates was last called
+            executeEventCommands(calendar.getJustEndedEvents(updateStatesLastCalledTime, now), CommandTagType.END);
+
+            // SECONDLY: process all Command Tags in all Calendar Events which BEGAN since updateStates was last called 
+            executeEventCommands(calendar.getJustBegunEvents(updateStatesLastCalledTime, now), CommandTagType.BEGIN);
+            
+            // save time when updateStates was previously called: 
+            // note: the purpose is to prevent repeat command execution of events that have already been executed
+            updateStatesLastCalledTime = now;
         }
+    }
+    
+    private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
+        if ((events != null) && (!events.isEmpty())) {
+            // 
+            if (eventPublisherCallback == null) {
+                logger.error("EventPublisher object not instantiated!");
+                return;
+            } 
+    
+            // loop through all events in the list
+            for (Event event : events) {
+            
+                // loop through all command tags in the event
+                for (CommandTag cmdTag : event.commandTags) { 
+                
+                    // only process the BEGIN resp. END tags
+                    if (cmdTag.tagType == execTime) {
+                        
+                        if (!cmdTag.isAuthorized(configuration.authorizationCode)) {
+                            logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.fullTag);
+                            continue;
+                        }
+                        if (!cmdTag.itemName.matches("^\\w+$")) {
+                            logger.warn("Event: {}, Command Tag: {} => Bad syntax for item name!", event.title, cmdTag.fullTag);
+                            continue;
+                        }
+                        Command cmdState = cmdTag.getCommand();
+                        if (cmdState == null) {
+                            logger.warn("Event: {}, Command Tag: {} => Invalid target state!", event.title, cmdTag.fullTag);
+                            continue;
+                        }
+            
+                        // (try to) execute the command
+                        try {
+                            eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.itemName, cmdState));
+                            if (logger.isDebugEnabled()) {
+                                String cmdType = cmdState.getClass().toString();
+                                int index = cmdType.lastIndexOf(".") + 1;
+                                if ((index > 0) && (index < cmdType.length())) {
+                                    cmdType = cmdType.substring(index);
+                                }
+                                logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", 
+                                        event.title, cmdTag.fullTag, cmdTag.itemName, cmdType, cmdState);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.fullTag);
+                        } catch (IllegalStateException e) {
+                            logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.fullTag);
+                        }
+    
+                    }
+                }
+            }
+        }
+    }
+
+    protected void setEventPublisher(EventPublisher eventPublisher) {
+        eventPublisherCallback = eventPublisher;
+    }
+
+    protected void unsetEventPublisher(EventPublisher eventPublisher) {
+        eventPublisherCallback = null;
     }
 
     /**
@@ -294,4 +380,5 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn("Calendar was updated, but loading failed.");
         }
     }
+
 }
