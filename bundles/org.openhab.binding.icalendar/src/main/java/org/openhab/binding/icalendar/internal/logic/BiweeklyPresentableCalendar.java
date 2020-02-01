@@ -45,10 +45,10 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * instantiation.
  *
  * @author Michael Wodniok - Initial contribution
- * 
+ *
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
- *  
-*/
+ *
+ */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     private final TemporalAmount lookAround;
@@ -93,8 +93,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         for (VEvent currentEvent : usedCalendar.getEvents()) {
             @Nullable
             Status eventStatus = currentEvent.getStatus();
-            boolean additive = (eventStatus == null
-                    || (eventStatus != null && (eventStatus.isTentative() || eventStatus.isConfirmed())));
+            boolean additive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
 
             DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             Duration duration = getEventLength(currentEvent);
@@ -152,8 +151,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         for (VEvent currentEvent : usedCalendar.getEvents()) {
             @Nullable
             Status eventStatus = currentEvent.getStatus();
-            boolean additive = (eventStatus == null
-                    || (eventStatus != null && (eventStatus.isTentative() || eventStatus.isConfirmed())));
+            boolean additive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
             DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             Duration duration = getEventLength(currentEvent);
             if (duration == null) {
@@ -254,11 +252,11 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     * 
-     * @param frameBegin   the start of the time frame
-     * @param frameEnd     the start of the time frame
-     * @return             list of iCalendar Events that BEGIN within the time frame 
-     *          
+     *
+     * @param frameBegin the start of the time frame
+     * @param frameEnd the start of the time frame
+     * @return list of iCalendar Events that BEGIN within the time frame
+     *
      */
     @Override
     public @Nullable List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
@@ -290,11 +288,11 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     * 
-     * @param frameBegin   the start of the time frame
-     * @param frameEnd     the start of the time frame
-     * @return             list of iCalendar Events that END within the time frame 
-     *          
+     *
+     * @param frameBegin the start of the time frame
+     * @param frameEnd the start of the time frame
+     * @return list of iCalendar Events that END within the time frame
+     *
      */
     @Override
     public @Nullable List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {

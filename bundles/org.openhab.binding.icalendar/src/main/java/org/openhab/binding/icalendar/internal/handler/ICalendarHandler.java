@@ -47,8 +47,8 @@ import org.openhab.binding.icalendar.internal.config.ICalendarConfiguration;
 import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
 import org.openhab.binding.icalendar.internal.logic.CalendarException;
-import org.openhab.binding.icalendar.internal.logic.CommandTagType;
 import org.openhab.binding.icalendar.internal.logic.CommandTag;
+import org.openhab.binding.icalendar.internal.logic.CommandTagType;
 import org.openhab.binding.icalendar.internal.logic.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +58,9 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Michael Wodniok - Initial contribution
- * 
+ *
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
- * 
+ *
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseThingHandler implements CalendarUpdateListener {
@@ -75,9 +75,9 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     private @Nullable ScheduledFuture<?> updateJobFuture;
     private @Nullable ScheduledFuture<?> pullJobFuture;
 
-    @Nullable 
+    @Nullable
     private EventPublisher eventPublisherCallback = null;
-    
+
     private Instant updateStatesLastCalledTime = Instant.now();
 
     public ICalendarHandler(Thing thing, HttpClient httpClient, @Nullable EventPublisher eventPublisher) {
@@ -108,6 +108,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         }
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
@@ -250,68 +251,75 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 this.updateState(nextEventStartChannel.getUID(), UnDefType.NULL);
                 this.updateState(nextEventEndChannel.getUID(), UnDefType.NULL);
             }
-            
+
             // FIRSTLY: process all Command Tags in all Calendar Events which ENDED since updateStates was last called
             executeEventCommands(calendar.getJustEndedEvents(updateStatesLastCalledTime, now), CommandTagType.END);
 
-            // SECONDLY: process all Command Tags in all Calendar Events which BEGAN since updateStates was last called 
+            // SECONDLY: process all Command Tags in all Calendar Events which BEGAN since updateStates was last called
             executeEventCommands(calendar.getJustBegunEvents(updateStatesLastCalledTime, now), CommandTagType.BEGIN);
-            
-            // save time when updateStates was previously called: 
+
+            // save time when updateStates was previously called:
             // note: the purpose is to prevent repeat command execution of events that have already been executed
             updateStatesLastCalledTime = now;
         }
     }
-    
+
     private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
-        if ((events != null) && (!events.isEmpty())) {
-            // 
-            if (eventPublisherCallback == null) {
+        ICalendarConfiguration currentConfiguration = this.configuration;
+        if ((events != null) && (!events.isEmpty()) && currentConfiguration != null) {
+            EventPublisher currentEventPublisherCallback = this.eventPublisherCallback;
+            if (currentEventPublisherCallback == null) {
                 logger.error("EventPublisher object not instantiated!");
                 return;
-            } 
-    
+            }
+
             // loop through all events in the list
             for (Event event : events) {
-            
+
                 // loop through all command tags in the event
-                for (CommandTag cmdTag : event.commandTags) { 
-                
+                for (CommandTag cmdTag : event.commandTags) {
+
                     // only process the BEGIN resp. END tags
                     if (cmdTag.tagType == execTime) {
-                        
-                        if (!cmdTag.isAuthorized(configuration.authorizationCode)) {
+
+                        if (!cmdTag.isAuthorized(currentConfiguration.authorizationCode)) {
                             logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.fullTag);
                             continue;
                         }
-                        if (!cmdTag.itemName.matches("^\\w+$")) {
-                            logger.warn("Event: {}, Command Tag: {} => Bad syntax for item name!", event.title, cmdTag.fullTag);
+                        String targetItem = cmdTag.itemName;
+                        if (targetItem == null || (!targetItem.matches("^\\w+$"))) {
+                            logger.warn("Event: {}, Command Tag: {} => Bad syntax for item name!", event.title,
+                                    cmdTag.fullTag);
                             continue;
                         }
                         Command cmdState = cmdTag.getCommand();
                         if (cmdState == null) {
-                            logger.warn("Event: {}, Command Tag: {} => Invalid target state!", event.title, cmdTag.fullTag);
+                            logger.warn("Event: {}, Command Tag: {} => Invalid target state!", event.title,
+                                    cmdTag.fullTag);
                             continue;
                         }
-            
+
                         // (try to) execute the command
                         try {
-                            eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.itemName, cmdState));
+                            currentEventPublisherCallback
+                                    .post(ItemEventFactory.createCommandEvent(cmdTag.itemName, cmdState));
                             if (logger.isDebugEnabled()) {
                                 String cmdType = cmdState.getClass().toString();
                                 int index = cmdType.lastIndexOf(".") + 1;
                                 if ((index > 0) && (index < cmdType.length())) {
                                     cmdType = cmdType.substring(index);
                                 }
-                                logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", 
-                                        event.title, cmdTag.fullTag, cmdTag.itemName, cmdType, cmdState);
+                                logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
+                                        cmdTag.fullTag, cmdTag.itemName, cmdType, cmdState);
                             }
                         } catch (IllegalArgumentException e) {
-                            logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.fullTag);
+                            logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title,
+                                    cmdTag.fullTag);
                         } catch (IllegalStateException e) {
-                            logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.fullTag);
+                            logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title,
+                                    cmdTag.fullTag);
                         }
-    
+
                     }
                 }
             }

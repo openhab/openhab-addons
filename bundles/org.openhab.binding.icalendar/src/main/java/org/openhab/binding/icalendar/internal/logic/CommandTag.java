@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -29,30 +30,39 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
- * This is a class that implements a Command Tag that may be embedded in an Event Description
- * 
- * Valid Tags must follow one of the following forms..
- * 
- *      BEGIN:<itemName>:<targetState> 
- *      BEGIN:<itemName>:<targetState>:<authorizationCode> 
- *      END:<itemName>:<targetState> 
- *      END:<itemName>:<targetState>:<authorizationCode> 
- * 
+ *
+ *         This is a class that implements a Command Tag that may be embedded in an Event Description
+ *
+ *         Valid Tags must follow one of the following forms..
+ *
+ *         BEGIN:<itemName>:<targetState>
+ *         BEGIN:<itemName>:<targetState>:<authorizationCode>
+ *         END:<itemName>:<targetState>
+ *         END:<itemName>:<targetState>:<authorizationCode>
+ *
  */
+@NonNullByDefault
 public class CommandTag {
+    @Nullable
     public String itemName;
+
+    @Nullable
     public String targetState;
+
+    @Nullable
     public String fullTag;
-    public CommandTagType tagType; 
+
+    @Nullable
+    public CommandTagType tagType;
 
     protected boolean isValid = false;
-    
+
+    @Nullable
     private String authorizationCode;
-    
-    private Command castToCommandType(Class<? extends Command> commandType) {
+
+    private @Nullable Command castToCommandType(Class<? extends Command> commandType) {
         try {
             Method valueOf = commandType.getMethod("valueOf", String.class);
             Command cmd = (Command) valueOf.invoke(commandType, targetState);
@@ -82,15 +92,18 @@ public class CommandTag {
         } catch (IllegalArgumentException e) {
             return;
         }
-        itemName = fields[1].trim();
-        if (itemName.isEmpty()) {
+        String currentItemName = fields[1].trim();
+        itemName = currentItemName;
+        if (currentItemName.isEmpty()) {
             return;
         }
-        targetState = fields[2].trim();
-        if (targetState.isEmpty()) {
+        String currentTargetState = fields[2].trim();
+        targetState = currentTargetState;
+        if (currentTargetState.isEmpty()) {
             return;
         }
-        isValid = true; 
+
+        isValid = true;
         fullTag = line;
         if (fields.length > 3) {
             authorizationCode = fields[3].trim();
@@ -99,7 +112,7 @@ public class CommandTag {
         }
     }
 
-    public static CommandTag createCommandTag(String line) {
+    public static @Nullable CommandTag createCommandTag(String line) {
         if (CommandTagType.prefixValid(line)) {
             CommandTag tag = new CommandTag(line.trim());
             return tag.isValid ? tag : null;
@@ -107,41 +120,59 @@ public class CommandTag {
             return null;
         }
     }
-    
+
     public boolean isAuthorized(@Nullable String authCode) {
         return isValid && (authCode == null || authCode.isEmpty() || authCode.equals(authorizationCode));
     }
-    
-    public Command getCommand() {
+
+    public @Nullable Command getCommand() {
         // string is in double quotes => force StringType
-        if (targetState.startsWith("\"") && targetState.endsWith("\"")) {
-            return new StringType(targetState.replaceAll("\"", ""));
+        String currentTargetState = targetState;
+        if (currentTargetState == null) {
+            return null;
+        }
+        if (currentTargetState.startsWith("\"") && currentTargetState.endsWith("\"")) {
+            return new StringType(currentTargetState.replaceAll("\"", ""));
         }
 
         // string is in single quotes => ditto
-        if (targetState.startsWith("'") && targetState.endsWith("'")) {
-            return new StringType(targetState.replaceAll("'", ""));
+        if (currentTargetState.startsWith("'") && currentTargetState.endsWith("'")) {
+            return new StringType(currentTargetState.replaceAll("'", ""));
         }
 
         Command cmd = null;
-        
+
         // string ends with % => try PercentType
-        if (targetState.endsWith("%")) {
+        if (currentTargetState.endsWith("%")) {
             try {
-                cmd = new PercentType(targetState.replaceAll("%", ""));
+                cmd = new PercentType(currentTargetState.replaceAll("%", ""));
                 return cmd;
             } catch (IllegalArgumentException e) {
             }
         }
 
         // try all other possible CommandTypes
-        if ((cmd = castToCommandType(QuantityType.class))          != null) return cmd;
-        if ((cmd = castToCommandType(OnOffType.class))             != null) return cmd;
-        if ((cmd = castToCommandType(OpenClosedType.class))        != null) return cmd;
-        if ((cmd = castToCommandType(UpDownType.class))            != null) return cmd;
-        if ((cmd = castToCommandType(HSBType.class))               != null) return cmd;
-        if ((cmd = castToCommandType(PlayPauseType.class))         != null) return cmd;
-        if ((cmd = castToCommandType(RewindFastforwardType.class)) != null) return cmd;
+        if ((cmd = castToCommandType(QuantityType.class)) != null) {
+            return cmd;
+        }
+        if ((cmd = castToCommandType(OnOffType.class)) != null) {
+            return cmd;
+        }
+        if ((cmd = castToCommandType(OpenClosedType.class)) != null) {
+            return cmd;
+        }
+        if ((cmd = castToCommandType(UpDownType.class)) != null) {
+            return cmd;
+        }
+        if ((cmd = castToCommandType(HSBType.class)) != null) {
+            return cmd;
+        }
+        if ((cmd = castToCommandType(PlayPauseType.class)) != null) {
+            return cmd;
+        }
+        if ((cmd = castToCommandType(RewindFastforwardType.class)) != null) {
+            return cmd;
+        }
 
         // fallback to StringType (should never fail)
         return castToCommandType(StringType.class);

@@ -27,7 +27,7 @@ import org.junit.Test;
  * Tests for presentable calendar.
  *
  * @author Michael Wodniok - Initial contribution.
- * 
+ *
  * @author Andrew Fiddian-Green - Tests for Command Tag code
  *
  */
@@ -150,19 +150,22 @@ public class BiweeklyPresentableCalendarTest {
         List<Event> events = null;
         int eventCount = 2;
         int tagsPerEvent = 8;
-        
+
         // test just begun events: first in the series
-        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:55:00Z"), Instant.parse("2020-01-28T16:05:00Z"));
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:55:00Z"),
+                Instant.parse("2020-01-28T16:05:00Z"));
         assertNotNull(events);
         assertEquals(events.size(), eventCount);
         for (Event event : events) {
             List<CommandTag> cmdTags = event.commandTags;
             assertEquals(cmdTags.size(), tagsPerEvent);
             int beginTags = 0;
-            for (CommandTag cmdTag : cmdTags) { 
+            for (CommandTag cmdTag : cmdTags) {
                 if (cmdTag.tagType == CommandTagType.BEGIN) {
                     assertTrue(cmdTag.isAuthorized("abc"));
-                    assertTrue(cmdTag.itemName.matches("^\\w+$"));
+                    String targetItemName = cmdTag.itemName;
+                    assertNotNull(targetItemName);
+                    assertTrue(targetItemName.matches("^\\w+$"));
                     assertTrue(cmdTag.getCommand() != null);
                     beginTags++;
                 }
@@ -171,17 +174,20 @@ public class BiweeklyPresentableCalendarTest {
         }
 
         // test just begun events: third in the series
-        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-30T15:55:00Z"), Instant.parse("2020-01-30T16:05:00Z"));
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-30T15:55:00Z"),
+                Instant.parse("2020-01-30T16:05:00Z"));
         assertNotNull(events);
         assertEquals(events.size(), eventCount);
         for (Event event : events) {
             List<CommandTag> cmdTags = event.commandTags;
             assertEquals(cmdTags.size(), tagsPerEvent);
             int beginTags = 0;
-            for (CommandTag cmdTag : cmdTags) { 
+            for (CommandTag cmdTag : cmdTags) {
                 if (cmdTag.tagType == CommandTagType.BEGIN) {
                     assertTrue(cmdTag.isAuthorized("abc"));
-                    assertTrue(cmdTag.itemName.matches("^\\w+$"));
+                    String targetItemName = cmdTag.itemName;
+                    assertNotNull(targetItemName);
+                    assertTrue(targetItemName.matches("^\\w+$"));
                     assertTrue(cmdTag.getCommand() != null);
                     beginTags++;
                 }
@@ -189,26 +195,31 @@ public class BiweeklyPresentableCalendarTest {
             assertEquals(beginTags, tagsPerEvent / 2);
         }
 
-        // test outside of window: begun events, too early 
-        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:50:00Z"), Instant.parse("2020-01-28T15:55:00Z"));
+        // test outside of window: begun events, too early
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:50:00Z"),
+                Instant.parse("2020-01-28T15:55:00Z"));
         assertNull(events);
 
-        // test outside of window: begun events, too late 
-        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T16:05:00Z"), Instant.parse("2020-01-28T16:10:00Z"));
+        // test outside of window: begun events, too late
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T16:05:00Z"),
+                Instant.parse("2020-01-28T16:10:00Z"));
         assertNull(events);
 
         // test just ended events: first in the series
-        events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:25:00Z"), Instant.parse("2020-01-28T16:35:00Z"));
+        events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:25:00Z"),
+                Instant.parse("2020-01-28T16:35:00Z"));
         assertNotNull(events);
         assertEquals(events.size(), eventCount);
         for (Event event : events) {
             List<CommandTag> cmdTags = event.commandTags;
             assertEquals(cmdTags.size(), tagsPerEvent);
             int endTags = 0;
-            for (CommandTag cmdTag : cmdTags) { 
+            for (CommandTag cmdTag : cmdTags) {
                 if (cmdTag.tagType == CommandTagType.END) {
                     assertTrue(cmdTag.isAuthorized("abc"));
-                    assertTrue(cmdTag.itemName.matches("^\\w+$"));
+                    String targetItemName = cmdTag.itemName;
+                    assertNotNull(targetItemName);
+                    assertTrue(targetItemName.matches("^\\w+$"));
                     assertTrue(cmdTag.getCommand() != null);
                     endTags++;
                 }
@@ -216,12 +227,14 @@ public class BiweeklyPresentableCalendarTest {
             assertEquals(endTags, tagsPerEvent / 2);
         }
 
-        // test outside of window: ended events, too early 
-        events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:20:00Z"), Instant.parse("2020-01-28T16:25:00Z"));
+        // test outside of window: ended events, too early
+        events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:20:00Z"),
+                Instant.parse("2020-01-28T16:25:00Z"));
         assertNull(events);
 
-        // test outside of window: ended events, too late 
-        events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:35:00Z"), Instant.parse("2020-01-28T16:40:00Z"));
+        // test outside of window: ended events, too late
+        events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:35:00Z"),
+                Instant.parse("2020-01-28T16:40:00Z"));
         assertNull(events);
     }
 
