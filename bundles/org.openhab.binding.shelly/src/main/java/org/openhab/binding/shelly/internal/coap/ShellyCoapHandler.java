@@ -107,7 +107,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 coapServer.addListener(this);
 
                 statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
-                        .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
+                        .setTimeout((long) SHELLY_API_READ_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
 
                 coapServer.start();
             }
@@ -698,6 +698,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @param sensorId The id from the sensor update
      * @return Index of found entry (+1 will be the suffix for the channel name) or null if sensorId is not found
      */
+    @SuppressWarnings("null")
     @Nullable
     private Integer getInputId(String sensorId) {
         Integer idx = 0;

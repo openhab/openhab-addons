@@ -451,7 +451,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         if (!propertyUpdates.isEmpty()) {
-            updateProperties(propertyUpdates);
+            flushProperties(propertyUpdates);
         }
     }
 
@@ -790,8 +790,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             thingProperties.put(property.getKey(), (String) property.getValue());
         }
-        updateProperties(thingProperties);
-        logger.trace("{}: Properties updated", thingName);
+        flushProperties(thingProperties);
     }
 
     /**
@@ -811,8 +810,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         logger.trace("{}: Properties updated", thingName);
     }
 
-    @Override
-    public void updateProperties(Map<String, String> propertyUpdates) {
+    public void flushProperties(Map<String, String> propertyUpdates) {
         Map<String, String> thingProperties = editProperties();
         for (Map.Entry<String, String> property : propertyUpdates.entrySet()) {
             if (thingProperties.containsKey(property.getKey())) {
