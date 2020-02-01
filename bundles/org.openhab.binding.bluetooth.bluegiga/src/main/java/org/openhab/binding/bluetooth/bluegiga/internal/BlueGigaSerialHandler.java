@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +65,11 @@ public class BlueGigaSerialHandler {
      * The portName portName output stream.
      */
     private final OutputStream outputStream;
+    private final InputStream inputStream;
     private final Queue<BlueGigaUniqueCommand> sendQueue = new LinkedList<BlueGigaUniqueCommand>();
     private final Timer timer = new Timer();
     private Thread parserThread = null;
-    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("BlueGigaSerialHandler");
+    private final ScheduledExecutorService executor;
 
     /**
      * Transaction listeners are used internally to correlate the commands and responses
@@ -91,8 +92,11 @@ public class BlueGigaSerialHandler {
      */
     private boolean close = false;
 
-    public BlueGigaSerialHandler(final InputStream inputStream, final OutputStream outputStream) {
+    public BlueGigaSerialHandler(final InputStream inputStream, final OutputStream outputStream,
+            ScheduledExecutorService executor) {
+        this.executor = executor;
         this.outputStream = outputStream;
+        this.inputStream = inputStream;
 
         final int framecheckParams[] = new int[] { 0x00, 0x7F, 0xC0, 0xF8, 0xE0 };
 
@@ -188,6 +192,7 @@ public class BlueGigaSerialHandler {
      */
     public void close() {
         close(0);
+        logger.debug("Closed");
     }
 
     /**
@@ -198,14 +203,21 @@ public class BlueGigaSerialHandler {
     public void close(long timeout) {
         close = true;
         cancelTransactionTimer();
-        executor.shutdownNow();
         timer.cancel();
         try {
             parserThread.interrupt();
-            parserThread.join(timeout);
+            Thread.sleep(50);
+            IOUtils.closeQuietly(outputStream);
+            IOUtils.closeQuietly(inputStream);
+            parserThread.join(0);
         } catch (InterruptedException e) {
             logger.warn("Interrupted in packet parser thread shutdown join.");
         }
+
+        sendQueue.clear();
+        transactionListeners.clear();
+        eventListeners.clear();
+        handlerListeners.clear();
     }
 
     /**
@@ -305,7 +317,7 @@ public class BlueGigaSerialHandler {
         boolean processed = false;
 
         for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
-            if (listener.transactionEvent(response)) {
+            if (listener.transactionEvent(response, ongoingTransactionId)) {
                 processed = true;
             }
         }
@@ -392,23 +404,29 @@ public class BlueGigaSerialHandler {
             }
 
             @Override
-            public boolean transactionEvent(BlueGigaResponse bleResponse) {
-                logger.debug("Expected transactionId: {}, ongoingTransactionId: {}", query.getTransactionId(),
-                        ongoingTransactionId);
-
-                if (ongoingTransactionId != query.getTransactionId()) {
-                    logger.debug("Ignore response as ongoingTransactionId {} doesn't match expected transactionId {}.",
-                            ongoingTransactionId, query.getTransactionId());
+            public boolean transactionEvent(BlueGigaResponse bleResponse, Integer transactionId) {
+                if (transactionId == null) {
+                    logger.debug("Transaction Id is null");
                     return false;
                 }
 
-                logger.debug("Expected response: {}, Received response: {}", expected.getSimpleName(), bleResponse);
+                logger.debug("Expected transactionId: {}, received transactionId: {}", query.getTransactionId(),
+                        transactionId);
+
+                if (transactionId != query.getTransactionId()) {
+                    logger.debug(
+                            "Ignore response as received transaction Id {} doesn't match expected transaction Id {}.",
+                            transactionId, query.getTransactionId());
+                    return false;
+                }
+
+                logger.debug("Expected response: {}, received response: {}", expected.getSimpleName(), bleResponse);
 
                 if (bleCommand instanceof BlueGigaDeviceCommand && bleResponse instanceof BlueGigaDeviceResponse) {
                     BlueGigaDeviceCommand devCommand = (BlueGigaDeviceCommand) bleCommand;
                     BlueGigaDeviceResponse devResponse = (BlueGigaDeviceResponse) bleResponse;
 
-                    logger.debug("Expected connection id: {}, Response connection id: {}", devCommand.getConnection(),
+                    logger.debug("Expected connection id: {}, response connection id: {}", devCommand.getConnection(),
                             devResponse.getConnection());
 
                     if (devCommand.getConnection() != devResponse.getConnection()) {
@@ -419,7 +437,6 @@ public class BlueGigaSerialHandler {
                 }
 
                 if (!expected.isInstance(bleResponse)) {
-                    // ignoring response if it was not requested
                     logger.debug("Ignoring {} response which has not been requested.",
                             bleResponse.getClass().getSimpleName());
                     return false;
@@ -544,7 +561,7 @@ public class BlueGigaSerialHandler {
     }
 
     interface BluetoothListener<T extends BlueGigaResponse> {
-        boolean transactionEvent(BlueGigaResponse response);
+        boolean transactionEvent(BlueGigaResponse response, Integer transactionId);
 
         boolean transactionTimeout(Integer transactionId);
     }

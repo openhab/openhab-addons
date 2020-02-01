@@ -21,11 +21,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -53,7 +57,6 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaConfiguration;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaEventListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaException;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaHandlerListener;
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaReschedulableTimer;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaSerialHandler;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaAttributeWriteCommand;
@@ -119,6 +122,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private final SerialPortManager serialPortManager;
 
+    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("BlueGiga");
+
     // The serial port.
     @Nullable
     private SerialPort serialPort;
@@ -157,13 +162,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // List of device listeners
     protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
 
-    private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
+    // private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
 
     private boolean initComplete = false;
 
     private @NonNullByDefault({}) ScheduledFuture<?> removeInactiveDevicesTask;
 
     private volatile boolean activeScanEnabled = false;
+
+    private @NonNullByDefault({}) Future<?> passiveScanIdleTimer;
 
     public BlueGigaBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
@@ -201,11 +208,10 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         logger.debug("Using configuration: {}", configuration);
 
         if (openSerialPort(configuration.port, 115200)) {
-            BlueGigaSerialHandler bgh = new BlueGigaSerialHandler(inputStream, outputStream);
+            BlueGigaSerialHandler bgh = new BlueGigaSerialHandler(inputStream, outputStream, executor);
             setBgHandler(bgh);
 
             updateStatus(ThingStatus.UNKNOWN);
-            passiveScanIdleTimer = new BlueGigaReschedulableTimer("BlueGigaPassiveScanIdleTimer", bgScanTask);
 
             try {
                 // Stop any procedures that are running
@@ -252,22 +258,42 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             bgh.removeHandlerListener(this);
             bgh.close();
             initComplete = false;
+            devices.clear();
+            connections.clear();
         } catch (IllegalStateException e) {
             // ignore if handler wasn't set at all
         }
         closeSerialPort();
     }
 
+    private void schedulePassiveScan() {
+        cancelScheduledPassiveScan();
+        passiveScanIdleTimer = executor.schedule(() -> {
+            if (!activeScanEnabled) {
+                logger.debug("Activate passive scan");
+                bgEndProcedure();
+                bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
+            } else {
+                logger.debug("Ignore passive scan activation as active scan is active");
+            }
+        }, configuration.passiveScanIdleTime, TimeUnit.MILLISECONDS);
+    }
+
+    private void cancelScheduledPassiveScan() {
+        if (passiveScanIdleTimer != null) {
+            passiveScanIdleTimer.cancel(true);
+        }
+    }
+
     private void startScheduledTasks() {
-        passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        schedulePassiveScan();
         logger.debug("Start scheduled task to remove inactive devices");
         removeInactiveDevicesTask = scheduler.scheduleWithFixedDelay(this::removeInactiveDevices, 1, 1,
                 TimeUnit.MINUTES);
     }
 
     private void stopScheduledTasks() {
-        passiveScanIdleTimer.cancel();
-        passiveScanIdleTimer = null;
+        cancelScheduledPassiveScan();
         removeInactiveDevicesTask.cancel(true);
     }
 
@@ -371,16 +397,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             try {
                 sp.disableReceiveTimeout();
                 sp.removeEventListener();
-                if (outputStream != null) {
-                    OutputStream os = outputStream;
-                    os.flush();
-                    os.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                logger.error("Error closing serial port.", e);
+                IOUtils.closeQuietly(outputStream);
+                IOUtils.closeQuietly(inputStream);
             } finally {
                 sp.close();
                 logger.debug("Closed serial port.");
@@ -431,7 +449,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         logger.debug("Start active scan");
         activeScanEnabled = true;
         // Stop the passive scan
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
         bgEndProcedure();
 
         // Start a active scan
@@ -451,7 +469,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         bgEndProcedure();
 
         // Start a passive scan after idle delay
-        passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+        schedulePassiveScan();
     }
 
     @Override
@@ -525,7 +543,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         }
 
         logger.debug("BlueGiga Connect: address {}.", address);
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
 
         // Connect...
         BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
@@ -547,7 +565,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     e.getMessage());
             return false;
         } finally {
-            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+            schedulePassiveScan();
         }
         return true;
     }
@@ -560,7 +578,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgDisconnect(int connectionHandle) {
         logger.debug("BlueGiga Disconnect: connection {}", connectionHandle);
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
         BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand();
         command.setConnection(connectionHandle);
 
@@ -573,7 +591,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     e.getMessage());
             return false;
         } finally {
-            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+            schedulePassiveScan();
         }
     }
 
@@ -596,7 +614,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgFindPrimaryServices(int connectionHandle) {
         logger.debug("BlueGiga FindPrimary: connection {}", connectionHandle);
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
         BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand();
         command.setConnection(connectionHandle);
         command.setStart(1);
@@ -612,7 +630,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     e.getMessage());
             return false;
         } finally {
-            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+            schedulePassiveScan();
         }
     }
 
@@ -624,7 +642,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgFindCharacteristics(int connectionHandle) {
         logger.debug("BlueGiga Find: connection {}", connectionHandle);
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
         BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand();
         command.setConnection(connectionHandle);
         command.setStart(1);
@@ -639,7 +657,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     e.getMessage());
             return false;
         } finally {
-            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+            schedulePassiveScan();
         }
     }
 
@@ -652,7 +670,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgReadCharacteristic(int connectionHandle, int handle) {
         logger.debug("BlueGiga Read: connection {}, handle {}", connectionHandle, handle);
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
         BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand();
         command.setConnection(connectionHandle);
         command.setChrHandle(handle);
@@ -666,7 +684,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     e.getMessage());
             return false;
         } finally {
-            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+            schedulePassiveScan();
         }
     }
 
@@ -680,7 +698,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgWriteCharacteristic(int connectionHandle, int handle, int[] value) {
         logger.debug("BlueGiga Write: connection {}, handle {}", connectionHandle, handle);
-        passiveScanIdleTimer.cancel();
+        cancelScheduledPassiveScan();
         BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand();
         command.setConnection(connectionHandle);
         command.setAttHandle(handle);
@@ -695,7 +713,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     e.getMessage());
             return false;
         } finally {
-            passiveScanIdleTimer.schedule(configuration.passiveScanIdleTime);
+            schedulePassiveScan();
         }
     }
 
