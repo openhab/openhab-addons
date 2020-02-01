@@ -39,6 +39,7 @@ public class SonyPS4BindingConstants {
     static final String CHANNEL_APPLICATION_NAME = "applicationName";
     static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
     static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
+    static final String CHANNEL_LOG_OUT = "logOut";
     static final String CHANNEL_KEY_UP = "keyUp";
     static final String CHANNEL_KEY_DOWN = "keyDown";
     static final String CHANNEL_KEY_RIGHT = "keyRight";

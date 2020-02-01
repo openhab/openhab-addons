@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 enum SonyPS4ErrorStatus {
     STATUS_OK(0x00, "Ok"),
+    STATUS_GAME_NOT_INSTALLED(0x0C, "Game not installed!"),
     STATUS_NOT_PAIRED(0x0E, "Not paired to PS4!"),
     STATUS_MISSING_PAIRING_CODE(0x14, "Missing pairing-code!"), // ??
     STATUS_WRONG_USER_CREDENTIAL(0x15, "Wrong user-credential!"),

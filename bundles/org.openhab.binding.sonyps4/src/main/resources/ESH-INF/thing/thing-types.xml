@@ -13,6 +13,7 @@
 			<channel id="applicationName" typeId="application-channel" />
 			<channel id="applicationTitleid" typeId="applicationId-channel" />
 			<channel id="applicationImage" typeId="applicationImage-channel" />
+			<channel id="logOut" typeId="logOut-channel" />
 			<channel id="keyUp" typeId="keyUp-channel" />
 			<channel id="keyDown" typeId="keyDown-channel" />
 			<channel id="keyRight" typeId="keyRight-channel" />
@@ -98,6 +99,11 @@
 		<label>Artwork</label>
 		<description>Application artwork channel.</description>
 		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="logOut-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Log out</label>
+		<description>Log out user from PS4.</description>
 	</channel-type>
 	<channel-type id="keyUp-channel" advanced="true">
 		<item-type>Switch</item-type>

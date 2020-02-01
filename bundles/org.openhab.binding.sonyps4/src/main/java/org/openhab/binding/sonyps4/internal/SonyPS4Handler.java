@@ -19,7 +19,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
@@ -64,7 +63,6 @@ public class SonyPS4Handler extends BaseThingHandler {
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
     private static final int MIN_SENDKEY_DELAY = 250; // min delay between sendKey sends
     private static final int MIN_HOLDKEY_DELAY = 300; // min delay after Key set
-    private static final boolean SHOULD_LOGIN = true;
 
     private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
 
@@ -88,7 +86,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         super.handleConfigurationUpdate(configurationParameters);
         if (!config.pairingCode.isEmpty()) {
             logger.debug("Pairing to PS4.");
-            if (pairPS4()) {
+            if (pairDevice()) {
                 // If we are paired, remove pairing code as it's one use only.
                 Configuration editedConfig = editConfiguration();
                 editedConfig.put(SonyPS4Configuration.PAIRING_CODE, "");
@@ -107,7 +105,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 if (currentPower.equals(OnOffType.ON)) {
                     turnOnPS4();
                 } else if (currentPower.equals(OnOffType.OFF)) {
-                    turnOffPS4();
+                    standby();
                 }
             }
             if (CHANNEL_APPLICATION_TITLEID.equals(channelUID.getId()) && command instanceof StringType) {
@@ -117,6 +115,9 @@ public class SonyPS4Handler extends BaseThingHandler {
                 }
             }
             if (command instanceof OnOffType) {
+                if (CHANNEL_LOG_OUT.equals(channelUID.getId())) {
+                    logOut();
+                }
                 if (CHANNEL_KEY_UP.equals(channelUID.getId())) {
                     sendRemoteKey(PS4_KEY_UP);
                 }
@@ -212,13 +213,10 @@ public class SonyPS4Handler extends BaseThingHandler {
             byte[] rxbuf = new byte[256];
             packet = new DatagramPacket(rxbuf, rxbuf.length);
             socket.receive(packet);
-            parsePacket(packet);
-        } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Communication timeout: {}", e.getMessage());
+            parseSearchResponse(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Fetch status exception: {}", e.getMessage());
         }
     }
 
@@ -233,7 +231,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.send(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Wake up PS4 exception: {}", e.getMessage());
         }
     }
 
@@ -248,7 +246,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             return true;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Open coms exception: {}", e.getMessage());
         }
         return false;
     }
@@ -261,8 +259,8 @@ public class SonyPS4Handler extends BaseThingHandler {
         // TODO Loop here a couple of times and check if we are connected.
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            logger.info("Login interrupted: {}", e1);
+        } catch (InterruptedException e) {
+            logger.info("Login interrupted: {}", e.getMessage());
         }
         channel.connect(new InetSocketAddress(hostName, currentComPort));
         channel.finishConnect();
@@ -295,6 +293,9 @@ public class SonyPS4Handler extends BaseThingHandler {
         readBuffer.clear();
         responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
+            byte[] respBuff = new byte[readBuffer.position()];
+            readBuffer.position(0);
+            readBuffer.get(respBuff, 0, responseLength);
             int result = ps4PacketHandler.parseEncryptedPacket(readBuffer);
             SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(result);
             if (status != null) {
@@ -322,7 +323,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 }
                 logger.info("Not logged in: {}", status.message);
             } else {
-                logger.info("Error code in response:{}", result);
+                logger.info("Error code in login response:{}", result);
             }
         } else {
             logger.debug("No login response!");
@@ -330,31 +331,58 @@ public class SonyPS4Handler extends BaseThingHandler {
         return false;
     }
 
-    private void turnOnPS4() {
-        wakeUpPS4();
-        if (!SHOULD_LOGIN) {
+    private void logOut() {
+        if (!openComs()) {
             return;
         }
+        try (SocketChannel channel = SocketChannel.open()) {
+            if (!login(channel)) {
+                return;
+            }
+
+            // Send logout request
+            logger.debug("Sending logout packet");
+            ByteBuffer outPacket = ps4PacketHandler.makeLogoutPacket();
+            channel.write(outPacket);
+
+            // Read logout response
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                logger.debug("Logout response: {}", respBuff);
+                ps4PacketHandler.parseEncryptedPacket(readBuffer);
+            } else {
+                logger.warn("No logout response!");
+            }
+
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("Log out exception: {}", e.getMessage());
+        }
+    }
+
+    private void turnOnPS4() {
+        wakeUpPS4();
         try {
             Thread.sleep(15000);
-        } catch (InterruptedException e1) {
-            logger.debug("Login interrupted: {}", e1);
+        } catch (InterruptedException e) {
+            logger.debug("Login interrupted: {}", e.getMessage());
         }
         if (!openComs()) {
             return;
         }
         try (SocketChannel channel = SocketChannel.open()) {
             login(channel);
-        } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Communication timeout: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Turn on PS4 exception: {}", e.getMessage());
         }
     }
 
-    private void turnOffPS4() {
+    private void standby() {
         if (!openComs()) {
             return;
         }
@@ -364,7 +392,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             }
 
             // Send standby request
-            logger.debug("PS4 sending standby packet");
+            logger.debug("Sending standby packet");
             ByteBuffer outPacket = ps4PacketHandler.makeStandbyPacket();
             channel.write(outPacket);
 
@@ -381,27 +409,21 @@ public class SonyPS4Handler extends BaseThingHandler {
                 logger.warn("No standby response!");
             }
 
-        } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Communication timeout: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Standby exception: {}", e.getMessage());
         }
     }
 
-    private boolean pairPS4() {
+    private boolean pairDevice() {
         if (!openComs()) {
             return false;
         }
         try (SocketChannel channel = SocketChannel.open()) {
             return login(channel);
-        } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Communication timeout: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Pair device exception: {}", e.getMessage());
         }
         return false;
     }
@@ -416,7 +438,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             }
 
             // Send application request
-            logger.debug("PS4 sending application packet");
+            logger.debug("Sending app start packet");
             ByteBuffer outPacket = ps4PacketHandler.makeApplicationPacket(applicationId);
             channel.write(outPacket);
 
@@ -430,15 +452,12 @@ public class SonyPS4Handler extends BaseThingHandler {
                 logger.debug("App start response: {}", respBuff);
                 ps4PacketHandler.parseEncryptedPacket(readBuffer);
             } else {
-                logger.debug("PS4 no application response!");
+                logger.debug("No app start response!");
             }
 
-        } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Communication timeout: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("Start application exception: {}", e.getMessage());
         }
     }
 
@@ -451,51 +470,46 @@ public class SonyPS4Handler extends BaseThingHandler {
                 return;
             }
 
-            try {
-                Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
-                logger.debug("Sending remoteKey");
-                ByteBuffer outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
-                channel.write(outPacket);
-                Thread.sleep(MIN_SENDKEY_DELAY);
+            Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
+            logger.debug("Sending remoteKey");
+            ByteBuffer outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
+            channel.write(outPacket);
+            Thread.sleep(MIN_SENDKEY_DELAY);
 
-                // Send remote key
-                outPacket = ps4PacketHandler.makeRemoteControlPacket(pushedKey);
-                channel.write(outPacket);
-                Thread.sleep(MIN_HOLDKEY_DELAY);
+            // Send remote key
+            outPacket = ps4PacketHandler.makeRemoteControlPacket(pushedKey);
+            channel.write(outPacket);
+            Thread.sleep(MIN_HOLDKEY_DELAY);
 
-                outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
-                channel.write(outPacket);
-                Thread.sleep(MIN_SENDKEY_DELAY);
+            outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
+            channel.write(outPacket);
+            Thread.sleep(MIN_SENDKEY_DELAY);
 
-                outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
-                channel.write(outPacket);
+            outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
+            channel.write(outPacket);
 
-                // Read remoteKey response
-                final ByteBuffer readBuffer = ByteBuffer.allocate(512);
-                int responseLength = channel.read(readBuffer);
-                if (responseLength > 0) {
-                    byte[] respBuff = new byte[responseLength];
-                    readBuffer.position(0);
-                    readBuffer.get(respBuff, 0, responseLength);
-                    logger.debug("RemoteKey response: {}", respBuff);
-                    ps4PacketHandler.parseEncryptedPacket(readBuffer);
-                } else {
-                    logger.warn("No remoteKey response!");
-                }
-
-            } catch (InterruptedException e1) {
-                logger.debug("RemoteKey interrupted: {}", e1);
+            // Read remoteKey response
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512);
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                logger.debug("RemoteKey response: {}", respBuff);
+                ps4PacketHandler.parseEncryptedPacket(readBuffer);
+            } else {
+                logger.warn("No remoteKey response!");
             }
-        } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Communication timeout: {}", e.getMessage());
+
+        } catch (InterruptedException e) {
+            logger.debug("RemoteKey interrupted: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("PS4 not found: {}", e.getMessage());
+            logger.debug("RemoteKey exception: {}", e.getMessage());
         }
     }
 
-    private void parsePacket(DatagramPacket packet) {
+    private void parseSearchResponse(DatagramPacket packet) {
         byte[] data = packet.getData();
         String message = new String(data, StandardCharsets.UTF_8);
         String applicationName = "";
