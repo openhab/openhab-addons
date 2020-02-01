@@ -106,7 +106,16 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         SET_LEVEL(0x10, LIGHTWAVERF, IT),
         COLOUR_PALETTE(0x11, LIGHTWAVERF),
         COLOUR_TONE(0x12, LIGHTWAVERF),
-        COLOUR_CYCLE(0x13, LIGHTWAVERF);
+        COLOUR_CYCLE(0x13, LIGHTWAVERF),
+        TOGGLE_1(0x01, LIVOLO_APPLIANCE),
+        TOGGLE_2(0x02, LIVOLO_APPLIANCE),
+        TOGGLE_3(0x03, LIVOLO_APPLIANCE),
+        TOGGLE_4(0x04, LIVOLO_APPLIANCE),
+        TOGGLE_5(0x07, LIVOLO_APPLIANCE),
+        TOGGLE_6(0x0B, LIVOLO_APPLIANCE),
+        TOGGLE_7(0x06, LIVOLO_APPLIANCE),
+        TOGGLE_8(0x0A, LIVOLO_APPLIANCE),
+        TOGGLE_9(0x05, LIVOLO_APPLIANCE);
 
         private final int command;
         private final List<SubType> supportedBySubTypes;
