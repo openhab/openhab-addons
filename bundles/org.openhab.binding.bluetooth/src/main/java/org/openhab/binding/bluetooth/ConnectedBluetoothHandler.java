@@ -192,26 +192,31 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
                 updateBatteryLevel(characteristic);
             } else {
-                logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(), address,
-                        HexUtils.bytesToHex(characteristic.getByteValue()));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(),
+                            address, HexUtils.bytesToHex(characteristic.getByteValue()));
+                }
             }
         } else {
             logger.debug("Characteristic {} from {} has been read - ERROR", characteristic.getUuid(), address);
-            return;
         }
     }
 
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
             BluetoothCompletionStatus status) {
-        logger.debug("Wrote {} to characteristic {} of device {}: {}",
-                HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Wrote {} to characteristic {} of device {}: {}",
+                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
+        }
     }
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        logger.debug("Recieved update {} to characteristic {} of device {}",
-                HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Recieved update {} to characteristic {} of device {}",
+                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
+        }
         if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
             updateBatteryLevel(characteristic);
         }
@@ -219,8 +224,10 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor descriptor) {
-        logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(descriptor.getValue()),
-                descriptor.getUuid(), address);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(descriptor.getValue()),
+                    descriptor.getUuid(), address);
+        }
     }
 
     protected void updateBatteryLevel(BluetoothCharacteristic characteristic) {
