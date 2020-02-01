@@ -75,6 +75,7 @@ This list is just an example how the mapping looks like for some of the devices,
 | Dual IR 3a               | Internet Radio | Spotify                 | -         | Music Player | DAB Radio | FM Radio | Bluetooth    | -         | -         | -      |
 | Silvercrest SIRD 14 C2   | Internet Radio | TIDAL                   | Deezer    | Qobuz        | Spotify   | -        | Music Player | DAB Radio | FM Radio  | AUX in |
 | Auna KR200 Kitchen Radio | Internet Radio | Spotify                 | -         | Music Player | DAB Radio | FM Radio | AUX in       | -         | -         | -      |
+| Hama DIR3505MSCBT        | Internet Radio | Amazon Music            | Spotify   | -            | Player    | DAB      | FM Radio     | AUX in    | Bluetooth | CD     |
 
 
 ## Full Example
