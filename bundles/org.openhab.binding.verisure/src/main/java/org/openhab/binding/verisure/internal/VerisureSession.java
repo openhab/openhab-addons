@@ -39,6 +39,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.model.VerisureAlarms;
 import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
 import org.openhab.binding.verisure.internal.model.VerisureClimates;
@@ -238,13 +241,14 @@ public class VerisureSession {
 
     public @Nullable String getCsrfToken(@Nullable BigDecimal installationId) {
         String subString = null;
-        String source = null;
+        String html = null;
         String url = SETTINGS + installationId.toString();
         logger.debug("Settings URL: {}", url);
+
         try {
             ContentResponse resp = httpClient.GET(url);
-            source = resp.getContentAsString();
-            logger.trace("{} html: {}", url, source);
+            html = resp.getContentAsString();
+            logger.trace("{} html: {}", url, html);
         } catch (ExecutionException e) {
             logger.warn("Caught ExecutionException {}", e.getMessage(), e);
             return null;
@@ -256,14 +260,9 @@ public class VerisureSession {
             return null;
         }
 
-        try {
-            int labelIndex = source.indexOf("_csrf\" value=");
-            subString = source.substring(labelIndex + 14, labelIndex + 78);
-            logger.debug("csrf-token: {}", subString);
-        } catch (IndexOutOfBoundsException e) {
-            logger.debug("Exception caught when parsing csrf {}", e.getMessage(), e);
-        }
-        return subString;
+        Document htmlDocument = Jsoup.parse(html);
+        Element nameInput = htmlDocument.select("input[name=_csrf]").first();
+        return nameInput.attr("value");
     }
 
     public @Nullable String getPinCode(@Nullable BigDecimal installationId) {
@@ -604,6 +603,18 @@ public class VerisureSession {
         }
     }
 
+    private void notifyListenersIfChanged(VerisureThing thing, VerisureInstallation installation, String deviceId) {
+        deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+        thing.setDeviceId(deviceId);
+        VerisureThing oldObj = verisureThings.get(deviceId);
+        if (oldObj == null || !oldObj.equals(thing)) {
+            thing.setSiteId(installation.getInstallationId());
+            thing.setSiteName(installation.getInstallationName());
+            verisureThings.put(thing.getDeviceId(), thing);
+            notifyListeners(thing);
+        }
+    }
+
     private synchronized void updateSmartLockStatus(Class<? extends VerisureThing> jsonClass,
             @Nullable VerisureInstallation installation) {
         if (installation != null) {
@@ -631,21 +642,15 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = doorLock.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        slThing.setDeviceId(deviceId);
                         // Set location
                         slThing.setLocation(doorLock.getDevice().getArea());
+                        slThing.setDeviceId(deviceId);
                         // Fetch more info from old endpoint
                         VerisureSmartLock smartLockThing = getJSONVerisureAPI(SMARTLOCK_PATH + slThing.getDeviceId(),
                                 VerisureSmartLock.class);
                         logger.debug("REST Response ({})", smartLockThing);
                         slThing.setSmartLockJSON(smartLockThing);
-                        VerisureThing oldObj = verisureThings.get(slThing.getDeviceId());
-                        if (oldObj == null || !oldObj.equals(slThing)) {
-                            slThing.setSiteId(installation.getInstallationId());
-                            slThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(slThing.getDeviceId(), slThing);
-                            notifyListeners(slThing);
-                        }
+                        notifyListenersIfChanged(slThing, installation, deviceId);
                     }
                 }
             } else {
@@ -669,27 +674,20 @@ public class VerisureSession {
             if (thing != null && thing.getData() != null) {
                 List<VerisureSmartPlugs.Smartplug> smartPlugList = thing.getData().getInstallation().getSmartplugs();
                 for (VerisureSmartPlugs.Smartplug smartPlug : smartPlugList) {
-                    VerisureSmartPlugs slThing = new VerisureSmartPlugs();
+                    VerisureSmartPlugs spThing = new VerisureSmartPlugs();
                     VerisureSmartPlugs.Installation inst = new VerisureSmartPlugs.Installation();
                     List<VerisureSmartPlugs.Smartplug> list = new ArrayList<VerisureSmartPlugs.Smartplug>();
                     list.add(smartPlug);
                     inst.setSmartplugs(list);
                     VerisureSmartPlugs.Data data = new VerisureSmartPlugs.Data();
                     data.setInstallation(inst);
-                    slThing.setData(data);
+                    spThing.setData(data);
                     // Set unique deviceID
                     String deviceId = smartPlug.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        slThing.setDeviceId(deviceId);
                         // Set location
-                        slThing.setLocation(smartPlug.getDevice().getArea());
-                        VerisureThing oldObj = verisureThings.get(slThing.getDeviceId());
-                        if (oldObj == null || !oldObj.equals(slThing)) {
-                            slThing.setSiteId(installation.getInstallationId());
-                            slThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(slThing.getDeviceId(), slThing);
-                            notifyListeners(slThing);
-                        }
+                        spThing.setLocation(smartPlug.getDevice().getArea());
+                        notifyListenersIfChanged(spThing, installation, deviceId);
                     }
                 }
             } else {
@@ -739,16 +737,9 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        cThing.setDeviceId(deviceId);
                         // Set location
                         cThing.setLocation(climate.getDevice().getArea());
-                        VerisureThing oldObj = verisureThings.get(cThing.getDeviceId());
-                        if (oldObj == null || !oldObj.equals(cThing)) {
-                            cThing.setSiteId(installation.getInstallationId());
-                            cThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(cThing.getDeviceId(), cThing);
-                            notifyListeners(cThing);
-                        }
+                        notifyListenersIfChanged(cThing, installation, deviceId);
                     }
                 }
             } else {
@@ -784,16 +775,9 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = doorWindow.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        dThing.setDeviceId(deviceId);
                         // Set location
                         dThing.setLocation(doorWindow.getDevice().getArea());
-                        VerisureThing oldObj = verisureThings.get(dThing.getDeviceId());
-                        if (oldObj == null || !oldObj.equals(dThing)) {
-                            dThing.setSiteId(installation.getInstallationId());
-                            dThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(dThing.getDeviceId(), dThing);
-                            notifyListeners(dThing);
-                        }
+                        notifyListenersIfChanged(dThing, installation, deviceId);
                     }
                 }
             } else {
@@ -818,14 +802,7 @@ public class VerisureSession {
             if (thing != null) {
                 // Set unique deviceID
                 String deviceId = "bc" + installationId.toString();
-                thing.setDeviceId(deviceId);
-                VerisureThing oldObj = verisureThings.get(deviceId);
-                if (oldObj == null || !oldObj.equals(thing)) {
-                    thing.setSiteId(inst.getInstallationId());
-                    thing.setSiteName(inst.getInstallationName());
-                    verisureThings.put(deviceId, thing);
-                    notifyListeners(thing);
-                }
+                notifyListenersIfChanged(thing, inst, deviceId);
             } else {
                 logger.debug("Failed to update BroadbandConnection thing: {}", thing);
             }
@@ -861,14 +838,7 @@ public class VerisureSession {
                         upThing.setData(data);
                         // Set unique deviceID
                         String deviceId = "up" + userTracking.getWebAccount() + installationId.toString();
-                        upThing.setDeviceId(deviceId);
-                        VerisureThing oldObj = verisureThings.get(upThing.getDeviceId());
-                        if (oldObj == null || !oldObj.equals(upThing)) {
-                            upThing.setSiteId(installation.getInstallationId());
-                            upThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(upThing.getDeviceId(), upThing);
-                            notifyListeners(upThing);
-                        }
+                        notifyListenersIfChanged(upThing, installation, deviceId);
                     }
                 }
             } else {
@@ -902,21 +872,13 @@ public class VerisureSession {
                     VerisureMiceDetection.Data data = new VerisureMiceDetection.Data();
                     data.setInstallation(inst);
                     miceThing.setData(data);
-
                     // Set unique deviceID
                     String deviceId = mouse.getDevice().getDeviceLabel();
                     logger.debug("Mouse id: {} for thing: {}", deviceId, mouse);
                     if (deviceId != null) {
-                        miceThing.setDeviceId(deviceId);
                         // Set location
                         miceThing.setLocation(mouse.getDevice().getArea());
-                        VerisureThing oldObj = verisureThings.get(miceThing.getDeviceId());
-                        if (oldObj == null || !oldObj.equals(miceThing)) {
-                            miceThing.setSiteId(installation.getInstallationId());
-                            miceThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(miceThing.getDeviceId(), miceThing);
-                            notifyListeners(miceThing);
-                        }
+                        notifyListenersIfChanged(miceThing, installation, deviceId);
                     }
                 }
             } else {

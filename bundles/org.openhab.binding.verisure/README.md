@@ -1,11 +1,13 @@
 # Verisure Binding
 
-This is an OpenHAB binding for Versiure Alarm system, by Securitas Direct.
+This is an OpenHAB binding for Verisure Alarm system, by Securitas Direct.
 
 This binding uses the rest API behind the Verisure My Pages: 
+
 https://mypages.verisure.com/login.html.
 
 Be aware that Verisure don't approve if you update to often, I have gotten no complaints running with a 10 minutes update interval, but officially you should use 30 minutes.
+
 
 ## Supported Things
 
@@ -22,21 +24,30 @@ This binding supports the following thing types:
 - Door/Window Status
 - User Presence Status
 - Broadband Connection Status
+- Mice Detection Status (incl. climate)
 
 
 ## Binding Configuration
 
 You will have to configure the bridge with username and password, these must be the same credentials as used when logging into https://mypages.verisure.com. 
+
 You must also configure your pin-code(s) to be able to lock/unlock the SmartLock(s) and arm/unarm the Alarm(s). 
+
 **NOTE:** To be able to have full control over all SmartLock functionality, the user has to have Administrator rights.
 
 ## Discovery
 
-After the configuration of the Verisure Bridge all of the available Sensors, Alarms, SmartPlugs, SmartLocks and Climate devices will be discovered and placed as things in the inbox.
+After the configuration of the Verisure Bridge all of the available Sensors, Alarms, SmartPlugs, SmartLocks, Climate and Mice Detection devices will be discovered and placed as things in the inbox.
 
 ## Thing Configuration
 
 Only the bridge require manual configuration. The devices and sensors can be added by hand, or you can let the discovery mechanism automatically find all of your Verisure things.
+
+## Enable Debugging
+
+To enable DEBUG logging for the binding, login to Karaf console and enter:
+
+`openhab> log:set DEBUG org.openhab.binding.verisure`
 
 ## Supported Things and Channels 
 
@@ -44,14 +55,14 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   username - The username used to connect to http://mypage.verisure.com
+*   `username` - The username used to connect to http://mypage.verisure.com
     * The user has to have Administrator rights to have full SmartLock functionality
 
-*   password - The password used to connect to http://mypage.verisure.com
+*   `password` - The password used to connect to http://mypage.verisure.com
 
-*   refresh - Specifies the refresh interval in seconds
+*   `refresh` - Specifies the refresh interval in seconds
 
-*   pin - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
+*   `pin` - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
     * Two installations where the first listed installation uses a 6 digit pin-code and second listed installation uses a 4 digit pin-code: 123456,1234
 
 
@@ -68,7 +79,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on installation ID 123456789: 'alarm123456789'. Installation ID can be found using DEBUG log settings
 
 #### Channels
@@ -88,7 +99,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
@@ -113,7 +124,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
@@ -132,7 +143,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App)
 
 #### Channels
@@ -153,7 +164,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
@@ -172,7 +183,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
@@ -191,7 +202,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
@@ -210,7 +221,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
+*   `deviceId` - Device Id
     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
@@ -229,8 +240,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
-    *   Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address test@gmail.com: 'uptestgmailcom123456789'. Installation ID can be found using DEBUG log settings.
+*   `deviceId` - Device Id
+    *  Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address test@gmail.com: 'uptestgmailcom123456789'. Installation ID can be found using DEBUG log settings.
 
 #### Channels
 
@@ -250,8 +261,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
-    *   Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on site id 123456789: 'bc123456789'. Installation ID can be found using DEBUG log settings.
+*   `deviceId` - Device Id
+    *  Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on site id 123456789: 'bc123456789'. Installation ID can be found using DEBUG log settings.
 
 #### Channels
 
@@ -268,8 +279,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 #### Configuration Options
 
-*   deviceId - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+*   `deviceId` - Device Id
+    *  Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -277,9 +288,9 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID | Item Type | Description                                                                         | 
 |-----------------|-----------|-------------------------------------------------------------------------------------|                                                                                                                                          
-| countLatestDetection| Number| This channel reports the number of mice counts the latest detection.                | 
-| countLast24Hours| Number    | This channel reports the number of mice counts the last 24 hours.                   |
-| durationLatestDetection| Number:Time | This channel reports the detection duration in min of last detection.      |
+| countLatestDetection| Number| This channel reports the number of mice counts the latest detection during last 24. | 
+| countLast24Hours| Number    | This channel reports the total number of mice counts the last 24h.                  |
+| durationLatestDetection| Number:Time | This channel reports the detection duration in min of latest detection.    |
 | durationLast24Hours| Number:Time | This channel reports the total detection duration in min for the last 24 hours.|
 | timestamp       | DateTime  | This channel reports time for the last mouse detection.                             |
 | temperature     | Number:Temperature | This channel reports the temperature.                                      |
@@ -337,6 +348,16 @@ String UserLocationNameGlava           "User Location Name Glava"      {channel=
 // Broadband Connection
 String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:myverisure:bc123456789:connected"}
 
+// Verisure Mice Detection
+Number MouseCountLastDetection          "Mouse Count Last Detection"  (gVerisureMiceDetection)     {channel="verisure:miceDetection:myverisure:2CFZH80U:countLatestDetection"}
+Number MouseCountLast24Hours            "Mouse Count Last 24 Hours"    (gVerisureMiceDetection)   {channel="verisure:miceDetection:myverisure:2CFZH80U:countLast24Hours"}
+DateTime MouseLastDetectionTime         "Mouse Last Detection Time [%1$tY-%1$tm-%1$td %1$tR]" (gVerisureMiceDetection) {channel="verisure:miceDetection:myverisure:2CFZH80U:timestamp"}
+Number MouseDurationLastDetection       "Mouse Duration Last Detection"    (gVerisureMiceDetection)   {channel="verisure:miceDetection:myverisure:2CFZH80U:durationLatestDetection"}
+Number MouseDurationLast24Hours         "Mouse Duration Last 24 Hours"    (gVerisureMiceDetection)   {channel="verisure:miceDetection:myverisure:2CFZH80U:durationLast24Hours"}
+Number MouseDetectionTemperature        "Mouse Detection Temperature [%.1f C]"  <temperature> (gTemperaturesVerisure, gVerisureMiceDetection) ["CurrentTemperature"] {channel="verisure:miceDetection:myverisure:2CFZH80U:temperature"}
+DateTime MouseDetectionTemperatureTime  "Mouse Detection Temperature Time [%1$tY-%1$tm-%1$td %1$tR]" (gVerisureMiceDetection) {channel="verisure:miceDetection:myverisure:2CFZH80U:temperatureTimestamp"}
+String MouseDetectionLocation           "Mouse Detection Location"      (gVerisureMiceDetection)   {channel="verisure:miceDetection:myverisure:2CFZH80U:location"}
+
 ````
 
 ### Sitemap
@@ -392,5 +413,9 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
 			}
 		}
 	}
+	
+	Frame label="Mice Detection" {
+            Group item=gVerisureMiceDetection label="Verisure Mice Detection"
+    }
     
 ````

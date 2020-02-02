@@ -573,8 +573,8 @@
 
 	<channel-type id="countLatestDetection">
 		<item-type>Number</item-type>
-		<label>Mouse Count Last Detection</label>
-		<description>Mouse count last detection.</description>
+		<label>Mouse Count Latest Detection</label>
+		<description>Mouse count latest detection during last 24 hours.</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 

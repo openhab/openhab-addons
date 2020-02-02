@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.verisure.internal;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,7 +21,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
@@ -37,7 +34,6 @@ import org.openhab.binding.verisure.internal.handler.VerisureMiceDetectionHandle
 import org.openhab.binding.verisure.internal.handler.VerisureSmartLockThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureSmartPlugThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureUserPresenceThingHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -49,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Further development
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.verisure")
@@ -72,9 +69,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
         SUPPORTED_THING_TYPES.addAll(VerisureMiceDetectionHandler.SUPPORTED_THING_TYPES);
     }
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
-
     private @NonNullByDefault({}) HttpClient httpClient;
 
     @Override
