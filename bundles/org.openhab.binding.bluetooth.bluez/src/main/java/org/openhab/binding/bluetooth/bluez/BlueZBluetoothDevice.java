@@ -49,7 +49,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBluetoothDevice.class);
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth.bluez");
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
     private long lastSeenTime;
 
