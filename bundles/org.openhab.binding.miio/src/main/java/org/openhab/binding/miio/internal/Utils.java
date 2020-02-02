@@ -106,9 +106,14 @@ public final class Utils {
     @NonNullByDefault
     public List<URL> findDatabaseFiles(Logger logger) {
         List<URL> urlEntries = new ArrayList<>();
+        String userDbFolder = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID;
         try {
-            File[] userDbFiles = new File(ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID)
-                    .listFiles((dir, name) -> name.endsWith(".json"));
+            new File(userDbFolder).mkdirs();
+        } catch (SecurityException e) {
+            logger.debug("Error while creating folder '{}' for local database files: {}", userDbFolder, e.getMessage());
+        }
+        try {
+            File[] userDbFiles = new File(userDbFolder).listFiles((dir, name) -> name.endsWith(".json"));
             if (userDbFiles != null) {
                 for (File f : userDbFiles) {
                     urlEntries.add(f.toURI().toURL());
