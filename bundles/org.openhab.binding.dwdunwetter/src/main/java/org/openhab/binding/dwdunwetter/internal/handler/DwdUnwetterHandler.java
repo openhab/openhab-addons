@@ -54,6 +54,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     private @Nullable DwdWarningsData data;
 
     private boolean inRefresh;
+    private boolean initializing;
 
     public DwdUnwetterHandler(Thing thing) {
         super(thing);
@@ -68,21 +69,43 @@ public class DwdUnwetterHandler extends BaseThingHandler {
 
     /**
      * Refreshes the Warning Data.
-     * <p>
+     *
      * The Switch Channel is switched to ON only after all other Channels are updated.
      * The Switch Channel is switched to OFF before all other Channels are updated.
      */
     private void refresh() {
-        if (inRefresh
-                || (getThing().getStatus() != ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.UNKNOWN)) {
+        if (inRefresh) {
+            logger.trace("Already refreshing. Ignoring refresh request.");
             return;
         }
-        final DwdWarningsData warningsData = this.data;
+
+        if (initializing) {
+            logger.trace("Still initializing. Ignoring refresh request.");
+            return;
+        }
+
+        ThingStatus status = getThing().getStatus();
+        if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
+            logger.debug("Unable to refresh. Thing status is {}", status);
+            return;
+        }
+
+        final DwdWarningsData warningsData = data;
+        if (warningsData == null) {
+            logger.debug("Unable to refresh. No data to use.");
+            return;
+        }
+
         inRefresh = true;
-        if (warningsData == null || !warningsData.refresh()) {
+
+        boolean refreshSucceeded = warningsData.refresh();
+        if (!refreshSucceeded) {
+            logger.debug("Failed to retrieve new data from the server.");
+            inRefresh = false;
             return;
         }
-        if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+
+        if (status == ThingStatus.UNKNOWN) {
             updateStatus(ThingStatus.ONLINE);
         }
 
@@ -111,6 +134,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
                 triggerChannel(getChannelUuid(CHANNEL_UPDATED, i), "NEW");
             }
         }
+
         warningsData.updateCache();
         inRefresh = false;
     }
@@ -118,6 +142,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
+        initializing = true;
         updateStatus(ThingStatus.UNKNOWN);
 
         DwdUnwetterConfiguration config = getConfigAs(DwdUnwetterConfiguration.class);
@@ -128,6 +153,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
         updateThing(editThing().withChannels(createChannels()).build());
 
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
+        initializing = false;
         logger.debug("Finished initializing!");
     }
 
@@ -201,8 +227,10 @@ public class DwdUnwetterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        final ScheduledFuture<?> job = refreshJob;
+
+        if (job != null) {
+            job.cancel(true);
         }
         super.dispose();
     }
