@@ -8,7 +8,7 @@ Regions outside of Germany are not supported.
 ## Supported Things
 
 This binding supports one thing, the Weather Warning.
-Each Thin provides one or more warnings for a city.
+Each Thing provides one or more warnings for a city.
 
 
 ## Thing Configuration
