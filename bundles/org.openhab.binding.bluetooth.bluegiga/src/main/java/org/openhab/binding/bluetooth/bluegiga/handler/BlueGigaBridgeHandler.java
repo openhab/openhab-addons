@@ -162,8 +162,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // List of device listeners
     protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
 
-    // private @NonNullByDefault({}) BlueGigaReschedulableTimer passiveScanIdleTimer;
-
     private boolean initComplete = false;
 
     private @NonNullByDefault({}) ScheduledFuture<?> removeInactiveDevicesTask;
@@ -176,20 +174,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         super(bridge);
         this.serialPortManager = serialPortManager;
     }
-
-    Runnable bgScanTask = new Runnable() {
-
-        @Override
-        public void run() {
-            if (!activeScanEnabled) {
-                logger.debug("Activate passive scan");
-                bgEndProcedure();
-                bgStartScanning(false, configuration.passiveScanInterval, configuration.passiveScanWindow);
-            } else {
-                logger.debug("Ignore passive scan activation as active scan is active");
-            }
-        }
-    };
 
     @Override
     public ThingUID getUID() {
@@ -428,7 +412,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     deviceDiscovered(device);
                 }
             } else {
-                logger.trace("Ignore BlueGigaScanResponseEvent as initialization is not complite");
+                logger.trace("Ignore BlueGigaScanResponseEvent as initialization is not complete");
             }
             return;
         }
