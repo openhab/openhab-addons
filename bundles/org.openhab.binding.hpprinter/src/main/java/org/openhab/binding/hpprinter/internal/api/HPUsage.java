@@ -79,7 +79,7 @@ public class HPUsage {
                     .getTextContent();
 
             int markAgentLength = currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength();
-            
+
             float totalMarking = 0;
             if (markAgentLength > 0) { // Check to make sure Cumulative Marking Agent exists
                 for (int ai = 0; ai < markAgentLength; ai++) {
@@ -87,14 +87,14 @@ public class HPUsage {
                             .item(ai);
 
                     float marking = Integer
-                            .valueOf(currMarking.getElementsByTagName("dd:ValueFloat").item(0).getTextContent());
+                            .parseInt(currMarking.getElementsByTagName("dd:ValueFloat").item(0).getTextContent());
 
                     switch (currMarking.getElementsByTagName("dd:Unit").item(0).getTextContent().toLowerCase()) {
-                    case "microliters":
-                        marking = marking / 1000; // Convert to litres
-                        break;
-                    case "liters":
-                        marking = marking * 1000; // Convert to millilitres
+                        case "microliters":
+                            marking = marking / 1000; // Convert to litres
+                            break;
+                        case "liters":
+                            marking = marking * 1000; // Convert to millilitres
                     }
 
                     totalMarking = totalMarking + marking; // Sum the marking counts together
@@ -102,64 +102,64 @@ public class HPUsage {
             }
 
             switch (inkName.toLowerCase()) {
-            case "black":
-                inkBlack = Integer.valueOf(inkRemaining);
-                inkBlackMarking = totalMarking;
-                break;
+                case "black":
+                    inkBlack = Integer.parseInt(inkRemaining);
+                    inkBlackMarking = totalMarking;
+                    break;
 
-            case "yellow":
-                inkYellow = Integer.valueOf(inkRemaining);
-                inkYellowMarking = totalMarking;
-                break;
+                case "yellow":
+                    inkYellow = Integer.parseInt(inkRemaining);
+                    inkYellowMarking = totalMarking;
+                    break;
 
-            case "magenta":
-                inkMagenta = Integer.valueOf(inkRemaining);
-                inkMagentaMarking = totalMarking;
-                break;
+                case "magenta":
+                    inkMagenta = Integer.parseInt(inkRemaining);
+                    inkMagentaMarking = totalMarking;
+                    break;
 
-            case "cyan":
-                inkCyan = Integer.valueOf(inkRemaining);
-                inkCyanMarking = totalMarking;
-                break;
+                case "cyan":
+                    inkCyan = Integer.parseInt(inkRemaining);
+                    inkCyanMarking = totalMarking;
+                    break;
 
-            case "cyanmagentayellow":
-                inkColor = Integer.valueOf(inkRemaining);
-                inkColorMarking = totalMarking;
-                break;
+                case "cyanmagentayellow":
+                    inkColor = Integer.parseInt(inkRemaining);
+                    inkColorMarking = totalMarking;
+                    break;
             }
         }
 
         // Get other usage info
         NodeList jamEvents = document.getDocumentElement().getElementsByTagName("dd:JamEvents");
         if (jamEvents.getLength() > 0)
-            this.jamEvents = Integer.valueOf(jamEvents.item(0).getTextContent());
+            this.jamEvents = Integer.parseInt(jamEvents.item(0).getTextContent());
 
         NodeList totalImpressions = document.getDocumentElement().getElementsByTagName("dd:TotalImpressions");
         if (totalImpressions.getLength() > 0)
-            this.totalImpressions = Integer.valueOf(totalImpressions.item(0).getTextContent());
+            this.totalImpressions = Integer.parseInt(totalImpressions.item(0).getTextContent());
 
         NodeList totalColorImpressions = document.getDocumentElement().getElementsByTagName("dd:ColorImpressions");
         if (totalColorImpressions.getLength() > 0)
-            this.totalColorImpressions = Integer.valueOf(totalColorImpressions.item(0).getTextContent());
+            this.totalColorImpressions = Integer.parseInt(totalColorImpressions.item(0).getTextContent());
 
         NodeList totalMonochromeImpressions = document.getDocumentElement()
                 .getElementsByTagName("dd:MonochromeImpressions");
         if (totalMonochromeImpressions.getLength() > 0)
-            this.totalMonochromeImpressions = Integer.valueOf(totalMonochromeImpressions.item(0).getTextContent());
+            this.totalMonochromeImpressions = Integer.parseInt(totalMonochromeImpressions.item(0).getTextContent());
 
         NodeList totalSubscriptionImpressions = document.getDocumentElement()
                 .getElementsByTagName("pudyn:SubscriptionImpressions");
         if (totalSubscriptionImpressions.getLength() > 0)
-            this.totalSubscriptionImpressions = Integer.valueOf(totalSubscriptionImpressions.item(0).getTextContent());
+            this.totalSubscriptionImpressions = Integer.parseInt(totalSubscriptionImpressions.item(0).getTextContent());
 
         NodeList mispickEvents = document.getDocumentElement().getElementsByTagName("dd:MispickEvents");
         if (mispickEvents.getLength() > 0)
-            this.mispickEvents = Integer.valueOf(mispickEvents.item(0).getTextContent());
+            this.mispickEvents = Integer.parseInt(mispickEvents.item(0).getTextContent());
 
         NodeList frontpanelCancelCount = document.getDocumentElement()
                 .getElementsByTagName("dd:TotalFrontPanelCancelPresses");
         if (frontpanelCancelCount.getLength() > 0)
-            this.frontpanelCancelCount = Integer.valueOf(frontpanelCancelCount.item(0).getTextContent());
+            this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
     }
 
     public int getFrontPanelCancelCount() {

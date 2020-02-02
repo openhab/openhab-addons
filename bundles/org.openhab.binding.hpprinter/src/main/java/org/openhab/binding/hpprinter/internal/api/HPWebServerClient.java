@@ -20,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult.RequestStatus;
@@ -30,33 +29,25 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * The {@link HPEmbeddedWebServerClient} is responsible for handling reading of data from the HP Embedded Web Server.
+ * The {@link HPWebServerClient} is responsible for handling reading of data from the HP Embedded Web Server.
  *
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
 public class HPWebServerClient {
-    
     private final Logger logger = LoggerFactory.getLogger(HPWebServerClient.class);
 
-    private @Nullable HttpClient httpClient;
-    private String serverAddress = "";
-
-    enum WebInterfaceType {
-        INVALID,
-        STANDARD,
-        SECURESOCKETS
-    }
+    private final HttpClient httpClient;
+    private final String serverAddress;
 
     /**
      * Creates a new HP Web Server Client object.
+     * 
      * @param httpClient {HttpClient} The HttpClient to use for HTTP requests.
      * @param address The address for the Embedded Web Server.
-     * @param ssl {Boolean} Use SSL (HTTPS) connections.
      */
-    public HPWebServerClient(@Nullable HttpClient httpClient, String address) {
+    public HPWebServerClient(HttpClient httpClient, String address) {
         this.httpClient = httpClient;
-
         serverAddress = "http://" + address;
 
         logger.debug("Create printer connection {}", serverAddress);
@@ -64,6 +55,7 @@ public class HPWebServerClient {
 
     /**
      * Gets the Status information from the Embedded Web Server.
+     * 
      * @return The status information.
      */
     public HPServerResult<HPStatus> getStatus() {
@@ -73,13 +65,14 @@ public class HPWebServerClient {
             ContentResponse cr = this.httpClient.GET(endpoint);
             logger.trace("HTTP Client Status Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
 
-            return new HPServerResult<HPStatus>(new HPStatus(new InputSource(new ByteArrayInputStream(cr.getContent()))));
+            return new HPServerResult<>(new HPStatus(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Status Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPStatus>(RequestStatus.TIMEOUT, new HPStatus());
-        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
+            return new HPServerResult<>(RequestStatus.TIMEOUT, new HPStatus());
+        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException
+                | IOException ex) {
             logger.trace("HTTP Client Status Exception {}", ex.getMessage());
-            return new HPServerResult<HPStatus>(RequestStatus.ERROR, new HPStatus());
+            return new HPServerResult<>(RequestStatus.ERROR, new HPStatus());
         }
     }
 
@@ -89,19 +82,20 @@ public class HPWebServerClient {
             logger.trace("HTTP Client Type GET {}", endpoint);
             ContentResponse cr = this.httpClient.GET(endpoint);
             logger.trace("HTTP Client Type Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
-
-            return new HPServerResult<HPType>(new HPType(new InputSource(new ByteArrayInputStream(cr.getContent()))));
+            return new HPServerResult<>(new HPType(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Type Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPType>(RequestStatus.TIMEOUT, new HPType());
-        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
+            return new HPServerResult<>(RequestStatus.TIMEOUT, new HPType());
+        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException
+                | IOException ex) {
             logger.trace("HTTP Client Type Exception {}", ex.getMessage());
-            return new HPServerResult<HPType>(RequestStatus.ERROR, new HPType());
+            return new HPServerResult<>(RequestStatus.ERROR, new HPType());
         }
     }
 
     /**
      * Gets the Usage information from the Embedded Web Server.
+     * 
      * @return The usage information.
      */
     public HPServerResult<HPUsage> getUsage() {
@@ -111,13 +105,14 @@ public class HPWebServerClient {
             ContentResponse cr = this.httpClient.GET(endpoint);
             logger.trace("HTTP Client Usage Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
 
-            return new HPServerResult<HPUsage>(new HPUsage(new InputSource(new ByteArrayInputStream(cr.getContent()))));
+            return new HPServerResult<>(new HPUsage(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Usage Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPUsage>(RequestStatus.TIMEOUT, new HPUsage());
-        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
+            return new HPServerResult<>(RequestStatus.TIMEOUT, new HPUsage());
+        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException
+                | IOException ex) {
             logger.trace("HTTP Client Usage Exception {}", ex.getMessage());
-            return new HPServerResult<HPUsage>(RequestStatus.ERROR, new HPUsage());
+            return new HPServerResult<>(RequestStatus.ERROR, new HPUsage());
         }
     }
 }

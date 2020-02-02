@@ -36,9 +36,12 @@ import org.xml.sax.SAXException;
 public class HPStatus {
     public static final String ENDPOINT = "/DevMgmt/ProductStatusDyn.xml";
 
-    private String printerStatus = "";
-    
+    private static final Map<String, String> STATUS_MESSAGES = initializeStatus();
+
+    private final String printerStatus;
+
     public HPStatus() {
+        printerStatus = "";
     }
 
     public HPStatus(InputSource source) throws ParserConfigurationException, SAXException, IOException {
@@ -49,26 +52,31 @@ public class HPStatus {
 
         NodeList nodes = document.getDocumentElement().getElementsByTagName("psdyn:Status");
 
+        String localPrinterStatus = null;
         for (int i = 0; i < nodes.getLength(); i++) {
             Element element = (Element) nodes.item(i);
-            if (element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent() != "genuineHP") {
-                printerStatus = getPrinterStatusMessage(
-                        element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent());
+            String statusCategory = element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent();
+            if (!"genuineHP".equals(statusCategory)) {
+                localPrinterStatus = getPrinterStatusMessage(statusCategory);
             }
         }
+        printerStatus = localPrinterStatus;
     }
 
     private String getPrinterStatusMessage(String statusMsg) {
-        Map<String, String> smap = new HashMap<>();
+        return STATUS_MESSAGES.getOrDefault(statusMsg, statusMsg);
+    }
 
-        smap.put("processing", "Printing");
-        smap.put("scanProcessing", "Scanning");
-        smap.put("inPowerSave", "Power Save");
-        smap.put("ready", "Idle");
-        smap.put("closeDoorOrCover", "Door/Cover Open");
-        smap.put("inkSystemInitializing", "Loading Ink");
+    private static Map<String, String> initializeStatus() {
+        Map<String, String> statusMap = new HashMap<>();
 
-        return smap.getOrDefault(statusMsg, statusMsg);
+        statusMap.put("processing", "Printing");
+        statusMap.put("scanProcessing", "Scanning");
+        statusMap.put("inPowerSave", "Power Save");
+        statusMap.put("ready", "Idle");
+        statusMap.put("closeDoorOrCover", "Door/Cover Open");
+        statusMap.put("inkSystemInitializing", "Loading Ink");
+        return statusMap;
     }
 
     public String getPrinterStatus() {

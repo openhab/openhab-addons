@@ -36,17 +36,20 @@ public class HPType {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
     private PrinterType printerType = PrinterType.UNKNOWN;
-    private boolean jamEvents = false;
-    private boolean mispickEvents = false;
-    private boolean subscriptionImpressions = false;
-    private boolean frontPanelCancel = false;
-    private boolean cumuMarking = false;
+    private boolean jamEvents;
+    private boolean mispickEvents;
+    private boolean subscriptionImpressions;
+    private boolean frontPanelCancel;
+    private boolean cumuMarking;
 
     public enum PrinterType {
-        UNKNOWN, MONOCHROME, SINGLECOLOR, MULTICOLOR
+        UNKNOWN,
+        MONOCHROME,
+        SINGLECOLOR,
+        MULTICOLOR
     }
 
-    public HPType() { 
+    public HPType() {
     }
 
     public HPType(InputSource source) throws ParserConfigurationException, SAXException, IOException {
@@ -68,41 +71,47 @@ public class HPType {
                 continue;
             }
 
-            if (currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength() > 0) 
-            cumuMarking = true;
+            if (currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength() > 0) {
+                cumuMarking = true;
+            }
 
             switch (inkName.toLowerCase()) {
-            case "cyan":
-            case "magenta":
-            case "yellow":
-                printerType = PrinterType.MULTICOLOR; // Is multicolor if it has this ink
-                break;
+                case "cyan":
+                case "magenta":
+                case "yellow":
+                    printerType = PrinterType.MULTICOLOR; // Is multicolor if it has this ink
+                    break;
 
-            case "cyanmagentayellow":
-                printerType = PrinterType.SINGLECOLOR; // Is singlecolor if it has this ink
-                break;
+                case "cyanmagentayellow":
+                    printerType = PrinterType.SINGLECOLOR; // Is singlecolor if it has this ink
+                    break;
 
-            case "black":
-                if (printerType == PrinterType.UNKNOWN)
-                    printerType = PrinterType.MONOCHROME; // Is Monochrome
-                break;
+                case "black":
+                    if (printerType == PrinterType.UNKNOWN) {
+                        printerType = PrinterType.MONOCHROME; // Is Monochrome
+                    }
+                    break;
             }
         }
 
         NodeList subUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
         Element currSubUnit = (Element) subUnit.item(0);
 
-        if (currSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0)
+        if (currSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0) {
             jamEvents = true;
+        }
 
-        if (currSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0)
+        if (currSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0) {
             mispickEvents = true;
+        }
 
-        if (currSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0)
+        if (currSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0) {
             subscriptionImpressions = true;
+        }
 
-        if (currSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0)
+        if (currSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0) {
             frontPanelCancel = true;
+        }
     }
 
     public PrinterType getType() {
@@ -111,9 +120,9 @@ public class HPType {
 
     /**
      * Printer data contains Cumulative Marking Agent Used.
-     * 
+     *
      * pudyn:ProductUsageDyn -> pudyn:ConsumableSubunit -> pudyn:Consumable -> dd2:CumulativeMarkingAgentUsed
-     * 
+     *
      * @return {boolean} True if supported.
      */
     public boolean hasCumulativeMarking() {
@@ -122,9 +131,9 @@ public class HPType {
 
     /**
      * Printer data contains Jam Events.
-     * 
+     *
      * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit -> dd:JamEvents
-     * 
+     *
      * @return {boolean} True if supported.
      */
     public boolean hasJamEvents() {
@@ -133,9 +142,9 @@ public class HPType {
 
     /**
      * Printer data contains Mispick Events.
-     * 
+     *
      * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit -> dd:MispickEvents
-     * 
+     *
      * @return {boolean} True if supported.
      */
     public boolean hasMispickEvents() {
@@ -144,10 +153,10 @@ public class HPType {
 
     /**
      * Printer data contains Subscription Impressions count.
-     * 
+     *
      * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit ->
      * pudyn:SubscriptionImpressions
-     * 
+     *
      * @return {boolean} True if supported.
      */
     public boolean hasSubscriptionCount() {
@@ -156,10 +165,10 @@ public class HPType {
 
     /**
      * Printer data contains Front panel cancel presses count.
-     * 
+     *
      * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit ->
      * dd:TotalFrontPanelCancelPresses
-     * 
+     *
      * @return {boolean} True if supported.
      */
     public boolean hasTotalFrontPanelCancelPresses() {

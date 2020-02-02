@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.hpprinter.internal.handler;
 
-import org.eclipse.jetty.client.HttpClient;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -40,16 +39,12 @@ import org.openhab.binding.hpprinter.internal.binder.HPPrinterBinderEvent;
  */
 @NonNullByDefault
 public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinderEvent {
-
-    private @NonNullByDefault({}) HPPrinterConfiguration config;
-    private @Nullable HttpClient httpClient = null;
+    private final HttpClient httpClient;
     private @Nullable HPPrinterBinder binder;
 
-    public HPPrinterHandler(Thing thing, @Nullable HttpClient httpClient) {
+    public HPPrinterHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-
-        if (httpClient != null)
-            this.httpClient = httpClient;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -60,22 +55,12 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
     }
 
     @Override
-    public void handleRemoval() {
-        if (binder != null) {
-            binder.close();
-            binder = null;
-        }
-
-        super.handleRemoval();
-    }
-
-    @Override
     public void dispose() {
         if (binder != null) {
             binder.close();
             binder = null;
         }
-        
+
         super.dispose();
     }
 
@@ -85,20 +70,15 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
 
     @Override
     public void initialize() {
-        config = getConfigAs(HPPrinterConfiguration.class);
+        HPPrinterConfiguration config = getConfigAs(HPPrinterConfiguration.class);
 
-        updateStatus(ThingStatus.UNKNOWN);
-
-        if (config != null && config.ipAddress != "") {
+        if (config != null && !"".equals(config.ipAddress)) {
             binder = new HPPrinterBinder(this, httpClient, scheduler, config);
-
             binder.dynamicallyAddChannels(thing.getUID());
-
             binder.open();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
         }
-
     }
 
     @Override
@@ -113,8 +93,7 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
 
     @Override
     public void binderAddChannels(List<Channel> channels) {
-        List<Channel> thingChannels = new ArrayList<>();
-            thingChannels.addAll(getThing().getChannels());
+        List<Channel> thingChannels = new ArrayList<>(getThing().getChannels());
 
         for (Channel channel : channels) {
             addOrUpdateChannel(channel, thingChannels);

@@ -25,6 +25,8 @@ import org.eclipse.smarthome.core.types.State;
 @NonNullByDefault
 public interface HPPrinterBinderEvent {
     void binderStatus(ThingStatus status);
+
     void binderChannel(String group, String channel, State state);
+
     void binderAddChannels(List<Channel> channels);
 }

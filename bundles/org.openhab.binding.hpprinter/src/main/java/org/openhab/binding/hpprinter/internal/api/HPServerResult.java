@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HPServerResult<result> {
+    private final RequestStatus status;
+    private final result data;
 
     public HPServerResult(RequestStatus status, result data) {
         this.status = status;
@@ -32,21 +34,18 @@ public class HPServerResult<result> {
         this.status = RequestStatus.SUCCESS;
         this.data = data;
     }
-    
+
     public enum RequestStatus {
         SUCCESS,
         TIMEOUT,
         ERROR
     }
 
-    private result data;
     public result getData() {
         return data;
     }
 
-    private RequestStatus status;
     public RequestStatus getStatus() {
         return status;
     }
-
 }
