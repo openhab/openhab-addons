@@ -52,13 +52,14 @@ public class DwdWarningDataAccess {
             stringBuilder.append("&CQL_FILTER=");
             stringBuilder
                     .append(URLEncoder.encode("WARNCELLID LIKE '" + cellId + "'", StandardCharsets.UTF_8.toString()));
-            logger.debug("Refreshing Data: {}", stringBuilder);
+            logger.debug("Refreshing Data for cell {}", cellId);
             String rawData = HttpUtil.executeUrl("GET", stringBuilder.toString(), 5000);
-            logger.trace("Raw response:\r\n{}", rawData);
+            logger.trace("Raw request: {}", stringBuilder);
+            logger.trace("Raw response: {}", rawData);
 
             return rawData;
         } catch (IOException e) {
-            logger.warn("Communication error occurred while getting data");
+            logger.warn("Communication error occurred while getting data: {}", e.getMessage());
             logger.debug("Communication error trace", e);
         }
 
