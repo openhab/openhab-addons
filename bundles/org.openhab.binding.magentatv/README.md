@@ -108,16 +108,16 @@ Channels receiving event information when changing the channel or playing a vide
 
 The player control supports the following actions:
 
-|Channel |Command                           |Description                       |
-|--------|----------------------------------|----------------------------------|
-|player  |PlayPauseType.PLAY                |Start playing media               |
-|        |PlayPauseType.PAUSE               |Pause player                      |
-|        |NextPreviousType.NEXT             |Move to the next chapter          |
-|        |NextPreviousType.PREVIOUS         |Move to the previous chapter      |
-|        |RewindFastforwardType.FASTFORWARD |Switch to forward mode            |
-|        |RewindFastforwardType.REWIND      |Switch to rewind mode             |
-|        |OnOffType.ON or OFF               |Toggle power - see notes on power |
-|channel |Numeric string                    |Send channel number key by key    |
+|Channel |Command        |Description                       |
+|--------|---------------|----------------------------------|
+|player  |PLAY           |Start playing media               |
+|        |PAUSE          |Pause player                      |
+|        |NEXT           |Move to the next chapter          |
+|        |PREVIOUS       |Move to the previous chapter      |
+|        |FASTFORWARD    |Switch to forward mode            |
+|        |REWIND         |Switch to rewind mode             |
+|        |ON or OFF      |Toggle power - see notes on power |
+|channel |Numeric string |Send channel number key by key    |
 
 ## Supported Key Code (channel key)
 
