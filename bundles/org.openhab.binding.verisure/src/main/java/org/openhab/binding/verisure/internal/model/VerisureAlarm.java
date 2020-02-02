@@ -122,11 +122,6 @@ public class VerisureAlarm extends VerisureBaseThing {
         return result;
     }
 
-    /*
-     *
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(@Nullable Object obj) {
         if (!super.equals(obj)) {
@@ -173,11 +168,6 @@ public class VerisureAlarm extends VerisureBaseThing {
         return true;
     }
 
-    /*
-     *
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

@@ -51,11 +51,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.verisure")
 public class VerisureHandlerFactory extends BaseThingHandlerFactory {
 
-    @Activate
-    public VerisureHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        super();
-    }
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
     static {
         SUPPORTED_THING_TYPES.addAll(VerisureBridgeHandler.SUPPORTED_THING_TYPES);
@@ -70,7 +65,12 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final HttpClient httpClient;
+
+    @Activate
+    public VerisureHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -113,17 +113,6 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = null;
         }
         return thingHandler;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        logger.debug("setHttpClientFactory this: {}", this);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        logger.debug("unsetHttpClientFactory this: {}", this);
-        this.httpClient = null;
     }
 
 }
