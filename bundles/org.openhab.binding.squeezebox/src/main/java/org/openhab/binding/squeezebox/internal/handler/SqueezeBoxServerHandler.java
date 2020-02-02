@@ -527,13 +527,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 player.setMacAddress(macAddress);
                 // populate the player state
                 for (String parameter : parameterList) {
-                    if (parameter.contains("ip")) {
+                    if (parameter.startsWith("ip:")) {
                         player.setIpAddr(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.contains("uuid")) {
+                    } else if (parameter.startsWith("uuid:")) {
                         player.setUuid(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.contains("name")) {
+                    } else if (parameter.startsWith("name:")) {
                         player.setName(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.contains("model")) {
+                    } else if (parameter.startsWith("model:")) {
                         player.setModel(parameter.substring(parameter.indexOf(":") + 1));
                     }
                 }
