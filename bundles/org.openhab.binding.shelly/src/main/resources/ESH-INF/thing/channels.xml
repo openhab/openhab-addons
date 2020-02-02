@@ -260,17 +260,17 @@
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
-    <channel-type id="sensorTempExt" advanced="true">
-        <item-type>Number:Temperature</item-type>
-        <label>Temperature</label>
-        <description>Temperature from the external sensor</description>
-        <category>Temperature</category>
-        <tags>
-            <tag>CurrentTemperature</tag>
-        </tags>
-        <state readOnly="true" pattern="%f %unit%">
-        </state>
-    </channel-type>
+	<channel-type id="sensorTempExt" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature from the external sensor</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
 	<channel-type id="sensorHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>

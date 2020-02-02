@@ -128,6 +128,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 logger.debug("{}: Device config: ipAddress={}, http user/password={}/{}, update interval={}",
                         getThing().getLabel(), config.deviceIp, config.userId.isEmpty() ? "<non>" : config.userId,
                         config.password.isEmpty() ? "<none>" : "***", config.updateInterval);
+                updateStatus(ThingStatus.UNKNOWN);
                 start = initializeThing();
             } catch (NullPointerException | IOException e) {
                 if (authorizationFailed(e.getMessage())) {
