@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.velux.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -34,29 +32,28 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>associated thing identified by String</li>
  * <li>defined channel identified by String</li>
- * <li>{@link VeluxItemType#getItemClass getItemClass} item class</li>
- * <li>{@link VeluxItemType#isReadable isReadable} about a read possibility</li>
- * <li>{@link VeluxItemType#isWritable isWritable} about a write possibility</li>
- * <li>{@link VeluxItemType#isExecutable isExecutable} about an execute possibility</li>
- * <li>{@link VeluxItemType#isToBeRefreshed isToBeRefreshed} about necessarily to be refreshed.</li>
- * <li>{@link VeluxItemType#isToBeRefreshedNow isToBeRefreshedNow} about necessarily to be refreshed at this time.</li>
+ * <li>{@link #getItemClass} item class,</li>
+ * <li>{@link #isReadable} about a read possibility,</li>
+ * <li>{@link #isWritable} about a write possibility,</li>
+ * <li>{@link #isExecutable} about an execute possibility,</li>
+ * <li>{@link #isToBeRefreshed} about necessarily to be refreshed,</li>
+ * <li>{@link #isToBeRefreshedNow} about necessarily to be refreshed at this time,</li>
+ * <li>{@link #isChannel} as indication of being handled as Channel of a thing,</li>
+ * <li>{@link #isProperty} as indication of being handled as property of a thing.</li>
  * </ul>
  *
  * In addition there are helper methods providing information about:
  *
  * <ul>
- * <li>{@link VeluxItemType#getByString getByString} the enum by identifier string,</li>
- * <li>{@link VeluxItemType#getByThingAndChannel getByThingAndChannel} to retrieve an enum instance selected by Thing
+ * <li>{@link #getIdentifier} returning the common identifier string,</li>
+ * <li>{@link #getByThingAndChannel} to retrieve an enum instance selected by Thing
  * and Channel identifier,</li>
- * <li>{@link VeluxItemType#getThingIdentifiers getThingIdentifiers} to retrieve any Thing identifiers as array of
+ * <li>{@link #getPropertyEntriesByThing} to retrieve any Thing identifiers as array of
  * String,</li>
- * <li>{@link VeluxItemType#getChannelIdentifiers getChannelIdentifiers} to retrieve any Channel identifiers as array of
- * String.</li>
  * </ul>
  * <p>
- * Within this enumeration, the expected behaviour of the OpenHAB item (resp. Channel)
- * is set. For each kind of Channel (i.e. bridge or device) parameter a
- * set of information is defined:
+ * Within this enumeration, the expected behaviour of the OpenHAB item (resp. Channel or Property) is set. For each kind
+ * of Channel (i.e. bridge or device) parameter a set of information is defined:
  * <ul>
  * <li>
  * Unique identification by:
@@ -85,16 +82,16 @@ public enum VeluxItemType {
     BRIDGE_DOWNTIME(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_DOWNTIME,      TypeFlavor.READONLY_VOLATILE_NUMBER),
     BRIDGE_RELOAD(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_RELOAD,        TypeFlavor.INITIATOR),
     BRIDGE_DO_DETECTION(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_DO_DETECTION,  TypeFlavor.INITIATOR),
-    BRIDGE_FIRMWARE(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_FIRMWARE,      TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_IPADDRESS(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_IPADDRESS,     TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_SUBNETMASK(VeluxBindingConstants.THING_TYPE_BRIDGE,                  VeluxBindingConstants.CHANNEL_BRIDGE_SUBNETMASK,    TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_DEFAULTGW(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_DEFAULTGW,     TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_DHCP(VeluxBindingConstants.THING_TYPE_BRIDGE,                        VeluxBindingConstants.CHANNEL_BRIDGE_DHCP,          TypeFlavor.READONLY_STATIC_SWITCH),
-    BRIDGE_WLANSSID(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_WLANSSID,      TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_WLANPASSWORD(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_WLANPASSWORD,  TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_PRODUCTS(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_PRODUCTS,      TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_SCENES(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_SCENES,        TypeFlavor.READONLY_STATIC_STRING),
-    BRIDGE_CHECK(VeluxBindingConstants.THING_TYPE_BRIDGE,                       VeluxBindingConstants.CHANNEL_BRIDGE_CHECK,         TypeFlavor.READONLY_STATIC_STRING),
+    BRIDGE_FIRMWARE(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_FIRMWARE,      TypeFlavor.PROPERTY),
+    BRIDGE_IPADDRESS(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_IPADDRESS,     TypeFlavor.PROPERTY),
+    BRIDGE_SUBNETMASK(VeluxBindingConstants.THING_TYPE_BRIDGE,                  VeluxBindingConstants.CHANNEL_BRIDGE_SUBNETMASK,    TypeFlavor.PROPERTY),
+    BRIDGE_DEFAULTGW(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_DEFAULTGW,     TypeFlavor.PROPERTY),
+    BRIDGE_DHCP(VeluxBindingConstants.THING_TYPE_BRIDGE,                        VeluxBindingConstants.CHANNEL_BRIDGE_DHCP,          TypeFlavor.PROPERTY),
+    BRIDGE_WLANSSID(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_WLANSSID,      TypeFlavor.PROPERTY),
+    BRIDGE_WLANPASSWORD(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_WLANPASSWORD,  TypeFlavor.PROPERTY),
+    BRIDGE_PRODUCTS(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_PRODUCTS,      TypeFlavor.PROPERTY),
+    BRIDGE_SCENES(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_SCENES,        TypeFlavor.PROPERTY),
+    BRIDGE_CHECK(VeluxBindingConstants.THING_TYPE_BRIDGE,                       VeluxBindingConstants.CHANNEL_BRIDGE_CHECK,         TypeFlavor.PROPERTY),
     //
     ACTUATOR_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,          VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
     ACTUATOR_STATE(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,             VeluxBindingConstants.CHANNEL_ACTUATOR_STATE,       TypeFlavor.MANIPULATOR_SWITCH),
@@ -154,10 +151,19 @@ public enum VeluxItemType {
          */
         MANIPULATOR_SWITCH,
         /**
+         * Used to present read-only non-volatile configuration parameter (being handled as property of aThing).
+         */
+        PROPERTY,
+        /**
          * Used to define an UNUSABLE entry.
          */
         UNUSABLE,
     }
+
+    /*
+     * ***************************
+     * ***** Private Objects *****
+     */
 
     private ThingTypeUID thingIdentifier;
     private String channelIdentifier;
@@ -167,18 +173,28 @@ public enum VeluxItemType {
     private boolean itemIsExecutable;
     private boolean itemIsToBeRefreshed;
     private int itemsRefreshDivider;
+    private boolean itemIsChannel;
+    private boolean itemIsProperty;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VeluxItemType.class);
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final int REFRESH_CYCLE_FIRST_TIME = 0;
     private static final int REFRESH_ONCE_A_DAY = 8640;
+    private static final int REFRESH_EACH_HOUR = 360;
     private static final int REFRESH_EACH_MINUTE = 6;
     private static final int REFRESH_EVERY_CYCLE = 1;
+
+    /*
+     * ************************
+     * ***** Constructors *****
+     */
 
     VeluxItemType(ThingTypeUID thingIdentifier, String channelIdentifier, TypeFlavor typeFlavor) {
         this.thingIdentifier = thingIdentifier;
         this.channelIdentifier = channelIdentifier;
+        this.itemIsChannel = true;
+        this.itemIsProperty = false;
         switch (typeFlavor) {
             case READONLY_STATIC_STRING:
                 this.itemClass = StringItem.class;
@@ -257,6 +273,17 @@ public enum VeluxItemType {
                 this.itemsRefreshDivider = REFRESH_EACH_MINUTE;
                 break;
 
+            case PROPERTY:
+                this.itemClass = StringItem.class;
+                this.itemIsReadable = true;
+                this.itemIsWritable = false;
+                this.itemIsExecutable = false;
+                this.itemIsToBeRefreshed = true;
+                this.itemsRefreshDivider = REFRESH_EACH_HOUR;
+                this.itemIsChannel = false;
+                this.itemIsProperty = true;
+                break;
+
             case UNUSABLE:
             default:
                 this.itemClass = StringItem.class;
@@ -265,21 +292,14 @@ public enum VeluxItemType {
                 this.itemIsExecutable = false;
                 this.itemIsToBeRefreshed = false;
                 this.itemsRefreshDivider = REFRESH_ONCE_A_DAY;
+                this.itemIsChannel = false;
         }
     }
 
-    private VeluxItemType(ThingTypeUID thingIdentifier, String channelIdentifier,
-            Class<? extends GenericItem> itemClass, boolean isReadable, boolean isWritable, boolean isExecutable,
-            boolean isToBeRefreshed, int refreshDivider) {
-        this.thingIdentifier = thingIdentifier;
-        this.channelIdentifier = channelIdentifier;
-        this.itemClass = itemClass;
-        this.itemIsReadable = isReadable;
-        this.itemIsWritable = isWritable;
-        this.itemIsExecutable = isExecutable;
-        this.itemIsToBeRefreshed = isToBeRefreshed;
-        this.itemsRefreshDivider = refreshDivider;
-    }
+    /*
+     * ********************************
+     * ***** Class access methods *****
+     */
 
     @Override
     public String toString() {
@@ -292,8 +312,17 @@ public enum VeluxItemType {
      * @return <b>thingIdentifier</b> of type String describing the value of the enum {@link VeluxItemType}
      *         return
      */
-    public ThingTypeUID getIdentifier() {
+    public ThingTypeUID getThingTypeUID() {
         return this.thingIdentifier;
+    }
+
+    /**
+     * {@link VeluxItemType} access method to query common (channel/property) identifier on this type of item.
+     *
+     * @return <b>channelIdentifier</b> of type String describing the value of the enum {@link VeluxItemType}.
+     */
+    public String getIdentifier() {
+        return this.channelIdentifier;
     }
 
     /**
@@ -356,6 +385,26 @@ public enum VeluxItemType {
     }
 
     /**
+     * {@link VeluxItemType} access method to query the type of this item.
+     *
+     * @return <b>isChannel</b> of type boolean describing the need to be handled as channel.
+     */
+    public boolean isChannel() {
+        logger.trace("isChannel() returns {}.", this.itemIsChannel);
+        return this.itemIsChannel;
+    }
+
+    /**
+     * {@link VeluxItemType} access method to query the type of this item.
+     *
+     * @return <b>itemIsProperty</b> of type boolean describing the need to be handled as property.
+     */
+    public boolean isProperty() {
+        logger.trace("isProperty() returns {}.", this.itemIsProperty);
+        return this.itemIsProperty;
+    }
+
+    /**
      * {@link VeluxItemType} access method to find an enum by itemTypeName.
      *
      * @param itemTypeName as name of requested Thing of type String.
@@ -379,49 +428,32 @@ public enum VeluxItemType {
      * @return <b>veluxItemType</b> of type VeluxItemType describing the appropriate enum.
      */
     public static VeluxItemType getByThingAndChannel(ThingTypeUID thingIdentifier, String channelIdentifier) {
-        LOGGER.trace("getByThingAndChannel({},{}) called.", thingIdentifier, channelIdentifier);
         for (VeluxItemType v : VeluxItemType.values()) {
-            if (((thingIdentifier.equals(v.thingIdentifier)) || (thingIdentifier.equals(v.thingIdentifier)))
-                    && (channelIdentifier.equals(v.channelIdentifier))) {
-                LOGGER.trace("getByThingAndChannel() returns enum {}.", v);
+            if (thingIdentifier.equals(v.thingIdentifier) && channelIdentifier.equals(v.channelIdentifier)) {
+                LOGGER.trace("getByThingAndChannel({},{}) returns enum {}.", thingIdentifier, channelIdentifier, v);
                 return v;
             }
         }
-        LOGGER.trace("getByThingAndChannel() returns UNKNOWN.");
+        LOGGER.trace("getByThingAndChannel({},{}) returns enum UNKNOWN.", thingIdentifier, channelIdentifier);
         return UNKNOWN;
     }
 
     /**
-     * {@link VeluxItemType} access method to find an enum by name.
-     *
-     * @return <b>veluxItemType</b> of type VeluxItemType describing the appropriate enum.
-     */
-    public static String[] getThingIdentifiers() {
-        LOGGER.trace("getThingIdentifiers() called.");
-        Set<List<ThingTypeUID>> uniqueSet = new HashSet<List<ThingTypeUID>>();
-        for (VeluxItemType v : VeluxItemType.values()) {
-            LOGGER.trace("getThingIdentifiers() adding {}.", v.thingIdentifier);
-            uniqueSet.add(Arrays.asList(v.thingIdentifier));
-        }
-        return uniqueSet.toArray(new String[uniqueSet.size()]);
-    }
-
-    /**
-     * {@link VeluxItemType} access method to find an enum by name.
+     * {@link VeluxItemType} access method to find similar enum entries by thingIdentifier.
      *
      * @param thingIdentifier as name of requested Thing of type String.
      *
-     * @return <b>veluxItemType</b> of type VeluxItemType describing the appropriate enum.
+     * @return <b>listOfveluxItemType</b> of type List of VeluxItemType containing all similar enum entries.
      */
-    public static String[] getChannelIdentifiers(ThingTypeUID thingIdentifier) {
-        LOGGER.trace("getChannelIdentifiers() called.");
-        Set<List<String>> uniqueSet = new HashSet<List<String>>();
+    public static List<VeluxItemType> getPropertyEntriesByThing(ThingTypeUID thingIdentifier) {
+        List<VeluxItemType> list = new ArrayList<VeluxItemType>();
         for (VeluxItemType v : VeluxItemType.values()) {
-            if (thingIdentifier.equals(v.thingIdentifier)) {
-                uniqueSet.add(Arrays.asList(v.channelIdentifier));
+            if (thingIdentifier.equals(v.thingIdentifier) && v.itemIsProperty) {
+                list.add(v);
             }
         }
-        return uniqueSet.toArray(new String[uniqueSet.size()]);
+        LOGGER.trace("getPropertyEntriesByThing({}) returns {}.", thingIdentifier, list);
+        return list;
     }
 
     /**

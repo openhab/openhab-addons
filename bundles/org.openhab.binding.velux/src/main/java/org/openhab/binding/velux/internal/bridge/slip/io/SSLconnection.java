@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -120,8 +122,8 @@ class SSLconnection {
         try {
             ctx = SSLContext.getInstance("SSL");
             ctx.init(null, trustAllCerts, null);
-        } catch (Exception e) {
-            throw new IOException("create of an empty trust store failed.");
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new IOException(String.format("create of an empty trust store failed: %s.", e.getMessage()));
         }
         logger.trace("SSLconnection(): creating socket...");
         // Just for avoidance of Potential null pointer access

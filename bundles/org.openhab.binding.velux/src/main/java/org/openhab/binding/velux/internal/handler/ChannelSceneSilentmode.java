@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeSetSceneVelocity;
+import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
 import org.openhab.binding.velux.internal.things.VeluxScene;
 import org.openhab.binding.velux.internal.things.VeluxScene.SceneName;
 import org.slf4j.Logger;
@@ -73,11 +74,11 @@ final class ChannelSceneSilentmode extends ChannelHandlerTemplate {
         do { // just for common exit
             assert thisBridgeHandler.bridgeParameters.scenes
                     .getChannel().existingScenes != null : "VeluxBridgeHandler.existingScenes not initialized.";
-            if (!ThingProperty.exists(thisBridgeHandler, channelUID, VeluxBindingProperties.PROPERTY_SCENE_NAME)) {
+            if (!ThingConfiguration.exists(thisBridgeHandler, channelUID, VeluxBindingProperties.PROPERTY_SCENE_NAME)) {
                 LOGGER.trace("handleCommand(): aborting processing as scene name is not set.");
                 break;
             }
-            String sceneName = (String) ThingProperty.getValue(thisBridgeHandler, channelUID,
+            String sceneName = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
                     VeluxBindingProperties.PROPERTY_SCENE_NAME);
             if (!thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes
                     .isRegistered(new SceneName(sceneName))) {

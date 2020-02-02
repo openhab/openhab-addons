@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,12 +34,12 @@ import org.openhab.binding.velux.internal.things.VeluxScene;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.binding.velux.internal.utils.ManifestInformation;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VeluxDiscoveryService} is responsible for discovering scenes on
- * the current Velux Bridge.
+ * The {@link VeluxDiscoveryService} is responsible for discovering actuators and scenes on the current Velux Bridge.
  *
  * @author Guenther Schreiner - Initial contribution.
  */
@@ -53,10 +53,24 @@ import org.slf4j.LoggerFactory;
 public class VeluxDiscoveryService extends AbstractDiscoveryService implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(VeluxDiscoveryService.class);
 
+    // Class internal
+
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
 
+    private @NonNullByDefault({}) LocaleProvider localeProvider;
+    private @NonNullByDefault({}) TranslationProvider i18nProvider;
     private Localization localization = Localization.UNKNOWN;
     private static @Nullable VeluxBridgeHandler bridgeHandler = null;
+
+    // Private
+
+    private void updateLocalization() {
+        if (localization == Localization.UNKNOWN && localeProvider != null && i18nProvider != null) {
+            logger.trace("updateLocalization(): creating Localization based on locale={},translation={}).",
+                    localeProvider, i18nProvider);
+            localization = new Localization(localeProvider, i18nProvider);
+        }
+    }
 
     /**
      * Constructor
@@ -66,6 +80,20 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     public VeluxDiscoveryService() {
         super(VeluxBindingConstants.SUPPORTED_THINGS_ITEMS, DISCOVER_TIMEOUT_SECONDS);
         logger.trace("VeluxDiscoveryService(without Bridge) just initialized.");
+    }
+
+    @Reference
+    protected void setLocaleProvider(final LocaleProvider givenLocaleProvider) {
+        logger.trace("setLocaleProvider(): provided locale={}.", givenLocaleProvider);
+        localeProvider = givenLocaleProvider;
+        updateLocalization();
+    }
+
+    @Reference
+    protected void setTranslationProvider(TranslationProvider givenI18nProvider) {
+        logger.trace("setTranslationProvider(): provided translation={}.", givenI18nProvider);
+        i18nProvider = givenI18nProvider;
+        updateLocalization();
     }
 
     /**
@@ -231,10 +259,10 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, label);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER, identifier)
+                    .withProperty(VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER, identifier)
                     .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_NAME, actuatorName)
                     .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED, isInverted)
-                    .withRepresentationProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER)
+                    .withRepresentationProperty(VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)
                     .withBridge(bridgeUID).withLabel(actuatorName).build();
             logger.debug("discoverProducts(): registering new thing {}.", discoveryResult);
             thingDiscovered(discoveryResult);

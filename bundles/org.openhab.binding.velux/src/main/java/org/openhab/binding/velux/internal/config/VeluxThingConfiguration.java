@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,13 @@ import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
  * <p>
  * There are three parts. Information for:
  * <UL>
- * <LI>{@link #sceneName Channel of type scene},</LI>
- * <LI>{@link #serial Channels of type actuator, rollershutter and window},</LI>
- * <LI>{@link #sceneLevels Channel of type virtualshutter}.</LI>
+ * <LI>{@link #sceneName} Name of a scene,</LI>
+ * <LI>{@link #serial} Unique identification of type actuator, rollershutter and window,</LI>
+ * <LI>{@link #name} Alternate Unique identification of type actuator, rollershutter and window,</LI>
+ * <LI>{@link #inverted} Value inversion for an actuator, rollershutter or window,</LI>
+ * <LI>{@link #velocity} Speed value for a scene,</LI>
+ * <LI>{@link #sceneLevels} Virtual shutter definition as a set of scenes imitating a shutter,</LI>
+ * <LI>{@link #currentLevel} Initial state of Virtual shutter definition.</LI>
  * </UL>
  *
  * @author Guenther Schreiner - Initial contribution.
@@ -45,8 +49,7 @@ public class VeluxThingConfiguration extends Configuration {
      * <LI>{@link #sceneName} for identification of a set of settings, so called scene.</LI>
      * </UL>
      */
-    @SuppressWarnings("unused")
-    private String sceneName = VeluxBindingConstants.UNKNOWN;
+    String sceneName = VeluxBindingConstants.UNKNOWN;
 
     /**
      * {@link #serial} of type {@link String}, identifying a io-homecontrol device by its serial number (i.e.
@@ -61,8 +64,7 @@ public class VeluxThingConfiguration extends Configuration {
      * <LI>{@link #velocity} for modified action speed.</LI>
      * </UL>
      */
-    @SuppressWarnings("unused")
-    private String serial = VeluxProductSerialNo.UNKNOWN;
+    public String serial = VeluxProductSerialNo.UNKNOWN;
     /**
      * {@link #name} of type {@link String}, identifying a io-homecontrol device by its registration name especially
      * for <B>somfy</B> as they do not provide a valid serial number.
@@ -70,8 +72,7 @@ public class VeluxThingConfiguration extends Configuration {
      * Part of the {@link #serial Configuration for the channels actuator, rollershutter and window}.
      * </P>
      */
-    @SuppressWarnings("unused")
-    private String name = VeluxBindingConstants.UNKNOWN;
+    String name = VeluxBindingConstants.UNKNOWN;
     /**
      * {@link #inverted} of type {@link Boolean}, inverts each Channel value. This means 0% will be handled as 100%,
      * and vice versa, 100% will be handled as 0%.
@@ -79,8 +80,7 @@ public class VeluxThingConfiguration extends Configuration {
      * Part of the {@link #serial Configuration for the channels actuator, rollershutter and window}.
      * </P>
      */
-    @SuppressWarnings("unused")
-    private Boolean inverted = false;
+    Boolean inverted = false;
     /**
      * {@link #velocity} of type {@link String}, describes the intended speed of action.
      * Possible values are defined within VeluxProductVelocity.
@@ -88,8 +88,7 @@ public class VeluxThingConfiguration extends Configuration {
      * Part of the {@link #serial Configuration for the channels actuator, rollershutter and window}.
      * </P>
      */
-    @SuppressWarnings("unused")
-    private String velocity = VeluxBindingConstants.UNKNOWN;
+    String velocity = VeluxBindingConstants.UNKNOWN;
 
     /**
      * {@link #sceneLevels} of type {@link String}, identifying a number of Velux scenes which act together as a virtual
@@ -107,15 +106,12 @@ public class VeluxThingConfiguration extends Configuration {
      * <LI>{@link #currentLevel} for identification of a set of settings, so called scene.</LI>
      * </UL>
      */
-    @SuppressWarnings("unused")
-    private String sceneLevels = VeluxBindingConstants.UNKNOWN;
+    String sceneLevels = VeluxBindingConstants.UNKNOWN;
     /**
      * {@link #currentLevel} of type {@link int}, which represents the current shutter level.
      * <P>
      * Private part of the {@link #sceneLevels Configuration for the channel virtualshutter}.
      * </P>
      */
-    @SuppressWarnings("unused")
-    private int currentLevel = 0;
-
+    int currentLevel = 0;
 }

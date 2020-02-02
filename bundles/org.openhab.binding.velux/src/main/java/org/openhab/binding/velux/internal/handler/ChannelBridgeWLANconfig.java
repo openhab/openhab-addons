@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeWLANConfig;
+import org.openhab.binding.velux.internal.handler.utils.StateUtils;
+import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,12 +73,12 @@ final class ChannelBridgeWLANconfig extends ChannelHandlerTemplate {
                 case BRIDGE_WLANSSID:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress);
                     ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_WLANSSID,
-                            thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanSSID);
+                            thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanSSID.toString());
                     break;
                 case BRIDGE_WLANPASSWORD:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask);
                     ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_WLANPASSWORD,
-                            thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanPassword);
+                            thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanPassword.toString());
                     break;
                 default:
             }

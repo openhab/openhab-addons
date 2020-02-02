@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,7 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 /**
- * Class for handling any kind of openHAB events and requests.
+ * Classes for handling any kind of openHAB events and requests, providing a synchronisation between openHAB and the
+ * real world.
  *
  * @author Guenther Schreiner - Initial contribution
  */

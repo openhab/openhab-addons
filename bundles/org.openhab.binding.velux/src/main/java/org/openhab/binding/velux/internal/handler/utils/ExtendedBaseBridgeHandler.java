@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,25 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.velux.internal.handler;
+package org.openhab.binding.velux.internal.handler.utils;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 
 /**
- * The {@link ExtendedBaseThingHandler} extended the {@link BaseThingHandler} interface and adds <B>publicly
+ * The {@link ExtendedBaseBridgeHandler} extended the {@link BaseBridgeHandler} interface and adds <B>publicly
  * visible</B> convenience methods for property handling.
- * <p>
- * It is recommended to extend this abstract base class.
- * <p>
  *
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-abstract class ExtendedBaseThingHandler extends BaseThingHandler {
+public abstract class ExtendedBaseBridgeHandler extends BaseBridgeHandler {
 
     /*
      * ************************
@@ -36,11 +34,11 @@ abstract class ExtendedBaseThingHandler extends BaseThingHandler {
      */
 
     /**
-     * @see BaseThingHandler
-     * @param thing which will be created.
+     * @see BaseBridgeHandler
+     * @param bridge which will be created.
      */
-    ExtendedBaseThingHandler(Thing thing) {
-        super(thing);
+    protected ExtendedBaseBridgeHandler(Bridge bridge) {
+        super(bridge);
     }
 
     /**
@@ -65,4 +63,14 @@ abstract class ExtendedBaseThingHandler extends BaseThingHandler {
         super.updateProperties(properties);
     }
 
+    /**
+     * Returns whether at least one item is linked for the given UID of the channel.
+     *
+     * @param channelUID UID of the channel (must not be null)
+     * @return true if at least one item is linked, false otherwise
+     */
+    @Override
+    public boolean isLinked(ChannelUID channelUID) {
+        return super.isLinked(channelUID);
+    }
 }

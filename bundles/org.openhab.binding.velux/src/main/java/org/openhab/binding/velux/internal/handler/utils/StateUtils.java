@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.velux.internal.handler;
+package org.openhab.binding.velux.internal.handler.utils;
 
 import java.math.BigDecimal;
 
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
  * @author Guenther Schreiner - Initial contribution
  */
 @NonNullByDefault
-final class StateUtils {
+public class StateUtils {
 
     /*
      * ************************
@@ -58,7 +58,7 @@ final class StateUtils {
      * @param propertyValue which should be converted,
      * @return <b>state</B> of type {@link State} in accordance with {@code dataType}. Will never be {@code null}.
      */
-    protected static State createState(@Nullable Object propertyValue) {
+    public static State createState(@Nullable Object propertyValue) {
         if (propertyValue == null) {
             return UnDefType.NULL;
         }

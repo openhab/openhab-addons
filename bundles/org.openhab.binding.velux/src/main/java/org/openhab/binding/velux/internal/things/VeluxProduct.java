@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class VeluxProduct {
     public static class ProductBridgeIndex {
 
         // Public definition
-        private static final ProductBridgeIndex UNKNOWN = new ProductBridgeIndex(0);
+        public static final ProductBridgeIndex UNKNOWN = new ProductBridgeIndex(0);
 
         // Class internal
         private int id;
@@ -50,6 +50,11 @@ public class VeluxProduct {
         // Class access methods
         public int toInt() {
             return id;
+        }
+
+        @Override
+        public String toString() {
+            return Integer.toString(id);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
+import org.openhab.binding.velux.internal.handler.utils.StateUtils;
+import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
 import org.openhab.binding.velux.internal.things.VeluxScene;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,12 +80,12 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
                         LOGGER.trace("handleCommand(): ignoring non SCENE_ACTION.");
                         continue;
                     }
-                    if (!ThingProperty.exists(thisBridgeHandler, channelUID,
+                    if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
                             VeluxBindingProperties.PROPERTY_SCENE_NAME)) {
                         LOGGER.trace("handleCommand(): aborting processing as scene name is not set.");
                         break;
                     }
-                    String sceneName = (String) ThingProperty.getValue(thisBridgeHandler, thisChannelUID,
+                    String sceneName = (String) ThingConfiguration.getValue(thisBridgeHandler, thisChannelUID,
                             VeluxBindingProperties.PROPERTY_SCENE_NAME);
                     LOGGER.trace("handleCommand(): comparing {} with {}.", scene.getName().toString(), sceneName);
                     if (scene.getName().toString().equals(sceneName)) {
@@ -99,8 +101,8 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
             }
             String result;
             if (unusedScenes.size() > 0) {
-                result = thisBridgeHandler.localization.getText("channelValue.check-integrity-failed",
-                        unusedScenes.toString());
+                result = thisBridgeHandler.localization.getText("channelValue.check-integrity-failed")
+                        .concat(unusedScenes.toString());
             } else {
                 result = thisBridgeHandler.localization.getText("channelValue.check-integrity-ok");
             }

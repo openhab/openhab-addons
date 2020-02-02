@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This class contains the property identifications:
  * <UL>
  * <LI>{@link #PROPERTY_BINDING_BUNDLEVERSION} for identification of the binding,</LI>
+ * <LI>{@link #PROPERTY_BINDING_NOOFBRIDGES} for number of bridges,</LI>
+ * <LI>{@link #PROPERTY_BINDING_NOOFTHINGS} for number of things,</LI>
  * </UL>
  * <UL>
  * <LI>{@link #PROPERTY_SCENE_NAME} for defining the name of a scene,</LI>
+ * <LI>{@link #PROPERTY_SCENE_VELOCITY} for defining the velocity of a scene,</LI>
  * </UL>
  * <UL>
- * <LI>{@link #PROPERTY_ACTUATOR_SERIALNUMBER} for defining the serial number of an actuator, a rollershutter and a
+ * <LI>{@link #CONFIG_ACTUATOR_SERIALNUMBER} for defining the serial number of an actuator, a rollershutter and a
  * window,</LI>
  * <LI>{@link #PROPERTY_ACTUATOR_NAME} for defining the name of an actuator, a rollershutter and a window,</LI>
  * <LI>{@link #PROPERTY_ACTUATOR_INVERTED} for modifying the value of a Channel,</LI>
@@ -48,7 +51,7 @@ public class VeluxBindingProperties {
     public static final String PROPERTY_SCENE_NAME = "sceneName";
     public static final String PROPERTY_SCENE_VELOCITY = "velocity";
 
-    public static final String PROPERTY_ACTUATOR_SERIALNUMBER = "serial";
+    public static final String CONFIG_ACTUATOR_SERIALNUMBER = "serial";
     public static final String PROPERTY_ACTUATOR_NAME = "name";
     public static final String PROPERTY_ACTUATOR_INVERTED = "inverted";
 

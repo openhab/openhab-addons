@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -27,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.velux.internal.config.VeluxThingConfiguration;
+import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +41,7 @@ import org.slf4j.LoggerFactory;
 public class VeluxHandler extends ExtendedBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VeluxHandler.class);
 
-    @SuppressWarnings("unused")
-    private @Nullable VeluxThingConfiguration configuration = null;
+    VeluxThingConfiguration configuration = new VeluxThingConfiguration();
 
     public VeluxHandler(Thing thing, Localization localization) {
         super(thing);
@@ -63,18 +62,14 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
             logger.trace("initialize() updating ThingStatus to ONLINE.");
             updateStatus(ThingStatus.ONLINE);
             initializeProperties();
-
         } else {
             logger.trace("initialize() updating ThingStatus to OFFLINE/BRIDGE_OFFLINE.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-
         }
         logger.trace("initialize() done.");
     }
 
     private synchronized void initializeProperties() {
-        logger.trace("initializeProperties() called.");
-
         configuration = getConfigAs(VeluxThingConfiguration.class);
         logger.trace("initializeProperties() done.");
     }

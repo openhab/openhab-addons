@@ -48,6 +48,7 @@
 		<category>NetworkAppliance</category>
 	</channel-type>
 
+	<!-- now organized as properties
 	<channel-type id="firmware" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.firmware.label</label>
@@ -127,6 +128,7 @@
 		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
+	-->
 
 	<!-- Channel Type - Generic Things -->
 

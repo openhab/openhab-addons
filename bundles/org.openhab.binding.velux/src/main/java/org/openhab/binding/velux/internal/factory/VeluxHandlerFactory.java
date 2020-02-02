@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.velux.internal;
+package org.openhab.binding.velux.internal.factory;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,9 +26,11 @@ import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.discovery.VeluxDiscoveryService;
 import org.openhab.binding.velux.internal.handler.VeluxBindingHandler;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
@@ -52,26 +56,34 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     // Class internal
 
-    private @Nullable ServiceRegistration<?> discoveryServiceReg;
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+
     private Set<VeluxBindingHandler> veluxBindingHandlers = new HashSet<VeluxBindingHandler>();
     private Set<VeluxBridgeHandler> veluxBridgeHandlers = new HashSet<VeluxBridgeHandler>();
     private Set<VeluxHandler> veluxHandlers = new HashSet<VeluxHandler>();
 
-    private Localization localization;
+    private @NonNullByDefault({}) LocaleProvider localeProvider;
+    private @NonNullByDefault({}) TranslationProvider i18nProvider;
+    private Localization localization = Localization.UNKNOWN;
 
     // Private
 
     private void registerDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
         VeluxDiscoveryService discoveryService = new VeluxDiscoveryService(bridgeHandler, localization);
-        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+        ServiceRegistration<?> discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(),
+                discoveryService, new Hashtable<String, Object>());
+        discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceReg);
+
     }
 
-    private synchronized void unregisterDeviceDiscoveryService() {
-        logger.trace("unregisterDeviceDiscoveryService() called.");
-        if (discoveryServiceReg != null) {
-            discoveryServiceReg.unregister();
-            discoveryServiceReg = null;
+    // Even if the compiler tells, that the value of <remove> cannot be null, it is possible!
+    // Therefore a @SuppressWarnings("null") is needed to suppress the warning
+    @SuppressWarnings("null")
+    private synchronized void unregisterDeviceDiscoveryService(ThingUID thingUID) {
+        logger.trace("unregisterDeviceDiscoveryService({}) called.", thingUID);
+        ServiceRegistration<?> remove = discoveryServiceRegistrations.remove(thingUID);
+        if (remove != null) {
+            remove.unregister();
         }
     }
 
@@ -103,12 +115,37 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         });
     }
 
+    private void updateLocalization() {
+        if (localization == Localization.UNKNOWN && localeProvider != null && i18nProvider != null) {
+            logger.trace("updateLocalization(): creating Localization based on locale={},translation={}).",
+                    localeProvider, i18nProvider);
+            localization = new Localization(localeProvider, i18nProvider);
+        }
+    }
+
     // Constructor
 
     @Activate
-    public VeluxHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference TranslationProvider i18nProvider) {
-        this.localization = new Localization(localeProvider, i18nProvider);
+    public VeluxHandlerFactory(final @Reference LocaleProvider givenLocaleProvider,
+            final @Reference TranslationProvider givenI18nProvider) {
+        logger.trace("VeluxHandlerFactory(locale={},translation={}) called.", givenLocaleProvider, givenI18nProvider);
+        localeProvider = givenLocaleProvider;
+        i18nProvider = givenI18nProvider;
+
+    }
+
+    @Reference
+    protected void setLocaleProvider(final LocaleProvider givenLocaleProvider) {
+        logger.trace("setLocaleProvider(): provided locale={}.", givenLocaleProvider);
+        localeProvider = givenLocaleProvider;
+        updateLocalization();
+    }
+
+    @Reference
+    protected void setTranslationProvider(TranslationProvider givenI18nProvider) {
+        logger.trace("setTranslationProvider(): provided translation={}.", givenI18nProvider);
+        i18nProvider = givenI18nProvider;
+        updateLocalization();
     }
 
     // Utility methods
@@ -147,21 +184,19 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        ThingTypeUID thingTypeUID = thingHandler.getThing().getThingTypeUID();
-
         // Handle Binding removal
-        if (VeluxBindingConstants.SUPPORTED_THINGS_BINDING.contains(thingTypeUID)) {
+        if (thingHandler instanceof VeluxBindingHandler) {
             logger.trace("removeHandler() removing information element '{}'.", thingHandler.toString());
             veluxBindingHandlers.remove(thingHandler);
         } else
         // Handle Bridge removal
-        if (VeluxBindingConstants.SUPPORTED_THINGS_BRIDGE.contains(thingTypeUID)) {
+        if (thingHandler instanceof VeluxBridgeHandler) {
             logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
             veluxBridgeHandlers.remove(thingHandler);
-            unregisterDeviceDiscoveryService();
+            unregisterDeviceDiscoveryService(thingHandler.getThing().getUID());
         } else
         // Handle removal of Things behind the Bridge
-        if (VeluxBindingConstants.SUPPORTED_THINGS_ITEMS.contains(thingTypeUID)) {
+        if (thingHandler instanceof VeluxHandler) {
             logger.trace("removeHandler() removing thing '{}'.", thingHandler.toString());
             veluxHandlers.remove(thingHandler);
         }

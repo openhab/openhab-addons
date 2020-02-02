@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,12 +23,10 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
-import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
-import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,16 +51,16 @@ import org.slf4j.LoggerFactory;
 final class ChannelActuatorPosition extends ChannelHandlerTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelActuatorPosition.class);
 
-    /*
-     * ************************
-     * ***** Constructors *****
+    // Constructors
+
+    /**
+     * Suppress default constructor for non-instantiability.
      */
-
-    // Suppress default constructor for non-instantiability
-
     private ChannelActuatorPosition() {
         throw new AssertionError();
     }
+
+    // Public methods
 
     /**
      * Communication method to retrieve information to update the channel value.
@@ -81,58 +79,25 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                 LOGGER.trace("handleRefresh(): there are some existing products.");
             }
-            if (!ThingProperty.exists(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER)) {
-                LOGGER.trace("handleRefresh(): aborting processing as {} is not set.",
-                        VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
-                break;
-            }
-            String actuatorSerial = (String) ThingProperty.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
-            LOGGER.trace("handleRefresh(): actuatorSerial={}", actuatorSerial);
-
-            // Handle value inversion
-            boolean propertyInverted = false;
-            if (ThingProperty.exists(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
-                propertyInverted = (boolean) ThingProperty.getValue(thisBridgeHandler, channelUID,
-                        VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
-            }
-            boolean isInverted = propertyInverted || VeluxProductSerialNo.indicatesRevertedValues(actuatorSerial);
-            LOGGER.trace("handleRefresh(): isInverted={}.", isInverted);
-            actuatorSerial = VeluxProductSerialNo.cleaned(actuatorSerial);
-
-            if (!thisBridgeHandler.bridgeParameters.actuators.getChannel().existingProducts
-                    .isRegistered(actuatorSerial)) {
-                LOGGER.info("handleRefresh(): cannot work on unknown actuator with serial {}.", actuatorSerial);
-                break;
-            }
-            LOGGER.trace("handleRefresh(): fetching actuator for {}.", actuatorSerial);
-            VeluxProduct thisProduct = thisBridgeHandler.bridgeParameters.actuators.getChannel().existingProducts
-                    .get(actuatorSerial);
-            LOGGER.trace("handleRefresh(): found actuator {}.", thisProduct);
-
+            Thing2VeluxActuator veluxActuator = thisBridgeHandler.channel2VeluxActuator.get(channelUID);
             GetProduct bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProduct();
             if (bcp == null) {
                 LOGGER.trace("handleRefresh(): aborting processing as handler is null.");
                 break;
             }
-            bcp.setProductId(thisProduct.getBridgeProductIndex().toInt());
-            if (thisBridgeHandler.thisBridge.bridgeCommunicate(bcp)) {
-                thisProduct = bcp.getProduct();
-                if (bcp.isCommunicationSuccessful()) {
-                    try {
-                        VeluxProductPosition position = new VeluxProductPosition(thisProduct.getCurrentPosition());
-                        if (position.isValid()) {
-                            PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
-                            LOGGER.trace("handleRefresh(): found actuator at level {}.", positionAsPercent);
-                            newState = positionAsPercent;
-                        } else {
-                            LOGGER.trace("handleRefresh(): level of actuator is unknown.");
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("handleRefresh(): getProducts() exception: {}.", e.getMessage());
+            bcp.setProductId(veluxActuator.getProductBridgeIndex().toInt());
+            if (thisBridgeHandler.thisBridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
+                try {
+                    VeluxProductPosition position = new VeluxProductPosition(bcp.getProduct().getCurrentPosition());
+                    if (position.isValid()) {
+                        PercentType positionAsPercent = position.getPositionAsPercentType(veluxActuator.isInverted());
+                        LOGGER.trace("handleRefresh(): found actuator at level {}.", positionAsPercent);
+                        newState = positionAsPercent;
+                    } else {
+                        LOGGER.trace("handleRefresh(): level of actuator is unknown.");
                     }
+                } catch (Exception e) {
+                    LOGGER.warn("handleRefresh(): getProducts() exception: {}.", e.getMessage());
                 }
             }
         } while (false); // common exit
@@ -159,46 +124,16 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                 LOGGER.trace("handleCommand(): there are some existing products.");
             }
-            if (!ThingProperty.exists(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER)) {
-                LOGGER.trace("handleCommand(): aborting processing as actuatorSerial is not set.");
-                break;
-            }
-            String actuatorSerial = (String) ThingProperty.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
-            LOGGER.trace("handleCommand(): actuatorSerial={}", actuatorSerial);
-
-            // Handle value inversion
-            boolean propertyInverted = false;
-            if (ThingProperty.exists(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
-                propertyInverted = (boolean) ThingProperty.getValue(thisBridgeHandler, channelUID,
-                        VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
-            }
-            boolean isInverted = propertyInverted || VeluxProductSerialNo.indicatesRevertedValues(actuatorSerial);
-            LOGGER.trace("handleCommand(): isInverted={}.", isInverted);
-            actuatorSerial = VeluxProductSerialNo.cleaned(actuatorSerial);
-
-            if (!thisBridgeHandler.bridgeParameters.actuators.getChannel().existingProducts
-                    .isRegistered(actuatorSerial)) {
-                LOGGER.info("handleCommand({},{}): cannot work on unknown actuator: {}.", channelUID.getAsString(),
-                        command, actuatorSerial);
-                break;
-            }
-            LOGGER.trace("handleCommand(): fetching product for {}.", actuatorSerial);
-            VeluxProduct thisProduct = thisBridgeHandler.bridgeParameters.actuators.getChannel().existingProducts
-                    .get(actuatorSerial);
-            LOGGER.trace("handleCommand(): found product {}.", thisProduct);
-
+            Thing2VeluxActuator veluxActuator = thisBridgeHandler.channel2VeluxActuator.get(channelUID);
             VeluxProductPosition targetLevel = VeluxProductPosition.UNKNOWN;
             if (channelId.equals(CHANNEL_ACTUATOR_POSITION)) {
                 if ((command instanceof UpDownType) && (command == UpDownType.UP)) {
                     LOGGER.trace("handleCommand(): found UP command.");
-                    targetLevel = isInverted ? new VeluxProductPosition(PercentType.HUNDRED)
+                    targetLevel = veluxActuator.isInverted() ? new VeluxProductPosition(PercentType.HUNDRED)
                             : new VeluxProductPosition(PercentType.ZERO);
                 } else if ((command instanceof UpDownType) && (command == UpDownType.DOWN)) {
                     LOGGER.trace("handleCommand(): found DOWN command.");
-                    targetLevel = isInverted ? new VeluxProductPosition(PercentType.ZERO)
+                    targetLevel = veluxActuator.isInverted() ? new VeluxProductPosition(PercentType.ZERO)
                             : new VeluxProductPosition(PercentType.HUNDRED);
                 } else if ((command instanceof StopMoveType) && (command == StopMoveType.STOP)) {
                     LOGGER.trace("handleCommand(): found STOP command.");
@@ -206,7 +141,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 } else if (command instanceof PercentType) {
                     LOGGER.trace("handleCommand(): found command of type PercentType.");
                     PercentType ptCommand = (PercentType) command;
-                    if (isInverted) {
+                    if (veluxActuator.isInverted()) {
                         ptCommand = new PercentType(PercentType.HUNDRED.intValue() - ptCommand.intValue());
                     }
                     LOGGER.trace("handleCommand(): found command to set level to {}.", ptCommand);
@@ -218,11 +153,11 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             } else {
                 if ((command instanceof OnOffType) && (command == OnOffType.ON)) {
                     LOGGER.trace("handleCommand(): found ON command.");
-                    targetLevel = isInverted ? new VeluxProductPosition(PercentType.HUNDRED)
+                    targetLevel = veluxActuator.isInverted() ? new VeluxProductPosition(PercentType.HUNDRED)
                             : new VeluxProductPosition(PercentType.ZERO);
                 } else if ((command instanceof OnOffType) && (command == OnOffType.OFF)) {
                     LOGGER.trace("handleCommand(): found OFF command.");
-                    targetLevel = isInverted ? new VeluxProductPosition(PercentType.ZERO)
+                    targetLevel = veluxActuator.isInverted() ? new VeluxProductPosition(PercentType.ZERO)
                             : new VeluxProductPosition(PercentType.HUNDRED);
                 } else {
                     LOGGER.info("handleCommand({},{}): ignoring command.", channelUID.getAsString(), command);
@@ -231,7 +166,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             }
             LOGGER.debug("handleCommand(): sending command with target level {}.", targetLevel);
             new VeluxBridgeRunProductCommand().sendCommand(thisBridgeHandler.thisBridge,
-                    thisProduct.getBridgeProductIndex().toInt(), targetLevel);
+                    veluxActuator.getProductBridgeIndex().toInt(), targetLevel);
             LOGGER.trace("handleCommand(): The new shutter level will be send through the home monitoring events.");
 
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {

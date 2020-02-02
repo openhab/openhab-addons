@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,6 +81,16 @@ public class VeluxProductPosition {
         logger.trace("VeluxProductPosition({} as PercentType) created.", position.intValue());
         this.position = position;
         this.isValid = true;
+    }
+
+    /**
+     * Creation of a Position object to specify a distinct actuator setting.
+     *
+     * @param position A position as type {@link PercentType} (between 0 and 100).
+     * @param toBeInverted Flag whether the value should be handled as inverted.
+     */
+    public VeluxProductPosition(PercentType position, boolean toBeInverted) {
+        this(toBeInverted ? new PercentType(PercentType.HUNDRED.intValue() - position.intValue()) : position);
     }
 
     /**

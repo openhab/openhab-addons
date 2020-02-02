@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.VeluxRSBindingConfig;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunScene;
+import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
+import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
 import org.openhab.binding.velux.internal.things.VeluxScene;
 import org.openhab.binding.velux.internal.things.VeluxScene.SceneName;
 import org.slf4j.Logger;
@@ -79,13 +81,13 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
         assert (channelId == CHANNEL_VSHUTTER_POSITION);
         State newState = null;
         do { // just for common exit
-            if (!ThingProperty.exists(thisBridgeHandler, channelUID,
+            if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
                     VeluxBindingProperties.PROPERTY_VSHUTTER_CURRENTLEVEL)) {
                 LOGGER.trace("handleRefresh(): aborting processing as current scene level is not set.");
                 break;
             }
             // Don't know why OH2 returns BigDecimal.
-            BigDecimal rollershutterLevelBC = (BigDecimal) ThingProperty.getValue(thisBridgeHandler, channelUID,
+            BigDecimal rollershutterLevelBC = (BigDecimal) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
                     VeluxBindingProperties.PROPERTY_VSHUTTER_CURRENTLEVEL);
             int rollershutterLevel = rollershutterLevelBC.intValue();
             LOGGER.trace("handleRefresh(): current level is {}.", rollershutterLevel);
@@ -110,21 +112,21 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
         LOGGER.debug("handleCommand({},{},{},{}) called.", channelUID, channelId, command, thisBridgeHandler);
         Command newValue = null;
         // ThingProperty sceneLevels
-        if (!ThingProperty.exists(thisBridgeHandler, channelUID,
+        if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
                 VeluxBindingProperties.PROPERTY_VSHUTTER_SCENELEVELS)) {
             LOGGER.trace("handleCommand(): aborting processing as scene levels are not set.");
             return newValue;
         }
-        String sceneLevels = (String) ThingProperty.getValue(thisBridgeHandler, channelUID,
+        String sceneLevels = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
                 VeluxBindingProperties.PROPERTY_VSHUTTER_SCENELEVELS);
         // ThingProperty currentLevel
-        if (!ThingProperty.exists(thisBridgeHandler, channelUID,
+        if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
                 VeluxBindingProperties.PROPERTY_VSHUTTER_CURRENTLEVEL)) {
             LOGGER.trace("handleCommand(): aborting processing as current scene level is not set.");
             return newValue;
         }
         // Don't know why OH2 returns BigDecimal.
-        BigDecimal rollershutterLevelBC = (BigDecimal) ThingProperty.getValue(thisBridgeHandler, channelUID,
+        BigDecimal rollershutterLevelBC = (BigDecimal) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
                 VeluxBindingProperties.PROPERTY_VSHUTTER_CURRENTLEVEL);
         int currentLevel = rollershutterLevelBC.intValue();
         LOGGER.trace("handleCommand(): current level is {}.", currentLevel);
@@ -158,7 +160,7 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
 
         LOGGER.trace("handleCommand(): updating level to {}.", currentLevel);
         ThingProperty.setValue(thisBridgeHandler, channelUID, VeluxBindingProperties.PROPERTY_VSHUTTER_CURRENTLEVEL,
-                thisRSBindingConfig.getLevel());
+                thisRSBindingConfig.getLevel().toString());
         LOGGER.trace("handleCommand() returns {}.", newValue);
         return newValue;
     }

@@ -33,6 +33,12 @@ Items marked with (\*) are fully implemented. Items marked with (+) have only pa
 
 ## Binding Configuration
 
+To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery:
+This thing named <B>Velux Binding Information</B> establishes one channel named <B>information</B> describing
+the current binding state in a (hopefully) human understandable fashion. Additionally it will give three
+properties with the version number of the bundle, the number of registered bridges and number of overall
+things attached to the bridge(s).
+
 The <B>Velux KLF200</B> bridge has to be configured with some parameters, at least with the IP address of the bridge.
 
 | Property               | Default          | Required | Description                                                  |
@@ -292,16 +298,6 @@ On the other hand, if you prefer a textual configuration, you can append the log
 During startup of normal operations, there should be only some few messages within the logfile, like:
 
 ```
-[INFO ] [i.dashboard.internal.DashboardService] - Started Dashboard at http://192.168.45.150:8080
-[INFO ] [i.dashboard.internal.DashboardService] - Started Dashboard at https://192.168.45.150:8443
-[INFO ] [rthome.model.lsp.internal.ModelServer] - Started Language Server Protocol (LSP) service on port 5007
-[INFO ] [e.core.internal.i18n.I18nProviderImpl] - Location set to '49.035932145739444,8.455450258310762'.
-[INFO ] [smarthome.event.ExtensionEvent       ] - Extension 'package-expert' has been installed.
-[INFO ] [marthome.ui.paper.internal.PaperUIApp] - Started Paper UI at /paperui
-[INFO ] [.ui.habmin.internal.servlet.HABminApp] - Started HABmin servlet at /habmin
-[INFO ] [ding.velux.handler.VeluxBridgeHandler] - Initializing Velux veluxBridge handler for 'velux:klf200:7dff2548'.
-[INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from UNINITIALIZED to INITIALIZING
-[INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from INITIALIZING to UNKNOWN
 [INFO ] [nal.VeluxValidatedBridgeConfiguration] - veluxConfig[protocol=slip,ipAddress=192.168.45.9,tcpPort=51200,password=********,timeoutMsecs=1000,retries=5,refreshMsecs=15000,isBulkRetrievalEnabled=true]
 [INFO ] [ng.velux.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
 [INFO ] [hab.binding.velux.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
@@ -322,20 +318,43 @@ During startup of normal operations, there should be only some few messages with
         Product "M_Window" / WINDOW_OPENER (bridgeIndex=0,serial=43:12:3E:26:0C:1B:00:10,position=C800)
         Product "W-Rollershutter" / ROLLER_SHUTTER (bridgeIndex=1,serial=43:12:40:5A:0C:2A:05:64,position=0000)      .
 [INFO ] [ding.velux.handler.VeluxBridgeHandler] - velux Bridge is online with 10 scenes and 4 actuators, now.
-[INFO ] [ome.event.ThingStatusInfoChangedEvent] - 'velux:klf200:7dff2548' changed from UNKNOWN to ONLINE
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_status-velux:klf200:7dff2548:status' has been added.
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_status changed from NULL to GW_S_GWM/GW_SS_IDLE
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_timestamp-velux:klf200:7dff2548:timestamp' has been added.
-[WARN ] [ding.velux.handler.VeluxBridgeHandler] - Exception occurred during activated refresh scheduler: null
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_timestamp changed from NULL to 1565646559977
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_products-velux:klf200:7dff2548:products' has been added.
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_products changed from NULL to 4_members:_Product_"M_Rollershutter"_/_ROLLER_SHUTTER_(bridgeIndex=4,serial=56:32:14:5A:12:1C:05:5F,position=0010),Product_"O_Rollershutter"_/_ROLLER_SHUTTER_(bridgeIndex=3,serial=53:09:40:5A:0C:23:0A:6E,position=0000),Product_"M_Window"_/_WINDOW_OPENER_(bridgeIndex=0,serial=56:23:3E:26:0C:1B:00:10,position=C800),Product_"W-Rollershutter"_/_ROLLER_SHUTTER_(bridgeIndex=1,serial=53:09:40:5A:0C:2A:05:64,position=0000)
-[INFO ] [thome.event.ItemChannelLinkAddedEvent] - Link 'velux_klf200_7dff2548_scenes-velux:klf200:7dff2548:scenes' has been added.
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_scenes changed from NULL to 10_members:_Scene_"V_Shutter_West_100"_(index_5)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_West_000"_(index_4)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_Ost_090"_(index_10)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_005"_(index_3)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_000"_(index_1)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_100"_(index_2)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_West_090"_(index_7)_with_non-silent_mode_and_0_actions,Scene_"V_Window_Mitte_010"_(index_0)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_Ost_000"_(index_8)_with_non-silent_mode_and_0_actions,Scene_"V_Shutter_Ost_100"_(index_9)_with_non-silent_mode_and_0_actions
-[INFO ] [smarthome.event.ItemStateChangedEvent] - velux_klf200_7dff2548_timestamp changed from 1565646559977 to 1565646593645
-[INFO ] [ig.discovery.internal.PersistentInbox] - Added new thing 'velux:scene:7dff2548:V_Shutter_West_100' to inbox.
+```
+
+However if you have set the configuration parameter isProtocolTraceEnabled to true, you'll see the complete sequence of exchanged messages:
+
+```
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_PASSWORD_ENTER_REQ.
+[INFO ] [nternal.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_PASSWORD_ENTER_CFM.
+[INFO ] [g.velux.internal.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_COMMAND_SEND_REQ.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_COMMAND_SEND_CFM.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_LIMITATION_STATUS_REQ.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_NODE_STATE_POSITION_CHANGED_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_COMMAND_RUN_STATUS_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_COMMAND_RUN_STATUS_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_SESSION_FINISHED_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_NODE_STATE_POSITION_CHANGED_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_LIMITATION_STATUS_CFM.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_LIMITATION_STATUS_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_NODE_INFORMATION_REQ.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_COMMAND_RUN_STATUS_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_SESSION_FINISHED_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_CFM.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_NODE_INFORMATION_REQ.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_CFM.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_NODE_INFORMATION_REQ.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_CFM.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_NODE_INFORMATION_REQ.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_CFM.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_NTF.
+[INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_LIMITATION_STATUS_REQ.
 ...
 ```
+
 
 ## Supported/Tested Firmware Revisions
 

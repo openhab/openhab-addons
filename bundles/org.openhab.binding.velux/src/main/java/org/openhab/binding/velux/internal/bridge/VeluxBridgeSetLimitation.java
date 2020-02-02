@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.velux.internal.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.bridge.common.SetProductLimitation;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class VeluxBridgeSetLimitation {
      * @param limitationMinimum new value for minimum limit.
      * @return true if successful, and false otherwise.
      */
-    public boolean setMinimumLimitation(VeluxBridge bridge, int nodeId, int limitationMinimum) {
+    public boolean setMinimumLimitation(VeluxBridge bridge, int nodeId, VeluxProductPosition limitationMinimum) {
         logger.trace("setMinimumLimitation(nodeId={}, limitation={}) called.", nodeId, limitationMinimum);
 
         SetProductLimitation bcp = bridge.bridgeAPI().setProductLimitation();
@@ -55,7 +56,7 @@ public class VeluxBridgeSetLimitation {
             logger.info("setMinimumLimitation(): aborting processing as there is handler available.");
             return false;
         }
-        bcp.setActuatorIdAndMinimumLimitation(nodeId, limitationMinimum);
+        bcp.setActuatorIdAndMinimumLimitation(nodeId, limitationMinimum.getPositionAsVeluxType());
         if (bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
             logger.trace("setMinimumLimitation() finished successfully.");
             return true;
@@ -73,7 +74,7 @@ public class VeluxBridgeSetLimitation {
      * @param limitationMaximum new value for maximum limit.
      * @return true if successful, and false otherwise.
      */
-    public boolean setMaximumLimitation(VeluxBridge bridge, int nodeId, int limitationMaximum) {
+    public boolean setMaximumLimitation(VeluxBridge bridge, int nodeId, VeluxProductPosition limitationMaximum) {
         logger.trace("setMaximumLimitation(nodeId={}, limitation={}) called.", nodeId, limitationMaximum);
 
         SetProductLimitation bcp = bridge.bridgeAPI().setProductLimitation();
@@ -81,7 +82,7 @@ public class VeluxBridgeSetLimitation {
             logger.info("setMaximumLimitation(): aborting processing as there is handler available.");
             return false;
         }
-        bcp.setActuatorIdAndMaximumLimitation(nodeId, limitationMaximum);
+        bcp.setActuatorIdAndMaximumLimitation(nodeId, limitationMaximum.getPositionAsVeluxType());
         if (bridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
             logger.trace("setMaximumLimitation() finished successfully.");
             return true;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 /**
- * Classes for modeling the Velux devices and their characteristics in the openHAB environment.
+ * Classes for modeling the Velux devices and their properties in a general openHAB (OH1/OH2/OH3)-independent way.
  *
  * @author Guenther Schreiner - Initial contribution
  */

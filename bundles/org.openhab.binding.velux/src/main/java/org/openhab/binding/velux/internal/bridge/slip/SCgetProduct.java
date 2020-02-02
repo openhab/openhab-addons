@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
 import org.openhab.binding.velux.internal.things.VeluxProductType;
-import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
-import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,7 +212,7 @@ class SCgetProduct extends GetProduct implements SlipBridgeCommunicationProtocol
                     break;
                 }
 
-                if (ntfName.length() == 0) {
+                if ((ntfName.length() == 0) || ntfName.startsWith("_")) {
                     ntfName = "#".concat(String.valueOf(ntfNodeID));
                     logger.debug("setResponse(): device provided invalid name, using '{}' instead.", ntfName);
                 }

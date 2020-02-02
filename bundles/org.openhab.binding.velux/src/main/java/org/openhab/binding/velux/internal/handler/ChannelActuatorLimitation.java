@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeGetLimitation;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeSetLimitation;
+import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
@@ -77,21 +78,21 @@ final class ChannelActuatorLimitation extends ChannelHandlerTemplate {
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                 LOGGER.trace("handleRefresh(): there are some existing products.");
             }
-            if (!ThingProperty.exists(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER)) {
+            if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)) {
                 LOGGER.trace("handleRefresh(): aborting processing as {} is not set.",
-                        VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
+                        VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
                 break;
             }
-            String actuatorSerial = (String) ThingProperty.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
+            String actuatorSerial = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
             LOGGER.trace("handleRefresh(): actuatorSerial={}", actuatorSerial);
 
             // Handle value inversion
             boolean propertyInverted = false;
-            if (ThingProperty.exists(thisBridgeHandler, channelUID,
+            if (ThingConfiguration.exists(thisBridgeHandler, channelUID,
                     VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
-                propertyInverted = (boolean) ThingProperty.getValue(thisBridgeHandler, channelUID,
+                propertyInverted = (boolean) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
                         VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
             }
             boolean isInverted = propertyInverted || VeluxProductSerialNo.indicatesRevertedValues(actuatorSerial);
@@ -154,21 +155,21 @@ final class ChannelActuatorLimitation extends ChannelHandlerTemplate {
             if (thisBridgeHandler.bridgeParameters.actuators.autoRefresh(thisBridgeHandler.thisBridge)) {
                 LOGGER.trace("handleCommand(): there are some existing products.");
             }
-            if (!ThingProperty.exists(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER)) {
+            if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)) {
                 LOGGER.trace("handleCommand(): aborting processing as {} is not set.",
-                        VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
+                        VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
                 break;
             }
-            String actuatorSerial = (String) ThingProperty.getValue(thisBridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
+            String actuatorSerial = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
             LOGGER.trace("handleCommand(): actuatorSerial={}", actuatorSerial);
 
             // Handle value inversion
             boolean propertyInverted = false;
-            if (ThingProperty.exists(thisBridgeHandler, channelUID,
+            if (ThingConfiguration.exists(thisBridgeHandler, channelUID,
                     VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
-                propertyInverted = (boolean) ThingProperty.getValue(thisBridgeHandler, channelUID,
+                propertyInverted = (boolean) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
                         VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
             }
             boolean isInverted = propertyInverted || VeluxProductSerialNo.indicatesRevertedValues(actuatorSerial);
@@ -190,18 +191,15 @@ final class ChannelActuatorLimitation extends ChannelHandlerTemplate {
             }
 
             LOGGER.trace("handleCommand(): found command of type PercentType.");
-            PercentType ptCommand = (PercentType) command;
-            if (isInverted) {
-                ptCommand = new PercentType(PercentType.HUNDRED.intValue() - ptCommand.intValue());
-            }
-            LOGGER.trace("handleCommand(): found command to set level to {}.", ptCommand);
+            VeluxProductPosition posCommand = new VeluxProductPosition((PercentType) command, isInverted);
+            LOGGER.trace("handleCommand(): found command to set level to {}.", posCommand);
 
             if (setMinimum) {
                 new VeluxBridgeSetLimitation().setMinimumLimitation(thisBridgeHandler.thisBridge,
-                        thisProduct.getBridgeProductIndex().toInt(), ptCommand.intValue());
+                        thisProduct.getBridgeProductIndex().toInt(), posCommand);
             } else {
                 new VeluxBridgeSetLimitation().setMaximumLimitation(thisBridgeHandler.thisBridge,
-                        thisProduct.getBridgeProductIndex().toInt(), ptCommand.intValue());
+                        thisProduct.getBridgeProductIndex().toInt(), posCommand);
             }
         } while (false); // common exit
         LOGGER.trace("handleCommand() returns {}.", newValue);

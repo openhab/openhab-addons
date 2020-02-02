@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,12 +19,14 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
+import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
+import org.openhab.binding.velux.internal.handler.utils.StateUtils;
+import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.binding.velux.internal.utils.ManifestInformation;
 import org.slf4j.Logger;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /***
  * The class is responsible for representing the overall status of the Velux binding.
  * <P>
- * Beside the normal thing handling introduced by {@link BaseThingHandler}, it provides a method:
+ * Beside the normal thing handling introduced by {@link ExtendedBaseThingHandler}, it provides a method:
  * <ul>
  * <li>{@link #updateBindingState} to enable other classes to modify the number of activated Velux bridges and
  * Things.</LI>
@@ -119,8 +121,10 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
         logger.trace("updateVisibleInformation(): updating properties.");
         ThingProperty.setValue(thing, VeluxBindingProperties.PROPERTY_BINDING_BUNDLEVERSION,
                 ManifestInformation.getBundleVersion());
-        ThingProperty.setValue(thing, VeluxBindingProperties.PROPERTY_BINDING_NOOFBRIDGES, currentNumberOfBridges);
-        ThingProperty.setValue(thing, VeluxBindingProperties.PROPERTY_BINDING_NOOFTHINGS, currentNumberOfThings);
+        ThingProperty.setValue(thing, VeluxBindingProperties.PROPERTY_BINDING_NOOFBRIDGES,
+                currentNumberOfBridges.toString());
+        ThingProperty.setValue(thing, VeluxBindingProperties.PROPERTY_BINDING_NOOFTHINGS,
+                currentNumberOfThings.toString());
 
         // BaseThingHandler is sensitive during initialization phase. Therefore, to avoid (wrong) warnings about:
         // "tried updating the thing status although the handler was already disposed."
@@ -150,7 +154,11 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
         // The framework requires you to return from this method quickly.
         // Setting the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
-
+        // Take care of unusual situations...
+        if (scheduler.isShutdown()) {
+            logger.warn("initialize(): scheduler is shutdown, aborting the initialization of this bridge.");
+            return;
+        }
         logger.trace("initialize(): preparing background initialization task.");
         // Background initialization...
         scheduler.execute(() -> {

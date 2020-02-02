@@ -15,21 +15,22 @@
 			<channel id="reload" typeId="reload" />
 			<channel id="downtime" typeId="downtime" />
 			<channel id="doDetection" typeId="doDetection" />
-
-			<channel id="firmware" typeId="firmware" />
-			<channel id="ipAddress" typeId="ipAddress" />
-			<channel id="subnetMask" typeId="subnetMask" />
-			<channel id="defaultGW" typeId="defaultGW" />
-			<channel id="DHCP" typeId="DHCP" />
-			<channel id="WLANSSID" typeId="WLANSSID" />
-			<channel id="WLANPassword" typeId="WLANPassword" />
-			<channel id="products" typeId="products" />
-			<channel id="scenes" typeId="scenes" />
-			<channel id="check" typeId="check" />
 		</channels>
 
 		<properties>
 			<property name="vendor">Velux</property>
+			<!-- Bridge properties
+			<property name="firmware" />
+			<property name="ipAddress" />
+			<property name="subnetMask" />
+			<property name="defaultGW" />
+			<property name="DHCP" />
+			<property name="WLANSSID" />
+			<property name="WLANPassword" />
+			<property name="products" />
+			<property name="scenes" />
+			<property name="check" />
+			-->
 		</properties>
 
 		<config-description-ref uri="bridge-type:velux:bridge" />

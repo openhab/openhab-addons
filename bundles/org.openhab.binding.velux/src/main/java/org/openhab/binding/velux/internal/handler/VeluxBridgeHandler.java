@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,17 +25,14 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBinding;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
-import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeActuators;
@@ -53,11 +51,14 @@ import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
+import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseBridgeHandler;
+import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxExistingScenes;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
-import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +87,7 @@ import org.slf4j.LoggerFactory;
 public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements VeluxBridgeInstance, VeluxBridgeProvider {
     private final Logger logger = LoggerFactory.getLogger(VeluxBridgeHandler.class);
 
-    /*
-     * ***************************
-     * ***** Private Objects *****
-     */
+    // Class internal
 
     /**
      * Scheduler for continuous refresh by scheduleWithFixedDelay.
@@ -104,7 +102,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     /**
      * Dedicated thread pool for the long-running bridge communication threads.
      */
-    private final ScheduledExecutorService handleScheduler = ThreadPoolManager
+    private ScheduledExecutorService handleScheduler = ThreadPoolManager
             .getScheduledPool(VeluxBindingConstants.BINDING_ID);
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
@@ -116,8 +114,13 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
 
     VeluxBridge thisBridge = myJsonBridge;
-    BridgeParameters bridgeParameters = new BridgeParameters();
+    public BridgeParameters bridgeParameters = new BridgeParameters();
     Localization localization;
+
+    /**
+     * Mapping from ChannelUID to class Thing2VeluxActuator, which return Velux device information, probably cached.
+     */
+    ConcurrentHashMap<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<ChannelUID, Thing2VeluxActuator>();
 
     /**
      * Information retrieved by {@link VeluxBinding#VeluxBinding}.
@@ -136,10 +139,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.debug("Creating a VeluxBridgeHandler for thing '{}'.", getThing().getUID());
     }
 
-    /*
-     * ***************************
-     * ***** Private Classes *****
-     */
+    // Private classes
 
     /**
      * <P>
@@ -157,7 +157,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @NonNullByDefault
     public class BridgeParameters {
         /** Information retrieved by {@link VeluxBridgeActuators#getProducts} */
-        VeluxBridgeActuators actuators = new VeluxBridgeActuators();
+        public VeluxBridgeActuators actuators = new VeluxBridgeActuators();
 
         /** Information retrieved by {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeScenes#getScenes} */
         VeluxBridgeScenes scenes = new VeluxBridgeScenes();
@@ -175,10 +175,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         VeluxBridgeWLANConfig.Channel wlanConfig = new VeluxBridgeWLANConfig().getChannel();
     }
 
-    /*
-     * ***************************
-     * ***** Private Methods *****
-     */
+    // Private methods
 
     /**
      * Provide the ThingType for a given Channel.
@@ -194,10 +191,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         return channelUID.getThingUID().getThingTypeUID();
     }
 
-    /*
-     * *****************************************************************
-     * ***** Objects and Methods for interface VeluxBridgeInstance *****
-     */
+    // Objects and Methods for interface VeluxBridgeInstance
 
     /**
      * Information retrieved by ...
@@ -223,10 +217,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         return bridgeParameters.scenes.getChannel().existingScenes;
     }
 
-    /*
-     * *****************************************************************
-     * ***** Objects and Methods for interface VeluxBridgeProvider *****
-     */
+    // Objects and Methods for interface VeluxBridgeProvider *****
 
     @Override
     public boolean bridgeCommunicate(BridgeCommunicationProtocol communication) {
@@ -240,21 +231,25 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         return null;
     }
 
-    /*
-     * **************************************************
-     * ******** Provisioning/Deprovisioning methods *****
-     */
+    // Provisioning/Deprovisioning methods *****
 
     @Override
     public void initialize() {
-        logger.debug("initialize() called.");
-        logger.info("Initializing Velux veluxBridge handler for '{}'.", getThing().getUID());
+        logger.info("Initializing Velux Bridge '{}'.", getThing().getUID());
         // The framework requires you to return from this method quickly.
         // Setting the thing status to UNKNOWN temporarily and let the background task decide for the real status.
+        logger.trace("initialize() called.");
         updateStatus(ThingStatus.UNKNOWN);
-
+        // Take care of unusual situations...
+        if (scheduler.isShutdown()) {
+            logger.warn("initialize(): scheduler is shutdown, aborting the initialization of this bridge.");
+            return;
+        }
+        if (handleScheduler.isShutdown()) {
+            logger.trace("initialize(): handleScheduler is shutdown, aborting the initialization of this bridge.");
+            return;
+        }
         logger.trace("initialize(): preparing background initialization task.");
-
         // Background initialization...
         scheduler.execute(() -> {
             logger.trace("initialize.scheduled(): Further work within scheduler.execute().");
@@ -269,7 +264,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 try {
                     refreshOpenHAB();
                 } catch (RuntimeException e) {
-                    logger.warn("Exception occurred during activated refresh scheduler: {}.", e.getMessage());
+                    logger.warn("Exception occurred during activated refresh scheduler: {}.", e);
                 }
             }, this.veluxBridgeConfiguration.refreshMSecs, this.veluxBridgeConfiguration.refreshMSecs,
                     TimeUnit.MILLISECONDS);
@@ -283,22 +278,23 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     @Override
     public synchronized void dispose() {
-        logger.debug("dispose({}) called.", this);
-        logger.trace("dispose(): shutting down scheduled bridge I/O tasks.");
-        handleScheduler.shutdownNow();
-        logger.trace("Shutting down Velux veluxBridge '{}'.", getThing().getUID());
+        logger.info("Shutting down Velux Bridge '{}'.", getThing().getUID());
+        logger.trace("dispose(): shutting down continous refresh.");
         // Just for avoidance of Potential null pointer access
-        ScheduledFuture<?> refreshJobX = refreshJob;
-        if (refreshJobX != null) {
+        ScheduledFuture<?> currentRefreshJob = refreshJob;
+        if (currentRefreshJob != null) {
             logger.trace("dispose(): stopping the refresh.");
-            refreshJobX.cancel(true);
+            currentRefreshJob.cancel(true);
         }
-        logger.trace("dispose(): initiating logout.");
-        thisBridge.bridgeLogout();
-        logger.trace("dispose(): shutting down JSON bridge.");
-        myJsonBridge.shutdown();
-        logger.trace("dispose(): shutting down SLIP bridge.");
-        mySlipBridge.shutdown();
+        // Background execution of dispose
+        scheduler.execute(() -> {
+            logger.trace("dispose.scheduled(): (synchronous) logout initiated.");
+            thisBridge.bridgeLogout();
+            logger.trace("dispose.scheduled(): shutting down JSON bridge.");
+            myJsonBridge.shutdown();
+            logger.trace("dispose.scheduled(): shutting down SLIP bridge.");
+            mySlipBridge.shutdown();
+        });
         logger.trace("dispose(): calling super class.");
         super.dispose();
         logger.trace("dispose() done.");
@@ -308,19 +304,15 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * NOTE: It takes care by calling {@link #handleCommand} with the REFRESH command, that every used channel is
      * initialized.
      */
-    @SuppressWarnings("unused")
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.trace("channelLinked({}) called.", channelUID.getAsString());
-
-        // TODO ... code eliminated for OH2.5
-        if (false) {
-            if (thing.getStatus() == ThingStatus.ONLINE) {
-                logger.trace("channelLinked() refreshing channel value with help of handleCommand as Thing is online.");
-                handleCommand(channelUID, RefreshType.REFRESH);
-            } else {
-                logger.trace("channelLinked() doing nothing as Thing is not online.");
-            }
+        if (thing.getStatus() == ThingStatus.ONLINE) {
+            channel2VeluxActuator.put(channelUID, new Thing2VeluxActuator(this, channelUID));
+            logger.trace("channelLinked({}) refreshing channel value with help of handleCommand as Thing is online.",
+                    channelUID.getAsString());
+            handleCommand(channelUID, RefreshType.REFRESH);
+        } else {
+            logger.trace("channelLinked({}) doing nothing as Thing is not online.", channelUID.getAsString());
         }
     }
 
@@ -329,22 +321,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("channelUnlinked({}) called.", channelUID.getAsString());
     }
 
-    @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        logger.trace("childHandlerInitialized({},{}) called.", childHandler, childThing);
-        super.childHandlerInitialized(childHandler, childThing);
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        logger.trace("childHandlerDisposed({},{}) called.", childHandler, childThing);
-        super.childHandlerDisposed(childHandler, childThing);
-    }
-
-    /*
-     * **************************************
-     * ******** Reconfiguration methods *****
-     */
+    // Reconfiguration methods
 
     private void bridgeParamsUpdated() {
         logger.debug("bridgeParamsUpdated() called.");
@@ -387,7 +364,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         bridgeParameters.scenes.getScenes(thisBridge);
         logger.info("Found {} scenes:\n\t{}", VeluxBindingConstants.BINDING_ID,
                 bridgeParameters.scenes.getChannel().existingScenes.toString(false, "\n\t"));
-
         logger.trace("bridgeParamsUpdated(): Fetching existing actuators/products.");
         bridgeParameters.actuators.getProducts(thisBridge);
         logger.info("Found {} actuators:\n\t{}", VeluxBindingConstants.BINDING_ID,
@@ -411,13 +387,15 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("bridgeParamsUpdated() successfully finished.");
     }
 
-    /*
-     * *************************************************
-     * ******** Continuous synchronization methods *****
-     */
+    // Continuous synchronization methods
 
     private synchronized void refreshOpenHAB() {
         logger.debug("refreshOpenHAB() initiated by {} starting cycle {}.", Thread.currentThread(), refreshCounter);
+
+        if (handleScheduler.isShutdown()) {
+            logger.trace("refreshOpenHAB(): handleScheduler is shutdown, recreating a scheduler pool.");
+            handleScheduler = ThreadPoolManager.getScheduledPool(VeluxBindingConstants.BINDING_ID);
+        }
 
         logger.trace("refreshOpenHAB(): processing of possible HSM messages.");
         // Background execution of bridge related I/O
@@ -434,8 +412,16 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 "refreshOpenHAB(): looping through all (both child things and bridge) linked channels for a need of refresh.");
         for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
             if (VeluxItemType.isToBeRefreshedNow(refreshCounter, thingTypeUIDOf(channelUID), channelUID.getId())) {
-                logger.trace("refreshOpenHAB(): refreshing item {}.", channelUID);
+                logger.trace("refreshOpenHAB(): refreshing channel {}.", channelUID);
                 handleCommand(channelUID, RefreshType.REFRESH);
+            }
+        }
+        logger.trace("refreshOpenHAB(): looping through properties for a need of refresh.");
+        for (VeluxItemType veluxItem : VeluxItemType.getPropertyEntriesByThing(getThing().getThingTypeUID())) {
+            if (VeluxItemType.isToBeRefreshedNow(refreshCounter, getThing().getThingTypeUID(),
+                    veluxItem.getIdentifier())) {
+                logger.trace("refreshOpenHAB(): refreshing property {}.", veluxItem.getIdentifier());
+                handleCommand(new ChannelUID(getThing().getUID(), veluxItem.getIdentifier()), RefreshType.REFRESH);
             }
         }
         logger.debug("refreshOpenHAB() initiated by {} finished cycle {}.", Thread.currentThread(), refreshCounter);
@@ -450,57 +436,35 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         if (!bridgeParameters.actuators.getChannel().existingProducts.isDirty()) {
             return;
         }
-        logger.trace("syncChannelsWithProducts(): existingProducts have changed.");
+        logger.trace("syncChannelsWithProducts(): there are some existing products with changed parameters.");
         outer: for (VeluxProduct product : bridgeParameters.actuators.getChannel().existingProducts
                 .valuesOfModified()) {
             logger.trace("syncChannelsWithProducts(): actuator {} has changed values.", product.getProductName());
+            ProductBridgeIndex productPbi = product.getBridgeProductIndex();
+            logger.trace("syncChannelsWithProducts(): bridge index is {}.", productPbi);
             for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
-                String itemName = channelUID.getAsString();
-                VeluxItemType itemType = VeluxItemType.getByThingAndChannel(thingTypeUIDOf(channelUID),
-                        channelUID.getId());
-                switch (itemType) {
-                    case ACTUATOR_POSITION:
-                    case ACTUATOR_STATE:
-                    case ROLLERSHUTTER_POSITION:
-                    case WINDOW_POSITION:
-                        // found on suitable entry of VeluxItemType.
-                        break;
-                    default:
-                        continue;
+                if (!channel2VeluxActuator.containsKey(channelUID)) {
+                    logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
+                    continue;
                 }
-                if (!ThingProperty.exists(this, channelUID, VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER)) {
-                    logger.trace("syncChannelsWithProducts(): aborting processing as actuatorSerial is not set.");
-                    break;
+                ProductBridgeIndex channelPbi = channel2VeluxActuator.get(channelUID).getProductBridgeIndex();
+                if (!channelPbi.equals(productPbi)) {
+                    continue;
                 }
-                String actuatorSerial = (String) ThingProperty.getValue(this, channelUID,
-                        VeluxBindingProperties.PROPERTY_ACTUATOR_SERIALNUMBER);
-
                 // Handle value inversion
-                boolean propertyInverted = false;
-                if (ThingProperty.exists(this, channelUID, VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
-                    propertyInverted = (boolean) ThingProperty.getValue(this, channelUID,
-                            VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
+                boolean isInverted = channel2VeluxActuator.get(channelUID).isInverted();
+                logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
+                VeluxProductPosition position = new VeluxProductPosition(product.getCurrentPosition());
+                if (position.isValid()) {
+                    PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
+                    logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
+                            positionAsPercent);
+                    updateState(channelUID, positionAsPercent);
+                } else {
+                    logger.trace("syncChannelsWithProducts(): update of channel {} to position {} skipped.", channelUID,
+                            position);
                 }
-                boolean isInverted = propertyInverted || VeluxProductSerialNo.indicatesRevertedValues(actuatorSerial);
-                logger.trace("syncChannelsWithProducts(): isInverted={}.", isInverted);
-                actuatorSerial = VeluxProductSerialNo.cleaned(actuatorSerial);
-
-                logger.trace("syncChannelsWithProducts(): working on actuatorSerial {}.", actuatorSerial);
-                if (product.getSerialNumber().equals(actuatorSerial)) {
-                    logger.trace("syncChannelsWithProducts(): product {}/{} used within item {}.",
-                            product.getProductName(), product.getSerialNumber(), itemName);
-                    VeluxProductPosition position = new VeluxProductPosition(product.getCurrentPosition());
-                    if (position.isValid()) {
-                        PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
-                        logger.debug("syncChannelsWithProducts(): updating item {} to position {}%.", itemName,
-                                positionAsPercent);
-                        updateState(channelUID, positionAsPercent);
-                    } else {
-                        logger.trace("syncChannelsWithProducts(): update of item {} to position {} skipped.", itemName,
-                                position);
-                    }
-                    break outer;
-                }
+                break outer;
             }
         }
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
@@ -508,15 +472,12 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("syncChannelsWithProducts() done.");
     }
 
-    /*
-     * *******************************************
-     * ******** Processing of openHAB events *****
-     */
+    // Processing of openHAB events
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand({}): execution of command {} on channel {} will be scheduled.",
-                Thread.currentThread(), command, channelUID.getAsString());
+        logger.trace("handleCommand({}): command {} on channel {} will be scheduled.", Thread.currentThread(), command,
+                channelUID.getAsString());
         logger.debug("handleCommand({},{}) called.", channelUID.getAsString(), command);
 
         // Background execution of bridge related I/O
@@ -540,8 +501,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param command the {@link Command}.
      */
     private synchronized void handleCommandScheduled(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommandScheduled({}): execution of command {} on channel {}.", Thread.currentThread(),
-                command, channelUID.getAsString());
+        logger.trace("handleCommandScheduled({}): command {} on channel {}.", Thread.currentThread(), command,
+                channelUID.getAsString());
         logger.debug("handleCommandScheduled({},{}) called.", channelUID.getAsString(), command);
 
         /*
@@ -565,6 +526,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             return;
         }
 
+        // Build cache
+        if (!channel2VeluxActuator.containsKey(channelUID)) {
+            channel2VeluxActuator.put(channelUID, new Thing2VeluxActuator(this, channelUID));
+        }
+
         if (veluxBridgeConfiguration.hasChanged) {
             logger.trace("handleCommandScheduled(): work on updated bridge configuration parameters.");
             bridgeParamsUpdated();
@@ -582,68 +548,79 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 logger.debug("handleCommandScheduled(): received a Refresh command for a non-readable item.");
             } else {
                 logger.trace("handleCommandScheduled(): refreshing item {} (type {}).", itemName, itemType);
-                switch (itemType) {
-                    // Bridge channels
-                    case BRIDGE_STATUS:
-                        newState = ChannelBridgeStatus.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case BRIDGE_DOWNTIME:
-                        newState = new DecimalType(
-                                thisBridge.lastCommunication() - thisBridge.lastSuccessfulCommunication());
-                        break;
-                    case BRIDGE_FIRMWARE:
-                        newState = ChannelBridgeFirmware.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case BRIDGE_IPADDRESS:
-                    case BRIDGE_SUBNETMASK:
-                    case BRIDGE_DEFAULTGW:
-                    case BRIDGE_DHCP:
-                        newState = ChannelBridgeLANconfig.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case BRIDGE_WLANSSID:
-                    case BRIDGE_WLANPASSWORD:
-                        newState = ChannelBridgeWLANconfig.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case BRIDGE_SCENES:
-                        newState = ChannelBridgeScenes.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case BRIDGE_PRODUCTS:
-                        newState = ChannelBridgeProducts.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case BRIDGE_CHECK:
-                        newState = ChannelBridgeCheck.handleRefresh(channelUID, channelId, this);
-                        break;
-                    // Actuator channels
-                    case ACTUATOR_POSITION:
-                    case ACTUATOR_STATE:
-                    case ROLLERSHUTTER_POSITION:
-                    case WINDOW_POSITION:
-                        newState = ChannelActuatorPosition.handleRefresh(channelUID, channelId, this);
-                        break;
-                    case ACTUATOR_LIMIT_MINIMUM:
-                    case ROLLERSHUTTER_LIMIT_MINIMUM:
-                    case WINDOW_LIMIT_MINIMUM:
-                        newState = ChannelActuatorLimitation.handleRefresh(channelUID, "", this);
-                        break;
-                    case ACTUATOR_LIMIT_MAXIMUM:
-                    case ROLLERSHUTTER_LIMIT_MAXIMUM:
-                    case WINDOW_LIMIT_MAXIMUM:
-                        newState = ChannelActuatorLimitation.handleRefresh(channelUID, channelId, this);
-                        break;
+                try { // expecting an IllegalArgumentException for unknown Velux device
+                    switch (itemType) {
+                        // Bridge channels
+                        case BRIDGE_STATUS:
+                            newState = ChannelBridgeStatus.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case BRIDGE_DOWNTIME:
+                            newState = new DecimalType(
+                                    thisBridge.lastCommunication() - thisBridge.lastSuccessfulCommunication());
+                            break;
+                        case BRIDGE_FIRMWARE:
+                            newState = ChannelBridgeFirmware.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case BRIDGE_IPADDRESS:
+                        case BRIDGE_SUBNETMASK:
+                        case BRIDGE_DEFAULTGW:
+                        case BRIDGE_DHCP:
+                            newState = ChannelBridgeLANconfig.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case BRIDGE_WLANSSID:
+                        case BRIDGE_WLANPASSWORD:
+                            newState = ChannelBridgeWLANconfig.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case BRIDGE_SCENES:
+                            newState = ChannelBridgeScenes.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case BRIDGE_PRODUCTS:
+                            newState = ChannelBridgeProducts.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case BRIDGE_CHECK:
+                            newState = ChannelBridgeCheck.handleRefresh(channelUID, channelId, this);
+                            break;
+                        // Actuator channels
+                        case ACTUATOR_POSITION:
+                        case ACTUATOR_STATE:
+                        case ROLLERSHUTTER_POSITION:
+                        case WINDOW_POSITION:
+                            newState = ChannelActuatorPosition.handleRefresh(channelUID, channelId, this);
+                            break;
+                        case ACTUATOR_LIMIT_MINIMUM:
+                        case ROLLERSHUTTER_LIMIT_MINIMUM:
+                        case WINDOW_LIMIT_MINIMUM:
+                            newState = ChannelActuatorLimitation.handleRefresh(channelUID, "", this);
+                            break;
+                        case ACTUATOR_LIMIT_MAXIMUM:
+                        case ROLLERSHUTTER_LIMIT_MAXIMUM:
+                        case WINDOW_LIMIT_MAXIMUM:
+                            newState = ChannelActuatorLimitation.handleRefresh(channelUID, channelId, this);
+                            break;
 
-                    // VirtualShutter channels
-                    case VSHUTTER_POSITION:
-                        newState = ChannelVShutterPosition.handleRefresh(channelUID, channelId, this);
-                        break;
+                        // VirtualShutter channels
+                        case VSHUTTER_POSITION:
+                            newState = ChannelVShutterPosition.handleRefresh(channelUID, channelId, this);
+                            break;
 
-                    default:
-                        logger.trace(
-                                "handleCommandScheduled(): cannot handle REFRESH on channel {} as it is of type {}.",
-                                itemName, channelId);
+                        default:
+                            logger.trace(
+                                    "handleCommandScheduled(): cannot handle REFRESH on channel {} as it is of type {}.",
+                                    itemName, channelId);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Cannot handle REFRESH on channel {} as it isn't (yet) known to the bridge.", itemName);
                 }
                 if (newState != null) {
-                    logger.debug("handleCommandScheduled(): updating {} ({}) to {}.", itemName, channelUID, newState);
-                    updateState(channelUID, newState);
+                    if (itemType.isChannel()) {
+                        logger.debug("handleCommandScheduled(): updating channel {} to {}.", channelUID, newState);
+                        updateState(channelUID, newState);
+                    }
+                    if (itemType.isProperty()) {
+                        logger.debug("handleCommandScheduled(): updating property {} to {}.", channelUID, newState);
+                        ThingProperty.setValue(this, itemType.getIdentifier(), newState.toString());
+
+                    }
                 } else {
                     logger.info("handleCommandScheduled({},{}): updating of item {} (type {}) failed.",
                             channelUID.getAsString(), command, itemName, itemType);
@@ -657,54 +634,58 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("handleCommandScheduled(): working on item {} (type {}) with COMMAND {}.", itemName, itemType,
                     command);
             Command newValue = null;
-            switch (itemType) {
-                // Bridge channels
-                case BRIDGE_RELOAD:
-                    if (command == OnOffType.ON) {
-                        logger.trace("handleCommandScheduled(): about to reload informations from veluxBridge.");
-                        bridgeParamsUpdated();
-                    } else {
-                        logger.trace("handleCommandScheduled(): ignoring OFF command.");
-                    }
-                    break;
-                case BRIDGE_DO_DETECTION:
-                    ChannelBridgeDoDetection.handleCommand(channelUID, channelId, command, this);
-                    break;
+            try { // expecting an IllegalArgumentException for unknown Velux device
+                switch (itemType) {
+                    // Bridge channels
+                    case BRIDGE_RELOAD:
+                        if (command == OnOffType.ON) {
+                            logger.trace("handleCommandScheduled(): about to reload informations from veluxBridge.");
+                            bridgeParamsUpdated();
+                        } else {
+                            logger.trace("handleCommandScheduled(): ignoring OFF command.");
+                        }
+                        break;
+                    case BRIDGE_DO_DETECTION:
+                        ChannelBridgeDoDetection.handleCommand(channelUID, channelId, command, this);
+                        break;
 
-                // Scene channels
-                case SCENE_ACTION:
-                    ChannelSceneAction.handleCommand(channelUID, channelId, command, this);
-                    break;
-                case SCENE_SILENTMODE:
-                    ChannelSceneSilentmode.handleCommand(channelUID, channelId, command, this);
-                    break;
+                    // Scene channels
+                    case SCENE_ACTION:
+                        ChannelSceneAction.handleCommand(channelUID, channelId, command, this);
+                        break;
+                    case SCENE_SILENTMODE:
+                        ChannelSceneSilentmode.handleCommand(channelUID, channelId, command, this);
+                        break;
 
-                // Actuator channels
-                case ACTUATOR_POSITION:
-                case ACTUATOR_STATE:
-                case ROLLERSHUTTER_POSITION:
-                case WINDOW_POSITION:
-                    ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
-                    break;
-                case ACTUATOR_LIMIT_MINIMUM:
-                case ROLLERSHUTTER_LIMIT_MINIMUM:
-                case WINDOW_LIMIT_MINIMUM:
-                    ChannelActuatorLimitation.handleCommand(channelUID, channelId, command, this);
-                    break;
-                case ACTUATOR_LIMIT_MAXIMUM:
-                case ROLLERSHUTTER_LIMIT_MAXIMUM:
-                case WINDOW_LIMIT_MAXIMUM:
-                    ChannelActuatorLimitation.handleCommand(channelUID, channelId, command, this);
-                    break;
+                    // Actuator channels
+                    case ACTUATOR_POSITION:
+                    case ACTUATOR_STATE:
+                    case ROLLERSHUTTER_POSITION:
+                    case WINDOW_POSITION:
+                        ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
+                        break;
+                    case ACTUATOR_LIMIT_MINIMUM:
+                    case ROLLERSHUTTER_LIMIT_MINIMUM:
+                    case WINDOW_LIMIT_MINIMUM:
+                        ChannelActuatorLimitation.handleCommand(channelUID, channelId, command, this);
+                        break;
+                    case ACTUATOR_LIMIT_MAXIMUM:
+                    case ROLLERSHUTTER_LIMIT_MAXIMUM:
+                    case WINDOW_LIMIT_MAXIMUM:
+                        ChannelActuatorLimitation.handleCommand(channelUID, channelId, command, this);
+                        break;
 
-                // VirtualShutter channels
-                case VSHUTTER_POSITION:
-                    newValue = ChannelVShutterPosition.handleCommand(channelUID, channelId, command, this);
-                    break;
+                    // VirtualShutter channels
+                    case VSHUTTER_POSITION:
+                        newValue = ChannelVShutterPosition.handleCommand(channelUID, channelId, command, this);
+                        break;
 
-                default:
-                    logger.warn("{} Cannot handle command {} on channel {} (type {}).",
-                            VeluxBindingConstants.LOGGING_CONTACT, command, itemName, itemType);
+                    default:
+                        logger.warn("{} Cannot handle command {} on channel {} (type {}).",
+                                VeluxBindingConstants.LOGGING_CONTACT, command, itemName, itemType);
+                }
+            } catch (IllegalArgumentException e) {
+                logger.warn("Cannot handle command on channel {} as it isn't (yet) known to the bridge.", itemName);
             }
             if (newValue != null) {
                 postCommand(channelUID, newValue);

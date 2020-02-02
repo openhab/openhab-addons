@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,7 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 /**
- * Classes for handling discovery of Velux devices beyond the Velux gateway.
+ * Classes to provide the discovery of things automatically and user-initiated after defining a valid Velux bridge
+ * configuration.
  *
  * @author Guenther Schreiner - Initial contribution
  */
