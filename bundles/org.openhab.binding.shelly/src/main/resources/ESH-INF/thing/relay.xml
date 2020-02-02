@@ -212,9 +212,9 @@
 		<label>External Sensors</label>
 		<description>Temperatures from external sensors (if extension is installed and sensor connected)</description>
 		<channels>
-			<channel id="temperature1" typeId="sensorTemp" />
-			<channel id="temperature2" typeId="sensorTemp" />
-			<channel id="temperature3" typeId="sensorTemp" />
+			<channel id="temperature1" typeId="sensorTempExt" />
+			<channel id="temperature2" typeId="sensorTempExt" />
+			<channel id="temperature3" typeId="sensorTempExt" />
 		</channels>
 	</channel-group-type>
 

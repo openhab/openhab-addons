@@ -107,7 +107,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 coapServer.addListener(this);
 
                 statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
-                        .setTimeout((long) SHELLY_API_READ_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
+                        .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
 
                 coapServer.start();
             }

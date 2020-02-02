@@ -471,25 +471,32 @@ public class ShellyHttpApi {
         try {
             result = innerRequest(uri);
         } catch (IOException e) {
-            if (e.getMessage().contains("Timeout")) {
-                logger.debug("Shelly API timeout, retry");
+            String type = StringUtils.substringAfterLast(e.getCause().toString(), ".");
+            if (e.getMessage().contains("Timeout") || type.toLowerCase().contains("timeout")
+                    || e.getMessage().contains("Connection reset")) {
+                logger.debug("{}: Shelly API timeout ({}), retry", thingName, type);
                 timeoutErrors++;
                 retry = true;
             } else {
-                throw new IOException("Shelly API call failed: " + e.getMessage() + ", uri=" + uri);
+                throw new IOException(
+                        thingName + ": Shelly API call failed (" + type + "), uri=" + uri);
             }
         }
-        if (retry) {
+        if (retry && !profile.hasBattery) {
             try {
                 // retry to recover
                 result = innerRequest(uri);
                 timeoutsRecovered++;
                 logger.debug("Shelly API timeout recovered");
             } catch (IOException e) {
-                if (e.getMessage().contains("Timeout")) {
-                    throw new IOException("Shelly API timeout, uri=" + uri);
+                String type = StringUtils.substringAfterLast(e.getCause().toString(), ".");
+                if (e.getMessage().contains("Timeout") || type.toLowerCase().contains("timeout")
+                        || e.getMessage().contains("Connection reset")) {
+                    throw new IOException(
+                            thingName + ": Shelly API timeout (" + type + "), uri=" + uri);
                 } else {
-                    throw new IOException("Shelly API call failed: " + e.getMessage() + ", uri=" + uri);
+                    throw new IOException(
+                            thingName + ": Shelly API call failed: " + type + ", uri=" + uri);
                 }
             }
         }
@@ -499,7 +506,7 @@ public class ShellyHttpApi {
     private String innerRequest(String uri) throws IOException {
         String httpResponse = "ERROR";
         String url = "http://" + config.deviceIp + uri;
-        logger.trace("HTTP GET for {}: {}", thingName, url);
+        logger.trace("{}: HTTP GET for {}", thingName, url);
 
         Properties headers = new Properties();
         if (!config.userId.isEmpty()) {
