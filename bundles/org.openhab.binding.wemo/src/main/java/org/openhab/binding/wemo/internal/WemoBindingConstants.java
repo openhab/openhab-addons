@@ -40,6 +40,10 @@ public class WemoBindingConstants {
     public static final ThingTypeUID THING_TYPE_MAKER = new ThingTypeUID(BINDING_ID, "Maker");
     public static final ThingTypeUID THING_TYPE_COFFEE = new ThingTypeUID(BINDING_ID, "CoffeeMaker");
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
+    public static final ThingTypeUID THING_TYPE_CROCKPOT = new ThingTypeUID(BINDING_ID, "Crockpot");
+    public static final ThingTypeUID THING_TYPE_PURIFIER = new ThingTypeUID(BINDING_ID, "Purifier");
+    public static final ThingTypeUID THING_TYPE_HUMIDIFIER = new ThingTypeUID(BINDING_ID, "Humidifier");
+    public static final ThingTypeUID THING_TYPE_HEATER = new ThingTypeUID(BINDING_ID, "Heater");
 
     // List of all Channel ids
     public static final String CHANNEL_STATE = "state";
@@ -77,6 +81,30 @@ public class WemoBindingConstants {
     public static final String CHANNEL_ENDTIME = "endTime";
     public static final String CHANNEL_NIGHTMODEBRIGHTNESS = "nightModeBrightness";
 
+    public static final String CHANNEL_COOKMODE = "cookMode";
+    public static final String CHANNEL_LOWCOOKTIME = "lowCookTime";
+    public static final String CHANNEL_WARMCOOKTIME = "warmCooktime";
+    public static final String CHANNEL_HIGHCOOKTIME = "highCooktime";
+    public static final String CHANNEL_COOKEDTIME = "cookedtime";
+
+    public static final String CHANNEL_PURIFIERMODE = "purifierMode";
+    public static final String CHANNEL_AIRQUALITY = "airQuality";
+    public static final String CHANNEL_IONIZER = "ionizer";
+    public static final String CHANNEL_FILTERLIFE = "filterLife";
+    public static final String CHANNEL_EXPIREDFILTERTIME = "expiredFilterTime";
+    public static final String CHANNEL_FILTERPRESENT = "filterPresent";
+
+    public static final String CHANNEL_HUMIDIFIERMODE = "humidifierMode";
+    public static final String CHANNEL_CURRENTHUMIDITY = "currentHumidity";
+    public static final String CHANNEL_DESIREDHUMIDITY = "desiredHumidity";
+    public static final String CHANNEL_WATERLEVEL = "waterLEvel";
+
+    public static final String CHANNEL_HEATERMODE = "heaterMode";
+    public static final String CHANNEL_CURRENTTEMP = "currentTemperature";
+    public static final String CHANNEL_TARGETTEMP = "targetTemperature";
+    public static final String CHANNEL_AUTOOFFTIME = "autoOffTime";
+    public static final String CHANNEL_HEATINGREMAINING = "heatingRemaining";
+
     // List of thing configuration properties
     public static final String UDN = "udn";
     public static final String DEVICE_ID = "deviceID";
@@ -94,9 +122,11 @@ public class WemoBindingConstants {
             .unmodifiableSet(Stream.of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
                     .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION, THING_TYPE_BRIDGE,
-                    THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE, THING_TYPE_DIMMER)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream
+                    .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION,
+                            THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE, THING_TYPE_DIMMER,
+                            THING_TYPE_CROCKPOT, THING_TYPE_PURIFIER, THING_TYPE_HUMIDIFIER, THING_TYPE_HEATER)
+                    .collect(Collectors.toSet()));
 
 }
