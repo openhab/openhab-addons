@@ -236,18 +236,24 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     }
                     break;
                 case CHANNEL_STOP:
-                    control.sendKey("STOP");
+                    if ((OnOffType) command == OnOffType.ON) {
+                        control.sendKey("STOP");
+                        updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
+                    }
                     updateState(CHANNEL_STOP, OnOffType.OFF);
-                    updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
                     break;
                 case CHANNEL_VOLUME_UP:
-                    control.sendKey("VOLUP");
-                    updateState(CHANNEL_MUTE, OnOffType.OFF);
+                    if ((OnOffType) command == OnOffType.ON) {
+                        control.sendKey("VOLUP");
+                        updateState(CHANNEL_MUTE, OnOffType.OFF);
+                    }
                     updateState(CHANNEL_VOLUME_UP, OnOffType.OFF);
                     break;
                 case CHANNEL_VOLUME_DOWN:
-                    control.sendKey("VOLDOWN");
-                    updateState(CHANNEL_MUTE, OnOffType.OFF);
+                    if ((OnOffType) command == OnOffType.ON) {
+                        control.sendKey("VOLDOWN");
+                        updateState(CHANNEL_MUTE, OnOffType.OFF);
+                    }
                     updateState(CHANNEL_VOLUME_DOWN, OnOffType.OFF);
                     break;
                 case CHANNEL_MUTE:
@@ -261,11 +267,15 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     control.selectChannel(command.toString());
                     break;
                 case CHANNEL_CHUP:
-                    control.sendKey("CHUP");
+                    if ((OnOffType) command == OnOffType.ON) {
+                        control.sendKey("CHUP");
+                    }
                     updateState(CHANNEL_CHUP, OnOffType.OFF);
                     break;
                 case CHANNEL_CHDOWN:
-                    control.sendKey("CHDOWN");
+                    if ((OnOffType) command == OnOffType.ON) {
+                        control.sendKey("CHDOWN");
+                    }
                     updateState(CHANNEL_CHDOWN, OnOffType.OFF);
                     break;
                 case CHANNEL_KEY:
@@ -547,13 +557,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case "paused":
-                logger.debug("Setting Player state to PAUSE");
-                updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
-                updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
             case "stopped":
-                logger.debug("Setting  STOP to ON and Player state to PAUSE");
-                updateState(CHANNEL_STOP, OnOffType.ON);
+                logger.debug("Setting Player state to PAUSE");
                 updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
                 break;
         }
