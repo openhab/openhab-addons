@@ -206,6 +206,7 @@ public class BlueGigaSerialHandler {
         timer.cancel();
         try {
             parserThread.interrupt();
+            // Give a fair chance to shutdown nicely
             Thread.sleep(50);
             IOUtils.closeQuietly(outputStream);
             IOUtils.closeQuietly(inputStream);
@@ -389,13 +390,7 @@ public class BlueGigaSerialHandler {
                 removeTransactionListener(this);
 
                 // Send next transaction if any
-                executor.submit(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        clearOngoingTransactionAndSendNext();
-                    }
-                });
+                executor.submit(BlueGigaSerialHandler.this::clearOngoingTransactionAndSendNext);
 
                 if (response == null) {
                     throw new TimeoutException("No response from BlueGiga controller");
