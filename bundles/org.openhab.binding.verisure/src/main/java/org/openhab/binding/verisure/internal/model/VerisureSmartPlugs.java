@@ -33,22 +33,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureSmartPlugs() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureSmartPlugs(@Nullable Data data) {
-        super();
-        this.data = data;
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -83,22 +67,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
     public static class Data {
 
         private @Nullable Installation installation;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
-        /**
-         *
-         * @param installation
-         */
-        public Data(@Nullable Installation installation) {
-            super();
-            this.installation = installation;
-        }
 
         public @Nullable Installation getInstallation() {
             return installation;
@@ -138,24 +106,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         private @Nullable List<Smartplug> smartplugs = null;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param smartplugs
-         */
-        public Installation(@Nullable List<Smartplug> smartplugs, @Nullable String typename) {
-            super();
-            this.smartplugs = smartplugs;
-            this.typename = typename;
-        }
 
         public @Nullable List<Smartplug> getSmartplugs() {
             return smartplugs;
@@ -206,31 +156,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         private @Nullable Boolean isHazardous;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Smartplug() {
-        }
-
-        /**
-         *
-         * @param icon
-         * @param typename
-         * @param currentState
-         * @param device
-         * @param isHazardous
-         */
-        public Smartplug(@Nullable Device device, @Nullable String currentState, @Nullable String icon,
-                @Nullable Boolean isHazardous, @Nullable String typename) {
-            super();
-            this.device = device;
-            this.currentState = currentState;
-            this.icon = icon;
-            this.isHazardous = isHazardous;
-            this.typename = typename;
-        }
 
         public @Nullable Device getDevice() {
             return device;
@@ -307,26 +232,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
         private @Nullable String area;
         private @Nullable String typename;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Device() {
-        }
-
-        /**
-         *
-         * @param area
-         * @param typename
-         * @param deviceLabel
-         */
-        public Device(@Nullable String deviceLabel, @Nullable String area, @Nullable String typename) {
-            super();
-            this.deviceLabel = deviceLabel;
-            this.area = area;
-            this.typename = typename;
-        }
-
         public @Nullable String getDeviceLabel() {
             return deviceLabel;
         }
@@ -374,7 +279,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             return new EqualsBuilder().append(area, rhs.area).append(typename, rhs.typename)
                     .append(deviceLabel, rhs.deviceLabel).isEquals();
         }
-
     }
 
 }

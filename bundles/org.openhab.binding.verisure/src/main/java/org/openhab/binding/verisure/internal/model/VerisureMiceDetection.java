@@ -35,22 +35,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
     private double temperatureValue = UNDEFINED;
     private @Nullable String temperatureTimestamp;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureMiceDetection() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureMiceDetection(Data data) {
-        super();
-        this.data = data;
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -103,13 +87,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         private @Nullable Installation installation;
         private @Nullable Map<String, Object> additionalProperties;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
         public @Nullable Installation getInstallation() {
             return installation;
         }
@@ -146,13 +123,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
 
         private @Nullable List<Mouse> mice = null;
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
 
         public @Nullable List<Mouse> getMice() {
             return mice;
@@ -200,13 +170,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         private @Nullable Object type;
         private @Nullable List<Detection> detections = null;
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Mouse() {
-        }
 
         public @Nullable Device getDevice() {
             return device;
@@ -350,13 +313,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         private @Nullable Gui gui;
         private @Nullable String typename;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Device() {
-        }
-
         public @Nullable String getDeviceLabel() {
             return deviceLabel;
         }
@@ -419,13 +375,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
 
         private @Nullable String support;
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Gui() {
-        }
 
         public @Nullable String getSupport() {
             return support;

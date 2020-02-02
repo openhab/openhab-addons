@@ -33,17 +33,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureUserPresences() {
-    }
-
-    public VerisureUserPresences(Data data) {
-        this.data = data;
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -79,17 +68,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
     public static class Data {
 
         private @Nullable Installation installation;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
-        public Data(Installation installation) {
-            this.installation = installation;
-        }
 
         public @Nullable Installation getInstallation() {
             return installation;
@@ -129,13 +107,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
         private @Nullable List<UserTracking> userTrackings = null;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
 
         public @Nullable List<UserTracking> getUserTrackings() {
             return userTrackings;
@@ -193,45 +164,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
         private @Nullable String currentLocationId;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public UserTracking() {
-        }
-
-        /**
-         *
-         * @param currentLocationId
-         * @param deviceName
-         * @param status
-         * @param currentLocationTimestamp
-         * @param currentLocationName
-         * @param typename
-         * @param name
-         * @param isCallingUser
-         * @param xbnContactId
-         * @param webAccount
-         * @param deviceId
-         */
-        public UserTracking(@Nullable Boolean isCallingUser, @Nullable String webAccount, @Nullable String status,
-                @Nullable String xbnContactId, @Nullable String currentLocationName, @Nullable String deviceId,
-                @Nullable String name, @Nullable String currentLocationTimestamp, @Nullable String deviceName,
-                @Nullable String currentLocationId, @Nullable String typename) {
-            super();
-            this.isCallingUser = isCallingUser;
-            this.webAccount = webAccount;
-            this.status = status;
-            this.xbnContactId = xbnContactId;
-            this.currentLocationName = currentLocationName;
-            this.deviceId = deviceId;
-            this.name = name;
-            this.currentLocationTimestamp = currentLocationTimestamp;
-            this.deviceName = deviceName;
-            this.currentLocationId = currentLocationId;
-            this.typename = typename;
-        }
 
         public @Nullable Boolean getIsCallingUser() {
             return isCallingUser;
@@ -355,6 +287,5 @@ public class VerisureUserPresences extends VerisureBaseThing {
                     .append(xbnContactId, rhs.xbnContactId).append(webAccount, rhs.webAccount)
                     .append(deviceId, rhs.deviceId).isEquals();
         }
-
     }
 }

@@ -34,22 +34,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
     private @Nullable Data data;
     private @Nullable VerisureSmartLock smartLockJSON;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureSmartLocks() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureSmartLocks(@Nullable Data data) {
-        super();
-        this.data = data;
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -93,22 +77,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
 
         private @Nullable Installation installation;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
-        /**
-         *
-         * @param installation
-         */
-        public Data(@Nullable Installation installation) {
-            super();
-            this.installation = installation;
-        }
-
         public @Nullable Installation getInstallation() {
             return installation;
         }
@@ -147,24 +115,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
         @SerializedName("__typename")
         private @Nullable String typename;
         private @Nullable List<Doorlock> doorlocks = null;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param doorlocks
-         */
-        public Installation(@Nullable String typename, @Nullable List<Doorlock> doorlocks) {
-            super();
-            this.typename = typename;
-            this.doorlocks = doorlocks;
-        }
 
         public @Nullable String getTypename() {
             return typename;
@@ -213,26 +163,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
         private @Nullable String typename;
         private @Nullable String area;
         private @Nullable String deviceLabel;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Device() {
-        }
-
-        /**
-         *
-         * @param area
-         * @param typename
-         * @param deviceLabel
-         */
-        public Device(@Nullable String typename, @Nullable String area, @Nullable String deviceLabel) {
-            super();
-            this.typename = typename;
-            this.area = area;
-            this.deviceLabel = deviceLabel;
-        }
 
         public @Nullable String getTypename() {
             return typename;
@@ -296,38 +226,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
         private @Nullable Boolean motorJam;
         private @Nullable Boolean secureModeActive;
         private @Nullable String userString;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Doorlock() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param device
-         * @param secureModeActive
-         * @param motorJam
-         * @param method
-         * @param eventTime
-         * @param currentLockState
-         * @param userString
-         */
-        public Doorlock(@Nullable String typename, @Nullable String currentLockState, @Nullable Device device,
-                @Nullable String eventTime, @Nullable String method, @Nullable Boolean motorJam,
-                @Nullable Boolean secureModeActive, @Nullable String userString) {
-            super();
-            this.typename = typename;
-            this.currentLockState = currentLockState;
-            this.device = device;
-            this.eventTime = eventTime;
-            this.method = method;
-            this.motorJam = motorJam;
-            this.secureModeActive = secureModeActive;
-            this.userString = userString;
-        }
 
         public @Nullable String getTypename() {
             return typename;

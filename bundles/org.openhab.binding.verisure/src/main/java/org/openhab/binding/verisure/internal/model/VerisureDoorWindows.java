@@ -33,22 +33,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureDoorWindows() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureDoorWindows(@Nullable Data data) {
-        super();
-        this.data = data;
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -83,22 +67,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
     public static class Data {
 
         private @Nullable Installation installation;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
-        /**
-         *
-         * @param installation
-         */
-        public Data(@Nullable Installation installation) {
-            super();
-            this.installation = installation;
-        }
 
         public @Nullable Installation getInstallation() {
             return installation;
@@ -138,24 +106,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         private @Nullable List<DoorWindow> doorWindows = null;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param doorWindows
-         */
-        public Installation(@Nullable List<DoorWindow> doorWindows, @Nullable String typename) {
-            super();
-            this.doorWindows = doorWindows;
-            this.typename = typename;
-        }
 
         public @Nullable List<DoorWindow> getDoorWindows() {
             return doorWindows;
@@ -207,33 +157,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         private @Nullable String reportTime;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public DoorWindow() {
-        }
-
-        /**
-         *
-         * @param reportTime
-         * @param typename
-         * @param state
-         * @param device
-         * @param wired
-         * @param type
-         */
-        public DoorWindow(@Nullable Device device, @Nullable String type, @Nullable String state,
-                @Nullable Boolean wired, @Nullable String reportTime, @Nullable String typename) {
-            super();
-            this.device = device;
-            this.type = type;
-            this.state = state;
-            this.wired = wired;
-            this.reportTime = reportTime;
-            this.typename = typename;
-        }
 
         public @Nullable Device getDevice() {
             return device;
@@ -318,26 +241,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
         private @Nullable String area;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Device() {
-        }
-
-        /**
-         *
-         * @param area
-         * @param typename
-         * @param deviceLabel
-         */
-        public Device(@Nullable String deviceLabel, @Nullable String area, @Nullable String typename) {
-            super();
-            this.deviceLabel = deviceLabel;
-            this.area = area;
-            this.typename = typename;
-        }
 
         public @Nullable String getDeviceLabel() {
             return deviceLabel;

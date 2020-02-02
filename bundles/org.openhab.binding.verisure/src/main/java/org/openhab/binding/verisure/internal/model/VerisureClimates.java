@@ -34,13 +34,6 @@ public class VerisureClimates extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureClimates() {
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -82,13 +75,6 @@ public class VerisureClimates extends VerisureBaseThing {
         private @Nullable Double temperatureValue;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Climate() {
-        }
 
         public @Nullable Device getDevice() {
             return device;
@@ -182,13 +168,6 @@ public class VerisureClimates extends VerisureBaseThing {
     public static class Data {
 
         private @Nullable Installation installation;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
 
         public @Nullable Installation getInstallation() {
             return installation;
@@ -285,13 +264,6 @@ public class VerisureClimates extends VerisureBaseThing {
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Device() {
-        }
-
         public @Nullable String getDeviceLabel() {
             return deviceLabel;
         }
@@ -357,13 +329,6 @@ public class VerisureClimates extends VerisureBaseThing {
         @SerializedName("__typename")
         @Expose
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Gui() {
-        }
 
         public @Nullable String getLabel() {
             return label;

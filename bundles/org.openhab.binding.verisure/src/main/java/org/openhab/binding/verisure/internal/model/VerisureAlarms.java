@@ -20,7 +20,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -33,22 +32,6 @@ import com.google.gson.annotations.SerializedName;
 public class VerisureAlarms extends VerisureBaseThing {
 
     private @Nullable Data data;
-
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureAlarms() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureAlarms(@Nullable Data data) {
-        super();
-        this.data = data;
-    }
 
     public @Nullable Data getData() {
         return data;
@@ -82,26 +65,7 @@ public class VerisureAlarms extends VerisureBaseThing {
 
     @NonNullByDefault
     public static class Data {
-
-        @SerializedName("installation")
-        @Expose
         private @Nullable Installation installation;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
-        /**
-         *
-         * @param installation
-         */
-        public Data(@Nullable Installation installation) {
-            super();
-            this.installation = installation;
-        }
 
         public @Nullable Installation getInstallation() {
             return installation;
@@ -141,24 +105,6 @@ public class VerisureAlarms extends VerisureBaseThing {
         private @Nullable ArmState armState;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param armState
-         */
-        public Installation(@Nullable ArmState armState, @Nullable String typename) {
-            super();
-            this.armState = armState;
-            this.typename = typename;
-        }
 
         public @Nullable ArmState getArmState() {
             return armState;
@@ -212,40 +158,6 @@ public class VerisureAlarms extends VerisureBaseThing {
         private @Nullable Boolean allowed;
         private @Nullable List<Object> errorCodes = null;
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public ArmState() {
-        }
-
-        /**
-         *
-         * @param allowed
-         * @param statusType
-         * @param typename
-         * @param name
-         * @param allowedForFirstLine
-         * @param errorCodes
-         * @param date
-         * @param type
-         * @param changedVia
-         */
-        public ArmState(@Nullable String type, @Nullable String statusType, @Nullable String date,
-                @Nullable String name, @Nullable String changedVia, @Nullable Boolean allowedForFirstLine,
-                @Nullable Boolean allowed, @Nullable List<Object> errorCodes, @Nullable String typename) {
-            super();
-            this.type = type;
-            this.statusType = statusType;
-            this.date = date;
-            this.name = name;
-            this.changedVia = changedVia;
-            this.allowedForFirstLine = allowedForFirstLine;
-            this.allowed = allowed;
-            this.errorCodes = errorCodes;
-            this.typename = typename;
-        }
 
         public @Nullable String getType() {
             return type;

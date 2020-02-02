@@ -33,9 +33,6 @@ public class VerisureInstallations extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    VerisureInstallations() {
-    }
-
     public @Nullable Data getData() {
         return data;
     }
@@ -71,13 +68,6 @@ public class VerisureInstallations extends VerisureBaseThing {
 
         @SerializedName("account")
         private @Nullable Account account;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
 
         public @Nullable Account getAccount() {
             return account;
@@ -117,13 +107,6 @@ public class VerisureInstallations extends VerisureBaseThing {
         @SerializedName("__typename")
         private @Nullable String typename;
         private @Nullable List<Owainstallation> owainstallations = null;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Account() {
-        }
 
         public @Nullable String getTypename() {
             return typename;
@@ -176,13 +159,6 @@ public class VerisureInstallations extends VerisureBaseThing {
         private @Nullable String giid;
         private @Nullable Object subsidiary;
         private @Nullable String type;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Owainstallation() {
-        }
 
         public @Nullable String getTypename() {
             return typename;

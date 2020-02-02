@@ -31,22 +31,6 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
 
     private @Nullable Data data;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public VerisureBroadbandConnections() {
-    }
-
-    /**
-     *
-     * @param data
-     */
-    public VerisureBroadbandConnections(@Nullable Data data) {
-        super();
-        this.data = data;
-    }
-
     public @Nullable Data getData() {
         return data;
     }

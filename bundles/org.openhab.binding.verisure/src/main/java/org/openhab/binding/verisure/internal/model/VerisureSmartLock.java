@@ -17,8 +17,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The SmartLock state of the Verisure System.
  *
@@ -70,19 +68,10 @@ public class VerisureSmartLock extends VerisureAlarm {
 
     @NonNullByDefault
     public static class DoorLockVolumeSettings {
-        @SerializedName("volume")
         private @Nullable String volume;
-
-        @SerializedName("voiceLevel")
         private @Nullable String voiceLevel;
-
-        @SerializedName("active")
         private @Nullable String active;
-
-        @SerializedName("availableVolumes")
         private @Nullable List<String> availableVolumes;
-
-        @SerializedName("availableVoiceLevels")
         private @Nullable List<String> availableVoiceLevels;
 
         public @Nullable String getVolume() {
@@ -125,7 +114,6 @@ public class VerisureSmartLock extends VerisureAlarm {
             this.availableVoiceLevels = availableVoiceLevels;
         }
 
-        @SuppressWarnings("null")
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -138,11 +126,6 @@ public class VerisureSmartLock extends VerisureAlarm {
             return result;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
         @Override
         public boolean equals(@Nullable Object obj) {
             if (this == obj) {
@@ -193,11 +176,6 @@ public class VerisureSmartLock extends VerisureAlarm {
             return true;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return "DoorLockVolumeSettings [volume=" + volume + ", voiceLevel=" + voiceLevel + ", active=" + active
@@ -205,7 +183,6 @@ public class VerisureSmartLock extends VerisureAlarm {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -216,11 +193,6 @@ public class VerisureSmartLock extends VerisureAlarm {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -257,11 +229,6 @@ public class VerisureSmartLock extends VerisureAlarm {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
