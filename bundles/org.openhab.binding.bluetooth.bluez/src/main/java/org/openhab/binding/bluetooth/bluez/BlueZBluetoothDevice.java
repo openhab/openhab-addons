@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.bluetooth.bluez;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.BluetoothAddress;
@@ -52,6 +51,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
+    private long lastSeenTime;
+
     /**
      * Constructor
      *
@@ -59,43 +60,17 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * @param address the Bluetooth address of the device
      * @param name the name of the device
      */
-    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address, String name) {
+    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
-        this.name = name;
         logger.debug("Creating BlueZ device with address '{}'", address);
     }
 
     /**
-     * Constructor
-     *
-     * @param adapter the bridge handler through which this device is connected
-     * @param tinybDevice the tinyB device to use internally (which already contains address and name information)
-     */
-    public BlueZBluetoothDevice(BlueZBridgeHandler adapter, tinyb.BluetoothDevice tinybDevice) {
-        super(adapter, new BluetoothAddress(tinybDevice.getAddress()));
-        this.name = tinybDevice.getName();
-        this.device = tinybDevice;
-    }
-
-    /**
      * Initializes a newly created instance of this class.
-     * It tries to set the internal tinyB device, if it isn't yet available, which is done asynchronously as
-     * BlueZ can take a while (it seems to do an active scan for the physical device).
-     *
      * This method should always be called directly after creating a new object instance.
      */
-    public synchronized void initialize() {
-        scheduler.submit(() -> {
-            if (this.device == null) {
-                tinyb.BluetoothDevice tinybDevice = findTinybDevice(address.toString());
-                if (tinybDevice != null) {
-                    device = tinybDevice;
-                    enableNotifications();
-                }
-            } else {
-                enableNotifications();
-            }
-        });
+    public void initialize() {
+        updateLastSeenTime();
     }
 
     /**
@@ -105,29 +80,36 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * @param tinybDevice the new device instance to use for communication
      */
     public synchronized void updateTinybDevice(tinyb.BluetoothDevice tinybDevice) {
-        if (device != null && !tinybDevice.equals(device)) {
+        if (Objects.equals(device, tinybDevice)) {
+            return;
+        }
+
+        if (device != null) {
             // we need to replace the instance - let's deactivate notifications on the old one
             disableNotifications();
         }
-        if (this.device == null || !tinybDevice.equals(device)) {
-            this.device = tinybDevice;
-            enableNotifications();
-        }
-        tinyb.BluetoothDevice dev = this.device;
-        if (dev != null) {
-            this.rssi = (int) dev.getRSSI();
-            this.txPower = (int) dev.getTxPower();
-            if (dev.getConnected()) {
-                this.connectionState = ConnectionState.CONNECTED;
-            }
-        }
-        refreshServices();
-    }
+        this.device = tinybDevice;
 
-    private tinyb.@Nullable BluetoothDevice findTinybDevice(String address) {
-        Collection<tinyb.BluetoothDevice> deviceList = ((BlueZBridgeHandler) getAdapter()).getTinyBDevices();
-        logger.trace("Searching for '{}' in {} devices.", address, deviceList.size());
-        return deviceList.stream().filter(d -> d.getAddress().equals(address)).findFirst().orElse(null);
+        if (this.device == null) {
+            return;
+        }
+        updateLastSeenTime();
+
+        this.name = device.getName();
+        this.rssi = (int) device.getRSSI();
+        this.txPower = (int) device.getTxPower();
+
+        device.getManufacturerData().entrySet().stream().map(Map.Entry::getKey).filter(Objects::nonNull).findFirst()
+                .ifPresent(manufacturerId ->
+                // Convert to unsigned int to match the convention in BluetoothCompanyIdentifiers
+                this.manufacturer = manufacturerId & 0xFFFF);
+
+        if (device.getConnected()) {
+            this.connectionState = ConnectionState.CONNECTED;
+        }
+
+        enableNotifications();
+        refreshServices();
     }
 
     private void enableNotifications() {
@@ -394,10 +376,33 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return null;
     }
 
+    private void updateLastSeenTime() {
+        this.lastSeenTime = System.currentTimeMillis();
+    }
+
+    public long getTimeSinceSeen(TimeUnit unit) {
+        return unit.convert(System.currentTimeMillis() - this.lastSeenTime, TimeUnit.MILLISECONDS);
+    }
+
     /**
      * Clean up and release memory.
      */
     public void dispose() {
+        if (device == null) {
+            return;
+        }
         disableNotifications();
+        try {
+            device.remove();
+        } catch (BluetoothException ex) {
+            if (ex.getMessage().contains("Does Not Exist")) {
+                // this happens when the underlying device has already been removed
+                // but we don't have a way to check if that is the case beforehand so
+                // we will just eat the error here.
+            } else {
+                logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
+                        ex.getMessage());
+            }
+        }
     }
 }
