@@ -59,6 +59,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaException;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaHandlerListener;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaSerialHandler;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaTransactionManager;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaAttributeWriteCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaAttributeWriteResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaFindInformationCommand;
@@ -139,8 +140,10 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private OutputStream outputStream;
 
     // The BlueGiga API handler
-    @Nullable
-    private BlueGigaSerialHandler bgHandler;
+    private @NonNullByDefault({}) BlueGigaSerialHandler serialHandler;
+
+    // The BlueGiga API handler
+    private @NonNullByDefault({}) BlueGigaTransactionManager transactionManager;
 
     // The maximum number of connections this interface supports
     private int maxConnections = 0;
@@ -192,8 +195,10 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         logger.debug("Using configuration: {}", configuration);
 
         if (openSerialPort(configuration.port, 115200)) {
-            BlueGigaSerialHandler bgh = new BlueGigaSerialHandler(inputStream, outputStream, executor);
-            setBgHandler(bgh);
+            serialHandler = new BlueGigaSerialHandler(inputStream, outputStream);
+            transactionManager = new BlueGigaTransactionManager(serialHandler, executor);
+            serialHandler.addHandlerListener(this);
+            transactionManager.addEventListener(this);
 
             updateStatus(ThingStatus.UNKNOWN);
 
@@ -203,9 +208,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
                 // Set mode to non-discoverable etc.
                 bgSetMode();
-
-                bgh.addEventListener(this);
-                bgh.addHandlerListener(this);
 
                 // Get maximum parallel connections
                 maxConnections = readMaxConnections().getMaxconn();
@@ -237,10 +239,10 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public void dispose() {
         try {
             stopScheduledTasks();
-            BlueGigaSerialHandler bgh = getBgHandler();
-            bgh.removeEventListener(this);
-            bgh.removeHandlerListener(this);
-            bgh.close();
+            transactionManager.removeEventListener(this);
+            serialHandler.removeHandlerListener(this);
+            transactionManager.close();
+            serialHandler.close();
             initComplete = false;
             devices.clear();
             connections.clear();
@@ -308,17 +310,17 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
         BlueGigaCommand command = new BlueGigaGetConnectionsCommand();
-        return getBgHandler().sendTransaction(command, BlueGigaGetConnectionsResponse.class, COMMAND_TIMEOUT_MS);
+        return transactionManager.sendTransaction(command, BlueGigaGetConnectionsResponse.class, COMMAND_TIMEOUT_MS);
     }
 
     private BlueGigaAddressGetResponse readAddress() throws BlueGigaException {
         BlueGigaAddressGetCommand command = new BlueGigaAddressGetCommand();
-        return getBgHandler().sendTransaction(command, BlueGigaAddressGetResponse.class, COMMAND_TIMEOUT_MS);
+        return transactionManager.sendTransaction(command, BlueGigaAddressGetResponse.class, COMMAND_TIMEOUT_MS);
     }
 
     private BlueGigaGetInfoResponse readInfo() throws BlueGigaException {
         BlueGigaGetInfoCommand command = new BlueGigaGetInfoCommand();
-        return getBgHandler().sendTransaction(command, BlueGigaGetInfoResponse.class, COMMAND_TIMEOUT_MS);
+        return transactionManager.sendTransaction(command, BlueGigaGetInfoResponse.class, COMMAND_TIMEOUT_MS);
     }
 
     private void updateThingProperties() throws BlueGigaException {
@@ -393,41 +395,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    @SuppressWarnings({ "unused", "null" })
-    @Override
-    public void bluegigaEventReceived(@Nullable BlueGigaResponse event) {
-        if (event instanceof BlueGigaScanResponseEvent) {
-            if (initComplete) {
-                BlueGigaScanResponseEvent scanEvent = (BlueGigaScanResponseEvent) event;
-
-                // We use the scan event to add any devices we hear to the devices list
-                // The device gets created, and then manages itself for discovery etc.
-                BluetoothAddress sender = new BluetoothAddress(scanEvent.getSender());
-                BlueGigaBluetoothDevice device;
-                if (devices.get(sender) == null) {
-                    logger.debug("BlueGiga adding new device to adaptor {}: {}", address, sender);
-                    device = new BlueGigaBluetoothDevice(this, new BluetoothAddress(scanEvent.getSender()),
-                            scanEvent.getAddressType());
-                    devices.put(sender, device);
-                    deviceDiscovered(device);
-                }
-            } else {
-                logger.trace("Ignore BlueGigaScanResponseEvent as initialization is not complete");
-            }
-            return;
-        }
-
-        if (event instanceof BlueGigaConnectionStatusEvent) {
-            BlueGigaConnectionStatusEvent connectionEvent = (BlueGigaConnectionStatusEvent) event;
-            connections.put(connectionEvent.getConnection(), new BluetoothAddress(connectionEvent.getAddress()));
-        }
-
-        if (event instanceof BlueGigaDisconnectedEvent) {
-            BlueGigaDisconnectedEvent disconnectedEvent = (BlueGigaDisconnectedEvent) event;
-            connections.remove(disconnectedEvent.getConnection());
-        }
-    }
-
     @Override
     public void scanStart() {
         logger.debug("Start active scan");
@@ -478,6 +445,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         return device;
     }
 
+<<<<<<< Upstream, based on origin/2.5.x
     @Override
     public boolean hasDevice(BluetoothAddress address) {
         return devices.containsKey(address);
@@ -502,6 +470,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         this.bgHandler = bgHandler;
     }
 
+=======
+>>>>>>> 68f3371 [bluetooth.bluegiga] Introduced transaction manager
     /**
      * Connects to a device.
      * <p>
@@ -539,7 +509,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         connect.setTimeout(configuration.connTimeout);
 
         try {
-            BlueGigaConnectDirectResponse connectResponse = getBgHandler().sendTransaction(connect,
+            BlueGigaConnectDirectResponse connectResponse = transactionManager.sendTransaction(connect,
                     BlueGigaConnectDirectResponse.class, COMMAND_TIMEOUT_MS);
             if (connectResponse.getResult() != BgApiResponse.SUCCESS) {
                 return false;
@@ -567,7 +537,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         command.setConnection(connectionHandle);
 
         try {
-            BlueGigaDisconnectResponse response = getBgHandler().sendTransaction(command,
+            BlueGigaDisconnectResponse response = transactionManager.sendTransaction(command,
                     BlueGigaDisconnectResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
@@ -606,7 +576,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         command.setUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"));
 
         try {
-            BlueGigaReadByGroupTypeResponse response = getBgHandler().sendTransaction(command,
+            BlueGigaReadByGroupTypeResponse response = transactionManager.sendTransaction(command,
                     BlueGigaReadByGroupTypeResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
@@ -633,7 +603,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         command.setEnd(65535);
 
         try {
-            BlueGigaFindInformationResponse response = getBgHandler().sendTransaction(command,
+            BlueGigaFindInformationResponse response = transactionManager.sendTransaction(command,
                     BlueGigaFindInformationResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
@@ -660,7 +630,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         command.setChrHandle(handle);
 
         try {
-            BlueGigaReadByHandleResponse response = getBgHandler().sendTransaction(command,
+            BlueGigaReadByHandleResponse response = transactionManager.sendTransaction(command,
                     BlueGigaReadByHandleResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
@@ -689,7 +659,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         command.setData(value);
 
         try {
-            BlueGigaAttributeWriteResponse response = getBgHandler().sendTransaction(command,
+            BlueGigaAttributeWriteResponse response = transactionManager.sendTransaction(command,
                     BlueGigaAttributeWriteResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
@@ -707,7 +677,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private boolean bgEndProcedure() {
         try {
             BlueGigaCommand command = new BlueGigaEndProcedureCommand();
-            BlueGigaEndProcedureResponse response = getBgHandler().sendTransaction(command,
+            BlueGigaEndProcedureResponse response = transactionManager.sendTransaction(command,
                     BlueGigaEndProcedureResponse.class, COMMAND_TIMEOUT_MS);
 
             return response.getResult() == BgApiResponse.SUCCESS;
@@ -722,8 +692,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             BlueGigaSetModeCommand command = new BlueGigaSetModeCommand();
             command.setConnect(GapConnectableMode.GAP_NON_CONNECTABLE);
             command.setDiscover(GapDiscoverableMode.GAP_NON_DISCOVERABLE);
-            BlueGigaSetModeResponse response = getBgHandler().sendTransaction(command, BlueGigaSetModeResponse.class,
-                    COMMAND_TIMEOUT_MS);
+            BlueGigaSetModeResponse response = transactionManager.sendTransaction(command,
+                    BlueGigaSetModeResponse.class, COMMAND_TIMEOUT_MS);
             return response.getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
             logger.debug("Error occured when sending set mode command, reason: {}", e.getMessage());
@@ -742,12 +712,12 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             scanCommand.setActiveScanning(active);
             scanCommand.setScanInterval(interval);
             scanCommand.setScanWindow(window);
-            BlueGigaSetScanParametersResponse scanParametersResponse = getBgHandler().sendTransaction(scanCommand,
+            BlueGigaSetScanParametersResponse scanParametersResponse = transactionManager.sendTransaction(scanCommand,
                     BlueGigaSetScanParametersResponse.class, COMMAND_TIMEOUT_MS);
             if (scanParametersResponse.getResult() == BgApiResponse.SUCCESS) {
                 BlueGigaDiscoverCommand discoverCommand = new BlueGigaDiscoverCommand();
                 discoverCommand.setMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION);
-                BlueGigaDiscoverResponse discoverResponse = getBgHandler().sendTransaction(discoverCommand,
+                BlueGigaDiscoverResponse discoverResponse = transactionManager.sendTransaction(discoverCommand,
                         BlueGigaDiscoverResponse.class, COMMAND_TIMEOUT_MS);
                 if (discoverResponse.getResult() == BgApiResponse.SUCCESS) {
                     logger.debug("{} scanning succesfully started.", active ? "Active" : "Passive");
@@ -767,7 +737,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @param listener the {@link BlueGigaEventListener} to add
      */
     public void addEventListener(BlueGigaEventListener listener) {
-        getBgHandler().addEventListener(listener);
+        transactionManager.addEventListener(listener);
     }
 
     /**
@@ -776,7 +746,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @param listener the {@link BlueGigaEventListener} to remove
      */
     public void removeEventListener(BlueGigaEventListener listener) {
-        getBgHandler().removeEventListener(listener);
+        transactionManager.removeEventListener(listener);
     }
 
     @Override
@@ -787,6 +757,40 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void removeDiscoveryListener(@Nullable BluetoothDiscoveryListener listener) {
         discoveryListeners.remove(listener);
+    }
+
+    @Override
+    public void bluegigaEventReceived(@Nullable BlueGigaResponse event) {
+        if (event instanceof BlueGigaScanResponseEvent) {
+            if (initComplete) {
+                BlueGigaScanResponseEvent scanEvent = (BlueGigaScanResponseEvent) event;
+
+                // We use the scan event to add any devices we hear to the devices list
+                // The device gets created, and then manages itself for discovery etc.
+                BluetoothAddress sender = new BluetoothAddress(scanEvent.getSender());
+                if (!devices.containsKey(sender)) {
+                    BlueGigaBluetoothDevice device;
+                    logger.debug("BlueGiga adding new device to adaptor {}: {}", address, sender);
+                    device = new BlueGigaBluetoothDevice(this, new BluetoothAddress(scanEvent.getSender()),
+                            scanEvent.getAddressType());
+                    devices.put(sender, device);
+                    deviceDiscovered(device);
+                }
+            } else {
+                logger.trace("Ignore BlueGigaScanResponseEvent as initialization is not complete");
+            }
+            return;
+        }
+
+        if (event instanceof BlueGigaConnectionStatusEvent) {
+            BlueGigaConnectionStatusEvent connectionEvent = (BlueGigaConnectionStatusEvent) event;
+            connections.put(connectionEvent.getConnection(), new BluetoothAddress(connectionEvent.getAddress()));
+        }
+
+        if (event instanceof BlueGigaDisconnectedEvent) {
+            BlueGigaDisconnectedEvent disconnectedEvent = (BlueGigaDisconnectedEvent) event;
+            connections.remove(disconnectedEvent.getConnection());
+        }
     }
 
     @Override
