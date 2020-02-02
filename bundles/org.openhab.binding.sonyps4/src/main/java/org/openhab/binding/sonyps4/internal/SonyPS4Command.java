@@ -26,8 +26,12 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 enum SonyPS4Command {
     HELLO_REQ(0x6f636370),
+    UNKNOWN1_REQ(0x02),
+    UNKNOWN1_RSP(0x03),
     BYEBYE_REQ(0x04),
     LOGIN_RSP(0x07),
+    UNKNOWN2_REQ(0x08),
+    UNKNOWN2_RSP(0x09),
     APP_START_REQ(0x0a),
     APP_START_RSP(0x0b),
     OSK_START_REQ(0x0c),
@@ -44,6 +48,7 @@ enum SonyPS4Command {
     LOGOUT_RSP(0x23),
     APP_START2_REQ(0x24),
     APP_START2_RSP(0x25),
+    COMMENT_VIEWER_START_REQ(0x2a),
     COMMENT_VIEWER_START_RESULT(0x2b),
     COMMENT_VIEWER_NEW_COMMENT(0x2c),
     COMMENT_VIEWER_NEW_COMMENT2(0x2e),

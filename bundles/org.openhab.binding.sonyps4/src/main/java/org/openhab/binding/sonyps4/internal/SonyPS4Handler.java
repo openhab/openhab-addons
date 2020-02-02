@@ -428,6 +428,11 @@ public class SonyPS4Handler extends BaseThingHandler {
         return false;
     }
 
+    /**
+     * Tries to start an application on the PS4.
+     *
+     * @param applicationId The unique id for the application (CUSAxxxxx).
+     */
     private void startApplication(String applicationId) {
         if (!openComs()) {
             return;
@@ -450,7 +455,12 @@ public class SonyPS4Handler extends BaseThingHandler {
                 readBuffer.position(0);
                 readBuffer.get(respBuff, 0, responseLength);
                 logger.debug("App start response: {}", respBuff);
-                ps4PacketHandler.parseEncryptedPacket(readBuffer);
+                int status = ps4PacketHandler.parseEncryptedPacket(readBuffer);
+                if (status == 12) {
+                    logger.debug("App start, app not found!");
+                } else if (status == 14) {
+                    logger.debug("App start, command wrong!");
+                }
             } else {
                 logger.debug("No app start response!");
             }
@@ -498,7 +508,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 logger.debug("RemoteKey response: {}", respBuff);
                 ps4PacketHandler.parseEncryptedPacket(readBuffer);
             } else {
-                logger.warn("No remoteKey response!");
+                logger.info("No remoteKey response!");
             }
 
         } catch (InterruptedException e) {

@@ -95,6 +95,7 @@ public class SonyPS4PacketHandler {
      * Allocates a new ByteBuffer of exactly size.
      *
      * @param size The size of the packet.
+     * @param cmd The command to add to the packet.
      * @return A ByteBuffer of exactly size number of bytes.
      */
     private ByteBuffer newPacketOfSize(int size, SonyPS4Command cmd) {
@@ -107,6 +108,7 @@ public class SonyPS4PacketHandler {
      * Allocates a new ByteBuffer of size aligned to be a multiple of 16 bytes.
      *
      * @param size The size of the data in the packet.
+     * @param cmd The command to add to the packet.
      * @return A ByteBuffer aligned to 16 byte size.
      */
     private ByteBuffer newPacketForEncryption(int size, SonyPS4Command cmd) {
@@ -213,7 +215,8 @@ public class SonyPS4PacketHandler {
                     break;
             }
         } else {
-            logger.info("Unknown response command: {}. Not in enum", cmdValue);
+            logger.info("Unknown resp-cmd, size:{}, command:{}, status:{}, data:{}.", size, cmdValue, statusValue,
+                    respBuff);
         }
         return result;
     }
@@ -305,12 +308,12 @@ public class SonyPS4PacketHandler {
 
     ByteBuffer makeApplicationPacket(String applicationId) {
         ByteBuffer packet = newPacketForEncryption(8 + 16, SonyPS4Command.APP_START_REQ);
-        packet.put(applicationId.getBytes()); // Application Id (CUSA0XXXX)
+        packet.put(applicationId.getBytes()); // Application Id (CUSAxxxxx)
         return encryptPacket(packet);
     }
 
     ByteBuffer makeByebyePacket() {
-        ByteBuffer packet = newPacketForEncryption(8, SonyPS4Command.BYEBYE_REQ);
+        ByteBuffer packet = newPacketForEncryption(16, SonyPS4Command.BYEBYE_REQ);
         return encryptPacket(packet);
     }
 
@@ -322,7 +325,7 @@ public class SonyPS4PacketHandler {
     ByteBuffer makeRemoteControlPacket(int pushedKey) {
         ByteBuffer packet = newPacketForEncryption(16, SonyPS4Command.REMOTE_CONTROL_REQ);
         packet.putInt(pushedKey);
-        packet.putInt(0); // HoldTime
+        packet.putInt(0); // HoldTime in milli seconds
         return encryptPacket(packet);
     }
 
