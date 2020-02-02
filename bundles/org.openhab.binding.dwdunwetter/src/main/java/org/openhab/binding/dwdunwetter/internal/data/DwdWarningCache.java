@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants;
-
 /**
  * Cache of Warnings to update the {@link DwdUnwetterBindingConstants#CHANNEL_UPDATED} if a new warning is sent to a
  * channel.
