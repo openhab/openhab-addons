@@ -204,11 +204,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         logger.debug("{}: Shelly settings info: {}", thingName, tmpPrf.settingsJson);
         logger.debug(
                 "{}: Device has relays: {} (numRelays={}, is roller: {} (numRoller={}), is Plug S: {}, is Dimmer: {}, "
-                        + "has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, weak signal threshold: {} dBm, has Battery: {} {}, "
+                        + "has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, has Battery: {} {}, "
                         + "event urls: btn:{},out:{},push{},roller:{},sensor:{}",
                 tmpPrf.hostname, tmpPrf.hasRelays, tmpPrf.numRelays, tmpPrf.isRoller, tmpPrf.numRollers, tmpPrf.isPlugS,
                 tmpPrf.isDimmer, tmpPrf.hasLed, tmpPrf.isLight, tmpPrf.hasMeter, tmpPrf.numMeters, tmpPrf.isEMeter,
-                tmpPrf.isSensor, tmpPrf.isSense, config.weakSignal, tmpPrf.hasBattery,
+                tmpPrf.isSensor, tmpPrf.isSense, tmpPrf.hasBattery,
                 tmpPrf.hasBattery ? "(low battery threshold=" + config.lowBattery + "%)" : "",
                 tmpPrf.supportsButtonUrls, tmpPrf.supportsOutUrls, tmpPrf.supportsPushUrls, tmpPrf.supportsRollerUrls,
                 tmpPrf.supportsSensorUrls);
@@ -434,9 +434,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
         lastUptime = uptime;
 
-        if ((rssi < config.weakSignal) && ((lastAlarmTs == 0))) {
-            alarm = ALARM_TYPE_WEAKSIGNAL;
-        }
         if (getBool(status.overtemperature)) {
             alarm = ALARM_TYPE_OVERTEMP;
         }

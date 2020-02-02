@@ -235,7 +235,6 @@ public class ShellyBindingConstants {
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
-    public static final String ALARM_TYPE_WEAKSIGNAL = "WEAK_SIGNAL";
     public static final String ALARM_TYPE_RESTARTED = "RESTARTED";
     public static final String ALARM_TYPE_OVERTEMP = "OVERTEMP";
     public static final String ALARM_TYPE_OVERPOWER = "OVERPOWER";

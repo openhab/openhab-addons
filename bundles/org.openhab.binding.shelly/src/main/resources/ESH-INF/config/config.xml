@@ -23,12 +23,6 @@
 			<description>IP-Address of the Shelly device.</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="weakSignal" type="integer" required="false">
-			<label>Weak Signal Threshold</label>
-			<description>An alarm is triggered if a device reports WiFi signal strength below this threshold. Default: -80 dBm</description>
-			<default>-80</default>
-			<unitLabel>%</unitLabel>
-		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
 			<label>Enable Button Events</label>
 			<description>True if the binding should register to get the Buttons Events.</description>
@@ -80,12 +74,6 @@
 			<label>Device IP Address</label>
 			<description>IP-Address of the Shelly device.</description>
 			<context>network-address</context>
-		</parameter>
-		<parameter name="weakSignal" type="integer" required="false">
-			<label>Weak Signal Threshold</label>
-			<description>An alarm is triggered if a device reports WiFi signal strength below this threshold. Default: -80 dBm</description>
-			<default>-80</default>
-			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
 			<label>Brightness Auto-ON</label>
@@ -157,13 +145,6 @@
 			<description>If enabled, the CoAP protocol is used to receive status updates.</description>
 			<advanced>true</advanced>
 			<default>true</default>
-		</parameter>
-		<parameter name="weakSignal" type="integer" required="false">
-			<label>Weak Signal Threshold</label>
-			<description>An alarm is triggered if a device reports WiFi signal strength below this threshold. Default: -80 dBm</description>
-			<advanced>true</advanced>
-			<default>80</default>
-			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="updateInterval" type="integer" required="true">
 			<label>Update Interval</label>
