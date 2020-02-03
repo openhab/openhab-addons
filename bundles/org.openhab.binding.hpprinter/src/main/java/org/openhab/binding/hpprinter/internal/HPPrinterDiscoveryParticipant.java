@@ -69,9 +69,9 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 String inetAddress = ip.toString().substring(1); // trim leading slash
                 String label = service.getName();
 
-                DiscoveryResult result = null;
                 properties.put(HPPrinterConfiguration.IP_ADDRESS, inetAddress);
-                result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
+                        .build();
                 logger.trace("Created a DiscoveryResult {} for printer on host '{}' name '{}'", result, inetAddress,
                         label);
                 return result;
@@ -128,7 +128,7 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return address;
     }
 
-    private @Nullable ThingTypeUID findThingType() {
+    private ThingTypeUID findThingType() {
         return THING_PRINTER;
     }
 }

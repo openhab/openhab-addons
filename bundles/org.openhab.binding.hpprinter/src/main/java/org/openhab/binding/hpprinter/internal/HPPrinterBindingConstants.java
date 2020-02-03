@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 
 /**
  * The {@link HPPrinterBindingConstants} class defines common constants, which are
@@ -65,6 +64,4 @@ public class HPPrinterBindingConstants {
     public static final String CGROUP_INK = "ink";
     public static final String CGROUP_STATUS = "status";
     public static final String CGROUP_USAGE = "usage";
-
-    public static final ChannelGroupTypeUID GROUP_INK = new ChannelGroupTypeUID(BINDING_ID, CGROUP_INK);
 }

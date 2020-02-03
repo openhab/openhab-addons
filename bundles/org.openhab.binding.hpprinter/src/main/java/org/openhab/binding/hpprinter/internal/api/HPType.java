@@ -12,18 +12,12 @@
  */
 package org.openhab.binding.hpprinter.internal.api;
 
-import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * The {@link HPType} is responsible for determining what type of printer the
@@ -49,15 +43,7 @@ public class HPType {
         MULTICOLOR
     }
 
-    public HPType() {
-    }
-
-    public HPType(InputSource source) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document document = builder.parse(source);
-
+    public HPType(Document document) {
         // Check what Ink/Toner colours are present
         NodeList consumableInk = document.getDocumentElement().getElementsByTagName("pudyn:Consumable");
 

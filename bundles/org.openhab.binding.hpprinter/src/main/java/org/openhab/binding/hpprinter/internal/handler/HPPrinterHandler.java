@@ -14,6 +14,7 @@ package org.openhab.binding.hpprinter.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,17 +52,10 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
     public void thingUpdated(Thing thing) {
         super.thingUpdated(thing);
 
-        binder.dynamicallyAddChannels(thing.getUID());
-    }
-
-    @Override
-    public void dispose() {
-        if (binder != null) {
-            binder.close();
-            binder = null;
+        HPPrinterBinder printerBinder = this.binder;
+        if (printerBinder != null) {
+            printerBinder.dynamicallyAddChannels(thing.getUID());
         }
-
-        super.dispose();
     }
 
     @Override
@@ -75,6 +69,7 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
         if (config != null && !"".equals(config.ipAddress)) {
             binder = new HPPrinterBinder(this, httpClient, scheduler, config);
             binder.dynamicallyAddChannels(thing.getUID());
+            binder.retrieveProperties();
             binder.open();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
@@ -82,8 +77,21 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
     }
 
     @Override
+    public void dispose() {
+        if (binder != null) {
+            binder.close();
+            binder = null;
+        }
+    }
+
+    @Override
     public void binderStatus(ThingStatus status) {
         updateStatus(status);
+    }
+
+    @Override
+    public void binderStatus(ThingStatus status, ThingStatusDetail thingStatusDetail, String message) {
+        updateStatus(status, thingStatusDetail, message);
     }
 
     @Override
@@ -100,6 +108,11 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
         }
 
         updateThing(editThing().withChannels(thingChannels).build());
+    }
+
+    @Override
+    public void binderProperties(Map<String, String> properties) {
+        updateProperties(properties);
     }
 
     private static void addOrUpdateChannel(Channel newChannel, List<Channel> thingChannels) {

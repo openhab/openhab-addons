@@ -12,20 +12,13 @@
  */
 package org.openhab.binding.hpprinter.internal.api;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * The {@link HPStatus} is responsible for handling reading of status data.
@@ -40,16 +33,7 @@ public class HPStatus {
 
     private final String printerStatus;
 
-    public HPStatus() {
-        printerStatus = "";
-    }
-
-    public HPStatus(InputSource source) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document document = builder.parse(source);
-
+    public HPStatus(Document document) {
         NodeList nodes = document.getDocumentElement().getElementsByTagName("psdyn:Status");
 
         String localPrinterStatus = null;
@@ -57,14 +41,10 @@ public class HPStatus {
             Element element = (Element) nodes.item(i);
             String statusCategory = element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent();
             if (!"genuineHP".equals(statusCategory)) {
-                localPrinterStatus = getPrinterStatusMessage(statusCategory);
+                localPrinterStatus = STATUS_MESSAGES.getOrDefault(statusCategory, statusCategory);
             }
         }
         printerStatus = localPrinterStatus;
-    }
-
-    private String getPrinterStatusMessage(String statusMsg) {
-        return STATUS_MESSAGES.getOrDefault(statusMsg, statusMsg);
     }
 
     private static Map<String, String> initializeStatus() {
@@ -74,12 +54,14 @@ public class HPStatus {
         statusMap.put("scanProcessing", "Scanning");
         statusMap.put("inPowerSave", "Power Save");
         statusMap.put("ready", "Idle");
+        statusMap.put("initializing", "Initializing...");
         statusMap.put("closeDoorOrCover", "Door/Cover Open");
         statusMap.put("inkSystemInitializing", "Loading Ink");
+        statusMap.put("shuttingDown", "Shutting Down");
         return statusMap;
     }
 
     public String getPrinterStatus() {
-        return getPrinterStatusMessage(printerStatus);
+        return STATUS_MESSAGES.getOrDefault(printerStatus, printerStatus);
     }
 }

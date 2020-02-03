@@ -31,10 +31,12 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.hpprinter.internal.HPPrinterConfiguration;
+import org.openhab.binding.hpprinter.internal.api.HPProperties;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult.RequestStatus;
 import org.openhab.binding.hpprinter.internal.api.HPStatus;
@@ -87,6 +89,14 @@ public class HPPrinterBinder {
             throw new IllegalStateException("ip-address should have been validated already and may not be empty.");
         }
         printerClient = new HPWebServerClient(httpClient, ipAddress);
+    }
+
+    public void retrieveProperties() {
+        HPServerResult<HPProperties> result = printerClient.getProperties();
+
+        if (result.getStatus() == RequestStatus.SUCCESS) {
+            handler.binderProperties(result.getData().getProperties());
+        }
     }
 
     /**
@@ -260,34 +270,24 @@ public class HPPrinterBinder {
                 TimeUnit.SECONDS);
     }
 
-    private void stopBackgroundSchedules() {
+    private synchronized void stopBackgroundSchedules() {
         logger.debug("Stopping Interval Refreshes");
-        if (usageScheduler != null) {
-            usageScheduler.cancel(true);
-            usageScheduler = null;
+        ScheduledFuture<?> localUsageScheduler = usageScheduler;
+        if (localUsageScheduler != null) {
+            localUsageScheduler.cancel(true);
         }
 
-        if (statusScheduler != null) {
-            statusScheduler.cancel(true);
-            statusScheduler = null;
+        ScheduledFuture<?> localStatusScheduler = statusScheduler;
+        if (localStatusScheduler != null) {
+            localStatusScheduler.cancel(true);
         }
     }
 
-    private void startBackgroundSchedules() {
-        handler.binderStatus(ThingStatus.ONLINE);
+    private synchronized void startBackgroundSchedules() {
         stopBackgroundSchedules();
         logger.debug("Starting Interval Refreshes");
 
-        if (usageScheduler != null) {
-            usageScheduler.cancel(true);
-            usageScheduler = null;
-        }
         usageScheduler = scheduler.scheduleWithFixedDelay(this::checkUsage, 0, usageCheckInterval, TimeUnit.SECONDS);
-
-        if (statusScheduler != null) {
-            statusScheduler.cancel(true);
-            statusScheduler = null;
-        }
         statusScheduler = scheduler.scheduleWithFixedDelay(this::checkStatus, 0, statusCheckInterval, TimeUnit.SECONDS);
     }
 
@@ -354,6 +354,9 @@ public class HPPrinterBinder {
             offlineScheduler = null;
         }
 
+        handler.binderStatus(ThingStatus.ONLINE);
+        retrieveProperties();
+
         startBackgroundSchedules();
     }
 
@@ -362,6 +365,10 @@ public class HPPrinterBinder {
 
         if (result.getStatus() == RequestStatus.SUCCESS) {
             goneOnline();
+        } else if (result.getStatus() == RequestStatus.TIMEOUT) {
+            handler.binderStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.getErrorMessage());
+        } else {
+            handler.binderStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, result.getErrorMessage());
         }
     }
 }
