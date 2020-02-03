@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -32,7 +29,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.stream.Collectors.toList;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @Component(service = UdpSenderService.class)
@@ -44,7 +45,7 @@ public class UdpSenderService {
     private final Logger logger = LoggerFactory.getLogger(UdpSenderService.class);
     private final DatagramSocketWrapper datagramSocketWrapper;
 
-    public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper) {
+    public UdpSenderService(@Reference DatagramSocketWrapper datagramSocketWrapper) {
         this.datagramSocketWrapper = datagramSocketWrapper;
     }
 

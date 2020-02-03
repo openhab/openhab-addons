@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,8 @@ import org.slf4j.LoggerFactory;
 public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
-    private final UdpSenderService udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
+    @Reference(service = UdpSenderService.class)
+    private UdpSenderService udpSenderService;
 
     private @Nullable RevogiSmartStripControlConfiguration config;
 
