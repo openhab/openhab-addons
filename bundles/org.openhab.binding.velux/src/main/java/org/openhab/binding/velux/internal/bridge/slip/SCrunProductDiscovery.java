@@ -103,7 +103,7 @@ class SCrunProductDiscovery extends RunProductDiscovery implements SlipBridgeCom
         Packet responseData = new Packet(thisResponseData);
         switch (Command.get(responseCommand)) {
             case GW_CS_DISCOVER_NODES_CFM:
-                logger.trace("setResponse({}): received confirmation for discovery mode.");
+                logger.trace("setResponse(): received confirmation for discovery mode.");
                 break;
 
             case GW_CS_DISCOVER_NODES_NTF:

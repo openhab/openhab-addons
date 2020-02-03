@@ -264,7 +264,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 try {
                     refreshOpenHAB();
                 } catch (RuntimeException e) {
-                    logger.warn("Exception occurred during activated refresh scheduler: {}.", e);
+                    logger.warn("Exception occurred during activated refresh scheduler: {}.", e.getMessage());
                 }
             }, this.veluxBridgeConfiguration.refreshMSecs, this.veluxBridgeConfiguration.refreshMSecs,
                     TimeUnit.MILLISECONDS);
