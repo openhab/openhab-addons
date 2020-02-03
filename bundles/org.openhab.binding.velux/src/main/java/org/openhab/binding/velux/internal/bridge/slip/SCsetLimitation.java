@@ -15,7 +15,6 @@ package org.openhab.binding.velux.internal.bridge.slip;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.bridge.common.GetProductLimitation;
 import org.openhab.binding.velux.internal.bridge.common.SetProductLimitation;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Protocol specific bridge communication supported by the Velux bridge:
- * <B>Retrieve Product</B>
+ * <B>Modify Product Limitations</B>
  * <P>
  * Common Message semantic: Communication with the bridge and (optionally) storing returned information within the class
  * itself.
@@ -38,11 +37,12 @@ import org.slf4j.LoggerFactory;
  * <P>
  * Methods in addition to the mentioned interface:
  * <UL>
- * <LI>{@link #setActuatorIdAndMinimumLimitation(int,int)} to set the lower limitation of one specific product.</LI>
- * <LI>{@link #setActuatorIdAndMaximumLimitation(int,int)} to set the higher limitation of one specific product.</LI>
+ * <LI>{@link #setActuatorIdAndMinimumLimitation} to set the lower limitation of one specific product.</LI>
+ * <LI>{@link #setActuatorIdAndMaximumLimitation} to set the higher limitation of one specific product.</LI>
+ * <LI>{@link #setActuatorIdAndResetLimitation} to reset any limitation of one specific product.</LI>
  * </UL>
  *
- * @see GetProductLimitation
+ * @see SetProductLimitation
  * @see SlipBridgeCommunicationProtocol
  *
  * @author Guenther Schreiner - Initial contribution.

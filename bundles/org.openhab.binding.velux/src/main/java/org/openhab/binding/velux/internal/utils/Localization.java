@@ -97,12 +97,10 @@ public class Localization {
      * @return <B>localizedMessageString</B> the resulted message of type {@link String}.
      */
     public String getText(String key, Object... arguments) {
-        logger.trace("getText({}) called.", key);
-
         if (i18nProvider == null) {
+            logger.trace("getText() returns default as no i18nProvider existant.");
             return key;
         }
-
         Bundle bundle = FrameworkUtil.getBundle(this.getClass()).getBundleContext().getBundle();
         Locale locale = localeProvider.getLocale();
         String defaultText = OPENBRACKET.concat(key).concat(CLOSEBRACKET);

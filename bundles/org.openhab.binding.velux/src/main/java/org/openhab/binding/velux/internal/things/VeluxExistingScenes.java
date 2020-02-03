@@ -50,7 +50,6 @@ public class VeluxExistingScenes {
     // Constructor methods
 
     public VeluxExistingScenes() {
-        logger.trace("VeluxExistingScenes(constructor) called.");
         existingScenesBySceneName = new ConcurrentHashMap<String, VeluxScene>();
         memberCount = 0;
         logger.trace("VeluxExistingScenes(constructor) done.");
@@ -69,8 +68,8 @@ public class VeluxExistingScenes {
     }
 
     public boolean register(VeluxScene newScene) {
-        logger.trace("register({}) called.", newScene);
         if (isRegistered(newScene)) {
+            logger.trace("register() ignoring scene {} as already known.", newScene);
             return false;
         }
         logger.trace("register() registering new scene {}.", newScene);

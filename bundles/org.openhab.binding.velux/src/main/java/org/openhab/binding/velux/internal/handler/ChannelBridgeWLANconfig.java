@@ -72,12 +72,12 @@ final class ChannelBridgeWLANconfig extends ChannelHandlerTemplate {
             switch (itemType) {
                 case BRIDGE_WLANSSID:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_WLANSSID,
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_WLANSSID,
                             thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanSSID.toString());
                     break;
                 case BRIDGE_WLANPASSWORD:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_WLANPASSWORD,
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_WLANPASSWORD,
                             thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanPassword.toString());
                     break;
                 default:

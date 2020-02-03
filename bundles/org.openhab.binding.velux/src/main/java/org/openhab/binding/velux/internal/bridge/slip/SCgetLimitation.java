@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Protocol specific bridge communication supported by the Velux bridge:
- * <B>Retrieve Product</B>
+ * <B>Retrieve Product Limitations</B>
  * <P>
  * Common Message semantic: Communication with the bridge and (optionally) storing returned information within the class
  * itself.

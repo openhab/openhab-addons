@@ -21,7 +21,7 @@
 // Definition of Velux bridge velux:klf200:home
 //
 
-Bridge velux:klf200:gs28    [ ipAddress="192.168.45.9", tcpPort=51200, password="secret", isProtocolTraceEnabled=true ] 
+Bridge velux:klf200:gs28    [ ipAddress="192.168.45.1", tcpPort=51200, password="secret", isProtocolTraceEnabled=true ] 
 
 //
 // vim: syntax=Xtend vim: noai:ts=4:sw=4

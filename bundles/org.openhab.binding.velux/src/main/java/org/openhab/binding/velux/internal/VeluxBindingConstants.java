@@ -104,25 +104,25 @@ public class VeluxBindingConstants {
 
     // List of all bridge channel ids
 
-    /** Channel identifier describing the current Bridge State. */
+    /** Channel/Property identifier describing the current Bridge State. */
     public static final String CHANNEL_BRIDGE_STATUS = "status";
     public static final String CHANNEL_BRIDGE_RELOAD = "reload";
     public static final String CHANNEL_BRIDGE_DOWNTIME = "downtime";
+    public static final String CHANNEL_BRIDGE_DO_DETECTION = "doDetection";
+
     public static final String PROPERTY_BRIDGE_TIMESTAMP_SUCCESS = "connectionSuccess";
     public static final String PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT = "connectionAttempt";
+    public static final String PROPERTY_BRIDGE_FIRMWARE = "firmware";
+    public static final String PROPERTY_BRIDGE_IPADDRESS = "ipAddress";
+    public static final String PROPERTY_BRIDGE_SUBNETMASK = "subnetMask";
+    public static final String PROPERTY_BRIDGE_DEFAULTGW = "defaultGW";
+    public static final String PROPERTY_BRIDGE_DHCP = "DHCP";
+    public static final String PROPERTY_BRIDGE_WLANSSID = "WLANSSID";
+    public static final String PROPERTY_BRIDGE_WLANPASSWORD = "WLANPassword";
 
-    public static final String CHANNEL_BRIDGE_FIRMWARE = "firmware";
-    public static final String CHANNEL_BRIDGE_IPADDRESS = "ipAddress";
-    public static final String CHANNEL_BRIDGE_SUBNETMASK = "subnetMask";
-    public static final String CHANNEL_BRIDGE_DEFAULTGW = "defaultGW";
-    public static final String CHANNEL_BRIDGE_DHCP = "DHCP";
-    public static final String CHANNEL_BRIDGE_WLANSSID = "WLANSSID";
-    public static final String CHANNEL_BRIDGE_WLANPASSWORD = "WLANPassword";
-
-    public static final String CHANNEL_BRIDGE_DO_DETECTION = "doDetection";
-    public static final String CHANNEL_BRIDGE_CHECK = "check";
-    public static final String CHANNEL_BRIDGE_PRODUCTS = "products";
-    public static final String CHANNEL_BRIDGE_SCENES = "scenes";
+    public static final String PROPERTY_BRIDGE_CHECK = "check";
+    public static final String PROPERTY_BRIDGE_PRODUCTS = "products";
+    public static final String PROPERTY_BRIDGE_SCENES = "scenes";
 
     // List of all scene channel ids
     public static final String CHANNEL_SCENE_ACTION = "action";

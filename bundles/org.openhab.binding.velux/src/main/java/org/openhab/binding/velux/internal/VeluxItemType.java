@@ -74,42 +74,43 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public enum VeluxItemType {
     // @formatter:off
-    UNKNOWN(VeluxBindingConstants.THING_TYPE_BRIDGE,                            VeluxBindingConstants.UNKNOWN,                      TypeFlavor.UNUSABLE),
+    UNKNOWN(VeluxBindingConstants.THING_TYPE_BRIDGE,                            VeluxBindingConstants.UNKNOWN,                       TypeFlavor.UNUSABLE),
     //
-    BINDING_INFORMATION(VeluxBindingConstants.THING_TYPE_BINDING,               VeluxBindingConstants.CHANNEL_BINDING_INFORMATION,  TypeFlavor.READONLY_VOLATILE_STRING),
+    BINDING_INFORMATION(VeluxBindingConstants.THING_TYPE_BINDING,               VeluxBindingConstants.CHANNEL_BINDING_INFORMATION,   TypeFlavor.READONLY_VOLATILE_STRING),
     //
-    BRIDGE_STATUS(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_STATUS,        TypeFlavor.READONLY_VOLATILE_STRING),
-    BRIDGE_DOWNTIME(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_DOWNTIME,      TypeFlavor.READONLY_VOLATILE_NUMBER),
-    BRIDGE_RELOAD(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_RELOAD,        TypeFlavor.INITIATOR),
-    BRIDGE_DO_DETECTION(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_DO_DETECTION,  TypeFlavor.INITIATOR),
-    BRIDGE_FIRMWARE(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_FIRMWARE,      TypeFlavor.PROPERTY),
-    BRIDGE_IPADDRESS(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_IPADDRESS,     TypeFlavor.PROPERTY),
-    BRIDGE_SUBNETMASK(VeluxBindingConstants.THING_TYPE_BRIDGE,                  VeluxBindingConstants.CHANNEL_BRIDGE_SUBNETMASK,    TypeFlavor.PROPERTY),
-    BRIDGE_DEFAULTGW(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_DEFAULTGW,     TypeFlavor.PROPERTY),
-    BRIDGE_DHCP(VeluxBindingConstants.THING_TYPE_BRIDGE,                        VeluxBindingConstants.CHANNEL_BRIDGE_DHCP,          TypeFlavor.PROPERTY),
-    BRIDGE_WLANSSID(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_WLANSSID,      TypeFlavor.PROPERTY),
-    BRIDGE_WLANPASSWORD(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_WLANPASSWORD,  TypeFlavor.PROPERTY),
-    BRIDGE_PRODUCTS(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_PRODUCTS,      TypeFlavor.PROPERTY),
-    BRIDGE_SCENES(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_SCENES,        TypeFlavor.PROPERTY),
-    BRIDGE_CHECK(VeluxBindingConstants.THING_TYPE_BRIDGE,                       VeluxBindingConstants.CHANNEL_BRIDGE_CHECK,         TypeFlavor.PROPERTY),
+    BRIDGE_STATUS(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_STATUS,         TypeFlavor.READONLY_VOLATILE_STRING),
+    BRIDGE_DOWNTIME(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_DOWNTIME,       TypeFlavor.READONLY_VOLATILE_NUMBER),
+    BRIDGE_RELOAD(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_RELOAD,         TypeFlavor.INITIATOR),
+    BRIDGE_DO_DETECTION(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_DO_DETECTION,   TypeFlavor.INITIATOR),
+
+    BRIDGE_FIRMWARE(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.PROPERTY_BRIDGE_FIRMWARE,      TypeFlavor.PROPERTY),
+    BRIDGE_IPADDRESS(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.PROPERTY_BRIDGE_IPADDRESS,     TypeFlavor.PROPERTY),
+    BRIDGE_SUBNETMASK(VeluxBindingConstants.THING_TYPE_BRIDGE,                  VeluxBindingConstants.PROPERTY_BRIDGE_SUBNETMASK,    TypeFlavor.PROPERTY),
+    BRIDGE_DEFAULTGW(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.PROPERTY_BRIDGE_DEFAULTGW,     TypeFlavor.PROPERTY),
+    BRIDGE_DHCP(VeluxBindingConstants.THING_TYPE_BRIDGE,                        VeluxBindingConstants.PROPERTY_BRIDGE_DHCP,          TypeFlavor.PROPERTY),
+    BRIDGE_WLANSSID(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.PROPERTY_BRIDGE_WLANSSID,      TypeFlavor.PROPERTY),
+    BRIDGE_WLANPASSWORD(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.PROPERTY_BRIDGE_WLANPASSWORD,  TypeFlavor.PROPERTY),
+    BRIDGE_PRODUCTS(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.PROPERTY_BRIDGE_PRODUCTS,      TypeFlavor.PROPERTY),
+    BRIDGE_SCENES(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.PROPERTY_BRIDGE_SCENES,        TypeFlavor.PROPERTY),
+    BRIDGE_CHECK(VeluxBindingConstants.THING_TYPE_BRIDGE,                       VeluxBindingConstants.PROPERTY_BRIDGE_CHECK,         TypeFlavor.PROPERTY),
     //
-    ACTUATOR_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,          VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
-    ACTUATOR_STATE(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,             VeluxBindingConstants.CHANNEL_ACTUATOR_STATE,       TypeFlavor.MANIPULATOR_SWITCH),
+    ACTUATOR_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,          VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,     TypeFlavor.MANIPULATOR_SHUTTER),
+    ACTUATOR_STATE(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,             VeluxBindingConstants.CHANNEL_ACTUATOR_STATE,        TypeFlavor.MANIPULATOR_SWITCH),
     ACTUATOR_LIMIT_MINIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,     VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MINIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     ACTUATOR_LIMIT_MAXIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,     VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MAXIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     //
-    ROLLERSHUTTER_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
+    ROLLERSHUTTER_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,     TypeFlavor.MANIPULATOR_SHUTTER),
     ROLLERSHUTTER_LIMIT_MINIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MINIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     ROLLERSHUTTER_LIMIT_MAXIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MAXIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     //
-    WINDOW_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,              VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
+    WINDOW_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,              VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,     TypeFlavor.MANIPULATOR_SHUTTER),
     WINDOW_LIMIT_MINIMUM(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,         VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MINIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     WINDOW_LIMIT_MAXIMUM(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,         VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MAXIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     //
-    SCENE_ACTION(VeluxBindingConstants.THING_TYPE_VELUX_SCENE,                  VeluxBindingConstants.CHANNEL_SCENE_ACTION,         TypeFlavor.INITIATOR),
-    SCENE_SILENTMODE(VeluxBindingConstants.THING_TYPE_VELUX_SCENE,              VeluxBindingConstants.CHANNEL_SCENE_SILENTMODE,     TypeFlavor.WRITEONLY_VOLATILE_SWITCH),
+    SCENE_ACTION(VeluxBindingConstants.THING_TYPE_VELUX_SCENE,                  VeluxBindingConstants.CHANNEL_SCENE_ACTION,          TypeFlavor.INITIATOR),
+    SCENE_SILENTMODE(VeluxBindingConstants.THING_TYPE_VELUX_SCENE,              VeluxBindingConstants.CHANNEL_SCENE_SILENTMODE,      TypeFlavor.WRITEONLY_VOLATILE_SWITCH),
     //
-    VSHUTTER_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_VSHUTTER,          VeluxBindingConstants.CHANNEL_VSHUTTER_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
+    VSHUTTER_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_VSHUTTER,          VeluxBindingConstants.CHANNEL_VSHUTTER_POSITION,     TypeFlavor.MANIPULATOR_SHUTTER),
     ;
     // @formatter:on
 
@@ -177,7 +178,6 @@ public enum VeluxItemType {
     private boolean itemIsProperty;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VeluxItemType.class);
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final int REFRESH_CYCLE_FIRST_TIME = 0;
     private static final int REFRESH_ONCE_A_DAY = 8640;
@@ -340,7 +340,6 @@ public enum VeluxItemType {
      * @return <b>itemIsReadable</b> of type boolean describing the ability to perform a write operation.
      */
     public boolean isReadable() {
-        logger.trace("isReadable() returns {}.", this.itemIsReadable);
         return this.itemIsReadable;
     }
 
@@ -350,7 +349,6 @@ public enum VeluxItemType {
      * @return <b>itemIsWritable</b> of type boolean describing the ability to perform a write operation.
      */
     public boolean isWritable() {
-        logger.trace("isWritable() returns {}.", this.itemIsWritable);
         return this.itemIsWritable;
     }
 
@@ -360,7 +358,6 @@ public enum VeluxItemType {
      * @return <b>isExecute</b> of type boolean describing the ability to perform a write operation.
      */
     public boolean isExecutable() {
-        logger.trace("isExecutable() returns {}.", this.itemIsExecutable);
         return this.itemIsExecutable;
     }
 
@@ -370,7 +367,6 @@ public enum VeluxItemType {
      * @return <b>isExecute</b> of type boolean describing the ability to perform a write operation.
      */
     public boolean isToBeRefreshed() {
-        logger.trace("isToBeRefreshed() returns {}.", this.itemIsToBeRefreshed);
         return this.itemIsToBeRefreshed;
     }
 
@@ -380,7 +376,6 @@ public enum VeluxItemType {
      * @return <b>refreshDivider</b> of type int describing the factor.
      */
     public int getRefreshDivider() {
-        logger.trace("getRefreshDivider() returns {}.", this.itemsRefreshDivider);
         return this.itemsRefreshDivider;
     }
 
@@ -390,7 +385,6 @@ public enum VeluxItemType {
      * @return <b>isChannel</b> of type boolean describing the need to be handled as channel.
      */
     public boolean isChannel() {
-        logger.trace("isChannel() returns {}.", this.itemIsChannel);
         return this.itemIsChannel;
     }
 
@@ -400,7 +394,6 @@ public enum VeluxItemType {
      * @return <b>itemIsProperty</b> of type boolean describing the need to be handled as property.
      */
     public boolean isProperty() {
-        logger.trace("isProperty() returns {}.", this.itemIsProperty);
         return this.itemIsProperty;
     }
 

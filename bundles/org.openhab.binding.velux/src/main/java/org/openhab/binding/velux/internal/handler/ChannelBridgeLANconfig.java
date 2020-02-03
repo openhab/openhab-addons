@@ -73,22 +73,22 @@ final class ChannelBridgeLANconfig extends ChannelHandlerTemplate {
             switch (itemType) {
                 case BRIDGE_IPADDRESS:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_IPADDRESS,
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_IPADDRESS,
                             thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress.toString());
                     break;
                 case BRIDGE_SUBNETMASK:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_SUBNETMASK,
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_SUBNETMASK,
                             thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask.toString());
                     break;
                 case BRIDGE_DEFAULTGW:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABdefaultGW);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_DEFAULTGW,
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_DEFAULTGW,
                             thisBridgeHandler.bridgeParameters.lanConfig.openHABdefaultGW.toString());
                     break;
                 case BRIDGE_DHCP:
                     newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABenabledDHCP);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.CHANNEL_BRIDGE_DHCP,
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_DHCP,
                             thisBridgeHandler.bridgeParameters.lanConfig.openHABenabledDHCP.toString());
                 default:
             }

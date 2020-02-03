@@ -22,38 +22,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Specific bridge communication message supported by the Velux bridge.
+ * Protocol specific bridge communication supported by the Velux bridge:
+ * <B>Ask the Bridge to detect (new) products/actuators</B>
  * <P>
- * Message semantic: Ask the Bridge to detect (new) products/actuators.
+ * Common Message semantic: Communication with the bridge and (optionally) storing returned information within the class
+ * itself.
  * <P>
- *
- * It defines informations how to send query and receive answer through the
+ * As 3rd level class it defines informations how to send query and receive answer through the
  * {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeProvider VeluxBridgeProvider}
- * as described by the {@link org.openhab.binding.velux.internal.bridge.slip.SlipBridgeCommunicationProtocol
+ * as described by the interface {@link org.openhab.binding.velux.internal.bridge.slip.SlipBridgeCommunicationProtocol
  * SlipBridgeCommunicationProtocol}.
+ * <P>
+ * There are no methods in addition to the mentioned interface.
  *
- * @author Guenther Schreiner - Initial contribution.
- *
- *         Protocol specific bridge communication supported by the Velux bridge:
- *         <B>Detect Products/Actuators</B>
- *         <P>
- *         Common Message semantic: Communication with the bridge and (optionally) storing returned information within
- *         the class itself.
- *         <P>
- *         Implementing the protocol-independent class {@link RunProductDiscovery}.
- *         <P>
- *         As 3rd level class it defines informations how to send query and receive answer through the
- *         {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeProvider VeluxBridgeProvider}
- *         as described by the interface {@link SlipBridgeCommunicationProtocol}.
- *         <P>
- *         There are no methods in addition to the mentioned interface.
- *
- * @see RunProductDiscovery
  * @see SlipBridgeCommunicationProtocol
  *
  * @author Guenther Schreiner - Initial contribution.
  */
-// ToDo: Velux has to provide an updated API doc.
 @NonNullByDefault
 class SCrunProductDiscovery extends RunProductDiscovery implements SlipBridgeCommunicationProtocol {
     private final Logger logger = LoggerFactory.getLogger(SCrunProductDiscovery.class);
