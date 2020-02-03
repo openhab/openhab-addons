@@ -73,6 +73,7 @@ public class FreeboxBindingConstants {
     public static final String LCDFORCED = "lcd_forced";
     public static final String WIFISTATUS = "wifi_status";
     public static final String XDSLSTATUS = "xdsl_status";
+    public static final String FTTHSTATUS = "ftth_status";
     public static final String LINESTATUS = "line_status";
     public static final String IPV4 = "ipv4";
     public static final String RATEUP = "rate_up";

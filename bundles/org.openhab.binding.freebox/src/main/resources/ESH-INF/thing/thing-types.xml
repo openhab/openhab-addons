@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="server">
-		<label>Freebox Revolution Server</label>
+		<label>Freebox Server</label>
 		<description>Provides various informations regarding the status of the Freebox Server</description>
 
 		<channels>
@@ -27,6 +27,7 @@
 			<channel id="sambafileshare_status" typeId="sambafileshare_status" />
 			<channel id="sambaprintershare_status" typeId="sambaprintershare_status" />
 			<channel id="xdsl_status" typeId="xdsl_status" />
+			<channel id="ftth_status" typeId="ftth_status" />
 			<channel id="line_status" typeId="line_status" />
 			<channel id="ipv4" typeId="ipv4" />
 			<channel id="rate_up" typeId="rate_up" />
@@ -409,6 +410,13 @@
 		<item-type>String</item-type>
 		<label>xDSL Status</label>
 		<description>Status of the xDSL line</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="ftth_status">
+		<item-type>Switch</item-type>
+		<label>FTTH Status</label>
+		<description>Status of the Fiber Optic line</description>
 		<state readOnly="true" />
 	</channel-type>
 
