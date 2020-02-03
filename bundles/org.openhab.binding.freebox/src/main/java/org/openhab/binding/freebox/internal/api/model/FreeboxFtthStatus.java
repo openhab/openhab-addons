@@ -43,11 +43,11 @@ public class FreeboxFtthStatus {
         return sfp_has_power_report;
     }
 
-    public Boolean getSfpHasSignal() {
+    public boolean getSfpHasSignal() {
         return sfp_has_signal;
     }
 
-    public Boolean getLink() {
+    public boolean getLink() {
         return link;
     }
 
