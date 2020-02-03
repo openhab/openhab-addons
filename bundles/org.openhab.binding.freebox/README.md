@@ -2,6 +2,8 @@
 
 This binding integrates the [Freebox Revolution](https://www.free.fr/freebox/freebox-revolution/) and [Freebox Delta](https://www.free.fr/freebox/freebox-delta/) to your openHAB installation.
 
+The 'server' Bridge can be connected to Free infrastructures either by xDSL or fiber optic.
+
 ## Supported Things
 
 This binding supports the following thing types:
@@ -24,8 +26,8 @@ Note that the discovered thing will be setup to use only HTTP API (and not HTTPS
 
 The binding has the following configuration options, which can be set for "binding:freebox":
 
-| Parameter   | Name         | Description                                                              | Required |
-|-------------|--------------|--------------------------------------------------------------------------|----------|
+| Parameter   | Name         | Description                                                                | Required |
+|-------------|--------------|----------------------------------------------------------------------------|----------|
 | callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
 
 ## Thing Configuration
