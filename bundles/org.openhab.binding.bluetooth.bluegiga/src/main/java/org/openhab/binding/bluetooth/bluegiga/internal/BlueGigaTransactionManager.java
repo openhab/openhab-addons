@@ -83,30 +83,21 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     /**
-     * Requests parser thread to shutdown. Waits forever while the parser thread is getting shut down.
+     * Close transaction manager.
      */
     public void close() {
-        close(0);
-        logger.debug("Closed");
-    }
-
-    /**
-     * Requests parser thread to shutdown. Waits specified milliseconds while the parser thread is getting shut down.
-     *
-     * @param timeout milliseconds to wait
-     */
-    public void close(long timeout) {
         serialHandler.removeEventListener(this);
         cancelTransactionTimer();
         sendQueue.clear();
         transactionListeners.clear();
         eventListeners.clear();
+        logger.debug("Closed");
     }
 
     private void startTransactionTimer() {
         transactionTimeoutTimer = executor.schedule(() -> {
             notifyTransactionTimeout(ongoingTransactionId);
-        }, TRANSACTION_TIMEOUT_PERIOD_MS * 2, TimeUnit.MILLISECONDS);
+        }, TRANSACTION_TIMEOUT_PERIOD_MS, TimeUnit.MILLISECONDS);
     }
 
     private void cancelTransactionTimer() {

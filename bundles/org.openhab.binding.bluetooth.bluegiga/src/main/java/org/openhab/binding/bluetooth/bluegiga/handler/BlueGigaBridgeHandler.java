@@ -142,7 +142,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // The BlueGiga API handler
     private @NonNullByDefault({}) BlueGigaSerialHandler serialHandler;
 
-    // The BlueGiga API handler
+    // The BlueGiga transaction manager
     private @NonNullByDefault({}) BlueGigaTransactionManager transactionManager;
 
     // The maximum number of connections this interface supports
