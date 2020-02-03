@@ -32,15 +32,15 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.AspectRatio;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.Background;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.Color;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.ColorMode;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.Gamma;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.Luminance;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.PowerStatus;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.Source;
-import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice.Switch;
+import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
+import org.openhab.binding.epsonprojector.internal.enums.Background;
+import org.openhab.binding.epsonprojector.internal.enums.Color;
+import org.openhab.binding.epsonprojector.internal.enums.ColorMode;
+import org.openhab.binding.epsonprojector.internal.enums.Gamma;
+import org.openhab.binding.epsonprojector.internal.enums.Luminance;
+import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
+import org.openhab.binding.epsonprojector.internal.enums.Source;
+import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +52,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EpsonProjectorHandler extends BaseThingHandler {
+    public static final int DEFAULT_POLLING_INTERVAL = 10000;
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
-
-    private @Nullable EpsonProjectorConfiguration config;
 
     private @Nullable EpsonProjectorDevice device;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -80,40 +79,33 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(EpsonProjectorConfiguration.class);
-
-        updateStatus(ThingStatus.UNKNOWN);
-
         scheduler.execute(() -> {
-            if (StringUtils.isNotEmpty(config.serialPort)) {
-                device = new EpsonProjectorDevice(config.serialPort);
-            } else if (StringUtils.isNotEmpty(config.host) && config.port > 0) {
-                device = new EpsonProjectorDevice(config.host, config.port);
+            EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
+            String serialPort = (config.serialPort != null) ? config.serialPort : "";
+            String host = (config.host != null) ? config.host : "";
+            if (StringUtils.isNotEmpty(serialPort)) {
+                device = new EpsonProjectorDevice(serialPort);
+            } else if (StringUtils.isNotEmpty(host) && config.port > 0) {
+                device = new EpsonProjectorDevice(host, config.port);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
 
             try {
-                device.connect();
-                updateStatus(ThingStatus.ONLINE);
+                if (device != null) {
+                    device.connect();
+                    updateStatus(ThingStatus.ONLINE);
 
-                int pollingInterval = config.pollingInterval;
-                if (pollingInterval == 0) {
-                    pollingInterval = 10000;
-                }
+                    List<Channel> channels = this.thing.getChannels();
 
-                List<Channel> channels = this.thing.getChannels();
-
-                pollingJob = scheduler.scheduleAtFixedRate(new Runnable() {
-                    @Override
-                    public void run() {
+                    pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                         for (Channel channel : channels) {
                             updateChannelState(channel);
                         }
-                    }
-                }, 0, pollingInterval, TimeUnit.MILLISECONDS);
-
+                    }, 0, (config.pollingInterval > 0) ? config.pollingInterval : DEFAULT_POLLING_INTERVAL,
+                            TimeUnit.MILLISECONDS);
+                }
             } catch (EpsonProjectorException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -145,8 +137,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         }
     }
 
-    private State queryDataFromDevice(EpsonProjectorCommandType commmandType) {
-
+    private State queryDataFromDevice(EpsonProjectorCommandType commandType) {
         EpsonProjectorDevice remoteController = device;
 
         if (remoteController == null) {
@@ -155,11 +146,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         }
 
         try {
-            if (remoteController.isConnected() == false) {
+            if (!remoteController.isConnected()) {
                 remoteController.connect();
             }
 
-            switch (commmandType) {
+            switch (commandType) {
                 case AKEYSTONE:
                     int autoKeystone = remoteController.getAutoKeystone();
                     return new DecimalType(autoKeystone);
@@ -212,7 +203,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     Gamma gamma = remoteController.getGamma();
                     return new StringType(gamma.toString());
                 case GAMMA_STEP:
-                    logger.warn("Get '{}' not implemented!", commmandType.toString());
+                    logger.warn("Get '{}' not implemented!", commandType.toString());
                     return UnDefType.UNDEF;
                 case HKEYSTONE:
                     int hKeystone = remoteController.getHorizontalKeystone();
@@ -245,17 +236,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new DecimalType(offsetRed);
                 case POWER:
                     PowerStatus powerStatus = remoteController.getPowerStatus();
-
-                    if (powerStatus == PowerStatus.ON) {
-                        return OnOffType.ON;
-                    } else {
-                        return OnOffType.OFF;
-                    }
+                    return powerStatus == PowerStatus.ON ? OnOffType.ON : OnOffType.OFF;
                 case POWER_STATE:
                     PowerStatus powerStatus1 = remoteController.getPowerStatus();
                     return new StringType(powerStatus1.toString());
                 case SHARP:
-                    logger.warn("Get '{}' not implemented!", commmandType.toString());
+                    logger.warn("Get '{}' not implemented!", commandType.toString());
                     return UnDefType.UNDEF;
                 case SOURCE:
                     Source source = remoteController.getSource();
@@ -279,23 +265,22 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     Switch vReverse = remoteController.getVerticalReverse();
                     return vReverse == Switch.ON ? OnOffType.ON : OnOffType.OFF;
                 default:
-                    logger.warn("Unknown '{}' command!", commmandType);
+                    logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;
             }
-
         } catch (EpsonProjectorException e) {
-            logger.debug("Couldn't execute command '{}', {}", commmandType.toString(), e.getMessage());
+            // some commands are invalid depending on the state of the device, for instance if it's in standby mode
+            logger.debug("Couldn't execute command '{}'", commandType, e);
             // closeConnection();
         } catch (Exception e) {
-            logger.warn("Couldn't retrieve state for command '{}', {}", commmandType.toString(), e.getMessage());
+            logger.warn("Couldn't retrieve state for command '{}'", commandType, e);
             return UnDefType.UNDEF;
         }
 
         return UnDefType.UNDEF;
     }
 
-    private void sendDataToDevice(EpsonProjectorCommandType commmandType, Command command) {
-
+    private void sendDataToDevice(EpsonProjectorCommandType commandType, Command command) {
         EpsonProjectorDevice remoteController = device;
 
         if (remoteController == null) {
@@ -304,12 +289,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         }
 
         try {
-
-            if (remoteController.isConnected() == false) {
+            if (!remoteController.isConnected()) {
                 remoteController.connect();
             }
 
-            switch (commmandType) {
+            switch (commandType) {
                 case AKEYSTONE:
                     remoteController.setAutoKeystone(((DecimalType) command).intValue());
                     break;
@@ -341,10 +325,10 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setDirectSource(((DecimalType) command).intValue());
                     break;
                 case ERR_CODE:
-                    logger.error("'{}' is read only parameter", commmandType);
+                    logger.error("'{}' is read only parameter", commandType);
                     break;
                 case ERR_MESSAGE:
-                    logger.error("'{}' is read only parameter", commmandType);
+                    logger.error("'{}' is read only parameter", commandType);
                     break;
                 case FLESH_TEMP:
                     remoteController.setFleshColor(((DecimalType) command).intValue());
@@ -362,7 +346,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setGamma(Gamma.valueOf(command.toString()));
                     break;
                 case GAMMA_STEP:
-                    logger.warn("Set '{}' not implemented!", commmandType.toString());
+                    logger.warn("Set '{}' not implemented!", commandType.toString());
                     break;
                 case HKEYSTONE:
                     remoteController.setHorizontalKeystone(((DecimalType) command).intValue());
@@ -377,7 +361,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.sendKeyCode(((DecimalType) command).intValue());
                     break;
                 case LAMP_TIME:
-                    logger.error("'{}' is read only parameter", commmandType);
+                    logger.error("'{}' is read only parameter", commandType);
                     break;
                 case LUMINANCE:
                     remoteController.setLuminance(Luminance.valueOf(command.toString()));
@@ -398,10 +382,10 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setPower((command == OnOffType.ON ? Switch.ON : Switch.OFF));
                     break;
                 case POWER_STATE:
-                    logger.error("'{}' is read only parameter", commmandType);
+                    logger.error("'{}' is read only parameter", commandType);
                     break;
                 case SHARP:
-                    logger.warn("Set '{}' not implemented!", commmandType.toString());
+                    logger.warn("Set '{}' not implemented!", commandType.toString());
                     break;
                 case SOURCE:
                     remoteController.setSource(Source.valueOf(command.toString()));
@@ -425,12 +409,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setVerticalReverse((command == OnOffType.ON ? Switch.ON : Switch.OFF));
                     break;
                 default:
-                    logger.warn("Unknown '{}' command!", commmandType);
+                    logger.warn("Unknown '{}' command!", commandType);
                     break;
             }
-
         } catch (EpsonProjectorException e) {
-            logger.warn("Couldn't execute command '{}', {}", commmandType, e.getMessage());
+            logger.warn("Couldn't execute command '{}'", commandType, e);
             // closeConnection();
         }
     }
@@ -443,9 +426,8 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 logger.debug("Closing connection to device '{}'", this.thing.getUID());
                 remoteController.disconnect();
             } catch (EpsonProjectorException e) {
-                logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID());
+                logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
             }
         }
     }
-
 }

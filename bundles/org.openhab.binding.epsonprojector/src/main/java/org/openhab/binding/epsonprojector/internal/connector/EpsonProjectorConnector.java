@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.epsonprojector.internal.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface EpsonProjectorConnector {
 
     /**

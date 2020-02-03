@@ -12,22 +12,26 @@
  */
 package org.openhab.binding.epsonprojector.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link EpsonProjectorConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Yannick Schaus - Initial contribution
  */
+@NonNullByDefault
 public class EpsonProjectorConfiguration {
 
     /**
      * Serial port used for communication.
      */
-    public String serialPort;
+    public @Nullable String serialPort;
 
     /**
      * Host or IP address used for communication over a TCP link (if serialPort is not set).
      */
-    public String host;
+    public @Nullable String host;
 
     /**
      * Port used for communication over a TCP link (if serialPort is not set).

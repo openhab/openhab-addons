@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
  * @author Pauli Anttila - Initial contribution
  */
 public enum EpsonProjectorCommandType {
-
     POWER("Power", SwitchItem.class),
     POWER_STATE("PowerState", StringItem.class),
     LAMP_TIME("LampTime", NumberItem.class),
@@ -96,10 +95,8 @@ public enum EpsonProjectorCommandType {
      */
     public static boolean validateBinding(String commandTypeText, Class<? extends Item> itemClass)
             throws IllegalArgumentException, InvalidClassException {
-
         for (EpsonProjectorCommandType c : EpsonProjectorCommandType.values()) {
             if (c.text.equalsIgnoreCase(commandTypeText)) {
-
                 if (c.getItemClass().equals(itemClass)) {
                     return true;
                 } else {
@@ -109,7 +106,6 @@ public enum EpsonProjectorCommandType {
         }
 
         throw new IllegalArgumentException("Not valid command type");
-
     }
 
     /**
@@ -122,7 +118,6 @@ public enum EpsonProjectorCommandType {
      *             Not valid class for command type.
      */
     public static EpsonProjectorCommandType getCommandType(String commandTypeText) throws IllegalArgumentException {
-
         for (EpsonProjectorCommandType c : EpsonProjectorCommandType.values()) {
             if (c.text.equalsIgnoreCase(commandTypeText)) {
                 return c;
