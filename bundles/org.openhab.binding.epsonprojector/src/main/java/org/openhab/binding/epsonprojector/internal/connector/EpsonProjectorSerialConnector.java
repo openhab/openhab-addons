@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.TooManyListenersException;
 
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
@@ -24,9 +25,12 @@ import org.slf4j.LoggerFactory;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Connector for serial port communication.
@@ -35,9 +39,9 @@ import gnu.io.SerialPortEventListener;
  */
 public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, SerialPortEventListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(EpsonProjectorSerialConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(EpsonProjectorSerialConnector.class);
 
-    String serialPortName = null;
+    final String serialPortName;
     InputStream in = null;
     OutputStream out = null;
     SerialPort serialPort = null;
@@ -46,12 +50,8 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
         serialPortName = serialPort;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void connect() throws EpsonProjectorException {
-
         try {
             logger.debug("Open connection to serial port '{}'", serialPortName);
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
@@ -75,15 +75,12 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             // Start event listener, which will just sleep and slow down event loop
             serialPort.addEventListener(this);
             serialPort.notifyOnDataAvailable(true);
-        } catch (Exception e) {
+        } catch (NoSuchPortException | PortInUseException | UnsupportedCommOperationException | IOException
+                | TooManyListenersException e) {
             throw new EpsonProjectorException(e);
         }
-
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void disconnect() throws EpsonProjectorException {
         if (out != null) {
@@ -106,9 +103,6 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
         logger.debug("Closed");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String sendMessage(String data, int timeout) throws EpsonProjectorException {
         if (in == null || out == null) {
@@ -120,13 +114,10 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             if (in.markSupported()) {
                 in.reset();
             } else {
-
                 while (in.available() > 0) {
-
                     int availableBytes = in.available();
 
                     if (availableBytes > 0) {
-
                         byte[] tmpData = new byte[availableBytes];
                         in.read(tmpData, 0, availableBytes);
                     }
@@ -134,9 +125,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             }
 
             return sendMmsg(data, timeout);
-
         } catch (IOException e) {
-
             logger.debug("IO error occurred...reconnect and resend ones");
             disconnect();
             connect();
@@ -146,7 +135,6 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             } catch (IOException e1) {
                 throw new EpsonProjectorException(e);
             }
-
         } catch (Exception e) {
             throw new EpsonProjectorException(e);
         }

@@ -12,12 +12,28 @@
  */
 package org.openhab.binding.epsonprojector.internal;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorSerialConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorTcpConnector;
+import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
+import org.openhab.binding.epsonprojector.internal.enums.Background;
+import org.openhab.binding.epsonprojector.internal.enums.Color;
+import org.openhab.binding.epsonprojector.internal.enums.ColorMode;
+import org.openhab.binding.epsonprojector.internal.enums.CommunicationSpeed;
+import org.openhab.binding.epsonprojector.internal.enums.ErrorMessage;
+import org.openhab.binding.epsonprojector.internal.enums.Gamma;
+import org.openhab.binding.epsonprojector.internal.enums.GammaStep;
+import org.openhab.binding.epsonprojector.internal.enums.Luminance;
+import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
+import org.openhab.binding.epsonprojector.internal.enums.Sharpness;
+import org.openhab.binding.epsonprojector.internal.enums.Source;
+import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,411 +41,39 @@ import org.slf4j.LoggerFactory;
  * Provide high level interface to Epson projector.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Yannick Schaus - Refactoring
  */
+@NonNullByDefault
 public class EpsonProjectorDevice {
-    public enum AspectRatio {
-        NORMAL(0x00),
-        AUTO(0x30),
-        FULL(0x40),
-        ZOOM(0x50),
-        WIDE(0x70),
-        ANAMORPHIC(0x80),
-        SQUEEZE(0x90),
-        ERROR(0xFF);
+    private static final String THING_HANDLER_THREADPOOL_NAME = "thingHandler";
 
-        private int value;
-        private static final Map<Integer, AspectRatio> typesByValue = new HashMap<Integer, AspectRatio>();
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
 
-        static {
-            for (AspectRatio type : AspectRatio.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
+    private final int defaultTimeout = 5 * 1000;
+    private final int powerOnTimeout = 100 * 1000;
+    private final int powerOffTimeout = 130 * 1000;
 
-        private AspectRatio(int value) {
-            this.value = value;
-        }
+    private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
-        public static AspectRatio forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-    }
-
-    public enum Luminance {
-        NORMAL(0x00),
-        ECO(0x01),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, Luminance> typesByValue = new HashMap<Integer, Luminance>();
-
-        static {
-            for (Luminance type : Luminance.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private Luminance(int value) {
-            this.value = value;
-        }
-
-        public static Luminance forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum Source {
-        COMPONENT(0x14),
-        PC_DSUB(0x20),
-        HDMI1(0x30),
-        HDMI2(0xA0),
-        VIDEO(0x41),
-        SVIDEO(0x42),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, Source> typesByValue = new HashMap<Integer, Source>();
-
-        static {
-            for (Source type : Source.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private Source(int value) {
-            this.value = value;
-        }
-
-        public static Source forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-    }
-
-    public enum ColorMode {
-        CINEMANIGHT(0x05),
-        DYNAMIC(0x06),
-        NATURAL(0x07),
-        HD(0x09),
-        SILVER(0x0A),
-        XVCOLOR(0x0B),
-        LIVINGROOM(0x0C),
-        THX(0x13),
-        CINEMA(0x15),
-        CINEMA3D(0x17),
-        DYNAMIC3D(0x18),
-        THX3D(0x19),
-        BWCINEMA(0x20),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, ColorMode> typesByValue = new HashMap<Integer, ColorMode>();
-
-        static {
-            for (ColorMode type : ColorMode.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private ColorMode(int value) {
-            this.value = value;
-        }
-
-        public static ColorMode forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-    }
-
-    public enum PowerStatus {
-        STANDBY(0x00),
-        ON(0x01),
-        WARPUP(0x02),
-        COOLDOWN(0x03),
-        STANDBYNETWORKON(0x04),
-        ABNORMALSTANDBY(0x05),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, PowerStatus> typesByValue = new HashMap<Integer, PowerStatus>();
-
-        static {
-            for (PowerStatus type : PowerStatus.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private PowerStatus(int value) {
-            this.value = value;
-        }
-
-        public static PowerStatus forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-    }
-
-    public enum Sharpness {
-        STANDARD(0x00),
-        HIGHPASS(0x01),
-        LOWPASS(0x02),
-        HORIZONTAL(0x04),
-        VERTICAL(0x05),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, Sharpness> typesByValue = new HashMap<Integer, Sharpness>();
-
-        static {
-            for (Sharpness type : Sharpness.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private Sharpness(int value) {
-            this.value = value;
-        }
-
-        public static Sharpness forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum GammaStep {
-        TONE1(0x00),
-        TONE2(0x01),
-        TONE3(0x02),
-        TONE4(0x03),
-        TONE5(0x04),
-        TONE6(0x05),
-        TONE7(0x06),
-        TONE8(0x07),
-        TONE9(0x08),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, GammaStep> typesByValue = new HashMap<Integer, GammaStep>();
-
-        static {
-            for (GammaStep type : GammaStep.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private GammaStep(int value) {
-            this.value = value;
-        }
-
-        public static GammaStep forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum Color {
-        RGB_RGBCMY(0x07),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, Color> typesByValue = new HashMap<Integer, Color>();
-
-        static {
-            for (Color type : Color.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private Color(int value) {
-            this.value = value;
-        }
-
-        public static Color forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum Gamma {
-        G2_0(0x20),
-        G2_1(0x21),
-        G2_2(0x22),
-        G2_3(0x23),
-        G2_4(0x24),
-        CUSTOM(0xF0),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, Gamma> typesByValue = new HashMap<Integer, Gamma>();
-
-        static {
-            for (Gamma type : Gamma.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private Gamma(int value) {
-            this.value = value;
-        }
-
-        public static Gamma forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum Background {
-        BLACK(0x00),
-        BLUE(0x01),
-        LOGO(0x02),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, Background> typesByValue = new HashMap<Integer, Background>();
-
-        static {
-            for (Background type : Background.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private Background(int value) {
-            this.value = value;
-        }
-
-        public static Background forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum CommunicationSpeed {
-        S9600(0x00),
-        S18200(0x01),
-        S38400(0x02),
-        S57600(0x03),
-        ERROR(0xFF);
-
-        private int value;
-        private static final Map<Integer, CommunicationSpeed> typesByValue = new HashMap<Integer, CommunicationSpeed>();
-
-        static {
-            for (CommunicationSpeed type : CommunicationSpeed.values()) {
-                typesByValue.put(type.value, type);
-            }
-        }
-
-        private CommunicationSpeed(int value) {
-            this.value = value;
-        }
-
-        public static CommunicationSpeed forValue(int value) {
-            return typesByValue.get(value);
-        }
-
-        public int toInt() {
-            return value;
-        }
-
-    }
-
-    public enum Switch {
-        ON,
-        OFF;
-    }
-
-    public enum Messages {
-
-        EpsonProjectorBinding_NO_ERROR("No error"),
-        EpsonProjectorBinding_ERROR1("Fan error"),
-        EpsonProjectorBinding_ERROR3("Lamp failure at power on"),
-        EpsonProjectorBinding_ERROR4("High internal temperature error"),
-        EpsonProjectorBinding_ERROR6("Lamp error"),
-        EpsonProjectorBinding_ERROR7("Open Lamp cover door error"),
-        EpsonProjectorBinding_ERROR8("Cinema filter error"),
-        EpsonProjectorBinding_ERROR9("Electric dual-layered capacitor is disconnected"),
-        EpsonProjectorBinding_ERROR10("Auto iris error"),
-        EpsonProjectorBinding_ERROR11("Subsystem error"),
-        EpsonProjectorBinding_ERROR12("Low air flow error"),
-        EpsonProjectorBinding_ERROR13("Air filter air flow sensor error"),
-        EpsonProjectorBinding_ERROR14("Power supply unit error (ballast)"),
-        EpsonProjectorBinding_ERROR15("Shutter error"),
-        EpsonProjectorBinding_ERROR16("Cooling system error (peltier element)"),
-        EpsonProjectorBinding_ERROR17("Cooling system error (pump)"),
-        EpsonProjectorBinding_ERROR18("Static iris error"),
-        EpsonProjectorBinding_ERROR19("Power supply unit error (disagreement of ballast)"),
-        EpsonProjectorBinding_ERROR20("Exhaust shutter error"),
-        EpsonProjectorBinding_ERROR21("Obstacle detection error"),
-        EpsonProjectorBinding_ERROR22("IF board discernment error"),
-        EpsonProjectorBinding_UNKNOWN_ERROR("Unknown error");
-
-        private final String message;
-
-        Messages(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-
-    final private int defaultTimeout = 5 * 1000;
-    final private int powerOnTimeout = 100 * 1000;
-    final private int powerOffTimeout = 130 * 1000;
-
-    private static Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
-
-    private EpsonProjectorConnector connection = null;
-    private boolean connected = false;
+    private EpsonProjectorConnector connection;
+    private boolean connected;
+    private boolean ready;
 
     public EpsonProjectorDevice(String serialPort) {
         connection = new EpsonProjectorSerialConnector(serialPort);
+        ready = true;
     }
 
     public EpsonProjectorDevice(String ip, int port) {
         connection = new EpsonProjectorTcpConnector(ip, port);
+        ready = true;
     }
 
-    private synchronized String sendQuery(String query, int timeout) throws EpsonProjectorException {
+    private synchronized @Nullable String sendQuery(String query, int timeout) throws EpsonProjectorException {
+        if (!ready) {
+            logger.debug("Refusing command {} while not ready", query);
+        }
 
         logger.debug("Query: '{}'", query);
         String response = connection.sendMessage(query, timeout);
@@ -441,26 +85,20 @@ public class EpsonProjectorDevice {
         response = response.replace("\r:", "");
         logger.debug("Response: '{}'", response);
 
-        if (response.equals("ERR")) {
+        if ("ERR".equals(response)) {
             throw new EpsonProjectorException("Error response received");
         }
 
         if ("PWR OFF".equals(query) && ":".equals(response)) {
             // When PWR OFF command is sent, next command can be send after 10 seconds after the colon is received
-            logger.debug("Waiting 10 seconds to power OFF completion");
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                // just exit
-            }
+            logger.debug("Refusing further commands for 10 seconds to power OFF completion");
+            ready = false;
+            scheduler.scheduleWithFixedDelay(() -> {
+                ready = true;
+            }, 0, 10000, TimeUnit.MILLISECONDS);
         }
 
         return response;
-    }
-
-    @SuppressWarnings("unused")
-    private String sendQuery(String query) throws EpsonProjectorException {
-        return sendQuery(query, defaultTimeout);
     }
 
     protected void sendCommand(String command, int timeout) throws EpsonProjectorException {
@@ -472,24 +110,16 @@ public class EpsonProjectorDevice {
     }
 
     protected int queryInt(String query, int timeout, int radix) throws EpsonProjectorException {
-
         String response = sendQuery(query, timeout);
 
-        if (response != null && !response.equals("")) {
+        if (response != null && !"".equals(response)) {
+            String[] pieces = response.split("=");
+            String str = pieces[1].trim();
 
-            try {
-                String[] pieces = response.split("=");
-                String str = pieces[1].trim();
-
-                return Integer.parseInt(str, radix);
-
-            } catch (Exception e) {
-                throw new EpsonProjectorException("Illegal response");
-            }
+            return Integer.parseInt(str, radix);
         } else {
             throw new EpsonProjectorException("No response received");
         }
-
     }
 
     protected int queryInt(String query, int timeout) throws EpsonProjectorException {
@@ -528,11 +158,7 @@ public class EpsonProjectorDevice {
     public PowerStatus getPowerStatus() throws EpsonProjectorException {
         int val = queryInt("PWR?");
         PowerStatus retval = PowerStatus.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to PowerStatus");
-        }
+        return retval;
     }
 
     public void setPower(Switch value) throws EpsonProjectorException {
@@ -585,11 +211,7 @@ public class EpsonProjectorDevice {
     public AspectRatio getAspectRatio() throws EpsonProjectorException {
         int val = queryHexInt("ASPECT?");
         AspectRatio retval = AspectRatio.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to AspectRatio");
-        }
+        return retval;
     }
 
     public void setAspectRatio(AspectRatio value) throws EpsonProjectorException {
@@ -602,11 +224,7 @@ public class EpsonProjectorDevice {
     public Luminance getLuminance() throws EpsonProjectorException {
         int val = queryHexInt("LUMINANCE?");
         Luminance retval = Luminance.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Luminance");
-        }
+        return retval;
     }
 
     public void setLuminance(Luminance value) throws EpsonProjectorException {
@@ -619,11 +237,7 @@ public class EpsonProjectorDevice {
     public Source getSource() throws EpsonProjectorException {
         int val = queryHexInt("SOURCE?");
         Source retval = Source.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Source");
-        }
+        return retval;
     }
 
     public void setSource(Source value) throws EpsonProjectorException {
@@ -721,11 +335,7 @@ public class EpsonProjectorDevice {
     public ColorMode getColorMode() throws EpsonProjectorException {
         int val = queryHexInt("CMODE?");
         ColorMode retval = ColorMode.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to ColorMode");
-        }
+        return retval;
     }
 
     public void setColorMode(ColorMode value) throws EpsonProjectorException {
@@ -848,11 +458,7 @@ public class EpsonProjectorDevice {
     public Gamma getGamma() throws EpsonProjectorException {
         int val = queryHexInt("GAMMA?");
         Gamma retval = Gamma.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Gamma");
-        }
+        return retval;
     }
 
     public void setGamma(Gamma value) throws EpsonProjectorException {
@@ -871,35 +477,12 @@ public class EpsonProjectorDevice {
     }
 
     /*
-     * Memory
-     */
-    public void LoadMemory(int number) throws EpsonProjectorException {
-        sendCommand(String.format("POPMEM 02 %02X", number));
-    }
-
-    public void SaveMemory(int number) throws EpsonProjectorException {
-        sendCommand(String.format("PUSHMEM 02 %02X", number));
-    }
-
-    public void EraseAllMemory() throws EpsonProjectorException {
-        sendCommand("ERASEMEM 00");
-    }
-
-    public void EraseMemory(int number) throws EpsonProjectorException {
-        sendCommand(String.format("ERASEMEM 02 %02X", number));
-    }
-
-    /*
      * Color
      */
     public Color getColor() throws EpsonProjectorException {
         int val = queryHexInt("CSEL?");
         Color retval = Color.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Color");
-        }
+        return retval;
     }
 
     public void setColor(Color value) throws EpsonProjectorException {
@@ -911,11 +494,7 @@ public class EpsonProjectorDevice {
      */
     public Switch getMute() throws EpsonProjectorException {
         int val = queryInt("MUTE?");
-        try {
-            return Switch.values()[val];
-        } catch (Exception e) {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Switch");
-        }
+        return Switch.values()[val];
     }
 
     public void setMute(Switch value) throws EpsonProjectorException {
@@ -927,11 +506,7 @@ public class EpsonProjectorDevice {
      */
     public Switch getHorizontalReverse() throws EpsonProjectorException {
         int val = queryInt("HREVERSE?");
-        try {
-            return Switch.values()[val];
-        } catch (Exception e) {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Switch");
-        }
+        return Switch.values()[val];
     }
 
     public void setHorizontalReverse(Switch value) throws EpsonProjectorException {
@@ -943,11 +518,7 @@ public class EpsonProjectorDevice {
      */
     public Switch getVerticalReverse() throws EpsonProjectorException {
         int val = queryInt("VREVERSE?");
-        try {
-            return Switch.values()[val];
-        } catch (Exception e) {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Switch");
-        }
+        return Switch.values()[val];
     }
 
     public void setVerticalReverse(Switch value) throws EpsonProjectorException {
@@ -960,22 +531,11 @@ public class EpsonProjectorDevice {
     public Background getBackground() throws EpsonProjectorException {
         int val = queryHexInt("MSEL?");
         Background retval = Background.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to Background");
-        }
+        return retval;
     }
 
     public void setBackground(Background value) throws EpsonProjectorException {
         sendCommand(String.format("MSEL %02X", value.toInt()));
-    }
-
-    /*
-     * Reset all
-     */
-    public void ResetAll() throws EpsonProjectorException {
-        sendCommand("INITALL");
     }
 
     /*
@@ -984,11 +544,7 @@ public class EpsonProjectorDevice {
     public CommunicationSpeed getCommunicationSpeed() throws EpsonProjectorException {
         int val = queryInt("SPEED?");
         CommunicationSpeed retval = CommunicationSpeed.forValue(val);
-        if (retval != null) {
-            return retval;
-        } else {
-            throw new EpsonProjectorException("Can't convert value" + val + " to CommunicationSpeed");
-        }
+        return retval;
     }
 
     public void setCommunicationSpeed(CommunicationSpeed value) throws EpsonProjectorException {
@@ -1013,79 +569,8 @@ public class EpsonProjectorDevice {
      * Error
      */
     public String getErrorString() throws EpsonProjectorException {
-        String errString = null;
-
         int err = queryInt("ERR?");
-
-        switch (err) {
-            case 0:
-                errString = Messages.EpsonProjectorBinding_NO_ERROR.getMessage();
-                break;
-            case 1:
-                errString = Messages.EpsonProjectorBinding_ERROR1.getMessage();
-                break;
-            case 3:
-                errString = Messages.EpsonProjectorBinding_ERROR3.getMessage();
-                break;
-            case 4:
-                errString = Messages.EpsonProjectorBinding_ERROR4.getMessage();
-                break;
-            case 6:
-                errString = Messages.EpsonProjectorBinding_ERROR6.getMessage();
-                break;
-            case 7:
-                errString = Messages.EpsonProjectorBinding_ERROR7.getMessage();
-                break;
-            case 8:
-                errString = Messages.EpsonProjectorBinding_ERROR8.getMessage();
-                break;
-            case 9:
-                errString = Messages.EpsonProjectorBinding_ERROR9.getMessage();
-                break;
-            case 10:
-                errString = Messages.EpsonProjectorBinding_ERROR10.getMessage();
-                break;
-            case 11:
-                errString = Messages.EpsonProjectorBinding_ERROR11.getMessage();
-                break;
-            case 12:
-                errString = Messages.EpsonProjectorBinding_ERROR12.getMessage();
-                break;
-            case 13:
-                errString = Messages.EpsonProjectorBinding_ERROR13.getMessage();
-                break;
-            case 14:
-                errString = Messages.EpsonProjectorBinding_ERROR14.getMessage();
-                break;
-            case 15:
-                errString = Messages.EpsonProjectorBinding_ERROR15.getMessage();
-                break;
-            case 16:
-                errString = Messages.EpsonProjectorBinding_ERROR16.getMessage();
-                break;
-            case 17:
-                errString = Messages.EpsonProjectorBinding_ERROR17.getMessage();
-                break;
-            case 18:
-                errString = Messages.EpsonProjectorBinding_ERROR18.getMessage();
-                break;
-            case 19:
-                errString = Messages.EpsonProjectorBinding_ERROR19.getMessage();
-                break;
-            case 20:
-                errString = Messages.EpsonProjectorBinding_ERROR20.getMessage();
-                break;
-            case 21:
-                errString = Messages.EpsonProjectorBinding_ERROR21.getMessage();
-                break;
-            case 22:
-                errString = Messages.EpsonProjectorBinding_ERROR22.getMessage();
-                break;
-            default:
-                errString = String.format(Messages.EpsonProjectorBinding_UNKNOWN_ERROR + " %d", err);
-        }
-
-        return errString;
+        return ErrorMessage.forCode(err);
     }
 
 }

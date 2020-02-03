@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.epsonprojector.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for Epson projector errors.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class EpsonProjectorException extends Exception {
 
     private static final long serialVersionUID = -8048415193494625295L;
-
-    public EpsonProjectorException() {
-        super();
-    }
 
     public EpsonProjectorException(String message) {
         super(message);
@@ -36,5 +35,4 @@ public class EpsonProjectorException extends Exception {
     public EpsonProjectorException(Throwable cause) {
         super(cause);
     }
-
 }

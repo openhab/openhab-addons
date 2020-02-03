@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
  */
 public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(EpsonProjectorTcpConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(EpsonProjectorTcpConnector.class);
 
-    String ip = null;
-    int port = 10000;
+    final String ip;
+    final int port;
     Socket socket = null;
     InputStream in = null;
     OutputStream out = null;
@@ -43,9 +43,6 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
         this.port = port;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void connect() throws EpsonProjectorException {
         logger.debug("Open connection to address'{}:{}'", ip, port);
@@ -54,14 +51,11 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             socket = new Socket(ip, port);
             in = socket.getInputStream();
             out = socket.getOutputStream();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new EpsonProjectorException(e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void disconnect() throws EpsonProjectorException {
         if (out != null) {
@@ -88,9 +82,6 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
         logger.debug("Closed");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String sendMessage(String data, int timeout) throws EpsonProjectorException {
         if (in == null || out == null) {
@@ -102,13 +93,10 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             if (in.markSupported()) {
                 in.reset();
             } else {
-
                 while (in.available() > 0) {
-
                     int availableBytes = in.available();
 
                     if (availableBytes > 0) {
-
                         byte[] tmpData = new byte[availableBytes];
                         in.read(tmpData, 0, availableBytes);
                     }
@@ -116,9 +104,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             }
 
             return sendMmsg(data, timeout);
-
         } catch (IOException e) {
-
             logger.debug("IO error occurred...reconnect and resend ones");
             disconnect();
             connect();
@@ -128,7 +114,6 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             } catch (IOException e1) {
                 throw new EpsonProjectorException(e);
             }
-
         } catch (Exception e) {
             throw new EpsonProjectorException(e);
         }
