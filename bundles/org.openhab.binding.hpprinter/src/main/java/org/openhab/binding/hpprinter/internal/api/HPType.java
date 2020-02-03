@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.hpprinter.internal.api;
 
-
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
