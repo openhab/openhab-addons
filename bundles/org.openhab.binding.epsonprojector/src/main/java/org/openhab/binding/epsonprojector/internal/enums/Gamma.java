@@ -36,7 +36,7 @@ public enum Gamma {
     }
 
     public static Gamma forValue(int value) {
-        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().orElseThrow();
+        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
     }
 
     public int toInt() {

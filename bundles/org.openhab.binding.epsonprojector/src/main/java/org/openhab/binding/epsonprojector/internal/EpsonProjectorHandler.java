@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -81,7 +82,9 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     public void initialize() {
         scheduler.execute(() -> {
             EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
+            @NonNull
             String serialPort = (config.serialPort != null) ? config.serialPort : "";
+            @NonNull
             String host = (config.host != null) ? config.host : "";
             if (StringUtils.isNotEmpty(serialPort)) {
                 device = new EpsonProjectorDevice(serialPort);
