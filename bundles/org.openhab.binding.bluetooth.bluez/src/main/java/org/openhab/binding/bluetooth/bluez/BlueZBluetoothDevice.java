@@ -241,8 +241,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         scheduler.submit(() -> {
             try {
                 byte[] value = c.readValue();
-                characteristic.setValue(value);
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
+                // create a copy of characteristic to make sure we don't interfere with writes
+                BluetoothCharacteristic copyChar = characteristic.copy();
+                copyChar.setValue(value);
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, copyChar,
                         BluetoothCompletionStatus.SUCCESS);
             } catch (BluetoothException e) {
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
@@ -287,8 +289,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         if (c != null) {
             try {
                 c.enableValueNotifications(value -> {
-                    characteristic.setValue(value);
-                    notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, characteristic);
+                    // create a copy of characteristic to make sure we don't interfere with writes
+                    BluetoothCharacteristic copyChar = characteristic.copy();
+                    copyChar.setValue(value);
+                    notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, copyChar);
                 });
             } catch (BluetoothException e) {
                 if (e.getMessage().contains("Already notifying")) {

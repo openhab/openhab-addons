@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +97,21 @@ public class BluetoothCharacteristic {
     protected BluetoothService service;
 
     /**
+     * Creates a copy of a BluetoothCharacteristic.
+     *
+     * @param copy the {@link BluetoothCharacteristic} to copy from
+     */
+    public BluetoothCharacteristic(BluetoothCharacteristic copy) {
+        this.uuid = copy.uuid;
+        this.handle = copy.handle;
+        this.instance = copy.instance;
+        this.properties = copy.properties;
+        this.permissions = copy.permissions;
+        this.writeType = copy.writeType;
+        this.value = copy.value != null ? Arrays.copyOf(value, copy.value.length) : null;
+    }
+
+    /**
      * Create a new BluetoothCharacteristic.
      *
      * @param uuid the {@link UUID} of the new characteristic
@@ -104,6 +120,14 @@ public class BluetoothCharacteristic {
     public BluetoothCharacteristic(UUID uuid, int handle) {
         this.uuid = uuid;
         this.handle = handle;
+    }
+
+    /**
+     * Returns a copy of this BluetoothCharacteristic.
+     *
+     */
+    public BluetoothCharacteristic copy() {
+        return new BluetoothCharacteristic(this);
     }
 
     /**
