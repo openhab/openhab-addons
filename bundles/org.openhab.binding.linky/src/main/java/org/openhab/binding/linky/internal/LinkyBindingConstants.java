@@ -31,11 +31,9 @@ public class LinkyBindingConstants {
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
 
     // List of all Channel id's
-    public static final String LAST_HOUR = "lastHour";
-    public static final String TODAY = "today";
     public static final String YESTERDAY = "daily#yesterday";
-    public static final String THIS_WEEK = "daily#thisWeek";
-    public static final String LAST_WEEK = "daily#lastWeek";
+    public static final String THIS_WEEK = "weekly#thisWeek";
+    public static final String LAST_WEEK = "weekly#lastWeek";
     public static final String THIS_MONTH = "monthly#thisMonth";
     public static final String LAST_MONTH = "monthly#lastMonth";
     public static final String THIS_YEAR = "yearly#thisYear";

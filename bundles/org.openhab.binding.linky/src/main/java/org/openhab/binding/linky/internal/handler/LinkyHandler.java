@@ -173,22 +173,6 @@ public class LinkyHandler extends BaseThingHandler {
         }
         updateKwhChannel(LAST_YEAR, lastYear);
         updateKwhChannel(THIS_YEAR, thisYear);
-
-        double lastHour = -1;
-        double uptonow = -1;
-        result = getEnedisInfo(HOURLY, today.minusDays(1), today);
-        if (result != null && result.success()) {
-            /*
-             * I've not been able to design and test this as of today
-             * int elementQuantity = result.getData().size();
-             * lastHour = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : lastHour;
-             * uptonow = elementQuantity > 1 ? result.getData().get(elementQuantity - 2).valeur : uptonow;
-             */
-        } else if (result != null && result.isInactive()) {
-            logger.info("Hourly consumptions are not activated");
-        }
-        updateKwhChannel(LAST_HOUR, lastHour);
-        updateKwhChannel(TODAY, uptonow);
     }
 
     private void updateKwhChannel(String channelId, double consumption) {
