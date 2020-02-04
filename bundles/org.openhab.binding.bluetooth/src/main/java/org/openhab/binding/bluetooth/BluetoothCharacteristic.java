@@ -109,6 +109,7 @@ public class BluetoothCharacteristic {
         this.permissions = copy.permissions;
         this.writeType = copy.writeType;
         this.value = copy.value != null ? Arrays.copyOf(value, copy.value.length) : null;
+        this.service = copy.service;
     }
 
     /**
