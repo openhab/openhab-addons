@@ -19,27 +19,37 @@
 		</channels>
 
 		<config-description>
-			<parameter name="url" type="text" required="true">
+			<parameter-group name="source">
+				<label>Source settings</label>
+			</parameter-group>
+			<parameter-group name="parsing">
+				<label>Parsing settings</label>
+			</parameter-group>
+			<parameter name="url" type="text" required="true" groupName="source">
 				<label>URL</label>
 				<description>URL for downloading iCalendar events</description>
+				<context>url</context>
 			</parameter>
-			<parameter name="refreshTime" type="integer" required="true">
+			<parameter name="refreshTime" type="integer" required="true" min="1" unit="min" groupName="source">
 				<label>Refresh Time</label>
-				<description>Interval to scan for changes (minutes)</description>
+				<description>Interval to scan for changes</description>
+				<unitLabel>minutes</unitLabel>
 			</parameter>
-			<parameter name="readAroundTime" type="integer" required="true">
+			<parameter name="readAroundTime" type="integer" required="true" min="1" unit="min" groupName="parsing">
 				<label>Read-around Time</label>
-				<description>Timespan to read around events (minutes)</description>
+				<description>Timespan to read around events, choose lower values if you have many short events</description>
+				<default>43200</default>
 			</parameter>
-			<parameter name="username" type="text" required="false">
+			<parameter name="username" type="text" required="false" groupName="source">
 				<label>User Name</label>
 				<description>User name for fetching the calendar (usable in combination with password in HTTP basic auth)</description>
 			</parameter>
-			<parameter name="password" type="text" required="false">
+			<parameter name="password" type="text" required="false" groupName="source">
 				<label>Password</label>
 				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic auth)</description>
+				<context>password</context>
 			</parameter>
-			<parameter name="authorizationCode" type="text" required="false">
+			<parameter name="authorizationCode" type="text" required="false" groupName="parsing">
 				<label>Command Authorization Code</label>
 				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
 			</parameter>
