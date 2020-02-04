@@ -76,18 +76,18 @@ public abstract class AbstractPresentableCalendar {
      *         further in the calendar.
      */
     public abstract @Nullable Event getNextEvent(Instant instant);
-    
+
     /**
-     *  
-     * @return list of Events which have just begin in the time window 
+     * 
+     * @return list of Events which have just begin in the time window
      *         since the instant when this method was last called
      * 
      */
     public abstract @Nullable List<Event> getJustBegunEvents(Instant from, Instant to);
 
     /**
-     *  
-     * @return list of Events which have just ended in the time window 
+     * 
+     * @return list of Events which have just ended in the time window
      *         since the instant when this method was last called
      * 
      */

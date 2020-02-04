@@ -18,11 +18,11 @@ package org.openhab.binding.icalendar.internal.logic;
  * 
  */
 public enum CommandTagType {
-        BEGIN,
-        END;
-    
+    BEGIN,
+    END;
+
     public static boolean prefixValid(String line) {
         return (line != null) && (line.startsWith(BEGIN.toString()) || line.startsWith(END.toString()));
     }
-    
+
 }

@@ -125,5 +125,5 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     public void unsetEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = null;
     }
-    
+
 }
