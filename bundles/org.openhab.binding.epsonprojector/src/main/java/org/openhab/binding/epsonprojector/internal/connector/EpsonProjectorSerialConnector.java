@@ -41,10 +41,10 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorSerialConnector.class);
 
-    final String serialPortName;
-    InputStream in = null;
-    OutputStream out = null;
-    SerialPort serialPort = null;
+    private final String serialPortName;
+    private InputStream in = null;
+    private OutputStream out = null;
+    private SerialPort serialPort = null;
 
     public EpsonProjectorSerialConnector(String serialPort) {
         serialPortName = serialPort;

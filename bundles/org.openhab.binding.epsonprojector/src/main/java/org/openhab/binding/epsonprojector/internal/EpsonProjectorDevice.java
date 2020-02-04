@@ -50,9 +50,9 @@ public class EpsonProjectorDevice {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
 
-    private final int defaultTimeout = 5 * 1000;
-    private final int powerOnTimeout = 100 * 1000;
-    private final int powerOffTimeout = 130 * 1000;
+    private static final int DEFAULT_TIMEOUT = 5 * 1000;
+    private static final int POWER_ON_TIMEOUT = 100 * 1000;
+    private static final int POWER_OFF_TIMEOUT = 130 * 1000;
 
     private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
@@ -78,7 +78,7 @@ public class EpsonProjectorDevice {
         logger.debug("Query: '{}'", query);
         String response = connection.sendMessage(query, timeout);
 
-        if (response == null || response.length() == 0) {
+        if (response.length() == 0) {
             throw new EpsonProjectorException("No response received");
         }
 
@@ -106,7 +106,7 @@ public class EpsonProjectorDevice {
     }
 
     protected void sendCommand(String command) throws EpsonProjectorException {
-        sendCommand(command, defaultTimeout);
+        sendCommand(command, DEFAULT_TIMEOUT);
     }
 
     protected int queryInt(String query, int timeout, int radix) throws EpsonProjectorException {
@@ -127,7 +127,7 @@ public class EpsonProjectorDevice {
     }
 
     protected int queryInt(String query) throws EpsonProjectorException {
-        return queryInt(query, defaultTimeout, 10);
+        return queryInt(query, DEFAULT_TIMEOUT, 10);
     }
 
     protected int queryHexInt(String query, int timeout) throws EpsonProjectorException {
@@ -135,7 +135,7 @@ public class EpsonProjectorDevice {
     }
 
     protected int queryHexInt(String query) throws EpsonProjectorException {
-        return queryInt(query, defaultTimeout, 16);
+        return queryInt(query, DEFAULT_TIMEOUT, 16);
     }
 
     public void connect() throws EpsonProjectorException {
@@ -162,7 +162,7 @@ public class EpsonProjectorDevice {
     }
 
     public void setPower(Switch value) throws EpsonProjectorException {
-        sendCommand(String.format("PWR %s", value.name()), value == Switch.ON ? powerOnTimeout : powerOffTimeout);
+        sendCommand(String.format("PWR %s", value.name()), value == Switch.ON ? POWER_ON_TIMEOUT : POWER_OFF_TIMEOUT);
     }
 
     /*
@@ -494,11 +494,11 @@ public class EpsonProjectorDevice {
      */
     public Switch getMute() throws EpsonProjectorException {
         int val = queryInt("MUTE?");
-        return Switch.values()[val];
+        return val == 0 ? Switch.OFF : Switch.ON;
     }
 
     public void setMute(Switch value) throws EpsonProjectorException {
-        sendCommand(String.format("MUTE %s", value.name()), defaultTimeout);
+        sendCommand(String.format("MUTE %s", value.name()), DEFAULT_TIMEOUT);
     }
 
     /*
@@ -506,7 +506,7 @@ public class EpsonProjectorDevice {
      */
     public Switch getHorizontalReverse() throws EpsonProjectorException {
         int val = queryInt("HREVERSE?");
-        return Switch.values()[val];
+        return val == 0 ? Switch.OFF : Switch.ON;
     }
 
     public void setHorizontalReverse(Switch value) throws EpsonProjectorException {
@@ -518,7 +518,7 @@ public class EpsonProjectorDevice {
      */
     public Switch getVerticalReverse() throws EpsonProjectorException {
         int val = queryInt("VREVERSE?");
-        return Switch.values()[val];
+        return val == 0 ? Switch.OFF : Switch.ON;
     }
 
     public void setVerticalReverse(Switch value) throws EpsonProjectorException {
