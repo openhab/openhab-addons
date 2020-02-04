@@ -18,6 +18,7 @@ import static org.openhab.binding.linky.internal.model.EnedisTimeScale.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -94,7 +95,8 @@ public class LinkyHandler extends BaseThingHandler {
             // client.newCall(requestLogin).execute().close();
             String requestContent = String.format(LOGIN_BODY_BUILDER,
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)),
-                    config.username, config.password);
+                    URLEncoder.encode(config.username, StandardCharsets.UTF_8.name()),
+                    URLEncoder.encode(config.password, StandardCharsets.UTF_8.name()));
             InputStream stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
             logger.debug("executeUrl POST {} requestContent {}", LOGIN_BASE_URI, requestContent);
             HttpUtil.executeUrl("POST", LOGIN_BASE_URI, stream, "application/x-www-form-urlencoded",
