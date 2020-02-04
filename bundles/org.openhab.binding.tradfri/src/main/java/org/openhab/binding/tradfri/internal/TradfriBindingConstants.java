@@ -157,6 +157,7 @@ public class TradfriBindingConstants {
     public static final String REACHABILITY_STATE = "9019";
     public static final String REBOOT = "9030";
     public static final String REPEAT_DAYS = "9041";
+    public static final String REPEATER = "15014";
     public static final String RESET = "9031";
     public static final String RESET_MIN_MAX_MSR = "5605";
     public static final String SCENE = "15005";
@@ -194,6 +195,7 @@ public class TradfriBindingConstants {
     public static final String TYPE_LIGHT = "2";
     public static final String TYPE_PLUG = "3";
     public static final String TYPE_SENSOR = "4";
+    public static final String TYPE_REPEATER = "6";
     public static final String TYPE_BLINDS = "7";
     public static final String DEVICE_VENDOR = "0";
     public static final String DEVICE_MODEL = "1";

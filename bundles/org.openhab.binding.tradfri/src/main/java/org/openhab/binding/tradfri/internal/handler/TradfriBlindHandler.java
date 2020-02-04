@@ -109,16 +109,16 @@ public class TradfriBlindHandler extends TradfriThingHandler {
         if (command instanceof PercentType) {
             setPosition((PercentType) command);
         } else if (command instanceof StopMoveType) {
-            final TradfriBlindData state = this.state;
-            if (state != null && state.getPosition() != null) {
-                if (StopMoveType.STOP.equals(command)) {
-                    // setPosition(state.getPosition());
-                } else {
-                    // (what) TODO (?)
-                }
-            } else {
-                logger.debug("Cannot handle stop/move as current state is not known.");
-            }
+            // final TradfriBlindData state = this.state;
+            // if (state != null && state.getPosition() != null) {
+            // if (StopMoveType.STOP.equals(command)) {
+            // // setPosition(state.getPosition());
+            // } else {
+            // // (what) TODO (?)
+            // }
+            // } else {
+            logger.debug("Cannot handle stop/move as current state is not known.");
+            // }
         } else if (command instanceof UpDownType) {
             if (UpDownType.UP.equals(command)) {
                 setPosition(PercentType.ZERO);
