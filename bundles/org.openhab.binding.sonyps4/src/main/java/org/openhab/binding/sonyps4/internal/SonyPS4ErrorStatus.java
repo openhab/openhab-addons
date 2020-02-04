@@ -25,7 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 enum SonyPS4ErrorStatus {
-    STATUS_OK(0x00, "Ok"),
+    STATUS_OK(0x00, "Status OK."),
+    STATUS_OSK_OPEN(0x04, "On screen keyboard open."),
     STATUS_COMMAND_NOT_GOOD(0x0b, "Command not good!"),
     STATUS_GAME_NOT_INSTALLED(0x0c, "Game not installed!"),
     STATUS_NOT_PAIRED(0x0e, "Not paired to PS4!"), // Not allowed?
