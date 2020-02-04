@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Added support for event description
- *
  */
 @NonNullByDefault
 public class Event {
