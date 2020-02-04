@@ -133,7 +133,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             updateState(channel.getUID(), state);
         } catch (IllegalArgumentException e) {
-            logger.warn("Illegal command {}", channel.getUID().getId());
+            logger.warn("Unknown channel {}", channel.getUID().getId());
         }
     }
 
@@ -272,9 +272,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             // some commands are invalid depending on the state of the device, for instance if it's in standby mode
             logger.debug("Couldn't execute command '{}'", commandType, e);
             // closeConnection();
-        } catch (Exception e) {
-            logger.warn("Couldn't retrieve state for command '{}'", commandType, e);
-            return UnDefType.UNDEF;
         }
 
         return UnDefType.UNDEF;

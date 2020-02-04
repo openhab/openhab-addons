@@ -32,11 +32,11 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorTcpConnector.class);
 
-    final String ip;
-    final int port;
-    Socket socket = null;
-    InputStream in = null;
-    OutputStream out = null;
+    private final String ip;
+    private final int port;
+    private Socket socket = null;
+    private InputStream in = null;
+    private OutputStream out = null;
 
     public EpsonProjectorTcpConnector(String ip, int port) {
         this.ip = ip;
