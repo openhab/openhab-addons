@@ -28,6 +28,8 @@ import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *  This is a class that implements a Command Tag that may be embedded in an Event Description
@@ -43,6 +45,8 @@ import org.eclipse.smarthome.core.types.Command;
  */
 @NonNullByDefault
 public class CommandTag {
+    private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
+
     @Nullable
     public String itemName;
 
