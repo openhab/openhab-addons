@@ -12,24 +12,21 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
+import jersey.repackaged.com.google.common.collect.Lists;
+import org.junit.Test;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
+
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
-
-import jersey.repackaged.com.google.common.collect.Lists;
-
 public class StatusServiceTest {
 
     private UdpSenderService udpSenderService = mock(UdpSenderService.class);
-    @InjectMocks
-    private StatusService statusService;
+    private StatusService statusService = new StatusService(udpSenderService);
 
     @Test
     public void getStatusSuccessfully() {

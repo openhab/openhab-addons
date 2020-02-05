@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -22,10 +20,12 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
-import org.osgi.service.component.annotations.Reference;
+import org.openhab.binding.revogismartstripcontrol.internal.api.Status;
+import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1;
 
 /**
  * The {@link RevogiSmartStripControlHandler} is responsible for handling commands, which are
@@ -37,13 +37,13 @@ import org.slf4j.LoggerFactory;
 public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
-    @Reference(service = UdpSenderService.class)
-    private UdpSenderService udpSenderService;
+    private final StatusService statusService;
 
     private @Nullable RevogiSmartStripControlConfiguration config;
 
-    public RevogiSmartStripControlHandler(Thing thing) {
+    public RevogiSmartStripControlHandler(Thing thing, StatusService statusService) {
         super(thing);
+        this.statusService = statusService;
     }
 
     @Override
@@ -82,10 +82,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
-            udpSenderService.broadcastUpdDatagram("");
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
+            Status status = statusService.queryStatus(config.getSerialNumber());
+            if (status != null) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
