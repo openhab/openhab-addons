@@ -305,18 +305,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     }
 
     private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
-        BlueGigaCommand command = new BlueGigaGetConnectionsCommand();
-        return sendCommand(command, BlueGigaGetConnectionsResponse.class, false);
+        return sendCommand(new BlueGigaGetConnectionsCommand(), BlueGigaGetConnectionsResponse.class, false);
     }
 
     private BlueGigaAddressGetResponse readAddress() throws BlueGigaException {
-        BlueGigaAddressGetCommand command = new BlueGigaAddressGetCommand();
-        return sendCommand(command, BlueGigaAddressGetResponse.class, false);
+        return sendCommand(new BlueGigaAddressGetCommand(), BlueGigaAddressGetResponse.class, false);
     }
 
     private BlueGigaGetInfoResponse readInfo() throws BlueGigaException {
-        BlueGigaGetInfoCommand command = new BlueGigaGetInfoCommand();
-        return sendCommand(command, BlueGigaGetInfoResponse.class, false);
+        return sendCommand(new BlueGigaGetInfoCommand(), BlueGigaGetInfoResponse.class, false);
     }
 
     private void updateThingProperties() throws BlueGigaException {
@@ -495,17 +492,18 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         logger.debug("BlueGiga Connect: address {}.", address);
         cancelScheduledPassiveScan();
 
-        // Connect...
-        BlueGigaConnectDirectCommand connect = new BlueGigaConnectDirectCommand();
-        connect.setAddress(address.toString());
-        connect.setAddrType(addressType);
-        connect.setConnIntervalMin(configuration.connIntervalMin);
-        connect.setConnIntervalMax(configuration.connIntervalMax);
-        connect.setLatency(configuration.connLatency);
-        connect.setTimeout(configuration.connTimeout);
-
+        // @formatter:off
+        BlueGigaConnectDirectCommand command = new BlueGigaConnectDirectCommand.CommandBuilder()
+                .withAddress(address.toString())
+                .withAddrType(addressType)
+                .withConnIntervalMin(configuration.connIntervalMin)
+                .withConnIntervalMax(configuration.connIntervalMax)
+                .withLatency(configuration.connLatency)
+                .withTimeout(configuration.connTimeout)
+                .build();
+        // @formatter:on
         try {
-            return sendCommand(connect, BlueGigaConnectDirectResponse.class, true).getResult() == BgApiResponse.SUCCESS;
+            return sendCommand(command, BlueGigaConnectDirectResponse.class, true).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
             logger.debug("Error occured when sending connect command to device {}, reason: {}.", address,
                     e.getMessage());
@@ -522,8 +520,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgDisconnect(int connectionHandle) {
         logger.debug("BlueGiga Disconnect: connection {}", connectionHandle);
         cancelScheduledPassiveScan();
-        BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand();
-        command.setConnection(connectionHandle);
+        BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand.CommandBuilder()
+                .withConnection(connectionHandle).build();
 
         try {
             return sendCommand(command, BlueGigaDisconnectResponse.class, true).getResult() == BgApiResponse.SUCCESS;
@@ -554,12 +552,14 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgFindPrimaryServices(int connectionHandle) {
         logger.debug("BlueGiga FindPrimary: connection {}", connectionHandle);
         cancelScheduledPassiveScan();
-        BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand();
-        command.setConnection(connectionHandle);
-        command.setStart(1);
-        command.setEnd(65535);
-        command.setUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"));
-
+        // @formatter:off
+        BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand.CommandBuilder()
+                .withConnection(connectionHandle)
+                .withStart(1)
+                .withEnd(65535)
+                .withUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"))
+                .build();
+        // @formatter:on
         try {
             return sendCommand(command, BlueGigaReadByGroupTypeResponse.class, true)
                     .getResult() == BgApiResponse.SUCCESS;
@@ -579,11 +579,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgFindCharacteristics(int connectionHandle) {
         logger.debug("BlueGiga Find: connection {}", connectionHandle);
         cancelScheduledPassiveScan();
-        BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand();
-        command.setConnection(connectionHandle);
-        command.setStart(1);
-        command.setEnd(65535);
-
+        // @formatter:off
+        BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand.CommandBuilder()
+                .withConnection(connectionHandle)
+                .withStart(1)
+                .withEnd(65535)
+                .build();
+        // @formatter:on
         try {
             return sendCommand(command, BlueGigaFindInformationResponse.class, true)
                     .getResult() == BgApiResponse.SUCCESS;
@@ -604,10 +606,12 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgReadCharacteristic(int connectionHandle, int handle) {
         logger.debug("BlueGiga Read: connection {}, handle {}", connectionHandle, handle);
         cancelScheduledPassiveScan();
-        BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand();
-        command.setConnection(connectionHandle);
-        command.setChrHandle(handle);
-
+        // @formatter:off
+        BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand.CommandBuilder()
+                .withConnection(connectionHandle)
+                .withChrHandle(handle)
+                .build();
+        // @formatter:on
         try {
             return sendCommand(command, BlueGigaReadByHandleResponse.class, true).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
@@ -628,11 +632,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     public boolean bgWriteCharacteristic(int connectionHandle, int handle, int[] value) {
         logger.debug("BlueGiga Write: connection {}, handle {}", connectionHandle, handle);
         cancelScheduledPassiveScan();
-        BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand();
-        command.setConnection(connectionHandle);
-        command.setAttHandle(handle);
-        command.setData(value);
-
+        // @formatter:off
+        BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand.CommandBuilder()
+                .withConnection(connectionHandle)
+                .withAttHandle(handle)
+                .withData(value)
+                .build();
+        // @formatter:on
         try {
             return sendCommand(command, BlueGigaAttributeWriteResponse.class, true)
                     .getResult() == BgApiResponse.SUCCESS;
@@ -658,9 +664,12 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private boolean bgSetMode() {
         try {
-            BlueGigaSetModeCommand command = new BlueGigaSetModeCommand();
-            command.setConnect(GapConnectableMode.GAP_NON_CONNECTABLE);
-            command.setDiscover(GapDiscoverableMode.GAP_NON_DISCOVERABLE);
+            // @formatter:off
+            BlueGigaSetModeCommand command = new BlueGigaSetModeCommand.CommandBuilder()
+                    .withConnect(GapConnectableMode.GAP_NON_CONNECTABLE)
+                    .withDiscover(GapDiscoverableMode.GAP_NON_DISCOVERABLE)
+                    .build();
+            // @formatter:on
             return sendCommand(command, BlueGigaSetModeResponse.class, false).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
             logger.debug("Error occured when sending set mode command, reason: {}", e.getMessage());
@@ -675,14 +684,17 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     private boolean bgStartScanning(boolean active, int interval, int window) {
         try {
-            BlueGigaSetScanParametersCommand scanCommand = new BlueGigaSetScanParametersCommand();
-            scanCommand.setActiveScanning(active);
-            scanCommand.setScanInterval(interval);
-            scanCommand.setScanWindow(window);
+            // @formatter:off
+            BlueGigaSetScanParametersCommand scanCommand = new BlueGigaSetScanParametersCommand.CommandBuilder()
+                    .withActiveScanning(active)
+                    .withScanInterval(interval)
+                    .withScanWindow(window)
+                    .build();
+            // @formatter:on
             if (sendCommand(scanCommand, BlueGigaSetScanParametersResponse.class, false)
                     .getResult() == BgApiResponse.SUCCESS) {
-                BlueGigaDiscoverCommand discoverCommand = new BlueGigaDiscoverCommand();
-                discoverCommand.setMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION);
+                BlueGigaDiscoverCommand discoverCommand = new BlueGigaDiscoverCommand.CommandBuilder()
+                        .withMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION).build();
                 if (sendCommand(discoverCommand, BlueGigaDiscoverResponse.class, false)
                         .getResult() == BgApiResponse.SUCCESS) {
                     logger.debug("{} scanning succesfully started.", active ? "Active" : "Passive");

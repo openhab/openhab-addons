@@ -33,21 +33,16 @@ public class BlueGigaDiscoverCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x02;
 
+    private BlueGigaDiscoverCommand(CommandBuilder builder) {
+        this.mode = builder.mode;
+    }
+
     /**
      * see:GAP Discover Mode.
      * <p>
      * BlueGiga API type is <i>GapDiscoverMode</i> - Java type is {@link GapDiscoverMode}
      */
     private GapDiscoverMode mode;
-
-    /**
-     * see:GAP Discover Mode.
-     *
-     * @param mode the mode to set as {@link GapDiscoverMode}
-     */
-    public void setMode(GapDiscoverMode mode) {
-        this.mode = mode;
-    }
 
     @Override
     public int[] serialize() {
@@ -67,5 +62,23 @@ public class BlueGigaDiscoverCommand extends BlueGigaCommand {
         builder.append(mode);
         builder.append(']');
         return builder.toString();
+    }
+
+    public static class CommandBuilder {
+        private GapDiscoverMode mode;
+
+        /**
+         * see:GAP Discover Mode.
+         *
+         * @param mode the mode to set as {@link GapDiscoverMode}
+         */
+        public CommandBuilder withMode(GapDiscoverMode mode) {
+            this.mode = mode;
+            return this;
+        }
+
+        public BlueGigaDiscoverCommand build() {
+            return new BlueGigaDiscoverCommand(this);
+        }
     }
 }
