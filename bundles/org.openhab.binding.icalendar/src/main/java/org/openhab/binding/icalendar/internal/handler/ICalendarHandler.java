@@ -283,41 +283,41 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             for (CommandTag cmdTag : event.commandTags) { 
             
                 // only process the BEGIN resp. END tags
-                if (cmdTag.tagType == execTime) {
-                    
-                    if (!cmdTag.isAuthorized(configuration.authorizationCode)) {
-                        logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.fullTag);
-                        continue;
-                    }
-                    if (!cmdTag.itemName.matches("^\\w+$")) {
-                        logger.warn("Event: {}, Command Tag: {} => Bad syntax for item name!", event.title, cmdTag.fullTag);
-                        continue;
-                    }
-                    Command cmdState = cmdTag.getCommand();
-                    if (cmdState == null) {
-                        logger.warn("Event: {}, Command Tag: {} => Invalid target state!", event.title, cmdTag.fullTag);
-                        continue;
-                    }
-        
-                    // (try to) execute the command
-                    try {
-                        eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.itemName, cmdState));
-                        if (logger.isDebugEnabled()) {
-                            String cmdType = cmdState.getClass().toString();
-                            int index = cmdType.lastIndexOf(".") + 1;
-                            if ((index > 0) && (index < cmdType.length())) {
-                                cmdType = cmdType.substring(index);
-                            }
-                            logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", 
-                                    event.title, cmdTag.fullTag, cmdTag.itemName, cmdType, cmdState);
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.fullTag);
-                    } catch (IllegalStateException e) {
-                        logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.fullTag);
-                    }
-
+                if (cmdTag.tagType != execTime) {
+                    continue;
                 }
+                if (!cmdTag.isAuthorized(configuration.authorizationCode)) {
+                    logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.fullTag);
+                    continue;
+                }
+                if (!cmdTag.itemName.matches("^\\w+$")) {
+                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for item name!", event.title, cmdTag.fullTag);
+                    continue;
+                }
+                Command cmdState = cmdTag.getCommand();
+                if (cmdState == null) {
+                    logger.warn("Event: {}, Command Tag: {} => Invalid target state!", event.title, cmdTag.fullTag);
+                    continue;
+                }
+        
+                // (try to) execute the command
+                try {
+                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.itemName, cmdState));
+                    if (logger.isDebugEnabled()) {
+                        String cmdType = cmdState.getClass().toString();
+                        int index = cmdType.lastIndexOf(".") + 1;
+                        if ((index > 0) && (index < cmdType.length())) {
+                            cmdType = cmdType.substring(index);
+                        }
+                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", 
+                                event.title, cmdTag.fullTag, cmdTag.itemName, cmdType, cmdState);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.fullTag);
+                } catch (IllegalStateException e) {
+                    logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.fullTag);
+                }
+
             }
         }
     }
