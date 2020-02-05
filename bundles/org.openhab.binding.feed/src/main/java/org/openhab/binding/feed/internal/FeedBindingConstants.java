@@ -64,6 +64,11 @@ public class FeedBindingConstants {
     public static final String CHANNEL_ITEM_DESCRIPTION = "item-description";
 
     /**
+     * Contains the published date of the last feed entry.
+     */
+    public static final String CHANNEL_LATEST_ENCLOSURE_URL = "latest-enclosure-url";
+
+    /**
      * Description of the feed.
      */
     public static final String CHANNEL_DESCRIPTION = "description";

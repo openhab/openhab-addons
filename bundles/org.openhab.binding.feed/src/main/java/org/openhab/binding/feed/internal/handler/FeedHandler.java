@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
@@ -167,6 +168,14 @@ public class FeedHandler extends BaseThingHandler {
             case CHANNEL_AUTHOR:
                 String author = currentFeedState.getAuthor();
                 state = new StringType(getValueSafely(author));
+                break;
+            case CHANNEL_LATEST_ENCLOSURE_URL:
+                List<SyndEnclosure> enclosures = getLatestEntry(currentFeedState).getEnclosures();
+                if (!enclosures.isEmpty()) {
+                    SyndEnclosure enc = enclosures.get(0);
+                    String url = enc.getUrl();
+                    state = new StringType(getValueSafely(url));
+                }
                 break;
             case CHANNEL_DESCRIPTION:
                 String channelDescription = currentFeedState.getDescription();

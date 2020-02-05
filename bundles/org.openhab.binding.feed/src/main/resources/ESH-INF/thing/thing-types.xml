@@ -18,6 +18,7 @@
 			<channel id="latest-title" typeId="latest-title" />
 			<channel id="latest-description" typeId="latest-description" />
 			<channel id="latest-date" typeId="latest-date" />
+			<channel id="latest-enclosure-url" typeId="latest-enclosure-url" />
 			<channel id="author" typeId="author" />
 			<channel id="description" typeId="description" />
 			<channel id="title" typeId="title" />
@@ -123,6 +124,13 @@
 		<label>Latest published date</label>
 		<description>Contains the published date of the last feed entry.</description>
 		<state readOnly="true" pattern="%tc %n" />
+	</channel-type>
+
+	<channel-type id="latest-enclosure-url" advanced="true">
+		<item-type>String</item-type>
+		<label>Enclosure URL</label>
+		<description>The enclosure URL of the last feed entry.</description>
+		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 	<channel-type id="author" advanced="true">
