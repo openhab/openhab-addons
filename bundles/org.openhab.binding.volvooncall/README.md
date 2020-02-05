@@ -32,10 +32,10 @@ Once the bridge created, you will be able to launch discovery of the vehicles at
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 
 
-| Parameter   | Name             | Description                                                              | Required |
-|-------------|------------------|--------------------------------------------------------------------------|----------|
-| vin         | Vin | Vehicle Identification Number of the car                         | yes      |
-| refreshinterval | Refresh interval    | Interval in minutes to refresh the data (default=10) | no       |
+| Parameter       | Name             | Description                                             | Required |
+|-----------------|------------------|---------------------------------------------------------|----------|
+| vin             | Vin              | Vehicle Identification Number of the car                | yes      |
+| refreshinterval | Refresh interval | Interval in minutes to refresh the data (default=10)    | no       |
 
 
 
