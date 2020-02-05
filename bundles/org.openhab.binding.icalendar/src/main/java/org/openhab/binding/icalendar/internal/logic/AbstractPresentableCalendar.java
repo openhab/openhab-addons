@@ -79,7 +79,7 @@ public abstract class AbstractPresentableCalendar {
 
     /**
      * 
-     * @return list of Events which have just begin in the time window
+     * @return list of Events which have just begun in the time window
      *         since the instant when this method was last called
      * 
      */
