@@ -67,10 +67,14 @@ public class CommandTag {
             if (cmd != null) {
                 return cmd;
             }
-        } catch (NoSuchMethodException e) {
         } catch (IllegalArgumentException e) {
+            logger.trace("IllegalArgumentException: \"{}\"", targetState);
+        } catch (NoSuchMethodException e) {
+            logger.trace("NoSuchMethodException: \"valueOf\"");
         } catch (IllegalAccessException e) {
+            logger.trace("IllegalAccessException: \"valueOf\"");
         } catch (InvocationTargetException e) {
+            logger.trace("InvocationTargetException: \"valueOf\"");
         }
         return null;
     }
@@ -80,24 +84,27 @@ public class CommandTag {
         try {
             fields = line.split(":");
         } catch (PatternSyntaxException e) {
+            logger.trace("PatternSyntaxException: \"{}\"", line);
             return;
         }
         if (fields.length < 3) {
+            logger.trace("Not enough fields: \"{}\"", line);
             return;
         }
         try {
             tagType = CommandTagType.valueOf(fields[0]);
         } catch (IllegalArgumentException e) {
+            logger.trace("Bad tag type prefix: \"{}\"", line);
             return;
         }
-        String currentItemName = fields[1].trim();
-        itemName = currentItemName;
-        if (currentItemName.isEmpty()) {
+        itemName = fields[1].trim();
+        if (itemName.isEmpty()) {
+            logger.trace("Empty item name: \"{}\"", line);
             return;
         }
-        String currentTargetState = fields[2].trim();
-        targetState = currentTargetState;
-        if (currentTargetState.isEmpty()) {
+        targetState = fields[2].trim();
+        if (targetState.isEmpty()) {
+            logger.trace("Empty target state: \"{}\"", line);
             return;
         }
 
@@ -146,6 +153,7 @@ public class CommandTag {
                 cmd = new PercentType(currentTargetState.replaceAll("%", ""));
                 return cmd;
             } catch (IllegalArgumentException e) {
+                logger.trace("Illegal percentage value: \"{}\"", targetState);
             }
         }
 
