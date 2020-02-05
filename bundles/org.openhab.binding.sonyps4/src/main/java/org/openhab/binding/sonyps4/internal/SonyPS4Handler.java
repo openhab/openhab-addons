@@ -222,7 +222,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     private void wakeUpPS4() {
-        logger.debug("Waking up PS4.");
+        logger.debug("Waking up PS4...");
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
@@ -342,8 +342,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                                 logger.debug("Response {}", status.message);
                                 break;
                             default:
-                                logger.warn("Unhandled response {}", result);
-                                logger.debug("Response {}", status.message);
+                                logger.warn("Unhandled response id {}, message {}", result, status.message);
                                 break;
                         }
                     } else {
@@ -365,6 +364,10 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     private SocketChannel getConnection() throws IOException {
+        return getConnection(false);
+    }
+
+    private SocketChannel getConnection(boolean skipLogin) throws IOException {
         SocketChannel channel = null;
         SocketChannelHandler handler = socketChannelHandler;
         if (handler != null) {
@@ -382,10 +385,11 @@ public class SonyPS4Handler extends BaseThingHandler {
             if (!setupConnection(channel)) {
                 throw new IOException("Setup connection failed");
             }
-            if (login(channel)) {
-                handler = new SocketChannelHandler(channel);
-                socketChannelHandler = handler;
-                handler.start();
+            handler = new SocketChannelHandler(channel);
+            socketChannelHandler = handler;
+            handler.start();
+            if (!skipLogin) {
+                login(channel);
                 Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
             }
         } catch (InterruptedException e) {
@@ -398,35 +402,48 @@ public class SonyPS4Handler extends BaseThingHandler {
         return channel;
     }
 
-    private boolean login() throws IOException {
+    private void sendPacket(ByteBuffer packet) throws IOException {
         SocketChannel channel = getConnection();
-        return login(channel);
+        channel.write(packet);
     }
 
     private boolean login(SocketChannel channel) throws IOException {
-
         // Send login request
         ByteBuffer outPacket = ps4PacketHandler.makeLoginPacket(config.userCredential, config.pinCode,
                 config.pairingCode);
         logger.debug("Sending login packet.");
-        // logger.debug("Sending login packet: {}", outPacket);
         channel.write(outPacket);
 
         return true;
     }
 
+    private boolean login() throws IOException {
+        SocketChannel channel = getConnection(true);
+        return login(channel);
+    }
+
     private void logOut() {
         try {
-            SocketChannel channel = getConnection();
-
-            // Send logout request
             logger.debug("Sending logout packet");
             ByteBuffer outPacket = ps4PacketHandler.makeLogoutPacket();
-            channel.write(outPacket);
-
+            sendPacket(outPacket);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Log out exception: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * This closes the connection with the PS4.
+     */
+    private void sendByeBye() {
+        try {
+            logger.debug("Sending byebye packet");
+            ByteBuffer outPacket = ps4PacketHandler.makeByebyePacket();
+            sendPacket(outPacket);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("Send byebye exception: {}", e.getMessage());
         }
     }
 
@@ -447,11 +464,8 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private void standby() {
         try {
-            SocketChannel channel = getConnection();
-
-            logger.debug("Sending standby packet");
             ByteBuffer outPacket = ps4PacketHandler.makeStandbyPacket();
-            channel.write(outPacket);
+            sendPacket(outPacket);
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -481,12 +495,9 @@ public class SonyPS4Handler extends BaseThingHandler {
      */
     private void startApplication(String applicationId) {
         try {
-            SocketChannel channel = getConnection();
-
-            // Send application request
             logger.debug("Sending app start packet");
             ByteBuffer outPacket = ps4PacketHandler.makeApplicationPacket(applicationId);
-            channel.write(outPacket);
+            sendPacket(outPacket);
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

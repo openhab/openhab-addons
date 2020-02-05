@@ -296,11 +296,16 @@ public class SonyPS4PacketHandler {
     }
 
     ByteBuffer makeStatusPacket(int status) {
-        ByteBuffer packet = newPacketForEncryption(16, SonyPS4Command.STATUS_REQ);
+        ByteBuffer packet = newPacketForEncryption(12, SonyPS4Command.STATUS_REQ);
         packet.putInt(status); // status
         return encryptPacket(packet);
     }
 
+    /**
+     * Makes a packet that puts the PS4 in standby mode.
+     *
+     * @return An encrypted standby-packet.
+     */
     ByteBuffer makeStandbyPacket() {
         ByteBuffer packet = newPacketForEncryption(8, SonyPS4Command.STANDBY_REQ);
         return encryptPacket(packet);
@@ -312,13 +317,46 @@ public class SonyPS4PacketHandler {
         return encryptPacket(packet);
     }
 
+    /**
+     * Makes a packet that closes down the connection with the PS4.
+     *
+     * @return An encrypted ByeBye-packet.
+     */
     ByteBuffer makeByebyePacket() {
-        ByteBuffer packet = newPacketForEncryption(16, SonyPS4Command.BYEBYE_REQ);
+        ByteBuffer packet = newPacketForEncryption(8, SonyPS4Command.BYEBYE_REQ);
         return encryptPacket(packet);
     }
 
     ByteBuffer makeLogoutPacket() {
         ByteBuffer packet = newPacketForEncryption(8, SonyPS4Command.LOGOUT_REQ);
+        return encryptPacket(packet);
+    }
+
+    ByteBuffer makeOSKStartPacket() {
+        ByteBuffer packet = newPacketForEncryption(8, SonyPS4Command.OSK_START_REQ);
+        return encryptPacket(packet);
+    }
+
+    ByteBuffer makeOSKStringChangePacket(String text) {
+        byte[] chars = text.getBytes(StandardCharsets.UTF_8);
+        ByteBuffer packet = newPacketForEncryption(28 + chars.length, SonyPS4Command.OSK_CHANGE_STRING_REQ);
+        packet.putInt(0); // preEditIndex
+        packet.putInt(0); // preEditLength
+        packet.putInt(0); // caretIndex
+        packet.putInt(0); // editIndex
+        packet.putInt(0); // editLength
+        packet.put(chars);
+        return encryptPacket(packet);
+    }
+
+    /**
+     *
+     * @param command 0 = return, 1 = close.
+     * @return
+     */
+    ByteBuffer makeOSKControlPacket(int command) {
+        ByteBuffer packet = newPacketForEncryption(12, SonyPS4Command.OSK_CONTROL_REQ);
+        packet.putInt(command);
         return encryptPacket(packet);
     }
 
