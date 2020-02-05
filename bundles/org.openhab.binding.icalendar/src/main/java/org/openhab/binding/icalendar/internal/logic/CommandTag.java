@@ -30,17 +30,15 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
+ *  This is a class that implements a Command Tag that may be embedded in an Event Description
+ *  Valid Tags must follow one of the following forms..
+ *
+ *      BEGIN:<itemName>:<targetState>
+ *      BEGIN:<itemName>:<targetState>:<authorizationCode>
+ *      END:<itemName>:<targetState>
+ *      END:<itemName>:<targetState>:<authorizationCode>
  *
  * @author Andrew Fiddian-Green - Initial contribution
- *
- *         This is a class that implements a Command Tag that may be embedded in an Event Description
- *
- *         Valid Tags must follow one of the following forms..
- *
- *         BEGIN:<itemName>:<targetState>
- *         BEGIN:<itemName>:<targetState>:<authorizationCode>
- *         END:<itemName>:<targetState>
- *         END:<itemName>:<targetState>:<authorizationCode>
  *
  */
 @NonNullByDefault
