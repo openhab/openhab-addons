@@ -135,8 +135,7 @@ public class VerisureSession {
             this.userName = userName;
             // Try to login to Verisure
             if (logIn()) {
-                getInstallations();
-                return true;
+                return getInstallations();
             } else {
                 logger.warn("Failed to login to Verisure!");
                 return false;
@@ -466,7 +465,7 @@ public class VerisureSession {
         return postVerisureAPI(url, "empty");
     }
 
-    private void getInstallations() {
+    private boolean getInstallations() {
         logger.debug("Attempting to get all installations");
 
         int httpResultCode = setSessionCookieAuthLogin();
@@ -495,7 +494,7 @@ public class VerisureSession {
                             pinCodesMatchInstallations = false;
                         } else if (owaInstList == null) {
                             logger.warn("Failed to get Verisure installations");
-                            return;
+                            return false;
                         }
                     } else {
                         logger.debug("No pin-code defined for user {}", userName);
@@ -519,15 +518,19 @@ public class VerisureSession {
                             verisureInstallations.put(new BigDecimal(owaInstList.get(i).getGiid()), vInst);
                         } else {
                             logger.warn("Failed to get alias and/or giid");
+                            return false;
                         }
                     }
                 } else {
                     logger.warn("Failed to fetch installations: {}", installations.toString());
+                    return false;
                 }
             }
         } else {
             logger.warn("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
+            return false;
         }
+        return true;
     }
 
     private synchronized boolean logIn() {
@@ -607,10 +610,13 @@ public class VerisureSession {
         deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
         thing.setDeviceId(deviceId);
         VerisureThing oldObj = verisureThings.get(deviceId);
+        logger.trace("Old thing: {}", oldObj);
+        logger.trace("Udated thing: {}", thing);
         if (oldObj == null || !oldObj.equals(thing)) {
             thing.setSiteId(installation.getInstallationId());
             thing.setSiteName(installation.getInstallationName());
             verisureThings.put(thing.getDeviceId(), thing);
+            logger.trace("Notify listener of thing {}", thing);
             notifyListeners(thing);
         }
     }
@@ -711,7 +717,7 @@ public class VerisureSession {
             if (thing != null && thing.getData() != null) {
                 List<VerisureClimates.Climate> climateList = thing.getData().getInstallation().getClimates();
                 for (VerisureClimates.Climate climate : climateList) {
-                    // If thing is Mouse detection, then skip it
+                    // If thing is Mouse detection device, then skip it, but fetch temperature from it
                     String type = climate.getDevice().getGui().getLabel();
                     if ("MOUSE".equals(type)) {
                         logger.debug("Mouse detection device!");
@@ -722,6 +728,7 @@ public class VerisureSession {
                             VerisureMiceDetection miceDetectorThing = (VerisureMiceDetection) mouseThing;
                             miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
                             miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());
+                            notifyListeners(miceDetectorThing);
                             logger.debug("Found climate thing for a Verisure Mouse Detector");
                         }
                         continue;
@@ -756,7 +763,7 @@ public class VerisureSession {
 
             String queryQLDoorWindow = "{\"operationName\":\"DoorWindow\",\"variables\":{\"giid\":\"" + installationId
                     + "\"},\"query\":\"query DoorWindow($giid: String!) {\\n installation(giid: $giid) {\\n doorWindows {\\n device {\\n deviceLabel\\n area\\n __typename\\n }\\n type\\n state\\n wired\\n reportTime\\n __typename\\n }\\n __typename\\n }\\n}\\n\"}";
-            logger.debug("Trying to get climate status with URL {} and data {}", url, queryQLDoorWindow);
+            logger.debug("Trying to get door&window status with URL {} and data {}", url, queryQLDoorWindow);
             VerisureDoorWindows thing = (VerisureDoorWindows) postJSONVerisureAPI(url, queryQLDoorWindow, jsonClass);
             logger.debug("REST Response ({})", thing);
 
@@ -795,7 +802,8 @@ public class VerisureSession {
             String queryQLBroadbandConnection = "{\"operationName\":\"Broadband\",\"variables\":{\"giid\":\""
                     + installationId
                     + "\"},\"query\":\"query Broadband($giid: String!) {\\n installation(giid: $giid) {\\n broadband {\\n testDate\\n isBroadbandConnected\\n __typename\\n }\\n __typename\\n }\\n}\\n\"}";
-            logger.debug("Trying to get alarm status with URL {} and data {}", url, queryQLBroadbandConnection);
+            logger.debug("Trying to get broadband connection status with URL {} and data {}", url,
+                    queryQLBroadbandConnection);
             VerisureThing thing = postJSONVerisureAPI(url, queryQLBroadbandConnection, jsonClass);
             logger.debug("REST Response ({})", thing);
 

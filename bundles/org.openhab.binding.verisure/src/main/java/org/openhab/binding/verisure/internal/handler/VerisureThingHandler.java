@@ -98,7 +98,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, String channel) {
         if (lastUpdatedTimeStamp != null) {
             try {
-                logger.debug("Parsing date {}", lastUpdatedTimeStamp);
+                logger.debug("Parsing date {} for channel {}", lastUpdatedTimeStamp, channel);
                 ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
                 ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
 
@@ -122,10 +122,14 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Verisure device is missing deviceId");
         }
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            this.bridgeStatusChanged(bridge.getStatusInfo());
-        }
+        // Set status to UNKNOWN and let background task set correct status
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                this.bridgeStatusChanged(bridge.getStatusInfo());
+            }
+        });
     }
 
     @Override

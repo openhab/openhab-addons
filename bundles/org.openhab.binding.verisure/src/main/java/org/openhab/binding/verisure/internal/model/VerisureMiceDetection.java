@@ -61,12 +61,13 @@ public class VerisureMiceDetection extends VerisureBaseThing {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
+        return new ToStringBuilder(this).append("data", data).append("temperatureValue", temperatureValue)
+                .append("temperatureTimestamp", temperatureTimestamp).toString();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(data).toHashCode();
+        return new HashCodeBuilder().append(data).append(temperatureValue).append(temperatureTimestamp).toHashCode();
     }
 
     @Override
@@ -78,7 +79,8 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             return false;
         }
         VerisureMiceDetection rhs = ((VerisureMiceDetection) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        return new EqualsBuilder().append(data, rhs.data).append(temperatureValue, rhs.temperatureValue)
+                .append(temperatureTimestamp, rhs.temperatureTimestamp).isEquals();
     }
 
     @NonNullByDefault

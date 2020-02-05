@@ -94,6 +94,12 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        // Do not do a refresh since that will refresh all things as well
+        logger.debug("Channel linked {}.", channelUID);
+    }
+
+    @Override
     protected void updateThing(Thing thing) {
         super.updateThing(thing);
     }
@@ -128,16 +134,20 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                 authstring = "j_username=" + config.username + "&j_password="
                         + URLEncoder.encode(config.password, StandardCharsets.UTF_8.toString())
                         + "&spring-security-redirect=" + START_REDIRECT;
-                if (session == null) {
-                    // Configuration change
-                    session = new VerisureSession(this.httpClient);
-                }
-                if (session.initialize(authstring, pinCode, config.username)) {
+                updateStatus(ThingStatus.UNKNOWN);
+                scheduler.execute(() -> {
+                    if (session == null) {
+                        logger.debug("Session is null, probably configuration change, let's create a new one");
+                        session = new VerisureSession(this.httpClient);
+                    }
+                    if (!session.initialize(authstring, pinCode, config.username)) {
+                        logger.warn("Failed to initialize bridge, please check your credentials!");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
+                                "Failed to login to Verisure, please check your credentials!");
+                        return;
+                    }
                     startAutomaticRefresh();
-                } else {
-                    logger.warn("Failed to initialize!");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                }
+                });
             } catch (RuntimeException e) {
                 logger.warn("Failed to initialize! Exception caught: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
