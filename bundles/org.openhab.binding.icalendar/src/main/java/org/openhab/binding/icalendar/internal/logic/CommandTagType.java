@@ -13,7 +13,11 @@
 package org.openhab.binding.icalendar.internal.logic;
 
 /**
- * 
+ * An type enumerator to indicate whether a Command Tag is of type BEGIN or END; as in the following examples:
+ *
+ *     BEGIN:<item_name>:<new_state>
+ *     END:<item_name>:<new_state>
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
