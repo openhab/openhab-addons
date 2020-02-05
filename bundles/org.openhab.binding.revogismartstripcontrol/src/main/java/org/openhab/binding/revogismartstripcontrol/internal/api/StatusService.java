@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jersey.repackaged.com.google.common.collect.Lists;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jersey.repackaged.com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.List;
 
 public class StatusService {
 
@@ -31,8 +29,15 @@ public class StatusService {
     private final Logger logger = LoggerFactory.getLogger(StatusService.class);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Reference
-    private UdpSenderService udpSenderService;
+    private final UdpSenderService udpSenderService;
+
+    public StatusService() {
+        udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
+    }
+
+    StatusService(UdpSenderService udpSenderService) {
+        this.udpSenderService = udpSenderService;
+    }
 
     public Status queryStatus(String serialNumber) {
         List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
