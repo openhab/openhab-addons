@@ -120,6 +120,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBridgeHandler.class);
 
     private final int COMMAND_TIMEOUT_MS = 5000;
+    private final int INITIALIZATION_INTERVAL_SEC = 60;
 
     private final SerialPortManager serialPortManager;
 
@@ -165,8 +166,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // List of device listeners
     protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
 
-    private boolean initComplete = false;
+    private volatile boolean initComplete = false;
 
+    private @NonNullByDefault({}) ScheduledFuture<?> initTask;
     private @NonNullByDefault({}) ScheduledFuture<?> removeInactiveDevicesTask;
 
     private volatile boolean activeScanEnabled = false;
@@ -192,61 +194,90 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     @Override
     public void initialize() {
         configuration = getConfigAs(BlueGigaConfiguration.class);
-        logger.debug("Using configuration: {}", configuration);
-
-        if (openSerialPort(configuration.port, 115200)) {
-            serialHandler = new BlueGigaSerialHandler(inputStream, outputStream);
-            transactionManager = new BlueGigaTransactionManager(serialHandler, executor);
-            serialHandler.addHandlerListener(this);
-            transactionManager.addEventListener(this);
-
-            updateStatus(ThingStatus.UNKNOWN);
-
-            try {
-                // Stop any procedures that are running
-                bgEndProcedure();
-
-                // Set mode to non-discoverable etc.
-                bgSetMode();
-
-                // Get maximum parallel connections
-                maxConnections = readMaxConnections().getMaxconn();
-
-                // Close all connections so we start from a known position
-                for (int connection = 0; connection < maxConnections; connection++) {
-                    bgDisconnect(connection);
-                }
-
-                // Get our Bluetooth address
-                address = new BluetoothAddress(readAddress().getAddress());
-
-                updateThingProperties();
-
-                initComplete = true;
-                updateStatus(ThingStatus.ONLINE);
-                startScheduledTasks();
-            } catch (BlueGigaException e) {
-                logger.info("Initialization of BlueGiga controller failed", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Initialization of BlueGiga controller failed");
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Failed opening serial port.");
-        }
+        initTask = executor.scheduleWithFixedDelay(this::start, 0, INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
-        stopScheduledTasks();
-        transactionManager.removeEventListener(this);
-        serialHandler.removeHandlerListener(this);
-        transactionManager.close();
-        serialHandler.close();
+        stop(true);
+    }
+
+    private void start() {
+        try {
+            if (!initComplete) {
+                logger.debug("Initialize BlueGiga");
+                logger.debug("Using configuration: {}", configuration);
+                stop(false);
+
+                if (openSerialPort(configuration.port, 115200)) {
+                    serialHandler = new BlueGigaSerialHandler(inputStream, outputStream);
+                    transactionManager = new BlueGigaTransactionManager(serialHandler, executor);
+                    serialHandler.addHandlerListener(this);
+                    transactionManager.addEventListener(this);
+
+                    updateStatus(ThingStatus.UNKNOWN);
+
+                    try {
+                        // Stop any procedures that are running
+                        bgEndProcedure();
+
+                        // Set mode to non-discoverable etc.
+                        bgSetMode();
+
+                        // Get maximum parallel connections
+                        maxConnections = readMaxConnections().getMaxconn();
+
+                        // Close all connections so we start from a known position
+                        for (int connection = 0; connection < maxConnections; connection++) {
+                            sendCommandWithoutChecks(
+                                    new BlueGigaDisconnectCommand.CommandBuilder().withConnection(connection).build(),
+                                    BlueGigaDisconnectResponse.class);
+                        }
+
+                        // Get our Bluetooth address
+                        address = new BluetoothAddress(readAddress().getAddress());
+
+                        updateThingProperties();
+
+                        initComplete = true;
+                        updateStatus(ThingStatus.ONLINE);
+                        startScheduledTasks();
+                    } catch (BlueGigaException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                "Initialization of BlueGiga controller failed");
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "Failed opening serial port.");
+                }
+            }
+        } catch (RuntimeException e) {
+            // Avoid scheduled task to shutdown
+            // e.g. when BlueGiga module is detached
+            logger.debug("Start failed", e);
+        }
+    }
+
+    private void stop(boolean exit) {
+        if (transactionManager != null) {
+            transactionManager.removeEventListener(this);
+            transactionManager.close();
+        }
+
+        if (serialHandler != null) {
+            serialHandler.removeHandlerListener(this);
+            serialHandler.close();
+        }
+
         initComplete = false;
-        devices.clear();
         connections.clear();
         closeSerialPort();
+
+        if (exit) {
+            stopScheduledTasks();
+            initTask.cancel(true);
+            devices.clear();
+        }
     }
 
     private void schedulePassiveScan() {
@@ -308,15 +339,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     }
 
     private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
-        return sendCommand(new BlueGigaGetConnectionsCommand(), BlueGigaGetConnectionsResponse.class, false);
+        return sendCommandWithoutChecks(new BlueGigaGetConnectionsCommand(), BlueGigaGetConnectionsResponse.class);
     }
 
     private BlueGigaAddressGetResponse readAddress() throws BlueGigaException {
-        return sendCommand(new BlueGigaAddressGetCommand(), BlueGigaAddressGetResponse.class, false);
+        return sendCommandWithoutChecks(new BlueGigaAddressGetCommand(), BlueGigaAddressGetResponse.class);
     }
 
     private BlueGigaGetInfoResponse readInfo() throws BlueGigaException {
-        return sendCommand(new BlueGigaGetInfoCommand(), BlueGigaGetInfoResponse.class, false);
+        return sendCommandWithoutChecks(new BlueGigaGetInfoCommand(), BlueGigaGetInfoResponse.class);
     }
 
     private void updateThingProperties() throws BlueGigaException {
@@ -376,12 +407,14 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private void closeSerialPort() {
         if (serialPort != null) {
             SerialPort sp = serialPort;
+            sp.removeEventListener();
             try {
                 sp.disableReceiveTimeout();
-                sp.removeEventListener();
+            } catch (Exception e) {
+                // Ignore all as RXTX seems to send arbitrary exceptions when BlueGiga module is detached
+            } finally {
                 IOUtils.closeQuietly(outputStream);
                 IOUtils.closeQuietly(inputStream);
-            } finally {
                 sp.close();
                 logger.debug("Closed serial port.");
                 serialPort = null;
@@ -658,7 +691,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private boolean bgEndProcedure() {
         try {
             BlueGigaCommand command = new BlueGigaEndProcedureCommand();
-            return sendCommand(command, BlueGigaEndProcedureResponse.class, false).getResult() == BgApiResponse.SUCCESS;
+            return sendCommandWithoutChecks(command, BlueGigaEndProcedureResponse.class)
+                    .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
             logger.debug("Error occured when sending end procedure command.");
             return false;
@@ -673,7 +707,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                     .withDiscover(GapDiscoverableMode.GAP_NON_DISCOVERABLE)
                     .build();
             // @formatter:on
-            return sendCommand(command, BlueGigaSetModeResponse.class, false).getResult() == BgApiResponse.SUCCESS;
+            return sendCommandWithoutChecks(command, BlueGigaSetModeResponse.class)
+                    .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
             logger.debug("Error occured when sending set mode command, reason: {}", e.getMessage());
             return false;
@@ -711,16 +746,32 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         return false;
     }
 
+    /**
+     * Send command only if initialization phase is successfully done
+     */
     private <T extends BlueGigaResponse> T sendCommand(BlueGigaCommand command, Class<T> expectedResponse,
             boolean schedulePassiveScan) throws BlueGigaException {
 
+        if (!initComplete) {
+            throw new BlueGigaException("BlueGiga not initialized");
+        }
+
         try {
-            return transactionManager.sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
+            return sendCommandWithoutChecks(command, expectedResponse);
         } finally {
             if (schedulePassiveScan) {
                 schedulePassiveScan();
             }
         }
+    }
+
+    /**
+     * Forcefully send command without any checks
+     */
+    private <T extends BlueGigaResponse> T sendCommandWithoutChecks(BlueGigaCommand command, Class<T> expectedResponse)
+            throws BlueGigaException {
+
+        return transactionManager.sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
     }
 
     /**
@@ -787,6 +838,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void bluegigaClosed(Exception reason) {
+        logger.debug("BlueGiga connection closed, request reinitialization");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
+        initComplete = false;
     }
 }
