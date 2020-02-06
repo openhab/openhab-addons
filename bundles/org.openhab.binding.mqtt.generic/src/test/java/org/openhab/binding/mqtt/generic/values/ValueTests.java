@@ -121,9 +121,11 @@ public class ValueTests {
         // Test with custom string, setup in the constructor
         v.update(new StringType("fancyOff"));
         assertThat(v.getMQTTpublishValue(null), is("fancyOff"));
+        assertThat(v.getMQTTpublishValue("=%s"), is("=fancyOff"));
         assertThat(v.getChannelState(), is(OnOffType.OFF));
         v.update(new StringType("fancyON"));
         assertThat(v.getMQTTpublishValue(null), is("fancyON"));
+        assertThat(v.getMQTTpublishValue("=%s"), is("=fancyON"));
         assertThat(v.getChannelState(), is(OnOffType.ON));
     }
 
