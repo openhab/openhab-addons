@@ -226,8 +226,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 updateStatus(ThingStatus.ONLINE);
                 startScheduledTasks();
             } catch (BlueGigaException e) {
+                logger.info("Initialization of BlueGiga controller failed", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Command send failed to BlueGiga controller");
+                        "Initialization of BlueGiga controller failed");
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -276,7 +277,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private void stopScheduledTasks() {
         cancelScheduledPassiveScan();
-        removeInactiveDevicesTask.cancel(true);
+        if (removeInactiveDevicesTask != null) {
+            removeInactiveDevicesTask.cancel(true);
+        }
     }
 
     private void removeInactiveDevices() {
