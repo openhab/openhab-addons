@@ -14,17 +14,16 @@ package org.openhab.binding.verisure.internal;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -268,6 +267,18 @@ public class VerisureSession {
         return verisureInstallations.get(installationId).getPinCode();
     }
 
+    private void setPasswordFromCookie() {
+        CookieStore c = httpClient.getCookieStore();
+        List<HttpCookie> cookies = c.get(URI.create("http://verisure.com"));
+        cookies.forEach(cookie -> {
+            logger.debug("Response Cookie: {}", cookie);
+            if (cookie.getName().equals(passwordName)) {
+                password = cookie.getValue();
+                logger.debug("Fetching vid {} from cookie", password);
+            }
+        });
+    }
+
     private int areWeLoggedIn() {
         logger.debug("areWeLoggedIn() - Checking if we are logged in");
         String url = STATUS;
@@ -279,15 +290,7 @@ public class VerisureSession {
                 case HttpStatus.OK_200:
                     if (response.getContentAsString().contains("<title>MyPages</title>")) {
                         logger.debug("Status code 200 and on MyPages!");
-                        CookieStore c = httpClient.getCookieStore();
-                        List<HttpCookie> cookies = c.get(URI.create("http://verisure.com"));
-                        cookies.forEach(cookie -> {
-                            logger.debug("Response Cookie: {}", cookie);
-                            if (cookie.getName().equals(passwordName)) {
-                                password = cookie.getValue();
-                                logger.debug("Fetching vid {} from cookie", password);
-                            }
-                        });
+                        setPasswordFromCookie();
                         return 1;
                     } else {
                         logger.debug("Not on MyPages, we need to login again!");
@@ -353,7 +356,7 @@ public class VerisureSession {
             }
             request.header("Accept", "application/json");
             if (!data.equals("empty")) {
-                request.content(new BytesContentProvider(data.getBytes("UTF-8")),
+                request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
                         "application/x-www-form-urlencoded; charset=UTF-8");
             } else {
                 logger.debug("Setting cookie with username {} and vid {}", userName, password);
@@ -364,8 +367,6 @@ public class VerisureSession {
             return request.send();
         } catch (ExecutionException e) {
             logger.warn("Caught ExecutionException {}", e.getMessage(), e);
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Caught UnsupportedEncodingException {}", e.getMessage(), e);
         } catch (InterruptedException e) {
             logger.warn("Caught InterruptedException {}", e.getMessage(), e);
         } catch (TimeoutException e) {
@@ -442,17 +443,7 @@ public class VerisureSession {
             ContentResponse response = httpClient.GET(url);
             logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
                     response.getContentAsString().replaceAll("\n+", "\n"));
-            CookieStore c = httpClient.getCookieStore();
-            List<HttpCookie> cookies = c.get(URI.create("http://verisure.com"));
-            Iterator<HttpCookie> cookiesIterator = cookies.iterator();
-            while (cookiesIterator.hasNext()) {
-                HttpCookie theCookie = cookiesIterator.next();
-                logger.debug("Response Cookie: name: {}, value: {} ", theCookie.getName(), theCookie.getValue());
-                if (theCookie.getName().equals(passwordName)) {
-                    password = theCookie.getValue();
-                    logger.debug("Fetching vid {} from cookie", password);
-                }
-            }
+            setPasswordFromCookie();
         } catch (ExecutionException e) {
             logger.warn("ExecutionException: {}", e.getMessage(), e);
         } catch (InterruptedException e) {
