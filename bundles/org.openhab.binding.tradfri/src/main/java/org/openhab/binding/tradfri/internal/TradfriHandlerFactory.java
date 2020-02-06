@@ -64,7 +64,8 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
             TradfriGatewayHandler handler = new TradfriGatewayHandler((Bridge) thing);
             registerDiscoveryService(handler);
             return handler;
-        } else if (THING_TYPE_DIMMER.equals(thingTypeUID) || THING_TYPE_REMOTE_CONTROL.equals(thingTypeUID)) {
+        } else if (THING_TYPE_DIMMER.equals(thingTypeUID) || THING_TYPE_REMOTE_CONTROL.equals(thingTypeUID)
+                || THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL.equals(thingTypeUID)) {
             return new TradfriControllerHandler(thing);
         } else if (THING_TYPE_MOTION_SENSOR.equals(thingTypeUID)) {
             return new TradfriSensorHandler(thing);

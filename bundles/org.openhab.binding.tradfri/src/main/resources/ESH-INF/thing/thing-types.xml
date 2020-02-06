@@ -156,6 +156,24 @@
 		<config-description-ref uri="thing-type:tradfri:device" />
 	</thing-type>
 
+	<thing-type id="0203" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway" />
+		</supported-bridge-type-refs>
+
+		<label>Window Covering Controller</label>
+		<description>This represents the wireless open/close remote capable of reporting the battery level.</description>
+
+		<channels>
+			<channel id="battery_level" typeId="system.battery-level" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:tradfri:device" />
+	</thing-type>
+
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>

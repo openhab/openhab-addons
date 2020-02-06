@@ -23,6 +23,7 @@ These are:
 | Non-Colour Scene Controller     | 0x0830           | 0830       |
 | Control Outlet                  | 0x0010           | 0010       |
 | Window Covering Device          | 0x0202           | 0202       |
+| Window Covering Controller      | 0x0202           | 0203       |
 
 The following matrix lists the capabilities (channels) for each of the supported lighting device types:
 
@@ -36,6 +37,7 @@ The following matrix lists the capabilities (channels) for each of the supported
 |  0820       |            |       |                   |       X       |      X      |       |          |
 |  0830       |            |       |                   |       X       |      X      |       |          |
 |  0202       |            |       |                   |       X       |      X      |       |     X    |
+|  0203       |            |       |                   |       X       |      X      |       |          |
 
 ## Thing Configuration
 

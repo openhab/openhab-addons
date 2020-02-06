@@ -44,6 +44,7 @@ public class TradfriBindingConstants {
     public static final ThingTypeUID THING_TYPE_REMOTE_CONTROL = new ThingTypeUID(BINDING_ID, "0830");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
     public static final ThingTypeUID THING_TYPE_BLINDS = new ThingTypeUID(BINDING_ID, "0202");
+    public static final ThingTypeUID THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL = new ThingTypeUID(BINDING_ID, "0203");
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_TEMP_LIGHT, THING_TYPE_COLOR_LIGHT)
@@ -61,8 +62,9 @@ public class TradfriBindingConstants {
     public static final String GATEWAY_CONFIG_PRE_SHARED_KEY = "preSharedKey";
 
     // Not yet used - included for future support
-    public static final Set<ThingTypeUID> SUPPORTED_CONTROLLER_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_DIMMER, THING_TYPE_REMOTE_CONTROL, THING_TYPE_MOTION_SENSOR).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_CONTROLLER_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_REMOTE_CONTROL,
+                    THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL, THING_TYPE_MOTION_SENSOR).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections.singleton(GATEWAY_TYPE_UID);
 
@@ -192,6 +194,7 @@ public class TradfriBindingConstants {
     public static final int WAKE_UP_SMART_TASK = 3;
 
     public static final String TYPE_SWITCH = "0";
+    public static final String TYPE_REMOTE = "1";
     public static final String TYPE_LIGHT = "2";
     public static final String TYPE_PLUG = "3";
     public static final String TYPE_SENSOR = "4";

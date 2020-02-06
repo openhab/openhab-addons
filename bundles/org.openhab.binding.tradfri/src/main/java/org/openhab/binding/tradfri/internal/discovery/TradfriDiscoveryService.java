@@ -131,6 +131,8 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                             ? THING_TYPE_REMOTE_CONTROL
                             : THING_TYPE_DIMMER;
                     thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                } else if (TYPE_REMOTE.equals(type)) {
+                    thingId = new ThingUID(THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL, bridge, Integer.toString(id));
                 } else if (TYPE_SENSOR.equals(type) && data.has(SENSOR)) {
                     // Motion sensor
                     thingId = new ThingUID(THING_TYPE_MOTION_SENSOR, bridge, Integer.toString(id));
