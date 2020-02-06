@@ -13,6 +13,7 @@
 package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,20 +25,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaDeviceDefinition {
 
-    private ArrayList<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
+    private List<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
+    private List<SomfyTahomaDeviceDefinitionState> states = new ArrayList<>();
 
-    public ArrayList<SomfyTahomaDeviceDefinitionCommand> getCommands() {
+    public List<SomfyTahomaDeviceDefinitionCommand> getCommands() {
         return commands;
+    }
+
+    public List<SomfyTahomaDeviceDefinitionState> getStates() {
+        return states;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{ ");
+        sb.append("Commands: { ");
         for (SomfyTahomaDeviceDefinitionCommand cmd : commands) {
             sb.append(cmd.toString()).append("; ");
         }
 
+        sb.append("}\nStates: {");
+        for (SomfyTahomaDeviceDefinitionState state : states) {
+            sb.append(state.toString()).append("; ");
+        }
         sb.append("}");
         return sb.toString();
     }

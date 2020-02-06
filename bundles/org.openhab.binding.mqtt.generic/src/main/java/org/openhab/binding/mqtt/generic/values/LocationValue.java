@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -30,6 +34,22 @@ import org.eclipse.smarthome.core.types.Command;
 public class LocationValue extends Value {
     public LocationValue() {
         super(CoreItemFactory.LOCATION, Stream.of(PointType.class, StringType.class).collect(Collectors.toList()));
+    }
+
+    @Override
+    public @NonNull String getMQTTpublishValue(@Nullable String pattern) {
+        String formatPattern = pattern;
+        PointType point = ((PointType) state);
+
+        if (formatPattern == null || "%s".equals(formatPattern)) {
+            if (point.getAltitude().toBigDecimal().equals(BigDecimal.ZERO)) {
+                formatPattern = "%2$f,%3$f";
+            } else {
+                formatPattern = "%2$f,%3$f,%1$f";
+            }
+        }
+        return String.format(Locale.ROOT, formatPattern, point.getAltitude().toBigDecimal(),
+                point.getLatitude().toBigDecimal(), point.getLongitude().toBigDecimal());
     }
 
     @Override

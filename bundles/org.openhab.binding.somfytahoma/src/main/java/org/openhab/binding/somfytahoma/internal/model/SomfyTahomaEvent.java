@@ -13,6 +13,7 @@
 package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,7 +32,7 @@ public class SomfyTahomaEvent {
     private String newState = "";
     private String execId = "";
     private String gatewayId = "";
-    private ArrayList<SomfyTahomaState> deviceStates = new ArrayList<>();
+    private List<SomfyTahomaState> deviceStates = new ArrayList<>();
     private JsonElement action = new JsonObject();
 
     public String getName() {
@@ -54,7 +55,7 @@ public class SomfyTahomaEvent {
         return execId;
     }
 
-    public ArrayList<SomfyTahomaState> getDeviceStates() {
+    public List<SomfyTahomaState> getDeviceStates() {
         return deviceStates;
     }
 

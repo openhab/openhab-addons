@@ -109,7 +109,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
             logger.info("There are unrecognized cosem values in the data received from the meter,"
                     + " which means you have values that can't be read by a channel: {}. Please report them and your raw data as reference: {}",
                     telegram.getUnknownCosemObjects().stream()
-                            .map(e -> String.format("obis id:{}, value:{}", e.getKey(), e.getValue()))
+                            .map(e -> String.format("obis id:%s, value:%s", e.getKey(), e.getValue()))
                             .collect(Collectors.joining(", ")),
                     telegram.getRawTelegram());
         }

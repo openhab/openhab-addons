@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lutron.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
 
 /**
@@ -20,7 +21,7 @@ import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
  *
  * @author Bob Adair - Initial contribution
  */
-
+@NonNullByDefault
 public interface KeypadComponent {
 
     public int id();

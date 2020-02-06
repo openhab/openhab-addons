@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Somfy Thermostat</label>
+		<channels>
+			<channel id="target_temperature" typeId="target_temperature"></channel>
+			<channel id="battery_level" typeId="system.battery-level"></channel>
+			<channel id="heating_mode" typeId="heating_mode"></channel>
+			<channel id="derogation_heating_mode" typeId="derogation_heating_mode"></channel>
+			<channel id="derogation_activation" typeId="derogation_activation"></channel>
+		</channels>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BAE091xPWMConfiguration} is a helper class for the BAE091x PWM Frequency configuration
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class BAE091xPWMConfiguration {
     public int prescaler = 0;
     public boolean reversePolarity = false;

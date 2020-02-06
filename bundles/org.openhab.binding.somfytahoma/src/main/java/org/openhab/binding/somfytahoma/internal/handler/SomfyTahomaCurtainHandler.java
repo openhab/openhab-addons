@@ -42,9 +42,11 @@ public class SomfyTahomaCurtainHandler extends SomfyTahomaRollerShutterHandler {
             case "UP":
             case "OPEN":
                 return COMMAND_OPEN;
+            case "MOVE":
             case "MY":
-            case "STOP":
                 return COMMAND_MY;
+            case "STOP":
+                return COMMAND_STOP;
             default:
                 return COMMAND_SET_CLOSURE;
         }

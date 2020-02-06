@@ -28,7 +28,6 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
 import org.openhab.binding.nanoleaf.internal.NanoleafHandlerFactory;
 import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.osgi.service.component.annotations.Component;
@@ -69,14 +68,17 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         properties.put(CONFIG_PORT, port);
         String firmwareVersion = service.getPropertyString("srcvers");
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
-        properties.put(Thing.PROPERTY_MODEL_ID, service.getPropertyString("md"));
+        String modelId = service.getPropertyString("md");
+        properties.put(Thing.PROPERTY_MODEL_ID, modelId);
         properties.put(Thing.PROPERTY_VENDOR, "Nanoleaf");
 
+        logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {}", host, port, firmwareVersion,
+                modelId);
         logger.debug("Adding Nanoleaf controller with FW version {} found at {} {} to inbox", firmwareVersion, host,
                 port);
-        if (!OpenAPIUtils.checkRequiredFirmware(firmwareVersion)) {
+        if (!OpenAPIUtils.checkRequiredFirmware(service.getPropertyString("md"), firmwareVersion)) {
             logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",
-                    NanoleafBindingConstants.API_MIN_FW_VER);
+                    MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
         }
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
                 .withProperties(properties).withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS)

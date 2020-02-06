@@ -9,6 +9,7 @@
 		<description>Shelly1 device with single relay</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="sensors" typeId="externalTemperature" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -21,6 +22,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel" />
 			<channel-group id="meter" typeId="meter" />
+			<channel-group id="sensors" typeId="externalTemperature" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -148,7 +150,7 @@
 		<description>Shelly Plug device with relay and power meter</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug" />
-			<channel-group id="meter" typeId="basicMeter" />
+			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -179,7 +181,7 @@
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:generic" />
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 
@@ -195,7 +197,6 @@
 			<channel id="timerActive" typeId="timerActive" />
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="relayChannelPlug">
 		<label>Relay</label>
 		<description>A Shelly relay channel</description>
@@ -206,6 +207,17 @@
 			<channel id="timerActive" typeId="timerActive" />
 		</channels>
 	</channel-group-type>
+
+	<channel-group-type id="externalTemperature">
+		<label>External Sensors</label>
+		<description>Temperatures from external sensors (if extension is installed and sensor connected)</description>
+		<channels>
+			<channel id="temperature1" typeId="sensorTempExt" />
+			<channel id="temperature2" typeId="sensorTempExt" />
+			<channel id="temperature3" typeId="sensorTempExt" />
+		</channels>
+	</channel-group-type>
+
 
 	<channel-group-type id="dimmerChannel">
 		<label>Dimmer</label>

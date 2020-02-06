@@ -12,19 +12,21 @@
  */
 package org.openhab.binding.satel.internal.event;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Event listener interface. All classes that want to receive Satel events must
  * implement this interface.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public interface SatelEventListener {
 
     /**
      * Event handler for Satel events.
      *
-     * @param event
-     *            incoming event to handle
+     * @param event incoming event to handle
      */
     void incomingEvent(SatelEvent event);
 }

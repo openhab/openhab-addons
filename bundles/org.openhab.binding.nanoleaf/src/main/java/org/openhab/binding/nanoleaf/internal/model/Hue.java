@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Represents hue setting of the light panels
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Hue implements IntegerState {
 
     private int value;
-    private Integer max;
-    private Integer min;
+    private @Nullable Integer max;
+    private @Nullable Integer min;
 
     @Override
     public int getValue() {
@@ -33,7 +37,7 @@ public class Hue implements IntegerState {
         this.value = value;
     }
 
-    public Integer getMax() {
+    public @Nullable Integer getMax() {
         return max;
     }
 
@@ -41,7 +45,7 @@ public class Hue implements IntegerState {
         this.max = max;
     }
 
-    public Integer getMin() {
+    public @Nullable Integer getMin() {
         return min;
     }
 

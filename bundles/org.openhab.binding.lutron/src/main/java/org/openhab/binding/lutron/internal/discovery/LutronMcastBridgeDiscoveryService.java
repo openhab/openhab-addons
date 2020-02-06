@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Renamed and added bridge properties
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lutron")
 public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService {
 
@@ -66,8 +69,8 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
 
     private final Logger logger = LoggerFactory.getLogger(LutronMcastBridgeDiscoveryService.class);
 
-    private ScheduledFuture<?> scanTask;
-    private ScheduledFuture<?> backgroundScan;
+    private @Nullable ScheduledFuture<?> scanTask;
+    private @Nullable ScheduledFuture<?> backgroundScan;
 
     public LutronMcastBridgeDiscoveryService() {
         super(BRIDGE_TYPE_UID, 5);

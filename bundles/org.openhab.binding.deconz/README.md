@@ -91,10 +91,11 @@ The devices support some of the following channels:
 | voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
 | current         | Number:ElectricCurrent   |      R      | Current current in mA                                                                     | some powersensors                            |
 | button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch                                       |
+| gesture         | Number                   |      R      | A gesture that was performed with the switch                                              | switch                                       |
 | lightlux        | Number:Illuminance       |      R      | Current light illuminance in Lux                                                          | lightsensor                                  |
 | light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
-| dark            | Switch                   |      R      | Light level is below the darkness threshold.                                              | lightsensor, sometimes for presencesensor    |
-| daylight        | Switch                   |      R      | Light level is above the daylight threshold.                                              | lightsensor                                  |
+| dark            | Switch                   |      R      | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor    |
+| daylight        | Switch                   |      R      | Light level is above the daylight threshold                                               | lightsensor                                  |
 | temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors       |
 | humidity        | Number:Dimensionless     |      R      | Current humidity in %                                                                     | humiditysensor                               |
 | pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
@@ -104,7 +105,7 @@ The devices support some of the following channels:
 | alarm           | Switch                   |      R      | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                  |
 | tampered        | Switch                   |      R      | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                               |
 | vibration       | Switch                   |      R      | Status of vibration: `ON` = vibration was detected; `OFF` = no vibration                  | alarmsensor                                  |
-| light           | String                   |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                                   | daylightsensor                               |
+| light           | String                   |      R      | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                               |
 | value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
 | battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
@@ -115,11 +116,28 @@ Have a detailed look for [supported devices](https://github.com/dresden-elektron
 
 ### Trigger Channels
 
-The dimmer switch additionally supports a trigger channel.
+The dimmer switch additionally supports trigger channels.
 
-| Channel Type ID | Description               | Thing types |
-|-----------------|---------------------------|-------------|
-| buttonevent     | Event for switch pressed. | switch      |
+| Channel Type ID | Description              | Thing types |
+|-----------------|--------------------------|-------------|
+| buttonevent     | Event for switch pressed | switch      |
+| gestureevent    | Event for gestures       | switch      |
+
+**NOTE:** The `gestureevent` trigger channel is only available if the optional channel `gesture` is present.
+Both will be added during runtime if supported by the switch.
+`gestureevent` can trigger one of the following events:
+
+| Gesture                          | Event |
+|----------------------------------|-------|
+| GESTURE_NONE                     | 0     |
+| GESTURE_SHAKE                    | 1     |
+| GESTURE_DROP                     | 2     |
+| GESTURE_FLIP_90                  | 3     |
+| GESTURE_FLIP_180                 | 4     |
+| GESTURE_PUSH                     | 5     |
+| GESTURE_DOUBLE_TAP               | 6     |
+| GESTURE_ROTATE_CLOCKWISE         | 7     |
+| GESTURE_ROTATE_COUNTER_CLOCKWISE | 8     |
 
 ## Full Example
 

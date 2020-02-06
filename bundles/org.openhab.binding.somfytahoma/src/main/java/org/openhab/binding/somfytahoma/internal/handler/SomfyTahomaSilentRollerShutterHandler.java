@@ -27,12 +27,11 @@ import org.eclipse.smarthome.core.types.RefreshType;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShutterHandler {
 
     public SomfyTahomaSilentRollerShutterHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL_SILENT, "core:ClosureState");
-        stateNames.put(CONTROL, "core:ClosureState");
     }
 
     @Override
@@ -42,14 +41,16 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_MY.equals(cmd)) {
+                sendCommand(COMMAND_MY);
+            } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the roller shutter is moving and MY is sent => STOP it
+                    //Check if the roller shutter is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
@@ -64,21 +65,6 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
                     sendCommand(cmd, param);
                 }
             }
-        }
-    }
-
-    private String getTahomaCommand(String command) {
-        switch (command) {
-            case "OFF":
-            case "DOWN":
-                return COMMAND_DOWN;
-            case "ON":
-            case "UP":
-                return COMMAND_UP;
-            case "STOP":
-                return COMMAND_MY;
-            default:
-                return COMMAND_SET_CLOSURE;
         }
     }
 }
