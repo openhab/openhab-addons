@@ -12,22 +12,24 @@
 
   <name>openHAB Add-ons :: Bundles :: Doorbird Binding</name>
 
-  <properties>
-    <dep.noembedding>jna</dep.noembedding>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.goterl.lazycode</groupId>
       <artifactId>lazysodium-java</artifactId>
-      <version>4.0.1</version>
-      <scope>compile</scope>
+      <version>4.2.5</version>
+      <scope>provided</scope>
     </dependency>
+ 	<dependency>
+      <groupId>co.libly</groupId>
+      <artifactId>resource-loader</artifactId>
+      <version>1.3.7</version>
+      <scope>provided</scope>
+	</dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.4.0</version>
-      <scope>compile</scope>
+      <version>5.5.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
