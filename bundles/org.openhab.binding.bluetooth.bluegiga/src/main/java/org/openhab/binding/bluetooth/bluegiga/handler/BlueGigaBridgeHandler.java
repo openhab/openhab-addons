@@ -526,7 +526,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         }
 
         logger.debug("BlueGiga Connect: address {}.", address);
-        cancelScheduledPassiveScan();
 
         // @formatter:off
         BlueGigaConnectDirectCommand command = new BlueGigaConnectDirectCommand.CommandBuilder()
@@ -555,7 +554,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgDisconnect(int connectionHandle) {
         logger.debug("BlueGiga Disconnect: connection {}", connectionHandle);
-        cancelScheduledPassiveScan();
         BlueGigaDisconnectCommand command = new BlueGigaDisconnectCommand.CommandBuilder()
                 .withConnection(connectionHandle).build();
 
@@ -587,7 +585,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgFindPrimaryServices(int connectionHandle) {
         logger.debug("BlueGiga FindPrimary: connection {}", connectionHandle);
-        cancelScheduledPassiveScan();
         // @formatter:off
         BlueGigaReadByGroupTypeCommand command = new BlueGigaReadByGroupTypeCommand.CommandBuilder()
                 .withConnection(connectionHandle)
@@ -614,7 +611,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgFindCharacteristics(int connectionHandle) {
         logger.debug("BlueGiga Find: connection {}", connectionHandle);
-        cancelScheduledPassiveScan();
         // @formatter:off
         BlueGigaFindInformationCommand command = new BlueGigaFindInformationCommand.CommandBuilder()
                 .withConnection(connectionHandle)
@@ -641,7 +637,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgReadCharacteristic(int connectionHandle, int handle) {
         logger.debug("BlueGiga Read: connection {}, handle {}", connectionHandle, handle);
-        cancelScheduledPassiveScan();
         // @formatter:off
         BlueGigaReadByHandleCommand command = new BlueGigaReadByHandleCommand.CommandBuilder()
                 .withConnection(connectionHandle)
@@ -667,7 +662,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     public boolean bgWriteCharacteristic(int connectionHandle, int handle, int[] value) {
         logger.debug("BlueGiga Write: connection {}, handle {}", connectionHandle, handle);
-        cancelScheduledPassiveScan();
         // @formatter:off
         BlueGigaAttributeWriteCommand command = new BlueGigaAttributeWriteCommand.CommandBuilder()
                 .withConnection(connectionHandle)
@@ -690,8 +684,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     private boolean bgEndProcedure() {
         try {
-            BlueGigaCommand command = new BlueGigaEndProcedureCommand();
-            return sendCommandWithoutChecks(command, BlueGigaEndProcedureResponse.class)
+            return sendCommandWithoutChecks(new BlueGigaEndProcedureCommand(), BlueGigaEndProcedureResponse.class)
                     .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
             logger.debug("Error occured when sending end procedure command.");
@@ -756,6 +749,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             throw new BlueGigaException("BlueGiga not initialized");
         }
 
+        cancelScheduledPassiveScan();
         try {
             return sendCommandWithoutChecks(command, expectedResponse);
         } finally {
