@@ -257,13 +257,14 @@ public class BlueGigaSerialHandler {
                             }
 
                             inputCount = 0;
+                            exceptionCnt = 0;
                         }
 
                     } catch (final IOException e) {
-                        logger.error("BlueGiga BLE IOException: ", e);
+                        logger.debug("BlueGiga BLE IOException: ", e);
 
                         if (exceptionCnt++ > 10) {
-                            logger.error("BlueGiga BLE exception count exceeded");
+                            logger.error("BlueGiga BLE exception count exceeded, closing handler");
                             close = true;
                             notifyEventListeners(e);
                         }
