@@ -88,6 +88,11 @@ public class OnOffValue extends Value {
 
     @Override
     public String getMQTTpublishValue(@Nullable String pattern) {
-        return (state == OnOffType.ON) ? onCommand : offCommand;
+        String formatPattern = pattern;
+        if (formatPattern == null) {
+            formatPattern = "%s";
+        }
+
+        return String.format(formatPattern, state == OnOffType.ON ? onCommand : offCommand);
     }
 }
