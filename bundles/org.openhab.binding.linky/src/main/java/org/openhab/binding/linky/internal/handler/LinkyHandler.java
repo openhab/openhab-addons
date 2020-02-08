@@ -119,8 +119,8 @@ public class LinkyHandler extends BaseThingHandler {
             // HTTP_DEFAULT_TIMEOUT_MS);
             // stream.close();
 
-            // first call to test connection and to get needed cookies
-            // getEnedisInfo(DAILY, LocalDate.now(), LocalDate.now());
+            // Do a first call to get data; this first call will fail with code 302
+            getEnedisInfo(DAILY, LocalDate.now(), LocalDate.now());
 
             updateStatus(ThingStatus.ONLINE);
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -141,7 +141,7 @@ public class LinkyHandler extends BaseThingHandler {
         double lastWeek = -1;
         double thisWeek = -1;
         double yesterday = -1;
-        LocalDate rangeStart = today.minusDays(9);
+        LocalDate rangeStart = today.minusDays(13);
         EnedisInfo result = getEnedisInfo(DAILY, rangeStart, today);
         if (result != null && result.success()) {
             int jump = result.getDecalage();
@@ -157,11 +157,14 @@ public class LinkyHandler extends BaseThingHandler {
             yesterday = -1;
             while (jump < result.getData().size()) {
                 double consumption = result.getData().get(jump).valeur;
+                logger.debug("consumption at jump {}: {}", jump, consumption);
                 if (consumption > 0) {
                     if (rangeStart.get(weekFields.weekOfWeekBasedYear()) == lastWeekNumber) {
                         lastWeek += consumption;
+                        logger.debug("consumption added to last week");
                     } else {
                         thisWeek += consumption;
+                        logger.debug("consumption added to current week");
                     }
                     yesterday = consumption;
                 }
