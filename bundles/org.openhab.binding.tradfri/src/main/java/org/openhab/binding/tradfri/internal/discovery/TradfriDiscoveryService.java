@@ -16,17 +16,24 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.tradfri.internal.DeviceUpdateListener;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 import org.slf4j.Logger;
@@ -44,23 +51,25 @@ import com.google.gson.JsonSyntaxException;
  * @author Manuel Raffel - Added support for blinds
  */
 @NonNullByDefault
-public class TradfriDiscoveryService extends AbstractDiscoveryService implements DeviceUpdateListener {
+public class TradfriDiscoveryService extends AbstractDiscoveryService
+        implements DeviceUpdateListener, DiscoveryService, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(TradfriDiscoveryService.class);
 
-    private final TradfriGatewayHandler handler;
+    private @Nullable TradfriGatewayHandler handler;
 
     private static final String REMOTE_CONTROLLER_MODEL = "TRADFRI remote control";
 
-    private static final String[] COLOR_TEMP_MODELS = new String[] { "TRADFRI bulb E27 WS opal 980lm",
-            "TRADFRI bulb E27 WS clear 950lm", "TRADFRI bulb GU10 WS 400lm", "TRADFRI bulb E14 WS opal 400lm",
-            "FLOALT panel WS 30x30", "FLOALT panel WS 60x60", "FLOALT panel WS 30x90",
-            "TRADFRI bulb E12 WS opal 400lm" };
+    private static final List<String> COLOR_TEMP_MODELS = Collections
+            .unmodifiableList(Stream
+                    .of("TRADFRI bulb E27 WS opal 980lm", "TRADFRI bulb E27 WS clear 950lm",
+                            "TRADFRI bulb GU10 WS 400lm", "TRADFRI bulb E14 WS opal 400lm", "FLOALT panel WS 30x30",
+                            "FLOALT panel WS 60x60", "FLOALT panel WS 30x90", "TRADFRI bulb E12 WS opal 400lm")
+                    .collect(Collectors.toList()));
 
     private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
-    public TradfriDiscoveryService(TradfriGatewayHandler bridgeHandler) {
+    public TradfriDiscoveryService() {
         super(SUPPORTED_DEVICE_TYPES_UIDS, 10, true);
-        this.handler = bridgeHandler;
     }
 
     @Override
@@ -74,6 +83,19 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
         removeOlderResults(getTimestampOfLastScan());
     }
 
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof TradfriGatewayHandler) {
+            this.handler = (TradfriGatewayHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @Override
     public void activate() {
         handler.registerDeviceUpdateListener(this);
     }
@@ -110,7 +132,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                         thingType = THING_TYPE_COLOR_LIGHT;
                     }
                     if (thingType == null && //
-                            (state.has(COLOR) || (model != null && Arrays.asList(COLOR_TEMP_MODELS).contains(model)))) {
+                            (state.has(COLOR) || (model != null && COLOR_TEMP_MODELS.contains(model)))) {
                         thingType = THING_TYPE_COLOR_TEMP_LIGHT;
                     }
                     if (thingType == null) {

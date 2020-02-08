@@ -50,7 +50,23 @@ public class TradfriDiscoveryServiceTest {
     @Mock
     private TradfriGatewayHandler handler;
 
-    private DiscoveryListener listener;
+    private final DiscoveryListener listener = new DiscoveryListener() {
+        @Override
+        public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+        }
+
+        @Override
+        public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+            discoveryResult = result;
+        }
+
+        @Override
+        public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+                Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+            return null;
+        }
+    };
+
     private DiscoveryResult discoveryResult;
 
     private TradfriDiscoveryService discovery;
@@ -58,25 +74,11 @@ public class TradfriDiscoveryServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
+
         when(handler.getThing()).thenReturn(BridgeBuilder.create(GATEWAY_TYPE_UID, "1").build());
-        discovery = new TradfriDiscoveryService(handler);
 
-        listener = new DiscoveryListener() {
-            @Override
-            public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-            }
-
-            @Override
-            public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-                discoveryResult = result;
-            }
-
-            @Override
-            public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                    Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
-                return null;
-            }
-        };
+        discovery = new TradfriDiscoveryService();
+        discovery.setThingHandler(handler);
         discovery.addDiscoveryListener(listener);
     }
 
