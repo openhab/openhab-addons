@@ -65,6 +65,7 @@ Don't worry: the binding comes with some helpful support in the background (this
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
 
 Compare the following output with the right picture at the beginning of the article
+
 ```                                     
             31413                    9162       13276     
 

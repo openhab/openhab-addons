@@ -12,20 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal.handler;
 
-import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
-
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,17 +26,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -58,11 +37,20 @@ import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
 import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.model.*;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.*;
+
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
 /**
  * The {@link NanoleafControllerHandler} is responsible for handling commands to the controller which
@@ -615,6 +603,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
+        properties.put("Bundle Version", FrameworkUtil.getBundle(getClass()).getVersion().toString());
         updateProperties(properties);
 
         Configuration config = editConfiguration();
@@ -626,6 +615,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
             logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
         }
+
         updateConfiguration(config);
 
         getConfig().getProperties().forEach((key, value) -> {
