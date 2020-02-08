@@ -180,6 +180,7 @@ public class TradfriBindingConstants {
     public static final String START_ACTION = "9042";
     public static final String START_TIME_HR = "9046";
     public static final String START_TIME_MN = "9047";
+    public static final String STOP_TRIGGER = "5523";
     public static final String SWITCH = "15009";
     public static final String TIME_ARRAY = "9994";
     public static final String TIME_REMAINING_IN_SECONDS = "9024";

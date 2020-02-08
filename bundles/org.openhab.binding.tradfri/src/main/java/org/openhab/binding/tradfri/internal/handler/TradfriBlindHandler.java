@@ -15,7 +15,6 @@ package org.openhab.binding.tradfri.internal.handler;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -41,9 +40,6 @@ import com.google.gson.JsonElement;
 public class TradfriBlindHandler extends TradfriThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriBlindHandler.class);
-
-    // keeps track of the current state for handling of stop/move
-    private @Nullable TradfriBlindData state;
 
     public TradfriBlindHandler(Thing thing) {
         super(thing);
@@ -72,8 +68,6 @@ public class TradfriBlindHandler extends TradfriThingHandler {
 
             updateDeviceProperties(state);
 
-            this.state = state;
-
             logger.debug(
                     "Updating thing for blindId {} to state {position: {}, firmwareVersion: {}, modelId: {}, vendor: {}}",
                     state.getDeviceId(), position, state.getFirmwareVersion(), state.getModelId(), state.getVendor());
@@ -81,9 +75,11 @@ public class TradfriBlindHandler extends TradfriThingHandler {
     }
 
     private void setPosition(PercentType percent) {
-        TradfriBlindData data = new TradfriBlindData();
-        data.setPosition(percent);
-        set(data.getJsonString());
+        set(new TradfriBlindData().setPosition(percent).getJsonString());
+    }
+
+    private void triggerStop() {
+        set(new TradfriBlindData().stop().getJsonString());
     }
 
     @Override
@@ -109,16 +105,11 @@ public class TradfriBlindHandler extends TradfriThingHandler {
         if (command instanceof PercentType) {
             setPosition((PercentType) command);
         } else if (command instanceof StopMoveType) {
-            // final TradfriBlindData state = this.state;
-            // if (state != null && state.getPosition() != null) {
-            // if (StopMoveType.STOP.equals(command)) {
-            // // setPosition(state.getPosition());
-            // } else {
-            // // (what) TODO (?)
-            // }
-            // } else {
-            logger.debug("Cannot handle stop/move as current state is not known.");
-            // }
+            if (StopMoveType.STOP.equals(command)) {
+                triggerStop();
+            } else {
+                logger.debug("Cannot handle command '{}' for channel '{}'", command, CHANNEL_POSITION);
+            }
         } else if (command instanceof UpDownType) {
             if (UpDownType.UP.equals(command)) {
                 setPosition(PercentType.ZERO);
@@ -126,7 +117,7 @@ public class TradfriBlindHandler extends TradfriThingHandler {
                 setPosition(PercentType.HUNDRED);
             }
         } else {
-            logger.debug("Cannot handle command {} for channel {}", command, CHANNEL_POSITION);
+            logger.debug("Cannot handle command '{}' for channel '{}'", command, CHANNEL_POSITION);
         }
     }
 }

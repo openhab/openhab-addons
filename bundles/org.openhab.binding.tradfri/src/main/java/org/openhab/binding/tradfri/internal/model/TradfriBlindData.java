@@ -41,6 +41,11 @@ public class TradfriBlindData extends TradfriWirelessDeviceData {
         return this;
     }
 
+    public TradfriBlindData stop() {
+        attributes.add(STOP_TRIGGER, new JsonPrimitive(0));
+        return this;
+    }
+
     public @Nullable PercentType getPosition() {
         PercentType result = null;
 
