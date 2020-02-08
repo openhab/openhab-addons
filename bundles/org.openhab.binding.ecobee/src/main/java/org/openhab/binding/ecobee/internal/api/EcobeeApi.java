@@ -15,6 +15,7 @@ package org.openhab.binding.ecobee.internal.api;
 import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -22,7 +23,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -52,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EcobeeApi} is responsible for managing all communication with
@@ -71,9 +75,8 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     private static final String ECOBEE_THERMOSTAT_UPDATE_URL = ECOBEE_THERMOSTAT_URL + "&format=json";
 
     // These errors from the API will require an Ecobee authorization
-    private static final int ECOBEE_ERROR_AUTHENTICATION_FAILED = 1;
-    private static final int ECOBEE_ERROR_TOKEN_EXPIRED = 14;
-    private static final int ECOBEE_ERROR_DEAUTHORIZED_TOKEN = 16;
+    private static final int ECOBEE_TOKEN_EXPIRED = 14;
+    private static final int ECOBEE_DEAUTHORIZED_TOKEN = 16;
 
     public static final Properties HTTP_HEADERS;
     static {
@@ -90,7 +93,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
 
     private final EcobeeAccountBridgeHandler bridgeHandler;
 
-    private String apiKey;
+    private final String apiKey;
     private int apiTimeout;
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
@@ -184,9 +187,13 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         String requestJson = GSON.toJson(new ThermostatRequestDTO(selection), ThermostatRequestDTO.class);
         String response = executeGet(ECOBEE_THERMOSTAT_SUMMARY_URL, requestJson);
         if (response != null) {
-            SummaryResponseDTO summaryResponse = GSON.fromJson(response, SummaryResponseDTO.class);
-            if (isSuccess(summaryResponse)) {
-                return summaryResponse;
+            try {
+                SummaryResponseDTO summaryResponse = GSON.fromJson(response, SummaryResponseDTO.class);
+                if (isSuccess(summaryResponse)) {
+                    return summaryResponse;
+                }
+            } catch (JsonSyntaxException e) {
+                logJSException(e, response);
             }
         }
         return null;
@@ -206,9 +213,13 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         String requestJson = GSON.toJson(new ThermostatRequestDTO(selection), ThermostatRequestDTO.class);
         String response = executeGet(ECOBEE_THERMOSTAT_URL, requestJson);
         if (response != null) {
-            ThermostatResponseDTO thermostatsResponse = GSON.fromJson(response, ThermostatResponseDTO.class);
-            if (isSuccess(thermostatsResponse)) {
-                return thermostatsResponse.thermostatList;
+            try {
+                ThermostatResponseDTO thermostatsResponse = GSON.fromJson(response, ThermostatResponseDTO.class);
+                if (isSuccess(thermostatsResponse)) {
+                    return thermostatsResponse.thermostatList;
+                }
+            } catch (JsonSyntaxException e) {
+                logJSException(e, response);
             }
         }
         return EMPTY_THERMOSTATS;
@@ -245,7 +256,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             response = HttpUtil.executeUrl("GET", buildQueryUrl(url, json), setHeaders(), null, null, apiTimeout);
             logger.trace("API: Response took {} msec: {}", System.currentTimeMillis() - startTime, response);
         } catch (IOException e) {
-            logger.info("API: Exception getting thermostat data: {}", e.getMessage());
+            logIOException(e);
         }
         return response;
     }
@@ -257,12 +268,34 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             String response = HttpUtil.executeUrl("POST", url, setHeaders(), new ByteArrayInputStream(json.getBytes()),
                     "application/json", apiTimeout);
             logger.trace("API: Response took {} msec: {}", System.currentTimeMillis() - startTime, response);
-            ThermostatResponseDTO thermostatsResponse = GSON.fromJson(response, ThermostatResponseDTO.class);
-            return isSuccess(thermostatsResponse);
+            try {
+                ThermostatResponseDTO thermostatsResponse = GSON.fromJson(response, ThermostatResponseDTO.class);
+                return isSuccess(thermostatsResponse);
+            } catch (JsonSyntaxException e) {
+                logJSException(e, response);
+            }
         } catch (IOException e) {
-            logger.info("API: Exception setting thermostat data: {}", e.getMessage());
+            logIOException(e);
         }
         return false;
+    }
+
+    private void logIOException(Exception e) {
+        Throwable rootCause = ExceptionUtils.getRootCause(e);
+        if (rootCause instanceof TimeoutException || rootCause instanceof EOFException) {
+            // These are "normal" errors and should be logged as DEBUG
+            logger.debug("API: Call to Ecobee API failed with exception: {}: {}", rootCause.getClass().getSimpleName(),
+                    rootCause.getMessage());
+        } else {
+            // What's left are unexpected errors that should be logged as INFO with a full stack trace
+            logger.info("API: Call to Ecobee API failed", e);
+        }
+    }
+
+    private void logJSException(Exception e, String response) {
+        // The API sometimes returns an HTML page complaining of an SSL error
+        // Otherwise, this probably should be INFO level
+        logger.debug("API: JsonSyntaxException parsing response: {}", response, e);
     }
 
     private boolean isSuccess(@Nullable AbstractResponseDTO response) {
@@ -275,9 +308,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                     response.status.message);
             // The following error indicate that the Ecobee PIN authorization
             // process needs to be restarted
-            if (response.status.code == ECOBEE_ERROR_AUTHENTICATION_FAILED
-                    || response.status.code == ECOBEE_ERROR_TOKEN_EXPIRED
-                    || response.status.code == ECOBEE_ERROR_DEAUTHORIZED_TOKEN) {
+            if (response.status.code == ECOBEE_TOKEN_EXPIRED || response.status.code == ECOBEE_DEAUTHORIZED_TOKEN) {
                 deleteOAuthClientService();
                 createOAuthClientService();
             }
