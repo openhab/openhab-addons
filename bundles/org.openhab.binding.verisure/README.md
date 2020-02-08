@@ -152,7 +152,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
  
 | Channel Type ID | Item Type             | Description                                                                 | 
 |-----------------|-----------------------|-----------------------------------------------------------------------------|
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.                    |                                                                                                                                          
+| temperature     | Number:Temperature    | This channel reports the current temperature.                               |                                                                                                                                          
 | humidity        | Number                | This channel reports the current humidity in percentage.                    |
 | humidityEnabled | Switch                | This channel reports if the Climate is device capable of reporting humidity.|
 | timestamp       | DateTime              | This channel reports the last time this sensor was updated.                 |
@@ -173,7 +173,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 | Channel Type ID | Item Type             | Description                                                  | 
 |-----------------|-----------------------|--------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.     |
+| temperature     | Number:Temperature    | This channel reports the current current temperature.        |
 | timestamp       | DateTime              | This channel reports the last time this sensor was updated.  |
 | location        | String                | This channel reports the location of the device.             |
 | installationName| String                | This channel reports the installation name.                  |
@@ -192,7 +192,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
  
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
+| temperature     | Number:Temperature    | This channel reports the current current temperature.   |
 | timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
@@ -211,7 +211,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
  
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
+| temperature     | Number:Temperature    | This channel reports the current current temperature.      |
 | timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
@@ -293,7 +293,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 | durationLatestDetection| Number:Time | This channel reports the detection duration in min of latest detection.    |
 | durationLast24Hours| Number:Time | This channel reports the total detection duration in min for the last 24 hours.|
 | timestamp       | DateTime  | This channel reports time for the last mouse detection.                             |
-| temperature     | Number:Temperature | This channel reports the temperature.                                      |
+| temperature     | Number:Temperature | This channel reports the current  temperature.                             |
 | temperatureTimestamp | DateTime  | This channel reports the time for the last temperature reading.                |
 | location        | String    | This channel reports the location of the device.                                    |
 | installationName| String    | This channel reports the installation name.                                         |
