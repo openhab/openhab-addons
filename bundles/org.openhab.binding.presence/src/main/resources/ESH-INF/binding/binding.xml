@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="presence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Presence Binding</name>
+	<description>This is the binding for Presence.</description>
+	<author>Mike Dabbs</author>
+
+	<config-description>
+		<parameter name="allowDHCPListen" type="boolean">
+			<default>true</default>
+			<label>Listen for DHCP Requests</label>
+			<description>Usually a device requests an IP address in an IPv4 network with the help of DHCP as soon as it enters a network. If we listen to those
+			packets, we can detect a device presence even faster. You need elevated access rights (see readme) for this to work.</description>
+		</parameter>
+		<parameter name="arpPingToolPath" type="text">
+			<default>arping</default>
+			<label>ARP Ping Tool Path</label>
+			<description>If your arp ping tool is not called arping and cannot be found in the PATH environment, you can configure the absolute path / tool name here</description>
+		</parameter>
+		<parameter name="pingToolPath" type="text">
+			<default>ping</default>
+			<label>Ping Tool Path</label>
+			<description>If your ping tool is not called ping and cannot be found in the PATH environment, you can configure the absolute path / tool name here</description>
+		</parameter>
+	</config-description>
+
+</binding:binding>

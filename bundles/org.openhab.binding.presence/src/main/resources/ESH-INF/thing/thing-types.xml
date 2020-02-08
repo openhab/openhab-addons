@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="presence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- PingDevice Thing Type -->
+	<thing-type id="pingdevice">
+		<label>Pingable Device</label>
+		<description>A device that is detectable by ping/arping</description>
+
+		<channels>
+			<channel id="online" typeId="onlineType" />
+			<channel id="lastseen" typeId="lastSeenType" />
+			<channel id="firstseen" typeId="firstSeenType" />
+		</channels>
+
+		<properties>
+			<property name="arp_state">-</property>
+			<property name="dhcp_state">-</property>
+			<property name="icmp_state">-</property>
+			<property name="preferred_method">-</property>
+			<property name="preferred_interface"></property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname of the device being detected</description>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
+				<default>60000</default>
+			</parameter>
+
+			<parameter name="retry" type="integer">
+				<label>Retry</label>
+				<description>How many refresh interval cycles should a presence detection should take place, before the device is stated as offline</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="refreshIntervalWhenGone" type="integer">
+				<label>Refresh Interval When Gone</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur when the device is currently not detected (in ms). Defaults to -1 which uses the normal Refresh Interval value</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="tcpportdevice">
+		<label>TCP Port Device</label>
+		<description>A device that is detectable by connecting to a TCP port</description>
+
+		<channels>
+			<channel id="online" typeId="onlineType" />
+			<channel id="lastseen" typeId="lastSeenType" />
+			<channel id="firstseen" typeId="firstSeenType" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname of the device being detected</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The port on which the device can be detected</description>
+				<default>443</default>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
+				<default>60000</default>
+			</parameter>
+
+			<parameter name="retry" type="integer">
+				<label>Retry</label>
+				<description>How many refresh interval cycles should a presence detection should take place, before the device is stated as offline</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="refreshIntervalWhenGone" type="integer">
+				<label>Refresh Interval When Gone</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur when the device is currently not detected (in ms). Defaults to -1 which uses the normal Refresh Interval value</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="smtpdevice">
+		<label>SMTP Device</label>
+		<description>A device that is detectable by connecting and receiving a HELO response</description>
+
+		<channels>
+			<channel id="online" typeId="onlineType" />
+			<channel id="lastseen" typeId="lastSeenType" />
+			<channel id="firstseen" typeId="firstSeenType" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname of the device being detected</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The port on which the device can be detected</description>
+				<default>25</default>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
+				<default>60000</default>
+			</parameter>
+
+			<parameter name="retry" type="integer">
+				<label>Retry</label>
+				<description>How many refresh interval cycles should a presence detection should take place, before the device is stated as offline</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="refreshIntervalWhenGone" type="integer">
+				<label>Refresh Interval When Gone</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur when the device is currently not detected (in ms). Defaults to -1 which uses the normal Refresh Interval value</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="onlineType">
+		<item-type>Switch</item-type>
+		<label>Present</label>
+		<description>States whether the device is present on the network or not</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastSeenType">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>States the last seen date/time of the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="firstSeenType">
+		<item-type>DateTime</item-type>
+		<label>First Seen</label>
+		<description>States the first seen date/time of the device after being away</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
