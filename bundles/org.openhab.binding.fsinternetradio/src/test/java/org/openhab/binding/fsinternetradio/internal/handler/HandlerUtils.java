@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.fsinternetradio.internal.handler;
 
-import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
  *
  * @author Markus Rathgeb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerUtils {
 
     /**
@@ -28,7 +30,8 @@ public class HandlerUtils {
      * @param handler the handler
      * @return the managed radio object
      */
-    public static FrontierSiliconRadio getRadio(final FSInternetRadioHandler handler) {
+    @SuppressWarnings("null")
+    public static @Nullable FrontierSiliconRadio getRadio(final @Nullable FSInternetRadioHandler handler) {
         return handler.radio;
     }
 }

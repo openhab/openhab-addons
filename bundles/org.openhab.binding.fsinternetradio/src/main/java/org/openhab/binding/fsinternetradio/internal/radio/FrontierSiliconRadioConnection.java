@@ -15,6 +15,8 @@ package org.openhab.binding.fsinternetradio.internal.radio;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -26,12 +28,13 @@ import org.slf4j.LoggerFactory;
 /**
  * This class holds the http-connection and session information for controlling the radio.
  *
- * @author Rainer Ostendorf
- * @author Patrick Koenemann
+ * @author Rainer Ostendorf - Initial contribution
+ * @author Patrick Koenemann - contribution
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
  * @author Mihaela Memova - changed the calling of the stopHttpClient() method, fixed the hardcoded URL path, fixed the
  *         for loop condition part
  */
+@NonNullByDefault
 public class FrontierSiliconRadioConnection {
 
     private final Logger logger = LoggerFactory.getLogger(FrontierSiliconRadioConnection.class);
@@ -49,15 +52,15 @@ public class FrontierSiliconRadioConnection {
     private final String pin;
 
     /** The session ID we get from the radio after logging in. */
-    private String sessionId;
+    private @Nullable String sessionId;
 
     /** http clients, store cookies, so it is kept in connection class. */
-    private HttpClient httpClient = null;
+    private @Nullable HttpClient httpClient = null;
 
     /** Flag indicating if we are successfully logged in. */
     private boolean isLoggedIn = false;
 
-    public FrontierSiliconRadioConnection(String hostname, int port, String pin, HttpClient httpClient) {
+    public FrontierSiliconRadioConnection(String hostname, int port, String pin, @Nullable HttpClient httpClient) {
         this.hostname = hostname;
         this.port = port;
         this.pin = pin;
@@ -75,6 +78,7 @@ public class FrontierSiliconRadioConnection {
      * @return <code>true</code> if login was successful; <code>false</code> otherwise.
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
+    @SuppressWarnings("null")
     public boolean doLogin() throws IOException {
         isLoggedIn = false; // reset login flag
 
@@ -129,7 +133,7 @@ public class FrontierSiliconRadioConnection {
      * @return request result
      * @throws IOException if the request failed.
      */
-    public FrontierSiliconRadioApiResult doRequest(String requestString) throws IOException {
+    public @Nullable FrontierSiliconRadioApiResult doRequest(String requestString) throws IOException {
         return doRequest(requestString, null);
     }
 
@@ -145,7 +149,9 @@ public class FrontierSiliconRadioConnection {
      * @return request result
      * @throws IOException if the request failed.
      */
-    public FrontierSiliconRadioApiResult doRequest(String requestString, String params) throws IOException {
+    @SuppressWarnings("null")
+    public @Nullable FrontierSiliconRadioApiResult doRequest(String requestString, @Nullable String params)
+            throws IOException {
         // 3 retries upon failure
         for (int i = 0; i < 3; i++) {
             if (!isLoggedIn && !doLogin()) {

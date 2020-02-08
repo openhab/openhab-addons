@@ -25,15 +25,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioConstants;
 
 /**
  * Radio service mock.
  *
+ * @author Markus Rathgeb - Initial contribution
  * @author Markus Rathgeb - Migrated from Groovy to pure Java, made more robust
  * @author Velin Yordanov - Small adjustments
  */
+@NonNullByDefault
 public class RadioServiceDummy extends HttpServlet {
     private static Map<Integer, String> requestParameters = new ConcurrentHashMap<>();
 
@@ -70,26 +74,26 @@ public class RadioServiceDummy extends HttpServlet {
 
     private final int httpStatus;
 
-    private String tagToReturn;
-    private String responseToReturn;
+    private String tagToReturn = "";
+    private String responseToReturn = "";
 
     private boolean isInvalidResponseExpected;
     private boolean isInvalidValueExpected;
     private boolean isOKAnswerExpected = true;
 
-    private String powerValue;
-    private String powerTag;
+    private @Nullable String powerValue;
+    private String powerTag = "";
 
-    private String muteValue;
-    private String muteTag;
+    private @Nullable String muteValue;
+    private String muteTag = "";
 
-    private String absoluteVolumeValue;
-    private String absoluteVolumeTag;
+    private @Nullable String absoluteVolumeValue;
+    private String absoluteVolumeTag = "";
 
-    private String modeValue;
-    private String modeTag;
+    private @Nullable String modeValue;
+    private String modeTag = "";
 
-    private String radioStation;
+    private String radioStation = "";
 
     public RadioServiceDummy() {
         this.httpStatus = HttpStatus.OK_200;
@@ -128,8 +132,9 @@ public class RadioServiceDummy extends HttpServlet {
         return requestParameters.isEmpty();
     }
 
+    @SuppressWarnings("null")
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws ServletException, IOException {
         String queryString = request.getQueryString();
         Collection<String> requestParameterNames = Collections.list(request.getParameterNames());
@@ -226,11 +231,11 @@ public class RadioServiceDummy extends HttpServlet {
         }
     }
 
-    protected String makeU8Tag(final String value) {
+    protected String makeU8Tag(final @Nullable String value) {
         return String.format("<value><u8>%s</u8></value>", value);
     }
 
-    protected String makeU32Tag(final String value) {
+    protected String makeU32Tag(final @Nullable String value) {
         return String.format("<value><u32>%s</u32></value>", value);
     }
 

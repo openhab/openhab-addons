@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fsinternetradio.test;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
@@ -22,9 +24,10 @@ import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandl
  * @author Velin Yordanov - initial contribution
  *
  */
+@NonNullByDefault
 public class MockedRadioHandler extends FSInternetRadioHandler {
 
-    public MockedRadioHandler(Thing thing, HttpClient client) {
+    public MockedRadioHandler(Thing thing, @Nullable HttpClient client) {
         super(thing, client);
     }
 

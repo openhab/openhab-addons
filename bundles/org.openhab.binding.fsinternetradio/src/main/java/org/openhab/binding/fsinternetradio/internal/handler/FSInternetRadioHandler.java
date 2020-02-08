@@ -19,6 +19,9 @@ import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -46,20 +49,26 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - removed the unused boolean parameter, changed the check for the PIN
  * @author Svilen Valkanov - changed handler initialization
  */
+@NonNullByDefault
 public class FSInternetRadioHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioHandler.class);
 
+    @Nullable
     FrontierSiliconRadio radio;
-    private final HttpClient httpClient;
+    private final @Nullable HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
-    private ScheduledFuture<?> updateJob;
+    private @Nullable ScheduledFuture<?> updateJob;
 
     /** Runnable for job {@link #updateJob} for periodic refresh. */
     private final Runnable updateRunnable = new Runnable() {
+        @SuppressWarnings("null")
         @Override
         public void run() {
+            if (radio == null) {
+                return;
+            }
             if (!radio.isLoggedIn()) {
                 // radio is not set, so set all channels to 'undefined'
                 for (Channel channel : getThing().getChannels()) {
@@ -116,7 +125,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         }
     };
 
-    public FSInternetRadioHandler(Thing thing, HttpClient httpClient) {
+    public FSInternetRadioHandler(@Nullable Thing thing, @Nullable HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }
@@ -149,9 +158,13 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     private void radioLogin() {
         scheduler.execute(new Runnable() {
+            @SuppressWarnings("null")
             @Override
             public void run() {
                 try {
+                    if (radio == null) {
+                        return;
+                    }
                     if (radio.login()) {
                         // Thing initialized. If done set status to ONLINE to indicate proper working.
                         updateStatus(ThingStatus.ONLINE);
@@ -176,8 +189,10 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         radio = null;
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        Validate.notNull(radio);
         if (!radio.isLoggedIn()) {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);

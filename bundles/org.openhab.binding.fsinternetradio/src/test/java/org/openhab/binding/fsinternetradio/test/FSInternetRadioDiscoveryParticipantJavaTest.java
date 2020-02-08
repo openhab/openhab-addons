@@ -114,17 +114,6 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
     }
 
     /**
-     * Verify no discovery result for FSInternetRadio device with null details.
-     *
-     * @throws ValidationException
-     */
-    @Test
-    public void noDiscoveryResultIfNullDetails() throws ValidationException {
-        RemoteDevice fsInterntRadioDeviceWithNullDetails = new RemoteDevice(null);
-        assertNull(discoveryParticipant.createResult(fsInterntRadioDeviceWithNullDetails));
-    }
-
-    /**
      * Verify no discovery result for unknown device.
      *
      * @throws ValidationException
