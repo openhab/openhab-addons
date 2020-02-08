@@ -31,6 +31,8 @@ import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the discovery service for internet radios based on the fontier silicon chipset. Unfortunately, it is not
@@ -43,6 +45,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(immediate = true)
 public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryParticipant {
+    private final Logger logger = LoggerFactory.getLogger(FSInternetRadioDiscoveryParticipant.class);
 
     /** Map from UPnP manufacturer to model number for supported radios; filled in static initializer below. */
     private static final Map<String, Set<String>> SUPPORTED_RADIO_MODELS = new HashMap<String, Set<String>>();
@@ -95,6 +98,11 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         SUPPORTED_RADIO_MODELS.put("SMRS18A1", radiosWithoutManufacturer);
         SUPPORTED_RADIO_MODELS.put("SMRS30A1", radiosWithoutManufacturer);
         SUPPORTED_RADIO_MODELS.put("SMRS35A1", radiosWithoutManufacturer);
+
+        // as reported on https://community.openhab.org/t/controlling-teufel-3sixty/88690/3
+        final Set<String> teufelRadios = new HashSet<String>();
+        SUPPORTED_RADIO_MODELS.put("TEUFELS", teufelRadios);
+        teufelRadios.add("3SIXTY");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/5
         final Set<String> ttmicroRadios = new HashSet<String>();
@@ -150,14 +158,13 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
                 if (manufacturer != null) {
                     properties.put(PROPERTY_MANUFACTURER, manufacturer);
                 }
-                final String model = getModel(device);
+                final String model = getModel(device) != null ? getModel(device) : getFriendlyName(device);
                 if (model != null) {
                     properties.put(PROPERTY_MODEL, model);
                 }
-
-                final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(device.getDisplayString()).build();
-                return result;
+                final String thingName = (manufacturer == null) && (getModel(device) == null) ? getFriendlyName(device)
+                        : device.getDisplayString();
+                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(thingName).build();
             }
         }
         return null;
@@ -165,20 +172,27 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
 
     private String getManufacturer(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();
-        if (details != null) {
-            if (details.getManufacturerDetails() != null) {
-                return details.getManufacturerDetails().getManufacturer();
-            }
+        if ((details != null) && (details.getManufacturerDetails() != null)) {
+            String manufacturer = details.getManufacturerDetails().getManufacturer().trim();
+            return manufacturer.isEmpty() ? null : manufacturer;
         }
         return null;
     }
 
     private String getModel(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();
-        if (details != null) {
-            if (details.getModelDetails() != null) {
-                return details.getModelDetails().getModelNumber();
-            }
+        if ((details != null) && (details.getModelDetails().getModelNumber() != null)) {
+            String model = details.getModelDetails().getModelNumber().trim();
+            return model.isEmpty() ? null : model;
+        }
+        return null;
+    }
+
+    private String getFriendlyName(RemoteDevice device) {
+        final DeviceDetails details = device.getDetails();
+        if ((details != null) && (details.getFriendlyName() != null)) {
+            String name = details.getFriendlyName().trim();
+            return name.isEmpty() ? null : name;
         }
         return null;
     }
@@ -203,22 +217,28 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
      * If <code>device</code> is a supported device, a unique thing ID (e.g. serial number) must be returned. Further
      * supported devices should be added here, based on the available UPnP information.
      */
+    @SuppressWarnings("null")
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();
+        final String friendlyName = details.getFriendlyName();
+        logger.debug("Discovered unit:  {}", friendlyName);
+
         if (details != null) {
             final ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
-            final String manufacturer = manufacturerDetails == null ? null : manufacturerDetails.getManufacturer();
             final ModelDetails modelDetails = details.getModelDetails();
             if (modelDetails != null) {
                 // check manufacturer and model number
+                final String manufacturer = manufacturerDetails == null ? null : manufacturerDetails.getManufacturer();
                 final String modelNumber = modelDetails.getModelNumber();
+                String serialNumber = details.getSerialNumber();
+                logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
                 if (modelNumber != null) {
                     if (manufacturer != null) {
                         final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS
                                 .get(manufacturer.trim().toUpperCase());
                         if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
-                            return new ThingUID(THING_TYPE_RADIO, details.getSerialNumber());
+                            return new ThingUID(THING_TYPE_RADIO, serialNumber);
                         }
                     }
                     // check model name and number
@@ -226,7 +246,22 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
                     if (modelName != null) {
                         final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS.get(modelName.trim().toUpperCase());
                         if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
-                            return new ThingUID(THING_TYPE_RADIO, details.getSerialNumber());
+                            return new ThingUID(THING_TYPE_RADIO, serialNumber);
+                        }
+                    }
+                }
+
+                if (((manufacturer == null) || manufacturer.trim().isEmpty())
+                        && ((modelNumber == null) || modelNumber.trim().isEmpty())) {
+                    // Some devices report crappy UPnP device description so manufacturer and model are ""
+                    // In this case we try to find the match in friendlyName
+                    for (Map.Entry<String, Set<String>> entry : SUPPORTED_RADIO_MODELS.entrySet()) {
+                        final String uname = friendlyName.toUpperCase();
+                        final Set<String> set = entry.getValue();
+                        for (String model : set) {
+                            if ((model != null) && !model.isEmpty() && uname.contains(model)) {
+                                return new ThingUID(THING_TYPE_RADIO, serialNumber);
+                            }
                         }
                     }
                 }
