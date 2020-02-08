@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.bluetooth.am43.internal.data;
 
-import org.openhab.binding.bluetooth.am43.internal.command.ControlCommand;
-
 /**
- * The {@link ControlAction} list possible controls actions that can be sent through {@link ControlCommand}
+ * The {@link ControlAction} list possible controls actions that can be sent through
+ * {@link org.openhab.binding.bluetooth.am43.internal.command.ControlCommand}
  *
  * @author Connor Petty - Initial contribution
  */

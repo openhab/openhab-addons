@@ -14,10 +14,10 @@ package org.openhab.binding.bluetooth.am43.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.am43.internal.command.SetSettingsCommand;
 
 /**
- * The {@link MotorSettings} is contains the settings which are sent in batch to {@link SetSettingsCommand}.
+ * The {@link MotorSettings} is contains the settings which are sent in batch to
+ * {@link org.openhab.binding.bluetooth.am43.internal.command.SetSettingsCommand}.
  * These settings cannot be changed individually and must be sent together in the same command.
  *
  * @author Connor Petty - Initial contribution
@@ -29,6 +29,11 @@ public class MotorSettings {
     private Direction direction;
     @Nullable
     private OperationMode operationMode;
+
+    private boolean topLimitSet;
+
+    private boolean bottomLimitSet;
+
     private int type = 0;
     // speed by rpm
     private int speed = 0;
@@ -53,6 +58,22 @@ public class MotorSettings {
 
     public void setOperationMode(OperationMode operationMode) {
         this.operationMode = operationMode;
+    }
+
+    public boolean isTopLimitSet() {
+        return topLimitSet;
+    }
+
+    public void setTopLimitSet(boolean value) {
+        this.topLimitSet = value;
+    }
+
+    public boolean isBottomLimitSet() {
+        return bottomLimitSet;
+    }
+
+    public void setBottomLimitSet(boolean value) {
+        this.bottomLimitSet = value;
     }
 
     public int getType() {

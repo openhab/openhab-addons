@@ -30,13 +30,15 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public abstract class AM43Command {
 
-    public static final byte[] REQUEST_PREFIX = { 0, (byte) 0xFF, 0, 0 };
-    public static final byte HEADER_PREFIX = (byte) 0x9a;
+    private static final byte[] REQUEST_PREFIX = { 0, (byte) 0xFF, 0, 0 };
+    private static final byte HEADER_PREFIX = (byte) 0x9a;
 
     private Lock stateLock = new ReentrantLock();
+
     private Condition stateCondition = stateLock.newCondition();
 
     private volatile State state;
+
     private byte header;
 
     private byte[] data;

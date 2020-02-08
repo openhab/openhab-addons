@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.am43;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.openhab.binding.bluetooth.am43.internal.data.ControlAction;
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public class CommandTest {
 
     @Test

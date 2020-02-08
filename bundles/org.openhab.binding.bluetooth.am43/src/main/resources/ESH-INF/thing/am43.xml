@@ -4,7 +4,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-<!-- Sample Thing Type -->
 	<thing-type id="am43">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bluegiga" />
@@ -44,10 +43,10 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 			<parameter name="refreshInterval" type="integer" min="1" max="86400" unit="s">
 				<label>Refresh Interval</label>
 				<advanced>true</advanced>
-				<description>Refresh interval for battery and light sensor data in seconds. This could have impact to battery lifetime</description>
+				<description>Refresh interval for battery and light sensor data (in seconds). This could impact battery lifetime</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="commandTimeout" type="boolean" unit="ms">
+			<parameter name="commandTimeout" type="integer" unit="ms">
 				<label>Command Timeout</label>
 				<advanced>true</advanced>
 				<description>The amount of time, in milliseconds, a command should take before it times out.</description>
@@ -68,7 +67,7 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 		</state>
 	</channel-type>
 	
-	<channel-type id="am43_topLimitSet">
+	<channel-type id="am43_topLimitSet" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Top Limit is Set</label>
 		<state readOnly="true"/>
@@ -102,44 +101,42 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 		<item-type>Number:Dimensionless</item-type>
 		<label>Speed</label>
 		<description>The speed value in RPMs set for this motor</description>
-		<state readOnly="false" pattern="%.0f RPM"/>
+		<state readOnly="false" pattern="%d RPM"/>
 	</channel-type>
 	
 	<channel-type id="am43_position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<description>The percent value of the blind position</description>
-		<state readOnly="false" pattern="%.0f %%" min="0" max="100" />
+		<state readOnly="false" pattern="%d %%" min="0" max="100" />
 	</channel-type>
 
 	<channel-type id="am43_length" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Length</label>
 		<description>The distance the blinds travel from full open and close (not really important)</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="am43_diameter" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Diameter</label>
 		<description>The diameter of the pulley of this motor (not really important)</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	
 	<channel-type id="am43_type" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Device Type</label>
 		<description>The type of blinds this motor is operating. (not really important)</description>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
 	<channel-type id="am43_lightLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Light Level</label>
 		<description>Light level detected by the solar sensor. Will range from 0-10</description>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	
-
-
 </thing:thing-descriptions>
