@@ -144,7 +144,6 @@ public class LinkyHandler extends BaseThingHandler {
 
             // Do a first call to get data; this first call will fail with code 302
             getConsumptionData(DAILY, LocalDate.now(), LocalDate.now(), false);
-
             updateStatus(ThingStatus.ONLINE);
             return true;
         } catch (IOException e) {
@@ -190,6 +189,7 @@ public class LinkyHandler extends BaseThingHandler {
             yesterday = -1;
             while (jump < result.getData().size()) {
                 double consumption = result.getData().get(jump).valeur;
+                logger.debug("consumption at jump {}: {}", jump, consumption);
                 if (consumption > 0) {
                     if (rangeStart.get(weekFields.weekOfWeekBasedYear()) == lastWeekNumber) {
                         lastWeek += consumption;
