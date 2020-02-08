@@ -219,8 +219,8 @@ public class LinkyHandler extends BaseThingHandler {
                 logger.debug("Response redirects to {}", response.header("Location"));
             }
             String body = (response.body() != null) ? response.body().string() : null;
-            logger.debug("Response body: === {} ===", body);
-            if (body != null) {
+            if (body != null && !body.isEmpty()) {
+                logger.debug("Response body: {}", body);
                 result = GSON.fromJson(body, EnedisInfo.class);
             }
             response.close();
