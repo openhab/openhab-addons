@@ -124,7 +124,9 @@ public class LinkyHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                updateLinkyData();
+                updateLinkyDailyData();
+                updateLinkyMonthlyData();
+                updateLinkyYearlyData();
             }, 0, config.refreshInterval, TimeUnit.MINUTES);
         } catch (IOException e) {
             logger.debug("Exception while trying to login: {}", e.getMessage(), e);
@@ -133,9 +135,14 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     /**
-     * Request new data and updates channels
+     * Request new dayly/weekly data and updates channels
      */
-    private void updateLinkyData() {
+    private void updateLinkyDailyData() {
+        if (!isLinked(YESTERDAY) && !isLinked(LAST_WEEK) && !isLinked(THIS_WEEK)) {
+            logger.debug("updateLinkyDailyData ignored because no linked channel");
+            return;
+        }
+
         final LocalDate today = LocalDate.now();
 
         double lastWeek = -1;
@@ -175,10 +182,22 @@ public class LinkyHandler extends BaseThingHandler {
         updateKwhChannel(YESTERDAY, yesterday);
         updateKwhChannel(THIS_WEEK, thisWeek);
         updateKwhChannel(LAST_WEEK, lastWeek);
+    }
+
+    /**
+     * Request new monthly data and updates channels
+     */
+    private void updateLinkyMonthlyData() {
+        if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
+            logger.debug("updateLinkyMonthlyData ignored because no linked channel");
+            return;
+        }
+
+        final LocalDate today = LocalDate.now();
 
         double lastMonth = -1;
         double thisMonth = -1;
-        result = getEnedisInfo(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today);
+        EnedisInfo result = getEnedisInfo(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today);
         if (result != null && result.success()) {
             lastMonth = result.getData().stream().filter(EnedisInfo.Data::isPositive).findFirst().get().valeur;
             thisMonth = result.getData().stream().filter(EnedisInfo.Data::isPositive).reduce((first, second) -> second)
@@ -186,10 +205,22 @@ public class LinkyHandler extends BaseThingHandler {
         }
         updateKwhChannel(LAST_MONTH, lastMonth);
         updateKwhChannel(THIS_MONTH, thisMonth);
+    }
+
+    /**
+     * Request new yearly data and updates channels
+     */
+    private void updateLinkyYearlyData() {
+        if (!isLinked(LAST_YEAR) && !isLinked(THIS_YEAR)) {
+            logger.debug("updateLinkyYearlyData ignored because no linked channel");
+            return;
+        }
+
+        final LocalDate today = LocalDate.now();
 
         double thisYear = -1;
         double lastYear = -1;
-        result = getEnedisInfo(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today);
+        EnedisInfo result = getEnedisInfo(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today);
         if (result != null && result.success()) {
             int elementQuantity = result.getData().size();
             thisYear = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : -1;
@@ -267,7 +298,23 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateLinkyData();
+            switch (channelUID.getId()) {
+                case YESTERDAY:
+                case LAST_WEEK:
+                case THIS_WEEK:
+                    updateLinkyDailyData();
+                    break;
+                case LAST_MONTH:
+                case THIS_MONTH:
+                    updateLinkyMonthlyData();
+                    break;
+                case LAST_YEAR:
+                case THIS_YEAR:
+                    updateLinkyYearlyData();
+                    break;
+                default:
+                    break;
+            }
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
         }
