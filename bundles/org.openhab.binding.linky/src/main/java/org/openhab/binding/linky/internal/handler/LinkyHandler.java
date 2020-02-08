@@ -53,6 +53,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import okhttp3.FormBody;
+import okhttp3.FormBody.Builder;
 import okhttp3.OkHttpClient;
 
 /**
@@ -67,7 +68,8 @@ public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
     private static final String LOGIN_BASE_URI = "https://espace-client-connexion.enedis.fr/auth/UI/Login";
-    private static final String LOGIN_BODY_BUILDER = "encoded=true&gx_charset=UTF-8&SunQueryParamsString=%s&IDToken1=%s&IDToken2=%s";
+    // private static final String LOGIN_BODY_BUILDER =
+    // "encoded=true&gx_charset=UTF-8&SunQueryParamsString=%s&IDToken1=%s&IDToken2=%s";
     private static final String API_BASE_URI = "https://espace-client-particuliers.enedis.fr/group/espace-particuliers/suivi-de-consommation";
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final Builder LOGIN_BODY_BUILDER = new FormBody.Builder().add("encoded", "true")
@@ -338,6 +340,7 @@ public class LinkyHandler extends BaseThingHandler {
                     result = gson.fromJson(body, LinkyConsumptionData.class);
                 }
             }
+            response.close();
         } catch (IOException e) {
             logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -347,10 +350,24 @@ public class LinkyHandler extends BaseThingHandler {
         if (tryRelog && login()) {
             result = getConsumptionData(timeScale, from, to, false);
         }
-        try {
-            stream.close();
-        } catch (IOException e) {
-        }
+        // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(ENEDIS_DATE_FORMAT),
+        // to.format(ENEDIS_DATE_FORMAT));
+        // InputStream stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
+        // logger.debug("POST {} requestContent {}", API_BASE_URI, requestContent);
+        // try {
+        // String jsonResponse = HttpUtil.executeUrl("POST", API_BASE_URI, stream, "application/x-www-form-urlencoded",
+        // HTTP_DEFAULT_TIMEOUT_MS);
+        // if (jsonResponse != null) {
+        // result = GSON.fromJson(jsonResponse, EnedisInfo.class);
+        // }
+        // } catch (IOException e) {
+        // logger.debug("Exception calling Enedis API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        // }
+        // try {
+        // stream.close();
+        // } catch (IOException e) {
+        // }
         return result;
     }
 
