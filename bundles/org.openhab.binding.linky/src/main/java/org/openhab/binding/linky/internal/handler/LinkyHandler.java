@@ -218,6 +218,9 @@ public class LinkyHandler extends BaseThingHandler {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
             return;
         }
+        updateKwhChannel(YESTERDAY, yesterday);
+        updateKwhChannel(THIS_WEEK, thisWeek);
+        updateKwhChannel(LAST_WEEK, lastWeek);
 
         double lastMonth = -1;
         double thisMonth = -1;
