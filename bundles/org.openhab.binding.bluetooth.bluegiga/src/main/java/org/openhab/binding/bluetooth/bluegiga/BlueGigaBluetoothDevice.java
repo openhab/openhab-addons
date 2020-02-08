@@ -200,12 +200,18 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                                     @SuppressWarnings("unchecked")
                                     Map<Short, int[]> eirRecord = (Map<Short, int[]>) obj;
                                     Map.Entry<Short, int[]> eirEntry = eirRecord.entrySet().iterator().next();
-                                    int[] manufacturerInt = eirEntry.getValue();
-                                    manufacturerData = new byte[manufacturerInt.length];
-                                    for (int i = 0; i < manufacturerInt.length; i++) {
-                                        manufacturerData[i] = (byte) manufacturerInt[i];
-                                    }
+
                                     manufacturer = (int) eirEntry.getKey();
+
+                                    int[] manufacturerInt = eirEntry.getValue();
+                                    manufacturerData = new byte[manufacturerInt.length + 2];
+                                    // Convert short Company ID to bytes and add it to manufacturerData
+                                    manufacturerData[0] = (byte) (manufacturer & 0xff);
+                                    manufacturerData[1] = (byte) ((manufacturer >> 8) & 0xff);
+                                    // Add Convert int custom data nd add it to manufacturerData
+                                    for (int i = 0; i < manufacturerInt.length; i++) {
+                                        manufacturerData[i + 2] = (byte) manufacturerInt[i];
+                                    }
                                 } catch (ClassCastException e) {
                                     logger.debug("Unsupported manufacturer specific record received from device {}",
                                             address);
