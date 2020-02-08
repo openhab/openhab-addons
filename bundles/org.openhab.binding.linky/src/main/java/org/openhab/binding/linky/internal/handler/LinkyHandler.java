@@ -44,10 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import okhttp3.FormBody;
 import okhttp3.FormBody.Builder;
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -103,13 +103,10 @@ public class LinkyHandler extends BaseThingHandler {
                     .build();
             logger.debug("POST {}", LOGIN_BASE_URI);
             Response response = client.newCall(requestLogin).execute();
-            logger.debug("Response status code {} message {} isSuccessful {} isRedirect {} body {}", response.code(),
-                    response.message(), response.isSuccessful(), response.isRedirect(), response.body());
-            Headers headers = response.headers();
-            if (headers != null) {
-                for (String name : headers.names()) {
-                    logger.debug("Header {}: {}", name, headers.get(name));
-                }
+            logger.debug("Response status {} {} => isSuccessful() {}", response.code(), response.message(),
+                    response.isSuccessful());
+            if (response.isRedirect()) {
+                logger.debug("Response redirects to {}", response.header("Location"));
             }
             response.close();
             // String requestContent = String.format(LOGIN_BODY_BUILDER,
@@ -141,6 +138,9 @@ public class LinkyHandler extends BaseThingHandler {
     private void updateLinkyData() {
         final LocalDate today = LocalDate.now();
 
+        double lastWeek = -1;
+        double thisWeek = -1;
+        double yesterday = -1;
         LocalDate rangeStart = today.minusDays(9);
         EnedisInfo result = getEnedisInfo(DAILY, rangeStart, today);
         if (result != null && result.success()) {
@@ -152,9 +152,9 @@ public class LinkyHandler extends BaseThingHandler {
 
             int lastWeekNumber = rangeStart.get(weekFields.weekOfWeekBasedYear());
 
-            double lastWeek = 0;
-            double thisWeek = 0;
-            double yesterday = -1;
+            lastWeek = 0;
+            thisWeek = 0;
+            yesterday = -1;
             while (jump < result.getData().size()) {
                 double consumption = result.getData().get(jump).valeur;
                 if (consumption > 0) {
@@ -168,11 +168,10 @@ public class LinkyHandler extends BaseThingHandler {
                 jump++;
                 rangeStart = rangeStart.plusDays(1);
             }
-
-            updateKwhChannel(YESTERDAY, yesterday);
-            updateKwhChannel(THIS_WEEK, thisWeek);
-            updateKwhChannel(LAST_WEEK, lastWeek);
         }
+        updateKwhChannel(YESTERDAY, yesterday);
+        updateKwhChannel(THIS_WEEK, thisWeek);
+        updateKwhChannel(LAST_WEEK, lastWeek);
 
         double lastMonth = -1;
         double thisMonth = -1;
@@ -214,14 +213,22 @@ public class LinkyHandler extends BaseThingHandler {
         Request requestData = new Request.Builder().url(API_BASE_URI).post(formBody).build();
         logger.debug("POST {}", API_BASE_URI);
         try (Response response = client.newCall(requestData).execute()) {
-            if (response.body() != null) {
-                String body = response.body().string();
+            logger.debug("Response status {} {} => isSuccessful() {}", response.code(), response.message(),
+                    response.isSuccessful());
+            if (response.isRedirect()) {
+                logger.debug("Response redirects to {}", response.header("Location"));
+            }
+            String body = (response.body() != null) ? response.body().string() : null;
+            logger.debug("Response body: === {} ===", body);
+            if (body != null) {
                 result = GSON.fromJson(body, EnedisInfo.class);
             }
             response.close();
         } catch (IOException e) {
             logger.debug("Exception calling Enedis API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception while converting JSON response : {}", e.getMessage());
         }
         // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(ENEDIS_DATE_FORMAT),
         // to.format(ENEDIS_DATE_FORMAT));
