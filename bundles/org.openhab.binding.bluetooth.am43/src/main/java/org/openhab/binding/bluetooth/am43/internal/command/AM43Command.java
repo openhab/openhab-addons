@@ -33,9 +33,9 @@ public abstract class AM43Command {
     private static final byte[] REQUEST_PREFIX = { 0, (byte) 0xFF, 0, 0 };
     private static final byte HEADER_PREFIX = (byte) 0x9a;
 
-    private Lock stateLock = new ReentrantLock();
+    private final Lock stateLock = new ReentrantLock();
 
-    private Condition stateCondition = stateLock.newCondition();
+    private final Condition stateCondition = stateLock.newCondition();
 
     private volatile State state;
 
