@@ -60,7 +60,7 @@
 			</parameter>
 			<parameter name="refreshLampState" type="boolean">
 				<default>false</default>
-				<label>Poll for lamp state</label>
+				<label>Poll for Lamp State</label>
 				<description>Enable polling for the lamp state. Only considered if the refresh interval is greater than zero.</description>
 			</parameter>
 		</config-description>
@@ -93,12 +93,12 @@
 
 	<channel-type id="lampHours">
 		<item-type>Number</item-type>
-		<label>Lamp hours</label>
+		<label>Lamp Hours</label>
 		<description>How long the lamp has been in use (in hours)</description>
 		<state readOnly="true" pattern="%d h" />
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
-				<label>Lamp number</label>
+				<label>Lamp Number</label>
 				<description>Show used hours for this lamp</description>
 				<default>1</default>
 			</parameter>
@@ -107,12 +107,12 @@
 
 	<channel-type id="lampActive">
 		<item-type>Switch</item-type>
-		<label>Lamp active</label>
+		<label>Lamp Active</label>
 		<description>Is the lamp in use?</description>
 		<state readOnly="true" />
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
-				<label>Lamp number</label>
+				<label>Lamp Number</label>
 				<description>Show activity for this lamp</description>
 				<default>1</default>
 			</parameter>
