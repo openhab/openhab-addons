@@ -26,7 +26,10 @@ import okhttp3.HttpUrl;
  * @author Gaël L'hopital - Initial contribution
  */
 public class LinkyCookieJar implements CookieJar {
-    private final List<Cookie> cookies = new ArrayList<>();
+
+    private static final String LOGIN_URL_PATH = "/auth/UI/Login";
+
+    private List<Cookie> cookies = new ArrayList<>();
 
     @Override
     public void saveFromResponse(final HttpUrl url, final List<Cookie> cookies) {
@@ -35,6 +38,9 @@ public class LinkyCookieJar implements CookieJar {
 
     @Override
     public List<Cookie> loadForRequest(final HttpUrl url) {
+        if (LOGIN_URL_PATH.equals(url.url().getPath())) {
+            cookies = new ArrayList<>();
+        }
         return cookies;
     }
 }

@@ -74,8 +74,8 @@ public class LinkyHandler extends BaseThingHandler {
             .add("gx_charset", "UTF-8").add("SunQueryParamsString",
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
 
-    private OkHttpClient client = new OkHttpClient.Builder().followRedirects(false).cookieJar(new LinkyCookieJar())
-            .build();
+    private final OkHttpClient client = new OkHttpClient.Builder().followRedirects(false)
+            .cookieJar(new LinkyCookieJar()).build();
     private final Gson GSON = new Gson();
 
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
@@ -106,9 +106,6 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("login");
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-
-        // TODO try to just reset the cookie rather than instantiate a new HTTP client
-        client = new OkHttpClient.Builder().followRedirects(false).cookieJar(new LinkyCookieJar()).build();
 
         try {
             Request requestLogin = new Request.Builder().url(LOGIN_BASE_URI)
