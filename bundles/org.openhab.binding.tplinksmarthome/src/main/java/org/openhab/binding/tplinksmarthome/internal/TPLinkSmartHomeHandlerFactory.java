@@ -88,7 +88,7 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
                 device = new RangeExtenderDevice();
                 break;
             case STRIP:
-                device = new PowerStripDevice(thingTypeUID);
+                device = new PowerStripDevice(type);
                 break;
             default:
                 return null;

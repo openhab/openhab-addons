@@ -30,8 +30,8 @@ Fragment-Host: org.openhab.binding.hue
 	org.apache.xbean.finder;version='[4.12.0,4.12.1)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
 	org.jupnp;version='[2.5.2,2.5.3)',\
-	org.openhab.binding.hue;version='[2.5.1,2.5.2)',\
-	org.openhab.binding.hue.tests;version='[2.5.1,2.5.2)',\
+	org.openhab.binding.hue;version='[2.5.2,2.5.3)',\
+	org.openhab.binding.hue.tests;version='[2.5.2,2.5.3)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.discovery;version='[2.5.0,2.5.1)',\

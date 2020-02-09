@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BAE091xAnalogConfiguration} is a helper class for the BAE091x ADC Pin configuration
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class BAE091xAnalogConfiguration {
     public Boolean hires = false;
 }

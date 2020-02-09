@@ -33,8 +33,9 @@ import org.slf4j.LoggerFactory;
 public class Connection {
 
     public static final int TP_LINK_SMART_HOME_PORT = 9999;
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 3_000;
 
-    private Logger logger = LoggerFactory.getLogger(Connection.class);
+    private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private @Nullable String ipAddress;
 
@@ -43,7 +44,7 @@ public class Connection {
      *
      * @param ipAddress ip address of the connection
      */
-    public Connection(@Nullable String ipAddress) {
+    public Connection(@Nullable final String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
@@ -52,7 +53,7 @@ public class Connection {
      *
      * @param ipAddress The ip address to connect to
      */
-    public void setIpAddress(String ipAddress) {
+    public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
@@ -63,7 +64,7 @@ public class Connection {
      * @return decrypted returned json result from the device
      * @throws IOException exception in case device not reachable
      */
-    public String sendCommand(String command) throws IOException {
+    public synchronized String sendCommand(final String command) throws IOException {
         logger.trace("Executing command: {}", command);
         try (Socket socket = createSocket(); final OutputStream outputStream = socket.getOutputStream()) {
             outputStream.write(CryptUtil.encryptWithLength(command));
@@ -81,7 +82,7 @@ public class Connection {
      * @return decrypted result
      * @throws IOException exception in case device not reachable
      */
-    private String readReturnValue(Socket socket) throws IOException {
+    private String readReturnValue(final Socket socket) throws IOException {
         try (InputStream is = socket.getInputStream()) {
             return CryptUtil.decryptWithLength(is);
         }
@@ -92,12 +93,15 @@ public class Connection {
      *
      * @return new Socket instance
      * @throws UnknownHostException exception in case the host could not be determined
-     * @throws IOException          exception in case device not reachable
+     * @throws IOException exception in case device not reachable
      */
     protected Socket createSocket() throws UnknownHostException, IOException {
         if (ipAddress == null) {
             throw new IOException("Ip address not set. Wait for discovery or manually trigger discovery process.");
         }
-        return new Socket(ipAddress, TP_LINK_SMART_HOME_PORT);
+        final Socket socket = new Socket(ipAddress, TP_LINK_SMART_HOME_PORT);
+
+        socket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
+        return socket;
     }
 }

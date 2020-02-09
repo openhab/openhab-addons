@@ -124,9 +124,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         }
         sensors.clear();
 
-        if (configuration.id != null) {
+        final String id = configuration.id;
+        if (id != null) {
             try {
-                this.sensorId = new SensorId(configuration.id);
+                this.sensorId = new SensorId(id);
             } catch (IllegalArgumentException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "sensor id format mismatch");
                 return false;

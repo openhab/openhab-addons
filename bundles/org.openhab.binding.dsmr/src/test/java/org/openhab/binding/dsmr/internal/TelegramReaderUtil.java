@@ -57,7 +57,7 @@ public final class TelegramReaderUtil {
      * @return a P1Telegram object
      */
     public static P1Telegram readTelegram(String telegramName, TelegramState expectedTelegramState) {
-        AtomicReference<P1Telegram> p1Telegram = new AtomicReference<>(null);
+        AtomicReference<P1Telegram> p1Telegram = new AtomicReference<>();
         byte[] telegram = readRawTelegram(telegramName);
         P1TelegramParser parser = new P1TelegramParser(p1Telegram::set);
 

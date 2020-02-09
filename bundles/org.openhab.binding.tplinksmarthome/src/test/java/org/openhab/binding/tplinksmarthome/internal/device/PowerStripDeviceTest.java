@@ -52,7 +52,7 @@ public class PowerStripDeviceTest extends DeviceTestBase<PowerStripDevice> {
             .collect(Collectors.toList()).toArray(new String[0]);
 
     public PowerStripDeviceTest() throws IOException {
-        super(new PowerStripDevice(HS300.thingTypeUID()), "hs300_get_sysinfo_response");
+        super(new PowerStripDevice(HS300), "hs300_get_sysinfo_response");
     }
 
     @Override

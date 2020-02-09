@@ -15,7 +15,7 @@ You need to manually add a new item using its IP address.
 ## Thing Configuration
 
 As a minimum, the IP address is needed:
-* host - The hostname of the OpenGarage controller. Typically you'd use an IP address such as `192.168.0.5` for this field.
+* hostname - The hostname of the OpenGarage controller. Typically you'd use an IP address such as `192.168.0.5` for this field.
 * port - the port the OpenGarage is listening on. Defaults to port 80
 * refresh - The frequency with which to refresh information from the OpenGarage controller specified in seconds. Defaults to 10 seconds.
 * password - The password to send commands to the OpenGarage. Defaults to "opendoor"
@@ -34,7 +34,7 @@ As a minimum, the IP address is needed:
 opengarage.things:
 
 ```
-opengarage:opengarage:OpenGarage [ host="192.168.0.5" ]
+opengarage:opengarage:OpenGarage [ hostname="192.168.0.5" ]
 ```
 
 opengarage.items:

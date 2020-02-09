@@ -97,7 +97,6 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
 
             return new ByteArrayInputStream(CryptUtil.encryptWithLength(stateResponse));
         }).when(socket).getInputStream();
-
     }
 
     /**

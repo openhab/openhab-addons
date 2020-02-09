@@ -14,6 +14,7 @@ package org.openhab.binding.satel.internal.handler;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -32,6 +33,7 @@ import org.openhab.binding.satel.internal.types.TroubleState;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
 
     public WirelessChannelsHandler(Thing thing) {
@@ -42,25 +44,27 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
     public void initialize() {
         super.initialize();
 
-        // add/remove channels depending on whether or not the device is wireless
-        final int wirelessDeviceId = thingConfig.getId() - bridgeHandler.getIntegraType().getOnMainboard();
-        ThingBuilder thingBuilder = editThing();
-        if (isWirelessDevice() && wirelessDeviceId > 0) {
-            // if a wireless device, remove channels for wireless devices
-            if (getChannel(TroubleState.DEVICE_LOBATT) == null) {
-                thingBuilder.withChannel(ChannelBuilder.create(getChannelUID(TroubleState.DEVICE_LOBATT), "Switch")
-                        .withType(CHANNEL_TYPE_LOBATT).build());
+        withBridgeHandlerPresent(bridgeHandler -> {
+            // add/remove channels depending on whether or not the device is wireless
+            final int wirelessDeviceId = getThingConfig().getId() - bridgeHandler.getIntegraType().getOnMainboard();
+            ThingBuilder thingBuilder = editThing();
+            if (isWirelessDevice() && wirelessDeviceId > 0) {
+                // if a wireless device, remove channels for wireless devices
+                if (getChannel(TroubleState.DEVICE_LOBATT) == null) {
+                    thingBuilder.withChannel(ChannelBuilder.create(getChannelUID(TroubleState.DEVICE_LOBATT), "Switch")
+                            .withType(CHANNEL_TYPE_LOBATT).build());
+                }
+                if (getChannel(TroubleState.DEVICE_NOCOMM) == null) {
+                    thingBuilder.withChannel(ChannelBuilder.create(getChannelUID(TroubleState.DEVICE_NOCOMM), "Switch")
+                            .withType(CHANNEL_TYPE_NOCOMM).build());
+                }
+            } else {
+                // if not a wireless device, remove channels for wireless devices
+                thingBuilder.withoutChannel(getChannelUID(TroubleState.DEVICE_LOBATT))
+                        .withoutChannel(getChannelUID(TroubleState.DEVICE_NOCOMM));
             }
-            if (getChannel(TroubleState.DEVICE_NOCOMM) == null) {
-                thingBuilder.withChannel(ChannelBuilder.create(getChannelUID(TroubleState.DEVICE_NOCOMM), "Switch")
-                        .withType(CHANNEL_TYPE_NOCOMM).build());
-            }
-        } else {
-            // if not a wireless device, remove channels for wireless devices
-            thingBuilder.withoutChannel(getChannelUID(TroubleState.DEVICE_LOBATT))
-                    .withoutChannel(getChannelUID(TroubleState.DEVICE_NOCOMM));
-        }
-        updateThing(thingBuilder.build());
+            updateThing(thingBuilder.build());
+        });
     }
 
     /**
@@ -69,12 +73,12 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
      * @return <code>true</code> if the thing is, or is configured as a wireless device
      */
     protected boolean isWirelessDevice() {
-        return thingConfig.isWireless();
+        return getThingConfig().isWireless();
     }
 
     @Override
     protected int getStateBitNbr(StateType stateType) {
-        int bitNbr = thingConfig.getId() - 1;
+        int bitNbr = getThingConfig().getId() - 1;
         if (stateType instanceof TroubleState) {
             // for wireless devices we need to correct bit number
             switch ((TroubleState) stateType) {
@@ -86,7 +90,7 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
                 case DEVICE_LOBATT:
                 case DEVICE_NOCOMM:
                 case OUTPUT_NOCOMM:
-                    bitNbr -= bridgeHandler.getIntegraType().getOnMainboard();
+                    bitNbr -= getBridgeHandler().getIntegraType().getOnMainboard();
                     break;
                 default:
                     // other states are either not supported or don't need correction
@@ -101,13 +105,13 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
         String stateName = channelId.toUpperCase();
         if (TroubleState.DEVICE_LOBATT.name().equals(stateName)
                 || TroubleState.DEVICE_NOCOMM.name().equals(stateName)) {
-            if (thingConfig.getId() - bridgeHandler.getIntegraType().getOnMainboard() > 120) {
+            if (getThingConfig().getId() - getBridgeHandler().getIntegraType().getOnMainboard() > 120) {
                 // last 120 ACU-100 devices in INTEGRA 256 PLUS
                 stateName += "1";
             }
             return TroubleState.valueOf(stateName);
         } else {
-            return null;
+            return StateType.NONE;
         }
     }
 

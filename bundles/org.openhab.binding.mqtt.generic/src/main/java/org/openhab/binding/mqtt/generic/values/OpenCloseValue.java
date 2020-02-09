@@ -71,6 +71,11 @@ public class OpenCloseValue extends Value {
 
     @Override
     public String getMQTTpublishValue(@Nullable String pattern) {
-        return (state == OpenClosedType.OPEN) ? openString : closeString;
+        String formatPattern = pattern;
+        if (formatPattern == null) {
+            formatPattern = "%s";
+        }
+
+        return String.format(formatPattern, state == OpenClosedType.OPEN ? openString : closeString);
     }
 }

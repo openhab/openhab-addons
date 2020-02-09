@@ -46,7 +46,6 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
         if (EXECUTE_ACTION.equals(channelUID.getId()) && command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
                 executeActionGroup();

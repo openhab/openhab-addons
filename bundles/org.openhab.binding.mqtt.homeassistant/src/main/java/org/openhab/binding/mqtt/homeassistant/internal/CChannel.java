@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelDefinitionBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
@@ -126,7 +127,6 @@ public class CChannel {
         private @Nullable String command_topic;
         private boolean retain;
         private @Nullable Integer qos;
-        private String unit = "";
         private ChannelStateUpdateListener channelStateUpdateListener;
 
         private @Nullable String templateIn;
@@ -156,11 +156,6 @@ public class CChannel {
                     }
                 }
             }
-            return this;
-        }
-
-        public Builder unit(String unit) {
-            this.unit = unit;
             return this;
         }
 
@@ -207,9 +202,11 @@ public class CChannel {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
             } else {
+                StateDescription description = valueState.createStateDescription(command_topic == null).build()
+                        .toStateDescription();
                 type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescription(valueState.createStateDescription(unit, command_topic == null)).build();
+                        .withStateDescription(description).build();
             }
 
             Configuration configuration = new Configuration();

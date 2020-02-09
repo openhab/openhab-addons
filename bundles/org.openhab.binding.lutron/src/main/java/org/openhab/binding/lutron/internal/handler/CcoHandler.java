@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Bob Adair - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class CcoHandler extends LutronHandler {
     private static final Integer ACTION_PULSE = 6;
     private static final Integer ACTION_STATE = 1;
@@ -56,7 +58,7 @@ public class CcoHandler extends LutronHandler {
         MAINTAINED
     }
 
-    protected CcoOutputType outputType;
+    protected @Nullable CcoOutputType outputType;
 
     public CcoHandler(Thing thing) {
         super(thing);

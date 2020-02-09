@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.satel.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Atd100Config} contains configuration values for ATD-100 things.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class Atd100Config {
 
     private int id;

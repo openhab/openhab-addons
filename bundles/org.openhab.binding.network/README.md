@@ -13,6 +13,7 @@ The binding has the following configuration options:
 -   **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
 -   **arpPingToolPath:** If the arp ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
 -   **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
+-   **preferResponseTimeAsLatency:** If enabled, an attempt will be made to extract the latency from the output of the ping command. If no such latency value is found in the ping command output, the time to execute the ping command is used as fallback latency. If disabled, the time to execute the ping command is always used as latency value. This is disabled by default to be backwards-compatible and to not break statistics and monitoring which existed before this feature.
 
 Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
 
@@ -154,6 +155,18 @@ If a DHCP server is operating on port 67, duplicate the received traffic and for
 ```shell
 iptables -A PREROUTING -t mangle -p udp ! -s 127.0.0.1 --dport 67 -j TEE --gateway 127.0.0.1
 iptables -A OUTPUT -t nat -p udp -s 127.0.0.1/32 --dport 67 -j DNAT --to 127.0.0.1:6767
+```
+
+Above iptables solutions to check *dhcp_state* are not working when OpenHAB is started in Docker. Use another workaround
+
+```shell
+iptables -I PREROUTING -t nat -p udp --src 0.0.0.0 --dport 67 -j DNAT --to 0.0.0.0:6767
+```
+
+To verify PREROUTING list use below command
+
+```shell
+iptables -L -n -t nat
 ```
 
 ## Channels

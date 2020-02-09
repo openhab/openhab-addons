@@ -37,7 +37,7 @@ public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             if (GATE_COMMAND.equals(channelUID.getId())) {

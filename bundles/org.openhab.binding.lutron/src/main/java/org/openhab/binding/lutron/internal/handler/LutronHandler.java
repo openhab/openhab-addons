@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lutron.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Added methods for status and state management
  */
+@NonNullByDefault
 public abstract class LutronHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LutronHandler.class);
 
@@ -54,7 +57,7 @@ public abstract class LutronHandler extends BaseThingHandler {
     protected void thingOfflineNotify() {
     }
 
-    protected IPBridgeHandler getBridgeHandler() {
+    protected @Nullable IPBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
 
         return bridge == null ? null : (IPBridgeHandler) bridge.getHandler();

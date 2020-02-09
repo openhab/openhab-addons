@@ -104,7 +104,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
 
         try {
             fileReader.registerListener(this);
-            fileReader.start(configuration.filePath, configuration.refreshRate, scheduler);
+            fileReader.start(configuration.filePath, configuration.refreshRate);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Exception occurred during initalization: {}. ", e.getMessage(), e);

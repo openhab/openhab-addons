@@ -16,12 +16,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Command class for command to set RTC clock.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class SetClockCommand extends ControlCommand {
 
     public static final byte COMMAND_CODE = (byte) 0x8e;
@@ -31,10 +33,8 @@ public class SetClockCommand extends ControlCommand {
     /**
      * Creates new command class instance.
      *
-     * @param dateTime
-     *                     date and time to set
-     * @param userCode
-     *                     code of the user on behalf the control is made
+     * @param dateTime date and time to set
+     * @param userCode code of the user on behalf the control is made
      */
     public SetClockCommand(LocalDateTime dateTime, String userCode) {
         super(COMMAND_CODE, ArrayUtils.addAll(userCodeToBytes(userCode), getDateTimeBytes(dateTime)));

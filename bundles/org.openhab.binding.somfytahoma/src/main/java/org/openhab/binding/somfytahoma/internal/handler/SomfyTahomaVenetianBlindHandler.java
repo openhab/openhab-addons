@@ -32,7 +32,7 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
     public SomfyTahomaVenetianBlindHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL, "core:ClosureState");
-        stateNames.put(ORIENTATION, "core:SlateOrientationState");
+        stateNames.put(ORIENTATION, SLATE_ORIENTATION_STATE);
     }
 
     @Override
@@ -42,14 +42,16 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             String cmd = getTahomaCommand(command.toString(), channelUID.getId());
             if (COMMAND_MY.equals(cmd)) {
+                sendCommand(COMMAND_MY);
+            } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the venetian blind is moving and MY is sent => STOP it
+                    //Check if the venetian blind is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
@@ -66,12 +68,17 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
         switch (command) {
             case "OFF":
             case "DOWN":
+            case "CLOSE":
                 return COMMAND_DOWN;
             case "ON":
             case "UP":
+            case "OPEN":
                 return COMMAND_UP;
-            case "STOP":
+            case "MOVE":
+            case "MY":
                 return COMMAND_MY;
+            case "STOP":
+                return COMMAND_STOP;
             default:
                 if (CONTROL.equals(channelId)) {
                     return COMMAND_SET_CLOSURE;

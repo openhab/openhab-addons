@@ -290,5 +290,122 @@
 		<label>USB Power</label>
 		<state readOnly="false" />
 	</channel-type>
-
+	<channel-type id="airFreshMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="favourite">Favorite</option>
+				<option value="sleep">Sleep</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="airFreshFavoriteSpeed">
+		<item-type>Number</item-type>
+		<label>Favorite Speed</label>
+		<state min="0" max="300" pattern="%.0f" readOnly="false" />
+	</channel-type>
+	<channel-type id="airFreshDisplay">
+		<item-type>Switch</item-type>
+		<label>Light On/Off</label>
+	</channel-type>
+	<channel-type id="airFreshSound">
+		<item-type>Switch</item-type>
+		<label>Sound On/Off</label>
+	</channel-type>
+	<channel-type id="airFreshChildLock">
+		<item-type>Switch</item-type>
+		<label>Child Lock On/Off</label>
+	</channel-type>
+	<channel-type id="airFreshDisplayDirection">
+		<item-type>String</item-type>
+		<label>Display Direction</label>
+		<state>
+			<options>
+				<option value="forward">Normal</option>
+				<option value="left">Counterclockwise 90°</option>
+				<option value="right">Clockwise 90°</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="airFreshPTCPower">
+		<item-type>Switch</item-type>
+		<label>PTC Power On/Off</label>
+	</channel-type>
+	<channel-type id="airFreshPTCStatus">
+		<item-type>Switch</item-type>
+		<label>PTC Status On/Off</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshPtcLevel">
+		<item-type>String</item-type>
+		<label>PTC Level</label>
+		<state>
+			<options>
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="high">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="airFreshCurrentSpeed">
+		<item-type>Number</item-type>
+		<label>Current Speed</label>
+		<state pattern="%.0f m³/h" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshCO2">
+		<item-type>Number</item-type>
+		<label>CO2</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshPM25">
+		<item-type>Number</item-type>
+		<label>PM2.5</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshTemperature">
+		<item-type>Number</item-type>
+		<label>Temperature Outside</label>
+		<state pattern="%.0f°C" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshResetFilter">
+		<item-type>String</item-type>
+		<label>Reset Filter</label>
+		<state>
+			<options>
+				<option value="intermediate">Reset Filter</option>
+				<option value="efficient">Reset Filter Pro</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="airFreshResetFilterA1">
+		<item-type>String</item-type>
+		<label>Reset Filter</label>
+		<state>
+			<options>
+				<option value="">Reset Filter</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="airFreshFilterPercents">
+		<item-type>Number</item-type>
+		<label>Filter Percents Remaining</label>
+		<state pattern="%.0f%%" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshFilterDays">
+		<item-type>Number</item-type>
+		<label>Filter Days Remaining</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshFilterProPercents">
+		<item-type>Number</item-type>
+		<label>Filter Pro Percents Remaining</label>
+		<state pattern="%.0f%%" readOnly="true" />
+	</channel-type>
+	<channel-type id="airFreshFilterProDays">
+		<item-type>Number</item-type>
+		<label>Filter Pro Days Remaining</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
 </thing:thing-descriptions>

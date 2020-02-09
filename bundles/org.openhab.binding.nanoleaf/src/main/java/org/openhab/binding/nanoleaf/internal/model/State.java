@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,18 +22,20 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class State {
 
-    private On on;
-    private Brightness brightness;
-    private Hue hue;
+    private @Nullable On on;
+    private @Nullable Brightness brightness;
+    private @Nullable Hue hue;
     @SerializedName("sat")
-    private Sat saturation;
+    private @Nullable Sat saturation;
     @SerializedName("ct")
-    private Ct colorTemperature;
-    private String colorMode;
+    private @Nullable Ct colorTemperature;
 
-    public On getOn() {
+    private @Nullable String colorMode;
+
+    public @Nullable On getOn() {
         return on;
     }
 
@@ -38,7 +43,7 @@ public class State {
         this.on = on;
     }
 
-    public Brightness getBrightness() {
+    public @Nullable Brightness getBrightness() {
         return brightness;
     }
 
@@ -46,7 +51,7 @@ public class State {
         this.brightness = brightness;
     }
 
-    public Hue getHue() {
+    public @Nullable Hue getHue() {
         return hue;
     }
 
@@ -54,7 +59,7 @@ public class State {
         this.hue = hue;
     }
 
-    public Sat getSaturation() {
+    public @Nullable Sat getSaturation() {
         return saturation;
     }
 
@@ -62,7 +67,7 @@ public class State {
         this.saturation = sat;
     }
 
-    public Ct getColorTemperature() {
+    public @Nullable Ct getColorTemperature() {
         return colorTemperature;
     }
 
@@ -70,7 +75,7 @@ public class State {
         this.colorTemperature = ct;
     }
 
-    public String getColorMode() {
+    public @Nullable String getColorMode() {
         return colorMode;
     }
 

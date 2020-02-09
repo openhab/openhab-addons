@@ -200,9 +200,11 @@ public class DwdWarningsData {
                 }
             }
         } catch (XMLStreamException e) {
-            logger.debug("Exception while parsing the XML Response", e);
+            logger.warn("Exception occurred while parsing the XML response: {}", e.getMessage());
+            logger.debug("Exception trace", e);
             return false;
         }
+
         Collections.sort(cityData, new SeverityComparator());
         return true;
     }

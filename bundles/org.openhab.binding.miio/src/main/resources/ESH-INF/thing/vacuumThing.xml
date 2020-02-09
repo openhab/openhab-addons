@@ -41,11 +41,13 @@
 			<channel id="clean_area" typeId="clean_area" />
 			<channel id="clean_time" typeId="clean_time" />
 			<channel id="error_code" typeId="error_code" />
+			<channel id="error_id" typeId="error_id" />
 			<channel id="fan_power" typeId="fan_power" />
 			<channel id="in_cleaning" typeId="in_cleaning" />
 			<channel id="dnd_enabled" typeId="dnd_enabled" />
 			<channel id="map_present" typeId="map_present" />
 			<channel id="state" typeId="state" />
+			<channel id="state_id" typeId="state_id" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -108,7 +110,12 @@
 	</channel-type>
 	<channel-type id="error_code">
 		<item-type>String</item-type>
-		<label>Error</label>
+		<label>Error Code</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="error_id">
+		<item-type>Number</item-type>
+		<label>Error ID</label>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="fan_power">
@@ -135,6 +142,11 @@
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>State</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="state_id">
+		<item-type>Number</item-type>
+		<label>State ID</label>
 		<state readOnly="true" />
 	</channel-type>
 

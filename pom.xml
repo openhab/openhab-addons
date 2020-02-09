@@ -9,11 +9,11 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>2.5.1-SNAPSHOT</version>
+  <version>2.5.2-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
-  <name>openHAB 2 Add-ons</name>
+  <name>openHAB Add-ons</name>
   <description>This project contains the official add-ons of openHAB</description>
 
   <organization>
@@ -68,7 +68,7 @@
     <ohc.version>2.5.0</ohc.version>
     <bnd.version>4.3.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
-    <sat.version>0.8.0</sat.version>
+    <sat.version>0.9.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage/>
@@ -547,6 +547,9 @@ Import-Package: \\
                 <excludes>
                   <exclude>**/pom.xml</exclude>
                 </excludes>
+                <excludes>
+                  <exclude>**/feature.xml</exclude>
+                </excludes>
                 <eclipseWtp>
                   <type>XML</type>
                   <files>
@@ -556,6 +559,21 @@ Import-Package: \\
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
+              </format>
+              <format>
+                <!-- feature.xml -->
+                <includes>
+                  <include>src/main/feature/feature.xml</include>
+                </includes>
+                <eclipseWtp>
+                  <type>XML</type>
+                  <files>
+                    <file>openhab_wst_feature_file.prefs</file>
+                  </files>
+                  <version>4.12.0</version>
+                </eclipseWtp>
+                <trimTrailingWhitespace />
+                <endWithNewline />
               </format>
               <format>
                 <!-- pom.xml -->
@@ -636,7 +654,18 @@ Import-Package: \\
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+      </plugin>
     </plugins>
+    <extensions>
+       <extension>
+          <groupId>org.openhab.tools.sat</groupId>
+          <artifactId>sat-extension</artifactId>
+          <version>${sat.version}</version>
+       </extension>
+    </extensions>
   </build>
 
   <profiles>

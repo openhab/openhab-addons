@@ -233,11 +233,16 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         TeslaChannelSelector selector = TeslaChannelSelector.getValueSelectorFromChannelID(channelID);
 
         if (command instanceof RefreshType) {
-            if (isAwake()) {
-                // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
-                // throttled so we are safe not to break the Tesla SLA
-                requestAllData();
+            if (!isAwake()) {
+                logger.debug("Waking vehicle to refresh all data");
+                wakeUp();
             }
+
+            setActive();
+
+            // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
+            // throttled so we are safe not to break the Tesla SLA
+            requestAllData();
         } else {
             if (selector != null) {
                 try {

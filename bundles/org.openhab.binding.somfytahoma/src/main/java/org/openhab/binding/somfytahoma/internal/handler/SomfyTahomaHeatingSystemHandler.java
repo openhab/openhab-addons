@@ -31,16 +31,16 @@ public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler
 
     public SomfyTahomaHeatingSystemHandler(Thing thing) {
         super(thing);
-        stateNames.put(TARGET_TEMPERATURE, "core:TargetTemperatureState");
+        stateNames.put(TARGET_TEMPERATURE, TARGET_TEMPERATURE_STATE);
         stateNames.put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
-        stateNames.put(BATTERY_LEVEL, "core:BatteryLevelState");
+        stateNames.put(BATTERY_LEVEL, BATTERY_LEVEL_STATE);
         stateNames.put(CURRENT_STATE, "zwave:SetPointTypeState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             if (TARGET_TEMPERATURE.equals(channelUID.getId())) {

@@ -5,33 +5,42 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:nanoleaf:controller">
-			<parameter name="address" type="text" required="true">
-				<context>network-address</context>
-				<label>@text/thing-type.config.nanoleaf.controller.address.label</label>
-				<description>@text/thing-type.config.nanoleaf.controller.address.description</description>
-			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65535">
-				<label>@text/thing-type.config.nanoleaf.controller.port.label</label>
-				<description>@text/thing-type.config.nanoleaf.controller.port.description</description> 
-				<default>16021</default>
-			</parameter>
-			<parameter name="authToken" type="text">
-				<context>password</context>
-				<label>@text/thing-type.config.nanoleaf.controller.authToken.label</label>
-				<description>@text/thing-type.config.nanoleaf.controller.authToken.description</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s">
-				<label>@text/thing-type.config.nanoleaf.controller.refreshInterval.label</label>
-				<description>@text/thing-type.config.nanoleaf.controller.refreshInterval.description</description>
-				<default>60</default>
-			</parameter>
+		<parameter name="address" type="text" required="true">
+			<context>network-address</context>
+			<label>@text/thing-type.config.nanoleaf.controller.address.label</label>
+			<description>@text/thing-type.config.nanoleaf.controller.address.description</description>
+		</parameter>
+		<parameter name="port" type="integer" required="true" min="1" max="65535">
+			<label>@text/thing-type.config.nanoleaf.controller.port.label</label>
+			<description>@text/thing-type.config.nanoleaf.controller.port.description</description>
+			<default>16021</default>
+		</parameter>
+		<parameter name="authToken" type="text">
+			<context>password</context>
+			<label>@text/thing-type.config.nanoleaf.controller.authToken.label</label>
+			<description>@text/thing-type.config.nanoleaf.controller.authToken.description</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" unit="s">
+			<label>@text/thing-type.config.nanoleaf.controller.refreshInterval.label</label>
+			<description>@text/thing-type.config.nanoleaf.controller.refreshInterval.description</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="deviceType" type="text" readOnly="true">
+			<label>@text/thing-type.config.nanoleaf.controller.deviceType.label</label>
+			<description>@text/thing-type.config.nanoleaf.controller.deviceType.description</description>
+			<default>lightPanels</default>
+			<options>
+				<option value="lightPanels">Light Panels</option>
+				<option value="canvas">Canvas</option>
+			</options>
+		</parameter>
 	</config-description>
-	
+
 	<config-description uri="thing-type:nanoleaf:lightpanel">
 		<parameter name="id" type="integer" required="true">
 			<label>@text/thing-type.config.nanoleaf.lightpanel.id.label</label>
 			<description>@text/thing-type.config.nanoleaf.lightpanel.id.description</description>
 		</parameter>
 	</config-description>
-	
+
 </config-description:config-descriptions>

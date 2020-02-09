@@ -35,12 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.network.internal.NetworkBindingConfiguration;
-import org.openhab.binding.network.internal.NetworkBindingConstants;
-import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
-import org.openhab.binding.network.internal.PresenceDetection;
-import org.openhab.binding.network.internal.PresenceDetectionListener;
-import org.openhab.binding.network.internal.PresenceDetectionValue;
+import org.openhab.binding.network.internal.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Rewritten
  */
 @NonNullByDefault
-public class NetworkHandler extends BaseThingHandler implements PresenceDetectionListener {
+public class NetworkHandler extends BaseThingHandler implements PresenceDetectionListener, NetworkBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
     private @NonNullByDefault({}) PresenceDetection presenceDetection;
 
@@ -72,6 +67,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         super(thing);
         this.isTCPServiceDevice = isTCPServiceDevice;
         this.configuration = configuration;
+        this.configuration.addNetworkBindingConfigurationListener(this);
     }
 
     private void refreshValue(ChannelUID channelUID) {
@@ -165,6 +161,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
 
         this.presenceDetection = presenceDetection;
         presenceDetection.setHostname(handlerConfiguration.hostname);
+        presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
 
         if (isTCPServiceDevice) {
             Integer port = handlerConfiguration.port;
@@ -217,5 +214,11 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
      */
     public boolean isTCPServiceDevice() {
         return isTCPServiceDevice;
+    }
+
+    @Override
+    public void bindingConfigurationChanged() {
+        // Make sure that changed binding configuration is reflected
+        presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
     }
 }

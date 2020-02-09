@@ -13,6 +13,8 @@
 package org.openhab.binding.network.internal;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
@@ -26,19 +28,47 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
  */
 @NonNullByDefault
 public class NetworkBindingConfiguration {
+
     public Boolean allowSystemPings = true;
     public Boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
     public @NonNullByDefault({}) ArpPingUtilEnum arpPingUtilMethod;
+    // For backwards compatibility reasons, the default is to use the ping method execution time as latency value
+    public boolean preferResponseTimeAsLatency = false;
+
+    private List<NetworkBindingConfigurationListener> listeners = new ArrayList<>();
 
     public void update(NetworkBindingConfiguration newConfiguration) {
         this.allowSystemPings = newConfiguration.allowSystemPings;
         this.allowDHCPlisten = newConfiguration.allowDHCPlisten;
         this.cacheDeviceStateTimeInMS = newConfiguration.cacheDeviceStateTimeInMS;
         this.arpPingToolPath = newConfiguration.arpPingToolPath;
+        this.preferResponseTimeAsLatency = newConfiguration.preferResponseTimeAsLatency;
 
         NetworkUtils networkUtils = new NetworkUtils();
         this.arpPingUtilMethod = networkUtils.determineNativeARPpingMethod(arpPingToolPath);
+
+        notifyListeners();
+    }
+
+    public void addNetworkBindingConfigurationListener(NetworkBindingConfigurationListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyListeners() {
+        listeners.forEach(NetworkBindingConfigurationListener::bindingConfigurationChanged);
+    }
+
+    @Override
+    public String toString() {
+        return "NetworkBindingConfiguration{" +
+                "allowSystemPings=" + allowSystemPings +
+                ", allowDHCPlisten=" + allowDHCPlisten +
+                ", cacheDeviceStateTimeInMS=" + cacheDeviceStateTimeInMS +
+                ", arpPingToolPath='" + arpPingToolPath + '\'' +
+                ", arpPingUtilMethod=" + arpPingUtilMethod +
+                ", preferResponseTimeAsLatency=" + preferResponseTimeAsLatency +
+                '}';
     }
 }

@@ -46,7 +46,6 @@ public final class ModelTestUtil {
      */
     public static <T> T jsonFromFile(String filename, Class<T> clazz) throws IOException {
         return GSON.fromJson(readJson(filename), clazz);
-
     }
 
     /**

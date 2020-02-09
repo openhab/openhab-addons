@@ -59,9 +59,9 @@ public class MillheatDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected synchronized void startScan() {
-        logger.debug("Start scan for Millheat devices.");
         try {
             final ThingUID accountUID = accountHandler.getThing().getUID();
+            logger.debug("Start scan for Millheat devices on account {}", accountUID.toString());
             accountHandler.updateModelFromServerWithRetry(false);
             final MillheatModel model = accountHandler.getModel();
             for (final Home home : model.getHomes()) {
@@ -99,7 +99,7 @@ public class MillheatDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } finally {
-            removeOlderResults(getTimestampOfLastScan());
+            removeOlderResults(getTimestampOfLastScan(), null, accountHandler.getThing().getUID());
         }
     }
 

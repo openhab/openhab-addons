@@ -138,8 +138,8 @@ public class Property implements AttributeChanged {
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                    .withStateDescription(
-                            channelState.getCache().createStateDescription(attributes.unit, !attributes.settable))
+                    .withStateDescription(channelState.getCache().createStateDescription(!attributes.settable).build()
+                            .toStateDescription())
                     .build();
         } else {
             if (attributes.datatype.equals(DataTypeEnum.enum_)) {
@@ -193,7 +193,7 @@ public class Property implements AttributeChanged {
                     step = new BigDecimal(1);
                 }
 
-                value = new NumberValue(min, max, step);
+                value = new NumberValue(min, max, step, attributes.unit);
                 break;
             case string_:
             case unknown:
@@ -210,7 +210,7 @@ public class Property implements AttributeChanged {
         }
 
         if (attributes.settable) {
-            b = b.withCommandTopic(commandTopic).withRetain(true);
+            b = b.withCommandTopic(commandTopic).withRetain(false);
         }
 
         final ChannelState channelState = new ChannelState(b.build(), channelUID, value, callback);

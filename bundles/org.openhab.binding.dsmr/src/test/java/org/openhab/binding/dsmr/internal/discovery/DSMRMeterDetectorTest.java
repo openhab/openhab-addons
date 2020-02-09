@@ -17,6 +17,7 @@ import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ public class DSMRMeterDetectorTest {
             { "dsmr_40", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "dsmr_42", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "dsmr_50", EnumSet.of( DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},
+            { "flu5", EnumSet.of( DEVICE_EMUCS_V1_0, ELECTRICITY_EMUCS_V1_0, GAS_EMUCS_V1_0)},
             { "Iskra_AM550", EnumSet.of( DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},
             { "Landis_Gyr_E350", EnumSet.of( DEVICE_V2_V3, ELECTRICITY_V3_0)},
             { "Landis_Gyr_ZCF110", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
@@ -74,10 +76,12 @@ public class DSMRMeterDetectorTest {
         Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> entry = detector
                 .detectMeters(telegram);
         Collection<DSMRMeterDescriptor> detectMeters = entry.getKey();
+
         assertEquals("Should detect correct number of meters: " + Arrays.toString(detectMeters.toArray()),
                 expectedMeters.size(), detectMeters.size());
-        assertEquals("Should not have any undetected cosem objects", 0, entry.getValue().size());
-        assertEquals("Should not have any unknown cosem objects", 0, telegram.getUnknownCosemObjects().size());
+        assertEquals("Should not have any undetected cosem objects: ", Collections.emptyMap(), entry.getValue());
+        assertEquals("Should not have any unknown cosem objects", Collections.emptyList(),
+                telegram.getUnknownCosemObjects());
         for (DSMRMeterType meter : expectedMeters) {
             assertEquals(
                     String.format("Meter '%s' not found: %s", meter,

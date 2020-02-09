@@ -33,7 +33,7 @@ public class ParadoxPanel implements IDataUpdateListener {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
 
-    private static ParadoxPanel paradoxPanel;
+    private static ParadoxPanel paradoxPanel = new ParadoxPanel();
 
     private ParadoxInformation panelInformation;
     private List<Partition> partitions;
@@ -56,18 +56,11 @@ public class ParadoxPanel implements IDataUpdateListener {
             updateEntitiesStates();
         } else {
             throw new ParadoxRuntimeException(
-                "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
+                    "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
         }
     }
 
     public static ParadoxPanel getInstance() {
-        if (paradoxPanel == null) {
-            synchronized (ParadoxPanel.class) {
-                if (paradoxPanel == null) {
-                    paradoxPanel = new ParadoxPanel();
-                }
-            }
-        }
         return paradoxPanel;
     }
 

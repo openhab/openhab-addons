@@ -34,14 +34,14 @@ public class SomfyTahomaDockHandler extends SomfyTahomaBaseThingHandler {
     public SomfyTahomaDockHandler(Thing thing) {
         super(thing);
         stateNames.put(BATTERY_STATUS, BATTERY_STATUS_STATE);
-        stateNames.put(BATTERY_LEVEL, "core:BatteryLevelState");
-        stateNames.put(SIREN_STATUS, "internal:SirenStatusState");
+        stateNames.put(BATTERY_LEVEL, BATTERY_LEVEL_STATE);
+        stateNames.put(SIREN_STATUS, SIREN_STATUS_STATE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         }
 

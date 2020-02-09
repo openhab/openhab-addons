@@ -32,23 +32,24 @@ public class P1Telegram {
      * The TelegramState described the meta data of the P1Telegram
      */
     public enum TelegramState {
-    /**
-     * OK. Telegram was successful received and CRC16 checksum is verified (CRC16 only for DSMR V4 and up)
-     */
-    OK("P1 telegram received OK"),
-    /**
-     * CRC_ERROR. CRC16 checksum failed (only DSMR V4 and up)
-     */
-    CRC_ERROR("CRC checksum failed for received P1 telegram"),
-    /**
-     * DATA_CORRUPTION. The P1 telegram has syntax errors.
-     */
-    DATA_CORRUPTION("Received P1 telegram is corrupted"),
-    /**
-     * P1TelegramListener. The smarty telegram was successful received but could not be decoded because of an invalid
-     * encryption key.
-     */
-    INVALID_ENCRYPTION_KEY("Failed to decrypt P1 telegram due to invalid encryption key");
+        /**
+         * OK. Telegram was successful received and CRC16 checksum is verified (CRC16 only for DSMR V4 and up)
+         */
+        OK("P1 telegram received OK"),
+        /**
+         * CRC_ERROR. CRC16 checksum failed (only DSMR V4 and up)
+         */
+        CRC_ERROR("CRC checksum failed for received P1 telegram"),
+        /**
+         * DATA_CORRUPTION. The P1 telegram has syntax errors.
+         */
+        DATA_CORRUPTION("Received P1 telegram is corrupted"),
+        /**
+         * P1TelegramListener. The smarty telegram was successful received but could not be decoded because of an
+         * invalid
+         * encryption key.
+         */
+        INVALID_ENCRYPTION_KEY("Failed to decrypt P1 telegram due to invalid encryption key");
 
         /**
          * public accessible state details

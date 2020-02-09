@@ -170,7 +170,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
         commOk &= fetchSystemConfig();
         commOk &= fetchLCDConfig();
         commOk &= fetchWifiConfig();
-        commOk &= fetchxDslStatus();
+        commOk &= (fetchxDslStatus() || fetchFtthPresent());
         commOk &= fetchConnectionStatus();
         commOk &= fetchFtpConfig();
         commOk &= fetchAirMediaConfig();
@@ -334,6 +334,17 @@ public class FreeboxHandler extends BaseBridgeHandler {
             return true;
         } catch (FreeboxException e) {
             logger.debug("Thing {}: exception in fetchxDslStatus: {}", getThing().getUID(), e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private boolean fetchFtthPresent() {
+        try {
+            boolean status = apiManager.getFtthPresent();
+            updateChannelSwitchState(FTTHSTATUS, status);
+            return status;
+        } catch (FreeboxException e) {
+            logger.debug("Thing {}: exception in fetchxFtthStatus: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
