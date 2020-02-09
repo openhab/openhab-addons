@@ -21,7 +21,7 @@
 			{
 				"property": "mode",
 				"friendlyName": "Mode",
-				"channel": "mode",
+				"channel": "humidifierMode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -147,6 +147,15 @@
 						"parameterType": "ONOFF"
 					}
 				]
+			},
+			{
+				"property": "fahrenheit",
+				"friendlyName": "Temperature",
+				"channel": "temperature_f",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
 			}
 		]
 	}
