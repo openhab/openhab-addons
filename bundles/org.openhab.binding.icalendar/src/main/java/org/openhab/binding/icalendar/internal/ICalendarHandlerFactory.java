@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - EventPublisher code
- * 
+ *
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)
@@ -63,22 +63,23 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (supportsThingType(thingTypeUID)) {
-            try {
-                retrieveHttpClient();
-                HttpClient localHttpClient = this.sharedHttpClient;
-                if (localHttpClient != null) {
-                    if (!localHttpClient.isStarted()) {
-                        localHttpClient.start();
-                    }
-                    return new ICalendarHandler(thing, localHttpClient, eventPublisher);
-                } else {
-                    throw new IllegalStateException("HttpClient could not be created.");
+        if (!supportsThingType(thingTypeUID)) {
+            return null;
+        }
+        try {
+            retrieveHttpClient();
+            HttpClient localHttpClient = sharedHttpClient;
+            if (localHttpClient != null) {
+                if (!localHttpClient.isStarted()) {
+                    localHttpClient.start();
                 }
-            } catch (Exception e) {
-                logger.error("Failed to create handler for thing with uid {}.", thing.getUID().toString());
-                logger.debug("internal exception while creating or preparing handler.", e);
+                return new ICalendarHandler(thing, localHttpClient, eventPublisher);
+            } else {
+                throw new IllegalStateException("HttpClient could not be created.");
             }
+        } catch (Exception e) {
+            logger.warn("Failed to create handler for thing with uid {}.", thing.getUID());
+            logger.debug("internal exception while creating or preparing handler.", e);
         }
 
         return null;
@@ -86,25 +87,25 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Retrieves an instance of HttpClient for use with this bundle. Only one
-     * instance will be retrieved and used for all instances.
+     * instance will be retrieved and used for all handler instances.
      *
      * @throws BundleException If ServiceReference of the HttpClientFactory is
      *             missing.
      */
     protected void retrieveHttpClient() throws BundleException {
-        if (this.sharedHttpClient == null) {
-            BundleContext currentContext = this.getBundleContext();
-
-            ServiceReference<HttpClientFactory> hcfReference = currentContext
-                    .getServiceReference(HttpClientFactory.class);
-            if (hcfReference == null) {
-                throw new BundleException(
-                        "Service Reference for HttpClientFactory is missing. This binding will not work without a valid HttpClient.");
-            }
-
-            HttpClientFactory clientFactory = currentContext.getService(hcfReference);
-            this.sharedHttpClient = clientFactory.createHttpClient(BINDING_ID);
+        if (sharedHttpClient != null) {
+            return;
         }
+        BundleContext currentContext = getBundleContext();
+
+        ServiceReference<HttpClientFactory> hcfReference = currentContext.getServiceReference(HttpClientFactory.class);
+        if (hcfReference == null) {
+            throw new BundleException(
+                    "Service Reference for HttpClientFactory is missing. This binding will not work without a valid HttpClient.");
+        }
+
+        HttpClientFactory clientFactory = currentContext.getService(hcfReference);
+        sharedHttpClient = clientFactory.createHttpClient(BINDING_ID);
     }
 
     /**

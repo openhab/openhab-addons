@@ -85,7 +85,6 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         this.httpClient = httpClient;
         this.calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[^a-zA-Z0-9\\._-]", "_") + ".ical");
-        this.runtimeCalendar = null;
         this.eventPublisherCallback = eventPublisher;
     }
 
@@ -108,17 +107,12 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         }
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        this.configuration = getConfigAs(ICalendarConfiguration.class);
-        ICalendarConfiguration currentConfiguration = this.configuration;
-        if (currentConfiguration == null) {
-            logger.warn("Something in API is behaving wrong. Stopping initialization.");
-            return;
-        }
+        ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
+        configuration = currentConfiguration;
 
         if ((currentConfiguration.username == null && currentConfiguration.password != null)
                 || (currentConfiguration.username != null && currentConfiguration.password == null)) {
@@ -129,12 +123,12 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
         PullJob regularPull;
         try {
-            regularPull = new PullJob(this.httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                    currentConfiguration.password, this.calendarFile, this);
+            regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
+                    currentConfiguration.password, calendarFile, this);
         } catch (URISyntaxException e) {
             logger.warn(
-                    "The URI for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
-                    e);
+                    "The URI '{}' for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
+                    currentConfiguration.url, e);
             return;
         }
 
@@ -196,7 +190,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     }
 
     /**
-     * Updates the states of the Thing and it's channels.
+     * Updates the states of the Thing and its channels.
      */
     private void updateStates() {
         AbstractPresentableCalendar calendar = this.runtimeCalendar;
@@ -256,11 +250,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             // the END Event tags must be processed before the BEGIN ones
             executeEventCommands(calendar.getJustEndedEvents(updateStatesLastCalledTime, now), CommandTagType.END);
 
-            // process all Command Tags in all Calendar Events which BEGAN since updateStates was last called 
+            // process all Command Tags in all Calendar Events which BEGAN since updateStates was last called
             // the END Event tags must be processed before the BEGIN ones
             executeEventCommands(calendar.getJustBegunEvents(updateStatesLastCalledTime, now), CommandTagType.BEGIN);
-            
-            // save time when updateStates was previously called 
+
+            // save time when updateStates was previously called
             // the purpose is to prevent repeat command execution of events that have already been executed
             updateStatesLastCalledTime = now;
         }
@@ -277,20 +271,20 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         if (syncEventPublisherCallback == null) {
             logger.error("EventPublisher object not instantiated!");
             return;
-        } 
+        }
         // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
         @Nullable
         ICalendarConfiguration syncConfiguration = configuration;
         if (syncConfiguration == null) {
             logger.error("Configuration not instantiated!");
             return;
-        } 
+        }
         // loop through all events in the list
         for (Event event : events) {
-        
+
             // loop through all command tags in the event
-            for (CommandTag cmdTag : event.commandTags) { 
-            
+            for (CommandTag cmdTag : event.commandTags) {
+
                 // only process the BEGIN resp. END tags
                 if (cmdTag.getTagType() != execTime) {
                     continue;
@@ -300,31 +294,36 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     continue;
                 }
                 if (!cmdTag.getItemName().matches("^\\w+$")) {
-                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title,
+                            cmdTag.getFullTag());
                     continue;
                 }
                 Command cmdState = cmdTag.getCommand();
                 if (cmdState == null) {
-                    logger.warn("Event: {}, Command Tag: {} => Invalid Target State!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Invalid Target State!", event.title,
+                            cmdTag.getFullTag());
                     continue;
                 }
-        
+
                 // (try to) execute the command
                 try {
-                    syncEventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
+                    syncEventPublisherCallback
+                            .post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
                     if (logger.isDebugEnabled()) {
                         String cmdType = cmdState.getClass().toString();
                         int index = cmdType.lastIndexOf(".") + 1;
                         if ((index > 0) && (index < cmdType.length())) {
                             cmdType = cmdType.substring(index);
                         }
-                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", 
-                                event.title, cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
+                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
+                                cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title,
+                            cmdTag.getFullTag());
                 } catch (IllegalStateException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title,
+                            cmdTag.getFullTag());
                 }
 
             }
@@ -351,36 +350,37 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             this.updateJobFuture = null;
         }
         AbstractPresentableCalendar currentCalendar = this.runtimeCalendar;
-        if (currentCalendar != null) {
-            Instant now = Instant.now();
-            if (currentCalendar.isEventPresent(now)) {
-                Event currentEvent = currentCalendar.getCurrentEvent(now);
-                if (currentEvent == null) {
-                    this.logger.warn(
-                            "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
-                    return;
-                }
+        if (currentCalendar == null) {
+            return;
+        }
+        Instant now = Instant.now();
+        if (currentCalendar.isEventPresent(now)) {
+            Event currentEvent = currentCalendar.getCurrentEvent(now);
+            if (currentEvent == null) {
+                logger.debug(
+                        "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
+                return;
+            }
+            this.updateJobFuture = this.scheduler.schedule(() -> {
+                ICalendarHandler.this.updateStates();
+                ICalendarHandler.this.rescheduleCalendarStateUpdate();
+            }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+        } else {
+            Event nextEvent = currentCalendar.getNextEvent(now);
+            ICalendarConfiguration currentConfig = this.configuration;
+            if (currentConfig == null) {
+                logger.debug("Something is broken, the configuration is not available.");
+                return;
+            }
+            if (nextEvent == null) {
+                this.updateJobFuture = this.scheduler.schedule(() -> {
+                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
+                }, currentConfig.readAroundTime.longValue(), TimeUnit.MINUTES);
+            } else {
                 this.updateJobFuture = this.scheduler.schedule(() -> {
                     ICalendarHandler.this.updateStates();
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-            } else {
-                Event nextEvent = currentCalendar.getNextEvent(now);
-                ICalendarConfiguration currentConfig = this.configuration;
-                if (currentConfig == null) {
-                    logger.warn("Something is broken, the configuration is not available.");
-                    return;
-                }
-                if (nextEvent == null) {
-                    this.updateJobFuture = this.scheduler.schedule(() -> {
-                        ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                    }, currentConfig.readAroundTime.longValue(), TimeUnit.MINUTES);
-                } else {
-                    this.updateJobFuture = this.scheduler.schedule(() -> {
-                        ICalendarHandler.this.updateStates();
-                        ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                    }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-                }
+                }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
             }
         }
     }
@@ -390,7 +390,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         if (this.reloadCalendar()) {
             this.updateStates();
         } else {
-            logger.warn("Calendar was updated, but loading failed.");
+            logger.trace("Calendar was updated, but loading failed.");
         }
     }
 
