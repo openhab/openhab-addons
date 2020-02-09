@@ -74,8 +74,8 @@ public class LinkyHandler extends BaseThingHandler {
             .add("gx_charset", "UTF-8").add("SunQueryParamsString",
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
 
-    private final OkHttpClient client = new OkHttpClient.Builder().followRedirects(false)
-            .cookieJar(new LinkyCookieJar()).build();
+    private OkHttpClient client = new OkHttpClient.Builder().followRedirects(false).cookieJar(new LinkyCookieJar())
+            .build();
     private final Gson GSON = new Gson();
 
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
@@ -89,24 +89,37 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Linky handler.");
+        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
 
-        scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
+        scheduler.schedule(() -> {
+            if (login()) {
+                refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                    updateLinkyDailyData();
+                    updateLinkyMonthlyData();
+                    updateLinkyYearlyData();
+                }, 0, config.refreshInterval, TimeUnit.MINUTES);
+            }
+        }, 0, TimeUnit.SECONDS);
     }
 
-    private void login() {
+    private boolean login() {
+        logger.debug("login");
+
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-        logger.debug("config username = '{}'", config.username);
+
+        // TODO try to just reset the cookie rather than instantiate a new HTTP client
+        client = new OkHttpClient.Builder().followRedirects(false).cookieJar(new LinkyCookieJar()).build();
 
         try {
             Request requestLogin = new Request.Builder().url(LOGIN_BASE_URI)
                     .post(LOGIN_BODY_BUILDER.add("IDToken1", config.username).add("IDToken2", config.password).build())
                     .build();
-            logger.debug("POST {}", LOGIN_BASE_URI);
             Response response = client.newCall(requestLogin).execute();
-            logger.debug("Response status {} {} => isSuccessful() {}", response.code(), response.message(),
-                    response.isSuccessful());
             if (response.isRedirect()) {
-                logger.debug("Response redirects to {}", response.header("Location"));
+                logger.debug("Response status {} {} redirects to {}", response.code(), response.message(),
+                        response.header("Location"));
+            } else {
+                logger.debug("Response status {} {}", response.code(), response.message());
             }
             response.close();
             // String requestContent = String.format(LOGIN_BODY_BUILDER,
@@ -120,24 +133,21 @@ public class LinkyHandler extends BaseThingHandler {
             // stream.close();
 
             // Do a first call to get data; this first call will fail with code 302
-            getEnedisInfo(DAILY, LocalDate.now(), LocalDate.now());
+            getEnedisInfo(DAILY, LocalDate.now(), LocalDate.now(), false);
 
             updateStatus(ThingStatus.ONLINE);
-            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                updateLinkyDailyData();
-                updateLinkyMonthlyData();
-                updateLinkyYearlyData();
-            }, 0, config.refreshInterval, TimeUnit.MINUTES);
+            return true;
         } catch (IOException e) {
             logger.debug("Exception while trying to login: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return false;
         }
     }
 
     /**
      * Request new dayly/weekly data and updates channels
      */
-    private void updateLinkyDailyData() {
+    private synchronized void updateLinkyDailyData() {
         if (!isLinked(YESTERDAY) && !isLinked(LAST_WEEK) && !isLinked(THIS_WEEK)) {
             logger.debug("updateLinkyDailyData ignored because no linked channel");
             return;
@@ -149,7 +159,7 @@ public class LinkyHandler extends BaseThingHandler {
         double thisWeek = -1;
         double yesterday = -1;
         LocalDate rangeStart = today.minusDays(13);
-        EnedisInfo result = getEnedisInfo(DAILY, rangeStart, today);
+        EnedisInfo result = getEnedisInfo(DAILY, rangeStart, today, true);
         if (result != null && result.success()) {
             int jump = result.getDecalage();
             while (rangeStart.getDayOfWeek() != weekFields.getFirstDayOfWeek()) {
@@ -164,14 +174,13 @@ public class LinkyHandler extends BaseThingHandler {
             yesterday = -1;
             while (jump < result.getData().size()) {
                 double consumption = result.getData().get(jump).valeur;
-                logger.debug("consumption at jump {}: {}", jump, consumption);
                 if (consumption > 0) {
                     if (rangeStart.get(weekFields.weekOfWeekBasedYear()) == lastWeekNumber) {
                         lastWeek += consumption;
-                        logger.debug("consumption added to last week");
+                        logger.debug("Consumption at index {} added to last week: {}", jump, consumption);
                     } else {
                         thisWeek += consumption;
-                        logger.debug("consumption added to current week");
+                        logger.debug("Consumption at index {} added to current week: {}", jump, consumption);
                     }
                     yesterday = consumption;
                 }
@@ -187,7 +196,7 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new monthly data and updates channels
      */
-    private void updateLinkyMonthlyData() {
+    private synchronized void updateLinkyMonthlyData() {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
             logger.debug("updateLinkyMonthlyData ignored because no linked channel");
             return;
@@ -197,7 +206,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         double lastMonth = -1;
         double thisMonth = -1;
-        EnedisInfo result = getEnedisInfo(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today);
+        EnedisInfo result = getEnedisInfo(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
         if (result != null && result.success()) {
             lastMonth = result.getData().stream().filter(EnedisInfo.Data::isPositive).findFirst().get().valeur;
             thisMonth = result.getData().stream().filter(EnedisInfo.Data::isPositive).reduce((first, second) -> second)
@@ -210,7 +219,7 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new yearly data and updates channels
      */
-    private void updateLinkyYearlyData() {
+    private synchronized void updateLinkyYearlyData() {
         if (!isLinked(LAST_YEAR) && !isLinked(THIS_YEAR)) {
             logger.debug("updateLinkyYearlyData ignored because no linked channel");
             return;
@@ -220,7 +229,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         double thisYear = -1;
         double lastYear = -1;
-        EnedisInfo result = getEnedisInfo(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today);
+        EnedisInfo result = getEnedisInfo(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
         if (result != null && result.success()) {
             int elementQuantity = result.getData().size();
             thisYear = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : -1;
@@ -236,8 +245,11 @@ public class LinkyHandler extends BaseThingHandler {
                 consumption != -1 ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR) : UnDefType.UNDEF);
     }
 
-    private @Nullable EnedisInfo getEnedisInfo(EnedisTimeScale timeScale, LocalDate from, LocalDate to) {
+    private @Nullable EnedisInfo getEnedisInfo(EnedisTimeScale timeScale, LocalDate from, LocalDate to, boolean reLog) {
+        logger.debug("getEnedisInfo {}", timeScale);
+
         EnedisInfo result = null;
+        boolean tryRelog = false;
 
         FormBody formBody = new FormBody.Builder().add("p_p_id", "lincspartdisplaycdc_WAR_lincspartcdcportlet")
                 .add("p_p_lifecycle", "2").add("p_p_resource_id", timeScale.getId())
@@ -245,17 +257,19 @@ public class LinkyHandler extends BaseThingHandler {
                 .add("_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateFin", to.format(ENEDIS_DATE_FORMAT)).build();
 
         Request requestData = new Request.Builder().url(API_BASE_URI).post(formBody).build();
-        logger.debug("POST {}", API_BASE_URI);
         try (Response response = client.newCall(requestData).execute()) {
-            logger.debug("Response status {} {} => isSuccessful() {}", response.code(), response.message(),
-                    response.isSuccessful());
             if (response.isRedirect()) {
-                logger.debug("Response redirects to {}", response.header("Location"));
-            }
-            String body = (response.body() != null) ? response.body().string() : null;
-            if (body != null && !body.isEmpty()) {
-                logger.debug("Response body: {}", body);
-                result = GSON.fromJson(body, EnedisInfo.class);
+                String location = response.header("Location");
+                logger.debug("Response status {} {} redirects to {}", response.code(), response.message(), location);
+                if (reLog && location != null && location.startsWith(LOGIN_BASE_URI)) {
+                    tryRelog = true;
+                }
+            } else {
+                String body = (response.body() != null) ? response.body().string() : null;
+                logger.debug("Response status {} {} : {}", response.code(), response.message(), body);
+                if (body != null && !body.isEmpty()) {
+                    result = GSON.fromJson(body, EnedisInfo.class);
+                }
             }
             response.close();
         } catch (IOException e) {
@@ -263,6 +277,9 @@ public class LinkyHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         } catch (JsonSyntaxException e) {
             logger.debug("Exception while converting JSON response : {}", e.getMessage());
+        }
+        if (tryRelog && login()) {
+            result = getEnedisInfo(timeScale, from, to, false);
         }
         // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(ENEDIS_DATE_FORMAT),
         // to.format(ENEDIS_DATE_FORMAT));
@@ -298,6 +315,7 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            logger.debug("Refreshing channel {}", channelUID.getId());
             switch (channelUID.getId()) {
                 case YESTERDAY:
                 case LAST_WEEK:
