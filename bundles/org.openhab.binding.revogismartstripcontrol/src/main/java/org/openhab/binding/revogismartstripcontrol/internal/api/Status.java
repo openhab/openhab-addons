@@ -17,6 +17,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link Status} is the internal data model used to control Revogi's SmartStrip
+ *
+ * @author Andi Bräu - Initial contribution
+ *
+ */
 public class Status {
     @JsonProperty("switch")
     private List<Integer> switchValue;

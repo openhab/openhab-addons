@@ -33,6 +33,11 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * The {@link UdpSenderService} is responsible for sending and receiving udp packets
+ *
+ * @author Andi Bräu - Initial contribution
+ */
 @NonNullByDefault
 public class UdpSenderService {
 

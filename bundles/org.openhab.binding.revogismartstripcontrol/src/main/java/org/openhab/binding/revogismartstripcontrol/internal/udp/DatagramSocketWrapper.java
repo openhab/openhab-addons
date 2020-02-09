@@ -13,17 +13,24 @@
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
 
-import org.osgi.service.component.annotations.Component;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-@Component
+/**
+ * The {@link DatagramSocketWrapper} wraps Java's DatagramSocket for better testing
+ * UdpSenderService
+ *
+ * @author Andi Bräu - Initial contribution
+ */
+@NonNullByDefault
 public class DatagramSocketWrapper {
 
-    DatagramSocket datagramSocket;
+    @Nullable DatagramSocket datagramSocket;
 
     public void initSocket() throws SocketException {
         if (datagramSocket != null && !datagramSocket.isClosed()) {

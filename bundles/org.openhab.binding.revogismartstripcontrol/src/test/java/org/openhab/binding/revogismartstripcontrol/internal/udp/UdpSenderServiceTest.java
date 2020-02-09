@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+/**
+ * @author Andi Bräu - Initial contribution
+ */
+@NonNullByDefault
 public class UdpSenderServiceTest {
 
     private final DatagramSocketWrapper datagramSocketWrapper = mock(DatagramSocketWrapper.class);

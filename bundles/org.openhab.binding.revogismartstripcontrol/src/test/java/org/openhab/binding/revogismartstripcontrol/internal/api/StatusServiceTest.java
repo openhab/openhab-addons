@@ -13,6 +13,7 @@
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import jersey.repackaged.com.google.common.collect.Lists;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 
@@ -23,6 +24,10 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Andi Bräu - Initial contribution
+ */
+@NonNullByDefault
 public class StatusServiceTest {
 
     private UdpSenderService udpSenderService = mock(UdpSenderService.class);
