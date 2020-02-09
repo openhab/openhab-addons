@@ -131,7 +131,6 @@
 				"channel": "temperature",
 				"type": "Number",
 				"refresh": true,
-				"transformation": "-32*5/9",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
