@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RevogiSmartStripControlBindingConstants {
 
-    private static final String BINDING_ID = "revogismartstrip";
+    private static final String BINDING_ID = "revogismartstripcontrol";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID SMART_STRIP_THING_TYPE = new ThingTypeUID(BINDING_ID, "smartstrip");
