@@ -275,7 +275,7 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                         return;
                     }
                     if (!settings.isTopLimitSet() || !settings.isBottomLimitSet()) {
-                        logger.warn("Cannot set position of blinds. Top of bottom limits have not yet been set. "
+                        logger.warn("Cannot set position of blinds. Top or bottom limits have not been set. "
                                 + "Please configure manually.");
                         return;
                     }
