@@ -167,6 +167,7 @@ public class BlueGigaSerialHandler {
             for (int b : payload) {
                 outputStream.write(b);
             }
+            outputStream.flush();
 
         } catch (IOException e) {
             throw new BlueGigaException("Error sending BLE frame", e);
