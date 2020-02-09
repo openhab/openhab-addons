@@ -6,7 +6,7 @@
 
 	<thing-type id="calendar">
 		<label>Calendar</label>
-		<description>Calendar based on a readable iCal calendar.</description>
+		<description>Calendar based on an iCal calendar.</description>
 
 		<channels>
 			<channel id="current_title" typeId="event_current_title" />
