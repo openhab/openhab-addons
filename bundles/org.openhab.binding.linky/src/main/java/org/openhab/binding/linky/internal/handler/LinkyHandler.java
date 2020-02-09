@@ -113,6 +113,7 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Linky handler.");
+        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
 
         scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
 
@@ -128,7 +129,6 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("login");
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-
         try {
             Request requestLogin = new Request.Builder().url(LOGIN_BASE_URI)
                     .post(LOGIN_BODY_BUILDER.add("IDToken1", config.username).add("IDToken2", config.password).build())
@@ -189,7 +189,6 @@ public class LinkyHandler extends BaseThingHandler {
             yesterday = -1;
             while (jump < result.getData().size()) {
                 double consumption = result.getData().get(jump).valeur;
-                logger.debug("consumption at jump {}: {}", jump, consumption);
                 if (consumption > 0) {
                     if (rangeStart.get(weekFields.weekOfWeekBasedYear()) == lastWeekNumber) {
                         lastWeek += consumption;
@@ -226,7 +225,7 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new monthly data and updates channels
      */
-    private void updateLinkyMonthlyData() {
+    private synchronized void updateLinkyMonthlyData() {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
             logger.debug("updateLinkyMonthlyData ignored because no linked channel");
             return;
