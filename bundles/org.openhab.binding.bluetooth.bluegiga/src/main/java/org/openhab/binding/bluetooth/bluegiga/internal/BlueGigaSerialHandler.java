@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.io.IOUtils;
+import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaEndProcedureCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ public class BlueGigaSerialHandler {
         this.outputStream = outputStream;
         this.inputStream = inputStream;
 
+        flush();
         parserThread = createBlueGigaBLEHandler();
         parserThread.setDaemon(true);
         parserThread.start();
@@ -77,6 +79,34 @@ public class BlueGigaSerialHandler {
                 /* ignore */
             }
         }
+    }
+
+    private void flush() {
+        // Send End Procedure command to end all activity and flush input buffer to start from know state
+        logger.debug("Flush");
+        sendFrame(new BlueGigaEndProcedureCommand(), false);
+        try {
+            // Wait BlueGiga controller have stopped all activity
+            Thread.sleep(100);
+
+            // Flush input buffer
+            logger.debug("Bytes available: {}", inputStream.available());
+            if (inputStream.markSupported()) {
+                logger.debug("Reset buffer");
+                inputStream.reset();
+            } else {
+                logger.debug("Read all data");
+                int i = 1000;
+                while (inputStream.available() > 0 && i-- > 0) {
+                    inputStream.read();
+                }
+            }
+        } catch (InterruptedException e) {
+            close = true;
+        } catch (IOException e) {
+            // Ignore
+        }
+        logger.debug("Flush done");
     }
 
     /**
@@ -119,7 +149,13 @@ public class BlueGigaSerialHandler {
     }
 
     public void sendFrame(BlueGigaCommand bleFrame) throws IllegalStateException {
-        checkIfAlive();
+        sendFrame(bleFrame, true);
+    }
+
+    private void sendFrame(BlueGigaCommand bleFrame, boolean checkIsAlive) throws IllegalStateException {
+        if (checkIsAlive) {
+            checkIfAlive();
+        }
 
         // Send the data
         logger.debug("sendFrame: {}", bleFrame);
