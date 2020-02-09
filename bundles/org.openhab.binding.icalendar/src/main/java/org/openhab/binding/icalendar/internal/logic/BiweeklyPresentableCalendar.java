@@ -252,11 +252,12 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     *
-     * @param frameBegin the start of the time frame
-     * @param frameEnd the start of the time frame
-     * @return list of iCalendar Events that BEGIN within the time frame
-     *
+     * Return a list of events that have just begun within the time frame 
+     * 
+     * @param frameBegin   the start of the time frame
+     * @param frameEnd     the start of the time frame
+     * @return             list of iCalendar Events that BEGIN within the time frame 
+     *          
      */
     @Override
     public @Nullable List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
@@ -288,11 +289,12 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     *
-     * @param frameBegin the start of the time frame
-     * @param frameEnd the start of the time frame
-     * @return list of iCalendar Events that END within the time frame
-     *
+     * Return a list of events that have just ended within the time frame 
+     * 
+     * @param frameBegin   the start of the time frame
+     * @param frameEnd     the start of the time frame
+     * @return             list of iCalendar Events that END within the time frame 
+     *          
      */
     @Override
     public @Nullable List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {

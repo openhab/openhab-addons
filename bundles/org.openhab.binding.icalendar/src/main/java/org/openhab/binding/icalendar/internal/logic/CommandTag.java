@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.icalendar.internal.logic;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.regex.PatternSyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -28,100 +25,93 @@ import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.TypeParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *  This is a class that implements a Command Tag that may be embedded in an Event Description
- *  Valid Tags must follow one of the following forms..
- *
- *      BEGIN:<itemName>:<targetState>
- *      BEGIN:<itemName>:<targetState>:<authorizationCode>
- *      END:<itemName>:<targetState>
- *      END:<itemName>:<targetState>:<authorizationCode>
- *
+ * This is a class that implements a Command Tag that may be embedded in an
+ * Event Description. Valid Tags must follow one of the following forms..
+ * 
+ *   BEGIN:<itemName>:<targetState>
+ *   BEGIN:<itemName>:<targetState>:<authorizationCode>
+ *   END:<itemName>:<targetState> END:<itemName>:<targetState>:<authorizationCode>
+ * 
  * @author Andrew Fiddian-Green - Initial contribution
- *
+ * 
  */
-@NonNullByDefault
 public class CommandTag {
-    private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
-
-    @Nullable
-    public String itemName;
-
-    @Nullable
-    public String targetState;
-
-    @Nullable
-    public String fullTag;
-
-    @Nullable
-    public CommandTagType tagType;
-
-    protected boolean isValid = false;
-
-    @Nullable
+    private String itemName;
+    private String targetState;
+    private String fullTag;
+    private CommandTagType tagType;
+    private boolean isValid = false;
     private String authorizationCode;
 
-    private @Nullable Command castToCommandType(Class<? extends Command> commandType) {
-        try {
-            Method valueOf = commandType.getMethod("valueOf", String.class);
-            Command cmd = (Command) valueOf.invoke(commandType, targetState);
-            if (cmd != null) {
-                return cmd;
-            }
-        } catch (IllegalArgumentException e) {
-            logger.trace("IllegalArgumentException: \"{}\"", targetState);
-        } catch (NoSuchMethodException e) {
-            logger.trace("NoSuchMethodException: \"valueOf\"");
-        } catch (IllegalAccessException e) {
-            logger.trace("IllegalAccessException: \"valueOf\"");
-        } catch (InvocationTargetException e) {
-            logger.trace("InvocationTargetException: \"valueOf\"");
-        }
-        return null;
+    private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
+
+    private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
+
+    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(QuantityType.class,
+            OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class, PlayPauseType.class,
+            RewindFastforwardType.class, StringType.class);
+
+    public String getItemName() {
+        return itemName != null ? itemName : "";
+    }
+
+    public String getTargetState() {
+        return targetState != null ? targetState : "";
+    }
+
+    public String getFullTag() {
+        return fullTag != null ? fullTag : "";
+    }
+
+    public CommandTagType getTagType() {
+        return tagType;
+    }
+
+    public boolean isValid() {
+        return isValid;
     }
 
     public CommandTag(String line) {
-        String[] fields;
-        try {
-            fields = line.split(":");
-        } catch (PatternSyntaxException e) {
-            logger.trace("PatternSyntaxException: \"{}\"", line);
+        fullTag = line;
+        if (!fullTag.contains(":")) {
+            logger.trace("Input line \"{}\" => No \":\" delimiters!", fullTag);
             return;
         }
+        String[] fields;
+        fields = fullTag.split(":");
         if (fields.length < 3) {
-            logger.trace("Not enough fields: \"{}\"", line);
+            logger.trace("Input line \"{}\" => Not enough fields!", fullTag);
             return;
         }
         try {
             tagType = CommandTagType.valueOf(fields[0]);
         } catch (IllegalArgumentException e) {
-            logger.trace("Bad tag type prefix: \"{}\"", line);
+            logger.trace("Input line \"{}\" => Bad tag prefix!", fullTag);
             return;
         }
         itemName = fields[1].trim();
-        if (itemName.isEmpty()) {
-            logger.trace("Empty item name: \"{}\"", line);
+        if (itemName == null || itemName.isEmpty()) {
+            logger.trace("Input line \"{}\" => Item name empty!", fullTag);
             return;
         }
         targetState = fields[2].trim();
-        if (targetState.isEmpty()) {
-            logger.trace("Empty target state: \"{}\"", line);
+        if (targetState == null || targetState.isEmpty()) {
+            logger.trace("Input line \"{}\" => Target State empty!", fullTag);
             return;
         }
-
         isValid = true;
-        fullTag = line;
         if (fields.length > 3) {
             authorizationCode = fields[3].trim();
-        } else {
-            authorizationCode = "";
         }
     }
 
-    public static @Nullable CommandTag createCommandTag(String line) {
+    public static CommandTag createCommandTag(String line) {
         if (CommandTagType.prefixValid(line)) {
             CommandTag tag = new CommandTag(line.trim());
             return tag.isValid ? tag : null;
@@ -130,62 +120,42 @@ public class CommandTag {
         }
     }
 
-    public boolean isAuthorized(@Nullable String authCode) {
-        return isValid && (authCode == null || authCode.isEmpty() || authCode.equals(authorizationCode));
+    public boolean isAuthorized(String userAuthorizationCode) {
+        return isValid && (userAuthorizationCode == null || userAuthorizationCode.isEmpty()
+                || userAuthorizationCode.equals(authorizationCode));
     }
 
-    public @Nullable Command getCommand() {
-        // string is in double quotes => force StringType
-        String currentTargetState = targetState;
-        if (currentTargetState == null) {
+    public Command getCommand() {
+        if (targetState == null || targetState.isEmpty()) {
             return null;
         }
-        if (currentTargetState.startsWith("\"") && currentTargetState.endsWith("\"")) {
-            return new StringType(currentTargetState.replaceAll("\"", ""));
+
+        // string is in double quotes => force StringType
+        if (targetState.startsWith("\"") && targetState.endsWith("\"")) {
+            return new StringType(targetState.replaceAll("\"", ""));
         }
 
         // string is in single quotes => ditto
-        if (currentTargetState.startsWith("'") && currentTargetState.endsWith("'")) {
-            return new StringType(currentTargetState.replaceAll("'", ""));
+        if (targetState.startsWith("'") && targetState.endsWith("'")) {
+            return new StringType(targetState.replaceAll("'", ""));
         }
 
-        Command cmd = null;
+        Command cmd;
 
         // string ends with % => try PercentType
-        if (currentTargetState.endsWith("%")) {
-            try {
-                cmd = new PercentType(currentTargetState.replaceAll("%", ""));
+        if (targetState.endsWith("%")) {
+            if ((cmd = TypeParser.parseCommand(percentCommandType,
+                    targetState.substring(0, targetState.length() - 1))) != null) {
                 return cmd;
-            } catch (IllegalArgumentException e) {
-                logger.trace("Illegal percentage value: \"{}\"", targetState);
             }
         }
 
         // try all other possible CommandTypes
-        if ((cmd = castToCommandType(QuantityType.class)) != null) {
-            return cmd;
-        }
-        if ((cmd = castToCommandType(OnOffType.class)) != null) {
-            return cmd;
-        }
-        if ((cmd = castToCommandType(OpenClosedType.class)) != null) {
-            return cmd;
-        }
-        if ((cmd = castToCommandType(UpDownType.class)) != null) {
-            return cmd;
-        }
-        if ((cmd = castToCommandType(HSBType.class)) != null) {
-            return cmd;
-        }
-        if ((cmd = castToCommandType(PlayPauseType.class)) != null) {
-            return cmd;
-        }
-        if ((cmd = castToCommandType(RewindFastforwardType.class)) != null) {
+        if ((cmd = TypeParser.parseCommand(otherCommandTypes, targetState)) != null) {
             return cmd;
         }
 
-        // fallback to StringType (should never fail)
-        return castToCommandType(StringType.class);
+        return null;
     }
 
 }

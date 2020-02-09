@@ -40,13 +40,15 @@ public class Event {
         this.start = start;
         this.end = end;
 
-        if (!description.isEmpty()) {
-            String[] lines = description.split("\n");
-            for (String line : lines) {
-                CommandTag tag = CommandTag.createCommandTag(line);
-                if (tag != null) {
-                    commandTags.add(tag);
-                }
+        if (description.isEmpty()) {
+            return;
+        }
+        
+        String[] lines = description.split("\n");
+        for (String line : lines) {
+            CommandTag tag = CommandTag.createCommandTag(line);
+            if (tag != null) {
+                commandTags.add(tag);
             }
         }
     }

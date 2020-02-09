@@ -78,17 +78,21 @@ public abstract class AbstractPresentableCalendar {
     public abstract @Nullable Event getNextEvent(Instant instant);
 
     /**
-     * 
-     * @return list of Events which have just begun in the time window
-     *         since the instant when this method was last called
+     * Return a list of events that have just begun within the time frame 
+     *  
+     * @param frameBegin   the start of the time frame
+     * @param frameEnd     the start of the time frame
+     * @return             list of iCalendar Events that BEGIN within the time frame 
      * 
      */
     public abstract @Nullable List<Event> getJustBegunEvents(Instant from, Instant to);
 
     /**
+     * Return a list of events that have just ended within the time frame 
      * 
-     * @return list of Events which have just ended in the time window
-     *         since the instant when this method was last called
+     * @param frameBegin   the start of the time frame
+     * @param frameEnd     the start of the time frame
+     * @return             list of iCalendar Events that END within the time frame 
      * 
      */
     public abstract @Nullable List<Event> getJustEndedEvents(Instant from, Instant to);

@@ -20,6 +20,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -161,11 +170,9 @@ public class BiweeklyPresentableCalendarTest {
             assertEquals(cmdTags.size(), tagsPerEvent);
             int beginTags = 0;
             for (CommandTag cmdTag : cmdTags) {
-                if (cmdTag.tagType == CommandTagType.BEGIN) {
+                if (cmdTag.getTagType() == CommandTagType.BEGIN) {
                     assertTrue(cmdTag.isAuthorized("abc"));
-                    String targetItemName = cmdTag.itemName;
-                    assertNotNull(targetItemName);
-                    assertTrue(targetItemName.matches("^\\w+$"));
+                    assertTrue(cmdTag.getItemName().matches("^\\w+$"));
                     assertTrue(cmdTag.getCommand() != null);
                     beginTags++;
                 }
@@ -183,11 +190,9 @@ public class BiweeklyPresentableCalendarTest {
             assertEquals(cmdTags.size(), tagsPerEvent);
             int beginTags = 0;
             for (CommandTag cmdTag : cmdTags) {
-                if (cmdTag.tagType == CommandTagType.BEGIN) {
+                if (cmdTag.getTagType() == CommandTagType.BEGIN) {
                     assertTrue(cmdTag.isAuthorized("abc"));
-                    String targetItemName = cmdTag.itemName;
-                    assertNotNull(targetItemName);
-                    assertTrue(targetItemName.matches("^\\w+$"));
+                    assertTrue(cmdTag.getItemName().matches("^\\w+$"));
                     assertTrue(cmdTag.getCommand() != null);
                     beginTags++;
                 }
@@ -215,17 +220,16 @@ public class BiweeklyPresentableCalendarTest {
             assertEquals(cmdTags.size(), tagsPerEvent);
             int endTags = 0;
             for (CommandTag cmdTag : cmdTags) {
-                if (cmdTag.tagType == CommandTagType.END) {
+                if (cmdTag.getTagType() == CommandTagType.END) {
                     assertTrue(cmdTag.isAuthorized("abc"));
-                    String targetItemName = cmdTag.itemName;
-                    assertNotNull(targetItemName);
-                    assertTrue(targetItemName.matches("^\\w+$"));
+                    assertTrue(cmdTag.getItemName().matches("^\\w+$"));
                     assertTrue(cmdTag.getCommand() != null);
                     endTags++;
                 }
             }
             assertEquals(endTags, tagsPerEvent / 2);
         }
+
 
         // test outside of window: ended events, too early
         events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:20:00Z"),
@@ -236,6 +240,149 @@ public class BiweeklyPresentableCalendarTest {
         events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:35:00Z"),
                 Instant.parse("2020-01-28T16:40:00Z"));
         assertNull(events);
+
+        // test a valid just begun event with both good and bad authorization codes
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:55:00Z"),
+                Instant.parse("2020-01-28T16:05:00Z"));
+        assertNotNull(events);
+        assertTrue(events.size() > 0);
+        assertTrue(events.get(0).commandTags.size() > 0);
+        CommandTag cmd = events.get(0).commandTags.get(0);
+        // accept correct, empty or null configuration codes
+        assertTrue(cmd.isAuthorized("abc"));
+        assertTrue(cmd.isAuthorized(""));
+        assertTrue(cmd.isAuthorized(null));
+        // reject incorrect configuration code
+        assertFalse(cmd.isAuthorized("123"));
+
+
+        // test tag syntax: Test Series #1
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T19:25:00Z"),
+                Instant.parse("2020-01-28T19:35:00Z"));
+        assertNotNull(events);
+        assertEquals(events.size(), 1);
+        List<CommandTag> cmdTags = events.get(0).commandTags;
+        assertEquals(cmdTags.size(), 11);
+
+        // BEGIN:Calendar_Test_Color:ON:abc
+        assertEquals(cmdTags.get(0).getItemName(), "Calendar_Test_Color");
+        assertTrue(cmdTags.get(0).isAuthorized("abc"));
+        assertEquals(cmdTags.get(0).getCommand().getClass(), OnOffType.class);
+
+        // BEGIN:Calendar_Test_Contact:OPEN:abc
+        assertEquals(cmdTags.get(1).getCommand().getClass(), OpenClosedType.class);
+
+        // BEGIN:Calendar_Test_Dimmer:ON:abc
+        assertEquals(cmdTags.get(2).getCommand().getClass(), OnOffType.class);
+
+        // BEGIN:Calendar_Test_Number:12.3:abc
+        assertEquals(cmdTags.get(3).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Temperature:12.3°C:abc
+        assertEquals(cmdTags.get(4).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Pressure:12.3hPa:abc
+        assertEquals(cmdTags.get(5).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Speed:12.3m/s:abc
+        assertEquals(cmdTags.get(6).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Player:PLAY:abc
+        assertEquals(cmdTags.get(7).getCommand().getClass(), PlayPauseType.class);
+
+        // BEGIN:Calendar_Test_RollerShutter:UP:abc
+        assertEquals(cmdTags.get(8).getCommand().getClass(), UpDownType.class);
+
+        // BEGIN:Calendar_Test_String:Test Series #1:abc
+        assertEquals(cmdTags.get(9).getCommand().getClass(), StringType.class);
+
+        // BEGIN:Calendar_Test_Switch:ON:abc
+        assertEquals(cmdTags.get(10).getCommand().getClass(), OnOffType.class);
+
+        
+        // test tag syntax: Test Series #4
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:10:00Z"),
+                Instant.parse("2020-01-28T20:20:00Z"));
+        assertNotNull(events);
+        assertEquals(events.size(), 1);
+        cmdTags = events.get(0).commandTags;
+        assertEquals(cmdTags.size(), 11);
+
+        // BEGIN:Calendar_Test_Color:0%:abc
+        assertEquals(cmdTags.get(0).getCommand().getClass(), PercentType.class);
+
+        // BEGIN:Calendar_Test_Contact:CLOSED:abc
+        assertEquals(cmdTags.get(1).getCommand().getClass(), OpenClosedType.class);
+
+        // BEGIN:Calendar_Test_Dimmer:0%:abc
+        assertEquals(cmdTags.get(2).getCommand().getClass(), PercentType.class);
+
+        // BEGIN:Calendar_Test_Number:-12.3:abc
+        assertEquals(cmdTags.get(3).getCommand().getClass(), QuantityType.class);
+        
+        // BEGIN:Calendar_Test_Temperature:-12.3°C:abc        
+        assertEquals(cmdTags.get(4).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Pressure:500mmHg:abc
+        assertEquals(cmdTags.get(5).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Speed:12300000mm/h:abc
+        assertEquals(cmdTags.get(6).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Player:REWIND:abc
+        assertEquals(cmdTags.get(7).getCommand().getClass(), RewindFastforwardType.class);
+
+        // BEGIN:Calendar_Test_RollerShutter:100%:abc
+        assertEquals(cmdTags.get(8).getCommand().getClass(), PercentType.class);
+
+        // BEGIN:Calendar_Test_String:Test Series #4:abc
+        assertEquals(cmdTags.get(9).getCommand().getClass(), StringType.class);
+
+        // BEGIN:Calendar_Test_Switch:OFF:abc
+        assertEquals(cmdTags.get(10).getCommand().getClass(), OnOffType.class);
+
+        
+        // test tag syntax: Test Series #5
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:25:00Z"),
+                Instant.parse("2020-01-28T20:35:00Z"));
+        assertNotNull(events);
+        assertEquals(events.size(), 1);
+        cmdTags = events.get(0).commandTags;
+        assertEquals(cmdTags.size(), 11);
+
+        // BEGIN:Calendar_Test_Color:240,100,100:abc
+        assertEquals(cmdTags.get(0).getCommand().getClass(), HSBType.class);
+
+        // BEGIN:Calendar_Test_Contact:OPEN:abc
+        assertEquals(cmdTags.get(1).getCommand().getClass(), OpenClosedType.class);
+
+        // BEGIN:Calendar_Test_Dimmer:50%:abc
+        assertEquals(cmdTags.get(2).getCommand().getClass(), PercentType.class);
+
+        // BEGIN:Calendar_Test_Number:-0:abc
+        assertEquals(cmdTags.get(3).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Temperature:0K:abc
+        assertEquals(cmdTags.get(4).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Pressure:12.3hPa:abc
+        assertEquals(cmdTags.get(5).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Speed:12.3km/h:abc
+        assertEquals(cmdTags.get(6).getCommand().getClass(), QuantityType.class);
+
+        // BEGIN:Calendar_Test_Player:PLAY:abc
+        assertEquals(cmdTags.get(7).getCommand().getClass(), PlayPauseType.class);
+
+        // BEGIN:Calendar_Test_RollerShutter:50%:abc
+        assertEquals(cmdTags.get(8).getCommand().getClass(), PercentType.class);
+
+        // BEGIN:Calendar_Test_String:Test Series #5:abc
+        assertEquals(cmdTags.get(9).getCommand().getClass(), StringType.class);
+
+        // BEGIN:Calendar_Test_Switch:ON:abc
+        assertEquals(cmdTags.get(10).getCommand().getClass(), OnOffType.class);
+
     }
 
 }

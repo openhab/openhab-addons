@@ -253,11 +253,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             }
 
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
-            // the ENDED Event tags must be processed before the BEGUN ones
+            // the END Event tags must be processed before the BEGIN ones
             executeEventCommands(calendar.getJustEndedEvents(updateStatesLastCalledTime, now), CommandTagType.END);
 
             // process all Command Tags in all Calendar Events which BEGAN since updateStates was last called 
-            // the ENDED Event tags must be processed before the BEGUN ones
+            // the END Event tags must be processed before the BEGIN ones
             executeEventCommands(calendar.getJustBegunEvents(updateStatesLastCalledTime, now), CommandTagType.BEGIN);
             
             // save time when updateStates was previously called 
@@ -267,13 +267,22 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     }
 
     private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
+        // no begun or ended events => exit quietly as there is nothing to do
         if ((events == null) || (events.isEmpty())) {
-            // no begun or ended events, so there is nothing to do
             return;
         }
-        // 
-        if (eventPublisherCallback == null) {
+        // prevent synchronization issues (MVN null pointer warnings) in "eventPublisherCallback"
+        @Nullable
+        EventPublisher syncEventPublisherCallback = eventPublisherCallback;
+        if (syncEventPublisherCallback == null) {
             logger.error("EventPublisher object not instantiated!");
+            return;
+        } 
+        // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
+        @Nullable
+        ICalendarConfiguration syncConfiguration = configuration;
+        if (syncConfiguration == null) {
+            logger.error("Configuration not instantiated!");
             return;
         } 
         // loop through all events in the list
@@ -283,26 +292,26 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             for (CommandTag cmdTag : event.commandTags) { 
             
                 // only process the BEGIN resp. END tags
-                if (cmdTag.tagType != execTime) {
+                if (cmdTag.getTagType() != execTime) {
                     continue;
                 }
-                if (!cmdTag.isAuthorized(configuration.authorizationCode)) {
-                    logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.fullTag);
+                if (!cmdTag.isAuthorized(syncConfiguration.authorizationCode)) {
+                    logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.getFullTag());
                     continue;
                 }
-                if (!cmdTag.itemName.matches("^\\w+$")) {
-                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for item name!", event.title, cmdTag.fullTag);
+                if (!cmdTag.getItemName().matches("^\\w+$")) {
+                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title, cmdTag.getFullTag());
                     continue;
                 }
                 Command cmdState = cmdTag.getCommand();
                 if (cmdState == null) {
-                    logger.warn("Event: {}, Command Tag: {} => Invalid target state!", event.title, cmdTag.fullTag);
+                    logger.warn("Event: {}, Command Tag: {} => Invalid Target State!", event.title, cmdTag.getFullTag());
                     continue;
                 }
         
                 // (try to) execute the command
                 try {
-                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.itemName, cmdState));
+                    syncEventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
                     if (logger.isDebugEnabled()) {
                         String cmdType = cmdState.getClass().toString();
                         int index = cmdType.lastIndexOf(".") + 1;
@@ -310,12 +319,12 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                             cmdType = cmdType.substring(index);
                         }
                         logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", 
-                                event.title, cmdTag.fullTag, cmdTag.itemName, cmdType, cmdState);
+                                event.title, cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.fullTag);
+                    logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title, cmdTag.getFullTag());
                 } catch (IllegalStateException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.fullTag);
+                    logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title, cmdTag.getFullTag());
                 }
 
             }
