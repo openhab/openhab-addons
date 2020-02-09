@@ -44,7 +44,7 @@ Compared to standard JsonPath, the transformation returns single values instead 
 The transformation also will not ever return `null`.
 This makes it possible to use the transform in labels or output channels of Things.
 
-Because the transformation will not return arrays or null values, if the JsonPath expression provided results in no matches, the transformation will return the entire original JSON string.
+If the JsonPath expression provided results in no matches, the transformation will return the entire original JSON string.
 
 ## Usage as a Profile
 
