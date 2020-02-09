@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class PullJob implements Runnable {
 
-    private final static int K = 1024;
     private final static String TMP_FILE_PREFIX = "icalendardld";
     private final Logger logger = LoggerFactory.getLogger(PullJob.class);
     private HttpClient httpClient;
@@ -77,9 +76,9 @@ class PullJob implements Runnable {
         this.httpClient = httpClient;
         this.sourceURI = sourceURI;
         if (username != null && password != null) {
-            this.authentication = new BasicAuthentication.BasicResult(this.sourceURI, username, password);
+            authentication = new BasicAuthentication.BasicResult(this.sourceURI, username, password);
         } else {
-            this.authentication = null;
+            authentication = null;
         }
         this.destination = destination;
         this.listener = listener;
@@ -87,8 +86,8 @@ class PullJob implements Runnable {
 
     @Override
     public void run() {
-        Request request = httpClient.newRequest(this.sourceURI).followRedirects(true).method(HttpMethod.GET);
-        Authentication.@Nullable Result currentAuthentication = this.authentication;
+        Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
+        Authentication.@Nullable Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
         }
@@ -100,12 +99,12 @@ class PullJob implements Runnable {
         try {
             response = asyncListener.get(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         } catch (InterruptedException | TimeoutException | ExecutionException e1) {
-            logger.warn("Response for calendar request could not be retrieved.", e1);
+            logger.warn("Response for calendar request could not be retrieved.");
             return;
         }
 
         if (response.getStatus() != HttpStatus.OK_200) {
-            logger.warn("Response status for getting \"{}\" was {} instead of 200. Ignoring it.", sourceURI.toString(),
+            logger.warn("Response status for getting \"{}\" was {} instead of 200. Ignoring it.", sourceURI,
                     response.getStatus());
             return;
         }
@@ -113,13 +112,13 @@ class PullJob implements Runnable {
         String responseLength = response.getHeaders().get(HttpHeader.CONTENT_LENGTH);
         if (responseLength != null) {
             try {
-                if (Integer.parseInt(responseLength) > HTTP_MAX_CALENDAR_SIZE_K * K) {
-                    logger.warn("Calendar is too big, aborting request");
+                if (Integer.parseInt(responseLength) > HTTP_MAX_CALENDAR_SIZE) {
+                    logger.warn("Calendar is too big ({} bytes), aborting request", responseLength);
                     response.abort(new ResponseTooBigException());
                     return;
                 }
             } catch (NumberFormatException e) {
-                logger.warn(
+                logger.debug(
                         "While requesting calendar Content-Length was set, but is malformed. Falling back to read-loop.",
                         e);
             }
@@ -130,14 +129,15 @@ class PullJob implements Runnable {
         try {
             tmpTargetFile = File.createTempFile(TMP_FILE_PREFIX, null);
             tmpOutStream = new FileOutputStream(tmpTargetFile);
-            byte[] buffer = new byte[K];
+            byte[] buffer = new byte[1024];
             int readBytesTotal = 0;
             InputStream httpInputStream = asyncListener.getInputStream();
             int currentReadBytes = -1;
             while ((currentReadBytes = httpInputStream.read(buffer)) > -1) {
                 readBytesTotal += currentReadBytes;
-                if (readBytesTotal > HTTP_MAX_CALENDAR_SIZE_K * K) {
-                    logger.warn("Calendar is too big. Stopping receiving calendar.");
+                if (readBytesTotal > HTTP_MAX_CALENDAR_SIZE) {
+                    logger.warn("Calendar is too big (> {} bytes). Stopping receiving calendar.",
+                            HTTP_MAX_CALENDAR_SIZE);
                     response.abort(new ResponseTooBigException());
                     return;
                 }
@@ -151,7 +151,7 @@ class PullJob implements Runnable {
                 try {
                     tmpOutStream.close();
                 } catch (IOException e) {
-                    // Ignore
+                    logger.trace("Failed while closing stream on cleanup.", e);
                 }
             }
         }
@@ -159,23 +159,23 @@ class PullJob implements Runnable {
         try {
             AbstractPresentableCalendar.create(new FileInputStream(tmpTargetFile), Duration.ZERO);
         } catch (IOException | CalendarException e) {
-            logger.warn("Not able to read downloaded iCal.", e);
+            logger.warn("Not able to read downloaded iCal. Validation failed or file not readable.");
             return;
         }
 
         try {
             Files.move(tmpTargetFile.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            logger.warn("Failed to replace iCal-file", e);
+            logger.warn("Failed to replace iCal file");
             return;
         }
 
-        CalendarUpdateListener currentUpdateListener = this.listener;
+        CalendarUpdateListener currentUpdateListener = listener;
         if (currentUpdateListener != null) {
             try {
                 currentUpdateListener.onCalendarUpdated();
             } catch (Exception e) {
-                logger.warn("An Exception was thrown while calling back", e);
+                logger.debug("An Exception was thrown while calling back", e);
             }
         }
     }
