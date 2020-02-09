@@ -68,25 +68,20 @@ import tec.uom.se.unit.MetricPrefix;
  *
  * @author Connor Petty - Initial contribution
  */
-@NonNullByDefault()
+@NonNullByDefault
 public class AM43Handler extends ConnectedBluetoothHandler implements ResponseListener {
 
     private final Logger logger = LoggerFactory.getLogger(AM43Handler.class);
 
-    @Nullable
-    private AM43Configuration config;
+    private @Nullable AM43Configuration config;
 
-    @Nullable
-    private volatile AM43Command currentCommand = null;
+    private volatile @Nullable AM43Command currentCommand = null;
 
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
-    @Nullable
-    private ExecutorService commandExecutor;
+    private @Nullable ExecutorService commandExecutor;
 
-    @Nullable
-    private MotorSettings motorSettings = null;
+    private @Nullable MotorSettings motorSettings = null;
 
     public AM43Handler(Thing thing) {
         super(thing);
@@ -364,6 +359,7 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
 
     @Override
     public void receivedResponse(GetSpeedCommand command) {
+        getMotorSettings().setSpeed(command.getSpeed());
         updateSpeed(command.getSpeed());
     }
 
@@ -391,43 +387,34 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
     private void updateDirection(Direction direction) {
         getMotorSettings().setDirection(direction);
 
-        StringType directionType = new StringType(direction.toString());
-        logger.debug("updating direction to: {}", directionType);
-        updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_DIRECTION, directionType);
+        updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_DIRECTION, new StringType(direction.toString()));
     }
 
     private void updateOperationMode(OperationMode opMode) {
         getMotorSettings().setOperationMode(opMode);
 
-        StringType mode = new StringType(opMode.toString());
-        logger.debug("updating operationMode to: {}", mode);
-        updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_OPERATION_MODE, mode);
+        updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_OPERATION_MODE, new StringType(opMode.toString()));
     }
 
     private void updateTopLimitSet(boolean bitValue) {
         getMotorSettings().setTopLimitSet(bitValue);
 
-        OnOffType limitSet = OnOffType.from(bitValue);
-        logger.debug("updating topLimitSet to: {}", bitValue);
-        updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_TOP_LIMIT_SET, limitSet);
+        updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_TOP_LIMIT_SET, OnOffType.from(bitValue));
     }
 
     private void updateBottomLimitSet(boolean bitValue) {
         getMotorSettings().setBottomLimitSet(bitValue);
 
-        logger.debug("updating bottomLimitSet to: {}", bitValue);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_BOTTOM_LIMIT_SET, OnOffType.from(bitValue));
     }
 
     private void updateHasLightSensor(boolean bitValue) {
-        logger.debug("updating hasLightSensor to: {}", bitValue);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_HAS_LIGHT_SENSOR, OnOffType.from(bitValue));
     }
 
     private void updateSpeed(int value) {
         getMotorSettings().setSpeed(value);
 
-        logger.debug("updating speed to: {}", value);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_SPEED, new DecimalType(value));
     }
 
@@ -437,10 +424,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
             if (getAM43Config().invertPosition) {
                 percentValue = 100 - percentValue;
             }
-            logger.debug("updating position to: {}", percentValue);
             updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_POSITION, new PercentType(percentValue));
         } else {
-            logger.debug("updating position to: undef");
             updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_POSITION, UnDefType.UNDEF);
         }
     }
@@ -449,7 +434,6 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         getMotorSettings().setLength(value);
 
         QuantityType<Length> lengthType = QuantityType.valueOf(value, MetricPrefix.MILLI(SIUnits.METRE));
-        logger.debug("updating length to: {}", lengthType);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_LENGTH, lengthType);
     }
 
@@ -457,7 +441,6 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         getMotorSettings().setDiameter(value);
 
         QuantityType<Length> diameter = QuantityType.valueOf(value, MetricPrefix.MILLI(SIUnits.METRE));
-        logger.debug("updating diameter to: {}", diameter);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_DIAMETER, diameter);
     }
 
@@ -465,23 +448,19 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         getMotorSettings().setType(value);
 
         DecimalType type = new DecimalType(value);
-        logger.debug("updating type to: {}", type);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_TYPE, type);
     }
 
     private void updateLightLevel(int value) {
         DecimalType lightLevel = new DecimalType(value);
-        logger.debug("updating lightLevel to: {}", lightLevel);
         updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_LIGHT_LEVEL, lightLevel);
     }
 
     private void updateBatteryLevel(int value) {
         if (value >= 0 && value <= 100) {
             DecimalType deviceElectric = new DecimalType(value & 0xFF);
-            logger.debug("updating battery level to: {}", deviceElectric);
             updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_ELECTRIC, deviceElectric);
         } else {
-            logger.debug("Received invalid battery value {}. Updating battery level: undef", value);
             updateStateIfLinked(AM43BindingConstants.CHANNEL_ID_ELECTRIC, UnDefType.UNDEF);
         }
     }
