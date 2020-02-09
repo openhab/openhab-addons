@@ -83,9 +83,9 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     public ICalendarHandler(Thing thing, HttpClient httpClient, @Nullable EventPublisher eventPublisher) {
         super(thing);
         this.httpClient = httpClient;
-        this.calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
+        calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[^a-zA-Z0-9\\._-]", "_") + ".ical");
-        this.eventPublisherCallback = eventPublisher;
+        eventPublisherCallback = eventPublisher;
     }
 
     @Override
@@ -99,11 +99,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             case CHANNEL_NEXT_EVENT_START:
             case CHANNEL_NEXT_EVENT_END:
                 if (command instanceof RefreshType) {
-                    this.updateStates();
+                    updateStates();
                 }
                 break;
             default:
-                this.logger.warn("Framework sent command to unknown channel with id '{}'", channelUID.getId());
+                logger.warn("Framework sent command to unknown channel with id '{}'", channelUID.getId());
         }
     }
 
@@ -132,18 +132,18 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             return;
         }
 
-        if (this.calendarFile.isFile()) {
-            if (this.reloadCalendar()) {
-                this.updateStatus(ThingStatus.ONLINE);
-                this.updateStates();
-                this.rescheduleCalendarStateUpdate();
+        if (calendarFile.isFile()) {
+            if (reloadCalendar()) {
+                updateStatus(ThingStatus.ONLINE);
+                updateStates();
+                rescheduleCalendarStateUpdate();
             } else {
-                this.updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE);
             }
             pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime.longValue(),
                     currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE);
             pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0,
                     currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
         }
@@ -151,11 +151,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> currentUpdateJobFuture = this.updateJobFuture;
+        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
         if (currentUpdateJobFuture != null) {
             currentUpdateJobFuture.cancel(true);
         }
-        ScheduledFuture<?> currentPullJobFuture = this.pullJobFuture;
+        ScheduledFuture<?> currentPullJobFuture = pullJobFuture;
         if (currentPullJobFuture != null) {
             currentPullJobFuture.cancel(true);
         }
@@ -168,22 +168,22 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
      * @return Whether the calendar was loaded successfully.
      */
     private boolean reloadCalendar() {
-        if (!this.calendarFile.isFile()) {
-            this.logger.warn("Local file for loading calendar is missing.");
+        if (!calendarFile.isFile()) {
+            logger.warn("Local file for loading calendar is missing.");
             return false;
         }
-        ICalendarConfiguration config = this.configuration;
+        ICalendarConfiguration config = configuration;
         if (config == null) {
-            this.logger.warn("Can't reload calendar when configuration is missing.");
+            logger.warn("Can't reload calendar when configuration is missing.");
             return false;
         }
         try {
-            AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(
-                    new FileInputStream(this.calendarFile), Duration.ofMinutes(config.readAroundTime.longValue()));
-            this.runtimeCalendar = calendar;
-            this.rescheduleCalendarStateUpdate();
+            AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(new FileInputStream(calendarFile),
+                    Duration.ofMinutes(config.readAroundTime.longValue()));
+            runtimeCalendar = calendar;
+            rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
-            this.logger.warn("Loading calendar failed.", e);
+            logger.warn("Loading calendar failed.", e);
             return false;
         }
         return true;
@@ -193,19 +193,19 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
      * Updates the states of the Thing and its channels.
      */
     private void updateStates() {
-        AbstractPresentableCalendar calendar = this.runtimeCalendar;
+        AbstractPresentableCalendar calendar = runtimeCalendar;
         if (calendar == null) {
-            this.updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE);
         } else {
-            this.updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.ONLINE);
 
-            Channel eventPresenceChannel = this.thing.getChannel(CHANNEL_CURRENT_EVENT_PRESENT);
-            Channel currentEventTitleChannel = this.thing.getChannel(CHANNEL_CURRENT_EVENT_TITLE);
-            Channel currentEventStartChannel = this.thing.getChannel(CHANNEL_CURRENT_EVENT_START);
-            Channel currentEventEndChannel = this.thing.getChannel(CHANNEL_CURRENT_EVENT_END);
-            Channel nextEventTitleChannel = this.thing.getChannel(CHANNEL_NEXT_EVENT_TITLE);
-            Channel nextEventStartChannel = this.thing.getChannel(CHANNEL_NEXT_EVENT_START);
-            Channel nextEventEndChannel = this.thing.getChannel(CHANNEL_NEXT_EVENT_END);
+            Channel eventPresenceChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_PRESENT);
+            Channel currentEventTitleChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_TITLE);
+            Channel currentEventStartChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_START);
+            Channel currentEventEndChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_END);
+            Channel nextEventTitleChannel = thing.getChannel(CHANNEL_NEXT_EVENT_TITLE);
+            Channel nextEventStartChannel = thing.getChannel(CHANNEL_NEXT_EVENT_START);
+            Channel nextEventEndChannel = thing.getChannel(CHANNEL_NEXT_EVENT_END);
             if (eventPresenceChannel == null || currentEventTitleChannel == null || currentEventStartChannel == null
                     || currentEventEndChannel == null || nextEventTitleChannel == null || nextEventStartChannel == null
                     || nextEventEndChannel == null) {
@@ -215,35 +215,35 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
             Instant now = Instant.now();
             if (calendar.isEventPresent(now)) {
-                this.updateState(eventPresenceChannel.getUID(), OnOffType.ON);
+                updateState(eventPresenceChannel.getUID(), OnOffType.ON);
                 Event currentEvent = calendar.getCurrentEvent(now);
                 if (currentEvent == null) {
                     logger.warn("Unexpected inconsistency of internal API. Not Updating event details.");
                 } else {
-                    this.updateState(currentEventTitleChannel.getUID(), new StringType(currentEvent.title));
-                    this.updateState(currentEventStartChannel.getUID(),
+                    updateState(currentEventTitleChannel.getUID(), new StringType(currentEvent.title));
+                    updateState(currentEventStartChannel.getUID(),
                             new DateTimeType(currentEvent.start.atZone(ZoneId.systemDefault())));
-                    this.updateState(currentEventEndChannel.getUID(),
+                    updateState(currentEventEndChannel.getUID(),
                             new DateTimeType(currentEvent.end.atZone(ZoneId.systemDefault())));
                 }
             } else {
-                this.updateState(eventPresenceChannel.getUID(), OnOffType.OFF);
-                this.updateState(currentEventTitleChannel.getUID(), UnDefType.NULL);
-                this.updateState(currentEventStartChannel.getUID(), UnDefType.NULL);
-                this.updateState(currentEventEndChannel.getUID(), UnDefType.NULL);
+                updateState(eventPresenceChannel.getUID(), OnOffType.OFF);
+                updateState(currentEventTitleChannel.getUID(), UnDefType.NULL);
+                updateState(currentEventStartChannel.getUID(), UnDefType.NULL);
+                updateState(currentEventEndChannel.getUID(), UnDefType.NULL);
             }
 
             Event nextEvent = calendar.getNextEvent(now);
             if (nextEvent != null) {
-                this.updateState(nextEventTitleChannel.getUID(), new StringType(nextEvent.title));
-                this.updateState(nextEventStartChannel.getUID(),
+                updateState(nextEventTitleChannel.getUID(), new StringType(nextEvent.title));
+                updateState(nextEventStartChannel.getUID(),
                         new DateTimeType(nextEvent.start.atZone(ZoneId.systemDefault())));
-                this.updateState(nextEventEndChannel.getUID(),
+                updateState(nextEventEndChannel.getUID(),
                         new DateTimeType(nextEvent.end.atZone(ZoneId.systemDefault())));
             } else {
-                this.updateState(nextEventTitleChannel.getUID(), UnDefType.NULL);
-                this.updateState(nextEventStartChannel.getUID(), UnDefType.NULL);
-                this.updateState(nextEventEndChannel.getUID(), UnDefType.NULL);
+                updateState(nextEventTitleChannel.getUID(), UnDefType.NULL);
+                updateState(nextEventStartChannel.getUID(), UnDefType.NULL);
+                updateState(nextEventEndChannel.getUID(), UnDefType.NULL);
             }
 
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
@@ -342,14 +342,14 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
      * Reschedules the next update of the states.
      */
     private void rescheduleCalendarStateUpdate() {
-        ScheduledFuture<?> currentUpdateJobFuture = this.updateJobFuture;
+        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
         if (currentUpdateJobFuture != null) {
             if (!(currentUpdateJobFuture.isCancelled() || currentUpdateJobFuture.isDone())) {
                 currentUpdateJobFuture.cancel(true);
             }
-            this.updateJobFuture = null;
+            updateJobFuture = null;
         }
-        AbstractPresentableCalendar currentCalendar = this.runtimeCalendar;
+        AbstractPresentableCalendar currentCalendar = runtimeCalendar;
         if (currentCalendar == null) {
             return;
         }
@@ -361,7 +361,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                         "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
                 return;
             }
-            this.updateJobFuture = this.scheduler.schedule(() -> {
+            updateJobFuture = scheduler.schedule(() -> {
                 ICalendarHandler.this.updateStates();
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
             }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
@@ -373,11 +373,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 return;
             }
             if (nextEvent == null) {
-                this.updateJobFuture = this.scheduler.schedule(() -> {
+                updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, currentConfig.readAroundTime.longValue(), TimeUnit.MINUTES);
             } else {
-                this.updateJobFuture = this.scheduler.schedule(() -> {
+                updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.updateStates();
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
@@ -387,8 +387,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
     @Override
     public void onCalendarUpdated() {
-        if (this.reloadCalendar()) {
-            this.updateStates();
+        if (reloadCalendar()) {
+            updateStates();
         } else {
             logger.trace("Calendar was updated, but loading failed.");
         }
