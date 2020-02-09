@@ -48,6 +48,7 @@
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.draytonwiser/ @andrew-schofield
+/bundles/org.openhab.binding.dreamscreen/ @markus7017
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.ecobee/ @mhilbush
