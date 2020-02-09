@@ -14,6 +14,7 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jersey.repackaged.com.google.common.collect.Lists;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -22,6 +23,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
+ *
+ * @author Andi Bräu - Initial contribution
+ */
+@NonNullByDefault
 public class StatusService {
 
     private static final String UDP_DISCOVERY_QUERY = "V3{\"sn\":\"%s\", \"cmd\": 90}";

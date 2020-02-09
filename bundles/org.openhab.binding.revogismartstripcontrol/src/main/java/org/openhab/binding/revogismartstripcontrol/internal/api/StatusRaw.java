@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
+/**
+ * The class {@link StatusRaw} represents the raw data received from Revogi's SmartStrip
+ *
+ * @author Andi Bräu - Initial contribution
+ */
 public class StatusRaw {
     private int response;
     private int code;
