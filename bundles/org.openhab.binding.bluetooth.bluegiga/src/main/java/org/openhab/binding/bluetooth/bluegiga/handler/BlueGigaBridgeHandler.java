@@ -749,7 +749,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             throw new BlueGigaException("BlueGiga not initialized");
         }
 
-        cancelScheduledPassiveScan();
+        if (schedulePassiveScan) {
+            cancelScheduledPassiveScan();
+        }
         try {
             return sendCommandWithoutChecks(command, expectedResponse);
         } finally {
