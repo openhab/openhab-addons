@@ -16,6 +16,7 @@ import static org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConst
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,29 +98,36 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   public void refresh(PJLinkDeviceConfiguration config) {
-    // Do not poll if device is offline
-    if (PJLinkDeviceHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
-      PJLinkDeviceHandler.this.logger.debug("Not polling device status because device is offline");
-      // setup() will schedule a new refresh interval after successful reconnection, cancel this one
-      this.clearRefreshInterval();
-      return;
+    PJLinkDeviceHandler.this.logger.debug("Polling device status...");
+
+    // build list of channels to be refreshed
+    List<String> channelNames = new ArrayList<>();
+    if (config.refreshPower) {
+      channelNames.add(CHANNEL_POWER);
+    }
+    if (config.refreshMute) {
+      // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
+      channelNames.add(CHANNEL_AUDIO_MUTE);
+    }
+    if (config.refreshInputChannel) {
+      channelNames.add(CHANNEL_INPUT);
+    }
+    if (config.refreshLampState) {
+      // this updates both CHANNEL_LAMP_ACTIVE and CHANNEL_LAMP_HOURS for all lamps
+      channelNames.add(CHANNEL_LAMP_1_HOURS);
     }
 
-    PJLinkDeviceHandler.this.logger.debug("Polling device status...");
-    if (config.refreshPower && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
-      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
-    }
-    if (config.refreshMute && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
-      // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
-      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
-          RefreshType.REFRESH);
-    }
-    if (config.refreshInputChannel && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
-      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), RefreshType.REFRESH);
-    }
-    if (config.refreshLampState && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
-      // this updates both CHANNEL_LAMP_ACTIVE and CHANNEL_LAMP_HOURS
-      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_LAMP_1_HOURS),
+    // refresh all channels enabled for refreshing
+    for (String channelName : channelNames) {
+      // Do not poll if device is offline
+      if (PJLinkDeviceHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
+        PJLinkDeviceHandler.this.logger.debug("Not polling device status because device is offline");
+        // setup() will schedule a new refresh interval after successful reconnection, cancel this one
+        this.clearRefreshInterval();
+        return;
+      }
+
+      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), channelName),
           RefreshType.REFRESH);
     }
   }
