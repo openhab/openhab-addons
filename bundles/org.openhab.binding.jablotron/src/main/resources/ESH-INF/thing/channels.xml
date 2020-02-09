@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jablotron" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Oasis -->
+	<!-- StatusA -->
+	<channel-type id="statusA">
+		<item-type>Switch</item-type>
+		<label>Alarm Zone A Status Channel</label>
+		<description>Status of the A zone of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- StatusB -->
+	<channel-type id="statusB">
+		<item-type>Switch</item-type>
+		<label>Alarm B Status Channel</label>
+		<description>Status of the B zone of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- StatusABC -->
+	<channel-type id="statusABC">
+		<item-type>Switch</item-type>
+		<label>Alarm Zone ABC Status Channel</label>
+		<description>Status of the ABC zone of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- StatusPGX -->
+	<channel-type id="statusPGX">
+		<item-type>Switch</item-type>
+		<label>OASIS PGX Status Channel</label>
+		<description>Status of the PGX switch of your OASIS alarm</description>
+	</channel-type>
+
+	<!-- StatusPGY -->
+	<channel-type id="statusPGY">
+		<item-type>Switch</item-type>
+		<label>OASIS PGY Status Channel</label>
+		<description>Status of the PGY switch of your OASIS alarm</description>
+	</channel-type>
+
+	<!-- JA100 -->
+	<channel-type id="status">
+		<item-type>Number</item-type>
+		<label>Alarm Section Status Channel</label>
+		<description>Status of the section of your alarm</description>
+	</channel-type>
+
+	<!-- StatusPGM -->
+	<channel-type id="statusPGM">
+		<item-type>Switch</item-type>
+		<label>JA-100 PGM Status Channel</label>
+		<description>Status of the PGM switch of your JA-100 alarm</description>
+	</channel-type>
+
+	<!-- Alarm -->
+	<channel-type id="alarm">
+		<kind>trigger</kind>
+		<label>Alarm Channel</label>
+		<description>Status of the alarm of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Command -->
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Alarm Command Channel</label>
+		<description>Channel for sending commands to your alarm</description>
+	</channel-type>
+
+	<!-- LastEvent -->
+	<channel-type id="lastEvent">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Text Description Channel</label>
+		<description>Text description of the last event of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventClass -->
+	<channel-type id="lastEventClass">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Class Channel</label>
+		<description>Class of the last event of your alarm (arm, disarm, ...)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventSection -->
+	<channel-type id="lastEventSection">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Section Channel</label>
+		<description>The last event section of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventInvoker -->
+	<channel-type id="lastEventInvoker">
+		<item-type>String</item-type>
+		<label>Alarm Last Event Invoker Channel</label>
+		<description>The last event invoker</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastEventTime -->
+	<channel-type id="lastEventTime">
+		<item-type>DateTime</item-type>
+		<label>Alarm Last Event Time Channel</label>
+		<description>Date and time of the last event of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- LastCheckTime -->
+	<channel-type id="lastCheckTime">
+		<item-type>DateTime</item-type>
+		<label>Alarm Last Check Time Channel</label>
+		<description>Date and time of last status check of your alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- alarm_state -->
+	<channel-type id="alarm_state">
+		<item-type>String</item-type>
+		<label>Alarm state</label>
+		<description>A channel used for controlling the alarm state</description>
+		<state>
+			<options>
+				<option value="set">ARMED</option>
+				<option value="partialSet">PARTIAL</option>
+				<option value="unset">DISARMED</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- ja100f_alarm_state -->
+	<channel-type id="ja100f_alarm_state">
+		<item-type>String</item-type>
+		<label>Alarm state</label>
+		<description>A channel used for controlling the alarm state</description>
+		<state>
+			<options>
+				<option value="ARM">ARMED</option>
+				<option value="PARTIAL_ARM">PARTIAL</option>
+				<option value="DISARM">DISARMED</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

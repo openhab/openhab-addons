@@ -93,6 +93,7 @@
 /bundles/org.openhab.binding.insteon/ @robnielsen
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irtrans/ @kgoderis
+/bundles/org.openhab.binding.jablotron/ @octa22
 /bundles/org.openhab.binding.jeelink/ @vbier
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
