@@ -22,13 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * A calendar-class which provides everything needed for the binding,
- * encapsulating the implementation of the real calendar.
+ * A calendar which provides the interface to the calendar implementation for
+ * the binding, encapsulating the implementation of the real calendar.
  *
  * @author Michael Wodniok - Initial contribution
- * 
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
- * 
+ *
  */
 @NonNullByDefault
 public abstract class AbstractPresentableCalendar {
@@ -38,7 +37,7 @@ public abstract class AbstractPresentableCalendar {
      * use {@link #setLookAround(Duration)} before to ensure the presentable
      * calendar is useful.
      *
-     * @param calendarStream A Stream containing the iCal-data.
+     * @param calendarStream A Stream containing the iCal data.
      * @param lookAround The time window to search for events around a certain
      *            point in time.
      * @return The instance.
@@ -54,7 +53,7 @@ public abstract class AbstractPresentableCalendar {
      * Checks whether an event is present at given Instant.
      *
      * @param instant The Instant, that should be checked.
-     * @return Whether an event is present.
+     * @return True if an event is present.
      */
     public abstract boolean isEventPresent(Instant instant);
 
@@ -78,22 +77,22 @@ public abstract class AbstractPresentableCalendar {
     public abstract @Nullable Event getNextEvent(Instant instant);
 
     /**
-     * Return a list of events that have just begun within the time frame 
-     *  
-     * @param frameBegin   the start of the time frame
-     * @param frameEnd     the start of the time frame
-     * @return             list of iCalendar Events that BEGIN within the time frame 
-     * 
+     * Return a list of events that have just begun within the time frame
+     *
+     * @param frameBegin the start of the time frame
+     * @param frameEnd the start of the time frame
+     * @return list of iCalendar Events that BEGIN within the time frame
+     *
      */
     public abstract @Nullable List<Event> getJustBegunEvents(Instant from, Instant to);
 
     /**
-     * Return a list of events that have just ended within the time frame 
-     * 
-     * @param frameBegin   the start of the time frame
-     * @param frameEnd     the start of the time frame
-     * @return             list of iCalendar Events that END within the time frame 
-     * 
+     * Return a list of events that have just ended within the time frame
+     *
+     * @param frameBegin the start of the time frame
+     * @param frameEnd the start of the time frame
+     * @return list of iCalendar Events that END within the time frame
+     *
      */
     public abstract @Nullable List<Event> getJustEndedEvents(Instant from, Instant to);
 

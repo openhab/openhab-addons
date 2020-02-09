@@ -20,12 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Transport class for a single event.
+ * A single event.
  *
  * @author Michael Wodniok - Initial contribution
- * 
  * @author Andrew Fiddian-Green - Added support for event description
- * 
+ *
  */
 @NonNullByDefault
 public class Event {
@@ -43,7 +42,7 @@ public class Event {
         if (description.isEmpty()) {
             return;
         }
-        
+
         String[] lines = description.split("\n");
         for (String line : lines) {
             CommandTag tag = CommandTag.createCommandTag(line);
@@ -51,11 +50,6 @@ public class Event {
                 commandTags.add(tag);
             }
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return title.hashCode() + start.hashCode() + end.hashCode();
     }
 
     @Override

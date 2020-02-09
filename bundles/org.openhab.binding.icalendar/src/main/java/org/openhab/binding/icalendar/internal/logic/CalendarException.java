@@ -33,7 +33,7 @@ public class CalendarException extends Exception {
     }
 
     public CalendarException(Exception source) {
-        super("Internal exception occured", source);
+        super("Implementation specific exception occurred", source);
     }
 
 }
