@@ -8,7 +8,7 @@ The only thing type is the calendar. It is based on a single iCalendar-File. The
 
 ## Thing Configuration
 
-Each calendar Thing instance requires some configuration parameters:
+Each Calendar Thing requires the following configuration parameters:
 
 | parameter name      | description                                                                                                                                                                                                                                                                | optional  |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
@@ -21,9 +21,9 @@ Each calendar Thing instance requires some configuration parameters:
 
 ## Channels
 
-The channels describe the current and the next event. They are all read only.
+The channels describe the current and the next event. They are all read-only.
 
-| channel           | type      | description                         |
+| Channel           | Type      | Description                         |
 |-------------------|-----------|-------------------------------------|
 | current_presence  | Switch    | Current presence of a event         |
 | current_title     | String    | Title of a currently present event  |
@@ -35,7 +35,7 @@ The channels describe the current and the next event. They are all read only.
 
 ## Command Tags
 
-Each calendar event may include one or more Command Tags in its description (body) text. These Command Tags are used to issue commands directly to other Items in the system when the event begins or ends. The syntax of the tags must consist of three or four fields as follows..
+Each calendar event may include one or more Command Tags in its description text. These Command Tags are used to issue commands directly to other Items in the system when the event begins or ends. A Command Tag must consist of at least three fields. A fourth field is optional. The syntax is as follows:
 
 	BEGIN:Item_Name:New_State_Value
 	BEGIN:Item_Name:New_State_Value:Authorization_Code
@@ -55,7 +55,7 @@ The `Authorization_Code` may optionally be used as follows:
 - When the Thing Configuration Parameter `authorizationCode` is an empty string, the binding will NOT check this `Authorization_Code` field, and so it will always execute the respective command.
 
  
-## Full Text Example
+## Full Example
 
 Provide at least all required information into the Thing definition, either via ui or in the Thing-file
 
