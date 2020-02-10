@@ -188,7 +188,7 @@ public class WizLightingHandler extends BaseThingHandler {
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
-            ;
+            this.keepAliveJob = null;
         }
         super.handleRemoval();
     }
