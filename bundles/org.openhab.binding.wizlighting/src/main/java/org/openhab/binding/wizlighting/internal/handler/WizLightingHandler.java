@@ -172,8 +172,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 if (command instanceof PercentType) {
                     handleSpeedCommand((PercentType) command);
                 } else if (command instanceof OnOffType) {
-                    handleSpeedCommand(
-                            ((OnOffType) command).as(PercentType.class));
+                    handleSpeedCommand(((OnOffType) command).as(PercentType.class));
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseSpeedCommand(
                             ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
@@ -296,36 +295,32 @@ public class WizLightingHandler extends BaseThingHandler {
             keepAliveJob.cancel(true);
         }
         // try with handler port if is null
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                long now = System.currentTimeMillis();
-                long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
+        Runnable runnable = () -> {
+            long now = System.currentTimeMillis();
+            long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
 
-                if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                logger.debug(
+                        "Begin socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
+                        bulbIpAddress, updateInterval);
+
+                logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", bulbMacAddress,
+                        latestUpdate, now, timePassedFromLastUpdateInSeconds);
+
+                boolean considerThingOffline = (latestUpdate < 0)
+                        || (timePassedFromLastUpdateInSeconds > (updateInterval * INTERVALS_BEFORE_OFFLINE));
+                if (considerThingOffline) {
                     logger.debug(
-                            "Begin socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
-                            bulbIpAddress, updateInterval);
-
-                    logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", bulbMacAddress,
-                            latestUpdate, now, timePassedFromLastUpdateInSeconds);
-
-                    boolean considerThingOffline = (latestUpdate < 0)
-                            || (timePassedFromLastUpdateInSeconds > (updateInterval * INTERVALS_BEFORE_OFFLINE));
-                    if (considerThingOffline) {
-                        logger.debug(
-                                "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
-                                getBulbMacAddress());
-                        updateStatus(ThingStatus.OFFLINE);
-                    } else {
-                        // refresh the current state
-                        getPilot();
-                    }
+                            "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
+                            getBulbMacAddress());
+                    updateStatus(ThingStatus.OFFLINE);
                 } else {
-                    logger.debug(
-                            "Bulb at {} - {} is offline.  Will not query for status until a firstBeat is received.",
-                            getBulbIpAddress(), getBulbMacAddress());
+                    // refresh the current state
+                    getPilot();
                 }
+            } else {
+                logger.debug("Bulb at {} - {} is offline.  Will not query for status until a firstBeat is received.",
+                        getBulbIpAddress(), getBulbMacAddress());
             }
         };
         this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
