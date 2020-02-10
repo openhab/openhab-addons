@@ -214,7 +214,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
             logger.warn("Network interface did not return an IP address!");
             return "OHIPAddress";
         }
-        logger.info("IP of OpenHab device is {}.", myIpAddress);
+        logger.info("IP of openHAB device is {}.", myIpAddress);
         return myIpAddress;
     }
 
@@ -223,14 +223,14 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         try {
             myMacAddress = NetworkUtils.getMyMacAddress();
             if (myMacAddress == null) {
-                logger.warn("No network interface could be found.  Mac of OpenHab device is unknown.");
+                logger.warn("No network interface could be found.  Mac of openHAB device is unknown.");
                 return "OHMACAddress";
             }
         } catch (Exception e) {
-            logger.warn("Mac Address of OpenHab device is invalid.");
+            logger.warn("Mac Address of openHAB device is invalid.");
             return "OHMACAddress";
         }
-        logger.info("Mac Address of OpenHab device is {}.", myMacAddress);
+        logger.info("Mac Address of openHAB device is {}.", myMacAddress);
         return myMacAddress;
     }
 

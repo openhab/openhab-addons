@@ -26,10 +26,10 @@ public enum WizLightingMethodType {
      * NOTE: There is no need to register before calling other methods.
      * Example Request:
      * {"method": "registration", "id": 1, "params":
-     * {"phoneIp": "10.0.0.xxx", "register": true, "homeId": xxxxxx, "phoneMac": "macOfOpenHab"}}
+     * {"phoneIp": "10.0.0.xxx", "register": true, "homeId": xxxxxx, "phoneMac": "macOfopenHAB"}}
      * Example Response:
      * {"method": "registration", "id": 1, "env": "pro", "result":
-     * {"mac": "macOfOpenHab", "success": true}}
+     * {"mac": "macOfopenHAB", "success": true}}
      */
     registration("registration"),
     /**

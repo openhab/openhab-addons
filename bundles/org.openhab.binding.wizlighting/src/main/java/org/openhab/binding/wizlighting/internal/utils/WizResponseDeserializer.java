@@ -94,7 +94,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
             switch (method) {
                 case registration:
                     // {"method": "registration", "id": 1, "env": "pro", "result": {"mac":
-                    // "macOfOpenHab", "success": true}}
+                    // "macOfopenHAB", "success": true}}
                     logger.trace("Deserializing registration result");
                     JsonObject registrationResult = jobject.getAsJsonObject("result");
                     String mac = registrationResult.get("mac").getAsString();
