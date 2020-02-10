@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WizLightingUpdateReceiverRunnable implements Runnable {
 
-    private static final int TIMEOUT_TO_DATAGRAM_RECEPTION = 15000; // in milliseconds
+    private static final int TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS = 15000;
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingUpdateReceiverRunnable.class);
 
@@ -65,7 +65,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
         DatagramSocket dsocket = new DatagramSocket(null);
         dsocket.setReuseAddress(true);
         dsocket.setBroadcast(true);
-        dsocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+        dsocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS);
         dsocket.bind(new InetSocketAddress(listeningPort));
         this.datagramSocket = dsocket;
         logger.debug("Update Receiver Runnable and socket started with success...");
@@ -104,7 +104,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
                 }
             } catch (SocketTimeoutException e) {
                 logger.trace("No incoming data on port {} during {} ms socket was listening.", listeningPort,
-                        TIMEOUT_TO_DATAGRAM_RECEPTION);
+                        TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS);
             } catch (IOException e) {
                 logger.debug("One exception has occurred: {} ", e.getMessage());
             }
@@ -126,7 +126,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
                 DatagramSocket dsocket = new DatagramSocket(null);
                 dsocket.setReuseAddress(true);
                 dsocket.setBroadcast(true);
-                dsocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+                dsocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS);
                 dsocket.bind(new InetSocketAddress(listeningPort));
                 this.datagramSocket = dsocket;
                 logger.trace("Datagram Socket reconnected.");
@@ -138,7 +138,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     }
 
     /**
-     * Gracefully shutdown thread. Worst case takes TIMEOUT_TO_DATAGRAM_RECEPTION to
+     * Gracefully shutdown thread. Worst case takes TIMEOUT_TO_DATAGRAM_RECEPTION_MILLISECONDS to
      * shutdown.
      */
     public void shutdown() {
