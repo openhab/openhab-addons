@@ -235,7 +235,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * Returns a {@link RegistrationRequestParam} based on the current OpenHAB
+     * Returns a {@link RegistrationRequestParam} based on the current openHAB
      * connection.
      *
      */

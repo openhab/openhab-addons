@@ -9,7 +9,7 @@ Note that while both are sold by Philips, WiZ bulbs are _not_ part of the Hue ec
 This binding operates completely within the local network - the discovery, control, and status monitoring is entirely over UDP in the local network.
 The binding never attempts to contact the WiZ servers in any way but does not stop them from doing so independently.
 It should not interfer in any way with control of the bulbs via the WiZ app or any other service integrated with the WiZ app (ie: Alexa, IFTTT, SmartThings).
-Any changes made to the bulb state outside of OpenHAB should be detected by the binding and vice-versa.
+Any changes made to the bulb state outside of openHAB should be detected by the binding and vice-versa.
 Before using the binding, the bulbs must be set up using the WiZ iOS or Android app.
 
 
@@ -31,7 +31,7 @@ If the binding cannot discover your device, try unplugging it, wait several seco
 ## Binding Configuration
 
 The binding does not require any special configuration.
-You can optionally manually set the IP and MAC address of the OpenHAB instance.
+You can optionally manually set the IP and MAC address of the openHAB instance.
 
 ## Thing Configuration
 

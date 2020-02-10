@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * warm whites are used to increase saturation (RGBW style). Temperatures of
  * white can also be called directly as K instead of mixing cw/ww (c/w) The
  * colors and temperatures need to be converted to the HSBType/PercentType
- * supported by OpenHAB.
+ * supported by openHAB.
  *
  * @author Sara Geleskie Damiano - Initial contribution
  *
