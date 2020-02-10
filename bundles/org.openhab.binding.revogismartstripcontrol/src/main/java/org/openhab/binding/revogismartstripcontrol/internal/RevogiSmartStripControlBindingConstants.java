@@ -30,12 +30,11 @@ public class RevogiSmartStripControlBindingConstants {
     public static final ThingTypeUID SMART_STRIP_THING_TYPE = new ThingTypeUID(BINDING_ID, "smartstrip");
 
     // List of all Channel ids
-    public static final String PLUG_1 = "plug1";
-    public static final String PLUG_2 = "plug2";
-    public static final String PLUG_3 = "plug3";
-    public static final String PLUG_4 = "plug4";
-    public static final String PLUG_5 = "plug5";
-    public static final String PLUG_6 = "plug6";
-    public static final String ALL_PLUGS = "allplugs";
-    public static final String STATS = "stats";
+    public static final String PLUG_1_SWITCH = "plug1#switch";
+    public static final String PLUG_2_SWITCH = "plug2#switch";
+    public static final String PLUG_3_SWITCH = "plug3#switch";
+    public static final String PLUG_4_SWITCH = "plug4#switch";
+    public static final String PLUG_5_SWITCH = "plug5#switch";
+    public static final String PLUG_6_SWITCH = "plug6#switch";
+    public static final String ALL_PLUGS = "overallPlug#switch";
 }
