@@ -83,8 +83,7 @@ public class CommandTag {
             logger.trace("Input line \"{}\" => No \":\" delimiters!", fullTag);
             return;
         }
-        String[] fields;
-        fields = fullTag.split(":");
+        String[] fields = fullTag.split(":");
         if (fields.length < 3) {
             logger.trace("Input line \"{}\" => Not enough fields!", fullTag);
             return;
