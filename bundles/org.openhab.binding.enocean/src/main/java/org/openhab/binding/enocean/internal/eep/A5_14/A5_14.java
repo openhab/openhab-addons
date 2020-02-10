@@ -47,8 +47,8 @@ public abstract class A5_14 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_BATTERY_VOLTAGE:
                 return getBatteryVoltage();

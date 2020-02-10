@@ -48,10 +48,9 @@ public class F6_05_02 extends _RPSMessage {
             return UnDefType.UNDEF;
         }
 
-        switch (channelId){
+        switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
-                return bytes[0] == ALARM_OFF ? OnOffType.OFF 
-                    : (bytes[0] == ALARM_ON ? OnOffType.ON : UnDefType.UNDEF);
+                return bytes[0] == ALARM_OFF ? OnOffType.OFF : (bytes[0] == ALARM_ON ? OnOffType.ON : UnDefType.UNDEF);
             case CHANNEL_BATTERYLOW:
                 return bytes[0] == ENERGY_LOW ? OnOffType.ON : UnDefType.UNDEF;
         }

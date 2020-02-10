@@ -19,8 +19,8 @@ import java.util.function.Function;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
+import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  * Single Input Contact (Window/Door), Supply voltage monitor
@@ -44,8 +44,8 @@ public class A5_14_01 extends A5_14 {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_CONTACT:
                 EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
