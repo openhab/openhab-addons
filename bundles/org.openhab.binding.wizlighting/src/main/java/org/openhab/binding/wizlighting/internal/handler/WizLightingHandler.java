@@ -253,7 +253,7 @@ public class WizLightingHandler extends BaseThingHandler {
         if (isIncrease) {
             newTemp = Math.min(100, oldTemp + 5);
         } else {
-            newTemp = Math.max(10, oldTemp - 5);
+            newTemp = Math.max(0, oldTemp - 5);
         }
         logger.trace("Changing color temperature from {}% to {}%.", oldTemp, newTemp);
         handleTemperatureCommand(new PercentType(newTemp));
