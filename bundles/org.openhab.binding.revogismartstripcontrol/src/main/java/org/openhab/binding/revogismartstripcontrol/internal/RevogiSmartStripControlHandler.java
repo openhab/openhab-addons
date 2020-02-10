@@ -25,7 +25,7 @@ import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
 
 /**
  * The {@link RevogiSmartStripControlHandler} is responsible for handling commands, which are
@@ -48,7 +48,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (PLUG_1.equals(channelUID.getId())) {
+        if (PLUG_1_SWITCH.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
