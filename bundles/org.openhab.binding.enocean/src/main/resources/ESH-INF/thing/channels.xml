@@ -199,8 +199,8 @@
 		<description>The teach in channel allows to send a teach in msg.</description>
 		<category>Switch</category>
 		<config-description>
-			<!-- <parameter name="teachInType" type="text"> <label>Teach in type</label> <description>Type of 4BS teach in message</description> 
-				<options> <option value="uniWoEEP">unidirectional without EEP</option> <option value="uniWEEP">unidirectional with EEP</option> 
+			<!-- <parameter name="teachInType" type="text"> <label>Teach in type</label> <description>Type of 4BS teach in message</description>
+				<options> <option value="uniWoEEP">unidirectional without EEP</option> <option value="uniWEEP">unidirectional with EEP</option>
 				<option value="biWEEP">bidirectional with EEP</option> </options> <limitToOptions>true</limitToOptions> </parameter> -->
 			<parameter name="manufacturerId" type="text">
 				<label>Manufacturer Id</label>
@@ -465,7 +465,7 @@
 
 	<channel-type id="maintenanceStatus">
 		<item-type>Switch</item-type>
-		<label>Maintenance neccessary</label>
+		<label>Maintenance Neccessary</label>
 		<description>Sensor maintenance status.</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -485,47 +485,47 @@
 	</channel-type>
 
 	<channel-type id="timeSinceLastMaintenance">
-		<item-type>Number</item-type>
-		<label>Weeks Since Last Maintenance</label>
-		<description>Time since last maintenance was done in weeks.</description>		
+		<item-type>Number:Time</item-type>
+		<label>Time Since Last Maintenance</label>
+		<description>Time since last maintenance was done.</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="remainingPLT">
-		<item-type>Number</item-type>
-		<label>Remaining Product Life Time in Months</label>
-		<description>Countdown time until product end of life.</description>		
+		<item-type>Number:Time</item-type>
+		<label>Remaining Product Life Time</label>
+		<description>Countdown time until product end of life.</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="hygroComfortIndex">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Hygrothermal Comfort Index</label>
 		<description>Comfort index based on temperature and humidity</description>
 		<state>
 			<options>
-				<option value="0">Good</option>
-				<option value="1">Medium</option>
-				<option value="2">Bad</option>
-				<option value="3">Error</option>
+				<option value="GOOD">Good</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="BAD">Bad</option>
+				<option value="ERROR">Error</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="indoorAirAnalysis">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Indoor Air Analysis</label>
 		<description>Indoor air quality analysis based on temperature and humidity</description>
 		<state>
 			<options>
-				<option value="0">Optimal air range</option>
-				<option value="1">Dry air range</option>
-				<option value="2">High humidity range</option>
-				<option value="3">High humidity and temperature range</option>
-				<option value="4">Humidity or temperature out of range</option>
-				<option value="5">Reserved1</option>
-				<option value="6">Reserved2</option>
-				<option value="7">Error</option>
+				<option value="OPTIMAL">Optimal air range</option>
+				<option value="DRY">Dry air range</option>
+				<option value="HIGH_HUMIDITY">High humidity range</option>
+				<option value="HIGH_TEMPHUMI">High humidity and temperature range</option>
+				<option value="OUT_OF_RANGE">Humidity or temperature out of range</option>
+				<option value="RESERVED1">Reserved1</option>
+				<option value="RESERVED2">Reserved2</option>
+				<option value="ERROR">Error</option>
 			</options>
 		</state>
 	</channel-type>

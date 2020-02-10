@@ -24,6 +24,7 @@
 				<options>
 					<option value="F6_05_02">F6-05-02 smoke detector</option>
 					<option value="D2_14_30">D2-14-30 multi function sensor for smoke</option>
+					<option value="A5_30_03_ELTAKO">A5-30-03 Eltako smoke detectors (FHMB, FRWB)</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>

@@ -263,10 +263,10 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | batterLow            | Switch             | Battery low indicator |
 | smokeDetection       | Switch             | Smoke detected |
 | sensorFault          | Switch             | Smoke sensor fault |
-| timeSinceLastMaintenance | Number         | Time since last maintenance |
-| remainingPLT         | Number             | Remaining product life time |
-| hygroComfortIndex    | Number             | Hygrothermal Comfort Index |
-| indoorAirAnalysis    | Number             | Indoor Air Analysis |
+| timeSinceLastMaintenance | Number:Time    | Time since last maintenance |
+| remainingPLT         | Number:Time        | Remaining product life time |
+| hygroComfortIndex    | String             | Hygrothermal Comfort Index |
+| indoorAirAnalysis    | String             | Indoor Air Analysis |
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |

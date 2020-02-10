@@ -26,6 +26,7 @@ import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -82,7 +83,7 @@ public class EnOceanBindingConstants {
                     THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
                     THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
                     THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
-                    THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR));
+            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
@@ -232,15 +233,17 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_SENSORANALYSISHUMIDITYRANGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));
                     put(CHANNEL_SENSORANALYSISTEMPERATURRANGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));                    
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SENSORFAULT), CoreItemFactory.SWITCH));
                     put(CHANNEL_TIMESINCELASTMAINTENANCE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TIMESINCELASTMAINTENANCE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TIMESINCELASTMAINTENANCE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Time.class.getSimpleName()));
                     put(CHANNEL_REMAININGPLT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_REMAININGPLT), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_REMAININGPLT),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Time.class.getSimpleName()));
                     put(CHANNEL_HYGROCOMFORTINDEX, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_HYGROCOMFORTINDEX), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_HYGROCOMFORTINDEX), CoreItemFactory.STRING));
                     put(CHANNEL_INDOORAIRANALYSIS, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRANALYSIS), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRANALYSIS), CoreItemFactory.STRING));
                     put(CHANNEL_SETPOINT, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT), CoreItemFactory.NUMBER));
                     put(CHANNEL_CONTACT, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CONTACT),
@@ -252,9 +255,9 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_ENERGY_STORAGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + ElectricPotential.class.getSimpleName()));
                     put(CHANNEL_BATTERY_LEVEL, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID(), 
-                            CoreItemFactory.NUMBER));
+                                    CoreItemFactory.NUMBER));
                     put(CHANNEL_BATTERYLOW, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY.getUID(), 
-                            CoreItemFactory.SWITCH));
+                                    CoreItemFactory.SWITCH));
                     put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
 
