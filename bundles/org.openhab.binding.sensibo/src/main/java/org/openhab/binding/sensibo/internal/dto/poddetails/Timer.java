@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
-import org.openhab.binding.sensibo.internal.model.SensiboSky;
-
 /**
- * The {@link SensiboSky} represents a Sensibo Sky timer
+ * The {@link Timer} represents a Sensibo Sky timer
  *
  * @author Arne Seime - Initial contribution
  */

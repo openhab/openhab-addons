@@ -12,7 +12,8 @@ This binding supports Sensibo Sky only.
 
 ## Discovery
 
-In order to do discovery, add a thing of type Sensibo API and add the API key. API key can be obtained here: https://home.sensibo.com/me/api
+In order to do discovery, add a thing of type Sensibo API and add the API key. 
+API key can be obtained here: https://home.sensibo.com/me/api
 
 ## Thing Configuration
 

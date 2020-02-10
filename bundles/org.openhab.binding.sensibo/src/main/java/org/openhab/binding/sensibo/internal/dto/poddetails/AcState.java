@@ -15,7 +15,6 @@ package org.openhab.binding.sensibo.internal.dto.poddetails;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 
@@ -50,7 +49,7 @@ public class AcState {
         this.mode = acState.getMode();
         this.swing = acState.getSwing();
 
-        Unit<@NonNull Temperature> unit = acState.getTemperatureUnit();
+        Unit<Temperature> unit = acState.getTemperatureUnit();
 
         if (unit.equals(SIUnits.CELSIUS)) {
             this.temperatureUnit = "C";

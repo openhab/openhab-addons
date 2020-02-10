@@ -37,7 +37,6 @@ public class WireHelper {
     private Gson gson;
 
     public WireHelper() {
-
         gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new TypeAdapter<ZonedDateTime>() {
             @Override
             public void write(final JsonWriter out, final ZonedDateTime value) throws IOException {
@@ -60,7 +59,6 @@ public class WireHelper {
         assertEquals("success", o.get("status").getAsString());
 
         return gson.fromJson(o.get("result"), type);
-
     }
 
     public <T> T deSerializeFromClasspathResource(final String jsonClasspathName, final Type type) throws IOException {

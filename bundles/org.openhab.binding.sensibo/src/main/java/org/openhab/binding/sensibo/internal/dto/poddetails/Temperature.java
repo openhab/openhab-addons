@@ -23,5 +23,5 @@ import com.google.gson.annotations.SerializedName;
 public class Temperature {
     public boolean isNative;
     @SerializedName("values")
-    public List<Integer> validValues = new ArrayList<Integer>();
+    public List<Integer> validValues = new ArrayList<>();
 }

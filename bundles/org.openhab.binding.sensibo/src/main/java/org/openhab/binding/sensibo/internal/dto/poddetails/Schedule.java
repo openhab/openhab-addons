@@ -12,15 +12,13 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
-import org.openhab.binding.sensibo.internal.model.SensiboSky;
-
 /**
- * The {@link SensiboSky} represents a Sensibo Sky schedule
+ * The {@link Schedule} represents a Sensibo Sky schedule
  *
  * @author Arne Seime - Initial contribution
  */
 public class Schedule {
-    public String targetLocalTime;
+    public String targetTimeLocal;
     public String nextTime;
     public String[] recurringDays;
     public AcState acState;

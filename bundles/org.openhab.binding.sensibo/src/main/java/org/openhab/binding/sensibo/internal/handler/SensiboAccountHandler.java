@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -102,7 +101,6 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             public ZonedDateTime read(final @NonNullByDefault({}) JsonReader in) throws IOException {
                 return ZonedDateTime.parse(in.nextString());
             }
-
         }).setLenient().setPrettyPrinting().create();
 
         requestLogger = new RequestLogger(bridge.getUID().getId(), gson);
@@ -119,8 +117,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        logger.info("Bridge does not support any commands, but received command {} for channelUID {}", command,
-                channelUID);
+        // Ignore commands as none are supported
     }
 
     @Override
@@ -139,9 +136,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Error fetching initial data: " + e.getMessage());
                 // Reschedule init
-                scheduler.schedule(() -> {
-                    initialize();
-                }, 30, TimeUnit.SECONDS);
+                scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
             }
         });
     }
@@ -157,13 +152,8 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
      */
     private void initPolling() {
         stopPolling();
-        statusFuture = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                updateModelFromServerAndUpdateThingStatus();
-            } catch (final Exception e) {
-                logger.debug("Error refreshing model", e);
-            }
-        }, config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS);
+        statusFuture = scheduler.scheduleWithFixedDelay(this::updateModelFromServerAndUpdateThingStatus,
+                config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     protected SensiboModel refreshModel() throws SensiboCommunicationException {
@@ -227,20 +217,12 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
     public void updateModelFromServerAndUpdateThingStatus() {
         if (allowModelUpdate()) {
-            boolean success = false;
-            int retriesLeft = 2;
-            while (retriesLeft > 0) {
-                retriesLeft--;
-                try {
-                    model = refreshModel();
-                    updateThingStatuses();
-                    success = true;
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (SensiboCommunicationException e) {
-                    logger.debug("Error updating Sensibo model do to {}, retries left {}", e.getMessage(), retriesLeft);
-                }
-            }
-            if (!success) {
+            try {
+                model = refreshModel();
+                updateThingStatuses();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (SensiboCommunicationException e) {
+                logger.debug("Error updating Sensibo model do to {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
@@ -258,9 +240,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     }
 
     private Request buildGetPodsRequest(final GetPodsRequest req) {
-        final Request request = buildRequest(req);
-
-        return request;
+        return buildRequest(req);
     }
 
     private Request buildGetPodDetailsRequest(final GetPodsDetailsRequest getPodsDetailsRequest) {
@@ -271,18 +251,15 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     }
 
     private Request buildSetAcStatePropertyRequest(SetAcStatePropertyRequest setAcStateRequest) {
-        final Request req = buildRequest(setAcStateRequest);
-        return req;
+        return buildRequest(setAcStateRequest);
     }
 
     private Request buildSetTimerRequest(SetTimerRequest setTimerRequest) {
-        final Request req = buildRequest(setTimerRequest);
-        return req;
+        return buildRequest(setTimerRequest);
     }
 
     private Request buildDeleteTimerRequest(DeleteTimerRequest deleteTimerRequest) {
-        final Request req = buildRequest(deleteTimerRequest);
-        return req;
+        return buildRequest(deleteTimerRequest);
     }
 
     private Request buildRequest(final AbstractRequest req) {
@@ -302,11 +279,9 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
     public void updateSensiboSkyAcState(final String macAddress, String property, Object value,
             SensiboBaseThingHandler handler) {
-        Optional<SensiboSky> optionalHeater = model.findSensiboSkyByMacAddress(macAddress);
-        if (optionalHeater.isPresent()) {
-            SensiboSky sensiboSky = optionalHeater.get();
+        model.findSensiboSkyByMacAddress(macAddress).ifPresent(pod -> {
             try {
-                SetAcStatePropertyRequest setAcStatePropertyRequest = new SetAcStatePropertyRequest(sensiboSky.getId(),
+                SetAcStatePropertyRequest setAcStatePropertyRequest = new SetAcStatePropertyRequest(pod.getId(),
                         property, value);
                 Request request = buildSetAcStatePropertyRequest(setAcStatePropertyRequest);
                 SetAcStatePropertyReponse response = sendRequest(request, setAcStatePropertyRequest,
@@ -318,39 +293,32 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             } catch (SensiboCommunicationException e) {
                 logger.debug("Error setting ac state for {}", macAddress, e);
             }
-        }
+        });
     }
 
     public void updateSensiboSkyTimer(final String macAddress, @Nullable Integer secondsFromNow) {
-        Optional<SensiboSky> optionalHeater = model.findSensiboSkyByMacAddress(macAddress);
-        if (optionalHeater.isPresent()) {
-            SensiboSky sensiboSky = optionalHeater.get();
+        model.findSensiboSkyByMacAddress(macAddress).ifPresent(pod -> {
             try {
                 if (secondsFromNow != null && secondsFromNow >= 60) {
                     org.openhab.binding.sensibo.internal.dto.poddetails.AcState offState = new org.openhab.binding.sensibo.internal.dto.poddetails.AcState(
-                            sensiboSky.getAcState());
+                            pod.getAcState().get());
                     offState.on = false;
 
-                    SetTimerRequest setTimerRequest = new SetTimerRequest(sensiboSky.getId(), secondsFromNow / 60,
-                            offState);
+                    SetTimerRequest setTimerRequest = new SetTimerRequest(pod.getId(), secondsFromNow / 60, offState);
                     Request request = buildSetTimerRequest(setTimerRequest);
                     // No data in response
                     sendRequest(request, setTimerRequest, new TypeToken<SetTimerReponse>() {
                     }.getType());
-
                 } else {
-                    DeleteTimerRequest setTimerRequest = new DeleteTimerRequest(sensiboSky.getId());
+                    DeleteTimerRequest setTimerRequest = new DeleteTimerRequest(pod.getId());
                     Request request = buildDeleteTimerRequest(setTimerRequest);
                     // No data in response
                     sendRequest(request, setTimerRequest, new TypeToken<SetTimerReponse>() {
                     }.getType());
-
                 }
-
             } catch (SensiboCommunicationException e) {
                 logger.debug("Error setting timer for {}", macAddress, e);
             }
-        }
+        });
     }
-
 }

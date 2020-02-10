@@ -61,7 +61,6 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
         assertAcState(rsp.acState);
         assertMeasurement(rsp.lastMeasurement);
         assertRemoteCapabilities(rsp.getRemoteCapabilities());
-
     }
 
     private void assertRemoteCapabilities(final Map<String, ModeCapability> remoteCapabilities) {
@@ -77,7 +76,6 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
         final Temperature temperature = temperatures.get("C");
         assertNotNull(temperature);
         assertNotNull(temperature.validValues);
-
     }
 
     private void assertMeasurement(final Measurement lastMeasurement) {
@@ -87,7 +85,6 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
         assertEquals(Double.valueOf("24.2"), lastMeasurement.humidity);
         assertEquals(Integer.valueOf("-71"), lastMeasurement.wifiSignalStrength);
         assertEquals(ZonedDateTime.parse("2019-05-05T07:52:11Z"), lastMeasurement.measurementTimestamp.time);
-
     }
 
     private void assertAcState(final AcState acState) {
@@ -99,6 +96,5 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
         assertEquals(21, acState.targetTemperature.intValue());
         assertEquals("heat", acState.mode);
         assertEquals("rangeFull", acState.swing);
-
     }
 }

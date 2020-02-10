@@ -36,6 +36,7 @@ import org.openhab.binding.sensibo.internal.discovery.SensiboDiscoveryService;
 import org.openhab.binding.sensibo.internal.handler.SensiboAccountHandler;
 import org.openhab.binding.sensibo.internal.handler.SensiboSkyHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -48,13 +49,18 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.sensibo", service = ThingHandlerFactory.class)
 public class SensiboHandlerFactory extends BaseThingHandlerFactory {
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private HttpClient httpClient;
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(SensiboBindingConstants.THING_TYPE_ACCOUNT, SensiboBindingConstants.THING_TYPE_SENSIBOSKY)
                     .collect(Collectors.toSet()));
+
+    @Activate
+    public SensiboHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     protected @Nullable ThingHandler createHandler(final Thing thing) {
@@ -90,15 +96,6 @@ public class SensiboHandlerFactory extends BaseThingHandlerFactory {
             unregisterDeviceDiscoveryService(thingUID);
         }
         super.removeHandler(thingHandler);
-    }
-
-    @Reference
-    protected void setHttpClientFactory(final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(final HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 
     @Override

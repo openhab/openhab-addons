@@ -15,7 +15,6 @@ package org.openhab.binding.sensibo.internal.model;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 
@@ -25,7 +24,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 public class AcState {
     private boolean on;
     private String fanLevel;
-    private @NonNull Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;
+    private Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;
     private Integer targetTemperature;
     private String mode;
     private String swing;
@@ -73,7 +72,7 @@ public class AcState {
         return fanLevel;
     }
 
-    public @NonNull Unit<@NonNull Temperature> getTemperatureUnit() {
+    public Unit<Temperature> getTemperatureUnit() {
         return temperatureUnit;
     }
 

@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -82,7 +80,6 @@ public class SensiboSkyHandlerTest {
         assertFalse(stateChangeCheckFanLevel.valid);
         assertNotNull(stateChangeCheckFanLevel.validationMessage);
         assertTrue(handler.checkStateChangeValid(sky, "fanLevel", "high").valid);
-
     }
 
     @Test
@@ -104,11 +101,11 @@ public class SensiboSkyHandlerTest {
 
         // Once with Celcius argument
         handler.handleCommand(new ChannelUID(thing.getUID(), SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE),
-                new QuantityType<Temperature>(50, ImperialUnits.FAHRENHEIT), model);
+                new QuantityType<>(50, ImperialUnits.FAHRENHEIT), model);
 
         // Once with Fahrenheit
         handler.handleCommand(new ChannelUID(thing.getUID(), SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE),
-                new QuantityType<Temperature>(10, SIUnits.CELSIUS), model);
+                new QuantityType<>(10, SIUnits.CELSIUS), model);
 
         // Once with Decimal directly
         handler.handleCommand(new ChannelUID(thing.getUID(), SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE),

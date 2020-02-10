@@ -12,42 +12,47 @@
  */
 package org.openhab.binding.sensibo.internal.model;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.openhab.binding.sensibo.internal.dto.poddetails.Measurement;
 import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapability;
 import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetails;
-import org.openhab.binding.sensibo.internal.dto.poddetails.Schedule;
 
 /**
  * The {@link SensiboSky} represents a Sensibo Sky unit
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class SensiboSky extends Pod {
 
     private final String macAddress;
     private final String firmwareVersion;
     private final String firmwareType;
     private final String serialNumber;
-    private Unit<Temperature> temperatureUnit;
-    private final String originalTemperatureUnit;
+    private Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;
+    private String originalTemperatureUnit = "C";
     private final String productModel;
-    private Boolean smartMode;
-    private AcState acState = null;
-    private Double temperature = null;
-    private Double humidity = null;
+    private Optional<AcState> acState = Optional.empty();;
+    private Double temperature;
+    private Double humidity;
     private boolean alive = false;
     private final String roomName;
-    private Schedule[] schedules;
+    private Schedule[] schedules = new Schedule[0];
+    private final Map<String, ModeCapability> remoteCapabilities;
+    private Optional<Timer> timer = Optional.empty();
 
     public String getOriginalTemperatureUnit() {
         return originalTemperatureUnit;
@@ -61,9 +66,6 @@ public class SensiboSky extends Pod {
         return schedules;
     }
 
-    private final Map<String, ModeCapability> remoteCapabilities;
-    private Timer timer;
-
     public SensiboSky(final PodDetails dto) {
         this.id = dto.id;
         this.macAddress = StringUtils.remove(dto.macAddress, ':');
@@ -71,7 +73,7 @@ public class SensiboSky extends Pod {
         this.firmwareType = dto.firmwareType;
         this.serialNumber = dto.serialNumber;
         this.originalTemperatureUnit = dto.temperatureUnit;
-        if (originalTemperatureUnit != null) {
+        if (dto.temperatureUnit != null) {
             switch (originalTemperatureUnit) {
                 case "C":
                     this.temperatureUnit = SIUnits.CELSIUS;
@@ -87,22 +89,24 @@ public class SensiboSky extends Pod {
         this.productModel = dto.productModel;
 
         if (dto.acState != null) {
-            this.acState = new AcState(dto.acState);
+            this.acState = Optional.of(new AcState(dto.acState));
         }
 
         if (dto.timer != null) {
-            this.timer = new Timer(dto.timer);
+            this.timer = Optional.of(new Timer(dto.timer));
         }
 
-        final Measurement lastMeasurement = dto.lastMeasurement;
-        if (lastMeasurement != null) {
-            this.temperature = lastMeasurement.temperature;
-            this.humidity = lastMeasurement.humidity;
-        }
+        this.temperature = dto.lastMeasurement.temperature;
+        this.humidity = dto.lastMeasurement.humidity;
+
         this.alive = dto.isAlive();
         this.remoteCapabilities = dto.getRemoteCapabilities();
         this.roomName = dto.getRoomName();
 
+        if (dto.schedules != null) {
+            schedules = Arrays.asList(dto.schedules).stream().map(e -> new Schedule(e)).collect(Collectors.toList())
+                    .toArray(new Schedule[0]);
+        }
     }
 
     public String getMacAddress() {
@@ -129,11 +133,7 @@ public class SensiboSky extends Pod {
         return productModel;
     }
 
-    public Boolean getSmartMode() {
-        return smartMode;
-    }
-
-    public AcState getAcState() {
+    public Optional<AcState> getAcState() {
         return acState;
     }
 
@@ -162,9 +162,9 @@ public class SensiboSky extends Pod {
         return remoteCapabilities;
     }
 
-    public ModeCapability getCurrentModeCapabilities() {
-        if (remoteCapabilities != null && acState != null && acState.getMode() != null) {
-            return remoteCapabilities.get(acState.getMode());
+    public @Nullable ModeCapability getCurrentModeCapabilities() {
+        if (remoteCapabilities != null && acState.isPresent() && acState.get().getMode() != null) {
+            return remoteCapabilities.get(acState.get().getMode());
         } else {
             return null;
         }
@@ -172,7 +172,7 @@ public class SensiboSky extends Pod {
     }
 
     public List<Integer> getTargetTemperatures() {
-        if (getCurrentModeCapabilities() != null && originalTemperatureUnit != null) {
+        if (getCurrentModeCapabilities() != null) {
             org.openhab.binding.sensibo.internal.dto.poddetails.Temperature selectedTemperatureRange = getCurrentModeCapabilities().temperatures
                     .get(originalTemperatureUnit);
             if (selectedTemperatureRange != null) {
@@ -186,10 +186,10 @@ public class SensiboSky extends Pod {
      * @param newAcState an updated ac state
      */
     public void updateAcState(AcState newAcState) {
-        this.acState = newAcState;
+        this.acState = Optional.of(newAcState);
     }
 
-    public Timer getTimer() {
+    public Optional<Timer> getTimer() {
         return timer;
     }
 

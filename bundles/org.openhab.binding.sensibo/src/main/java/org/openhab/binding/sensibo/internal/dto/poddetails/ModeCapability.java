@@ -25,6 +25,6 @@ import com.google.gson.annotations.SerializedName;
 public class ModeCapability {
     @SerializedName("swing")
     public List<String> swingModes = new ArrayList<>();
-    public Map<String, Temperature> temperatures = new HashMap<String, Temperature>();
+    public Map<String, Temperature> temperatures = new HashMap<>();
     public List<String> fanLevels = new ArrayList<>();
 }
