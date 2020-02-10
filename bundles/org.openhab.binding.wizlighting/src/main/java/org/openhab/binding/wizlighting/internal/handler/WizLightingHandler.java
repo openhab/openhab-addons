@@ -434,15 +434,15 @@ public class WizLightingHandler extends BaseThingHandler {
         if (receivedParam.rssi != 0) {
             int strength = -1;
             if (receivedParam.rssi < -90) {
-                strength = 4;
+                strength = 0;
             } else if (receivedParam.rssi < -80) {
-                strength = 3;
+                strength = 1;
             } else if (receivedParam.rssi < -70) {
                 strength = 2;
-            } else if (receivedParam.rssi < -60) {
-                strength = 1;
+            } else if (receivedParam.rssi < -67) {
+                strength = 3;
             } else {
-                strength = 0;
+                strength = 4;
             }
             logger.debug("Received RSSI: {}, Signal Strength: {}", receivedParam.rssi, strength);
             updateState(CHANNEL_RSSI, new DecimalType(strength));
