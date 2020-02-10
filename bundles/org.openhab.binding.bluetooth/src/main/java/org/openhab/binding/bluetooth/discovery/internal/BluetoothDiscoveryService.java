@@ -15,7 +15,6 @@ package org.openhab.binding.bluetooth.discovery.internal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -25,7 +24,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.UID;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
@@ -50,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
-public class BluetoothDiscoveryService extends AbstractDiscoveryService {
+public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
 
@@ -59,7 +57,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
-    private final Map<UID, BluetoothDiscoveryListener> registeredListeners = new ConcurrentHashMap<>();
 
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
 
@@ -90,14 +87,12 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void addBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.add(adapter);
-        BluetoothDiscoveryListener listener = device -> deviceDiscovered(adapter, device);
-        adapter.addDiscoveryListener(listener);
-        registeredListeners.put(adapter.getUID(), listener);
+        adapter.addDiscoveryListener(this);
     }
 
     protected void removeBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.remove(adapter);
-        adapter.removeDiscoveryListener(registeredListeners.remove(adapter.getUID()));
+        adapter.removeDiscoveryListener(this);
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
@@ -131,7 +126,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
         removeOlderResults(getTimestampOfLastScan());
     }
 
-    private void deviceDiscovered(BluetoothAdapter adapter, BluetoothDevice device) {
+    @Override
+    public void deviceDiscovered(BluetoothDevice device) {
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
         for (BluetoothDiscoveryParticipant participant : participants) {
             try {
@@ -165,13 +161,13 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
             label += " (" + manufacturer + ")";
         }
 
-        ThingUID thingUID = new ThingUID(BluetoothBindingConstants.THING_TYPE_BEACON, adapter.getUID(),
+        ThingUID thingUID = new ThingUID(BluetoothBindingConstants.THING_TYPE_BEACON, device.getAdapter().getUID(),
                 device.getAddress().toString().toLowerCase().replace(":", ""));
 
         // Create the discovery result and add to the inbox
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS).withTTL(DISCOVERY_TTL)
-                .withBridge(adapter.getUID()).withLabel(label).build();
+                .withBridge(device.getAdapter().getUID()).withLabel(label).build();
         thingDiscovered(discoveryResult);
     }
 }
