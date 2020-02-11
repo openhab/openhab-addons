@@ -195,7 +195,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                             break;
                         case EIR_MANUFACTURER_SPECIFIC:
                             Object obj = eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
-                            if (obj != null && obj instanceof Map<?, ?>) {
+                            if (obj != null) {
                                 try {
                                     @SuppressWarnings("unchecked")
                                     Map<Short, int[]> eirRecord = (Map<Short, int[]>) obj;
