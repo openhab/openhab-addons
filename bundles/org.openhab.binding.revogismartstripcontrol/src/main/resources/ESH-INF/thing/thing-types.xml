@@ -12,12 +12,24 @@
 
 		<channel-groups>
 			<channel-group id="overallPlug" typeId="overallPlugActor"/>
-			<channel-group id="plug1" typeId="plugActor"/>
-			<channel-group id="plug2" typeId="plugActor"/>
-			<channel-group id="plug3" typeId="plugActor"/>
-			<channel-group id="plug4" typeId="plugActor"/>
-			<channel-group id="plug5" typeId="plugActor"/>
-			<channel-group id="plug6" typeId="plugActor"/>
+			<channel-group id="plug1" typeId="plugActor">
+				<label>Plug 1</label>
+			</channel-group>
+			<channel-group id="plug2" typeId="plugActor">
+				<label>Plug 2</label>
+			</channel-group>
+			<channel-group id="plug3" typeId="plugActor">
+				<label>Plug 3</label>
+			</channel-group>
+			<channel-group id="plug4" typeId="plugActor">
+				<label>Plug 4</label>
+			</channel-group>
+			<channel-group id="plug5" typeId="plugActor">
+				<label>Plug 5</label>
+			</channel-group>
+			<channel-group id="plug6" typeId="plugActor">
+				<label>Plug 6</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -48,15 +60,15 @@
 	</channel-group-type>
 
 	<channel-type id="single-plug">
-		<item-type>revogismartstripItem</item-type>
+		<item-type>Switch</item-type>
 		<label>Switch</label>
-		<description>Single plug channel for RevogiSmartStrip Binding</description>
+		<description>Switch a single plug</description>
 	</channel-type>
 	<channel-type id="watts" advanced="true">
 		<item-type>Number</item-type>
 		<label>Watt</label>
 		<description>Contains the current watt value for the given plug</description>
-		<state readOnly="true" pattern="%.1f -w" />
+		<state readOnly="true" pattern="%.1f W" />
 	</channel-type>
 	<channel-type id="amps" advanced="true">
 		<item-type>Number</item-type>
