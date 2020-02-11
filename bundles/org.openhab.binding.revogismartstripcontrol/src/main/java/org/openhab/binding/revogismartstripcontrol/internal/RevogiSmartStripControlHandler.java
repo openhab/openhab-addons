@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -24,8 +27,6 @@ import org.openhab.binding.revogismartstripcontrol.internal.api.Status;
 import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
 
 /**
  * The {@link RevogiSmartStripControlHandler} is responsible for handling commands, which are
@@ -83,10 +84,10 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         // Example for background initialization:
         scheduler.execute(() -> {
             Status status = statusService.queryStatus(config.getSerialNumber());
-            if (status != null) {
+            if (status.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Retrieved status code: " + status.getResponseCode());
             }
         });
 

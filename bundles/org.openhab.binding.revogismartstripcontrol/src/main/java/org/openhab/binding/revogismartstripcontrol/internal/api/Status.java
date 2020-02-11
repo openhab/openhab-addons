@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * {@link Status} is the internal data model used to control Revogi's SmartStrip
@@ -24,6 +24,8 @@ import java.util.Objects;
  *
  */
 public class Status {
+    private boolean online;
+    private int responseCode;
     @JsonProperty("switch")
     private List<Integer> switchValue;
     private List<Integer> watt;
@@ -32,10 +34,20 @@ public class Status {
     public Status() {
     }
 
-    public Status(List<Integer> switchValue, List<Integer> watt, List<Integer> amp) {
+    public Status(final boolean online, final int responseCode, List<Integer> switchValue, List<Integer> watt, List<Integer> amp) {
+        this.online = online;
+        this.responseCode = responseCode;
         this.switchValue = switchValue;
         this.watt = watt;
         this.amp = amp;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
     }
 
     public List<Integer> getSwitchValue() {
@@ -51,17 +63,23 @@ public class Status {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Status status = (Status) o;
-        return Objects.equals(switchValue, status.switchValue) &&
+        return online == status.online &&
+                responseCode == status.responseCode &&
+                Objects.equals(switchValue, status.switchValue) &&
                 Objects.equals(watt, status.watt) &&
                 Objects.equals(amp, status.amp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(switchValue, watt, amp);
+        return Objects.hash(online, responseCode, switchValue, watt, amp);
     }
 }

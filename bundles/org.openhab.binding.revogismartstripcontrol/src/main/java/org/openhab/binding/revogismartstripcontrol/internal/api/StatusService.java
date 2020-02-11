@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jersey.repackaged.com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
@@ -53,9 +53,11 @@ public class StatusService {
                 .filter(response -> !response.isEmpty() && response.contains(VERSION_STRING))
                 .map(this::deserializeString)
                 .filter(statusRaw -> statusRaw.getCode() == 200)
-                .map(StatusRaw::getData)
+                .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(), statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
                 .findFirst()
-                .orElse(null);
+                .orElse(new Status(false, 503, null, null, null));
+
+
     }
 
     private StatusRaw deserializeString(String response) {
@@ -64,7 +66,7 @@ public class StatusService {
             return objectMapper.readValue(extractedJsonResponse, StatusRaw.class);
         } catch (IOException e) {
             logger.warn("Could not parse string \"{}\" to StatusRaw", response, e);
-            return new StatusRaw(503, 0, new Status(Lists.newArrayList(), Lists.newArrayList(), Lists.newArrayList()));
+            return new StatusRaw(503, 0, new Status(false, 503, null, null, null));
         }
     }
 }
