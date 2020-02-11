@@ -22,6 +22,7 @@ public class SpeedTestConfiguration {
     public Integer refreshInterval = 20;
     public Integer initialDelay = 5;
     public Integer uploadSize = 1000000;
+    public Integer maxTimeout = 3;
     private String url;
     private String fileName;
 
