@@ -34,13 +34,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.lightwaverf", service = {ThingHandlerFactory.class,
     })
 
-public class LWHandlerFactory extends BaseThingHandlerFactory 
-//implements ChannelTypeProvider, ChannelGroupTypeProvider
-    {
-
-    //private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
-    //private final List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
-
+public class LWHandlerFactory extends BaseThingHandlerFactory  {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -61,57 +55,4 @@ public class LWHandlerFactory extends BaseThingHandlerFactory
         }
         
     }  
-
-/*
-    @Override
-    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return channelTypes;
-    }
-
-    @Override
-    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        for (ChannelType channelType : channelTypes) {
-            if (channelType.getUID().equals(channelTypeUID)) {
-                return channelType;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
-            @Nullable Locale locale) {
-        for (ChannelGroupType channelGroupType : channelGroupTypes) {
-            if (channelGroupType.getUID().equals(channelGroupTypeUID)) {
-                return channelGroupType;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
-        return channelGroupTypes;
-    }
-
-    public void addChannelType(ChannelType type) {
-        channelTypes.add(type);
-    }
-
-    public void removeChannelType(ChannelType type) {
-        channelTypes.remove(type);
-    }
-
-    public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<>();
-        for (ChannelType c : channelTypes) {
-            if (c.getUID().getAsString().startsWith(uid.getAsString())) {
-                removes.add(c);
-            }
-        }
-        channelTypes.removeAll(removes);
-    }
-    
-    */
-
 }
