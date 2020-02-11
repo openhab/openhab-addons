@@ -110,8 +110,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return attributes.unsubscribe().thenCompose(
-                b -> CompletableFuture.allOf(properties.stream().map(p -> p.stop()).toArray(CompletableFuture[]::new)));
+        return attributes.unsubscribe().thenCompose(b -> CompletableFuture
+                .allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
     }
 
     /**

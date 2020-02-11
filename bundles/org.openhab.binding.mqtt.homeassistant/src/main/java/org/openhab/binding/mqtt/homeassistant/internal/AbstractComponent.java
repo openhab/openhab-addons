@@ -122,7 +122,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().parallelStream().map(v -> v.stop()).collect(FutureCollector.allOf());
+        return channels.values().parallelStream().map(CChannel::stop).collect(FutureCollector.allOf());
     }
 
     /**
@@ -197,7 +197,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * Return the channel group type.
      */
     public ChannelGroupType type() {
-        final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(c -> c.type())
+        final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(CChannel::type)
                 .collect(Collectors.toList());
         return ChannelGroupTypeBuilder.instance(channelGroupTypeUID, name()).withChannelDefinitions(channelDefinitions)
                 .build();
@@ -208,7 +208,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * to the MQTT broker got lost.
      */
     public void resetState() {
-        channels.values().forEach(c -> c.resetState());
+        channels.values().forEach(CChannel::resetState);
     }
 
     /**

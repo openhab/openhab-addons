@@ -38,6 +38,7 @@ import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.generic.values.ValueFactory;
 import org.slf4j.Logger;
@@ -83,11 +84,8 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
      */
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
-        List<CompletableFuture<@Nullable Void>> futures = channelStateByChannelUID.values().stream()
-                .map(c -> c.start(connection, scheduler, 0)).collect(Collectors.toList());
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).thenRun(() -> {
-            calculateThingStatus();
-        });
+        return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
+                .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
     }
 
     @Override
@@ -127,13 +125,13 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         // Incoming value transformations
         transformations = channelConfig.transformationPattern.split("∩");
-        Stream.of(transformations).filter(t -> StringUtils.isNotBlank(t))
+        Stream.of(transformations).filter(StringUtils::isNotBlank)
                 .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
                 .forEach(t -> state.addTransformation(t));
 
         // Outgoing value transformations
         transformations = channelConfig.transformationPatternOut.split("∩");
-        Stream.of(transformations).filter(t -> StringUtils.isNotBlank(t))
+        Stream.of(transformations).filter(StringUtils::isNotBlank)
                 .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
                 .forEach(t -> state.addTransformationOut(t));
 
@@ -180,7 +178,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         // in question to the user.
         if (!configErrors.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Remove and recreate: "
-                    + configErrors.stream().map(e -> e.getAsString()).collect(Collectors.joining(",")));
+                    + configErrors.stream().map(ChannelUID::getAsString).collect(Collectors.joining(",")));
             return;
         }
         super.initialize();

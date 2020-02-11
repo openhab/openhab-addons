@@ -215,8 +215,8 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (!device.isInitialized()) {
             return;
         }
-        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream())
-                .map(prop -> prop.getChannel()).collect(Collectors.toList());
+        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream()).map(Property::getChannel)
+                .collect(Collectors.toList());
         updateThing(editThing().withChannels(channels).build());
         updateProperty(MqttBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
         final MqttBrokerConnection connection = this.connection;

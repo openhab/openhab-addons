@@ -349,7 +349,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void clearAllAvailabilityTopics() {
         Set<String> topics = new HashSet<>(availabilityStates.keySet());
-        topics.forEach(t -> removeAvailabilityTopic(t));
+        topics.forEach(this::removeAvailabilityTopic);
     }
 
     @Override
