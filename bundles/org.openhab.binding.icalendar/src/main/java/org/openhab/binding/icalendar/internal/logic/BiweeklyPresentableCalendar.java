@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,10 +50,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
-    private final TemporalAmount lookAround;
     private final ICalendar usedCalendar;
 
-    BiweeklyPresentableCalendar(InputStream streamed, TemporalAmount lookAround) throws IOException, CalendarException {
+    BiweeklyPresentableCalendar(InputStream streamed) throws IOException, CalendarException {
         ICalReader reader = new ICalReader(streamed);
         try {
             ICalendar currentCalendar = reader.readNext();
@@ -62,7 +60,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 throw new CalendarException("No calendar was parsed.");
             }
             this.usedCalendar = currentCalendar;
-            this.lookAround = lookAround;
         } finally {
             reader.close();
         }
@@ -85,30 +82,32 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getNextEvent(Instant instant) {
-
-        Instant recurrenceCalculationEnd = instant.plus(lookAround);
-
-        List<VEventWPeriod> positiveCandidates = new LinkedList<VEventWPeriod>();
-        List<VEventWPeriod> negativeCandidates = new LinkedList<VEventWPeriod>();
-        fillNextEventCandidateLists(instant, positiveCandidates, negativeCandidates, recurrenceCalculationEnd);
-        VEventWPeriod earliestNextEvent = null;
-        for (VEventWPeriod positiveCandidate : positiveCandidates) {
-            @Nullable
-            Uid pcUid = positiveCandidate.vEvent.getUid();
-            boolean cancel = false;
-            if (pcUid != null) {
-                for (VEventWPeriod negativeCandidate : negativeCandidates) {
+        List<VEventWPeriod> candidates = new LinkedList<VEventWPeriod>();
+        List<VEvent> negativeEvents = new LinkedList<VEvent>();
+        List<VEvent> positiveEvents = new LinkedList<VEvent>();
+        classifyEvents(positiveEvents, negativeEvents);
+        for (VEvent currentEvent : positiveEvents) {
+            DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
+            Duration duration = getEventLength(currentEvent);
+            if (duration == null) {
+                continue;
+            }
+            startDates.advanceTo(Date.from(instant));
+            while (startDates.hasNext()) {
+                Instant startInstant = startDates.next().toInstant();
+                if (startInstant.isAfter(instant)) {
                     @Nullable
-                    Uid ncUid = negativeCandidate.vEvent.getUid();
-                    if (ncUid != null && ncUid.getValue().contentEquals(pcUid.getValue())
-                            && positiveCandidate.start.equals(negativeCandidate.start)
-                            && positiveCandidate.end.equals(negativeCandidate.end)) {
-                        cancel = true;
+                    Uid currentEventUid = currentEvent.getUid();
+                    if (currentEventUid == null || !isCounteredBy(startInstant, currentEventUid, negativeEvents)) {
+                        candidates.add(new VEventWPeriod(currentEvent, startInstant, startInstant.plus(duration)));
                         break;
                     }
                 }
             }
-            if (!cancel && (earliestNextEvent == null || earliestNextEvent.start.isAfter(positiveCandidate.start))) {
+        }
+        VEventWPeriod earliestNextEvent = null;
+        for (VEventWPeriod positiveCandidate : candidates) {
+            if (earliestNextEvent == null || earliestNextEvent.start.isAfter(positiveCandidate.start)) {
                 earliestNextEvent = positiveCandidate;
             }
         }
@@ -120,38 +119,31 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     * Fills candidate lists for the next event after an Instant.
+     * Checks whether an counter event blocks an event with given uid and start.
      *
-     * @param instant The Instant to search after.
-     * @param positiveCandidates A target List of positive candidates.
-     * @param negativeCandidates A target List of negative candidates.
-     * @param recurrenceCalculationEnd The end point of recurrence calculation.
+     * @param startInstant The start of the event.
+     * @param eventUid The uid of the event.
+     * @param counterEvents Events that may counter.
+     * @return True if a counter event exists that matches uid and start, else false.
      */
-    private void fillNextEventCandidateLists(Instant instant, List<VEventWPeriod> positiveCandidates,
-            List<VEventWPeriod> negativeCandidates, Instant recurrenceCalculationEnd) {
-        for (VEvent currentEvent : usedCalendar.getEvents()) {
+    private boolean isCounteredBy(Instant startInstant, Uid eventUid, List<VEvent> counterEvents) {
+        boolean ignoreThis = false;
+        for (VEvent counterEvent : counterEvents) {
             @Nullable
-            Status eventStatus = currentEvent.getStatus();
-            boolean additive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
-
-            DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
-            Duration duration = getEventLength(currentEvent);
-            if (duration == null) {
-                continue;
-            }
-            startDates.advanceTo(Date.from(instant));
-            while (startDates.hasNext()) {
-                Instant startInstant = startDates.next().toInstant();
-                Instant endInstant = startInstant.plus(duration);
-                if (startInstant.isAfter(instant)) {
-                    List<VEventWPeriod> candidateList = (additive ? positiveCandidates : negativeCandidates);
-                    candidateList.add(new VEventWPeriod(currentEvent, startInstant, endInstant));
-                }
-                if (startInstant.isAfter(recurrenceCalculationEnd)) {
-                    break;
+            Uid counterEventUid = counterEvent.getUid();
+            if (counterEventUid != null && eventUid.getValue().contentEquals(counterEventUid.getValue())) {
+                DateIterator counterStartDates = getRecurredEventDateIterator(counterEvent);
+                counterStartDates.advanceTo(Date.from(startInstant));
+                if (counterStartDates.hasNext()) {
+                    Instant counterStartInstant = counterStartDates.next().toInstant();
+                    if (counterStartInstant.equals(startInstant)) {
+                        ignoreThis = true;
+                        break;
+                    }
                 }
             }
         }
+        return ignoreThis;
     }
 
     /**
@@ -161,68 +153,49 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return A VEventWPeriod describing the event or null if there is none.
      */
     private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant) {
-        Instant recurrenceCalculationBegin = instant.minus(lookAround);
-        Instant recurrenceCalculationEnd = instant.plus(lookAround);
-        List<VEventWPeriod> positiveCandidates = new LinkedList<VEventWPeriod>();
-        List<VEventWPeriod> negativeCandidates = new LinkedList<VEventWPeriod>();
-        fillCurrentEventCandidateLists(instant, positiveCandidates, negativeCandidates, recurrenceCalculationBegin,
-                recurrenceCalculationEnd);
+        List<VEvent> negativeEvents = new LinkedList<VEvent>();
+        List<VEvent> positiveEvents = new LinkedList<VEvent>();
+        classifyEvents(positiveEvents, negativeEvents);
 
-        for (VEventWPeriod possibleCandidate : positiveCandidates) {
-            boolean cancel = false;
-            @Nullable
-            Uid candidateUid = possibleCandidate.vEvent.getUid();
-            if (candidateUid != null) {
-                for (VEventWPeriod possibleCancellation : negativeCandidates) {
-                    @Nullable
-                    Uid cancellationUid = possibleCancellation.vEvent.getUid();
-                    if (cancellationUid != null && candidateUid.getValue().contentEquals(cancellationUid.getValue())) {
-                        cancel = true;
-                        break;
-                    }
-                }
-            }
-            if (!cancel) {
-                return possibleCandidate;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Finds event candidates at given instant.
-     *
-     * @param instant The Instant to find event candidates around.
-     * @param positiveCandidates The List for the positive Candidates.
-     * @param negativeCandidates The List for the negative Candidates.
-     * @param recurrenceCalculationBegin The starting point in calculation.
-     * @param recurrenceCalculationEnd The end point in calculation.
-     */
-    private void fillCurrentEventCandidateLists(Instant instant, List<VEventWPeriod> positiveCandidates,
-            List<VEventWPeriod> negativeCandidates, Instant recurrenceCalculationBegin,
-            Instant recurrenceCalculationEnd) {
-        for (VEvent currentEvent : usedCalendar.getEvents()) {
-            @Nullable
-            Status eventStatus = currentEvent.getStatus();
-            boolean additive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
+        for (VEvent currentEvent : positiveEvents) {
             DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             Duration duration = getEventLength(currentEvent);
             if (duration == null) {
                 continue;
             }
-            startDates.advanceTo(Date.from(recurrenceCalculationBegin));
+            startDates.advanceTo(Date.from(instant.minus(duration)));
             while (startDates.hasNext()) {
                 Instant startInstant = startDates.next().toInstant();
                 Instant endInstant = startInstant.plus(duration);
                 if (startInstant.isBefore(instant) && endInstant.isAfter(instant)) {
-                    List<VEventWPeriod> candidateList = (additive ? positiveCandidates : negativeCandidates);
-                    candidateList.add(new VEventWPeriod(currentEvent, startInstant, endInstant));
-                    break;
+                    @Nullable
+                    Uid eventUid = currentEvent.getUid();
+                    if (eventUid == null || !isCounteredBy(startInstant, eventUid, negativeEvents)) {
+                        return new VEventWPeriod(currentEvent, startInstant, endInstant);
+                    }
                 }
-                if (startInstant.isAfter(recurrenceCalculationEnd)) {
+                if (startInstant.isAfter(instant.plus(duration))) {
                     break;
                 }
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Classifies events into positive and negative ones.
+     *
+     * @param positiveEvents A List where to add positive ones.
+     * @param negativeEvents A List where to add negative ones.
+     */
+    private void classifyEvents(List<VEvent> positiveEvents, List<VEvent> negativeEvents) {
+        for (VEvent currentEvent : usedCalendar.getEvents()) {
+            @Nullable
+            Status eventStatus = currentEvent.getStatus();
+            boolean positive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
+            List<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
+            positiveOrNegativeEvents.add(currentEvent);
         }
     }
 

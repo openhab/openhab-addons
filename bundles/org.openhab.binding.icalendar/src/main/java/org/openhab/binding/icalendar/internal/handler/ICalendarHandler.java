@@ -19,7 +19,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -178,8 +177,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             return false;
         }
         try {
-            AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(new FileInputStream(calendarFile),
-                    Duration.ofMinutes(config.readAroundTime.longValue()));
+            AbstractPresentableCalendar calendar = AbstractPresentableCalendar
+                    .create(new FileInputStream(calendarFile));
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
@@ -375,7 +374,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             if (nextEvent == null) {
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, currentConfig.readAroundTime.longValue(), TimeUnit.MINUTES);
+                }, 1L, TimeUnit.DAYS);
             } else {
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.updateStates();

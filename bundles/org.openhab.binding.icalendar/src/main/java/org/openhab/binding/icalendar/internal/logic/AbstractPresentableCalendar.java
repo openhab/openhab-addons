@@ -14,7 +14,6 @@ package org.openhab.binding.icalendar.internal.logic;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
@@ -33,20 +32,15 @@ import org.eclipse.jdt.annotation.Nullable;
 public abstract class AbstractPresentableCalendar {
 
     /**
-     * Creates an implementing Instance of AbstractPresentableCalendar. Please
-     * use {@link #setLookAround(Duration)} before to ensure the presentable
-     * calendar is useful.
+     * Creates an implementing Instance of AbstractPresentableCalendar.
      *
      * @param calendarStream A Stream containing the iCal data.
-     * @param lookAround The time window to search for events around a certain
-     *            point in time.
      * @return The instance.
      * @throws IOException When something while reading stream fails.
      * @throws CalendarException When something while parsing fails.
      */
-    public static AbstractPresentableCalendar create(InputStream calendarStream, Duration lookAround)
-            throws IOException, CalendarException {
-        return new BiweeklyPresentableCalendar(calendarStream, lookAround);
+    public static AbstractPresentableCalendar create(InputStream calendarStream) throws IOException, CalendarException {
+        return new BiweeklyPresentableCalendar(calendarStream);
     }
 
     /**

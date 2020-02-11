@@ -24,7 +24,6 @@ public class ICalendarConfiguration {
 
     public String url;
     public BigDecimal refreshTime;
-    public BigDecimal readAroundTime;
     public String username;
     public String password;
     public String authorizationCode;

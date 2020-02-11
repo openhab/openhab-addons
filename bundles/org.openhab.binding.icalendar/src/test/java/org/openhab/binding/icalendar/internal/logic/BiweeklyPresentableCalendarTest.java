@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
@@ -47,12 +46,9 @@ public class BiweeklyPresentableCalendarTest {
 
     @Before
     public void setUp() throws IOException, CalendarException {
-        calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"),
-                Duration.ofDays(2));
-        calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"),
-                Duration.ofDays(30));
-        calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"),
-                Duration.ofDays(30));
+        calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"));
+        calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"));
+        calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
     }
 
     /**
@@ -230,7 +226,6 @@ public class BiweeklyPresentableCalendarTest {
             assertEquals(tagsPerEvent / 2, endTags);
         }
 
-
         // test outside of window: ended events, too early
         events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:20:00Z"),
                 Instant.parse("2020-01-28T16:25:00Z"));
@@ -255,7 +250,6 @@ public class BiweeklyPresentableCalendarTest {
         // reject incorrect configuration code
         assertFalse(cmd.isAuthorized("123"));
 
-
         // test tag syntax: Test Series #1
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T19:25:00Z"),
                 Instant.parse("2020-01-28T19:35:00Z"));
@@ -265,7 +259,7 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:ON:abc
-        assertEquals( "Calendar_Test_Color", cmdTags.get(0).getItemName());
+        assertEquals("Calendar_Test_Color", cmdTags.get(0).getItemName());
         assertTrue(cmdTags.get(0).isAuthorized("abc"));
         assertEquals(OnOffType.class, cmdTags.get(0).getCommand().getClass());
 
@@ -299,7 +293,6 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Switch:ON:abc
         assertEquals(OnOffType.class, cmdTags.get(10).getCommand().getClass());
 
-        
         // test tag syntax: Test Series #4
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:10:00Z"),
                 Instant.parse("2020-01-28T20:20:00Z"));
@@ -319,8 +312,8 @@ public class BiweeklyPresentableCalendarTest {
 
         // BEGIN:Calendar_Test_Number:-12.3:abc
         assertEquals(QuantityType.class, cmdTags.get(3).getCommand().getClass());
-        
-        // BEGIN:Calendar_Test_Temperature:-12.3°C:abc        
+
+        // BEGIN:Calendar_Test_Temperature:-12.3°C:abc
         assertEquals(QuantityType.class, cmdTags.get(4).getCommand().getClass());
 
         // BEGIN:Calendar_Test_Pressure:500mmHg:abc
@@ -341,7 +334,6 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Switch:OFF:abc
         assertEquals(OnOffType.class, cmdTags.get(10).getCommand().getClass());
 
-        
         // test tag syntax: Test Series #5
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:25:00Z"),
                 Instant.parse("2020-01-28T20:35:00Z"));

@@ -35,11 +35,6 @@
 				<description>Interval to scan for changes</description>
 				<unitLabel>minutes</unitLabel>
 			</parameter>
-			<parameter name="readAroundTime" type="integer" required="true" min="1" unit="min" groupName="parsing">
-				<label>Read-around Time</label>
-				<description>Timespan to read around events, choose lower values if you have many short events</description>
-				<default>43200</default>
-			</parameter>
 			<parameter name="username" type="text" required="false" groupName="source">
 				<label>User Name</label>
 				<description>User name for fetching the calendar (usable in combination with password in HTTP basic auth)</description>
