@@ -245,6 +245,10 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (connectionState == ConnectionState.DISCOVERING) {
+                // TODO: It could make sense to wait with discovery for non-connectable devices until scan response is
+                //  received to eventually retrieve more about the device before it gets discovered. Anyhow, devices
+                //  that don't send a scan response at all also have to be supported. See also PR #6995.
+
                 // Set our state to disconnected
                 connectionState = ConnectionState.DISCONNECTED;
                 connection = -1;
@@ -376,10 +380,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         if (event instanceof BlueGigaConnectionStatusEvent) {
-            // TODO: It could make sense to wait with discovery for non-connectable devices until scan response is
-            //  received to eventually retrieve more about the device before it gets discovered. Anyhow, devices that
-            //  don't send a scan response at all also have to be supported. See also PR #6995.
-
             BlueGigaConnectionStatusEvent connectionEvent = (BlueGigaConnectionStatusEvent) event;
 
             // Check if this is addressed to this device
