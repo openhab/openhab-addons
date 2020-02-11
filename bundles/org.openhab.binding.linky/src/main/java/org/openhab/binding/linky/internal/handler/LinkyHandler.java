@@ -77,6 +77,9 @@ public class LinkyHandler extends BaseThingHandler {
             .add("gx_charset", "UTF-8").add("SunQueryParamsString",
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
 
+    private static final int REFRESH_FIRST_HOUR_OF_DAY = 3;
+    private static final int REFRESH_INTERVAL_IN_MIN = 720;
+
     private final OkHttpClient client = new OkHttpClient.Builder().followRedirects(false)
             .cookieJar(new LinkyCookieJar()).build();
     private final Gson GSON = new Gson();
@@ -102,10 +105,11 @@ public class LinkyHandler extends BaseThingHandler {
 
         // Refresh data twice a day at approximatively 3am and 3pm
         final LocalDateTime now = LocalDateTime.now();
-        final LocalDateTime nextUpdateTime = now.plusDays(1).with(ChronoField.HOUR_OF_DAY, 3)
-                .truncatedTo(ChronoUnit.HOURS);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, ChronoUnit.MINUTES.between(now, nextUpdateTime),
-                720, TimeUnit.MINUTES);
+        final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1)
+                .with(ChronoField.HOUR_OF_DAY, REFRESH_FIRST_HOUR_OF_DAY).truncatedTo(ChronoUnit.HOURS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN,
+                REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
     }
 
     private boolean login() {
