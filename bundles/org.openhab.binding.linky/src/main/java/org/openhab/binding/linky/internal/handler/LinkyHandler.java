@@ -364,18 +364,18 @@ public class LinkyHandler extends BaseThingHandler {
         if (tryRelog && login()) {
             result = getConsumptionData(timeScale, from, to, false);
         }
-        // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(ENEDIS_DATE_FORMAT),
-        // to.format(ENEDIS_DATE_FORMAT));
+        // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(API_DATE_FORMAT),
+        // to.format(API_DATE_FORMAT));
         // InputStream stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
         // logger.debug("POST {} requestContent {}", API_BASE_URI, requestContent);
         // try {
         // String jsonResponse = HttpUtil.executeUrl("POST", API_BASE_URI, stream, "application/x-www-form-urlencoded",
         // HTTP_DEFAULT_TIMEOUT_MS);
         // if (jsonResponse != null) {
-        // result = GSON.fromJson(jsonResponse, EnedisInfo.class);
+        // result = GSON.fromJson(jsonResponse, LinkyConsumptionData.class);
         // }
         // } catch (IOException e) {
-        // logger.debug("Exception calling Enedis API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
+        // logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         // }
         // try {
