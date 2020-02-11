@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lightwaverf.internal.handler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,9 +41,10 @@ import org.openhab.binding.lightwaverf.internal.config.AccountConfig;
 import org.openhab.binding.lightwaverf.internal.LWDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
- * The {@link lightwaverfBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link lightwaverfBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author David Murton - Initial contribution
  */
@@ -60,7 +62,8 @@ public class LWAccountHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> listTask;
     private String list;
     private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
-    .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+
     public LWAccountHandler(Bridge bridge) {
         super(bridge);
     }
@@ -70,8 +73,16 @@ public class LWAccountHandler extends BaseBridgeHandler {
         logger.debug("Initializing Lightwave account handler.");
         config = getConfigAs(AccountConfig.class);
         listener = new UpdateListener();
-        listener.login(config.username, config.password);
-        createLists();
+        try {
+            listener.login(config.username, config.password);
+        } catch (IOException e) {
+
+        }
+        try {
+            createLists();
+        } catch (IOException e) {
+
+        }
         properties();
         startRefresh();
         //if (listTask == null || listTask.isCancelled()) {
@@ -82,7 +93,7 @@ public class LWAccountHandler extends BaseBridgeHandler {
         
     }
 
-    private void createLists() {
+    private void createLists() throws IOException {
         logger.debug("Started List Generation");
         StructureList structureList = listener.getStructureList();
         for (int a = 0; a < structureList.getStructures().size(); a++) {
@@ -127,7 +138,7 @@ public class LWAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void connect() {
+    private void connect() throws IOException {
         logger.debug("Initializing connection to Lightwave");
         updateStatus(ThingStatus.OFFLINE);
             listener.login(config.username, config.password);

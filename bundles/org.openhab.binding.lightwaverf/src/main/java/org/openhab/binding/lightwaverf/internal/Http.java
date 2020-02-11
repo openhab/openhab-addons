@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.lightwaverf.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lightwaverf.internal.api.AccessToken;
-import org.openhab.io.net.http.HttpUtil;
-
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 
 /**
- * The {@link lightwaverfBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link lightwaverfBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author David Murton - Initial contribution
  */
@@ -45,7 +45,7 @@ public class Http {
         return headers;
     }
 
-    private static String url(@Nullable  String type,@Nullable  String groupId) {
+    private static String url(@Nullable String type, @Nullable String groupId) {
         String url;
         switch (type) {
         case "login":
@@ -87,7 +87,8 @@ public class Http {
         return method;
     }
 
-    public static String httpClient(@Nullable String type, @Nullable InputStream data, @Nullable String other,@Nullable String groupId) {
+    public static String httpClient(@Nullable String type, @Nullable InputStream data, @Nullable String other,
+            @Nullable String groupId) throws IOException {
         String response = HttpUtil.executeUrl(method(type), url(type, groupId), getHeader(type), data, other, 100000);
         return response;
     }  

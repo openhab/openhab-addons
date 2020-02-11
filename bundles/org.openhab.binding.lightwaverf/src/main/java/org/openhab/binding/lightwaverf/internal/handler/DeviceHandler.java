@@ -357,7 +357,7 @@ public class DeviceHandler extends BaseThingHandler {
             updateState(channelId, new PercentType(value));
             break;
             case "batteryLevel":
-            updateState(channelId, new PercentType(value *100));
+            updateState(channelId, new DecimalType(value));
             break;
         case "rgbColor":
             Color color = new Color(value);

@@ -13,6 +13,8 @@
 package org.openhab.binding.lightwaverf.internal;
 
 import static org.openhab.binding.lightwaverf.internal.LWBindingConstants.*;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +40,9 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * The {@link lightwaverfBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link lightwaverfBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author David Murton - Initial contribution
  */
@@ -126,9 +127,8 @@ public class LWDiscoveryService extends AbstractDiscoveryService implements Disc
             this.scanTask = null;
         }
     }
-    
 
-    private void discover() {
+    private void discover() throws IOException {
         logger.debug("Start Discovery");
             bridgeUID = accountHandler.getThing().getUID();
             List<Thing> things = accountHandler.getThing().getThings();

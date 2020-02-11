@@ -13,6 +13,7 @@
 package org.openhab.binding.lightwaverf.internal;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,14 +36,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link lightwaverfBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link lightwaverfBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author David Murton - Initial contribution
  */
 @NonNullByDefault
 public class UpdateListener {
-    private final Logger logger = LoggerFactory.getLogger(UpdateListener.class);  
+    private final Logger logger = LoggerFactory.getLogger(UpdateListener.class);
     private List<FeatureStatus> featureStatus = new ArrayList<FeatureStatus>();
     private List<String> channelList = new ArrayList<String>();
     private List<String> cLinked = new ArrayList<String>();
@@ -55,7 +56,7 @@ public class UpdateListener {
     private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
             .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 
-    public void updateListener(int partitionSize) {
+    public void updateListener(int partitionSize) throws IOException {
         jsonBody = "";
         jsonEnd = "";
         jsonMain = "";
@@ -142,7 +143,7 @@ public class UpdateListener {
         return true;
      }
 
-    public void login(String username, String password) {
+    public void login(String username, String password) throws IOException {
         logger.warn("Start Lightwave Login Process");
         setConnected(false);
         JsonObject jsonReq = new JsonObject();
@@ -164,19 +165,19 @@ public class UpdateListener {
         logger.warn("Connected to lightwave");
     }
 
-        public StructureList getStructureList() {
+        public StructureList getStructureList() throws IOException {
             String response = Http.httpClient("structures", null, null, null);
             StructureList structureList = gson.fromJson(response, StructureList.class);
             return structureList;
         }
 
-        public Root getStructure(String structureId) {
+        public Root getStructure(String structureId) throws IOException {
             String response = Http.httpClient("structure", null, null, structureId);
             Root structure = gson.fromJson(response, Root.class);
             return structure;
         }
 
-        public List<Devices> getDevices(String structureId) {
+        public List<Devices> getDevices(String structureId) throws IOException {
             List<Devices> devices = getStructure(structureId).getDevices();
             return devices;
         }

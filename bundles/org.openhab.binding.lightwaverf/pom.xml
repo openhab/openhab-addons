@@ -7,17 +7,11 @@
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>2.5.2-SNAPSHOT</version>
+    
   </parent>
-  <!-- https://mvnrepository.com/artifact/org.openhab.core.bundles/org.openhab.core.io.net -->
-<!-- <dependencies>
-  <dependency>
-  <groupId>org.openhab.core.bundles</groupId>
-  <artifactId>org.openhab.core.io.net</artifactId>
-  <version>2.5.0</version>
-</dependency>
-</dependencies> -->
+
   <artifactId>org.openhab.binding.lightwaverf</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: lightwaverf Binding</name>
-
+  <name>openHAB Add-ons :: Bundles :: LightwaveRf Binding</name>
+  
 </project>
