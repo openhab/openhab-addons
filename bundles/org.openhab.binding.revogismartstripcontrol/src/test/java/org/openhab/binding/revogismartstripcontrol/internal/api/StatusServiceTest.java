@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import jersey.repackaged.com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import jersey.repackaged.com.google.common.collect.Lists;
 
 /**
  * @author Andi Bräu - Initial contribution
@@ -36,7 +36,7 @@ public class StatusServiceTest {
     @Test
     public void getStatusSuccessfully() {
         // given
-        Status status = new Status(Lists.newArrayList(0, 0, 0, 0, 0, 0), Lists.newArrayList(0, 0, 0, 0, 0, 0), Lists.newArrayList(0, 0, 0, 0, 0, 0));
+        Status status = new Status(true, 200, Lists.newArrayList(0, 0, 0, 0, 0, 0), Lists.newArrayList(0, 0, 0, 0, 0, 0), Lists.newArrayList(0, 0, 0, 0, 0, 0));
         ArrayList<String> statusString = Lists.newArrayList("V3{\"response\":90,\"code\":200,\"data\":{\"switch\":[0,0,0,0,0,0],\"watt\":[0,0,0,0,0,0],\"amp\":[0,0,0,0,0,0]}}");
         when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 90}")).thenReturn(statusString);
 
@@ -57,6 +57,6 @@ public class StatusServiceTest {
         Status status = statusService.queryStatus("serial");
 
         // then
-        assertNull(status);
+        assertEquals( 503, status.getResponseCode());
     }
 }
