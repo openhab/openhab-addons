@@ -190,7 +190,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
             String line = resp.getContentAsString();
 
-            logger.debug("Response: {}", line);
+            logger.trace("Response: {}", line);
             JablotronGetServiceResponse response = gson.fromJson(line, JablotronGetServiceResponse.class);
 
             if (response.getHttpCode() != 200) {
@@ -269,7 +269,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
         String url = JABLOTRON_API_URL + "dataUpdate.json";
-        String urlParameters = "data=[{ \"filter_data\":[{\"data_type\":\"section\"},{\"data_type\":\"pgm\"},{\"data_type\":\"teplomery\"},{\"data_type\":\"elektromery\"}],\"service_type\":\"" + th.getThingTypeUID().getId() + "\",\"service_id\":" + th.getUID().getId() + ",\"data_group\":\"serviceData\"}]&system=" + SYSTEM;
+        String urlParameters = "data=[{ \"filter_data\":[{\"data_type\":\"section\"},{\"data_type\":\"pgm\"},{\"data_type\":\"thermometer\"}],\"service_type\":\"" + th.getThingTypeUID().getId() + "\",\"service_id\":" + th.getUID().getId() + ",\"data_group\":\"serviceData\"}]&system=" + SYSTEM;
 
         logger.trace("Url parameters: {}", urlParameters);
         try {

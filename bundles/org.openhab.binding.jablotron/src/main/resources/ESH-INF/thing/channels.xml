@@ -145,4 +145,12 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<!-- temperature -->
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Sensor Temperature</label>
+		<description>The current temperature reported by the sensor</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

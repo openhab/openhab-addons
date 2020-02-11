@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -25,6 +28,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegmentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +70,14 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         }
     }
 
+    private void createTempChannel(String name, String label) {
+        ChannelTypeUID temperature = new ChannelTypeUID("jablotron", "temperature");
+        ThingBuilder thingBuilder = editThing();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature").withLabel(label).withType(temperature).build();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
+    }
+
     private void createPGMChannel(String name, String label) {
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label).build();
@@ -84,29 +96,58 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     @Override
     protected void updateSegmentStatus(JablotronServiceDetailSegment segment) {
         logger.debug("Segment id: {} and status: {}", segment.getSegmentId(), segment.getSegmentState());
+        String segmentId = segment.getSegmentId();
 
-        if (segment.getSegmentId().startsWith("STATE_") || segment.getSegmentId().startsWith("PGM_")) {
-            String name = segment.getSegmentId();
-            Channel channel = getThing().getChannel(name);
-            if (channel == null) {
-                logger.debug("Creating a new channel: {}", name);
-                createChannel(segment);
-            }
-            channel = getThing().getChannel(name);
-            if (channel != null) {
-                logger.debug("Updating channel: {} to value: {}", channel.getUID(), segment.getSegmentState());
-                State newState;
-                if (name.startsWith("PGM_")) {
-                    newState = "unset".equals(segment.getSegmentState()) ? OnOffType.OFF : OnOffType.ON;
-                } else {
-                    newState = new StringType(segment.getSegmentState());
-                }
-                updateState(channel.getUID(), newState);
-            } else {
-                logger.debug("The channel: {} still doesn't exist!", segment.getSegmentId());
-            }
+        if (segmentId.startsWith("STATE_") || segmentId.startsWith("PGM_")) {
+            processSection(segment);
+        } else if (segmentId.startsWith("THERMOMETER_")) {
+            processThermometer(segment);
         } else {
             logger.debug("Unknown segment received: {} with state: {}", segment.getSegmentId(), segment.getSegmentState());
+        }
+    }
+
+    private void processSection(JablotronServiceDetailSegment segment) {
+        String segmentId = segment.getSegmentId();
+        Channel channel = getThing().getChannel(segmentId);
+        if (channel == null) {
+            logger.debug("Creating a new channel: {}", segmentId);
+            createChannel(segment);
+        }
+        channel = getThing().getChannel(segmentId);
+        if (channel != null) {
+            logger.debug("Updating channel: {} to value: {}", channel.getUID(), segment.getSegmentState());
+            State newState;
+            if (segmentId.startsWith("PGM_")) {
+                newState = "unset".equals(segment.getSegmentState()) ? OnOffType.OFF : OnOffType.ON;
+            } else {
+                newState = new StringType(segment.getSegmentState());
+            }
+            updateState(channel.getUID(), newState);
+        } else {
+            logger.debug("The channel: {} still doesn't exist!", segmentId);
+        }
+    }
+
+    private void processThermometer(JablotronServiceDetailSegment segment) {
+        String segmentId = segment.getSegmentId();
+        Channel channel = getThing().getChannel(segmentId);
+        if (channel == null) {
+            logger.debug("Creating a new temperature channel: {}", segmentId);
+            createTempChannel(segmentId, segment.getSegmentName());
+        }
+        channel = getThing().getChannel(segmentId);
+        if (channel != null) {
+            List<JablotronServiceDetailSegmentInfo> infos = segment.getSegmentInfos();
+            if (infos.size() > 0) {
+                logger.debug("Found value: {} and type: {}", infos.get(0).getValue(), infos.get(0).getType());
+                DecimalType newState = new DecimalType(infos.get(0).getValue());
+                updateState(channel.getUID(), newState);
+            } else {
+                logger.debug("No segment information received");
+            }
+        } else {
+            logger.debug("The channel: {} still doesn't exist!", segmentId);
         }
     }
 

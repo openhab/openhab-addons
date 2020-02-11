@@ -7,8 +7,8 @@ https://www.jablotron.com/en/jablotron-products/alarms/
 
 * bridge (the bridge to your Jablonet cloud account)
 * JA-80/OASIS alarm
-* JA-100 alarm (no thermometer neither energy meter support)
-* JA-100+/JA-100F alarm (no thermometer neither energy meter support)
+* JA-100 alarm (thermometer support)
+* JA-100F alarm (no thermometer support)
  
 ## Discovery
 
@@ -34,7 +34,7 @@ All alarm things have this configuration:
 
 * refresh (thing channel refresh period in seconds, default is 60s)
 
-The Ja100/JA100+ alarm thing has one extra parameter
+The Ja100/JA100F alarm thing has one extra parameter
 
  * code (alarm master code, used for controlling sections & PGMs)
 
@@ -56,7 +56,7 @@ The OASIS alarm thing exposes these channels:
 * lastCheckTime (the time of the last checking)
 * alarm (the alarm trigger, might fire ALARM or TAMPER events)
 
-The JA100/JA100+ things have these channels:
+The JA100/JA100F things have these channels:
 
 * lastEvent (the text description of the last event)
 * lastEventClass (the class of the last event - arm, disarm, ...)
@@ -66,10 +66,10 @@ The JA100/JA100+ things have these channels:
 * lastCheckTime (the time of the last checking)
 * alarm (the alarm trigger, might fire ALARM or TAMPER events)
 
-all other channels for the JA100/+ alarms (sections, PGs) are dynamically created according to your configuration
+all other channels for the JA100/JA100F alarms (sections, PGs and thermometers for JA100) are dynamically created according to your configuration
 
 * The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA100 and 
-possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100+)
+possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100F)
 * The PGs (programmable gates) are represented by Switch channels 
 
 ## Full Example

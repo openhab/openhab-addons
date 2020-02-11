@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.jablotron.internal.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -32,6 +35,9 @@ public class JablotronServiceDetailSegment {
     @SerializedName("segment_name")
     String segmentName = "";
 
+    @SerializedName("segment_informations")
+    List<JablotronServiceDetailSegmentInfo> segmentInfos = new ArrayList<>();
+
     public String getSegmentId() {
         return segmentId;
     }
@@ -42,5 +48,9 @@ public class JablotronServiceDetailSegment {
 
     public String getSegmentName() {
         return segmentName;
+    }
+
+    public List<JablotronServiceDetailSegmentInfo> getSegmentInfos() {
+        return segmentInfos;
     }
 }
