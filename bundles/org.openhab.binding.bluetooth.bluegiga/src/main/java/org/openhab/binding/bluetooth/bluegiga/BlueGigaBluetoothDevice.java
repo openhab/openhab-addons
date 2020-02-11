@@ -54,9 +54,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     // BlueGiga needs to know the address type when connecting
     private BluetoothAddressType addressType;
 
-    // Used to correlate the scans so we get as much information as possible before calling the device "discovered"
-    private final Set<ScanResponseType> scanResponses = new HashSet<ScanResponseType>();
-
     // The dongle handler
     private final BlueGigaBridgeHandler bgHandler;
 
@@ -248,8 +245,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (connectionState == ConnectionState.DISCOVERING) {
-                scanResponses.add(scanEvent.getPacketType());
-
                 // Set our state to disconnected
                 connectionState = ConnectionState.DISCONNECTED;
                 connection = -1;
