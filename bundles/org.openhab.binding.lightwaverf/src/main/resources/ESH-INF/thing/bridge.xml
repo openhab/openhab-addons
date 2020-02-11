@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lightwaverf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Account -->
+	<bridge-type id="lightwaverfaccount">
+		<label>Lightwaverf Account</label>
+		<description>Lightwave Account</description>
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Lightwaverf Username</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Lightwaverf Password</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="true">
+				<label>Refresh Interval</label>
+				<description>Time between data refreshes</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="pollingGroupSize" type="integer" required="true">
+				<label>Number of Items to fetch at once</label>
+				<description>Number of Items to fetch at once</description>
+				<default>20</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
