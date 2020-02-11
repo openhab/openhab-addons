@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.linky.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LinkyTimeScale} enumerates all possible time scale
  * for API queries
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public enum LinkyTimeScale {
     HOURLY("urlCdcHeure"),
     DAILY("urlCdcJour"),

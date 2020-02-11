@@ -18,7 +18,10 @@ import static org.openhab.binding.linky.internal.model.LinkyTimeScale.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.Base64;
 import java.util.concurrent.ScheduledFuture;
@@ -93,13 +96,16 @@ public class LinkyHandler extends BaseThingHandler {
 
         scheduler.schedule(() -> {
             if (login()) {
-                refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                    updateLinkyDailyData();
-                    updateLinkyMonthlyData();
-                    updateLinkyYearlyData();
-                }, 0, config.refreshInterval, TimeUnit.MINUTES);
+                updateData();
             }
         }, 0, TimeUnit.SECONDS);
+
+        // Refresh data twice a day at approximatively 3am and 3pm
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime nextUpdateTime = now.plusDays(1).with(ChronoField.HOUR_OF_DAY, 3)
+                .truncatedTo(ChronoUnit.HOURS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, ChronoUnit.MINUTES.between(now, nextUpdateTime),
+                720, TimeUnit.MINUTES);
     }
 
     private boolean login() {
@@ -142,11 +148,20 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     /**
+     * Request new data and updates channels
+     */
+    private void updateData() {
+        updateDailyData();
+        updateMonthlyData();
+        updateYearlyData();
+    }
+
+    /**
      * Request new dayly/weekly data and updates channels
      */
-    private synchronized void updateLinkyDailyData() {
+    private synchronized void updateDailyData() {
         if (!isLinked(YESTERDAY) && !isLinked(LAST_WEEK) && !isLinked(THIS_WEEK)) {
-            logger.debug("updateLinkyDailyData ignored because no linked channel");
+            logger.debug("updateDailyData ignored because no linked channel");
             return;
         }
 
@@ -193,9 +208,9 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new monthly data and updates channels
      */
-    private synchronized void updateLinkyMonthlyData() {
+    private synchronized void updateMonthlyData() {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
-            logger.debug("updateLinkyMonthlyData ignored because no linked channel");
+            logger.debug("updateMonthlyData ignored because no linked channel");
             return;
         }
 
@@ -217,9 +232,9 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new yearly data and updates channels
      */
-    private synchronized void updateLinkyYearlyData() {
+    private synchronized void updateYearlyData() {
         if (!isLinked(LAST_YEAR) && !isLinked(THIS_YEAR)) {
-            logger.debug("updateLinkyYearlyData ignored because no linked channel");
+            logger.debug("updateYearlyData ignored because no linked channel");
             return;
         }
 
@@ -319,15 +334,15 @@ public class LinkyHandler extends BaseThingHandler {
                 case YESTERDAY:
                 case LAST_WEEK:
                 case THIS_WEEK:
-                    updateLinkyDailyData();
+                    updateDailyData();
                     break;
                 case LAST_MONTH:
                 case THIS_MONTH:
-                    updateLinkyMonthlyData();
+                    updateMonthlyData();
                     break;
                 case LAST_YEAR:
                 case THIS_YEAR:
-                    updateLinkyYearlyData();
+                    updateYearlyData();
                     break;
                 default:
                     break;
