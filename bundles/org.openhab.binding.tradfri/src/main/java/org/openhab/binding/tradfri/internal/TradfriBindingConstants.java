@@ -68,14 +68,14 @@ public class TradfriBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections.singleton(GATEWAY_TYPE_UID);
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Stream
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream(),
                     SUPPORTED_PLUG_TYPES_UIDS.stream(), SUPPORTED_BLINDS_TYPES_UIDS.stream())
-            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet());
+            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(SUPPORTED_BRIDGE_TYPES_UIDS.stream(), SUPPORTED_DEVICE_TYPES_UIDS.stream())
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.concat(SUPPORTED_BRIDGE_TYPES_UIDS.stream(), SUPPORTED_DEVICE_TYPES_UIDS.stream())
+                    .collect(Collectors.toSet()));
 
     // List of all Channel IDs
     public static final String CHANNEL_POWER = "power";

@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,12 +59,12 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService
 
     private static final String REMOTE_CONTROLLER_MODEL = "TRADFRI remote control";
 
-    private static final List<String> COLOR_TEMP_MODELS = Collections
-            .unmodifiableList(Stream
+    private static final Set<String> COLOR_TEMP_MODELS = Collections
+            .unmodifiableSet(Stream
                     .of("TRADFRI bulb E27 WS opal 980lm", "TRADFRI bulb E27 WS clear 950lm",
                             "TRADFRI bulb GU10 WS 400lm", "TRADFRI bulb E14 WS opal 400lm", "FLOALT panel WS 30x30",
                             "FLOALT panel WS 60x60", "FLOALT panel WS 30x90", "TRADFRI bulb E12 WS opal 400lm")
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toSet()));
 
     private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
