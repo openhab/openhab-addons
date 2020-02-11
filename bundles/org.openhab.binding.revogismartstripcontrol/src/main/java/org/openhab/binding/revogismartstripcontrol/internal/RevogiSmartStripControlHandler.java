@@ -14,8 +14,13 @@ package org.openhab.binding.revogismartstripcontrol.internal;
 
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -39,6 +44,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
     private final StatusService statusService;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable RevogiSmartStripControlConfiguration config;
 
@@ -82,14 +88,12 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
-        scheduler.execute(() -> {
-            Status status = statusService.queryStatus(config.getSerialNumber());
-            if (status.isOnline()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Retrieved status code: " + status.getResponseCode());
-            }
-        });
+        scheduler.execute(this::updateStripInformation);
+        Runnable runnable = RevogiSmartStripControlHandler.this::updateStripInformation;
+
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);
+        }
 
         logger.debug("Finished initializing!");
 
@@ -98,5 +102,29 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
+    }
+
+    private void updateStripInformation() {
+        Status status = statusService.queryStatus(config.getSerialNumber());
+        if (status.isOnline()) {
+            updateStatus(ThingStatus.ONLINE);
+            for (int i = 0; i < status.getSwitchValue().size(); i++) {
+                int plugNumber = i + 1;
+                updateState("plug" + plugNumber + "#switch", OnOffType.valueOf(status.getSwitchValue().get(i).toString()));
+                updateState("plug" + plugNumber + "#watt", new DecimalType(status.getWatt().get(i) / 1000f));
+                updateState("plug" + plugNumber + "#amp", new DecimalType(status.getAmp().get(i) / 1000));
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Retrieved status code: " + status.getResponseCode());
+        }
     }
 }
