@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The {@link EnedisInfo} is responsible for holding values
- * returned by Enedis API calls
+ * The {@link LinkyConsumptionData} is responsible for holding values
+ * returned by API calls
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class EnedisInfo {
+public class LinkyConsumptionData {
     private Etat etat;
     private Graphe graphe;
 

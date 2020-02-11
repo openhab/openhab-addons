@@ -13,12 +13,12 @@
 package org.openhab.binding.linky.internal.model;
 
 /**
- * The {@link EnedisTimeScale} enumerates all possible time scale
- * for Enedis API queries
+ * The {@link LinkyTimeScale} enumerates all possible time scale
+ * for API queries
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public enum EnedisTimeScale {
+public enum LinkyTimeScale {
     HOURLY("urlCdcHeure"),
     DAILY("urlCdcJour"),
     MONTHLY("urlCdcMois"),
@@ -26,7 +26,7 @@ public enum EnedisTimeScale {
 
     private String id;
 
-    private EnedisTimeScale(String id) {
+    private LinkyTimeScale(String id) {
         this.id = id;
     }
 

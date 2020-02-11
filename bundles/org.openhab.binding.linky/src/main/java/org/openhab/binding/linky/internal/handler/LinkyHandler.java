@@ -13,7 +13,7 @@
 package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
-import static org.openhab.binding.linky.internal.model.EnedisTimeScale.*;
+import static org.openhab.binding.linky.internal.model.LinkyTimeScale.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,8 +38,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
-import org.openhab.binding.linky.internal.model.EnedisInfo;
-import org.openhab.binding.linky.internal.model.EnedisTimeScale;
+import org.openhab.binding.linky.internal.model.LinkyConsumptionData;
+import org.openhab.binding.linky.internal.model.LinkyTimeScale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class LinkyHandler extends BaseThingHandler {
     private static final String API_BASE_URI = "https://espace-client-particuliers.enedis.fr/group/espace-particuliers/suivi-de-consommation";
     // private static final String DATA_BODY_BUILDER =
     // "p_p_id=lincspartdisplaycdc_WAR_lincspartcdcportlet&p_p_lifecycle=2&p_p_resource_id=%s&_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateDebut=%s&_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateFin=%s";
-    private static final DateTimeFormatter ENEDIS_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     // private static final int HTTP_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
     private static final Builder LOGIN_BODY_BUILDER = new FormBody.Builder().add("encoded", "true")
             .add("gx_charset", "UTF-8").add("SunQueryParamsString",
@@ -130,7 +130,7 @@ public class LinkyHandler extends BaseThingHandler {
             // stream.close();
 
             // Do a first call to get data; this first call will fail with code 302
-            getEnedisInfo(DAILY, LocalDate.now(), LocalDate.now(), false);
+            getConsumptionData(DAILY, LocalDate.now(), LocalDate.now(), false);
 
             updateStatus(ThingStatus.ONLINE);
             return true;
@@ -156,7 +156,7 @@ public class LinkyHandler extends BaseThingHandler {
         double thisWeek = -1;
         double yesterday = -1;
         LocalDate rangeStart = today.minusDays(13);
-        EnedisInfo result = getEnedisInfo(DAILY, rangeStart, today, true);
+        LinkyConsumptionData result = getConsumptionData(DAILY, rangeStart, today, true);
         if (result != null && result.success()) {
             int jump = result.getDecalage();
             while (rangeStart.getDayOfWeek() != weekFields.getFirstDayOfWeek()) {
@@ -203,11 +203,12 @@ public class LinkyHandler extends BaseThingHandler {
 
         double lastMonth = -1;
         double thisMonth = -1;
-        EnedisInfo result = getEnedisInfo(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
+        LinkyConsumptionData result = getConsumptionData(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
         if (result != null && result.success()) {
-            lastMonth = result.getData().stream().filter(EnedisInfo.Data::isPositive).findFirst().get().valeur;
-            thisMonth = result.getData().stream().filter(EnedisInfo.Data::isPositive).reduce((first, second) -> second)
+            lastMonth = result.getData().stream().filter(LinkyConsumptionData.Data::isPositive).findFirst()
                     .get().valeur;
+            thisMonth = result.getData().stream().filter(LinkyConsumptionData.Data::isPositive)
+                    .reduce((first, second) -> second).get().valeur;
         }
         updateKwhChannel(LAST_MONTH, lastMonth);
         updateKwhChannel(THIS_MONTH, thisMonth);
@@ -226,7 +227,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         double thisYear = -1;
         double lastYear = -1;
-        EnedisInfo result = getEnedisInfo(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
+        LinkyConsumptionData result = getConsumptionData(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
         if (result != null && result.success()) {
             int elementQuantity = result.getData().size();
             thisYear = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : -1;
@@ -242,16 +243,17 @@ public class LinkyHandler extends BaseThingHandler {
                 consumption != -1 ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR) : UnDefType.UNDEF);
     }
 
-    private @Nullable EnedisInfo getEnedisInfo(EnedisTimeScale timeScale, LocalDate from, LocalDate to, boolean reLog) {
-        logger.debug("getEnedisInfo {}", timeScale);
+    private @Nullable LinkyConsumptionData getConsumptionData(LinkyTimeScale timeScale, LocalDate from, LocalDate to,
+            boolean reLog) {
+        logger.debug("getConsumptionData {}", timeScale);
 
-        EnedisInfo result = null;
+        LinkyConsumptionData result = null;
         boolean tryRelog = false;
 
         FormBody formBody = new FormBody.Builder().add("p_p_id", "lincspartdisplaycdc_WAR_lincspartcdcportlet")
                 .add("p_p_lifecycle", "2").add("p_p_resource_id", timeScale.getId())
-                .add("_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateDebut", from.format(ENEDIS_DATE_FORMAT))
-                .add("_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateFin", to.format(ENEDIS_DATE_FORMAT)).build();
+                .add("_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateDebut", from.format(API_DATE_FORMAT))
+                .add("_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateFin", to.format(API_DATE_FORMAT)).build();
 
         Request requestData = new Request.Builder().url(API_BASE_URI).post(formBody).build();
         try (Response response = client.newCall(requestData).execute()) {
@@ -265,31 +267,31 @@ public class LinkyHandler extends BaseThingHandler {
                 String body = (response.body() != null) ? response.body().string() : null;
                 logger.debug("Response status {} {} : {}", response.code(), response.message(), body);
                 if (body != null && !body.isEmpty()) {
-                    result = GSON.fromJson(body, EnedisInfo.class);
+                    result = GSON.fromJson(body, LinkyConsumptionData.class);
                 }
             }
             response.close();
         } catch (IOException e) {
-            logger.debug("Exception calling Enedis API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
+            logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         } catch (JsonSyntaxException e) {
             logger.debug("Exception while converting JSON response : {}", e.getMessage());
         }
         if (tryRelog && login()) {
-            result = getEnedisInfo(timeScale, from, to, false);
+            result = getConsumptionData(timeScale, from, to, false);
         }
-        // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(ENEDIS_DATE_FORMAT),
-        // to.format(ENEDIS_DATE_FORMAT));
+        // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(API_DATE_FORMAT),
+        // to.format(API_DATE_FORMAT));
         // InputStream stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
         // logger.debug("POST {} requestContent {}", API_BASE_URI, requestContent);
         // try {
         // String jsonResponse = HttpUtil.executeUrl("POST", API_BASE_URI, stream, "application/x-www-form-urlencoded",
         // HTTP_DEFAULT_TIMEOUT_MS);
         // if (jsonResponse != null) {
-        // result = GSON.fromJson(jsonResponse, EnedisInfo.class);
+        // result = GSON.fromJson(jsonResponse, LinkyConsumptionData.class);
         // }
         // } catch (IOException e) {
-        // logger.debug("Exception calling Enedis API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
+        // logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         // }
         // try {
