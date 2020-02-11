@@ -154,6 +154,15 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     /**
+     * Request new data and updates channels
+     */
+    private void updateData() {
+        updateDailyData();
+        updateMonthlyData();
+        updateYearlyData();
+    }
+
+    /**
      * Request new dayly/weekly data and updates channels
      */
     private void updateData() {
@@ -225,9 +234,9 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new monthly data and updates channels
      */
-    private synchronized void updateLinkyMonthlyData() {
+    private synchronized void updateMonthlyData() {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
-            logger.debug("updateLinkyMonthlyData ignored because no linked channel");
+            logger.debug("updateMonthlyData ignored because no linked channel");
             return;
         }
 
