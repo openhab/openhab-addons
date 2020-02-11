@@ -112,7 +112,7 @@ public class LinkyHandler extends BaseThingHandler {
                 REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
     }
 
-    private boolean login() {
+    private synchronized boolean login() {
         logger.debug("login");
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
