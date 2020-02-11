@@ -341,6 +341,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 device = new BlueGigaBluetoothDevice(this, new BluetoothAddress(scanEvent.getSender()),
                         scanEvent.getAddressType());
                 devices.put(sender, device);
+                deviceDiscovered(device);
             }
 
             return;
