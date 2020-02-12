@@ -15,7 +15,6 @@ package org.openhab.binding.tradfri.internal.discovery;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -54,11 +53,11 @@ public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * gw:001122334455, gw-001122334455, gw:00-11-22-33-44-55, gw-001122334455ServiceName
      *
      */
-    private final Pattern GATEWAY_NAME_REGEX_PATTERN = Pattern.compile("(gw[:-]{1}([a-f0-9]{2}[-]?){6}){1}");
+    private static final Pattern GATEWAY_NAME_REGEX_PATTERN = Pattern.compile("(gw[:-]{1}([a-f0-9]{2}[-]?){6}){1}");
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(GATEWAY_TYPE_UID);
+        return SUPPORTED_BRIDGE_TYPES_UIDS;
     }
 
     @Override

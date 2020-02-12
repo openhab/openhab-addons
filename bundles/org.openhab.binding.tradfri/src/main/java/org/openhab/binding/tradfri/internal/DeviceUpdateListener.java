@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 import com.google.gson.JsonObject;
@@ -22,6 +23,7 @@ import com.google.gson.JsonObject;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public interface DeviceUpdateListener {
 
     /**

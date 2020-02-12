@@ -16,14 +16,15 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
-import org.openhab.binding.tradfri.internal.model.TradfriVersion;
 
 /**
  * Tests for {@link TradfriVersion}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class TradfriVersionTest {
 
     private static final int LESS_THAN = -1;
