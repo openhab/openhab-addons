@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.ALL_PLUGS;
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
 
 /**
@@ -117,14 +118,30 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         Status status = statusService.queryStatus(config.getSerialNumber());
         if (status.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
-            for (int i = 0; i < status.getSwitchValue().size(); i++) {
-                int plugNumber = i + 1;
-                updateState("plug" + plugNumber + "#switch", OnOffType.from(status.getSwitchValue().get(i).toString()));
-                updateState("plug" + plugNumber + "#watt", new DecimalType(status.getWatt().get(i) / 1000f));
-                updateState("plug" + plugNumber + "#amp", new DecimalType(status.getAmp().get(i) / 1000f));
-            }
+            handleAllPlugsInformation(status);
+            handleSinglePlugInformation(status);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Retrieved status code: " + status.getResponseCode());
+        }
+    }
+
+    private void handleSinglePlugInformation(Status status) {
+        for (int i = 0; i < status.getSwitchValue().size(); i++) {
+            int plugNumber = i + 1;
+            updateState("plug" + plugNumber + "#switch", OnOffType.from(status.getSwitchValue().get(i).toString()));
+            updateState("plug" + plugNumber + "#watt", new DecimalType(status.getWatt().get(i) / 1000f));
+            updateState("plug" + plugNumber + "#amp", new DecimalType(status.getAmp().get(i) / 1000f));
+        }
+    }
+
+    private void handleAllPlugsInformation(Status status) {
+        long onCount = status.getSwitchValue().stream()
+                .filter(statusValue -> statusValue == 1)
+                .count();
+        if (onCount == 6) {
+            updateState(ALL_PLUGS, OnOffType.ON);
+        } else {
+            updateState(ALL_PLUGS, OnOffType.OFF);
         }
     }
 }
