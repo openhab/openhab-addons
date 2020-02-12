@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lightwaverf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="h21">
+		<label>Link Plus</label>
+		<description></description>
+		<category></category>
+	<channels>
+		<channel id="currentTime" typeId="currentTime" />
+		<channel id="buttonPress" typeId="buttonPress" />
+		<channel id="time" typeId="time" />
+		<channel id="date" typeId="date" />
+		<channel id="monthArray" typeId="monthArray" />
+		<channel id="weekdayArray" typeId="weekdayArray" />
+		<channel id="locationLongitude" typeId="locationLongitude" />
+		<channel id="locationLatitude" typeId="locationLatitude" />
+		<channel id="duskTime" typeId="duskTime" />
+		<channel id="dawnTime" typeId="dawnTime" />
+		<channel id="day" typeId="day" />
+		<channel id="month" typeId="month" />
+		<channel id="year" typeId="year" />
+		<channel id="weekday" typeId="weekday" />
+		<channel id="timeZone" typeId="timeZone" />
+		<channel id="rgbColor" typeId="rgbColor" />
+		<channel id="identify" typeId="identify" />
+	</channels>
+</channel-group-type>
+
+	<channel-group-type id="t11">
+		<label>Thermostat</label>
+		<description></description>
+		<category></category>
+	<channels>
+		<channel id="temperature" typeId="temperature" />
+		<channel id="targetTemperature" typeId="targetTemperature" />
+		<channel id="valveLevel" typeId="valveLevel" />
+		<channel id="heatState" typeId="heatState" />
+		<channel id="batteryLevel" typeId="batteryLevel" />
+		<channel id="rssi" typeId="rssi" />
+		<channel id="identify" typeId="identify" />
+		<channel id="diagnostics" typeId="diagnostics" />
+		<channel id="callForHeat" typeId="callForHeat" />
+	</channels>
+</channel-group-type>
+
+	<channel-group-type id="e11">
+		<label>Energy Monitor</label>
+		<description></description>
+		<category></category>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+			<channel id="identify" typeId="identify" />
+			<channel id="rssi" typeId="rssi" />
+		</channels>
+	</channel-group-type>
+
+
+	<channel-group-type id="s21">
+		<label>Channel 1</label>
+		<description></description>
+		<category>PowerOutlet</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="outletInUse" typeId="outletInUse" />
+			<channel id="protection" typeId="protection" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+			<channel id="identify" typeId="identify" />
+			<channel id="reset" typeId="reset" />
+			<channel id="upgrade" typeId="upgrade" />
+			<channel id="diagnostics" typeId="diagnostics" />
+			<channel id="periodOfBroadcast" typeId="periodOfBroadcast" />
+			<channel id="rgbColor" typeId="rgbColor" />
+			<channel id="voltage" typeId="voltage" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="s22">
+		<label>Channel 2</label>
+		<description></description>
+		<category>PowerOutlet</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="outletInUse" typeId="outletInUse" />
+			<channel id="protection" typeId="protection" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="s11">
+		<label>Channel 1</label>
+		<description></description>
+		<category>PowerOutlet</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="identify" typeId="identify" />
+			<channel id="protection" typeId="protection" />
+
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="d21">
+		<label>Channel 1</label>
+		<description></description>
+		<category>WallSwitch</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="dimLevel" typeId="dimLevel" />
+			<channel id="dimSetup" typeId="dimSetup" />
+			<channel id="bulbSetup" typeId="bulbSetup" />
+			<channel id="protection" typeId="protection" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+			<channel id="identify" typeId="identify" />
+			<channel id="reset" typeId="reset" />
+			<channel id="upgrade" typeId="upgrade" />
+			<channel id="diagnostics" typeId="diagnostics" />
+			<channel id="periodOfBroadcast" typeId="periodOfBroadcast" />
+			<channel id="rgbColor" typeId="rgbColor" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="d22">
+		<label>Channel 2</label>
+		<description></description>
+		<category>WallSwitch</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="dimLevel" typeId="dimLevel" />
+			<channel id="dimSetup" typeId="dimSetup" />
+			<channel id="protection" typeId="protection" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+			<channel id="bulbSetup" typeId="bulbSetup" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="d23">
+		<label>Channel 2</label>
+		<description></description>
+		<category>WallSwitch</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="dimLevel" typeId="dimLevel" />
+			<channel id="dimSetup" typeId="dimSetup" />
+			<channel id="protection" typeId="protection" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+			<channel id="bulbSetup" typeId="bulbSetup" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="d24">
+		<label>Channel 2</label>
+		<description></description>
+		<category>WallSwitch</category>
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="dimLevel" typeId="dimLevel" />
+			<channel id="dimSetup" typeId="dimSetup" />
+			<channel id="protection" typeId="protection" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+			<channel id="bulbSetup" typeId="bulbSetup" />
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

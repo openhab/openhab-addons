@@ -1,0 +1,35 @@
+Version 1.0.7
+Fixed bug with Update listener not reflecting the correct polling time
+Removed Update Listener additional Thread as was unstable
+Added synchronization lock for handle command - status will now stay in sync
+
+
+Version 1.0.6
+Battery Level Fix
+
+
+Version 1.0.5
+Minor bug fixes
+
+
+Version 1.0.4
+Disabled discovery for already added devices
+
+
+Version 1.0.3
+Fixed RGBColor brightness not supported
+
+
+Version 1.0.2
+Updated Readme
+Changed linkplus item types to correct types - see readme for channel types
+
+
+Version 1.0.1
+Fixed RGB Color Item to display / send the correct value
+Added http dependency
+Added properties to thing: Available Channels.  Lists all available channels on the thing. (helpful for adding new device types)
+Fixed Channel number in thing properties
+*To clear existing properties you will need to clear the cache
+
+

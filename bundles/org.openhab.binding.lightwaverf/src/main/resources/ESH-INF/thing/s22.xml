@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lightwaverf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="s22">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="lightwaverfaccount" />
+		</supported-bridge-type-refs>
+		<label>Generation 2 Double Socket</label>
+		<description>Generation 2 Double Socket</description>
+		<channel-groups>
+			<channel-group id="1" typeId="s21" />
+			<channel-group id="2" typeId="s22" />
+		</channel-groups>
+		<properties>
+			<property name="Device ID"></property>
+			<property name="Name"></property>
+			<property name="Device"></property>
+			<property name="Type"></property>
+			<property name="Description"></property>
+			<property name="Product"></property>
+			<property name="Product Code"></property>
+			<property name="Category"></property>
+			<property name="Generation"></property>
+			<property name="Channels"></property>
+		</properties>
+		<config-description>
+			<parameter name="sdId" type="text" required="true">
+				<label>Simplified Device ID</label>
+				<description>Simplified DeviceID of the Lightwave Item</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
