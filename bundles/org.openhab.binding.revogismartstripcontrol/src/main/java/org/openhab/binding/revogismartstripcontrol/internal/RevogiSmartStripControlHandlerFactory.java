@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
+import org.openhab.binding.revogismartstripcontrol.internal.api.SwitchService;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.osgi.service.component.annotations.Component;
@@ -52,7 +53,9 @@ public class RevogiSmartStripControlHandlerFactory extends BaseThingHandlerFacto
 
         if (SMART_STRIP_THING_TYPE.equals(thingTypeUID)) {
             UdpSenderService udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
-            return new RevogiSmartStripControlHandler(thing, new StatusService(udpSenderService));
+            StatusService statusService = new StatusService(udpSenderService);
+            SwitchService switchService = new SwitchService(udpSenderService);
+            return new RevogiSmartStripControlHandler(thing, statusService, switchService);
         }
 
         return null;
