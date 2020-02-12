@@ -113,7 +113,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         Runnable runnable = RevogiSmartStripControlHandler.this::updateStripInformation;
 
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.getPollInterval(), TimeUnit.SECONDS);
         }
 
         logger.debug("Finished initializing!");

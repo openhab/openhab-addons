@@ -21,8 +21,14 @@ public class RevogiSmartStripControlConfiguration {
 
     public  String serialNumber;
 
+    public int pollInterval;
+
     public String getSerialNumber() {
         return serialNumber;
+    }
+
+    public int getPollInterval() {
+        return pollInterval;
     }
 
 }
