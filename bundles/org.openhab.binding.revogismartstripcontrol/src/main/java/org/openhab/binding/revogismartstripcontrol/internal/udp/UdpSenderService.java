@@ -92,7 +92,7 @@ public class UdpSenderService {
             }
             catch (SocketTimeoutException e) {
                 timeoutCounter++;
-                logger.warn("Socket receive time no. {}", timeoutCounter);
+                logger.info("Socket receive time no. {}", timeoutCounter);
                 try {
                     TimeUnit.MILLISECONDS.sleep(timeoutCounter * 800L);
                 } catch (InterruptedException ex) {
