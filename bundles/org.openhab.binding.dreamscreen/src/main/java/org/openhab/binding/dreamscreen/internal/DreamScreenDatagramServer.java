@@ -145,10 +145,10 @@ class DreamScreenDatagramServer {
                 final int off = data.getOffset();
                 final int len = data.getLength();
 
-                logger.info("DreamScreen message: {} {}-{}:{}", data.getAddress(), off, len, buf);
+                logger.debug("DreamScreen message: {} {}-{}:{}", data.getAddress(), off, len, buf);
 
                 if (isValidStateMsg(buf, off, len) && isDreamScreen(buf, off, len)) {
-                    logger.info("Received DreamScreen message from {}", data.getAddress());
+                    logger.debug("Received DreamScreen message from {}", data.getAddress());
                     refreshDreamScreen(buf, off, len, data.getAddress());
                 }
             } catch (IOException ioe) {
