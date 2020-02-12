@@ -53,8 +53,14 @@ public abstract class TradfriDeviceData {
     public TradfriDeviceData(String attributesNodeName, JsonElement json) {
         try {
             root = json.getAsJsonObject();
-            array = root.getAsJsonArray(attributesNodeName);
-            attributes = array.get(0).getAsJsonObject();
+            if (root.has(attributesNodeName)) {
+                array = root.getAsJsonArray(attributesNodeName);
+                attributes = array.get(0).getAsJsonObject();
+            } else {
+                array = new JsonArray();
+                attributes = new JsonObject();
+                array.add(attributes);
+            }
             generalInfo = root.getAsJsonObject(DEVICE);
         } catch (JsonSyntaxException e) {
             logger.warn("JSON error: {}", e.getMessage(), e);
