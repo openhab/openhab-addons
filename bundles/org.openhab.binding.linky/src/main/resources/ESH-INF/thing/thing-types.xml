@@ -29,12 +29,6 @@
 				<context>password</context>
 				<description>Your Enedis Password</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" min="60" max="1440">
-				<label>Refresh Interval</label>
-				<description>The refresh interval to poll Enedis (in minutes).</description>
-				<default>60</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</thing-type>
 	

@@ -97,11 +97,7 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("Initializing Linky handler.");
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
 
-        scheduler.schedule(() -> {
-            if (login()) {
-                updateData();
-            }
-        }, 0, TimeUnit.SECONDS);
+        scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
 
         // Refresh data twice a day at approximatively 3am and 3pm
         final LocalDateTime now = LocalDateTime.now();
@@ -165,7 +161,6 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateDailyData() {
         if (!isLinked(YESTERDAY) && !isLinked(LAST_WEEK) && !isLinked(THIS_WEEK)) {
-            logger.debug("updateDailyData ignored because no linked channel");
             return;
         }
 
@@ -193,10 +188,10 @@ public class LinkyHandler extends BaseThingHandler {
                 if (consumption > 0) {
                     if (rangeStart.get(weekFields.weekOfWeekBasedYear()) == lastWeekNumber) {
                         lastWeek += consumption;
-                        logger.debug("Consumption at index {} added to last week: {}", jump, consumption);
+                        logger.trace("Consumption at index {} added to last week: {}", jump, consumption);
                     } else {
                         thisWeek += consumption;
-                        logger.debug("Consumption at index {} added to current week: {}", jump, consumption);
+                        logger.trace("Consumption at index {} added to current week: {}", jump, consumption);
                     }
                     yesterday = consumption;
                 }
@@ -214,7 +209,6 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateMonthlyData() {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
-            logger.debug("updateMonthlyData ignored because no linked channel");
             return;
         }
 
@@ -238,7 +232,6 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateYearlyData() {
         if (!isLinked(LAST_YEAR) && !isLinked(THIS_YEAR)) {
-            logger.debug("updateYearlyData ignored because no linked channel");
             return;
         }
 
@@ -312,6 +305,8 @@ public class LinkyHandler extends BaseThingHandler {
         // } catch (IOException e) {
         // logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        // } catch (JsonSyntaxException e) {
+        // logger.debug("Exception while converting JSON response : {}", e.getMessage());
         // }
         // try {
         // stream.close();

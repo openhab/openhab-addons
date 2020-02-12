@@ -21,5 +21,4 @@ package org.openhab.binding.linky.internal;
 public class LinkyConfiguration {
     public String username;
     public String password;
-    public int refreshInterval;
 }

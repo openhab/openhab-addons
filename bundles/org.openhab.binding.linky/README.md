@@ -23,25 +23,22 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has the following configuration parameters:
 
-| Parameter       | Description                                                             |
-|-----------------|-------------------------------------------------------------------------|
-| username        | Your Enedis platform username.                                          |
-| password        | Your Enedis platform password.                                          |
-| refreshInterval | Refresh interval in minutes. Optional, the default value is 60 minutes. |
+| Parameter       | Description                    |
+|-----------------|--------------------------------|
+| username        | Your Enedis platform username. |
+| password        | Your Enedis platform password. |
 
 ## Channels
 
 The information that is retrieved is available as these channels:
 
-| Channel ID | Item Type     | Description                  |
-|------------|---------------|------------------------------|
-| lastHour   | Number:Energy | Last hour energy usage       |
-| today      | Number:Energy | Today's energy usage         |
-| yesterday  | Number:Energy | Yesterdays hour energy usage |
-| thisWeek   | Number:Energy | This week hour energy usage  |
-| lastWeek   | Number:Energy | Last week hour energy usage  |
-| thisMonth  | Number:Energy | This month hour energy usage |
-| lastMonth  | Number:Energy | Last month hour energy usage |
-| thisYear   | Number:Energy | Current year energy usage    |
-| lastYear   | Number:Energy | Last year energy usage       |
+| Channel ID        | Item Type     | Description                |
+|-------------------|---------------|----------------------------|
+| daily#yesterday   | Number:Energy | Yesterday energy usage     |
+| weekly#thisWeek   | Number:Energy | Current week energy usage  |
+| weekly#lastWeek   | Number:Energy | Last week energy usage     |
+| monthly#thisMonth | Number:Energy | Current month energy usage |
+| monthly#lastMonth | Number:Energy | Last month energy usage    |
+| yearly#thisYear   | Number:Energy | Current year energy usage  |
+| yearly#lastYear   | Number:Energy | Last year energy usage     |
 
