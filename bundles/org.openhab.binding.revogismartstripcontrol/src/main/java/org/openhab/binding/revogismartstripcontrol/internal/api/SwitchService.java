@@ -1,7 +1,6 @@
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +16,6 @@ public class SwitchService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UdpSenderService udpSenderService;
-
-    public SwitchService() {
-        udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
-    }
 
     public SwitchService(UdpSenderService udpSenderService) {
         this.udpSenderService = udpSenderService;
