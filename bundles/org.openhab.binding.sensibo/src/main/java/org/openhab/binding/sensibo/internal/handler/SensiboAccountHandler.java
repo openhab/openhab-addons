@@ -40,6 +40,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.sensibo.internal.SensiboCommunicationException;
+import org.openhab.binding.sensibo.internal.SensiboConfigurationException;
+import org.openhab.binding.sensibo.internal.SensiboException;
 import org.openhab.binding.sensibo.internal.client.RequestLogger;
 import org.openhab.binding.sensibo.internal.config.SensiboAccountConfiguration;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
@@ -130,10 +132,12 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 initPolling();
                 logger.debug("Initialization of Sensibo account completed successfully for {}", config);
-            } catch (final SensiboCommunicationException e) {
+            } catch (final SensiboException e) {
                 logger.info("Error initializing Sensibo data: {}", e.getMessage());
                 model = new SensiboModel(0); // Empty model
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE,
+                        e instanceof SensiboConfigurationException ? ThingStatusDetail.CONFIGURATION_ERROR
+                                : ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error fetching initial data: " + e.getMessage());
                 // Reschedule init
                 scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
@@ -156,7 +160,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                 config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-    protected SensiboModel refreshModel() throws SensiboCommunicationException {
+    protected SensiboModel refreshModel() throws SensiboException {
         final SensiboModel model = new SensiboModel(System.currentTimeMillis());
 
         final GetPodsRequest getPodsRequest = new GetPodsRequest();
@@ -178,7 +182,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     }
 
     private <T> T sendRequest(final Request request, final AbstractRequest req, final Type responseType)
-            throws SensiboCommunicationException {
+            throws SensiboException {
         try {
             final ContentResponse contentResponse = request.send();
             final String responseJson = contentResponse.getContentAsString();
@@ -192,7 +196,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                     throw new SensiboCommunicationException(req, overallStatus);
                 }
             } else if (contentResponse.getStatus() == HttpStatus.FORBIDDEN_403) {
-                throw new SensiboCommunicationException("Invalid API key");
+                throw new SensiboConfigurationException("Invalid API key");
             } else {
                 throw new SensiboCommunicationException(
                         "Error sending request to Sensibo server. Server responded with " + contentResponse.getStatus()
@@ -221,9 +225,11 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                 model = refreshModel();
                 updateThingStatuses();
                 updateStatus(ThingStatus.ONLINE);
-            } catch (SensiboCommunicationException e) {
+            } catch (SensiboException e) {
                 logger.debug("Error updating Sensibo model do to {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE,
+                        e instanceof SensiboConfigurationException ? ThingStatusDetail.CONFIGURATION_ERROR
+                                : ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     }
@@ -290,7 +296,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
                 model.updateAcState(macAddress, new AcState(response.acState));
                 handler.updateState(model);
-            } catch (SensiboCommunicationException e) {
+            } catch (SensiboException e) {
                 logger.debug("Error setting ac state for {}", macAddress, e);
             }
         });
@@ -316,7 +322,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                     sendRequest(request, setTimerRequest, new TypeToken<SetTimerReponse>() {
                     }.getType());
                 }
-            } catch (SensiboCommunicationException e) {
+            } catch (SensiboException e) {
                 logger.debug("Error setting timer for {}", macAddress, e);
             }
         });

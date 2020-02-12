@@ -82,7 +82,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     private final Logger logger = LoggerFactory.getLogger(SensiboSkyHandler.class);
     private SensiboSkyConfiguration config;
     private final Map<ChannelTypeUID, ChannelType> generatedChannelTypes = new HashMap<>();
-    private ThingStatus reportedStatus = ThingStatus.UNKNOWN;
 
     public SensiboSkyHandler(final Thing thing) {
         super(thing);
@@ -211,15 +210,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        // Do not report status if not really changed
-        if (reportedStatus != status) {
-            super.updateStatus(status);
-            reportedStatus = status;
-        }
     }
 
     @Override

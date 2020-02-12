@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.sensibo", service = ThingHandlerFactory.class)
 public class SensiboHandlerFactory extends BaseThingHandlerFactory {
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 

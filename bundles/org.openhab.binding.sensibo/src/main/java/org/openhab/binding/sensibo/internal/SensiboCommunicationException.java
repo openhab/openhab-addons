@@ -21,7 +21,7 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
  * @author Arne Seime - Initial contribution
  */
 @NonNullByDefault
-public class SensiboCommunicationException extends Exception {
+public class SensiboCommunicationException extends SensiboException {
     private static final long serialVersionUID = 1L;
 
     public SensiboCommunicationException(final String message, final Throwable cause) {
