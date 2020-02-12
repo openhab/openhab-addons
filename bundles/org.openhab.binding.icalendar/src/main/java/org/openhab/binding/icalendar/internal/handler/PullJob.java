@@ -143,7 +143,7 @@ class PullJob implements Runnable {
                 tmpOutStream.write(buffer, 0, currentReadBytes);
             }
         } catch (IOException e) {
-            logger.warn("Not able to write temporary file with downloaded iCal.", e);
+            logger.warn("Not able to write temporary file with downloaded iCal.");
             return;
         } finally {
             if (tmpOutStream != null) {

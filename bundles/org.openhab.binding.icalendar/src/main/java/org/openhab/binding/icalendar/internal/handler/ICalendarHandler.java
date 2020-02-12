@@ -83,7 +83,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         super(thing);
         this.httpClient = httpClient;
         calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
-                + getThing().getUID().getAsString().replaceAll("[^a-zA-Z0-9\\._-]", "_") + ".ical");
+                + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\\\|\\?\\*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
     }
 
