@@ -16,9 +16,11 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,8 +29,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.tradfri.internal.DeviceUpdateListener;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 import org.slf4j.Logger;
@@ -43,26 +48,28 @@ import com.google.gson.JsonSyntaxException;
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Andre Fuechsel - fixed the results removal
+ * @author Manuel Raffel - Added support for blinds
  */
 @NonNullByDefault
-public class TradfriDiscoveryService extends AbstractDiscoveryService implements DeviceUpdateListener {
+public class TradfriDiscoveryService extends AbstractDiscoveryService
+        implements DeviceUpdateListener, DiscoveryService, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(TradfriDiscoveryService.class);
 
-    private final TradfriGatewayHandler handler;
+    private @Nullable TradfriGatewayHandler handler;
 
     private static final String REMOTE_CONTROLLER_MODEL = "TRADFRI remote control";
 
-    private static final String[] COLOR_TEMP_MODELS = new String[] { "TRADFRI bulb E27 WS opal 980lm",
-            "TRADFRI bulb E27 WS clear 950lm", "TRADFRI bulb GU10 WS 400lm", "TRADFRI bulb E14 WS opal 400lm",
-            "FLOALT panel WS 30x30", "FLOALT panel WS 60x60", "FLOALT panel WS 30x90",
-            "TRADFRI bulb E12 WS opal 400lm" };
+    private static final Set<String> COLOR_TEMP_MODELS = Collections
+            .unmodifiableSet(Stream
+                    .of("TRADFRI bulb E27 WS opal 980lm", "TRADFRI bulb E27 WS clear 950lm",
+                            "TRADFRI bulb GU10 WS 400lm", "TRADFRI bulb E14 WS opal 400lm", "FLOALT panel WS 30x30",
+                            "FLOALT panel WS 60x60", "FLOALT panel WS 30x90", "TRADFRI bulb E12 WS opal 400lm")
+                    .collect(Collectors.toSet()));
 
     private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
-    public TradfriDiscoveryService(TradfriGatewayHandler bridgeHandler) {
-        super(Stream.concat(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream())
-                .collect(Collectors.toSet()), 10, true);
-        this.handler = bridgeHandler;
+    public TradfriDiscoveryService() {
+        super(SUPPORTED_DEVICE_TYPES_UIDS, 10, true);
     }
 
     @Override
@@ -76,6 +83,19 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
         removeOlderResults(getTimestampOfLastScan());
     }
 
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof TradfriGatewayHandler) {
+            this.handler = (TradfriGatewayHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @Override
     public void activate() {
         handler.registerDeviceUpdateListener(this);
     }
@@ -106,23 +126,25 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                     // concrete model names.
                     // Color light:
                     // As the protocol does not distinguishes between color and full-color lights,
-                    // we check if the "CWS" identifier is given in the model name
+                    // we check if the "CWS" or "CW/S" identifier is given in the model name
                     ThingTypeUID thingType = null;
                     if (model != null && Arrays.stream(COLOR_MODEL_IDENTIFIER_HINTS).anyMatch(model::contains)) {
                         thingType = THING_TYPE_COLOR_LIGHT;
                     }
                     if (thingType == null && //
-                            (state.has(COLOR) || (model != null && Arrays.asList(COLOR_TEMP_MODELS).contains(model)))) {
+                            (state.has(COLOR) || (model != null && COLOR_TEMP_MODELS.contains(model)))) {
                         thingType = THING_TYPE_COLOR_TEMP_LIGHT;
                     }
                     if (thingType == null) {
                         thingType = THING_TYPE_DIMMABLE_LIGHT;
                     }
                     thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                } else if (TYPE_BLINDS.equals(type) && data.has(BLINDS)) {
+                    // Blinds
+                    thingId = new ThingUID(THING_TYPE_BLINDS, bridge, Integer.toString(id));
                 } else if (TYPE_PLUG.equals(type) && data.has(PLUG)) {
                     // Smart plug
-                    ThingTypeUID thingType = THING_TYPE_ONOFF_PLUG;
-                    thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                    thingId = new ThingUID(THING_TYPE_ONOFF_PLUG, bridge, Integer.toString(id));
                 } else if (TYPE_SWITCH.equals(type) && data.has(SWITCH)) {
                     // Remote control and wireless dimmer
                     // As protocol does not distinguishes between remote control and wireless dimmer,
@@ -131,6 +153,8 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                             ? THING_TYPE_REMOTE_CONTROL
                             : THING_TYPE_DIMMER;
                     thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                } else if (TYPE_REMOTE.equals(type)) {
+                    thingId = new ThingUID(THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL, bridge, Integer.toString(id));
                 } else if (TYPE_SENSOR.equals(type) && data.has(SENSOR)) {
                     // Motion sensor
                     thingId = new ThingUID(THING_TYPE_MOTION_SENSOR, bridge, Integer.toString(id));
