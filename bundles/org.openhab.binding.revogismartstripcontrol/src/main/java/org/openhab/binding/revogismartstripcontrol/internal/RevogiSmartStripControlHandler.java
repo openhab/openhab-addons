@@ -12,11 +12,6 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
-
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,6 +27,11 @@ import org.openhab.binding.revogismartstripcontrol.internal.api.Status;
 import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
 
 /**
  * The {@link RevogiSmartStripControlHandler} is responsible for handling commands, which are
@@ -119,9 +119,9 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             for (int i = 0; i < status.getSwitchValue().size(); i++) {
                 int plugNumber = i + 1;
-                updateState("plug" + plugNumber + "#switch", OnOffType.valueOf(status.getSwitchValue().get(i).toString()));
+                updateState("plug" + plugNumber + "#switch", OnOffType.from(status.getSwitchValue().get(i).toString()));
                 updateState("plug" + plugNumber + "#watt", new DecimalType(status.getWatt().get(i) / 1000f));
-                updateState("plug" + plugNumber + "#amp", new DecimalType(status.getAmp().get(i) / 1000));
+                updateState("plug" + plugNumber + "#amp", new DecimalType(status.getAmp().get(i) / 1000f));
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Retrieved status code: " + status.getResponseCode());
