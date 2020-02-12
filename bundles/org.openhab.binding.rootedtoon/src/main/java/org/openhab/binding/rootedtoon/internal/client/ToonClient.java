@@ -146,7 +146,7 @@ public class ToonClient {
                 .request(new MediaType[] { MediaType.APPLICATION_JSON_TYPE }).get();
 
         JsonObject json = validateResponse(response);
-        logger.debug("toon state: {}", json);
+        logger.debug("toon thermostate state: {}", json);
         ThermostatInfo result = this.gson.fromJson((JsonElement) json, ThermostatInfo.class);
 
         result.currentTemp /= 100.0D;
@@ -164,7 +164,7 @@ public class ToonClient {
                 .request(new MediaType[] { MediaType.APPLICATION_JSON_TYPE }).get();
 
         JsonObject json = validateResponse(response);
-        logger.debug("toon state: {}", json);
+        logger.debug("toon power usage state: {}", json);
         PowerUsageInfo result = this.gson.fromJson((JsonElement) json, PowerUsageInfo.class);
 
         for (ToonClientEventListener listener : this.listeners) {
@@ -258,7 +258,11 @@ public class ToonClient {
         JsonObject json = this.jsonParser.parse(strJson).getAsJsonObject();
         if (!json.get("result").getAsString().equals("ok")) {
             logger.debug("validateResponse {}", json);
-            throw new ToonConnectionException(json.get("error").getAsString());
+            String error = json.get("error").getAsString();
+            if (error == null || error == "") {
+                error = strJson;
+            }
+            throw new ToonConnectionException(error);
         }
         return json;
     }
