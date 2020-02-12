@@ -83,30 +83,19 @@ public class BlueGigaSerialHandler {
 
     private void flush() {
         // Send End Procedure command to end all activity and flush input buffer to start from know state
-        logger.debug("Flush");
+        logger.trace("Flush input stream");
         sendFrame(new BlueGigaEndProcedureCommand(), false);
         try {
             // Wait BlueGiga controller have stopped all activity
             Thread.sleep(100);
-
-            // Flush input buffer
-            logger.debug("Bytes available: {}", inputStream.available());
-            if (inputStream.markSupported()) {
-                logger.debug("Reset buffer");
-                inputStream.reset();
-            } else {
-                logger.debug("Read all data");
-                int i = 1000;
-                while (inputStream.available() > 0 && i-- > 0) {
-                    inputStream.read();
-                }
-            }
+            logger.trace("Bytes available: {}", inputStream.available());
+            IOUtils.skipFully(inputStream, inputStream.available());
         } catch (InterruptedException e) {
             close = true;
         } catch (IOException e) {
             // Ignore
         }
-        logger.debug("Flush done");
+        logger.trace("Flush done");
     }
 
     /**
@@ -158,7 +147,7 @@ public class BlueGigaSerialHandler {
         }
 
         // Send the data
-        logger.debug("sendFrame: {}", bleFrame);
+        logger.trace("sendFrame: {}", bleFrame);
         try {
             int[] payload = bleFrame.serialize();
             if (logger.isTraceEnabled()) {
@@ -247,7 +236,7 @@ public class BlueGigaSerialHandler {
             @Override
             public void run() {
                 int exceptionCnt = 0;
-                logger.debug("BlueGiga BLE thread started");
+                logger.trace("BlueGiga BLE thread started");
                 int[] inputBuffer = new int[BLE_MAX_LENGTH];
                 int inputCount = 0;
                 int inputLength = 0;

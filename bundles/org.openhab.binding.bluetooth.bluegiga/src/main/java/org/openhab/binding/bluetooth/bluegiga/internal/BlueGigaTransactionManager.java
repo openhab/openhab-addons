@@ -110,11 +110,11 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
         BlueGigaUniqueCommand nextFrame = sendQueue.poll();
         if (nextFrame == null) {
             // Nothing to send
-            logger.debug("sendNextFrame: nothing to send");
+            logger.trace("Send frame: nothing to send");
             return;
         }
         cancelTransactionTimer();
-        logger.debug("sendNextFrame: {}", nextFrame);
+        logger.debug("Send frame #{}: {}", nextFrame.getTransactionId(), nextFrame.getMessage());
         ongoingTransactionId = nextFrame.getTransactionId();
         serialHandler.sendFrame(nextFrame.getMessage());
         startTransactionTimer();
@@ -129,14 +129,14 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
      *            {@link BlueGigaCommand}
      */
     public void queueFrame(BlueGigaUniqueCommand request) {
-        logger.debug("Queue TX BLE frame: {}", request);
+        logger.trace("Queue TX BLE frame: {}", request);
         sendQueue.add(request);
-        logger.debug("TX BLE queue size: {}", sendQueue.size());
+        logger.trace("TX BLE queue size: {}", sendQueue.size());
     }
 
     private void sendNextTransactionIfNoOngoing() {
         synchronized (this) {
-            logger.debug("Send next transaction if no ongoing");
+            logger.trace("Send next transaction if no ongoing");
             if (ongoingTransactionId == null) {
                 sendNextFrame();
             }
@@ -145,7 +145,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
 
     private void clearOngoingTransactionAndSendNext() {
         synchronized (this) {
-            logger.debug("Clear ongoing transaction and send next message from queue");
+            logger.trace("Clear ongoing transaction and send next frame from queue");
             ongoingTransactionId = null;
             sendNextFrame();
         }
@@ -214,38 +214,37 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
             @Override
             public boolean transactionEvent(BlueGigaResponse bleResponse, Integer transactionId) {
                 if (transactionId == null) {
-                    logger.debug("Transaction id is null");
+                    logger.trace("Transaction id is null");
                     return false;
                 }
 
-                logger.debug("Expected transactionId: {}, received transactionId: {}", query.getTransactionId(),
+                logger.trace("Expected transactionId: {}, received transactionId: {}", query.getTransactionId(),
                         transactionId);
 
                 if (transactionId != query.getTransactionId()) {
-                    logger.debug(
-                            "Ignore response as received transaction Id {} doesn't match expected transaction Id {}.",
+                    logger.trace("Ignore frame as received transaction Id {} doesn't match expected transaction Id {}.",
                             transactionId, query.getTransactionId());
                     return false;
                 }
 
-                logger.debug("Expected response: {}, received response: {}", expected.getSimpleName(), bleResponse);
+                logger.trace("Expected frame: {}, received frame: {}", expected.getSimpleName(), bleResponse);
 
                 if (bleCommand instanceof BlueGigaDeviceCommand && bleResponse instanceof BlueGigaDeviceResponse) {
                     BlueGigaDeviceCommand devCommand = (BlueGigaDeviceCommand) bleCommand;
                     BlueGigaDeviceResponse devResponse = (BlueGigaDeviceResponse) bleResponse;
 
-                    logger.debug("Expected connection id: {}, response connection id: {}", devCommand.getConnection(),
+                    logger.trace("Expected connection id: {}, received connection id: {}", devCommand.getConnection(),
                             devResponse.getConnection());
 
                     if (devCommand.getConnection() != devResponse.getConnection()) {
-                        logger.debug("Ignore response as response connection id {} doesn't match expected id {}.",
+                        logger.trace("Ignore response as received connection id {} doesn't match expected id {}.",
                                 devResponse.getConnection(), devCommand.getConnection());
                         return false;
                     }
                 }
 
                 if (!expected.isInstance(bleResponse)) {
-                    logger.debug("Ignoring {} response which has not been requested.",
+                    logger.trace("Ignoring {} frame which has not been requested.",
                             bleResponse.getClass().getSimpleName());
                     return false;
                 }
@@ -253,6 +252,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
                 // Response received, notify waiter
                 response = bleResponse;
                 complete = true;
+                logger.debug("Received frame #{}: {}", transactionId, bleResponse);
                 synchronized (this) {
                     notify();
                 }
@@ -262,7 +262,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
             @Override
             public boolean transactionTimeout(Integer transactionId) {
                 if (transactionId == null) {
-                    logger.debug("Transaction id is null");
+                    logger.trace("Transaction id is null");
                     return false;
                 }
                 if (transactionId != query.getTransactionId()) {
