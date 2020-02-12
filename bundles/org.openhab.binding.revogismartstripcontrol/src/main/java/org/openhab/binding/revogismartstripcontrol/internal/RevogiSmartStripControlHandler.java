@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.revogismartstripcontrol.internal.api.Status;
 import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
+import org.openhab.binding.revogismartstripcontrol.internal.api.SwitchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +46,15 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
     private final StatusService statusService;
+    private final SwitchService switchService;
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable RevogiSmartStripControlConfiguration config;
 
-    public RevogiSmartStripControlHandler(Thing thing, StatusService statusService) {
+    public RevogiSmartStripControlHandler(Thing thing, StatusService statusService, SwitchService switchService) {
         super(thing);
         this.statusService = statusService;
+        this.switchService = switchService;
     }
 
     @Override
