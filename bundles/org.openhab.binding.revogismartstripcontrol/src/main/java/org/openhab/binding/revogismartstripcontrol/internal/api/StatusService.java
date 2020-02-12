@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
@@ -38,11 +36,7 @@ public class StatusService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UdpSenderService udpSenderService;
 
-    public StatusService() {
-        udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
-    }
-
-    StatusService(UdpSenderService udpSenderService) {
+    public StatusService(UdpSenderService udpSenderService) {
         this.udpSenderService = udpSenderService;
     }
 
