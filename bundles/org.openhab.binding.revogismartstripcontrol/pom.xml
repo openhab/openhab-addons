@@ -17,6 +17,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
       <version>2.9.10</version>
     </dependency>
     <dependency>
@@ -28,6 +29,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
       <version>2.9.10</version>
     </dependency>
   </dependencies>

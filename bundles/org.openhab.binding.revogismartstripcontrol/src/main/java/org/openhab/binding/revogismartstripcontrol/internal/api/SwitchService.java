@@ -57,7 +57,7 @@ public class SwitchService {
         return responses.stream()
                 .filter(response -> !response.isEmpty())
                 .map(this::deserializeString)
-                .filter(switchResponse -> switchResponse.getCode() == 200)
+                .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
                 .findFirst()
                 .orElse(new SwitchResponse(0, 503));
     }
