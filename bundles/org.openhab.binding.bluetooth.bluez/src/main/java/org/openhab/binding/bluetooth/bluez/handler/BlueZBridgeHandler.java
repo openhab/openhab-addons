@@ -177,6 +177,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
                     logger.debug("Removing device '{}' due to inactivity", device.getAddress());
                     device.dispose();
                     devices.remove(device.getAddress());
+                    notifyRemovalListeners(device);
                 }
             }
         }
@@ -255,6 +256,12 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
                 logger.trace("Not notifying listeners for device '{}', because it is not reachable.",
                         device.getAddress());
             }
+        }
+    }
+
+    private void notifyRemovalListeners(BluetoothDevice device) {
+        for (BluetoothDiscoveryListener listener : discoveryListeners) {
+            listener.deviceRemoved(device);
         }
     }
 

@@ -14,19 +14,22 @@ package org.openhab.binding.bluetooth.discovery.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
+import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
@@ -45,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial Contribution
  * @author Kai Kreuzer - Introduced BluetoothAdapters and BluetoothDiscoveryParticipants
- *
+ * @author Connor Petty - Introduced connection based discovery
  */
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
@@ -53,10 +56,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
 
     private static final int SEARCH_TIME = 15;
-    private static final int DISCOVERY_TTL = 30;
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
+    private final Map<BluetoothAddress, DiscoveryCache> discoveryCaches = new ConcurrentHashMap<>();
 
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
 
@@ -127,47 +130,171 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     @Override
+    public void deviceRemoved(BluetoothDevice device) {
+        discoveryCaches.computeIfPresent(device.getAddress(), (addr, cache) -> cache.removeDiscoveries(device));
+    }
+
+    @Override
     public void deviceDiscovered(BluetoothDevice device) {
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
-        for (BluetoothDiscoveryParticipant participant : participants) {
-            try {
-                DiscoveryResult result = participant.createResult(device);
-                if (result != null) {
-                    thingDiscovered(result);
+
+        DiscoveryCache cache = discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache());
+        cache.handleDiscovery(device);
+    }
+
+    private static ThingUID createThingUIDWithBridge(DiscoveryResult result, BluetoothAdapter adapter) {
+        return new ThingUID(result.getThingTypeUID(), adapter.getUID(), result.getThingUID().getId());
+    }
+
+    private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
+        return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter)).withBridge(adapter.getUID())
+                .withProperties(result.getProperties()).withRepresentationProperty(result.getRepresentationProperty())
+                .withTTL(result.getTimeToLive()).withLabel(result.getLabel()).build();
+    }
+
+    private static DiscoveryResult adaptResult(DiscoveryResult result, BluetoothAdapter adapter) {
+        if (adapter.getUID().equals(result.getBridgeUID())) {
+            // the bridges match so we can publish as is
+            return result;
+        } else {
+            // this discovery was from a different bridge, we can reuse it
+            return copyWithNewBridge(result, adapter);
+        }
+    }
+
+    private class DiscoveryCache {
+
+        private @Nullable BluetoothDeviceSnapshot currentSnapshot;
+
+        private Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
+
+        /**
+         * This is meant to be used as part of a Map.compute function
+         *
+         * @param device the device to remove from this cache
+         * @return this DiscoveryCache if there are still snapshots, null otherwise
+         */
+        public synchronized DiscoveryCache removeDiscoveries(BluetoothDevice device) {
+            // we remove any discoveries that have been published for this device
+            discoveryFutures.computeIfPresent(device.getAdapter(), (adapter, snapshotFuture) -> {
+                snapshotFuture.future.thenAccept(result -> thingRemoved(createThingUIDWithBridge(result, adapter)));
+                return null;
+            });
+            if (discoveryFutures.isEmpty()) {
+                return null;
+            }
+            return this;
+        }
+
+        public synchronized void handleDiscovery(BluetoothDevice device) {
+            BluetoothAdapter adapter = device.getAdapter();
+            BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
+            CompletableFuture<DiscoveryResult> future;
+            if (updateSnapshot(snapshot)) {
+                // we back-merge to make sure that our 'snapshot' is up-to-date
+                snapshot.merge(currentSnapshot);
+
+                // we need to make a new future result
+                if (!discoveryFutures.isEmpty()) {
+                    future = CompletableFuture
+                            // we have an ongoing futures so lets create our discovery after they all finish
+                            .allOf(discoveryFutures.values().stream().map(sf -> sf.future)
+                                    .toArray(CompletableFuture[]::new))
+                            .thenCompose(v -> createDiscoveryFuture(device));
+                } else {
+                    future = createDiscoveryFuture(device);
+                }
+            } else {
+                if (discoveryFutures.containsKey(adapter) && discoveryFutures.get(adapter).snapshot.equals(snapshot)) {
+                    // This adapter has already produced the most up-to-date result, so no further processing is
+                    // necessary
                     return;
                 }
-            } catch (RuntimeException e) {
-                logger.warn("Participant '{}' threw an exception", participant.getClass().getName(), e);
+                /*
+                 * This isn't a new snapshot, but an up-to-date result from this adapter has not been produced yet.
+                 * Since a result must have been produced for this snapshot, we search the results of the other adapters
+                 * to find the future for the latest snapshot, then we modify it to make it look like it came from this
+                 * adapter. This way we don't need to recompute the DiscoveryResult.
+                 */
+                Optional<CompletableFuture<DiscoveryResult>> otherFuture = discoveryFutures.values().stream()
+                        // make sure that we only get futures for the current snapshot
+                        .filter(sf -> sf.snapshot.equals(snapshot)).findAny().map(sf -> sf.future);
+                future = otherFuture.get().thenApply(result -> adaptResult(result, adapter));
             }
+
+            // now save it for later
+            discoveryFutures.put(adapter, new SnapshotFuture(snapshot, future));
+
+            /*
+             * this appends a post-process to any ongoing or completed discoveries with this device's address.
+             * If this discoveryFuture is ongoing then this post-process will run asynchronously upon the future's
+             * completion.
+             * If this discoveryFuture is already completed then this post-process will run in the current thread.
+             */
+            future.thenAccept(BluetoothDiscoveryService.this::thingDiscovered);
         }
 
-        // We did not find a thing type for this device, so let's treat it as a generic one
-        String label = device.getName();
-        if (label == null || label.length() == 0 || label.equals(device.getAddress().toString().replace(':', '-'))) {
-            label = "Bluetooth Device";
+        private boolean updateSnapshot(BluetoothDeviceSnapshot snapshot) {
+            BluetoothDeviceSnapshot currentSnapshot = this.currentSnapshot;
+            if (currentSnapshot == null) {
+                this.currentSnapshot = new BluetoothDeviceSnapshot(snapshot);
+                return true;
+            }
+            return currentSnapshot.merge(snapshot);
         }
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
-        Integer txPower = device.getTxPower();
-        if (txPower != null && txPower > 0) {
-            properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(txPower));
-        }
-        String manufacturer = BluetoothCompanyIdentifiers.get(device.getManufacturerId());
-        if (manufacturer == null) {
-            logger.debug("Unknown manufacturer Id ({}) found on bluetooth device.", device.getManufacturerId());
-        } else {
-            properties.put(Thing.PROPERTY_VENDOR, manufacturer);
-            label += " (" + manufacturer + ")";
+        private CompletableFuture<DiscoveryResult> createDiscoveryFuture(BluetoothDevice device) {
+            return CompletableFuture.supplyAsync(new BluetoothDiscoveryProcess(device, participants), scheduler);
         }
 
-        ThingUID thingUID = new ThingUID(BluetoothBindingConstants.THING_TYPE_BEACON, device.getAdapter().getUID(),
-                device.getAddress().toString().toLowerCase().replace(":", ""));
+        // private CompletableFuture<DiscoveryResult> createDiscoveryFuture(BluetoothDeviceSnapshot snapshot,
+        // BluetoothDevice device) {
+        // // first see if any of the participants that don't require a connection recognize this device
+        // List<BluetoothDiscoveryParticipant> connectionParticipants = new ArrayList<>();
+        // for (BluetoothDiscoveryParticipant participant : participants) {
+        // if (!participant.requiresConnection(device)) {
+        // try {
+        // DiscoveryResult result = participant.createResult(snapshot);
+        // if (result != null) {
+        // return CompletableFuture.completedFuture(result);
+        // }
+        // } catch (RuntimeException e) {
+        // logger.warn("Participant '{}' threw an exception", participant.getClass().getName(), e);
+        // }
+        // } else {
+        // connectionParticipants.add(participant);
+        // }
+        // }
+        //
+        // if (connectionParticipants.isEmpty()) {
+        // // we can skip connection discovery
+        // return CompletableFuture.completedFuture(createDefaultResult(device));
+        // }
+        //
+        // return CompletableFuture
+        // .supplyAsync(new BluetoothDiscoveryProcess(snapshot, device, connectionParticipants), scheduler)
+        // .exceptionally(exception -> {
+        // // This might happen if a device throws an exception during an attempt to disconnect
+        // logger.warn("Error occurred during bluetooth discovery for device {} on adapter {}",
+        // device.getAddress(), device.getAdapter().getAddress(), exception);
+        // // treat as a non result so a default one gets created in the next stage
+        // return null;
+        // })
+        // // if the participants don't produce any results we create a default one
+        // .thenApply(result -> result != null ? result : createDefaultResult(device));
+        // }
 
-        // Create the discovery result and add to the inbox
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS).withTTL(DISCOVERY_TTL)
-                .withBridge(device.getAdapter().getUID()).withLabel(label).build();
-        thingDiscovered(discoveryResult);
     }
+
+    private static class SnapshotFuture {
+        public final BluetoothDeviceSnapshot snapshot;
+        public final CompletableFuture<DiscoveryResult> future;
+
+        public SnapshotFuture(BluetoothDeviceSnapshot snapshot, CompletableFuture<DiscoveryResult> future) {
+            this.snapshot = snapshot;
+            this.future = future;
+        }
+
+    }
+
 }
