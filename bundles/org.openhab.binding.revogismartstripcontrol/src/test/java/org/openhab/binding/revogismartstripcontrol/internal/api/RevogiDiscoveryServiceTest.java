@@ -29,10 +29,10 @@ import static org.mockito.Mockito.when;
  * @author Andi Bräu - Initial contribution
  */
 @NonNullByDefault
-public class DiscoveryServiceTest {
+public class RevogiDiscoveryServiceTest {
 
     private UdpSenderService udpSenderService = mock(UdpSenderService.class);
-    private DiscoveryService discoveryService = new DiscoveryService(udpSenderService);
+    private RevogiDiscoveryService revogiDiscoveryService = new RevogiDiscoveryService(udpSenderService);
 
     @Test
     public void discoverSmartStripSuccesfully() {
@@ -42,7 +42,7 @@ public class DiscoveryServiceTest {
         when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
 
         // when
-        List<DiscoveryResponse> discoverSmartStrips = discoveryService.discoverSmartStrips();
+        List<DiscoveryResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
 
         // then
         assertThat(discoverSmartStrips.size(), equalTo(1));
@@ -56,7 +56,7 @@ public class DiscoveryServiceTest {
         when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
 
         // when
-        List<DiscoveryResponse> discoverSmartStrips = discoveryService.discoverSmartStrips();
+        List<DiscoveryResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
 
         // then
         assertThat(discoverSmartStrips.isEmpty(), is(true));

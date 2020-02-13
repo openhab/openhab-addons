@@ -46,7 +46,7 @@ public class StatusService {
         return responses.stream()
                 .filter(response -> !response.isEmpty() && response.contains(VERSION_STRING))
                 .map(this::deserializeString)
-                .filter(statusRaw -> statusRaw.getCode() == 200)
+                .filter(statusRaw -> statusRaw.getCode() == 200 && statusRaw.getResponse() == 90)
                 .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(), statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
                 .findFirst()
                 .orElse(new Status(false, 503, null, null, null));
