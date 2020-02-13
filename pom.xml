@@ -549,6 +549,8 @@ Import-Package: \\
                 </excludes>
                 <excludes>
                   <exclude>**/feature.xml</exclude>
+                  <exclude>features/openhab-addons/src/main/resources/header.xml</exclude>
+                  <exclude>features/openhab-addons/src/main/resources/footer.xml</exclude>
                 </excludes>
                 <eclipseWtp>
                   <type>XML</type>
