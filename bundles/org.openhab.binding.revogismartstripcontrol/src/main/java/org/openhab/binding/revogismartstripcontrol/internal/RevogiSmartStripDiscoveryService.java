@@ -16,11 +16,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.revogismartstripcontrol.internal.api.DiscoveryResponse;
-import org.openhab.binding.revogismartstripcontrol.internal.api.DiscoveryService;
+import org.openhab.binding.revogismartstripcontrol.internal.api.RevogiDiscoveryService;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.osgi.service.component.annotations.Component;
@@ -40,17 +41,17 @@ import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartSt
  *
  * @author Andi Bräu - Initial contribution
  */
-@Component(service = org.eclipse.smarthome.config.discovery.DiscoveryService.class, immediate = true, configurationPid = "discovery.revogismartstripcontrol")
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.revogismartstripcontrol")
 public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Collections.singleton(SMART_STRIP_THING_TYPE));
 
-    private final DiscoveryService discoveryService;
+    private final RevogiDiscoveryService revogiDiscoveryService;
 
     private static final int SEARCH_TIME = 10;
 
     public RevogiSmartStripDiscoveryService() {
         super(SUPPORTED_THING_TYPES, SEARCH_TIME);
-        discoveryService = new DiscoveryService(new UdpSenderService(new DatagramSocketWrapper()));
+        revogiDiscoveryService = new RevogiDiscoveryService(new UdpSenderService(new DatagramSocketWrapper()));
     }
 
     @Override
@@ -60,7 +61,7 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        List<DiscoveryResponse> discoveryResponses = discoveryService.discoverSmartStrips();
+        List<DiscoveryResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
         discoveryResponses.forEach(response -> {
             ThingUID thingUID = getThingUID(response);
                     if (thingUID != null) {
