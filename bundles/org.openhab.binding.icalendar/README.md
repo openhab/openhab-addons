@@ -41,13 +41,13 @@ Each calendar event may include one or more Command Tags in its description text
 	END:Item_Name:New_State_Value
 	END:Item_Name:New_State_Value:Authorization_Code
 
-The first field **must** be either `BEGIN` or `END`. If it is `BEGIN` then the command will be executed at the beginning of the calendar event. Whereas if it is `END` then the command will be executed at the end of the calendar event. A calendar event may contain both multiple `BEGIN` tags and/or multiple `END` tags. If an event contains both `BEGIN` and `END` tags, this allows the respective Items (say) to be turned ON at the beginning of an event and turned OFF again at the end of the event.
+The first field **must** be either `BEGIN` or `END`. If it is `BEGIN` then the command will be executed at the beginning of the calendar event. If it is `END` then the command will be executed at the end of the calendar event. A calendar event may contain multiple `BEGIN` or `END` tags. If an event contains both `BEGIN` and `END` tags, this Items (say) to be turned ON at the beginning of an event and turned OFF again at the end of the event.
  
 The `Item_Name` field must be the name of any Item in the system.
 
 The `New_State_Value` is the state value that will be sent to the Item. It must be a value which is compatible with the Item type. See OpenHAB core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
 
-The `Authorization_Code` may optionally be used as follows:
+The `Authorization_Code` may *optionally* be used as follows:
 
 - When the Thing Configuration Parameter `authorizationCode` is a non-empty string, the binding will compare the `Authorization_Code` field to the `authorizationCode` Configuration Parameter, and it will only execute the command if the two strings are the same.
 
