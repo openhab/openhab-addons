@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This is a listener interface that is e.g. used by {@link BluetoothAdapter}s after discovering new devices.
  *
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
+@NonNullByDefault
 public interface BluetoothDiscoveryListener {
 
     /**

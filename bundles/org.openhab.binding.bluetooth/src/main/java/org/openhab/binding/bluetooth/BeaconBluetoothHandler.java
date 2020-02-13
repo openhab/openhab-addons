@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.bluetooth.internal.RoamingBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -76,7 +77,24 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
             return;
         }
 
+        /*
+         * TODO create channels
+         * 1. last seen
+         * 2. rssi
+         * 3. tx power
+         * 4. estimated distance
+         */
         adapter = (BluetoothAdapter) bridgeHandler;
+
+        if (adapter instanceof RoamingBluetoothBridgeHandler) {
+            /*
+             * TODO create roaming channels
+             * 5. nearest controller
+             * 6. nearest controller location
+             */
+             this.editConfiguration().
+            RoamingBluetoothBridgeHandler roamingAdapter = (RoamingBluetoothBridgeHandler) adapter;
+        }
 
         try {
             deviceLock.lock();

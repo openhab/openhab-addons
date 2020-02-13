@@ -32,6 +32,7 @@ import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
+import org.openhab.binding.bluetooth.internal.RoamingBluetoothBridgeHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -98,6 +99,15 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     protected void removeBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.remove(adapter);
         adapter.removeDiscoveryListener(registeredListeners.remove(adapter.getUID()));
+    }
+
+    private RoamingBluetoothBridgeHandler getRoamingBluetoothAdapter() {
+        for (BluetoothAdapter adapter : adapters) {
+            if (adapter instanceof RoamingBluetoothBridgeHandler) {
+                return (RoamingBluetoothBridgeHandler) adapter;
+            }
+        }
+        return null;
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
