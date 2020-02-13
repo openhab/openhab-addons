@@ -276,6 +276,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         if (exit) {
             stopScheduledTasks();
             initTask.cancel(true);
+            devices.forEach((address, device) -> {
+                device.dispose();
+            });
             devices.clear();
         }
     }

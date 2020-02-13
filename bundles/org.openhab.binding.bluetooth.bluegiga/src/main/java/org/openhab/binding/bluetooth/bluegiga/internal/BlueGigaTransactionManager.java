@@ -121,12 +121,12 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     /**
-     * Add a {@link BlueGigaCommand} frame to the send queue. The sendQueue is a
+     * Add a {@link BlueGigaUniqueCommand} frame to the send queue. The sendQueue is a
      * FIFO queue. This method queues a {@link BlueGigaCommand} frame without
      * waiting for a response.
      *
      * @param transaction
-     *            {@link BlueGigaCommand}
+     *            {@link BlueGigaUniqueCommand}
      */
     public void queueFrame(BlueGigaUniqueCommand request) {
         logger.trace("Queue TX BLE frame: {}", request);
@@ -174,7 +174,8 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
         class TransactionWaiter implements Callable<T>, BluetoothListener<T> {
             private volatile boolean complete;
             private BlueGigaResponse response;
-            BlueGigaUniqueCommand query = new BlueGigaUniqueCommand(bleCommand, transactionId.getAndIncrement());
+            private BlueGigaUniqueCommand query = new BlueGigaUniqueCommand(bleCommand,
+                    transactionId.getAndIncrement());
 
             @SuppressWarnings("unchecked")
             @Override
