@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.openhab.binding.tado</groupId>
+  <artifactId>aggregator</artifactId>
+  <version>1</version>
+  <name>openHAB Add-ons :: Bundles :: Tado Binding :: Aggregator</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>src/main/api/pom.xml</module>
+    <module>pom.xml</module>
+  </modules>
+
+</project>
