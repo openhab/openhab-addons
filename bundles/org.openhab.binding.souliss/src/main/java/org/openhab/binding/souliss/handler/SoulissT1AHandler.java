@@ -1,14 +1,9 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
+ * Copyright (c) 2014-2018 by the respective copyright holders.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.souliss.handler;
 
@@ -67,20 +62,15 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
         // update Last Status stored time
         super.setLastStatusStored();
         // update item state only if it is different from previous
-        try {
-            if (T1nRawState != _rawState) {
-                this.updateState(SoulissBindingConstants.T1A_1_CHANNEL, getTypeFromBool(getBitState(_rawState, 0)));
-                this.updateState(SoulissBindingConstants.T1A_2_CHANNEL, getTypeFromBool(getBitState(_rawState, 1)));
-                this.updateState(SoulissBindingConstants.T1A_3_CHANNEL, getTypeFromBool(getBitState(_rawState, 2)));
-                this.updateState(SoulissBindingConstants.T1A_4_CHANNEL, getTypeFromBool(getBitState(_rawState, 3)));
-                this.updateState(SoulissBindingConstants.T1A_5_CHANNEL, getTypeFromBool(getBitState(_rawState, 4)));
-                this.updateState(SoulissBindingConstants.T1A_6_CHANNEL, getTypeFromBool(getBitState(_rawState, 5)));
-                this.updateState(SoulissBindingConstants.T1A_7_CHANNEL, getTypeFromBool(getBitState(_rawState, 6)));
-                this.updateState(SoulissBindingConstants.T1A_8_CHANNEL, getTypeFromBool(getBitState(_rawState, 7)));
-            }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if (T1nRawState != _rawState) {
+            this.updateState(SoulissBindingConstants.T1A_1_CHANNEL, getTypeFromBool(getBitState(_rawState, 0)));
+            this.updateState(SoulissBindingConstants.T1A_2_CHANNEL, getTypeFromBool(getBitState(_rawState, 1)));
+            this.updateState(SoulissBindingConstants.T1A_3_CHANNEL, getTypeFromBool(getBitState(_rawState, 2)));
+            this.updateState(SoulissBindingConstants.T1A_4_CHANNEL, getTypeFromBool(getBitState(_rawState, 3)));
+            this.updateState(SoulissBindingConstants.T1A_5_CHANNEL, getTypeFromBool(getBitState(_rawState, 4)));
+            this.updateState(SoulissBindingConstants.T1A_6_CHANNEL, getTypeFromBool(getBitState(_rawState, 5)));
+            this.updateState(SoulissBindingConstants.T1A_7_CHANNEL, getTypeFromBool(getBitState(_rawState, 6)));
+            this.updateState(SoulissBindingConstants.T1A_8_CHANNEL, getTypeFromBool(getBitState(_rawState, 7)));
         }
         T1nRawState = _rawState;
     }

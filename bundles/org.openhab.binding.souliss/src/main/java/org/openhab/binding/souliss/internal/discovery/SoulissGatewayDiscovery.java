@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingProtocolConstants;
@@ -37,7 +36,6 @@ import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.Discove
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingNetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SoulissBindingUDPServerJob;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +45,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.souliss")
 public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
     private Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
@@ -82,7 +79,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             UDP_Server_RunnableClass = new SoulissBindingUDPServerJob(datagramSocket,
                     SoulissBindingNetworkParameters.discoverResult);
 
-            UDPserverJob = scheduler.scheduleWithFixedDelay(UDP_Server_RunnableClass, 100,
+            UDPserverJob = scheduler.scheduleAtFixedRate(UDP_Server_RunnableClass, 100,
                     SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
 
         } else {
@@ -147,7 +144,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         }
         // create discovery job, that run discovery class
         if (soulissDiscoverRunnableClass != null) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
+            discoveryJob = scheduler.scheduleAtFixedRate(soulissDiscoverRunnableClass, 100,
                     SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
             logger.info("Start Discovery Job");
         }
@@ -194,7 +191,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         if (gw != null) {
             gatewayUID = gw.getThing().getUID();
 
-            if (lastByteGatewayIP == gw.getGatewayIP_lastByte()) {
+            if (lastByteGatewayIP == Byte.parseByte(gw.IPAddressOnLAN.split("\\.")[3])) {
                 String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
                 switch (typical) {
                     case SoulissBindingProtocolConstants.Souliss_T11:

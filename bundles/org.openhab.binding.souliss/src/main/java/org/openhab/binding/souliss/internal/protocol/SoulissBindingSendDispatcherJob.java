@@ -1,14 +1,10 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.souliss.internal.protocol;
 
@@ -17,13 +13,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.SoulissBindingUDPConstants;
 import org.openhab.binding.souliss.handler.SoulissGatewayHandler;
+import org.openhab.binding.souliss.handler.SoulissGatewayJobHealty;
 import org.openhab.binding.souliss.handler.SoulissGenericHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,19 +34,19 @@ import org.slf4j.LoggerFactory;
  */
 public class SoulissBindingSendDispatcherJob implements Runnable {
 
-    private static Logger logger = LoggerFactory.getLogger(SoulissBindingSendDispatcherJob.class);
+    private static Logger logger = LoggerFactory.getLogger(SoulissGatewayJobHealty.class);
 
     private SoulissGatewayHandler gw;
     static boolean bPopSuspend = false;
     public static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<SoulissBindingSocketAndPacketStruct>();
     private long start_time = System.currentTimeMillis();
-    static byte _iPAddressOnLAN_lastbyte;
+    static String _iPAddressOnLAN;
     static int iDelay = 0; // equal to 0 if array is empty
     static int SEND_MIN_DELAY = 0;
 
     public SoulissBindingSendDispatcherJob(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN_lastbyte = gw.getGatewayIP_lastByte();
+        _iPAddressOnLAN = gw.IPAddressOnLAN;
     }
 
     /**
@@ -138,6 +135,8 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         bPopSuspend = false;
     }
 
+    private ScheduledFuture<?> UDPserverJob_DefaultPort;
+
     @Override
     public void run() {
         try {
@@ -203,11 +202,8 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     static byte bExpected;
     static byte bActualItemState;
     static String sExpected;
-    long millis = 0;
-    long timeToShowLog = 5000;
 
     public void safeSendCheck() {
-
         // short sVal = getByteAtSlot(macacoFrame, slot);
         // scansione lista paccetti inviati
         for (int i = 0; i < packetsList.size(); i++) {
@@ -219,56 +215,62 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // controllo lo slot solo se il comando è diverso da ZERO
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
-                        typ = getHandler(_iPAddressOnLAN_lastbyte, node, iSlot);
-                        // Nel caso es. del T16 la ricerca il recupero del tipico dalla memoria da null per i byte R
-                        // (byte 1), G (byte 2) e B (byte 3)
-                        if (typ != null) {
-                            bExpected = typ.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
+                        typ = getHandler(_iPAddressOnLAN, node, iSlot);
+                        bExpected = typ.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
 
-                            // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
-                            // funzione
-                            // secureSend
+                        // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
+                        // funzione
+                        // secureSend
+                        if (bExpected < 0) {
+                            typ = null;
+                        }
+
+                        // traduce il comando inviato con lo stato previsto e
+                        // poi fa il confronto con lo stato attuale
+                        if (logger.isDebugEnabled() && typ != null) {
+                            // String s1 = ((OnOffType) typ.getExpectedState(sCmd)).toFullString();
+                            // String s1 = Integer.toHexString(
+                            // (int) ((SoulissT11Handler) typ.getThing().getHandler()).getFeedbackState());
+                            // String sStateMemoria = s1.length() < 2 ? "0x0" + s1.toUpperCase() : "0x" +
+                            // s1.toUpperCase();
+                            //
+                            sCmd = Integer.toHexString(packetsList.get(i).packet.getData()[j]);
+                            // comando inviato
+                            sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
+                            sExpected = Integer.toHexString(bExpected);
+                            sExpected = sExpected.length() < 2 ? "0x0" + sExpected.toUpperCase()
+                                    : "0x" + sExpected.toUpperCase();
+                            logger.debug(
+                                    "Compare. Node: {} Slot: {} Node Name: {} Command: {} Expected Souliss State: {} - Actual OH item State: {}",
+                                    node, iSlot, typ.getLabel(), sCmd, sExpected, typ.getRawState());
+
+                            // logger.debug(
+                            // "Compare. Node: {} Slot: {} Typical: {} Command: {} EXPECTED: {} - IN MEMORY: {}",
+                            // node, iSlot, Integer.toHexString(typ.getType()), sCmd,
+                            // expectedState(typ.getType(), packetsList.get(i).packet.getData()[j]),
+                            // sStateMemoria);
+                        }
+
+                        if (typ != null && checkExpectedState(typ.getRawState(), bExpected)) {
+                            // se il valore del tipico coincide con il valore
+                            // trasmesso allora pongo il byte a zero.
+                            // quando tutti i byte saranno uguale a zero allora
+                            // si
+                            // cancella il frame
+                            packetsList.get(i).packet.getData()[j] = 0;
+                            logger.debug("{} Node: {} Slot: {} - OK Expected State", typ.getLabel(), node, iSlot);
+                        } else if (typ == null) {
                             if (bExpected < 0) {
-                                typ = null;
-                            }
-                            // traduce il comando inviato con lo stato previsto e
-                            // poi fa il confronto con lo stato attuale
-                            if (logger.isDebugEnabled() && typ != null) {
-                                sCmd = Integer.toHexString(packetsList.get(i).packet.getData()[j]);
-                                // comando inviato
-                                sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
-                                sExpected = Integer.toHexString(bExpected);
-                                sExpected = sExpected.length() < 2 ? "0x0" + sExpected.toUpperCase()
-                                        : "0x" + sExpected.toUpperCase();
-
-                                // Show Log Not More That Every 5 second
-                                if (timeToShowLog < (System.currentTimeMillis() - millis)) {
-                                    logger.debug(
-                                            "Compare. Node: {} Slot: {} Node Name: {} Command: {} Expected Souliss State: {} - Actual OH item State: {}",
-                                            node, iSlot, typ.getLabel(), sCmd, sExpected, typ.getRawState());
-                                    millis = System.currentTimeMillis();
-                                }
-                            }
-
-                            if (typ != null && checkExpectedState(typ.getRawState(), bExpected)) {
-                                // se il valore del tipico coincide con il valore
-                                // trasmesso allora pongo il byte a zero.
-                                // quando tutti i byte saranno uguale a zero allora si cancella il frame
+                                // se il tipico non viene gestito allora metto a zero il byte del relativo
+                                // slot
                                 packetsList.get(i).packet.getData()[j] = 0;
-                                logger.debug("{} Node: {} Slot: {} - OK Expected State", typ.getLabel(), node, iSlot);
-                            } else if (typ == null) {
-                                if (bExpected < 0) {
-                                    // se il tipico non viene gestito allora metto a zero il byte del relativo
-                                    // slot
+                            } else {
+                                // se allo slot j non esiste un tipico allora vuol dire che si tratta di uno slot
+                                // collegato
+                                // al precedente (es: RGB, T31,...)
+                                // allora se lo slot j-1=0 allora anche j puÃ² essere messo a 0
+                                if (packetsList.get(i).packet.getData()[j - 1] == 0) {
                                     packetsList.get(i).packet.getData()[j] = 0;
-                                } else {
-                                    // se allo slot j non esiste un tipico allora vuol dire che si tratta di uno slot
-                                    // collegato
-                                    // al precedente (es: RGB, T31,...)
-                                    // allora se lo slot j-1=0 allora anche j puÃ² essere messo a 0
-                                    if (packetsList.get(i).packet.getData()[j - 1] == 0) {
-                                        packetsList.get(i).packet.getData()[j] = 0;
-                                    }
                                 }
                             }
                         }
@@ -302,31 +304,33 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         }
     }
 
-    private static SoulissGenericHandler getHandler(byte _iPAddressOnLAN_lastbyte, int node, int slot) {
+    private static SoulissGenericHandler getHandler(String _iPAddressOnLAN, int node, int slot) {
         // recupero il riferimento al gateway
         SoulissGatewayHandler gateway = null;
+        byte _lastByteGatewayIP = Byte.parseByte(_iPAddressOnLAN.split("\\.")[3]);
         try {
-            gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(_iPAddressOnLAN_lastbyte)
+            gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(_lastByteGatewayIP)
                     .getHandler();
         } catch (Exception ex) {
         }
 
-        Iterator<@NonNull Thing> thingsIterator;
-        if (gateway != null && gateway.getGatewayIP() != null
-                && gateway.getGatewayIP_lastByte() == _iPAddressOnLAN_lastbyte) {
+        Iterator thingsIterator;
+        if (gateway != null && gateway.IPAddressOnLAN != null
+                && Byte.parseByte(gateway.IPAddressOnLAN.split("\\.")[3]) == _lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
             Thing typ = null;
             while (thingsIterator.hasNext() && !bFound) {
-                typ = thingsIterator.next();
+                typ = (Thing) thingsIterator.next();
                 String sUID_Array[] = typ.getUID().getAsString().split(":");
                 SoulissGenericHandler handler = (SoulissGenericHandler) typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway
                     if (sUID_Array[0].equals(SoulissBindingConstants.BINDING_ID) && Byte
-                            .parseByte(handler.getGatewayIP().toString().split("\\.")[3]) == _iPAddressOnLAN_lastbyte) {
+                            .parseByte(handler.getGatewayIP().toString().split("\\.")[3]) == _lastByteGatewayIP) {
 
-                        if (handler.getNode() == node && handler.getSlot() == slot) {
+                        if ((handler) != null && handler.getNode() == node && handler.getSlot() == slot) {
+
                             return handler;
                         }
                     }

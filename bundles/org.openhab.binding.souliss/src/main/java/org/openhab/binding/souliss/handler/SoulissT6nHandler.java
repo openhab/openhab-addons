@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.handler;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,7 +21,7 @@ import org.eclipse.smarthome.core.types.PrimitiveType;
 import org.openhab.binding.souliss.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.HalfFloatUtils;
 
-// import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The {@link SoulissT6nHandler} is responsible for handling commands, which are
@@ -71,13 +70,8 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
     public void setFloatValue(float valueOf) {
         super.setLastStatusStored();
         if (fSetPointValue != valueOf) {
-            try {
-                this.setState(DecimalType.valueOf(Float.toString(valueOf)));
-                fSetPointValue = valueOf;
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            this.setState(DecimalType.valueOf(Float.toString(valueOf)));
+            fSetPointValue = valueOf;
         }
     }
 

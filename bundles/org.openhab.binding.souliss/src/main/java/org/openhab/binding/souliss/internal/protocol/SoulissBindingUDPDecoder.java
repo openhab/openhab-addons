@@ -207,28 +207,24 @@ public class SoulissBindingUDPDecoder {
             byte tgtnode = mac.get(3);
             int numberOf = mac.get(4);
 
-            SoulissGatewayHandler gateway;
-            if (SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP) != null) {
-                gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(lastByteGatewayIP)
-                        .getHandler();
-                if (gateway != null) {
-                    int typXnodo = gateway.getMaxTypicalXnode();
+            SoulissGatewayHandler gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters
+                    .getGateway(lastByteGatewayIP).getHandler();
+            if (gateway != null) {
+                int typXnodo = gateway.getMaxTypicalXnode();
 
-                    // creates Souliss nodes
-                    for (int j = 0; j < numberOf; j++) {
-                        if (mac.get(5 + j) != 0) {// create only not-empty typicals
-                            if (!(mac.get(5 + j) == SoulissBindingProtocolConstants.Souliss_T_related)) {
-                                byte typical = mac.get(5 + j);
-                                byte slot = (byte) (j % typXnodo);
-                                byte node = (byte) (j / typXnodo + tgtnode);
-                                if (discoverResult != null) {
-                                    logger.debug(
-                                            "Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
-                                            lastByteGatewayIP, Integer.toHexString(typical), node, slot);
-                                    discoverResult.thingDetected_Typicals(lastByteGatewayIP, typical, node, slot);
-                                } else {
-                                    logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
-                                }
+                // creates Souliss nodes
+                for (int j = 0; j < numberOf; j++) {
+                    if (mac.get(5 + j) != 0) {// create only not-empty typicals
+                        if (!(mac.get(5 + j) == SoulissBindingProtocolConstants.Souliss_T_related)) {
+                            byte typical = mac.get(5 + j);
+                            byte slot = (byte) (j % typXnodo);
+                            byte node = (byte) (j / typXnodo + tgtnode);
+                            if (discoverResult != null) {
+                                logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
+                                        lastByteGatewayIP, Integer.toHexString(typical), node, slot);
+                                discoverResult.thingDetected_Typicals(lastByteGatewayIP, typical, node, slot);
+                            } else {
+                                logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
                             }
                         }
                     }
@@ -399,7 +395,8 @@ public class SoulissBindingUDPDecoder {
         }
 
         Iterator thingsIterator;
-        if (gateway != null && gateway.getGatewayIP() != null && gateway.getGatewayIP_lastByte() == lastByteGatewayIP) {
+        if (gateway != null && gateway.IPAddressOnLAN != null
+                && Byte.parseByte(gateway.IPAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
             Thing typ = null;
@@ -480,13 +477,8 @@ public class SoulissBindingUDPDecoder {
                                             + " - bit5 (fan3 on-off): " + getBitState(sVal, 5)
                                             + " - bit6 (Manual/automatic fan mode): " + getBitState(sVal, 6)
                                             + " - bit7 (heating/cooling mode): " + getBitState(sVal, 7));
-                                    try {
-                                        ((SoulissT31Handler) handler).setRawStateValues(sVal,
-                                                getFloatAtSlot(mac, slot + 1), getFloatAtSlot(mac, slot + 3));
-                                    } catch (Exception e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
+                                    ((SoulissT31Handler) handler).setRawStateValues(sVal, getByteAtSlot(mac, slot + 1),
+                                            getByteAtSlot(mac, slot + 2));
 
                                     break;
                                 case SoulissBindingConstants.T41:
@@ -591,8 +583,8 @@ public class SoulissBindingUDPDecoder {
     }
 
     private float getFloatAtSlot(ArrayList<Byte> mac, int slot) {
-        int iOutput = mac.get(5 + slot) & 0xFF;
-        int iOutput2 = mac.get(5 + slot + 1) & 0xFF;
+        int iOutput = mac.get(5 + slot);
+        int iOutput2 = mac.get(5 + slot + 1);
         // ora ho i due bytes, li converto
         int shifted = iOutput2 << 8;
         float ret = HalfFloatUtils.toFloat(shifted + iOutput);

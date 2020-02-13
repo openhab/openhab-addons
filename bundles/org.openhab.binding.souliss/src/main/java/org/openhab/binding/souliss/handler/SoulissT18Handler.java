@@ -36,6 +36,7 @@ public class SoulissT18Handler extends SoulissGenericHandler {
     // private Logger logger = LoggerFactory.getLogger(SoulissT18Handler.class);
     byte T1nRawState;
     Configuration gwConfigurationMap;
+    // HSBType hsbState = HSBType.WHITE;
     byte xSleepTime = 0;
 
     @Override

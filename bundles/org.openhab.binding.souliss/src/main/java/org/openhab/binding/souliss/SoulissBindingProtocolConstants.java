@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.souliss;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * This class contains Souliss constants. Original version is taken from
  * SoulissApp. For scope of this binding not all constants are used.
@@ -24,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Luca Remigio
  * @since 2.0.0
  */
-@NonNullByDefault
+
 public class SoulissBindingProtocolConstants {
 
     public static final String TAG = "SoulissApp:Typicals";
