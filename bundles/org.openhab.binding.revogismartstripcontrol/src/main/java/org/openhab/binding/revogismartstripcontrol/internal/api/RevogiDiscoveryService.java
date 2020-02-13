@@ -23,19 +23,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The {@link DiscoveryService} helps to discover smart strips within your network
+ * The {@link RevogiDiscoveryService} helps to discover smart strips within your network
  *
  * @author Andi Bräu - Initial contribution
  */
 @NonNullByDefault
-public class DiscoveryService {
+public class RevogiDiscoveryService {
     private static final String UDP_DISCOVERY_QUERY = "00sw=all,,,;";
-    private final Logger logger = LoggerFactory.getLogger(DiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(RevogiDiscoveryService.class);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UdpSenderService udpSenderService;
 
-    public DiscoveryService(UdpSenderService udpSenderService) {
+    public RevogiDiscoveryService(UdpSenderService udpSenderService) {
         this.udpSenderService = udpSenderService;
     }
 
