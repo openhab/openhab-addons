@@ -15,11 +15,11 @@ package org.openhab.binding.tado.internal.handler;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ControlDevice;
 import org.openhab.binding.tado.internal.api.model.Zone;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class TadoBatteryChecker {
     private final Logger logger = LoggerFactory.getLogger(TadoBatteryChecker.class);
 
-    private List<Zone> zoneList = null;
+    private Map<Long, State> zoneList = new HashMap<>();
     private Date refreshTime = new Date();
     private TadoHomeHandler homeHandler;
 
@@ -47,7 +47,7 @@ public class TadoBatteryChecker {
 
     private synchronized void refreshZoneList() {
         Date now = new Date();
-        if (homeHandler != null && (now.after(refreshTime) || zoneList == null)) {
+        if (homeHandler != null && (now.after(refreshTime) || zoneList.isEmpty())) {
             // be frugal, we only need to refresh the battery state hourly
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(now);
@@ -57,10 +57,20 @@ public class TadoBatteryChecker {
             Long homeId = homeHandler.getHomeId();
             if (homeId != null) {
                 logger.debug("Fetching (battery state) zone list for HomeId {}", homeId);
+                zoneList.clear();
                 try {
-                    zoneList = homeHandler.getApi().listZones(homeId);
+                    for (Zone zone : homeHandler.getApi().listZones(homeId)) {
+                        boolean batteryLow = false;
+                        for (ControlDevice device : zone.getDevices()) {
+                            String batteryState = device.getBatteryState();
+                            batteryLow = (batteryState != null && !batteryState.equals("NORMAL"));
+                            if (batteryLow) {
+                                break;
+                            }
+                        }
+                        zoneList.put(Long.valueOf(zone.getId()), batteryLow ? OnOffType.ON : OnOffType.OFF);
+                    }
                 } catch (IOException | ApiException e) {
-                    zoneList = null;
                     logger.debug("Fetch (battery state) zone list exception", e);
                 }
             }
@@ -69,25 +79,8 @@ public class TadoBatteryChecker {
 
     public State getBatteryLowAlarm(long zoneId) {
         refreshZoneList();
-        boolean hasBatteryStateValue = false;
-        if (zoneList != null) {
-            // logger.debug("Fetching battery state for ZoneId {}", zoneId);
-            for (Zone zone : zoneList) {
-                if (zoneId == zone.getId()) {
-                    for (ControlDevice device : zone.getDevices()) {
-                        String batteryState = device.getBatteryState();
-                        if (batteryState != null) {
-                            if (!batteryState.equals("NORMAL")) {    
-                                return OnOffType.ON;
-                            }
-                            hasBatteryStateValue = true;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        return hasBatteryStateValue ? OnOffType.OFF : UnDefType.UNDEF;
+        State state = zoneList.get(zoneId);
+        return state != null ? state : OnOffType.OFF;
     }
 
 }

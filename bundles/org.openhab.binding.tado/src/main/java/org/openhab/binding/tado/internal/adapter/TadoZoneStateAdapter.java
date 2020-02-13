@@ -233,7 +233,7 @@ public class TadoZoneStateAdapter {
         if (openWindowDetected != null) {
             return OnOffType.from(openWindowDetected);
         }
-        return UnDefType.UNDEF;
+        return OnOffType.OFF;
     }
         
 }
