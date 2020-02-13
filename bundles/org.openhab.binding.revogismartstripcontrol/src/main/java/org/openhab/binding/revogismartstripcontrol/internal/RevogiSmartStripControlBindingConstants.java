@@ -37,4 +37,6 @@ public class RevogiSmartStripControlBindingConstants {
     public static final String PLUG_5_SWITCH = "plug5#switch";
     public static final String PLUG_6_SWITCH = "plug6#switch";
     public static final String ALL_PLUGS = "overallPlug#switch";
+
+    public static final String SERIAL_NUMBER = "serialNumber";
 }

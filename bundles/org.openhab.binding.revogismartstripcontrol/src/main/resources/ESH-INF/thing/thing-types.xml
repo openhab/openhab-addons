@@ -32,8 +32,9 @@
 			</channel-group>
 		</channel-groups>
 
+		<representation-property>serialNumber</representation-property>
 		<config-description>
-			<parameter name="serialnumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>Serial number of your smart strip.</description>
 			</parameter>
