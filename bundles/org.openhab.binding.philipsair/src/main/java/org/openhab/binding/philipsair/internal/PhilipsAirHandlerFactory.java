@@ -14,9 +14,9 @@ package org.openhab.binding.philipsair.internal;
 
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729_50;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC3829_10;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,8 +55,8 @@ public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_UNIVERSAL.equals(thingTypeUID) || THING_TYPE_AC2889_10.equals(thingTypeUID)
-                || THING_TYPE_AC2729_10.equals(thingTypeUID) || THING_TYPE_AC2889_10.equals(thingTypeUID)
-                || THING_TYPE_AC2729_50.equals(thingTypeUID) || THING_TYPE_AC1214_10.equals(thingTypeUID)) {
+                || THING_TYPE_AC2729.equals(thingTypeUID) || THING_TYPE_AC2889_10.equals(thingTypeUID)
+                || THING_TYPE_AC3829_10.equals(thingTypeUID) || THING_TYPE_AC1214_10.equals(thingTypeUID)) {
             return new PhilipsAirHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 

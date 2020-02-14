@@ -118,15 +118,23 @@ public class PhilipsAirCipher {
         return aesKey;
     }
 
-    public String decrypt(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {
+    public @Nullable String decrypt(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {
+        if(decipher == null) {
+            return null;
+        }
+        
         byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
         byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
         return new String(unpaded);
     }
 
-    public String encrypt(String data)
+    public @Nullable String encrypt(String data)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException,
             NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+        if(cipher == null) {
+            return null;
+        }
+        
         String encodedData = "AA" + data;
         byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes("ascii"));
         return Base64.getEncoder().encodeToString(encryptedBytes);

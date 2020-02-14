@@ -13,7 +13,10 @@
 package org.openhab.binding.philipsair.internal.discovery;
 
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC3829_10;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
 
 import java.util.Dictionary;
@@ -41,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PhilipsAirUpnpDiscoveryParticipant} is responsible for discovering
+ * The {@link PhilipsAirUpnpDiscoveryParticipantTest} is responsible for discovering
  * new Philips Air Purifier things
  *
  * @author Michał Boroński - Initial contribution
@@ -83,7 +86,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-            logger.info("Creating with uid {}", uid.getAsString());
+            logger.trace("Creating with uid {}", uid.getAsString());
             Map<String, Object> properties = new HashMap<>();
             properties.put(PhilipsAirConfiguration.CONFIG_HOST, device.getIdentity().getDescriptorURL().getHost());
             properties.put(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID,
@@ -94,7 +97,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
                             + device.getDetails().getModelDetails().getModelNumber())
                     .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
 
-            logger.info("DiscoveryResult with uid {}", result.getThingUID().getAsString());
+            logger.info("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(), result.getLabel());
             return result;
         } else {
             return null;
@@ -110,17 +113,28 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         if (details == null || (modelDetails = details.getModelDetails()) == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL
                         .equalsIgnoreCase(modelName = modelDetails.getModelName())) {
-            logger.debug("Device not recognized {}", device.toString());
+            logger.trace("Device not recognized {}", device.toString());
             return null;
         }
 
+        ThingTypeUID thingType = THING_TYPE_UNIVERSAL;
         if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2889_10
                 .startsWith(modelDetails.getModelNumber().toLowerCase())) {
-            logger.info("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
-            return new ThingUID(THING_TYPE_AC2889_10, device.getIdentity().getUdn().getIdentifierString());
+            thingType = THING_TYPE_AC2889_10;
+        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC1214_10
+                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+            thingType = THING_TYPE_AC1214_10;
+        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729
+                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+            thingType = THING_TYPE_AC2729;
+        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC3829_10
+                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+            thingType = THING_TYPE_AC3829_10;
         } else {
-            logger.info("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
-            return new ThingUID(THING_TYPE_UNIVERSAL, device.getIdentity().getUdn().getIdentifierString());
+            thingType = THING_TYPE_UNIVERSAL;
         }
+        
+        logger.debug("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
+        return new ThingUID(thingType, device.getIdentity().getUdn().getIdentifierString());
     }
 }

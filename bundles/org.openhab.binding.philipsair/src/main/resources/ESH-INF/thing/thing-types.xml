@@ -37,25 +37,9 @@
 			uri="thing-type:philipsair:config" />
 	</thing-type>
 
-	<thing-type id="ac2729_10">
-		<label>Philips Air Purifier AC2729/10 Binding Thing</label>
-		<description>Philips Air Purifier AC2729/10 Binding Thing</description>
-		<channel-groups>
-			<channel-group typeId="controls-adv"
-			id="controls" />
-			<channel-group typeId="controls-ui"
-			id="controls-ui" />
-			<channel-group typeId="sensors-adv"
-			id="sensors" />
-			<channel-group typeId="filters-wicks" id="filters" />
-		</channel-groups>
-		<config-description-ref
-			uri="thing-type:philipsair:config" />
-	</thing-type>
-	
-	<thing-type id="ac2729_50">
-		<label>Philips Air Purifier AC2729/50 Binding Thing</label>
-		<description>Philips Air Purifier AC2729/50 Binding Thing</description>
+	<thing-type id="ac2729">
+		<label>Philips Air Purifier AC2729 Binding Thing</label>
+		<description>Philips Air Purifier AC2729 Binding Thing</description>
 		<channel-groups>
 			<channel-group typeId="controls-adv"
 			id="controls" />
