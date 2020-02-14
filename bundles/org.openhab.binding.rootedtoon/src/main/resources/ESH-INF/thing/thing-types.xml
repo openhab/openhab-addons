@@ -6,7 +6,7 @@
 
     <thing-type id="toon">
 
-        <label>Local Toon (rooted))</label>
+        <label>Rooted Toon</label>
         <description>A connection for a rooted Toon on your local network</description>
 
         <channels>
