@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="webthings" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>WebThings Binding</name>
+	<description>This is the binding for WebThings.</description>
+	<author>Sven Schneider</author>
+
+	<!-- https://www.eclipse.org/smarthome/documentation/development/bindings/xml-reference.html -->
+	<config-description>
+			<parameter name="serverUrl" type="text">
+				<default></default>
+				<context>url</context>
+				<label>Server URL</label>
+				<description>URL of WebThing Server</description>
+			</parameter>
+			<parameter name="token" type="text">
+				<default></default>
+				<context>password</context>
+				<label>Bearer Token</label>
+				<description>Token for Authorization</description>
+			</parameter>
+			<parameter name="openhabIp" type="text">
+				<default>localhost:8080</default>
+				<context>network-address</context>
+				<label>IP and Port</label>
+				<description>IP:Port of openHAB Server</description>
+			</parameter>
+			<parameter name="mozilla" type="boolean">
+				<default>false</default>
+				<label>Match capabilities</label>
+				<description>If true the binding tries to match Mozilla capabilities/types</description>
+			</parameter>
+	</config-description>
+</binding:binding>
