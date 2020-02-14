@@ -64,6 +64,7 @@
 	<channel-type id="cl">
 		<item-type>Switch</item-type>
 		<label>Child lock</label>
+		<description>Child lock enabled/disabled</description>
 	</channel-type>
 
 	<channel-type id="dtrs">
@@ -168,7 +169,7 @@
 	<channel-type id="wl">
 		<item-type>Number</item-type>
 		<label>Water level</label>
-		<description>water level</description>
+		<description>Water tank level</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 
