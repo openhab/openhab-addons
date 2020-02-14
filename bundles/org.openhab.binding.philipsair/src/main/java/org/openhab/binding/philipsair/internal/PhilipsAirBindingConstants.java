@@ -17,7 +17,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.dimension.Density;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -41,20 +48,24 @@ public class PhilipsAirBindingConstants {
     public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_UNIVERSAL);
     public static final ThingTypeUID THING_TYPE_AC2889_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC2889_10);
-    public static final ThingTypeUID THING_TYPE_AC2729 = new ThingTypeUID(BINDING_ID,
-            SUPPORTED_MODEL_NUMBER_AC2729);
+    public static final ThingTypeUID THING_TYPE_AC2729 = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_NUMBER_AC2729);
     public static final ThingTypeUID THING_TYPE_AC1214_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC1214_10);
     public static final ThingTypeUID THING_TYPE_AC3829_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC3829_10);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_AC2889_10,
-                    THING_TYPE_AC2729, THING_TYPE_AC1214_10, THING_TYPE_AC3829_10).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_AC2889_10, THING_TYPE_AC2729,
+                    THING_TYPE_AC1214_10, THING_TYPE_AC3829_10).collect(Collectors.toSet()));
 
     public static final String DISCOVERY_UPNP_MODEL = "AirPurifier";
 
     public static final String DISCOVERY_UDN = "udn";
+
+    // Units of measurement of the data delivered by the API
+    public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Dimensionless> HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
+    public static final Unit<Density> DENSITY_UNIT = SmartHomeUnits.MICROGRAM_PER_CUBICMETRE;
 
     // List of all Channel groups
     public static final String FILTERS = "filters";

@@ -54,7 +54,7 @@ public class PhilipsAirAPIException extends RuntimeException {
      * Constructs a new exception with the specified detail message and cause.
      *
      * @param message Detail message
-     * @param cause   The cause
+     * @param cause The cause
      */
     public PhilipsAirAPIException(String message, Throwable cause) {
         super(message, cause);

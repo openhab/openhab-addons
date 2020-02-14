@@ -13,7 +13,11 @@ The binding compatible with OpenHAB 2.4 can be found at https://git.dabucomp.com
 Supported Philips Air Purifiers (hardware testes) devices are
 
 + AC2889/10
++ AC2889/10
++ AC2729
 + AC2729/50
++ AC1214/10
++ AC3829/10
 
 You are welcome to provide any information about compatibility with other versions.
 
@@ -26,23 +30,21 @@ You are welcome to provide any information about compatibility with other versio
 * purification mode control,
 * lights control,
 * sensor readings (air quality, temperature, humidity)
+* filter status
+* child lock
+* temperature/humidity offset
 
 ## Discovery
 
-Via UPNP protocol
+This binding can discover Philips Air Purifiers automatically via UPNP protocol.
+Currently following devices are recognized precisely, all other Philips Air purifiers family is recognized as 'Universal' thing type
+
+-   AC2889/10
+-   AC2729
+-   AC2729/50
+-   AC1214/10
+-   AC3829/10
 
 ## Thing Configuration
 
-No need to configure as UPNP discovery should configure everything automatically, including keys exchange with the device
-
-## Installation
-
-### Before installing a new build
-
-- stop OH
-- run "openhab-cli clean-cache"
-
-### General installation
-
-- copy the jar into you OH's addons folder.
-- start OH, wait until initialized
+The binding in order to work does not need to configure anything, as UPNP discovery should configure everything automatically allready. After adding the thing the binding automatically exchange keys with the device used for communication encryption/decryption.

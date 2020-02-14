@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC3829_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

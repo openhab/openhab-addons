@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal.discovery;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC3829_10;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -97,7 +92,8 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
                             + device.getDetails().getModelDetails().getModelNumber())
                     .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
 
-            logger.info("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(), result.getLabel());
+            logger.info("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
+                    result.getLabel());
             return result;
         } else {
             return null;
@@ -133,7 +129,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         } else {
             thingType = THING_TYPE_UNIVERSAL;
         }
-        
+
         logger.debug("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
         return new ThingUID(thingType, device.getIdentity().getUdn().getIdentifierString());
     }

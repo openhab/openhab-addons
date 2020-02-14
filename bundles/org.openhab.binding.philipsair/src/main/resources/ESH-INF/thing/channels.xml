@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-	bindingId="philipsair"
+<thing:thing-descriptions bindingId="philipsair"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
@@ -81,7 +80,7 @@
 	</channel-type>
 
 	<channel-type id="pm25">
-		<item-type>Number</item-type>
+		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM 2.5 particles pollution level</description>
 		<state readOnly="true" pattern="%d" min="0" max="5000" />
@@ -97,11 +96,11 @@
 		<label>AQIT</label>
 		<description>AQI</description>
 		<state readOnly="true" pattern="%d" />
-	</channel-type>	
+	</channel-type>
 	<channel-type id="err">
 		<item-type>String</item-type>
 		<label>Error message</label>
-		<state readOnly="true" pattern="%s" >
+		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="0">No error</option>
 				<option value="49408">No water</option>
@@ -136,23 +135,24 @@
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="rh">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity</description>
-		<state readOnly="true" pattern="%d" />
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100" />
 	</channel-type>
 	<channel-type id="rhset">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity setpoint</label>
 		<description>Humidity setpoint</description>
-		<state readOnly="false" pattern="%d" min="40" max="70"
-			step="10" />
+		<state readOnly="false" pattern="%.0f %unit%" min="40" max="70" step="10" />
 	</channel-type>
 	<channel-type id="temp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
-		<state readOnly="true" pattern="%d" />
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="func">
 		<item-type>String</item-type>
@@ -172,7 +172,7 @@
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 
-	<channel-type id="swversion">
+	<channel-type id="swversion" advanced="true">
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Firmware Version of the thing</description>

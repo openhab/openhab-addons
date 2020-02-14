@@ -13,6 +13,7 @@
 package org.openhab.binding.philipsair.internal;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,13 +29,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.dimension.Density;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -176,18 +182,6 @@ public class PhilipsAirHandlerTest extends JavaTest {
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         handler = new PhilipsAirHandler(thing, httpClient);
-
-        /*
-         * String encoded = cipher.decrypt(content1);
-         * System.out.println(encoded);
-         *
-         * encoded = cipher.decrypt(content2);
-         * System.out.println(encoded);
-         * encoded = cipher.decrypt(content3);
-         * System.out.println(encoded);
-         * encoded = cipher.decrypt(content4);
-         * System.out.println(encoded);
-         */
         when(request.send()).thenReturn(response);
 
     }
@@ -266,7 +260,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         waitForAssert(() -> {
             verify(callback, times(3)).statusUpdated(eq(thing), statusInfoCaptor.capture());
-            verify(callback, atLeast(2)).stateUpdated(any(), stateCaptor.capture());
+            verify(callback, atLeast(3)).stateUpdated(any(), stateCaptor.capture());
         }, 6000, 100);
 
         // assert that the (temporary) UNKNOWN status was given first:
@@ -277,7 +271,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         int calls = stateCaptor.getAllValues().size();
         assertThat(calls, is(18));
-        assertThat(stateCaptor.getAllValues().get(0), instanceOf(DecimalType.class));
+        assertThat(stateCaptor.getAllValues().get(0), instanceOf(QuantityType.class));
         assertThat(stateCaptor.getAllValues().get(1), instanceOf(OnOffType.class));
         assertThat(stateCaptor.getAllValues().get(2), instanceOf(StringType.class));
         assertThat(stateCaptor.getAllValues().get(3), instanceOf(OnOffType.class)); // cl
@@ -293,11 +287,11 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertThat(stateCaptor.getAllValues().get(12), instanceOf(StringType.class)); // err
         assertThat(stateCaptor.getAllValues().get(13), instanceOf(StringType.class)); // func
         assertThat(stateCaptor.getAllValues().get(14), instanceOf(DecimalType.class)); // rhset
-        assertThat(stateCaptor.getAllValues().get(15), instanceOf(DecimalType.class)); // rh
-        assertThat(stateCaptor.getAllValues().get(16), instanceOf(DecimalType.class)); // temp
+        assertThat(stateCaptor.getAllValues().get(15), instanceOf(QuantityType.class)); // rh
+        assertThat(stateCaptor.getAllValues().get(16), instanceOf(QuantityType.class)); // temp
         assertThat(stateCaptor.getAllValues().get(17), instanceOf(DecimalType.class)); // wl
 
-        DecimalType pm25State = (DecimalType) stateCaptor.getAllValues().get(0);
+        QuantityType<Density> pm25State = (QuantityType<Density>) stateCaptor.getAllValues().get(0);
         OnOffType pwrState = (OnOffType) stateCaptor.getAllValues().get(1);
         StringType omState = (StringType) stateCaptor.getAllValues().get(2);
         OnOffType clState = (OnOffType) stateCaptor.getAllValues().get(3);
@@ -313,8 +307,10 @@ public class PhilipsAirHandlerTest extends JavaTest {
         StringType errState = (StringType) stateCaptor.getAllValues().get(12);
         StringType funcState = (StringType) stateCaptor.getAllValues().get(13);
         DecimalType rhsetState = (DecimalType) stateCaptor.getAllValues().get(14);
-        DecimalType rhState = (DecimalType) stateCaptor.getAllValues().get(15);
-        DecimalType tempState = (DecimalType) stateCaptor.getAllValues().get(16);
+        @SuppressWarnings("unchecked")
+        QuantityType<Dimensionless> rhState = (QuantityType<Dimensionless>) stateCaptor.getAllValues().get(15);
+        @SuppressWarnings("unchecked")
+        QuantityType<Temperature> tempState = (QuantityType<Temperature>) stateCaptor.getAllValues().get(16);
         DecimalType wlState = (DecimalType) stateCaptor.getAllValues().get(17);
 
         assertThat(pm25State.intValue(), is(8));
@@ -335,7 +331,61 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertThat(rhState.intValue(), is(56));
         assertThat(tempState.intValue(), is(21));
         assertThat(wlState.intValue(), is(0));
-        // assertThat(errMsgState, is("No error"));
+    }
+
+    @Test
+    public void testStateOffsetUpdates() throws Exception {
+        // mock getConfiguration to prevent NPEs
+
+        initChannels(callback, "rh:Number", "temp:Number");
+
+        when(request.timeout(5, TimeUnit.SECONDS)).thenReturn(request);
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn(content1).thenReturn(content2).thenReturn(content1)
+                .thenReturn(content3).thenReturn(content4);
+
+        handler.setCallback(callback);
+        handler.initialize();
+
+        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+        // verify the interaction with the callback and capture the ThingStatusInfo
+        // argument:
+
+        waitForAssert(() -> {
+            verify(callback, atLeast(2)).stateUpdated(any(), stateCaptor.capture());
+        }, 6000, 100);
+
+        int calls = stateCaptor.getAllValues().size();
+        assertThat(calls, is(2));
+        assertThat(stateCaptor.getAllValues().get(0), instanceOf(QuantityType.class)); // rh
+        assertThat(stateCaptor.getAllValues().get(1), instanceOf(QuantityType.class)); // temp
+
+        @SuppressWarnings("unchecked")
+        QuantityType<Dimensionless> rhState = (QuantityType<Dimensionless>) stateCaptor.getAllValues().get(0);
+        @SuppressWarnings("unchecked")
+        QuantityType<Temperature> tempState = (QuantityType<Temperature>) stateCaptor.getAllValues().get(1);
+
+        assertThat(rhState.intValue(), is(56));
+        assertThat(tempState.intValue(), is(21));
+
+        config.put(PhilipsAirConfiguration.CONFIG_DEF_TEMPERATURE_OFFSET, 1.0);
+        config.put(PhilipsAirConfiguration.CONFIG_DEF_HUMIDITY_OFFSET, -1.0);
+        calls = stateCaptor.getAllValues().size();
+        handler.handleConfigurationUpdate(config.getProperties());
+        waitForAssert(() -> {
+            verify(callback, atLeast(4)).stateUpdated(any(), stateCaptor.capture());
+        }, 5500, 500);
+
+        calls = stateCaptor.getAllValues().size();
+        assertThat(stateCaptor.getAllValues().get(calls - 2), instanceOf(QuantityType.class));
+        assertThat(stateCaptor.getAllValues().get(calls - 1), instanceOf(QuantityType.class));
+
+        calls = stateCaptor.getAllValues().size();
+        assertThat(calls, is(6));
+        rhState = (QuantityType<Dimensionless>) stateCaptor.getAllValues().get(calls - 2);
+        assertThat(rhState.floatValue(), is(55f));
+        tempState = (QuantityType<Temperature>) stateCaptor.getAllValues().get(calls - 1);
+        assertThat(tempState.floatValue(), is(22f));
     }
 
     private void sendCommandTemplate(Channel channel, Command command, State stateBefore, State stateAfter,

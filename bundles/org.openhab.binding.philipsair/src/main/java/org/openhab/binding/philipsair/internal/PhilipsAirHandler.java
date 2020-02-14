@@ -26,11 +26,13 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.measure.quantity.Dimensionless;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.library.dimension.Density;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -66,7 +68,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) PhilipsAirAPIConnection connection;
-    private @NonNullByDefault({}) PhilipsAirConfiguration config;
+    // private @NonNullByDefault({}) PhilipsAirConfiguration config;
     private @Nullable PhilipsAirPurifierData currentData;
     private @Nullable PhilipsAirPurifierDevice deviceInfo;
     private @Nullable PhilipsAirPurifierFilters filters;
@@ -123,7 +125,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        config = getConfigAs(PhilipsAirConfiguration.class);
+        PhilipsAirConfiguration config = getAirPurifierConfig();
         boolean configValid = true;
 
         int refreshInterval = config.getRefreshInterval();
@@ -184,12 +186,12 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
     protected boolean requestData(PhilipsAirAPIConnection connection) throws PhilipsAirAPIException {
         try {
-            PhilipsAirPurifierDevice info = connection.getAirPurifierDevice(config.getHost());
-            PhilipsAirPurifierData data = connection.getAirPurifierStatus(config.getHost());
+            PhilipsAirPurifierDevice info = connection.getAirPurifierDevice(getAirPurifierConfig().getHost());
+            PhilipsAirPurifierData data = connection.getAirPurifierStatus(getAirPurifierConfig().getHost());
             PhilipsAirPurifierFilters filters = null;
             List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
             if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
-                filters = connection.getAirPurifierFiltersStatus(config.getHost());
+                filters = connection.getAirPurifierFiltersStatus(getAirPurifierConfig().getHost());
             }
 
             if (data != null) {
@@ -198,9 +200,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
             if (info != null) {
                 this.deviceInfo = info;
-                config.setModelid(info.getModelid());
-                this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, config.getModelid());
-                this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, config.getKey());
+                getAirPurifierConfig().setModelid(info.getModelid());
+                this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, getAirPurifierConfig().getModelid());
+                this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, getAirPurifierConfig().getKey());
                 ThingHandlerCallback callback = getCallback();
                 if (callback != null) {
                     callback.configurationUpdated(thing);
@@ -283,7 +285,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case POWER:
                     return data.getPower() == 0 ? OnOffType.OFF : OnOffType.ON;
                 case PM25:
-                    return data.getPm25();
+                    return new QuantityType<Density>(data.getPm25(), DENSITY_UNIT);
                 case OM:
                     return data.getFanSpeed();
                 case CL:
@@ -301,11 +303,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case ERR:
                     return String.valueOf(data.getErrorCode());
                 case RH:
-                    return data.getHumidity();
+                    return new QuantityType<Dimensionless>(
+                            data.getHumidity() + getAirPurifierConfig().getHumidityOffset(), HUMIDITY_UNIT);
                 case RHSET:
                     return data.getHumiditySetpoint();
                 case TEMP:
-                    return data.getTemperature();
+                    return new QuantityType<>(data.getTemperature() + getAirPurifierConfig().getTemperatureOffset(),
+                            TEMPERATURE_UNIT);
                 case FUNC:
                     return data.getFunction();
                 case WL:
@@ -337,6 +341,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     public PhilipsAirConfiguration getAirPurifierConfig() {
-        return config;
+        return getConfigAs(PhilipsAirConfiguration.class);
     }
 }

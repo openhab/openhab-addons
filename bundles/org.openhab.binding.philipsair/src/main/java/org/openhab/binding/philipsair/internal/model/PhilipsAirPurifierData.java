@@ -21,8 +21,8 @@ import com.google.gson.annotations.SerializedName;
  * Holds status of particular features of the Air Purifier thing
  *
  * @author Michał Boroński - Initial contribution
- *@Nullable
-    
+ * @Nullable
+ *
  */
 public class PhilipsAirPurifierData {
     @SerializedName("om")
@@ -67,7 +67,7 @@ public class PhilipsAirPurifierData {
 
     @SerializedName("rh")
     @Expose
-    private int humidity;
+    private float humidity;
 
     @SerializedName("rhset")
     @Expose
@@ -75,7 +75,7 @@ public class PhilipsAirPurifierData {
 
     @SerializedName("temp")
     @Expose
-    private int temperature;
+    private float temperature;
 
     @SerializedName("func")
     @Expose
@@ -190,11 +190,11 @@ public class PhilipsAirPurifierData {
         this.errorCode = errorCode;
     }
 
-    public int getHumidity() {
+    public float getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(int humidity) {
+    public void setHumidity(float humidity) {
         this.humidity = humidity;
     }
 
@@ -206,7 +206,7 @@ public class PhilipsAirPurifierData {
         this.humiditySetpoint = humiditySetpoint;
     }
 
-    public int getTemperature() {
+    public float getTemperature() {
         return temperature;
     }
 
