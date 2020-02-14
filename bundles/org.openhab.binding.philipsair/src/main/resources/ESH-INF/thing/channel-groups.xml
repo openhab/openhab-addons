@@ -72,7 +72,7 @@
 			<channel id="fltsts0" typeId="fltsts0" />
 			<channel id="fltsts1" typeId="fltsts1" />
 			<channel id="fltsts2" typeId="fltsts2" />
-			<channel id="wick" typeId="wick" />
+			<channel id="wicksts" typeId="wicksts" />
 		</channels>
 	</channel-group-type>
 
