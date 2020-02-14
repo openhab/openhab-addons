@@ -83,7 +83,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         super(thing);
         this.httpClient = httpClient;
         calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
-                + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\\\|\\?\\*]", "_") + ".ical");
+                + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
     }
 
@@ -268,14 +268,14 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         @Nullable
         EventPublisher syncEventPublisherCallback = eventPublisherCallback;
         if (syncEventPublisherCallback == null) {
-            logger.error("EventPublisher object not instantiated!");
+            logger.warn("EventPublisher object not instantiated!");
             return;
         }
         // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
         @Nullable
         ICalendarConfiguration syncConfiguration = configuration;
         if (syncConfiguration == null) {
-            logger.error("Configuration not instantiated!");
+            logger.warn("Configuration not instantiated!");
             return;
         }
         // loop through all events in the list

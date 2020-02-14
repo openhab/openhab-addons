@@ -4,7 +4,7 @@ This binding is intended to read out a calendar from somewhere on the web and to
 
 ## Supported Things
 
-The only thing type is the calendar. It is based on a single iCalendar-File. There can be multiple Things having different properties representing different calendars.
+The only thing type is the calendar. It is based on a single iCalendar file. There can be multiple Things having different properties representing different calendars.
 
 ## Thing Configuration
 
@@ -45,7 +45,7 @@ The first field **must** be either `BEGIN` or `END`. If it is `BEGIN` then the c
  
 The `Item_Name` field must be the name of any Item in the system.
 
-The `New_State_Value` is the state value that will be sent to the Item. It must be a value which is compatible with the Item type. See OpenHAB core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
+The `New_State_Value` is the state value that will be sent to the Item. It must be a value which is compatible with the Item type. See openHAB core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
 
 The `Authorization_Code` may optionally be used as follows:
 
