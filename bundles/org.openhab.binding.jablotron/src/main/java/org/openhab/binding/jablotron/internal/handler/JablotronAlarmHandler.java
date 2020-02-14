@@ -53,7 +53,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     protected Gson gson = new Gson();
 
-    protected @Nullable JablotronDeviceConfig thingConfig;
+    protected JablotronDeviceConfig thingConfig = new JablotronDeviceConfig();
 
     private String lastWarningTime = "";
 

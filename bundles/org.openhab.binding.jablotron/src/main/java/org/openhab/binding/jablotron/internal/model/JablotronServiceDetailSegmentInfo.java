@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.jablotron.internal.model;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**

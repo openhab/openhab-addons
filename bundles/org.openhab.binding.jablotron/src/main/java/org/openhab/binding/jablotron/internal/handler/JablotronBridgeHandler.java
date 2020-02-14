@@ -64,7 +64,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
     /**
      * Our configuration
      */
-    public @Nullable JablotronBridgeConfig bridgeConfig;
+    public JablotronBridgeConfig bridgeConfig = new JablotronBridgeConfig();
 
     public JablotronBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
@@ -98,8 +98,10 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateAlarmThings() {
         List<JablotronDiscoveredService> services = discoverServices();
-        for (JablotronDiscoveredService service : services) {
-            updateAlarmThing(service);
+        if (services != null) {
+            for (JablotronDiscoveredService service : services) {
+                updateAlarmThing(service);
+            }
         }
     }
 
@@ -107,6 +109,10 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (String.valueOf(service.getId()).equals(th.getUID().getId())) {
                 JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+                if (handler == null) {
+                    logger.debug("Thing handler is null");
+                    continue;
+                }
                 if ("ENABLED".equals(service.getStatus())) {
                     if (!"".equals(service.getWarning())) {
                         logger.debug("Alarm with service id: {} warning: {}", service.getId(), service.getWarning());
@@ -201,7 +207,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException ex) {
             logger.debug("Timeout during discovering services", ex);
         } catch (ExecutionException | InterruptedException ex) {
-            logger.debug("Interruption during discovering services", ex);
+            logger.debug("Error during discovering services", ex);
         }
         return null;
     }
@@ -209,6 +215,11 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
     protected synchronized @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key, String status, String code) {
         String url;
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
 
         if (handler.isInService()) {
             logger.debug("Cannot send command because the alarm is in the service mode");
@@ -233,10 +244,10 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("Error during sending user code: {}", response.getErrorMessage());
             }
             return response;
-        } catch (TimeoutException ex) {
-            logger.debug("sendUserCode timeout exception", ex);
-        } catch (Exception ex) {
-            logger.debug("sendUserCode exception", ex);
+        } catch (TimeoutException e) {
+            logger.debug("sendUserCode timeout exception", e);
+        } catch (InterruptedException | ExecutionException e) {
+            logger.debug("sendUserCode exception", e);
         }
         return null;
     }
@@ -261,7 +272,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm history!");
             return null;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("sendGetEventHistory exception", e);
             return null;
         }
@@ -284,7 +295,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm status!");
             return null;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("sendGetStatusRequest exception", e);
             return null;
         }
@@ -307,7 +318,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting programmable gates!");
             return null;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("sendGetSections exception", e);
             return null;
         }
@@ -330,7 +341,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm sections!");
             return null;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("sendGetSections exception", e);
             return null;
         }
@@ -338,6 +349,11 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     protected synchronized @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action, String value, String componentId) {
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
 
         if (handler.isInService()) {
             logger.debug("Cannot control component because the alarm is in the service mode");
@@ -360,7 +376,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm sections!");
             return null;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("controlComponent exception", e);
             return null;
         }

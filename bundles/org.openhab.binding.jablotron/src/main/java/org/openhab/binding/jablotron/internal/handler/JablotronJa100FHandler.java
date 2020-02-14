@@ -17,7 +17,6 @@ import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LA
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -104,13 +103,17 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
             // sections
             JablotronGetSectionsResponse response = handler.sendGetSections(getThing(), alarmName);
-            createSectionChannels(response.getData().getSections());
-            updateSectionState(response.getData().getStates());
+            if (response != null) {
+                createSectionChannels(response.getData().getSections());
+                updateSectionState(response.getData().getStates());
+            }
 
             // PGs
             JablotronGetPGResponse resp = handler.sendGetProgrammableGates(getThing(), alarmName);
-            createPGChannels(resp.getData().getProgrammableGates());
-            updateSectionState(resp.getData().getStates());
+            if (resp != null) {
+                createPGChannels(resp.getData().getProgrammableGates());
+                updateSectionState(resp.getData().getStates());
+            }
 
             // update events
             List<JablotronHistoryDataEvent> events = sendGetEventHistory(alarmName);
