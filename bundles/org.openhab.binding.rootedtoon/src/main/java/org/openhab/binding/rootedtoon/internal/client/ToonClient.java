@@ -178,6 +178,7 @@ public class ToonClient {
 
         try {
             String strJson = response.readEntity(String.class);
+            logger.debug("Realtime usage info response: " + strJson);
             JsonObject json = this.jsonParser.parse(strJson).getAsJsonObject();
 
             RealtimeUsageInfo result = new RealtimeUsageInfo();
@@ -188,46 +189,63 @@ public class ToonClient {
                 try {
                     String str = dev.get("type").getAsString();
                     switch (str) {
-                        case "elec_received_lt":
 
-                            result.elec_received_lt = new RatedValue(
+                        case "HAE_METER_v3_1":
+                        case "gas":
+                            result.gas = new RatedValue(Double.valueOf(dev.get("CurrentGasFlow").getAsDouble()),
+                                    Double.valueOf(dev.get("CurrentGasQuantity").getAsDouble()));
+                            break;
+
+                        case "HAE_METER_v3_2":
+                        case "elec":
+                            result.elec = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
                             break;
+
+                        case "HAE_METER_v3_3":
+                        case "elec_solar":
+                            double flow = Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble());
+                            double total = Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble());
+                            result.elec_solar = new RatedValue(flow, total);
+                            break;
+
+                        case "HAE_METER_v3_4":
+                        case "elec_delivered_nt":
+                            result.elec_delivered_nt = new RatedValue(
+                                    Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
+                                    Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
+                            break;
+
+                        case "HAE_METER_v3_5":
                         case "elec_received_nt":
 
                             result.elec_received_nt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
                             break;
-                        case "gas":
-                            result.gas = new RatedValue(Double.valueOf(dev.get("CurrentGasFlow").getAsDouble()),
-                                    Double.valueOf(dev.get("CurrentGasQuantity").getAsDouble()));
-                            break;
-                        case "elec":
-                            result.elec = new RatedValue(
-                                    Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
-                                    Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
-                            break;
-                        case "heat":
-                            result.heat = new RatedValue(Double.valueOf(dev.get("CurrentHeatQuantity").getAsDouble()),
-                                    null);
-                            break;
-                        case "elec_solar":
-                            double flow = Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble());
-                            double total = Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble());
-                            result.elec_solar = new RatedValue(flow, total);
-                            break;
+
+                        case "HAE_METER_v3_6":
                         case "elec_delivered_lt":
                             result.elec_delivered_lt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
                             break;
-                        case "elec_delivered_nt":
-                            result.elec_delivered_nt = new RatedValue(
+
+                        case "HAE_METER_v3_7":
+                        case "elec_received_lt":
+
+                            result.elec_received_lt = new RatedValue(
                                     Double.valueOf(dev.get("CurrentElectricityFlow").getAsDouble()),
                                     Double.valueOf(dev.get("CurrentElectricityQuantity").getAsDouble()));
                             break;
+
+                        case "HAE_METER_v3_8":
+                        case "heat":
+                            result.heat = new RatedValue(Double.valueOf(dev.get("CurrentHeatQuantity").getAsDouble()),
+                                    null);
+                            break;
+
                     }
                 } catch (Exception exception) {
                     logger.error(dev.toString());
