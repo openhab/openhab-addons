@@ -70,6 +70,12 @@ Nevertheless there are thing parameters that can be set manually:
 | humidityOffset    | Humidity sensor readings offset used for correction. Optional, the default value is 0 degrees.                        |
 | temperatureOffset | Temperature sensor readings offset used for correction. Optional, the default value is 0 Celsius degrees.             |
 
+demo.things
+
+```java
+philipsair:ac2889_10:123 "Philips Air AC2889_10" @ "Wroclaw" [ key="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", host="1.1.1.1", refreshInterval=15 ]
+```
+
 ## Channels
 
 | Channel ID | Item Type            | Description                                                                         |
