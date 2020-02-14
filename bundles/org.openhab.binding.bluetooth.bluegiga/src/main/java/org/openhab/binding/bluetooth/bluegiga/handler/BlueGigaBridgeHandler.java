@@ -246,9 +246,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 "Initialization of BlueGiga controller failed");
                     }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Failed opening serial port.");
                 }
             }
         } catch (RuntimeException e) {
