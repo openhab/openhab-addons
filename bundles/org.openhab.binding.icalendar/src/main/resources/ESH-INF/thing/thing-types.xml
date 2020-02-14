@@ -32,7 +32,7 @@
 			</parameter>
 			<parameter name="refreshTime" type="integer" required="true" min="1" unit="min" groupName="source">
 				<label>Refresh Time</label>
-				<description>Interval to scan for changes</description>
+				<description>Frequency to scan for changes</description>
 				<unitLabel>minutes</unitLabel>
 			</parameter>
 			<parameter name="username" type="text" required="false" groupName="source">

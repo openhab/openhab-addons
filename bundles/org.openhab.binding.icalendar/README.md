@@ -1,6 +1,6 @@
 # iCalendar Binding
 
-This binding is intended to read out a calendar from somewhere on the web and to use it as trigger or presence switch. It implements several Channels that indicate the current active calendar event, and the next active event. Furthermore it is possible to embed Command Tags in the calendar event description to issue commands directly to other Items in the system, without the need to create special Rules. 
+This binding is intended to use a web-based iCal calendar as an event trigger or presence switch. It implements several Channels that iindicate the current calendar event and the next event. Furthermore it is possible to embed Command Tags in the calendar event description to issue commands directly to other Items in the system, without the need to create special Rules. 
 
 ## Supported Things
 
@@ -12,8 +12,8 @@ Each Calendar Thing requires the following configuration parameters:
 
 | parameter name      | description                                                                                                                                                                                                                                                                | optional  |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `url`               | The URL of the ical which used used as database                                                                                                                                                                                                                            | mandatory |
-| `refreshTime`       | The frequency the calendar gets refreshed and pulled from the source, if possible. In minutes.                                                                                                                                                                             | mandatory |
+| `url`               | The URL of an iCalendar to be used as a source of events.                                                                                                                                                                                                                  | mandatory |
+| `refreshTime`       | The frequency in minutes with which the calendar gets refreshed from the source.                                                                                                                                                                                           | mandatory |
 | `username`          | The username for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `password`                                                                                                                                  | optional  |
 | `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`                                                                                                                                  | optional  |
 | `authorizationCode` | The authorization code to permit the execution of embedded Command Tags. If set, the binding checks that the authorization code in the Command Tag matches before executing any commands.                                                                                  | optional  |
@@ -22,15 +22,15 @@ Each Calendar Thing requires the following configuration parameters:
 
 The channels describe the current and the next event. They are all read-only.
 
-| Channel           | Type      | Description                         |
-|-------------------|-----------|-------------------------------------|
-| current_presence  | Switch    | Current presence of a event         |
-| current_title     | String    | Title of a currently present event  |
-| current_start     | DateTime  | Start of a currently present event  |
-| current_end       | DateTime  | End of a currently present event    |
-| next_title        | String    | Title of the next event             |
-| next_start        | DateTime  | Start of the next event             |
-| next_end          | DateTime  | End of the next event               |
+| Channel           | Type      | Description                                                                   |
+|-------------------|-----------|-------------------------------------------------------------------------------|
+| current_presence  | Switch    | Current presence of a event, ON if there is currently an event, OFF otherwise |
+| current_title     | String    | Title of a currently present event                                            |
+| current_start     | DateTime  | Start of a currently present event                                            |
+| current_end       | DateTime  | End of a currently present event                                              |
+| next_title        | String    | Title of the next event                                                       |
+| next_start        | DateTime  | Start of the next event                                                       |
+| next_end          | DateTime  | End of the next event                                                         |
 
 ## Command Tags
 
@@ -43,7 +43,7 @@ Each calendar event may include one or more Command Tags in its description text
 
 The first field **must** be either `BEGIN` or `END`. If it is `BEGIN` then the command will be executed at the beginning of the calendar event. If it is `END` then the command will be executed at the end of the calendar event. A calendar event may contain multiple `BEGIN` or `END` tags. If an event contains both `BEGIN` and `END` tags, this Items (say) to be turned ON at the beginning of an event and turned OFF again at the end of the event.
  
-The `Item_Name` field must be the name of any Item in the system.
+The `Item_Name` field must be the name of an Item.
 
 The `New_State_Value` is the state value that will be sent to the Item. It must be a value which is compatible with the Item type. See openHAB core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
 
@@ -51,12 +51,12 @@ The `Authorization_Code` may *optionally* be used as follows:
 
 - When the Thing Configuration Parameter `authorizationCode` is a non-empty string, the binding will compare the `Authorization_Code` field to the `authorizationCode` Configuration Parameter, and it will only execute the command if the two strings are the same.
 
-- When the Thing Configuration Parameter `authorizationCode` is an empty string, the binding will NOT check this `Authorization_Code` field, and so it will always execute the respective command.
+- When the Thing Configuration Parameter `authorizationCode` is an empty string, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
 
  
 ## Full Example
 
-Provide at least all required information into the Thing definition, either via ui or in the Thing-file
+Provide at least all required information into the Thing definition, either via UI or in the things file
 
 ```
 Thing icalendar:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60, readAroundTime=20160 ]

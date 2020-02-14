@@ -182,7 +182,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
-            logger.warn("Loading calendar failed.", e);
+            logger.warn("Loading calendar failed: {}", e.getMessage());
             return false;
         }
         return true;
