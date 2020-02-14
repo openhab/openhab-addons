@@ -12,29 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.AQIL;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.AQIT;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.CARBON_FILTER;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.CL;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.DDP;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.DT;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.DTRS;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.ERR;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.FUNC;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.HEPA_FILTER;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.IAQL;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.MODE;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.OM;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PM25;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.POWER;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PRE_FILTER;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.RH;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.RHSET;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SWVERSION;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.TEMP;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.UIL;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.WICKS_FILTER;
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.WL;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -120,8 +98,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             if (parameter.equals(CL)) {
                 value = ((OnOffType) command) == OnOffType.ON ? "true" : "false";
+            } else {
+                value = ((OnOffType) command) == OnOffType.ON ? "1" : "0";
             }
-            value = ((OnOffType) command) == OnOffType.ON ? "1" : "0";
         } else if (command instanceof DecimalType) {
             value = ((DecimalType) command).intValue();
         } else if (command instanceof StringType) {
@@ -162,7 +141,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
             connection = new PhilipsAirAPIConnection(config, httpClient);
             updateStatus(ThingStatus.UNKNOWN);
-            if (refreshJob == null || refreshJob.isCancelled()) {
+            if (refreshJob == null || (refreshJob != null && refreshJob.isCancelled())) {
                 logger.debug("Start refresh job at interval {} sec.", refreshInterval);
                 refreshJob = scheduler.scheduleWithFixedDelay(this::updateThing, INITIAL_DELAY_IN_SECONDS,
                         refreshInterval, TimeUnit.SECONDS);
@@ -209,7 +188,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             PhilipsAirPurifierData data = connection.getAirPurifierStatus(config.getHost());
             PhilipsAirPurifierFilters filters = null;
             List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
-            if (filterGroup != null && filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
+            if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
                 filters = connection.getAirPurifierFiltersStatus(config.getHost());
             }
 
@@ -295,61 +274,61 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
         if (data != null) {
             switch (field) {
-            case AQIL:
-                return data.getLightLevel();
-            case DDP:
-                return Integer.toString(data.getDisplayIndex());
-            case UIL:
-                return data.getButtons() == 0 ? OnOffType.OFF : OnOffType.ON;
-            case POWER:
-                return data.getPower() == 0 ? OnOffType.OFF : OnOffType.ON;
-            case PM25:
-                return data.getPm25();
-            case OM:
-                return data.getFanSpeed();
-            case CL:
-                return data.getChildLock() ? OnOffType.ON : OnOffType.OFF;
-            case DT:
-                return data.getTimer();
-            case DTRS:
-                return data.getTimerLeft();
-            case MODE:
-                return data.getMode();
-            case IAQL:
-                return data.getAllergenLevel();
-            case AQIT:
-                return data.getAqit();
-            case ERR:
-                return String.valueOf(data.getErrorCode());
-            case RH:
-                return data.getHumidity();
-            case RHSET:
-                return data.getHumiditySetpoint();
-            case TEMP:
-                return data.getTemperature();
-            case FUNC:
-                return data.getFunction();
-            case WL:
-                return data.getWaterLevel();
+                case AQIL:
+                    return data.getLightLevel();
+                case DDP:
+                    return Integer.toString(data.getDisplayIndex());
+                case UIL:
+                    return data.getButtons() == 0 ? OnOffType.OFF : OnOffType.ON;
+                case POWER:
+                    return data.getPower() == 0 ? OnOffType.OFF : OnOffType.ON;
+                case PM25:
+                    return data.getPm25();
+                case OM:
+                    return data.getFanSpeed();
+                case CL:
+                    return data.getChildLock() ? OnOffType.ON : OnOffType.OFF;
+                case DT:
+                    return data.getTimer();
+                case DTRS:
+                    return data.getTimerLeft();
+                case MODE:
+                    return data.getMode();
+                case IAQL:
+                    return data.getAllergenLevel();
+                case AQIT:
+                    return data.getAqit();
+                case ERR:
+                    return String.valueOf(data.getErrorCode());
+                case RH:
+                    return data.getHumidity();
+                case RHSET:
+                    return data.getHumiditySetpoint();
+                case TEMP:
+                    return data.getTemperature();
+                case FUNC:
+                    return data.getFunction();
+                case WL:
+                    return data.getWaterLevel();
             }
 
             if (deviceInfo != null) {
                 switch (field) {
-                case SWVERSION:
-                    deviceInfo.getSwversion();
+                    case SWVERSION:
+                        deviceInfo.getSwversion();
                 }
             }
 
             if (filters != null) {
                 switch (field) {
-                case PRE_FILTER:
-                    return filters.getPreFilter();
-                case WICKS_FILTER:
-                    return filters.getWickFilter();
-                case CARBON_FILTER:
-                    return filters.getCarbonFilter();
-                case HEPA_FILTER:
-                    return filters.getHepaFilter();
+                    case PRE_FILTER:
+                        return filters.getPreFilter();
+                    case WICKS_FILTER:
+                        return filters.getWickFilter();
+                    case CARBON_FILTER:
+                        return filters.getCarbonFilter();
+                    case HEPA_FILTER:
+                        return filters.getHepaFilter();
                 }
             }
         }

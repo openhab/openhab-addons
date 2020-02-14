@@ -55,7 +55,7 @@ public class PhilipsAirCipher {
             16);
     private static final Random RAND = new Random();
 
-    @Nullable    
+    @Nullable
     private Cipher decipher;
     @Nullable
     private Cipher cipher;
@@ -68,6 +68,7 @@ public class PhilipsAirCipher {
         aPow = G.modPow(a, P);
     }
 
+    @SuppressWarnings("null")
     public void initKey(String key) throws GeneralSecurityException {
         try {
             decipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -119,10 +120,11 @@ public class PhilipsAirCipher {
     }
 
     public @Nullable String decrypt(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {
-        if(decipher == null) {
+        if (decipher == null) {
             return null;
         }
-        
+
+        @SuppressWarnings("null")
         byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
         byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
         return new String(unpaded);
@@ -131,11 +133,12 @@ public class PhilipsAirCipher {
     public @Nullable String encrypt(String data)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException,
             NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        if(cipher == null) {
+        if (cipher == null) {
             return null;
         }
-        
+
         String encodedData = "AA" + data;
+        @SuppressWarnings("null")
         byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes("ascii"));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }

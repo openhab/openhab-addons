@@ -13,11 +13,7 @@
 package org.openhab.binding.philipsair.internal.connection;
 
 import static org.eclipse.jetty.http.HttpMethod.PUT;
-import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
-import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
-import static org.eclipse.jetty.http.HttpStatus.OK_200;
-import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
-import static org.eclipse.jetty.http.HttpStatus.UNAUTHORIZED_401;
+import static org.eclipse.jetty.http.HttpStatus.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
@@ -177,18 +173,18 @@ public class PhilipsAirAPIConnection {
 
             logger.debug("Philips Air Purifier device response: status = {}, content = '{}'", httpStatus, finalcontent);
             switch (httpStatus) {
-            case OK_200:
-                return finalcontent;
-            case BAD_REQUEST_400:
-            case UNAUTHORIZED_401:
-            case NOT_FOUND_404:
-                logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
-                throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
-            case TOO_MANY_REQUESTS_429:
-                cooldownTimer = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
-            default:
-                logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
-                throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
+                case OK_200:
+                    return finalcontent;
+                case BAD_REQUEST_400:
+                case UNAUTHORIZED_401:
+                case NOT_FOUND_404:
+                    logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
+                    throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
+                case TOO_MANY_REQUESTS_429:
+                    cooldownTimer = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+                default:
+                    logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
+                    throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
             }
         } catch (ExecutionException e) {
             String errorMessage = e.getLocalizedMessage();
@@ -235,6 +231,10 @@ public class PhilipsAirAPIConnection {
 
         logger.info("{}", commandValue.toString());
         commandValue = this.cipher.encrypt(commandValue.toString());
+        if (commandValue == null || commandValue.isEmpty()) {
+            return null;
+        }
+
         String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
         logger.info("{}", response);
         return gson.fromJson(response, PhilipsAirPurifierData.class);
