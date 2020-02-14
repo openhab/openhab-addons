@@ -97,7 +97,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         Object value = null;
         if (command instanceof OnOffType) {
             if (parameter.equals(CL)) {
-                value = ((OnOffType) command) == OnOffType.ON ? "true" : "false";
+                value = ((OnOffType) command) == OnOffType.ON ? true : false;
             } else {
                 value = ((OnOffType) command) == OnOffType.ON ? "1" : "0";
             }
