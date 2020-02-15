@@ -40,7 +40,7 @@ public class CachedCommand<ResponseType extends Response<?>> implements Command<
                 return this.cachedCommand.execute();
             } catch (ResponseException | IOException | AuthenticationException e) {
                 // wrap exception into RuntimeException to unwrap again later in CachedCommand.execute()
-                throw new RuntimeException(e);
+                throw new CacheException(e);
             }
         });
     }
@@ -56,7 +56,7 @@ public class CachedCommand<ResponseType extends Response<?>> implements Command<
                 throw new ResponseException("Cached value is null");
             }
             return result;
-        } catch (RuntimeException e) {
+        } catch (CacheException e) {
             // try to unwrap RuntimeException thrown in ExpiringCache
             Throwable cause = e.getCause();
             if (cause instanceof ResponseException) {
