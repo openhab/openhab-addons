@@ -1,56 +1,68 @@
 # RevogiSmartStripControl Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This Binding is written to control the [Revogi Smart Power Strip](https://www.revogi.com/smart-power/smart-power-strip-eu/#section6). The device has 6 power plugs that can be switched independently, or all together.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+It was hard to find out how to control it without internet access, but there's a way to use UDP packets. See `LAN UDP Control.pdf` in the `doc` folder for details. This was the only document the Revogi support provided. 
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Currently only the model `SOW019` is supported.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+If your smart strip is within your network (broadcast domain), discovery can work. The discovery service will send udp packets to the broadcast address and waits for a feedback.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+It is required to integrate your power strip into your network first, maybe with the official app.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+You need to know the serial number. Usually you can find it on the back. The serial number will also be discovered.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| overallPlug#switch  | Switch | Switch all plugs  |
+| plug1#switch  | Switch | Switch plug 1  |
+| plug1#watt  | Number | Contains currently used power of plug 1  |
+| plug1#amp  | Number | Contains currently used current of plug 1  |
+| plug2#switch  | Switch | Switch plug 2  |
+| plug2#watt  | Number | Contains currently used power of plug 2  |
+| plug2#amp  | Number | Contains currently used current of plug 2  |
+| plug3#switch  | Switch | Switch plug 3  |
+| plug3#watt  | Number | Contains currently used power of plug 3  |
+| plug3#amp  | Number | Contains currently used current of plug 3  |
+| plug4#switch  | Switch | Switch plug 4  |
+| plug4#watt  | Number | Contains currently used power of plug 4 |
+| plug4#amp  | Number | Contains currently used current of plug 4  |
+| plug5#switch  | Switch | Switch plug 5  |
+| plug5#watt  | Number | Contains currently used power of plug 5  |
+| plug5#amp  | Number | Contains currently used current of plug 5  |
+| plug6#switch  | Switch | Switch plug 6  |
+| plug6#watt  | Number | Contains currently used power of plug 6  |
+| plug6#amp  | Number | Contains currently used current of plug 6  |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Example Thing configuration:
 
-## Any custom content here!
+```
+Thing revogismartstripcontrol:smartstrip:<serialNumber> "<Name>" @ "<Location>" [serialNumber="<serialNumnber>", pollIntervall="45"]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Example Items configuration:
+
+```
+Group revogi (LivingRoom)
+
+Group plug1 (revogi)
+Group plug2 (revogi)
+
+Switch All_Plugs "Steckdosen komplett" <switch> (revogi) {channel="revogismartstripcontrol:smartstrip:<serialNumnber>:overallPlug#switch"}
+
+Switch Plug_1 "Steckdose 1" <switch> (plug1) {channel="revogismartstripcontrol:smartstrip:<serialNumnber>:plug1#switch"}
+Number Plug_1_Watt "Steckdose 1 Leistung" <chart> (plug1) {channel="revogismartstripcontrol:smartstrip:<serialNumnber>:plug1#watt"}
+Number Plug_1_Amp "Steckdose 1 Strom" <chart> (plug1) {channel="revogismartstripcontrol:smartstrip:<serialNumnber>:plug1#amp"}
+
+...
+```
