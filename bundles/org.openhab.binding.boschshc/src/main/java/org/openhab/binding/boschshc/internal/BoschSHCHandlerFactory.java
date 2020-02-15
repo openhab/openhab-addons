@@ -54,7 +54,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
 
-        logger.warn("Thing createHandler for thing: {}", thing.getLabel());
+        logger.warn("Thing createHandler for thing: {} - 2.5.1", thing.getLabel());
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 

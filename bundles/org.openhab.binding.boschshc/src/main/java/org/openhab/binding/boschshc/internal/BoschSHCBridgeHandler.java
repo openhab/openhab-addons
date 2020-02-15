@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 public class BoschSHCBridgeHandler extends BaseBridgeHandler {
@@ -58,7 +59,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         try {
             this.httpClient.start();
         } catch (Exception e) {
-            logger.warn("Failed to start http client", e);
+            logger.warn("Failed to start http client from: {}", keystore, e);
         }
     }
 
@@ -75,7 +76,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
 
         config = getConfigAs(BoschSHCBridgeConfiguration.class);
-        logger.warn("Initializating bridge: {}", config.ipAddress);
+        logger.warn("Initializating bridge: {} - HTTP client is: ", config.ipAddress, this.httpClient);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -88,8 +89,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                this.subscribe();
+
+                // Start long polling to receive updates from Bosch SHC.
                 this.longPoll();
+
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -169,6 +172,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     /**
      * Subscribe to events and store the subscription ID needed for long polling
      *
+     * Method is synchronous.
      */
     private void subscribe() {
 
@@ -208,6 +212,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e);
+
+                this.subscriptionId = null;
             }
         }
     }
@@ -217,7 +223,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      *
      * TODO Do we need to protect against concurrent execution of this method via locks etc?
      *
-     * This is only called from the boot up code as well as after a previous longPoll terminates, so I guess not.
+     * If no subscription ID is present, this function will first try to acquire one. If that fails, it will attempt to
+     * retry after a small timeout.
+     *
+     * Return whether to retry getting a new subscription and restart polling.
      */
     private void longPoll() {
         /*
@@ -225,6 +234,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
          * // TODO Change hard-coded IP address
          * // TODO Change hard-coded port
          */
+
+        if (this.subscriptionId == null) {
+
+            this.subscribe();
+        }
 
         if (this.httpClient != null && this.subscriptionId != null) {
 
@@ -254,11 +268,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 @Override
                 public void onComplete(@Nullable Result result) {
 
+                    String content = null;
+
                     try {
                         if (result != null && !result.isFailed()) {
 
                             byte[] responseContent = getContent();
-                            String content = new String(responseContent);
+                            content = new String(responseContent);
 
                             logger.info("Response complete: {} - return code: {}", content,
                                     result.getResponse().getStatus());
@@ -315,7 +331,23 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                     } catch (Exception e) {
 
-                        logger.warn("Exception in onComplete - ignoring to avoid breaking long polling: {}", e);
+                        try {
+                            // Check if we got a proper result from the SHC
+                            LongPollError parsed = gson.fromJson(content, LongPollError.class);
+
+                            if (parsed.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+
+                                // TODO Do we need to use atomic operations here?
+                                bridgeHandler.subscriptionId = null;
+                            }
+
+                            logger.warn("Execption in long polling - result: {} - error: {}", parsed, e);
+
+                        } catch (JsonSyntaxException jsonError) {
+                            logger.warn(
+                                    "Exception in onComplete - ignoring to avoid breaking long polling: {} - json result: {}",
+                                    e, jsonError);
+                        }
                     }
 
                     // TODO Is this call okay? Should we use scheduler.execute instead?
@@ -331,7 +363,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         } else {
 
             logger.warn("Unable to long poll. Subscription ID or http client undefined.");
+
+            // Timeout before retry
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                logger.warn("Failed to sleep in longRun()");
+            }
         }
+
     }
 
     /**
