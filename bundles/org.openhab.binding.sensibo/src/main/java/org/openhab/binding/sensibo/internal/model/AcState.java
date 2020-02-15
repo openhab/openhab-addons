@@ -111,5 +111,4 @@ public class AcState {
     public void setSwing(final String swing) {
         this.swing = swing;
     }
-
 }

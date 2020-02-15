@@ -52,5 +52,4 @@ public class SensiboBindingConstants {
     public static final Set<String> DYNAMIC_CHANNEL_TYPES = Collections.unmodifiableSet(Stream
             .of(CHANNEL_TYPE_FAN_LEVEL, CHANNEL_TYPE_MODE, CHANNEL_TYPE_SWING_MODE, CHANNEL_TYPE_TARGET_TEMPERATURE)
             .collect(Collectors.toSet()));
-
 }

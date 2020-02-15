@@ -34,5 +34,4 @@ public class SetAcStatePropertyRequestTest extends AbstractSerializationDeserial
 
         assertEquals("mode", deSerializedRequest.newValue);
     }
-
 }

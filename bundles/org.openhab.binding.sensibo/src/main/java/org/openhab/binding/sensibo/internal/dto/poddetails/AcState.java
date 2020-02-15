@@ -59,5 +59,4 @@ public class AcState {
             throw new IllegalArgumentException("Unexpected temperature unit " + unit);
         }
     }
-
 }

@@ -67,5 +67,4 @@ public abstract class SensiboBaseThingHandler extends BaseThingHandler {
     }
 
     protected abstract void handleCommand(ChannelUID uid, Command command, SensiboModel model);
-
 }

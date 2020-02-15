@@ -47,7 +47,6 @@ public class WireHelper {
             public ZonedDateTime read(final JsonReader in) throws IOException {
                 return ZonedDateTime.parse(in.nextString());
             }
-
         }).setPrettyPrinting().create();
     }
 

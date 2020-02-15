@@ -36,5 +36,4 @@ public class SensiboCommunicationException extends SensiboException {
         super("Server responded with error to request " + req.getClass().getSimpleName() + "/" + req.getRequestUrl()
                 + ": " + overallStatus);
     }
-
 }

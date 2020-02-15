@@ -57,5 +57,4 @@ public class SensiboModel {
     public void updateAcState(String macAddress, AcState acState) {
         findSensiboSkyByMacAddress(macAddress).ifPresent(sky -> sky.updateAcState(acState));
     }
-
 }

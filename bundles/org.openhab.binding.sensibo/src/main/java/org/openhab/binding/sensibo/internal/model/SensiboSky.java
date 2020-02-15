@@ -168,7 +168,6 @@ public class SensiboSky extends Pod {
         } else {
             return null;
         }
-
     }
 
     public List<Integer> getTargetTemperatures() {
@@ -192,5 +191,4 @@ public class SensiboSky extends Pod {
     public Optional<Timer> getTimer() {
         return timer;
     }
-
 }

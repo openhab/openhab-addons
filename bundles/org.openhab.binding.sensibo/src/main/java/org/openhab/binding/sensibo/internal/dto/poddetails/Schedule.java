@@ -23,5 +23,4 @@ public class Schedule {
     public String[] recurringDays;
     public AcState acState;
     public boolean enabled;
-
 }

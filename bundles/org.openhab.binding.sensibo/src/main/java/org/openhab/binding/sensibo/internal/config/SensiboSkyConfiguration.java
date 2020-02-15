@@ -27,5 +27,4 @@ public class SensiboSkyConfiguration {
     public String toString() {
         return "SensiboSkyConfiguration [macAddress=" + macAddress + "]";
     }
-
 }

@@ -423,7 +423,5 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             return "StateChange [valid=" + valid + ", validationMessage=" + validationMessage + ", value=" + value
                     + ", value Class=" + value.getClass() + "]";
         }
-
     }
-
 }

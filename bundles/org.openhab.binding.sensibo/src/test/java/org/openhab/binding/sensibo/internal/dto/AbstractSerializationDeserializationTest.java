@@ -20,5 +20,4 @@ import org.openhab.binding.sensibo.internal.WireHelper;
 public abstract class AbstractSerializationDeserializationTest {
 
     protected WireHelper wireHelper = new WireHelper();
-
 }

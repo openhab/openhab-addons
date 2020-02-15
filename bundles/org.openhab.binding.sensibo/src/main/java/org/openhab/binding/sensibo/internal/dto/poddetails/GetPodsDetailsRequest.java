@@ -28,5 +28,4 @@ public class GetPodsDetailsRequest extends AbstractRequest {
     public String getRequestUrl() {
         return String.format("/v2/pods/%s", id);
     }
-
 }

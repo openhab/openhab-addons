@@ -61,7 +61,6 @@ public class SensiboAccountHandlerTest {
         httpClient = new HttpClient();
         httpClient.start();
         SensiboAccountHandler.API_ENDPOINT = "http://localhost:" + wireMockRule.port() + "/api"; // https://home.sensibo.com/api/v2
-
     }
 
     @After
@@ -118,5 +117,4 @@ public class SensiboAccountHandlerTest {
 
         assertEquals(1, numPods);
     }
-
 }

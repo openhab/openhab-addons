@@ -33,5 +33,4 @@ public abstract class SensiboException extends Exception {
     public SensiboException(@NonNull String message, @NonNull Throwable cause) {
         super(message, cause);
     }
-
 }

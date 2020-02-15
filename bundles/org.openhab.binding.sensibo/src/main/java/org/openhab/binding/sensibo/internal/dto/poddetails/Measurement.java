@@ -34,5 +34,4 @@ public class Measurement {
         }
         return null;
     }
-
 }

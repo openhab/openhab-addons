@@ -37,5 +37,4 @@ public class SetTimerRequestTest extends AbstractSerializationDeserializationTes
         assertEquals(60, deSerializedRequest.minutesFromNow);
         assertFalse(deSerializedRequest.acState.on);
     }
-
 }

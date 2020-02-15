@@ -96,5 +96,4 @@ public class SensiboDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Stop scan for Sensibo devices.");
         super.stopScan();
     }
-
 }
