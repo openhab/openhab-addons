@@ -18,7 +18,7 @@
 				<label>Device Discovery</label>
 				<description>Whether this adapter actively participates in Bluetooth device discovery</description>
 				<advanced>true</advanced>
-				<default>true</default>
+				<default>false</default>
 			</parameter>
 			<parameter name="passiveScanIdleTime" type="integer" min="100" max="60000">
 				<label>Passive Scan Idle Time</label>
