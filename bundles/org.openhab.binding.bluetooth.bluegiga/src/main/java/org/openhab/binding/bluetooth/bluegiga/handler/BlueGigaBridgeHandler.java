@@ -170,6 +170,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private @NonNullByDefault({}) ScheduledFuture<?> initTask;
     private @NonNullByDefault({}) ScheduledFuture<?> removeInactiveDevicesTask;
+    private @NonNullByDefault({}) ScheduledFuture<?> discoveryTask;
 
     private volatile boolean activeScanEnabled = false;
 
@@ -304,12 +305,18 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         logger.debug("Start scheduled task to remove inactive devices");
         removeInactiveDevicesTask = scheduler.scheduleWithFixedDelay(this::removeInactiveDevices, 1, 1,
                 TimeUnit.MINUTES);
+        discoveryTask = scheduler.scheduleWithFixedDelay(this::refreshDiscoveredDevices, 0, 10, TimeUnit.SECONDS);
     }
 
     private void stopScheduledTasks() {
         cancelScheduledPassiveScan();
         if (removeInactiveDevicesTask != null) {
             removeInactiveDevicesTask.cancel(true);
+            removeInactiveDevicesTask = null;
+        }
+        if (discoveryTask != null) {
+            discoveryTask.cancel(true);
+            discoveryTask = null;
         }
     }
 
@@ -322,6 +329,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 device.dispose();
                 devices.remove(address);
             }
+        });
+    }
+
+    private void refreshDiscoveredDevices() {
+        logger.debug("Refreshing Bluetooth device list...");
+        devices.forEach((address, device) -> {
+            deviceDiscovered(device);
         });
     }
 
