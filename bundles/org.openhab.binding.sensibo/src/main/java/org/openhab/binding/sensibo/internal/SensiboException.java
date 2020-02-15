@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.sensibo.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 /**
  * The {@link SensiboException} class wraps exceptions raised when communicating with the API
  *
@@ -30,7 +28,7 @@ public abstract class SensiboException extends Exception {
         super(message);
     }
 
-    public SensiboException(@NonNull String message, @NonNull Throwable cause) {
+    public SensiboException(String message, Throwable cause) {
         super(message, cause);
     }
 }
