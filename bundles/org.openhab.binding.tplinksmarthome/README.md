@@ -303,19 +303,38 @@ Than the a `RefreshType` command will fetch the device state and update the inte
 
 ```
 tplinksmarthome:hs100:tv      "TV"                 [ deviceId="00000000000000000000000000000001", refresh=60 ]
+tplinksmarthome:hs220:light	  "Bedroom Lights"     [ ipAddress="192.168.1.xx", refresh=5 ]
 tplinksmarthome:hs300:laptop  "Laptop"             [ deviceId="00000000000000000000000000000004", refresh=60 ]
 tplinksmarthome:lb110:bulb1   "Living Room Bulb 1" [ deviceId="00000000000000000000000000000002", refresh=60, transitionPeriod=2500 ]
 tplinksmarthome:lb130:bulb2   "Living Room Bulb 2" [ deviceId="00000000000000000000000000000003", refresh=60, transitionPeriod=2500 ]
+
 ```
 
 ### tplinksmarthome.items:
 
 ```
 Switch       TP_L_TV      "TV"                                 { channel="tplinksmarthome:hs100:tv:switch" }
+Switch       TP_L_TV_LED  "TV Outlet LED"                      { channel="tplinksmarthome:hs100:tv:led" }
+Dimmer       TP_L_Light   "Lights [%d %%]"                     { channel="tplinksmarthome:hs220:light:brightness" }
 Switch       TP_L_Laptop  "Laptop"                             { channel="tplinksmarthome:hs300:laptop:outlet1#switch" }
 Number:Power TP_L_RSSI    "Signal [%d %unit%]"        <signal> { channel="tplinksmarthome:hs100:tv:rssi" }
 Dimmer       TP_LB_Bulb   "Dimmer [%d %%]"            <slider> { channel="tplinksmarthome:lb110:bulb1:brightness" }
 Dimmer       TP_LB_ColorT "Color Temperature [%d %%]" <slider> { channel="tplinksmarthome:lb130:bulb2:colorTemperature" }
 Color        TP_LB_Color  "Color"                     <slider> { channel="tplinksmarthome:lb130:bulb2:color" }
 Switch       TP_LB_ColorS "Switch"                             { channel="tplinksmarthome:lb130:bulb2:color" }
+```
+
+### demo.sitemap:
+
+```
+			Frame label="HS100 Outlet" {
+        Switch item=TP_L_TV
+				Switch item=TP_L_TV_LED
+				Text item=TP_L_RSSI
+			}
+
+		Frame label="HS220 Lights Dimmer" {
+				Switch item=TP_L_Light																		                    visibility=[TP_L_Light < 1]
+				Slider item=TP_L_Light								    minValue=0 maxValue=100 step=5			visibility=[TP_L_Light > 0]
+			}
 ```
