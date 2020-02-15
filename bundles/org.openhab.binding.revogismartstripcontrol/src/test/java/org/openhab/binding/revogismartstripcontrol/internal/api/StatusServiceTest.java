@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 
-import jersey.repackaged.com.google.common.collect.Lists;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andi Bräu - Initial contribution

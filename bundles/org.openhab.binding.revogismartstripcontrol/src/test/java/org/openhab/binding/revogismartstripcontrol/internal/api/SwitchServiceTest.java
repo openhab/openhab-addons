@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Andi Bräu - Initial contribution
  */
+@NonNullByDefault
 public class SwitchServiceTest {
 
     private UdpSenderService udpSenderService = mock(UdpSenderService.class);

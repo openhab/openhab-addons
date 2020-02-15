@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -80,6 +81,7 @@ public class UdpSenderServiceTest {
         doAnswer( invocation -> {
             DatagramPacket argument = invocation.getArgument(0);
             argument.setData(receivedBuf);
+            argument.setAddress(InetAddress.getLocalHost());
             return null;
         }).doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
 
