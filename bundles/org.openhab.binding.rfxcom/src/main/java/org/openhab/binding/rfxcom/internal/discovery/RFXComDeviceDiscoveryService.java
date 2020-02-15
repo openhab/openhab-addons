@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
         implements ExtendedDiscoveryService, DeviceMessageListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
+    private final int DISCOVERY_TTL = 3600;
 
     private RFXComBridgeHandler bridgeHandler;
     private DiscoveryServiceCallback callback;
@@ -82,7 +83,8 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
 
         if (!bridgeHandler.getConfiguration().disableDiscovery) {
             logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge);
+            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge)
+                    .withTTL(DISCOVERY_TTL);
             message.addDevicePropertiesTo(discoveryResultBuilder);
 
             thingDiscovered(discoveryResultBuilder.build());
