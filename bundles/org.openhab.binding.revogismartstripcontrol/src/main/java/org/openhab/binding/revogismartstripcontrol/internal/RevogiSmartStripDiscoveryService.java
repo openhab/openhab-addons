@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -42,6 +43,7 @@ import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartSt
  * @author Andi Bräu - Initial contribution
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.revogismartstripcontrol")
+@NonNullByDefault
 public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Collections.singleton(SMART_STRIP_THING_TYPE));
 
@@ -61,6 +63,7 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+
         List<DiscoveryResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
         discoveryResponses.forEach(response -> {
             ThingUID thingUID = getThingUID(response);
