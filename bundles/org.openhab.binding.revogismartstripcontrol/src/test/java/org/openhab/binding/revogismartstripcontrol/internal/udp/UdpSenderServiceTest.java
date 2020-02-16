@@ -13,7 +13,6 @@
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,10 +66,10 @@ public class UdpSenderServiceTest {
         doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
 
         // when
-        List<String> list = udpSenderService.broadcastUpdDatagram("send something");
+        List<UdpResponse> list = udpSenderService.broadcastUpdDatagram("send something");
 
         // then
-        assertThat(list.isEmpty(), Matchers.is(true));
+        assertThat(list.isEmpty(), is(true));
         verify(datagramSocketWrapper, times(numberOfInterfaces * 2)).receiveAnswer(any());
     }
 
@@ -87,10 +86,10 @@ public class UdpSenderServiceTest {
 
 
         // when
-        List<String> list = udpSenderService.broadcastUpdDatagram("send something");
+        List<UdpResponse> list = udpSenderService.broadcastUpdDatagram("send something");
 
         // then
-        assertThat(list.contains("valid answer"), is(true));
+        assertThat(list.get(0).getAnswer(), is("valid answer"));
         verify(datagramSocketWrapper, times(1 + 2 * numberOfInterfaces)).receiveAnswer(any());
     }
 

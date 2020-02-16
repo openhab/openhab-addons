@@ -51,7 +51,7 @@ public class UdpSenderService {
         this.datagramSocketWrapper = datagramSocketWrapper;
     }
 
-    public List<String> broadcastUpdDatagram(String content) {
+    public List<UdpResponse> broadcastUpdDatagram(String content) {
         List<InetAddress> broadcastAddresses = new ArrayList<>();
         try {
             broadcastAddresses = getBroadcastAddresses();
@@ -59,30 +59,31 @@ public class UdpSenderService {
             logger.warn("Could not find broadcast addresse, got socket error {}", e.getMessage(), e);
         }
         return broadcastAddresses.stream()
-                .map( address -> sendBroadcastMessage(content, address))
+                .map( address -> sendMessage(content, address))
                 .flatMap(Collection::stream)
                 .collect(toList());
 
     }
 
-    private List<String> sendBroadcastMessage(String content, InetAddress broadcastAddress) {
-        logger.info("Using address {}", broadcastAddress);
+    private List<UdpResponse> sendMessage(String content, InetAddress inetAddress) {
+        logger.info("Using address {}", inetAddress);
         byte[] buf = content.getBytes(Charset.defaultCharset());
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, broadcastAddress, REVOGI_PORT);
-        List<String> responses = new ArrayList<>();
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress, REVOGI_PORT);
+        List<UdpResponse> responses = new ArrayList<>();
         try {
             datagramSocketWrapper.initSocket();
             datagramSocketWrapper.sendPacket(packet);
             responses = receiveResponses();
-            datagramSocketWrapper.closeSocket();
         } catch (IOException e) {
             logger.warn("Error sending message or reading anwser {}", e.getMessage(), e);
+        } finally {
+            datagramSocketWrapper.closeSocket();
         }
         return responses;
     }
 
-    private List<String> receiveResponses() throws IOException {
-        List<String> list = new ArrayList<>();
+    private List<UdpResponse> receiveResponses() throws IOException {
+        List<UdpResponse> list = new ArrayList<>();
         int timeoutCounter = 0;
         while (timeoutCounter < MAX_TIMEOUT_COUNT) {
             byte[] receivedBuf = new byte[512];
@@ -103,7 +104,7 @@ public class UdpSenderService {
             }
 
             if (answer.getLength() > 0) {
-                list.add(new String(answer.getData(), 0, answer.getLength()));
+                list.add(new UdpResponse(new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress()));
             }
         }
 
