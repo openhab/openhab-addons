@@ -42,8 +42,7 @@ public class AirthingsHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    @Nullable
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS)) {
             return new AirthingsWavePlusHandler(thing);

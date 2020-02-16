@@ -41,43 +41,43 @@
 	<channel-type id="airthings_humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>Humidity level (%%)</description>
+		<description>Humidity level</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="airthings_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Temperature (°C)</description>
+		<description>Temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="airthings_pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
-		<description>Pressure (mbar)</description>
+		<description>Pressure</description>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 	<channel-type id="airthings_co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2 Level</label>
-		<description>Carbon dioxide level (ppm)</description>
+		<description>Carbon dioxide level</description>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 	<channel-type id="airthings_tvoc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC Level</label>
-		<description>Total volatile organic compounds (ppb)</description>
+		<description>Total volatile organic compounds</description>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 	<channel-type id="airthings_radon_st_avg">
 		<item-type>Number:Density</item-type>
 		<label>Radon Short Term Average Level</label>
-		<description>Radon gas level (Bq/m3)</description>
+		<description>Radon gas level</description>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 	<channel-type id="airthings_radon_lt_avg">
 		<item-type>Number:Density</item-type>
 		<label>Radon Long Term Average Level</label>
-		<description>Radon gas level (Bq/m3)</description>
+		<description>Radon gas level</description>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 </thing:thing-descriptions>

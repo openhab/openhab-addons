@@ -14,11 +14,13 @@ package org.openhab.binding.bluetooth.airthings.internal;
 
 import static org.openhab.binding.bluetooth.airthings.internal.AirthingsBindingConstants.*;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -29,7 +31,6 @@ import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
-import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,8 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
     private final UUID uuid = UUID.fromString(DATA_UUID);
 
     private volatile Boolean servicesResolved = false;
-    private @NonNullByDefault({}) AirthingsConfiguration configuration;
-    private @NonNullByDefault({}) ScheduledFuture<?> scheduledTask;
+    private Optional<AirthingsConfiguration> configuration = Optional.empty();
+    private @Nullable ScheduledFuture<?> scheduledTask;
 
     public AirthingsWavePlusHandler(Thing thing) {
         super(thing);
@@ -59,7 +60,7 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
     @Override
     public void initialize() {
         super.initialize();
-        configuration = getConfigAs(AirthingsConfiguration.class);
+        configuration = Optional.of(getConfigAs(AirthingsConfiguration.class));
         logger.debug("Using configuration: {}", configuration);
     }
 
@@ -78,9 +79,11 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
 
     private void startScheduledTask() {
         if (scheduledTask == null) {
-            logger.debug("Start scheduled task to read device in every {} seconds", configuration.refreshInterval);
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::execute, 10, configuration.refreshInterval,
-                    TimeUnit.SECONDS);
+            configuration.ifPresent(cfg -> {
+                logger.debug("Start scheduled task to read device in every {} seconds", cfg.refreshInterval);
+                scheduledTask = scheduler.scheduleWithFixedDelay(this::execute, 10, cfg.refreshInterval,
+                        TimeUnit.SECONDS);
+            });
         }
     }
 
@@ -137,11 +140,7 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
     }
 
     private void printServices() {
-        if (logger.isDebugEnabled()) {
-            for (BluetoothService service : device.getServices()) {
-                logger.debug("Device {} Service '{}'", address, service);
-            }
-        }
+        device.getServices().forEach(service -> logger.debug("Device {} Service '{}'", address, service));
     }
 
     @Override

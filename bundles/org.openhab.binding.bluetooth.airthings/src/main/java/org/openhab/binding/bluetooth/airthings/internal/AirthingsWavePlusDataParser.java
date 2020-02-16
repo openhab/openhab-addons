@@ -65,27 +65,22 @@ public class AirthingsWavePlusDataParser {
     }
 
     private void parseData(int[] data) throws AirthingsParserException {
-        try {
-            if (data.length == EXPECTED_DATA_LEN) {
-                final int version = data[0];
+        if (data.length == EXPECTED_DATA_LEN) {
+            final int version = data[0];
 
-                if (version == EXPECTED_VER) {
-                    humidity = data[1] / 2D;
-                    radonShortTermAvg = intFromBytes(data[4], data[5]);
-                    radonLongTermAvg = intFromBytes(data[6], data[7]);
-                    temperature = intFromBytes(data[8], data[9]) / 100D;
-                    pressure = intFromBytes(data[10], data[11]) / 50D;
-                    co2 = intFromBytes(data[12], data[13]);
-                    tvoc = intFromBytes(data[14], data[15]);
-                } else {
-                    throw new AirthingsParserException(
-                            String.format("Unsupported data structure version '%d'", version));
-                }
+            if (version == EXPECTED_VER) {
+                humidity = data[1] / 2D;
+                radonShortTermAvg = intFromBytes(data[4], data[5]);
+                radonLongTermAvg = intFromBytes(data[6], data[7]);
+                temperature = intFromBytes(data[8], data[9]) / 100D;
+                pressure = intFromBytes(data[10], data[11]) / 50D;
+                co2 = intFromBytes(data[12], data[13]);
+                tvoc = intFromBytes(data[14], data[15]);
             } else {
-                throw new AirthingsParserException(String.format("Illegal data structure length '%d'", data.length));
+                throw new AirthingsParserException(String.format("Unsupported data structure version '%d'", version));
             }
-        } catch (RuntimeException e) {
-            throw new AirthingsParserException("Unknown error occured when parsing data", e);
+        } else {
+            throw new AirthingsParserException(String.format("Illegal data structure length '%d'", data.length));
         }
     }
 
