@@ -5,10 +5,12 @@ https://www.jablotron.com/en/jablotron-products/alarms/
 
 ## Supported Things
 
-* bridge (the bridge to your Jablonet cloud account)
-* JA-80/OASIS alarm
-* JA-100 alarm (thermometer support)
-* JA-100F alarm (no thermometer support)
+| thing   | note                                      |
+|---------|-------------------------------------------|
+| bridge  | the bridge to your Jablonet cloud account |
+| JA-80   | the OASIS alarm                           |
+| JA-100  | with the thermometer support              |
+| JA-100F | without the thermometer support           |
  
 ## Discovery
 
@@ -20,56 +22,38 @@ Binding itself doesn't require specific configuration.
 
 ## Thing Configuration
 
-The bridge thing requires this configuration:
-
-* login (the login to your Jablonet account)
-* password (the password to your Jablonet account)
-* refresh (the refresh time for all alarm warnings including ALARM, TAMPER triggers and SERVICE state flag)
-
-optionally you can set
-
-* lang (language of the alarm texts)
-
-All alarm things have this configuration:
-
-* refresh (thing channel refresh period in seconds, default is 60s)
-
-The Ja100/JA100F alarm thing has one extra parameter
-
- * code (alarm master code, used for controlling sections & PGMs)
+| thing                | config parameter name | description                                                                        | type                  |
+|----------------------|-----------------------|------------------------------------------------------------------------------------|-----------------------|
+| bridge               | login                 | the login to your Jablonet account                                                 | mandatory             |
+| bridge               | password              | the password to your Jablonet account                                              | mandatory             |
+| bridge               | refresh               | the refresh time for all alarm warnings (ALARM, TAMPER triggers and SERVICE state) | optional, default=30s |
+| bridge               | lang                  | the language of the alarm texts                                                    | optional, default=en  |
+| JA-80/JA-100/JA-100F | refresh               | the channels refresh period in seconds                                             | optional, default=60s |
+| JA-100/JA-100F       | code                  | the master code for controlling sections                                           | optional              |
 
 ## Channels
 
-The bridge thing does not have any channels.
-The OASIS alarm thing exposes these channels:
+| thing                | channel name     | description                                               |
+|----------------------|------------------|-----------------------------------------------------------|
+| bridge               | N/A              | the bridge does not expose any channels                   |
+| JA-80                | statusA          | the status of the A section                                   |
+| JA-80                | statusB          | the status of the AB/B section                                |
+| JA-80                | statusABC        | the status of the ABC section                                 |
+| JA-80                | statusPGX        | the status of PGX                                         |
+| JA-80                | statusPGY        | the status of PGY                                         |
+| JA-80                | command          | the channel for sending keyboard codes to the OASIS alarm |
+| JA-80/JA-100/JA-100F | lastEvent        | the text description of the last event                    |
+| JA-80/JA-100/JA-100F | lastEventClass   | the class of the last event - e.g. arm, disarm, ...       |
+| JA-80/JA-100/JA-100F | lastEventInvoker | the invoker of the last event                             |
+| JA-80/JA-100/JA-100F | lastEventTime    | the time of the last event                                |
+| JA-80/JA-100/JA-100F | lastCheckTime    | the time of the last checking                             |
+| JA-80/JA-100/JA-100F | alarm            | the alarm trigger, might fire ALARM or TAMPER events      |
+| JA-100/JA-100F       | lastEventSection | the section of the last event                             |
 
-* statusA (the status of A section)
-* statusB (the status of AB/B section)
-* statusABC (the status of ABC section)
-* statusPGX (the status of PGX)
-* statusPGY (the status of PGY)
-* command (the channel for sending keyboard codes to the OASIS alarm)
-* lastEvent (the text description of the last event)
-* lastEventClass (the class of the last event - e.g. arm, disarm, ...)
-* lastEventInvoker (the invoker of the last event)
-* lastEventTime (the time of the last event)
-* lastCheckTime (the time of the last checking)
-* alarm (the alarm trigger, might fire ALARM or TAMPER events)
+all other channels for the JA-100/JA-100F alarms (sections, PGs and thermometers for JA-100) are dynamically created according to your configuration
 
-The JA100/JA100F things have these channels:
-
-* lastEvent (the text description of the last event)
-* lastEventClass (the class of the last event - arm, disarm, ...)
-* lastEventInvoker (the invoker of the last event)
-* lastEventSection (the section of the last event)
-* lastEventTime (the time of the last event)
-* lastCheckTime (the time of the last checking)
-* alarm (the alarm trigger, might fire ALARM or TAMPER events)
-
-all other channels for the JA100/JA100F alarms (sections, PGs and thermometers for JA100) are dynamically created according to your configuration
-
-* The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA100 and 
-possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100F)
+* The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and 
+possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
 * The PGs (programmable gates) are represented by Switch channels 
 
 ## Full Example
@@ -128,7 +112,7 @@ end
 
 rule "Jablotron alarm trigger"
 when
-    Channel "jablotron:oasis:8c93a5ed:50939:alarm" triggered
+    Channel "jablotron:oasis:8c93a5ed:50139:alarm" triggered
 then
     logInfo("default.rules", "Jablotron triggered " + receivedEvent.getEvent())
 end

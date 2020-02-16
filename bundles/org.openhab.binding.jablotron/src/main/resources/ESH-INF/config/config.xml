@@ -15,7 +15,7 @@
 		<parameter name="refresh" type="integer" required="false">
 			<label>Refresh</label>
 			<description>Specifies the refresh time of thing channels in seconds</description>
-			<default>180</default>
+			<default>60</default>
 		</parameter>
 
 		<parameter name="code" type="text">
