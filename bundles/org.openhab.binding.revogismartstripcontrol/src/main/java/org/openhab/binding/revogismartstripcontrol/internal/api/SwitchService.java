@@ -14,12 +14,14 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The {@link SwitchService} enables the binding to actually switch plugs on and of
@@ -50,7 +52,10 @@ public class SwitchService {
             throw new IllegalArgumentException("Given port doesn't exist");
         }
 
-        List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
+        List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state))
+                .stream()
+                .map(UdpResponse::getAnswer)
+                .collect(Collectors.toList());
         responses.forEach(response -> {
             logger.info("Reveived {}", response);
         });

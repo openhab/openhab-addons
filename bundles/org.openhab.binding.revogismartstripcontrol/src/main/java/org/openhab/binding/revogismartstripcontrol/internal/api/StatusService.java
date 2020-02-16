@@ -14,12 +14,14 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
@@ -41,7 +43,10 @@ public class StatusService {
     }
 
     public Status queryStatus(String serialNumber) {
-        List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
+        List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber))
+                .stream()
+                .map(UdpResponse::getAnswer)
+                .collect(Collectors.toList());
         responses.forEach(response -> logger.info("Received: {}", response));
         return responses.stream()
                 .filter(response -> !response.isEmpty() && response.contains(VERSION_STRING))

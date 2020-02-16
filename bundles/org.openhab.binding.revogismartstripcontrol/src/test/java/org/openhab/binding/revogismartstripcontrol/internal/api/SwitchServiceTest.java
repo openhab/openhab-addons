@@ -14,10 +14,11 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,7 +36,7 @@ public class SwitchServiceTest {
     @Test
     public void getStatusSuccesfully() {
         // given
-        ArrayList<String> response = new ArrayList<>(Collections.singleton("V3{\"response\":20,\"code\":200}"));
+        List<UdpResponse> response = Collections.singletonList(new UdpResponse("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}")).thenReturn(response);
 
         // when
@@ -48,7 +49,7 @@ public class SwitchServiceTest {
     @Test
     public void invalidUdpResponse() {
         // given
-        ArrayList<String> response = new ArrayList<>(Collections.singleton("something invalid"));
+        List<UdpResponse> response = Collections.singletonList(new UdpResponse("something invalid", "12345"));
         when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}")).thenReturn(response);
 
         // when

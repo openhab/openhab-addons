@@ -14,6 +14,7 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 
 import java.util.Collections;
@@ -38,7 +39,9 @@ public class RevogiDiscoveryServiceTest {
     public void discoverSmartStripSuccesfully() {
         // given
         DiscoveryResponse discoveryResponse = new DiscoveryResponse("1234", "reg", "sak", "Strip", "mac", "5.11");
-        List<String> discoveryString = Collections.singletonList("{\"response\":0,\"data\":{\"sn\":\"1234\",\"regid\":\"reg\",\"sak\":\"sak\",\"name\":\"Strip\",\"mac\":\"mac\",\"ver\":\"5.11\"}}");
+        List<UdpResponse> discoveryString = Collections.singletonList(
+                new UdpResponse("{\"response\":0,\"data\":{\"sn\":\"1234\",\"regid\":\"reg\",\"sak\":\"sak\",\"name\":\"Strip\",\"mac\":\"mac\",\"ver\":\"5.11\"}}",
+                        "127.0.0.1"));
         when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
 
         // when
@@ -52,7 +55,7 @@ public class RevogiDiscoveryServiceTest {
     @Test
     public void invalidUdpResponse() {
         // given
-        List<String> discoveryString = Collections.singletonList("something invalid");
+        List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
         when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
 
         // when
