@@ -37,14 +37,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
-import org.openhab.binding.mqtt.generic.mapping.MQTTvalueTransform;
-import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic;
-import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
 import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic.FieldChanged;
 
 /**
- * Tests cases for {@link SubscribeFieldToMQTTtopic}.
+ * Tests cases for {@link org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic}.
  *
  * @author David Graeff - Initial contribution
  */
