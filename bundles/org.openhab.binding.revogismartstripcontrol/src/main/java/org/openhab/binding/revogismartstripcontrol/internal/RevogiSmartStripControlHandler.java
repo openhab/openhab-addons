@@ -91,7 +91,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     private void switchPlug(Command command, int port) {
         if (command instanceof OnOffType) {
             int state = convertOnOffTypeToState(command);
-            switchService.switchPort(config.getSerialNumber(), port, state);
+            switchService.switchPort(config.getSerialNumber(), config.ipAddress, port, state);
         }
     }
 
