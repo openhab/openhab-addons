@@ -129,7 +129,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void updateStripInformation() {
-        Status status = statusService.queryStatus(config.getSerialNumber());
+        Status status = statusService.queryStatus(config.getSerialNumber(), config.getIpAddress());
         if (status.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
             handleAllPlugsInformation(status);

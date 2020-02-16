@@ -42,8 +42,8 @@ public class StatusService {
         this.udpSenderService = udpSenderService;
     }
 
-    public Status queryStatus(String serialNumber) {
-        List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber))
+    public Status queryStatus(String serialNumber, String ipAddress) {
+        List<String> responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber), ipAddress)
                 .stream()
                 .map(UdpResponse::getAnswer)
                 .collect(Collectors.toList());
