@@ -21,6 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.revogismartstripcontrol.internal.api.DiscoveryRawResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.api.DiscoveryResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.api.RevogiDiscoveryService;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
@@ -64,15 +65,16 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
 
-        List<DiscoveryResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
+        List<DiscoveryRawResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
         discoveryResponses.forEach(response -> {
-            ThingUID thingUID = getThingUID(response);
+            ThingUID thingUID = getThingUID(response.getData());
                     if (thingUID != null) {
                         Map<String, Object> properties = new HashMap<>();
-                        properties.put(Thing.PROPERTY_MODEL_ID, response.getRegId());
-                        properties.put(Thing.PROPERTY_MAC_ADDRESS, response.getMacAddress());
-                        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.getVersion());
-                        properties.put(Thing.PROPERTY_SERIAL_NUMBER, response.getSerialNumber());
+                        properties.put(Thing.PROPERTY_MODEL_ID, response.getData().getRegId());
+                        properties.put(Thing.PROPERTY_MAC_ADDRESS, response.getData().getMacAddress());
+                        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.getData().getVersion());
+                        properties.put(Thing.PROPERTY_SERIAL_NUMBER, response.getData().getSerialNumber());
+                        properties.put("ipAddress", response.getIpAddress());
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder
                                 .create(thingUID)
                                 .withThingType(SMART_STRIP_THING_TYPE)

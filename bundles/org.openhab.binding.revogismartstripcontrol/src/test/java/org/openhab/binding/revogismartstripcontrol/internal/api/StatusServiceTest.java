@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2020 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
@@ -41,10 +41,10 @@ public class StatusServiceTest {
         List<UdpResponse> statusString = Collections.singletonList(
                 new UdpResponse("V3{\"response\":90,\"code\":200,\"data\":{\"switch\":[0,0,0,0,0,0],\"watt\":[0,0,0,0,0,0],\"amp\":[0,0,0,0,0,0]}}"
                         , "127.0.0.1"));
-        when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 90}")).thenReturn(statusString);
+        when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1")).thenReturn(statusString);
 
         // when
-        Status statusResponse = statusService.queryStatus("serial");
+        Status statusResponse = statusService.queryStatus("serial", "127.0.0.1");
 
         // then
         assertEquals(status, statusResponse);
@@ -54,10 +54,10 @@ public class StatusServiceTest {
     public void invalidUdpResponse() {
         // given
         List<UdpResponse> statusString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
-        when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 90}")).thenReturn(statusString);
+        when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1")).thenReturn(statusString);
 
         // when
-        Status status = statusService.queryStatus("serial");
+        Status status = statusService.queryStatus("serial", "127.0.0.1");
 
         // then
         assertEquals(503, status.getResponseCode());

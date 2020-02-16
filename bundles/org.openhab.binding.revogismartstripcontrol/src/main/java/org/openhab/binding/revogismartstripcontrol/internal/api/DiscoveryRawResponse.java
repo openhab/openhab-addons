@@ -21,6 +21,7 @@ public class DiscoveryRawResponse {
 
     private int response;
     private DiscoveryResponse data;
+    private String ipAddress;
 
     public DiscoveryRawResponse() {
     }
@@ -28,6 +29,21 @@ public class DiscoveryRawResponse {
     public DiscoveryRawResponse(int response, DiscoveryResponse data) {
         this.response = response;
         this.data = data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DiscoveryRawResponse that = (DiscoveryRawResponse) o;
+        return response == that.response &&
+                data.equals(that.data) &&
+                Objects.equals(ipAddress, that.ipAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(response, data, ipAddress);
     }
 
     public int getResponse() {
@@ -38,17 +54,11 @@ public class DiscoveryRawResponse {
         return data;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DiscoveryRawResponse that = (DiscoveryRawResponse) o;
-        return response == that.response &&
-                Objects.equals(data, that.data);
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(response, data);
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }

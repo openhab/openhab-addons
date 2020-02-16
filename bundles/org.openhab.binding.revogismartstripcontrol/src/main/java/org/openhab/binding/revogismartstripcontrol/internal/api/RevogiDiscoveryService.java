@@ -40,20 +40,21 @@ public class RevogiDiscoveryService {
         this.udpSenderService = udpSenderService;
     }
 
-    public List<DiscoveryResponse> discoverSmartStrips() {
+    public List<DiscoveryRawResponse> discoverSmartStrips() {
         List<UdpResponse> responses = udpSenderService.broadcastUpdDatagram(UDP_DISCOVERY_QUERY);
         responses.forEach(response -> logger.info("Received: {}", response));
         return responses.stream()
                 .filter(response -> !response.getAnswer().isEmpty())
-                .map((UdpResponse response1) -> deserializeString(response1.getAnswer()))
+                .map(this::deserializeString)
                 .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0)
-                .map(DiscoveryRawResponse::getData)
                 .collect(Collectors.toList());
     }
 
-    private DiscoveryRawResponse deserializeString(String response) {
+    private DiscoveryRawResponse deserializeString(UdpResponse response) {
         try {
-            return objectMapper.readValue(response, DiscoveryRawResponse.class);
+            DiscoveryRawResponse discoveryRawResponse = objectMapper.readValue(response.getAnswer(), DiscoveryRawResponse.class);
+            discoveryRawResponse.setIpAddress(response.getIpAddress());
+            return discoveryRawResponse;
         } catch (IOException e) {
             logger.warn("Could not parse string \"{}\" to DiscoveryRawResponse", response, e);
             return new DiscoveryRawResponse(503, new DiscoveryResponse());

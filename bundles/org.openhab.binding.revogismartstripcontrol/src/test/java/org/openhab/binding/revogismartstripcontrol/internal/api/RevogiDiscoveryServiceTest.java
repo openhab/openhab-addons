@@ -45,11 +45,12 @@ public class RevogiDiscoveryServiceTest {
         when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
 
         // when
-        List<DiscoveryResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
+        List<DiscoveryRawResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
 
         // then
         assertThat(discoverSmartStrips.size(), equalTo(1));
-        assertThat(discoverSmartStrips.get(0), equalTo(discoveryResponse));
+        assertThat(discoverSmartStrips.get(0).getData(), equalTo(discoveryResponse));
+        assertThat(discoverSmartStrips.get(0).getIpAddress(), equalTo("127.0.0.1"));
     }
 
     @Test
@@ -59,7 +60,7 @@ public class RevogiDiscoveryServiceTest {
         when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
 
         // when
-        List<DiscoveryResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
+        List<DiscoveryRawResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
 
         // then
         assertThat(discoverSmartStrips.isEmpty(), is(true));

@@ -23,6 +23,8 @@ public class RevogiSmartStripControlConfiguration {
 
     public int pollInterval;
 
+    public String ipAddress;
+
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -31,4 +33,7 @@ public class RevogiSmartStripControlConfiguration {
         return pollInterval;
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
 }
