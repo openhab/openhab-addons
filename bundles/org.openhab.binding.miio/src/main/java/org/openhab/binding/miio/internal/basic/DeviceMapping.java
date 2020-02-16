@@ -17,6 +17,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.miio.internal.MiIoCommand;
 
 /**
  * Mapping devices from json
@@ -31,6 +32,12 @@ public class DeviceMapping {
     @SerializedName("channels")
     @Expose
     private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    @SerializedName("propertyMethod")
+    @Expose
+    private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();
+    @SerializedName("maxProperties")
+    @Expose
+    private int maxProperties = 5;
 
     public List<String> getId() {
         return id;
@@ -38,6 +45,22 @@ public class DeviceMapping {
 
     public void setId(List<String> id) {
         this.id = id;
+    }
+
+    public String getPropertyMethod() {
+        return propertyMethod;
+    }
+
+    public void setPropertyMethod(String propertyMethod) {
+        this.propertyMethod = propertyMethod;
+    }
+
+    public int getMaxProperties() {
+        return maxProperties;
+    }
+
+    public void setMaxProperties(int maxProperties) {
+        this.maxProperties = maxProperties;
     }
 
     public List<MiIoBasicChannel> getChannels() {
