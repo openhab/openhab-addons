@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -127,31 +128,27 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("BlueGiga");
 
     // The serial port.
-    @Nullable
-    private SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
-    private @NonNullByDefault({}) BlueGigaConfiguration configuration;
+    private BlueGigaConfiguration configuration = new BlueGigaConfiguration();
 
     // The serial port input stream.
-    @Nullable
-    private InputStream inputStream;
+    private @Nullable InputStream inputStream;
 
     // The serial port output stream.
-    @Nullable
-    private OutputStream outputStream;
+    private @Nullable OutputStream outputStream;
 
     // The BlueGiga API handler
-    private @NonNullByDefault({}) BlueGigaSerialHandler serialHandler;
+    private @Nullable BlueGigaSerialHandler serialHandler;
 
     // The BlueGiga transaction manager
-    private @NonNullByDefault({}) BlueGigaTransactionManager transactionManager;
+    private @Nullable BlueGigaTransactionManager transactionManager;
 
     // The maximum number of connections this interface supports
     private int maxConnections = 0;
 
     // Our BT address
-    @Nullable
-    private BluetoothAddress address;
+    private @Nullable BluetoothAddress address;
 
     // Map of Bluetooth devices known to this bridge.
     // This is all devices we have heard on the network - not just things bound to the bridge
@@ -168,13 +165,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     private volatile boolean initComplete = false;
 
-    private @NonNullByDefault({}) ScheduledFuture<?> initTask;
-    private @NonNullByDefault({}) ScheduledFuture<?> removeInactiveDevicesTask;
-    private @NonNullByDefault({}) ScheduledFuture<?> discoveryTask;
+    private @Nullable ScheduledFuture<?> initTask;
+    private @Nullable ScheduledFuture<?> removeInactiveDevicesTask;
+    private @Nullable ScheduledFuture<?> discoveryTask;
 
     private volatile boolean activeScanEnabled = false;
 
-    private @NonNullByDefault({}) Future<?> passiveScanIdleTimer;
+    private @Nullable Future<?> passiveScanIdleTimer;
 
     public BlueGigaBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
@@ -194,8 +191,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(BlueGigaConfiguration.class);
-        initTask = executor.scheduleWithFixedDelay(this::start, 0, INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+        Optional<BlueGigaConfiguration> cfg = Optional.of(getConfigAs(BlueGigaConfiguration.class));
+        if (cfg.isPresent()) {
+            configuration = cfg.get();
+            initTask = executor.scheduleWithFixedDelay(this::start, 0, INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+        }
     }
 
     @Override
@@ -209,13 +211,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 logger.debug("Initialize BlueGiga");
                 logger.debug("Using configuration: {}", configuration);
                 stop(false);
-
                 if (openSerialPort(configuration.port, 115200)) {
                     serialHandler = new BlueGigaSerialHandler(inputStream, outputStream);
                     transactionManager = new BlueGigaTransactionManager(serialHandler, executor);
-                    serialHandler.addHandlerListener(this);
-                    transactionManager.addEventListener(this);
-
+                    if (serialHandler != null) {
+                        serialHandler.addHandlerListener(this);
+                    }
+                    if (transactionManager != null) {
+                        transactionManager.addEventListener(this);
+                    }
                     updateStatus(ThingStatus.UNKNOWN);
 
                     try {
@@ -260,20 +264,23 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         if (transactionManager != null) {
             transactionManager.removeEventListener(this);
             transactionManager.close();
+            transactionManager = null;
         }
-
         if (serialHandler != null) {
             serialHandler.removeHandlerListener(this);
             serialHandler.close();
+            serialHandler = null;
         }
-
+        address = null;
         initComplete = false;
         connections.clear();
         closeSerialPort();
 
         if (exit) {
             stopScheduledTasks();
-            initTask.cancel(true);
+            if (initTask != null) {
+                initTask.cancel(true);
+            }
             devices.forEach((address, device) -> {
                 device.dispose();
             });
@@ -780,8 +787,12 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     private <T extends BlueGigaResponse> T sendCommandWithoutChecks(BlueGigaCommand command, Class<T> expectedResponse)
             throws BlueGigaException {
+        if (transactionManager != null) {
+            return transactionManager.sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
+        } else {
+            throw new BlueGigaException("Transaction manager missing");
+        }
 
-        return transactionManager.sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
     }
 
     /**
@@ -790,7 +801,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @param listener the {@link BlueGigaEventListener} to add
      */
     public void addEventListener(BlueGigaEventListener listener) {
-        transactionManager.addEventListener(listener);
+        if (transactionManager != null) {
+            transactionManager.addEventListener(listener);
+        }
     }
 
     /**
@@ -799,7 +812,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @param listener the {@link BlueGigaEventListener} to remove
      */
     public void removeEventListener(BlueGigaEventListener listener) {
-        transactionManager.removeEventListener(listener);
+        if (transactionManager != null) {
+            transactionManager.removeEventListener(listener);
+        }
     }
 
     @Override

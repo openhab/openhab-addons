@@ -103,6 +103,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private void cancelTransactionTimer() {
         if (transactionTimeoutTimer != null) {
             transactionTimeoutTimer.cancel(true);
+            transactionTimeoutTimer = null;
         }
     }
 
