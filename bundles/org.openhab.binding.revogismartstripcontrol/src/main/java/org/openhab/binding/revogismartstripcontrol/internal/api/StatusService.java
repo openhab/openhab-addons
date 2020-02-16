@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
@@ -43,14 +42,16 @@ public class StatusService {
     }
 
     public Status queryStatus(String serialNumber, String ipAddress) {
-        List<String> responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber), ipAddress)
-                .stream()
-                .map(UdpResponse::getAnswer)
-                .collect(Collectors.toList());
-        responses.forEach(response -> logger.info("Received: {}", response));
+        List<UdpResponse> responses;
+        if (ipAddress == null || ipAddress.trim().isEmpty()) {
+            responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
+        } else {
+            responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber), ipAddress);
+        }
+        responses.forEach(response -> logger.info("Received: {}", response.getAnswer()));
         return responses.stream()
-                .filter(response -> !response.isEmpty() && response.contains(VERSION_STRING))
-                .map(this::deserializeString)
+                .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))
+                .map(response -> deserializeString(response.getAnswer()))
                 .filter(statusRaw -> statusRaw.getCode() == 200 && statusRaw.getResponse() == 90)
                 .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(), statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
                 .findFirst()
