@@ -163,13 +163,17 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     }
 
     private void sendRenderedEffectCommand(Command command) throws NanoleafException {
+        logger.debug("Command Type: {}", command.getClass());
         HSBType currentPanelColor = getPanelColor();
+        logger.debug("currentPanelColor: {}", currentPanelColor.toString());
         if (currentPanelColor == null)
             return;
         HSBType newPanelColor = new HSBType();
         if (command instanceof HSBType) {
+            logger.debug("HSBType command received");
             newPanelColor = (HSBType) command;
         } else if (command instanceof OnOffType) {
+            logger.debug("OnOffType command received");
             if (OnOffType.ON.equals(command)) {
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
                         MAX_PANEL_BRIGHTNESS);
@@ -178,10 +182,12 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                         MIN_PANEL_BRIGHTNESS);
             }
         } else if (command instanceof PercentType) {
+            logger.debug("PercentType command received");
             PercentType brightness = new PercentType(
                     Math.max(MIN_PANEL_BRIGHTNESS.intValue(), ((PercentType) command).intValue()));
             newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(), brightness);
         } else if (command instanceof IncreaseDecreaseType) {
+            logger.debug("IncreaseDecreaseType command received");
             int brightness = currentPanelColor.getBrightness().intValue();
             if (command.equals(IncreaseDecreaseType.INCREASE)) {
                 brightness = Math.min(MAX_PANEL_BRIGHTNESS.intValue(), brightness + BRIGHTNESS_STEP_SIZE);
@@ -220,9 +226,10 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             if (handler != null) {
                 NanoleafControllerConfig config = ((NanoleafControllerHandler) handler).getControllerConfig();
                 // Light Panels and Canvas use different stream commands
-                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)) {
+                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)|| config.deviceType.equals(CONFIG_DEVICE_TYPE_CANVAS)) {
                     write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
                 } else {
+                    logger.debug("special streaming case for canvas (yet unsupported)");
                     int quotient = Integer.divideUnsigned(Integer.valueOf(panelID), 256);
                     int remainder = Integer.remainderUnsigned(Integer.valueOf(panelID), 256);
                     write.setAnimData(
