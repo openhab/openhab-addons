@@ -200,4 +200,8 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     @Override
     public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
+
+    @Override
+    public void sourceChangeEvent(String mac, String source) {
+    }
 }

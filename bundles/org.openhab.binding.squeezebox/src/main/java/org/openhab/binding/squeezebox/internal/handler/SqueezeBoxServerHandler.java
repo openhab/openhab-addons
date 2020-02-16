@@ -853,6 +853,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 mode = messageParts[3].equals("0") ? "play" : "pause";
             } else if (action.equals("stop")) {
                 mode = "stop";
+            } else if ("play".equals(action) && "playlist".equals(messageParts[1])) {
+                if (messageParts.length >= 4) {
+                    handleSourceChangeMessage(mac, messageParts[3]);
+                }
+                return;
             } else {
                 // Added so that actions (such as delete, index, jump, open) are not treated as "play"
                 logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
@@ -864,6 +869,19 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 @Override
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
+                }
+
+            });
+        }
+
+        private void handleSourceChangeMessage(String mac, String rawSource) {
+            String source = URLDecoder.decode(rawSource);
+
+            updatePlayer(new PlayerUpdateEvent() {
+
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.sourceChangeEvent(mac, source);
                 }
 
             });
