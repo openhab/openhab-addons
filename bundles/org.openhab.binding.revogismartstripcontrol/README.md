@@ -16,7 +16,7 @@ It is required to integrate your power strip into your network first, maybe with
 
 ## Thing Configuration
 
-You need to know the serial number. Usually you can find it on the back. The serial number will also be discovered.
+You need to know the serial number. Usually you can find it on the back. The serial number will also be discovered. The IP address of the device is also necessary, this address should be set static.
 
 ## Channels
 
@@ -47,7 +47,7 @@ You need to know the serial number. Usually you can find it on the back. The ser
 Example Thing configuration:
 
 ```
-Thing revogismartstripcontrol:smartstrip:<serialNumber> "<Name>" @ "<Location>" [serialNumber="<serialNumnber>", pollIntervall="45"]
+Thing revogismartstripcontrol:smartstrip:<serialNumber> "<Name>" @ "<Location>" [serialNumber="<serialNumnber>", ipAddress=<ipaddress>, pollIntervall="45"]
 ```
 
 Example Items configuration:
