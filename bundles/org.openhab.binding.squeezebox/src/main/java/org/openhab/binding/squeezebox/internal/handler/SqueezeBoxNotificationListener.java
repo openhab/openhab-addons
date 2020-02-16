@@ -212,4 +212,8 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     @Override
     public void updateFavoritesListEvent(List<Favorite> favorites) {
     }
+
+    @Override
+    public void sourceChangeEvent(String mac, String source) {
+    }
 }

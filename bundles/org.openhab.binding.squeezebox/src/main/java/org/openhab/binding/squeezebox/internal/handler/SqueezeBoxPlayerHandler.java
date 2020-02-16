@@ -323,6 +323,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
+    public void sourceChangeEvent(String mac, String source) {
+        updateChannel(mac, CHANNEL_SOURCE, StringType.valueOf(source));
+    }
+
+    @Override
     public void absoluteVolumeChangeEvent(String mac, int volume) {
         int newVolume = volume;
         newVolume = Math.min(100, newVolume);
