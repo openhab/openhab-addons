@@ -23,6 +23,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,6 +64,15 @@ public class UdpSenderService {
                 .flatMap(Collection::stream)
                 .collect(toList());
 
+    }
+
+    public List<UdpResponse> sendMessage(String content, String ipAddress) {
+        try {
+            return sendMessage(content, InetAddress.getByName(ipAddress));
+        } catch (UnknownHostException e) {
+            logger.warn("Could not find host with IP {}", ipAddress);
+            return Collections.emptyList();
+        }
     }
 
     private List<UdpResponse> sendMessage(String content, InetAddress inetAddress) {
@@ -133,5 +143,4 @@ public class UdpSenderService {
         }
         return Collections.emptyList();
     }
-
 }
