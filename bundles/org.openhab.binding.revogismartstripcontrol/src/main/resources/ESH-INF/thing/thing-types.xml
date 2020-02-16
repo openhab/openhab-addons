@@ -43,7 +43,7 @@
 				<default>60</default>
 				<description>How often (seconds) should the smart strip status be polled?</description>
 			</parameter>
-			<parameter name="ipAddress" type="text" required="true">
+			<parameter name="ipAddress" type="text">
 				<label>IP Address</label>
 				<description>IP Address of your smart strip</description>
 			</parameter>
