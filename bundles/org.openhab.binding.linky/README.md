@@ -42,3 +42,22 @@ The information that is retrieved is available as these channels:
 | yearly#thisYear   | Number:Energy | Current year energy usage  |
 | yearly#lastYear   | Number:Energy | Last year energy usage     |
 
+## Full Example
+
+### Thing
+
+```
+Thing linky:linky:local "Compteur Linky" [ username="example@domaine.fr", password="******" ]
+```
+
+### Items
+
+```
+Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:linky:local:daily#yesterday" }
+Number:Energy ConsoSemaineEnCours "Conso semaine en cours [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#thisWeek" }
+Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#lastWeek" }
+Number:Energy ConsoMoisEnCours "Conso mois en cours [%.0f %unit%]" <energy> { channel="linky:linky:local:monthly#thisMonth" }
+Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:linky:local:monthly#lastMonth" }
+Number:Energy ConsoAnneeEnCours "Conso année en cours [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#thisYear" }
+Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#lastYear" }
+```
