@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The {@link SwitchService} enables the binding to actually switch plugs on and of
@@ -42,7 +41,7 @@ public class SwitchService {
         this.udpSenderService = udpSenderService;
     }
 
-    public SwitchResponse switchPort(String serialNumber, int port, int state) {
+    public SwitchResponse switchPort(String serialNumber, String ipAddress, int port, int state) {
         if (state < 0 || state > 1) {
             logger.warn("state value is not valid: {}", state);
             throw new IllegalArgumentException("state has to be 0 or 1");
@@ -52,16 +51,19 @@ public class SwitchService {
             throw new IllegalArgumentException("Given port doesn't exist");
         }
 
-        List<String> responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state))
-                .stream()
-                .map(UdpResponse::getAnswer)
-                .collect(Collectors.toList());
+        List<UdpResponse> responses;
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
+        } else {
+            responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state), ipAddress);
+        }
+
         responses.forEach(response -> {
-            logger.info("Reveived {}", response);
+            logger.info("Reveived {}", response.getAnswer());
         });
         return responses.stream()
-                .filter(response -> !response.isEmpty())
-                .map(this::deserializeString)
+                .filter(response -> !response.getAnswer().isEmpty())
+                .map( response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
                 .findFirst()
                 .orElse(new SwitchResponse(0, 503));
