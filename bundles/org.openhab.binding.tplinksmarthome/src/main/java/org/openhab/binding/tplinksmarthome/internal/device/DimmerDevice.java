@@ -71,7 +71,6 @@ public class DimmerDevice extends SwitchDevice {
                     return false;
                 }
                 response = setOnOffState(channelUid, OnOffType.ON);
-
             } else {
                 response = setOnOffState(channelUid, OnOffType.OFF);
             }
