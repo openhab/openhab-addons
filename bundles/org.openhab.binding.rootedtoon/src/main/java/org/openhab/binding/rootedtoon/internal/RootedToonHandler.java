@@ -68,9 +68,14 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
 
     @Override
     public void dispose() {
-        this.refreshJob.cancel(true);
-        this.realtimeRefreshJob.cancel(true);
-        this.client = null;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
+
+        if (realtimeRefreshJob != null) {
+            realtimeRefreshJob.cancel(true);
+        }
+        client = null;
     }
 
     @Override
@@ -79,6 +84,14 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
             updateThermostatInfo();
             updateRealtimeUsageInfo();
         } else {
+
+            if (this.client == null) {
+                logger.error("Handling command without a client. Either not initialized or disposed.");
+                return;
+            }
+
+            ToonClient client = this.client;
+
             try {
                 OnOffType wantedValue;
                 int toonState;
@@ -89,13 +102,13 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
                 switch (str) {
                     case "ProgramEnabled":
                         wantedValue = (OnOffType) command;
-                        this.client.setProgramEnabled(wantedValue.equals(OnOffType.ON));
-                        this.client.requestThermostatInfo();
+                        client.setProgramEnabled(wantedValue.equals(OnOffType.ON));
+                        client.requestThermostatInfo();
                         break;
                     case "SetpointMode":
                         toonState = ((DecimalType) command).intValue();
-                        this.client.setActiveState(ToonClient.State.fromToonState(toonState));
-                        this.client.requestThermostatInfo();
+                        client.setActiveState(ToonClient.State.fromToonState(toonState));
+                        client.requestThermostatInfo();
                         break;
                     case "Setpoint":
                         if (command instanceof DecimalType) {
@@ -104,8 +117,8 @@ public class RootedToonHandler extends BaseThingHandler implements ToonClientEve
                             setpoint = ((QuantityType) command).doubleValue();
                         }
                         if (setpoint != -1) {
-                            this.client.setRoomSetpoint(setpoint);
-                            this.client.requestThermostatInfo();
+                            client.setRoomSetpoint(setpoint);
+                            client.requestThermostatInfo();
                         }
                         break;
                 }
