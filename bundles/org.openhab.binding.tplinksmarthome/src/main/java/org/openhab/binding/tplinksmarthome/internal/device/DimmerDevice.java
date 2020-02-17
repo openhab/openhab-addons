@@ -32,7 +32,6 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
  */
 @NonNullByDefault
 public class DimmerDevice extends SwitchDevice {
-    private PercentType lastBrightnessState = PercentType.ZERO;
 
     @Override
     protected @Nullable HasErrorResponse setOnOffState(ChannelUID channelUid, OnOffType onOff) throws IOException {
@@ -65,12 +64,14 @@ public class DimmerDevice extends SwitchDevice {
 
             // Don't send value 0 as brightness value as it will give an error from the device.
             if (percentCommand.intValue() > 0) {
-                if (lastBrightnessState.equals(PercentType.ZERO)) {
-                    // if the light was off before, turn it on before setting the brightness value
-                    setOnOffState(channelUid, OnOffType.ON);
-                }
                 response = commands.setDimmerBrightnessResponse(
                         connection.sendCommand(commands.setDimmerBrightness(percentCommand.intValue())));
+                checkErrors(response);
+                if (response == null) {
+                    return false;
+                }
+                response = setOnOffState(channelUid, OnOffType.ON);
+
             } else {
                 response = setOnOffState(channelUid, OnOffType.OFF);
             }
@@ -82,10 +83,9 @@ public class DimmerDevice extends SwitchDevice {
     @Override
     public State updateChannel(ChannelUID channelUid, DeviceState deviceState) {
         if (CHANNEL_BRIGHTNESS.equals(channelUid.getId())) {
-            lastBrightnessState = deviceState.getSysinfo().getRelayState() == OnOffType.OFF ?
+            return deviceState.getSysinfo().getRelayState() == OnOffType.OFF ?
                     PercentType.ZERO :
                     new PercentType(deviceState.getSysinfo().getBrightness());
-            return lastBrightnessState;
         } else {
             return super.updateChannel(channelUid, deviceState);
         }
