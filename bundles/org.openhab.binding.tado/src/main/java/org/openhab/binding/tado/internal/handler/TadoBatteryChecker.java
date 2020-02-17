@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ControlDevice;
-import org.openhab.binding.tado.internal.api.model.Zone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,19 +59,19 @@ public class TadoBatteryChecker {
                 logger.debug("Fetching (battery state) zone list for HomeId {}", homeId);
                 zoneList.clear();
                 try {
-                    for (Zone zone : homeHandler.getApi().listZones(homeId)) {
+                    homeHandler.getApi().listZones(homeId).forEach(zone -> {
                         boolean batteryLow = false;
                         for (ControlDevice device : zone.getDevices()) {
                             String batteryState = device.getBatteryState();
-                            batteryLow = (batteryState != null && !batteryState.equals("NORMAL"));
+                            batteryLow = (batteryState != null) && !"NORMAL".equals(batteryState);
                             if (batteryLow) {
                                 break;
                             }
                         }
-                        zoneList.put(Long.valueOf(zone.getId()), batteryLow ? OnOffType.ON : OnOffType.OFF);
-                    }
+                        zoneList.put(Long.valueOf(zone.getId()), OnOffType.from(batteryLow));
+                    });
                 } catch (IOException | ApiException e) {
-                    logger.debug("Fetch (battery state) zone list exception", e);
+                    logger.debug("Fetch (battery state) zone list exception");
                 }
             }
         }
@@ -79,8 +79,7 @@ public class TadoBatteryChecker {
 
     public State getBatteryLowAlarm(long zoneId) {
         refreshZoneList();
-        State state = zoneList.get(zoneId);
-        return state != null ? state : OnOffType.OFF;
+        return zoneList.getOrDefault(zoneId, UnDefType.UNDEF);
     }
 
 }
