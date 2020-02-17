@@ -31,7 +31,6 @@ import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraVersionEvent;
 import org.openhab.binding.satel.internal.event.ModuleVersionEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
 import org.openhab.binding.satel.internal.types.IntegraType;
 import org.slf4j.Logger;
@@ -231,18 +230,19 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof ModuleVersionEvent) {
-            ModuleVersionEvent versionEvent = (ModuleVersionEvent) event;
-            this.extPayloadSupport = versionEvent.hasExtPayloadSupport();
-            logger.info("Module version: {}.", versionEvent.getVersion());
-        } else if (event instanceof IntegraVersionEvent) {
-            IntegraVersionEvent versionEvent = (IntegraVersionEvent) event;
-            this.integraType = IntegraType.valueOf(versionEvent.getType() & 0xFF);
-            this.integraVersion = versionEvent.getVersion();
-            logger.info("Connection to {} initialized. INTEGRA version: {}.", this.integraType.getName(),
-                    this.integraVersion);
-        }
+    public void incomingEvent(ModuleVersionEvent event) {
+        ModuleVersionEvent versionEvent = event;
+        this.extPayloadSupport = versionEvent.hasExtPayloadSupport();
+        logger.info("Module version: {}.", versionEvent.getVersion());
+    }
+
+    @Override
+    public void incomingEvent(IntegraVersionEvent event) {
+        IntegraVersionEvent versionEvent = event;
+        this.integraType = IntegraType.valueOf(versionEvent.getType() & 0xFF);
+        this.integraVersion = versionEvent.getVersion();
+        logger.info("Connection to {} initialized. INTEGRA version: {}.", this.integraType.getName(),
+                this.integraVersion);
     }
 
     private @Nullable SatelMessage readMessage() throws InterruptedException {
@@ -408,21 +408,33 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                 }
                 command.setState(State.SENT);
 
-                // command sent, wait for response
-                logger.trace("Waiting for response");
-                timeoutTimer.start();
-                SatelMessage response = this.readMessage();
-                timeoutTimer.stop();
+                SatelMessage response;
+                do {
+                    // command sent, wait for response
+                    logger.trace("Waiting for response");
+                    timeoutTimer.start();
+                    response = this.readMessage();
+                    timeoutTimer.stop();
+                    if (response == null) {
+                        break;
+                    }
+                    logger.debug("Got response: {}", response);
+
+                    if (!receivedResponse) {
+                        receivedResponse = true;
+                        // notify about connection success after first
+                        // response from the module
+                        this.dispatchEvent(new ConnectionStatusEvent(true));
+                    }
+                    if (command.matches(response)) {
+                        break;
+                    }
+                    logger.info("Ignoring response, it does not match command {}: {}",
+                            String.format("%02X", command.getRequest().getCommand()), response);
+                } while (!Thread.currentThread().isInterrupted());
+
                 if (response == null) {
                     break;
-                }
-                logger.debug("Got response: {}", response);
-
-                if (!receivedResponse) {
-                    receivedResponse = true;
-                    // notify about connection success after first
-                    // response from the module
-                    this.dispatchEvent(new ConnectionStatusEvent(true));
                 }
 
                 if (command.handleResponse(this, response)) {
