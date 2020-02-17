@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
@@ -60,14 +61,8 @@ public class TadoBatteryChecker {
                 zoneList.clear();
                 try {
                     homeHandler.getApi().listZones(homeId).forEach(zone -> {
-                        boolean batteryLow = false;
-                        for (ControlDevice device : zone.getDevices()) {
-                            String batteryState = device.getBatteryState();
-                            batteryLow = (batteryState != null) && !"NORMAL".equals(batteryState);
-                            if (batteryLow) {
-                                break;
-                            }
-                        }
+                        boolean batteryLow = !zone.getDevices().stream().map(ControlDevice::getBatteryState)
+                                .filter(Objects::nonNull).allMatch(s -> s.equals("NORMAL"));
                         zoneList.put(Long.valueOf(zone.getId()), OnOffType.from(batteryLow));
                     });
                 } catch (IOException | ApiException e) {
