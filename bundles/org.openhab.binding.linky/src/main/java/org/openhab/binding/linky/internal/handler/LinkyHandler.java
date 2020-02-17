@@ -113,7 +113,6 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Linky handler.");
-        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
 
         scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
 
@@ -238,8 +237,6 @@ public class LinkyHandler extends BaseThingHandler {
         if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
             return;
         }
-
-        final LocalDate today = LocalDate.now();
 
         double lastMonth = -1;
         double thisMonth = -1;
