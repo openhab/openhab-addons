@@ -4,232 +4,232 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="toon">
+	<thing-type id="toon">
 
-        <label>Rooted Toon</label>
-        <description>A connection for a rooted Toon on your local network</description>
+		<label>Rooted Toon</label>
+		<description>A connection for a rooted Toon on your local network</description>
 
-        <channels>
-            <channel id="Temperature" typeId="temperature" />
-            <channel id="Setpoint" typeId="setpoint" />
-            <channel id="SetpointMode" typeId="setpointMode" />
-            <channel id="GasMeterReading" typeId="gasMeterReading" />
-            <channel id="GasConsumption" typeId="gasConsumption" />
-            <channel id="PowerMeterReading" typeId="powerAmount">
-                <label>Energy, high rate</label>
-            </channel>
-            <channel id="PowerMeterReadingLow" typeId="powerAmount">
-                <label>Energy, low rate</label>
-            </channel>
-            
-            
-            <channel id="PowerMeterFlow" typeId="powerAmount">
-                <label>Energy flow, high rate</label>
-            </channel>
-            <channel id="PowerMeterFlowLow" typeId="powerFlow">
-                <label>Energy flow, low rate</label>
-            </channel>
-
-            <channel id="PowerProducedReading" typeId="powerAmount">
-                <label>Power produced, high rate</label>
-            </channel>
-            <channel id="PowerProducedFlow" typeId="powerFlow">
-                <label>Power producing flow, high rate</label>
-            </channel>
-            
-            <channel id="PowerProducedFlowLow" typeId="powerAmount">
-                <label>Power produced, low rate</label>
-            </channel>
-            <channel id="PowerProducedReadingLow" typeId="powerFlow">
-                <label>Power producing flow, low rate</label>
-            </channel>
-            
-            <channel id="SolarPowerReading" typeId="powerAmount">
-                <label>Solar power</label>
-            </channel>
-            <channel id="SolarPowerFlow" typeId="powerFlow">
-                <label>Solar power flow</label>
-            </channel>
-            
-            
-            <channel id="ProgramEnabled" typeId="switch_binary">
-                <label>Program enabled</label>
-            </channel>
-
-            <channel id="PowerConsumption" typeId="powerFlow" />
-
-            <channel id="ModulationLevel" typeId="modulationLevel" />
-            <channel id="Heating" typeId="heating" />
-            <channel id="Tapwater" typeId="tapwater" />
-            <channel id="Preheat" typeId="preheat" />
-
-            <channel id="NextSetpoint" typeId="nextSetpoint" />
-            <channel id="NextSetpointTime" typeId="nextSetpointTime" />
-            <channel id="BoilerSetpoint" typeId="boilerSetpoint" />
-
-        </channels>
-
-        <config-description>
-            <parameter name="url" type="text" required="true" pattern="https?://.*">
-                <label>URL</label>
-                <description>The URL on which to contact your local Toon.</description>
-            </parameter>
-            <parameter name="refreshInterval" type="integer" required="true" min="1" max="3600">
-                <default>8</default>
-                <label>Refresh interval</label>
-                <description>The interval in seconds between automatic refreshes.</description>
-            </parameter>
-        </config-description>
-
-    </thing-type>
+		<channels>
+			<channel id="Temperature" typeId="temperature" />
+			<channel id="Setpoint" typeId="setpoint" />
+			<channel id="SetpointMode" typeId="setpointMode" />
+			<channel id="GasMeterReading" typeId="gasMeterReading" />
+			<channel id="GasConsumption" typeId="gasConsumption" />
+			<channel id="PowerMeterReading" typeId="powerAmount">
+				<label>Energy, high rate</label>
+			</channel>
+			<channel id="PowerMeterReadingLow" typeId="powerAmount">
+				<label>Energy, low rate</label>
+			</channel>
 
 
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Current room temperature</description>
-        <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
-    </channel-type>
+			<channel id="PowerMeterFlow" typeId="powerAmount">
+				<label>Energy flow, high rate</label>
+			</channel>
+			<channel id="PowerMeterFlowLow" typeId="powerFlow">
+				<label>Energy flow, low rate</label>
+			</channel>
 
-    <channel-type id="setpoint">
-        <item-type>Number</item-type>
-        <label>Setpoint</label>
-        <description>Thermostat setpoint</description>
-        <category>heating</category>
-        <state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false" />
-    </channel-type>
+			<channel id="PowerProducedReading" typeId="powerAmount">
+				<label>Power produced, high rate</label>
+			</channel>
+			<channel id="PowerProducedFlow" typeId="powerFlow">
+				<label>Power producing flow, high rate</label>
+			</channel>
 
-    <channel-type id="nextSetpoint">
-        <item-type>Number</item-type>
-        <label>Next Setpoint</label>
-        <description>The next setpoint, according to the program</description>
-        <category>heating</category>
-        <state pattern="%.1f °C" readOnly="true" />
-    </channel-type>
+			<channel id="PowerProducedFlowLow" typeId="powerAmount">
+				<label>Power produced, low rate</label>
+			</channel>
+			<channel id="PowerProducedReadingLow" typeId="powerFlow">
+				<label>Power producing flow, low rate</label>
+			</channel>
 
-    <channel-type id="nextSetpointTime">
-        <item-type>DateTime</item-type>
-        <label>Next Setpoint moment</label>
-        <description>The moment the next setpoint occurs, according to the program</description>
-        <category>heating</category>
-        <state readOnly="true" pattern="%1$tH:%1$tM" />
-    </channel-type>
-
-    <channel-type id="setpointMode">
-        <item-type>Number</item-type>
-        <label>Setpoint Mode</label>
-        <description>Chosen setpoint mode (Comfort, Active, Sleep, Away)</description>
-        <category>heating</category>
-        <state readOnly="false">
-            <options>
-                <option value="-1">Override</option>
-                <option value="0">Comfort</option>
-                <option value="1">Active</option>
-                <option value="2">Sleep</option>
-                <option value="3">Away</option>
-                <option value="4">Holiday</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="gasMeterReading" advanced="true">
-        <item-type>Number</item-type>
-        <label>Gas</label>
-        <description>Current Gas Meter reading in L</description>
-        <category>gas</category>
-        <state readOnly="true" pattern="%d" />
-    </channel-type>
-
-    <channel-type id="powerAmount" advanced="true">
-        <item-type>Number</item-type>
-        <label>Energy</label>
-        <description>Electric energy amount</description>
-        <category>energy</category>
-        <state readOnly="true" pattern="%d Wh" />
-    </channel-type>
-
-    <channel-type id="powerFlow">
-        <item-type>Number</item-type>
-        <label>Power</label>
-        <description>Electric energy flow</description>
-        <category>energy</category>
-        <state pattern="%.1f W" readOnly="true" />
-    </channel-type>
-
-    <channel-type id="gasConsumption">
-        <item-type>Number</item-type>
-        <label>Gas</label>
-        <description>Current gas consumption</description>
-        <category>energy</category>
-        <state pattern="%d l/h" readOnly="true" />
-    </channel-type>
+			<channel id="SolarPowerReading" typeId="powerAmount">
+				<label>Solar power</label>
+			</channel>
+			<channel id="SolarPowerFlow" typeId="powerFlow">
+				<label>Solar power flow</label>
+			</channel>
 
 
-    <channel-type id="modulationLevel" advanced="true">
-        <item-type>Number</item-type>
-        <label>Modulation Level</label>
-        <description>Current burner modulation level</description>
-        <category>heating</category>
-        <state readOnly="true" pattern="%d %%" />
-    </channel-type>
+			<channel id="ProgramEnabled" typeId="switch_binary">
+				<label>Program enabled</label>
+			</channel>
 
-    <channel-type id="heating" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Heating</label>
-        <description>Indicates if the boiler is burning</description>
-        <category>fire</category>
-        <state readOnly="true">
-            <options>
-                <option value="ON">On</option>
-                <option value="OFF">Off</option>
-            </options>
-        </state>
-    </channel-type>
+			<channel id="PowerConsumption" typeId="powerFlow" />
 
-    <channel-type id="tapwater" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Tapwater</label>
-        <description>Indicates if the boiler is burning</description>
-        <category>fire</category>
-        <state readOnly="true">
-            <options>
-                <option value="ON">On</option>
-                <option value="OFF">Off</option>
-            </options>
-        </state>
-    </channel-type>
+			<channel id="ModulationLevel" typeId="modulationLevel" />
+			<channel id="Heating" typeId="heating" />
+			<channel id="Tapwater" typeId="tapwater" />
+			<channel id="Preheat" typeId="preheat" />
 
-    <channel-type id="preheat" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Preheat</label>
-        <description>Indicates if the boiler is burning</description>
-        <category>fire</category>
-        <state readOnly="true">
-            <options>
-                <option value="ON">On</option>
-                <option value="OFF">Off</option>
-            </options>
-        </state>
-    </channel-type>
+			<channel id="NextSetpoint" typeId="nextSetpoint" />
+			<channel id="NextSetpointTime" typeId="nextSetpointTime" />
+			<channel id="BoilerSetpoint" typeId="boilerSetpoint" />
+
+		</channels>
+
+		<config-description>
+			<parameter name="url" type="text" required="true" pattern="https?://.*">
+				<label>URL</label>
+				<description>The URL on which to contact your local Toon.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true" min="1" max="3600">
+				<default>8</default>
+				<label>Refresh interval</label>
+				<description>The interval in seconds between automatic refreshes.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
 
 
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current room temperature</description>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
 
-    <channel-type id="boilerSetpoint">
-        <item-type>Number</item-type>
-        <label>Boiler Setpoint</label>
-        <description>Internal Boiler Setpoint</description>
-        <category>heating</category>
-        <state step="0.1" pattern="%d °C" readOnly="true" />
-    </channel-type>
+	<channel-type id="setpoint">
+		<item-type>Number</item-type>
+		<label>Setpoint</label>
+		<description>Thermostat setpoint</description>
+		<category>heating</category>
+		<state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="nextSetpoint">
+		<item-type>Number</item-type>
+		<label>Next Setpoint</label>
+		<description>The next setpoint, according to the program</description>
+		<category>heating</category>
+		<state pattern="%.1f °C" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="nextSetpointTime">
+		<item-type>DateTime</item-type>
+		<label>Next Setpoint moment</label>
+		<description>The moment the next setpoint occurs, according to the program</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%1$tH:%1$tM" />
+	</channel-type>
+
+	<channel-type id="setpointMode">
+		<item-type>Number</item-type>
+		<label>Setpoint Mode</label>
+		<description>Chosen setpoint mode (Comfort, Active, Sleep, Away)</description>
+		<category>heating</category>
+		<state readOnly="false">
+			<options>
+				<option value="-1">Override</option>
+				<option value="0">Comfort</option>
+				<option value="1">Active</option>
+				<option value="2">Sleep</option>
+				<option value="3">Away</option>
+				<option value="4">Holiday</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="gasMeterReading" advanced="true">
+		<item-type>Number</item-type>
+		<label>Gas</label>
+		<description>Current Gas Meter reading in L</description>
+		<category>gas</category>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="powerAmount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Energy</label>
+		<description>Electric energy amount</description>
+		<category>energy</category>
+		<state readOnly="true" pattern="%d Wh" />
+	</channel-type>
+
+	<channel-type id="powerFlow">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Electric energy flow</description>
+		<category>energy</category>
+		<state pattern="%.1f W" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="gasConsumption">
+		<item-type>Number</item-type>
+		<label>Gas</label>
+		<description>Current gas consumption</description>
+		<category>energy</category>
+		<state pattern="%d l/h" readOnly="true" />
+	</channel-type>
+
+
+	<channel-type id="modulationLevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Modulation Level</label>
+		<description>Current burner modulation level</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="heating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heating</label>
+		<description>Indicates if the boiler is burning</description>
+		<category>fire</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tapwater" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Tapwater</label>
+		<description>Indicates if the boiler is burning</description>
+		<category>fire</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="preheat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Preheat</label>
+		<description>Indicates if the boiler is burning</description>
+		<category>fire</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
 
 
 
-    <channel-type id="switch_binary" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Switch</label>
-    </channel-type>
+	<channel-type id="boilerSetpoint">
+		<item-type>Number</item-type>
+		<label>Boiler Setpoint</label>
+		<description>Internal Boiler Setpoint</description>
+		<category>heating</category>
+		<state step="0.1" pattern="%d °C" readOnly="true" />
+	</channel-type>
+
+
+
+	<channel-type id="switch_binary" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+	</channel-type>
 
 
 </thing:thing-descriptions>

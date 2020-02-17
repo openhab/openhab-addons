@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,7 @@ public class ToonClient {
 
     public void setRoomSetpoint(double temperature) throws ToonConnectionException {
         double sanitized = Math.min(30.0D, Math.max(10.0D, Math.round(temperature * 2.0D) / 2.0D));
-        logger.debug("Setting temperature to " + temperature);
+        logger.debug("Setting temperature to {}", temperature);
         Response response = this.toonTarget.path("happ_thermstat").queryParam("action", new Object[] { "roomSetpoint" })
                 .queryParam("Setpoint", new Object[] { Integer.valueOf((int) (sanitized * 100.0D)) })
                 .request(new MediaType[] { MediaType.APPLICATION_JSON_TYPE }).get();
@@ -178,7 +178,7 @@ public class ToonClient {
 
         try {
             String strJson = response.readEntity(String.class);
-            logger.debug("Realtime usage info response: " + strJson);
+            logger.debug("Realtime usage info response: {}", strJson);
             JsonObject json = this.jsonParser.parse(strJson).getAsJsonObject();
 
             RealtimeUsageInfo result = new RealtimeUsageInfo();
@@ -248,7 +248,7 @@ public class ToonClient {
 
                     }
                 } catch (Exception exception) {
-                    logger.error(dev.toString());
+                    logger.error("{}", dev.toString());
                     logger.error("Error while parsing getDevices.json output", exception);
                 }
             }
