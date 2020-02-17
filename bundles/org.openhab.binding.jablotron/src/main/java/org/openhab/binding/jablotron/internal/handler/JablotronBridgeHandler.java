@@ -206,13 +206,19 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return response.getData().getServices();
         } catch (TimeoutException ex) {
             logger.debug("Timeout during discovering services", ex);
-        } catch (ExecutionException | InterruptedException ex) {
+        } catch (InterruptedException ex) {
             logger.debug("Error during discovering services", ex);
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+            } else {
+                logger.debug("Error during discovering services", e);
+            }
         }
         return null;
     }
 
-    protected synchronized @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key, String status, String code) {
+    protected synchronized @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key, String status, String code) throws SecurityException {
         String url;
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
@@ -246,8 +252,15 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return response;
         } catch (TimeoutException e) {
             logger.debug("sendUserCode timeout exception", e);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             logger.debug("sendUserCode exception", e);
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+                throw new SecurityException(AUTHENTICATION_CHALLENGE);
+            } else {
+                logger.debug("sendUserCode exception", e);
+            }
         }
         return null;
     }
@@ -271,11 +284,16 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return response.getData().getEvents();
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm history!");
-            return null;
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             logger.debug("sendGetEventHistory exception", e);
-            return null;
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+            } else {
+                logger.debug("sendGetEventHistory exception", e);
+            }
         }
+        return null;
     }
 
     protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
@@ -294,11 +312,16 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return gson.fromJson(line, JablotronDataUpdateResponse.class);
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm status!");
-            return null;
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             logger.debug("sendGetStatusRequest exception", e);
-            return null;
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+            } else {
+                logger.debug("sendGetStatusRequest exception", e);
+            }
         }
+        return null;
     }
 
     protected synchronized @Nullable JablotronGetPGResponse sendGetProgrammableGates(Thing th, String alarm) {
@@ -317,11 +340,16 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return gson.fromJson(line, JablotronGetPGResponse.class);
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting programmable gates!");
-            return null;
-        } catch (InterruptedException | ExecutionException e) {
-            logger.debug("sendGetSections exception", e);
-            return null;
+        } catch (InterruptedException e) {
+            logger.debug("sendGetProgramambleGates exception", e);
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+            } else {
+                logger.debug("sendGetProgramambleGates exception", e);
+            }
         }
+        return null;
     }
 
     protected synchronized @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
@@ -340,14 +368,19 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return gson.fromJson(line, JablotronGetSectionsResponse.class);
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm sections!");
-            return null;
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             logger.debug("sendGetSections exception", e);
-            return null;
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+            } else {
+                logger.debug("sendGetSections exception", e);
+            }
         }
+        return null;
     }
 
-    protected synchronized @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action, String value, String componentId) {
+    protected synchronized @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action, String value, String componentId) throws SecurityException {
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -375,11 +408,17 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             return gson.fromJson(line, JablotronGetSectionsResponse.class);
         } catch (TimeoutException ste) {
             logger.debug("Timeout during getting alarm sections!");
-            return null;
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             logger.debug("controlComponent exception", e);
-            return null;
+        } catch (ExecutionException e) {
+            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                relogin();
+                throw new SecurityException(AUTHENTICATION_CHALLENGE);
+            } else {
+                logger.debug("controlComponent exception", e);
+            }
         }
+        return null;
     }
 
     private Request createRequest(String url) {
@@ -390,5 +429,10 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
                 .header("x-vendor-id", VENDOR)
                 .agent(AGENT)
                 .timeout(TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    private void relogin() {
+        logger.debug("doing relogin");
+        login();
     }
 }

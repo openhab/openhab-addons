@@ -52,7 +52,6 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (channelUID.getId().startsWith("SEC-") && command instanceof StringType) {
             if ("PARTIAL_ARM".equals(command.toString())) {
                 controlComponent(channelUID.getId(), "CONTROL-SECTION", "DISARM");
@@ -70,7 +69,12 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
-            JablotronGetSectionsResponse response = handler.controlComponent(getThing(), thingConfig.getCode(), action, value, componentId);
+            JablotronGetSectionsResponse response;
+            try {
+                response = handler.controlComponent(getThing(), thingConfig.getCode(), action, value, componentId);
+            } catch (SecurityException se) {
+                response = handler.controlComponent(getThing(), thingConfig.getCode(), action, value, componentId);
+            }
             if (response != null) {
                 updateSectionState(response.getData().getStates());
             } else {

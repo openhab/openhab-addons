@@ -35,8 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.config.JablotronDeviceConfig;
 import org.openhab.binding.jablotron.internal.model.*;
-import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
-import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,11 +184,16 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected @Nullable JablotronControlResponse sendUserCode(String section, String key, String status, String code) {
+        JablotronControlResponse response = null;
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
-            return handler.sendUserCode(getThing(), section, key, status, code);
+            try {
+                response = handler.sendUserCode(getThing(), section, key, status, code);
+            } catch (SecurityException se) {
+                response = handler.sendUserCode(getThing(), section, key, status, code);
+            }
         }
-        return null;
+        return response;
     }
 
     protected @Nullable JablotronBridgeHandler getBridgeHandler() {
