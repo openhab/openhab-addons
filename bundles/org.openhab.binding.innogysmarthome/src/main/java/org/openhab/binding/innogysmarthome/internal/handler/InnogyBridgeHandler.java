@@ -894,7 +894,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.debug("IO error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof ApiException) {
-            logger.warn("Unexcepted API error: {}", e.getMessage(), e);
+            logger.warn("Unexpected API error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
