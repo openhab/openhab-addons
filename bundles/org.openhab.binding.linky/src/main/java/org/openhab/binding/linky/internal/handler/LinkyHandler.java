@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.linky.internal.ExpiringDayCache;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.model.LinkyConsumptionData;
 import org.openhab.binding.linky.internal.model.LinkyTimeScale;
@@ -65,6 +66,7 @@ import okhttp3.Response;
 @NonNullByDefault
 public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
+
     private static final String LOGIN_BASE_URI = "https://espace-client-connexion.enedis.fr/auth/UI/Login";
     // private static final String LOGIN_BODY_BUILDER =
     // "encoded=true&gx_charset=UTF-8&SunQueryParamsString=%s&IDToken1=%s&IDToken2=%s";
@@ -78,28 +80,42 @@ public class LinkyHandler extends BaseThingHandler {
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
 
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 3;
-    private static final int REFRESH_INTERVAL_IN_MIN = 720;
+    private static final int REFRESH_INTERVAL_IN_MIN = 360;
 
     private final OkHttpClient client = new OkHttpClient.Builder().followRedirects(false)
             .cookieJar(new LinkyCookieJar()).build();
-    private final Gson GSON = new Gson();
+    private final Gson gson = new Gson();
 
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
     private final WeekFields weekFields;
 
+    private ExpiringDayCache<LinkyConsumptionData> cachedDaylyData;
+    private ExpiringDayCache<LinkyConsumptionData> cachedMonthlyData;
+    private ExpiringDayCache<LinkyConsumptionData> cachedYearlyData;
+
     public LinkyHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
-        weekFields = WeekFields.of(localeProvider.getLocale());
+        this.weekFields = WeekFields.of(localeProvider.getLocale());
+        this.cachedDaylyData = new ExpiringDayCache<LinkyConsumptionData>("daily cache", () -> {
+            final LocalDate today = LocalDate.now();
+            return getConsumptionData(DAILY, today.minusDays(13), today, true);
+        });
+        this.cachedMonthlyData = new ExpiringDayCache<LinkyConsumptionData>("monthly cache", () -> {
+            final LocalDate today = LocalDate.now();
+            return getConsumptionData(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
+        });
+        this.cachedYearlyData = new ExpiringDayCache<LinkyConsumptionData>("yearly cache", () -> {
+            final LocalDate today = LocalDate.now();
+            return getConsumptionData(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
+        });
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Linky handler.");
-        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
 
         scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
 
-        // Refresh data twice a day at approximatively 3am and 3pm
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1)
                 .with(ChronoField.HOUR_OF_DAY, REFRESH_FIRST_HOUR_OF_DAY).truncatedTo(ChronoUnit.HOURS);
@@ -164,14 +180,12 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        final LocalDate today = LocalDate.now();
-
         double lastWeek = -1;
         double thisWeek = -1;
         double yesterday = -1;
-        LocalDate rangeStart = today.minusDays(13);
-        LinkyConsumptionData result = getConsumptionData(DAILY, rangeStart, today, true);
+        LinkyConsumptionData result = cachedDaylyData.getValue();
         if (result != null && result.success()) {
+            LocalDate rangeStart = LocalDate.now().minusDays(13);
             int jump = result.getDecalage();
             while (rangeStart.getDayOfWeek() != weekFields.getFirstDayOfWeek()) {
                 rangeStart = rangeStart.plusDays(1);
@@ -198,6 +212,8 @@ public class LinkyHandler extends BaseThingHandler {
                 jump++;
                 rangeStart = rangeStart.plusDays(1);
             }
+        } else {
+            cachedDaylyData.invalidateValue();
         }
         updateKwhChannel(YESTERDAY, yesterday);
         updateKwhChannel(THIS_WEEK, thisWeek);
@@ -212,16 +228,16 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        final LocalDate today = LocalDate.now();
-
         double lastMonth = -1;
         double thisMonth = -1;
-        LinkyConsumptionData result = getConsumptionData(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
+        LinkyConsumptionData result = cachedMonthlyData.getValue();
         if (result != null && result.success()) {
             lastMonth = result.getData().stream().filter(LinkyConsumptionData.Data::isPositive).findFirst()
                     .get().valeur;
             thisMonth = result.getData().stream().filter(LinkyConsumptionData.Data::isPositive)
                     .reduce((first, second) -> second).get().valeur;
+        } else {
+            cachedMonthlyData.invalidateValue();
         }
         updateKwhChannel(LAST_MONTH, lastMonth);
         updateKwhChannel(THIS_MONTH, thisMonth);
@@ -235,15 +251,15 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        final LocalDate today = LocalDate.now();
-
         double thisYear = -1;
         double lastYear = -1;
-        LinkyConsumptionData result = getConsumptionData(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
+        LinkyConsumptionData result = cachedYearlyData.getValue();
         if (result != null && result.success()) {
             int elementQuantity = result.getData().size();
             thisYear = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : -1;
             lastYear = elementQuantity > 1 ? result.getData().get(elementQuantity - 2).valeur : -1;
+        } else {
+            cachedYearlyData.invalidateValue();
         }
         updateKwhChannel(LAST_YEAR, lastYear);
         updateKwhChannel(THIS_YEAR, thisYear);
@@ -279,7 +295,7 @@ public class LinkyHandler extends BaseThingHandler {
                 String body = (response.body() != null) ? response.body().string() : null;
                 logger.debug("Response status {} {} : {}", response.code(), response.message(), body);
                 if (body != null && !body.isEmpty()) {
-                    result = GSON.fromJson(body, LinkyConsumptionData.class);
+                    result = gson.fromJson(body, LinkyConsumptionData.class);
                 }
             }
             response.close();
