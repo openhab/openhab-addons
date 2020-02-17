@@ -1,6 +1,6 @@
 # iCalendar Binding
 
-This binding is intended to use a web-based iCal calendar as an event trigger or presence switch. It implements several Channels that iindicate the current calendar event and the next event. Furthermore it is possible to embed Command Tags in the calendar event description to issue commands directly to other Items in the system, without the need to create special Rules. 
+This binding is intended to use a web-based iCal calendar as an event trigger or presence switch. It implements several Channels that indicate the current calendar event and the next event. Furthermore it is possible to embed Command Tags in the calendar event description to issue commands directly to other Items in the system, without the need to create special Rules. 
 
 ## Supported Things
 
