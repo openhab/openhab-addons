@@ -147,7 +147,7 @@ public class AdorneSwitchHandler extends BaseThingHandler {
         // Asynchronously get our onOff state from the hub controller and update our state accordingly
         AdorneHubController adorneHubController = getAdorneHubController();
         adorneHubController.getState(zoneId).thenAccept(state -> {
-            OnOffType onOffState = state.onOff ? OnOffType.ON : OnOffType.OFF;
+            OnOffType onOffState = OnOffType.from(state.onOff);
             updateState(CHANNEL_POWER, onOffState);
             logger.debug("Refreshed switch {} with switch state {}", getThing().getLabel(), onOffState);
         });

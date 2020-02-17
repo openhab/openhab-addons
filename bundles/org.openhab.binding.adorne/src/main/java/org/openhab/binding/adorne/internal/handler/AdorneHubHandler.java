@@ -105,7 +105,7 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
         getThing().getThings().forEach(thing -> {
             AdorneSwitchHandler thingHandler = (AdorneSwitchHandler) thing.getHandler();
             if (thingHandler != null && thingHandler.getZoneId() == zoneId) {
-                thingHandler.updateState(CHANNEL_POWER, onOff ? OnOffType.ON : OnOffType.OFF);
+                thingHandler.updateState(CHANNEL_POWER, OnOffType.from(onOff));
                 if (thing.getThingTypeUID().equals(THING_TYPE_DIMMER)) {
                     thingHandler.updateState(CHANNEL_BRIGHTNESS, new PercentType(brightness));
                 }

@@ -9,14 +9,16 @@
 		<description>The Adorne Hub serves as the bridge to control Adorne switches, dimmer switches and outlets.</description>
 
 		<config-description>
-			<parameter name="host" type="text" required="false">
+			<parameter name="host" type="text">
 				<label>Host</label>
+				<default>LCM1.local</default>
 				<description>
 					Host name or IP address.
 				</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer">
 				<label>Port</label>
+				<default>2112</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
