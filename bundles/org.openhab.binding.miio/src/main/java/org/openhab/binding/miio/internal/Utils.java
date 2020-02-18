@@ -106,7 +106,7 @@ public final class Utils {
     @NonNullByDefault
     public List<URL> findDatabaseFiles(Logger logger) {
         List<URL> urlEntries = new ArrayList<>();
-        String userDbFolder = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID;
+        String userDbFolder = ConfigConstants.getConfigFolder() + File.separator + "misc" + File.separator + BINDING_ID;
         try {
             new File(userDbFolder).mkdirs();
         } catch (SecurityException e) {
