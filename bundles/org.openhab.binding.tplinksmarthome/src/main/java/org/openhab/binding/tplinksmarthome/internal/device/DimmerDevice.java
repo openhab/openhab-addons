@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
-
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,6 +20,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
+
+import java.io.IOException;
+
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
 
 /**
  * TP-Link Smart Home device with a dimmer (HS220).
@@ -40,8 +40,9 @@ public class DimmerDevice extends SwitchDevice {
 
     @Override
     public boolean handleCommand(ChannelUID channelUid, Command command) throws IOException {
-        return CHANNEL_BRIGHTNESS.equals(channelUid.getId()) ? handleBrightnessChannel(channelUid, command)
-                : super.handleCommand(channelUid, command);
+        return CHANNEL_BRIGHTNESS.equals(channelUid.getId()) ?
+                handleBrightnessChannel(channelUid, command) :
+                super.handleCommand(channelUid, command);
     }
 
     /**
@@ -65,6 +66,11 @@ public class DimmerDevice extends SwitchDevice {
             if (percentCommand.intValue() > 0) {
                 response = commands.setDimmerBrightnessResponse(
                         connection.sendCommand(commands.setDimmerBrightness(percentCommand.intValue())));
+                checkErrors(response);
+                if (response == null) {
+                    return false;
+                }
+                response = setOnOffState(channelUid, OnOffType.ON);
             } else {
                 response = setOnOffState(channelUid, OnOffType.OFF);
             }
@@ -76,8 +82,9 @@ public class DimmerDevice extends SwitchDevice {
     @Override
     public State updateChannel(ChannelUID channelUid, DeviceState deviceState) {
         if (CHANNEL_BRIGHTNESS.equals(channelUid.getId())) {
-            return deviceState.getSysinfo().getRelayState() == OnOffType.OFF ? PercentType.ZERO
-                    : new PercentType(deviceState.getSysinfo().getBrightness());
+            return deviceState.getSysinfo().getRelayState() == OnOffType.OFF ?
+                    PercentType.ZERO :
+                    new PercentType(deviceState.getSysinfo().getBrightness());
         } else {
             return super.updateChannel(channelUid, deviceState);
         }
