@@ -208,6 +208,7 @@ public class ExecHandler extends BaseThingHandler {
                             shell = SHELL_NIX;
                             logger.debug("OS: *NIX ({})", getOperatingSystemName());
                             cmdArray = createCmdArray(shell, "-c", commandLine);
+                            break;
 
                         default:
                             logger.debug("OS: Unknown ({})", getOperatingSystemName());
