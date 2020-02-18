@@ -27,6 +27,7 @@ import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +35,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This class detects TV shutdown much before TV closes the websocket by listening to the upnp registry.
  *
- * Upnp devices send a good-bye broad-cast on normal shutdown. So do LGWebos devices.
- * This seems to be the only way to detect instantly that the TV is about to shut down, when turned off via remote
- * control. This occurs much before the device actually closes the websocket connection.
+ * Upnp devices send a good-bye broadcast on normal shutdown. This is true also for webos devices.
+ * This seems to be the only way to detect instantly that the TV was turned off by remote control and much before the
+ * device actually closes the websocket connection.
  *
- * However, not all users do use Upnp, so this use case is optional optimization.
+ * However, not all users do use Upnp, so this use case is an optional optimization.
  *
  *
  * @author Sebastian Prehn - Initial contribution
@@ -46,17 +47,24 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(immediate = true, configurationPid = "discovery.lgwebos.shutdown")
-public class LGWebOSUpnpDiscoveryShutdownDetection implements RegistryListener {
+public class LGWebOSUpnpShutdownDetector implements RegistryListener {
 
-    private final Logger logger = LoggerFactory.getLogger(LGWebOSUpnpDiscoveryShutdownDetection.class);
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSUpnpShutdownDetector.class);
 
     private final ThingRegistry thingRegistry;
+    private final UpnpService upnpService;
 
     @Activate
-    public LGWebOSUpnpDiscoveryShutdownDetection(final @Reference UpnpService upnpService,
+    public LGWebOSUpnpShutdownDetector(final @Reference UpnpService upnpService,
             final @Reference ThingRegistry thingRegistry) {
         this.thingRegistry = thingRegistry;
+        this.upnpService = upnpService;
         upnpService.getRegistry().addListener(this);
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        upnpService.getRegistry().removeListener(this);
     }
 
     @Override
