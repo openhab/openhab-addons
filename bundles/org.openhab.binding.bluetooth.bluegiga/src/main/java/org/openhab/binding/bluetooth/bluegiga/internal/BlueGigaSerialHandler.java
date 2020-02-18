@@ -250,6 +250,12 @@ public class BlueGigaSerialHandler {
 
                         inputBuffer[inputCount++] = val;
 
+                        if (inputCount == 1) {
+                            if (inputStream.markSupported()) {
+                                inputStream.mark(BLE_MAX_LENGTH);
+                            }
+                        }
+
                         if (inputCount < 4) {
                             // The BGAPI protocol has no packet framing, and no error detection, so we do a few
                             // sanity checks on the header to try and allow resyncronisation should there be an
@@ -260,6 +266,9 @@ public class BlueGigaSerialHandler {
                             // Byte 3: Check command ID is less than 16
                             if ((val & framecheckParams[inputCount]) != 0) {
                                 logger.debug("BlueGiga framing error byte {} = {}", inputCount, val);
+                                if (inputStream.markSupported()) {
+                                    inputStream.reset();
+                                }
                                 inputCount = 0;
                                 continue;
                             }
@@ -267,7 +276,7 @@ public class BlueGigaSerialHandler {
                             // Process the header to get the length
                             inputLength = inputBuffer[1] + (inputBuffer[0] & 0x02 << 8) + 4;
                             if (inputLength > 64) {
-                                logger.error("BLE length larger than 64 bytes ({})", inputLength);
+                                logger.debug("BLE length larger than 64 bytes ({})", inputLength);
                             }
                         }
                         if (inputCount == inputLength) {
