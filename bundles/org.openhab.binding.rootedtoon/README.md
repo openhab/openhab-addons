@@ -1,56 +1,38 @@
 # RootedToon Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding is meant to connect your OpenHAB installation to a rooted Toon. It currently supports:
+ * changing the setpoint (target temperature)
+ * changing the program mode
+ * enabling/disabling the program mode
+ * reading the room temperature
+ * reading boiler state/settings
+ * reading smart power meter readings (electricity usage, electricity generation from e.g. solar, gas usage)
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+You can find how to root your Toon here: https://www.youtube.com/watch?v=0ojFe4Q7vDs
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Currently only thoroughly tested with my own Toon, as well as lightly tested by some forum users on [this topic](https://community.openhab.org/t/rooted-locally-accessible-toon/65958).
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Unfortunately, autodiscovery does not work. You'll have to enter the Toon address manually.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+The "Rooted Toon" thing has two configuration parameters: 
+ * the url to access the Toon (preferrably on your local network, for security reasons), in the form of `http://ip.of.your.toon`
+ * the interval between updates, which defaults to 8 seconds (recommended, as Toon refreshes its data every 8 seconds)
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Here are some of the main channels of interest. To see all the channels, don't forget to click the "SHOW MORE" button in the Paper UI.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+| channel           | type     | description                                                      |
+|-------------------|----------|------------------------------------------------------------------|
+| Temperature       | Number   | The measured room temperature in degrees Celcius                 |
+| Setpoint          | Number   | The desired room temperature in degrees Celcius                  |
+| SetpointMode      | Number   | What programmable mode is active (Comfort, Active, Sleep, Away)  |
+| PowerConsumption  | Number   | Current power consumption, low and high rate combined            |
+| NextSetpointTime  | DateTime | The moment when the next Setpoint will become active             |
