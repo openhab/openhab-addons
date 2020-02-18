@@ -3,8 +3,22 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="roaming">
+		<label>Roaming Bluetooth Controller</label>
+		<description>A virtual Bluetooth adapter that handles roaming between other adapters</description>
+		<config-description>
+			<parameter name="discovery" type="boolean">
+				<label>Device Discovery</label>
+				<description>Whether this adapter actively participates in Bluetooth device discovery</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="beacon">
 		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming" />
 			<bridge-type-ref id="bluegiga" />
 			<bridge-type-ref id="bluez" />
 		</supported-bridge-type-refs>
@@ -13,6 +27,9 @@
 		<description>A generic Bluetooth device in beacon-mode</description>
 		<channels>
 			<channel id="rssi" typeId="rssi" />
+			<channel id="lastActivityTime" typeId="last-activity" />
+			<channel id="adapterUID" typeId="adapter-uid" />
+			<channel id="adapterLocation" typeId="adapter-location" />
 		</channels>
 
 		<config-description>
@@ -25,6 +42,7 @@
 
 	<thing-type id="connected">
 		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming" />
 			<bridge-type-ref id="bluegiga" />
 			<bridge-type-ref id="bluez" />
 		</supported-bridge-type-refs>
@@ -33,6 +51,9 @@
 		<description>A generic Bluetooth device in connected-mode</description>
 		<channels>
 			<channel id="rssi" typeId="rssi" />
+			<channel id="lastActivityTime" typeId="last-activity" />
+			<channel id="adapterUID" typeId="adapter-uid" />
+			<channel id="adapterLocation" typeId="adapter-location" />
 		</channels>
 
 		<config-description>

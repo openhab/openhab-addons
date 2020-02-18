@@ -141,6 +141,11 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
     }
 
     @Override
+    public @Nullable String getLocation() {
+        return getThing().getLocation();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 

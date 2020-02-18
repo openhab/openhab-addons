@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial Contribution
  * @author Kai Kreuzer - Introduced BluetoothAdapters and BluetoothDiscoveryParticipants
- *
+ * @author Connor Petty - Added roaming support
  */
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService {
@@ -67,6 +67,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     public BluetoothDiscoveryService() {
         super(SEARCH_TIME);
         supportedThingTypes.add(BluetoothBindingConstants.THING_TYPE_BEACON);
+        supportedThingTypes.add(BluetoothBindingConstants.THING_TYPE_ROAMING);
     }
 
     @Override
@@ -74,6 +75,12 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     protected void activate(Map<String, Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
+        thingDiscovered(createRoamingAdapterDiscoveryResult());
+    }
+
+    private DiscoveryResult createRoamingAdapterDiscoveryResult() {
+        return DiscoveryResultBuilder.create(new ThingUID(BluetoothBindingConstants.THING_TYPE_ROAMING, "ctrl"))
+                .withLabel("Bluetooth Roaming Controller").build();
     }
 
     @Override
@@ -184,4 +191,26 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
                 .withBridge(adapter.getUID()).withLabel(label).build();
         thingDiscovered(discoveryResult);
     }
+
+    @Override
+    protected void thingDiscovered(DiscoveryResult discoveryResult) {
+        super.thingDiscovered(discoveryResult);
+
+        RoamingBluetoothBridgeHandler roamingAdapter = getRoamingBluetoothAdapter();
+        if (roamingAdapter != null && roamingAdapter.isDiscoveryEnabled()) {
+            // we create a roaming version of every discoveryResult.
+            super.thingDiscovered(copyWithNewBridge(discoveryResult, getRoamingBluetoothAdapter()));
+        }
+    }
+
+    private static ThingUID createThingUIDWithBridge(DiscoveryResult result, BluetoothAdapter adapter) {
+        return new ThingUID(result.getThingTypeUID(), adapter.getUID(), result.getThingUID().getId());
+    }
+
+    private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
+        return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter)).withBridge(adapter.getUID())
+                .withProperties(result.getProperties()).withRepresentationProperty(result.getRepresentationProperty())
+                .withTTL(result.getTimeToLive()).withLabel(result.getLabel()).build();
+    }
+
 }

@@ -76,4 +76,12 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
      */
     BluetoothDevice getDevice(BluetoothAddress address);
 
+    /**
+     * Gets the location of this adapter, as specified in Thing.getLocation()
+     *
+     * @return the location of this adapter
+     */
+    @Nullable
+    String getLocation();
+
 }

@@ -133,6 +133,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
+        super.onConnectionStateChange(connectionNotification);
         switch (connectionNotification.getConnectionState()) {
             case DISCOVERED:
                 // The device is now known on the Bluetooth network, so we can do something...
@@ -168,6 +169,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onServicesDiscovered() {
+        super.onServicesDiscovered();
         if (!resolved) {
             resolved = true;
             logger.debug("Service discovery completed for '{}'", address);
@@ -188,6 +190,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
+        super.onCharacteristicReadComplete(characteristic, status);
         if (status == BluetoothCompletionStatus.SUCCESS) {
             if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
                 updateBatteryLevel(characteristic);
@@ -205,6 +208,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
             BluetoothCompletionStatus status) {
+        super.onCharacteristicWriteComplete(characteristic, status);
         if (logger.isDebugEnabled()) {
             logger.debug("Wrote {} to characteristic {} of device {}: {}",
                     HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
@@ -213,6 +217,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+        super.onCharacteristicUpdate(characteristic);
         if (logger.isDebugEnabled()) {
             logger.debug("Recieved update {} to characteristic {} of device {}",
                     HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
@@ -224,6 +229,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor descriptor) {
+        super.onDescriptorUpdate(descriptor);
         if (logger.isDebugEnabled()) {
             logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(descriptor.getValue()),
                     descriptor.getUuid(), address);

@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.bluetooth;
 
+import java.time.ZonedDateTime;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,7 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.bluetooth.internal.RoamingBluetoothBridgeHandler;
+import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -77,24 +81,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
             return;
         }
 
-        /*
-         * TODO create channels
-         * 1. last seen
-         * 2. rssi
-         * 3. tx power
-         * 4. estimated distance
-         */
         adapter = (BluetoothAdapter) bridgeHandler;
-
-        if (adapter instanceof RoamingBluetoothBridgeHandler) {
-            /*
-             * TODO create roaming channels
-             * 5. nearest controller
-             * 6. nearest controller location
-             */
-             this.editConfiguration().
-            RoamingBluetoothBridgeHandler roamingAdapter = (RoamingBluetoothBridgeHandler) adapter;
-        }
 
         try {
             deviceLock.lock();
@@ -123,6 +110,22 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            switch (channelUID.getId()) {
+                case BluetoothBindingConstants.CHANNEL_TYPE_RSSI:
+                    updateRSSI();
+                    break;
+                case BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME:
+                    updateLastActivityTime();
+                    break;
+                case BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER:
+                    updateAdapter();
+                    break;
+                case BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION:
+                    updateAdapterLocation();
+                    break;
+            }
+        }
         if (command == RefreshType.REFRESH && channelUID.getId().equals(BluetoothBindingConstants.CHANNEL_TYPE_RSSI)) {
             updateRSSI();
         }
@@ -145,6 +148,35 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     /**
+     * Updates the LastActivityTime channel
+     */
+    protected void updateLastActivityTime() {
+        if (device != null) {
+            ZonedDateTime activityTime = device.getLastActivityTime();
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
+        }
+    }
+
+    protected void updateAdapter() {
+        if (device != null) {
+            BluetoothAdapter adapter = device.getAdapter();
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER, new StringType(adapter.getUID().getId()));
+        }
+    }
+
+    protected void updateAdapterLocation() {
+        if (device != null) {
+            BluetoothAdapter adapter = device.getAdapter();
+            String location = adapter.getLocation();
+            if (location != null || StringUtils.isBlank(location)) {
+                updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, new StringType(location));
+            } else {
+                updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, UnDefType.NULL);
+            }
+        }
+    }
+
+    /**
      * This method sets the Thing status based on whether or not we can receive a signal from it.
      * This is the best logic for beacons, but connected devices might want to deactivate this by overriding the method.
      *
@@ -158,8 +190,14 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         }
     }
 
+    private void onActivity() {
+        device.updateLastActivityTime();
+        updateLastActivityTime();
+    }
+
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
+        onActivity();
         int rssi = scanNotification.getRssi();
         if (rssi != Integer.MIN_VALUE) {
             device.setRssi(rssi);
@@ -169,27 +207,46 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
     @Override
     public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
+        // a disconnection doesn't count as activity
+        if (connectionNotification.getConnectionState() != ConnectionState.DISCONNECTED) {
+            onActivity();
+        }
     }
 
     @Override
     public void onServicesDiscovered() {
+        onActivity();
     }
 
     @Override
     public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
+        if (status == BluetoothCompletionStatus.SUCCESS) {
+            onActivity();
+        }
     }
 
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
             BluetoothCompletionStatus status) {
+        if (status == BluetoothCompletionStatus.SUCCESS) {
+            onActivity();
+        }
     }
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+        onActivity();
     }
 
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
+        onActivity();
+    }
+
+    @Override
+    public void onAdapterChanged(BluetoothAdapter adapter) {
+        updateAdapter();
+        updateAdapterLocation();
     }
 
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +73,8 @@ public abstract class BluetoothDevice {
         CHARACTERISTIC_WRITE_COMPLETE,
         CHARACTERISTIC_UPDATED,
         DESCRIPTOR_UPDATED,
-        SERVICES_DISCOVERED
+        SERVICES_DISCOVERED,
+        ADAPTER_CHANGED
     }
 
     /**
@@ -116,6 +118,11 @@ public abstract class BluetoothDevice {
      * Last reported transmitter power
      */
     protected Integer txPower = null;
+
+    /**
+     * Time of last report
+     */
+    protected ZonedDateTime lastActivityTime = null;
 
     /**
      * The event listeners will be notified of device updates
@@ -234,6 +241,22 @@ public abstract class BluetoothDevice {
      */
     public Integer getRssi() {
         return rssi;
+    }
+
+    /**
+     * Updates the lastSeenTime of this device to now.
+     */
+    public void updateLastActivityTime() {
+        this.lastActivityTime = ZonedDateTime.now();
+    }
+
+    /**
+     * Returns a ZonedDateTime of when this device was last seen or null if it has never been set.
+     *
+     * @return the time when this device was last seen
+     */
+    public ZonedDateTime getLastActivityTime() {
+        return this.lastActivityTime;
     }
 
     /**
@@ -491,7 +514,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {
@@ -530,6 +553,9 @@ public abstract class BluetoothDevice {
                         break;
                     case DESCRIPTOR_UPDATED:
                         listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
+                        break;
+                    case ADAPTER_CHANGED:
+                        listener.onAdapterChanged((BluetoothAdapter) args[0]);
                         break;
                 }
             } catch (Exception e) {

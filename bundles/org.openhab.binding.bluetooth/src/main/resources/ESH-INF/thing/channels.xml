@@ -10,5 +10,26 @@
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d dBm" />
 	</channel-type>
+	
+	<channel-type id="last-activity" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Activity</label>
+		<description>Date and time of the last activity</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="adapter-uid">
+		<item-type>String</item-type>
+		<label>Adapter UID</label>
+		<description>ThingUID of nearest adapter</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="adapter-location">
+		<item-type>String</item-type>
+		<label>Adapter Location</label>
+		<description>Location of the nearest adapter to this device</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

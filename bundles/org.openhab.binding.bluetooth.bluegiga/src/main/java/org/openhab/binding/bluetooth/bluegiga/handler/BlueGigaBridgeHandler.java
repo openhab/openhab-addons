@@ -165,6 +165,11 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
+    public @Nullable String getLocation() {
+        return getThing().getLocation();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // No commands supported for the bridge
     }

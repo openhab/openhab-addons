@@ -30,14 +30,19 @@ public class BluetoothBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONNECTED = new ThingTypeUID(BINDING_ID, "connected");
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BINDING_ID, "beacon");
+    public static final ThingTypeUID THING_TYPE_ROAMING = new ThingTypeUID(BINDING_ID, "roaming");
 
     // List of all Channel Type IDs
     public static final String CHANNEL_TYPE_RSSI = "rssi";
+    public static final String CHANNEL_TYPE_LAST_ACTIVITY_TIME = "lastActivityTime";
+    public static final String CHANNEL_TYPE_ADAPTER = "adapterUID";
+    public static final String CHANNEL_TYPE_ADAPTER_LOCATION = "adapterLocation";
 
     public static final String PROPERTY_TXPOWER = "txpower";
     public static final String PROPERTY_MAXCONNECTIONS = "maxconnections";
 
     public static final String CONFIGURATION_ADDRESS = "address";
+    public static final String CONFIGURATION_DISCOVERY = "discovery";
 
     public static final long BLUETOOTH_BASE_UUID = 0x800000805f9b34fbL;
 
