@@ -13,6 +13,7 @@
 package org.openhab.binding.samsungtv.internal.service.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
@@ -56,6 +57,7 @@ public interface EventListener {
      * @param key key of configuration item
      * @return value of key
      */
+    @Nullable
     Object getConfig(String key);
 
     /**
