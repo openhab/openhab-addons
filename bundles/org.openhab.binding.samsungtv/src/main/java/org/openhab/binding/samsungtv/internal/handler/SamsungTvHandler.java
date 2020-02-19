@@ -88,6 +88,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     /* Store if art mode is supported to be able to skip switching power state to ON during initialization */
     boolean artModeIsSupported = false;
 
+    private @Nullable SamsungTvConfiguration configuration;
+
     private Map<String, Object> settings = new HashMap<>();
 
     public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, DiscoveryServiceRegistry discoveryServiceRegistry,
@@ -105,6 +107,10 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
+
+        if (configuration == null) {
+            return;
+        }
 
         String channel = channelUID.getId();
 
@@ -150,6 +156,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         updateStatus(ThingStatus.UNKNOWN);
 
         logger.debug("Initializing Samsung TV handler for uid '{}'", getThing().getUID());
+
+        configuration = getConfigAs(SamsungTvConfiguration.class);
 
         discoveryServiceRegistry.addDiscoveryListener(this);
 
@@ -224,8 +232,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     private synchronized void createService(RemoteDevice device) {
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
-        if (configuration.hostName != null
+        if (configuration != null && configuration.hostName != null
                 && configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
             String modelName = device.getDetails().getModelDetails().getModelName();
             String udn = device.getIdentity().getUdn().getIdentifierString();
@@ -276,7 +283,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             RemoteControllerService service = (RemoteControllerService) findServiceInstance(
                     RemoteControllerService.SERVICE_NAME);
             if (service == null) {
-                SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
                 int port = ((Integer) getConfig(SamsungTvConfiguration.PORT)).intValue();
                 service = RemoteControllerService.createNonUpnpService(configuration.hostName, port);
                 startService(service);
@@ -305,9 +311,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     @Override
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
-
-        if (configuration.hostName != null
+        if (configuration != null && configuration.hostName != null
                 && configuration.hostName.equals(result.getProperties().get(SamsungTvConfiguration.HOST_NAME))) {
             logger.debug("thingDiscovered: {}, {}", result.getProperties().get(SamsungTvConfiguration.HOST_NAME),
                     result);
@@ -363,8 +367,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
      * @param command Command to resend
      */
     private void sendWOLandResendCommand(String channel, Command command) {
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
-
         String macAddress = (String) getConfig(SamsungTvConfiguration.MAC_ADDRESS);
         if (macAddress == null || macAddress.isEmpty()) {
             logger.warn("Cannot send WOL packet to {} MAC address unknown", configuration.hostName);
