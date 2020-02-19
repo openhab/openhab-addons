@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                 }
             }
         } catch (CGateException e) {
-            logger.error("Problem checking network state for network {}", e);
+            logger.error("Problem checking network state for network {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
@@ -102,7 +102,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         CBusNetworkHandler bridgeHandler = null;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.debug("Required bridge not defined for device {}.");
+            logger.debug("Required bridge not defined for device .");
             return null;
         }
         ThingHandler handler = bridge.getHandler();

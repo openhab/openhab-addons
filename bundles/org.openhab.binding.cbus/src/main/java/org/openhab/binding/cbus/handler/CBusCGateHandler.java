@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -201,7 +201,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 if (e.getMessage().startsWith("Connection refused")) {
                     logger.error("Failed to connect to CGate: Connection refused");
                 } else {
-                    logger.error("Failed to connect to CGate: {}", e);
+                    logger.error("Failed to connect to CGate: {}", e.getMessage());
                 }
                 try {
                     cGateSession.close();
