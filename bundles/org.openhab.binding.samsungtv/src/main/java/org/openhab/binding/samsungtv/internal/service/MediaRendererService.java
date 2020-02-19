@@ -126,6 +126,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     }
 
     private Runnable pollingRunnable = () -> {
+        logger.debug("MediaRenderer service refresh task");
         if (isRegistered()) {
             updateResourceState("RenderingControl", "GetVolume",
                     SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
@@ -136,6 +137,8 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
             updateResourceState("RenderingControl", "GetSharpness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
             updateResourceState("RenderingControl", "GetColorTemperature",
                     SamsungTvUtils.buildHashMap("InstanceID", "0"));
+        } else {
+            logger.debug("Device is not registered");
         }
     };
 
@@ -229,6 +232,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     }
 
     protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
+        logger.debug("MediaRenderer service invokeAction serviceId {} actionId {}", serviceId, actionId);
         Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
 
         for (String variable : result.keySet()) {
