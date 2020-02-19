@@ -29,13 +29,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -171,7 +171,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                     StandardCharsets.US_ASCII);
 
             Matcher matcher = BRIDGE_PROP_PATTERN.matcher(data);
-            Map<String, String> bridgeProperties = new HashMap<>();
+            Map<String, @Nullable String> bridgeProperties = new HashMap<>();
 
             while (matcher.find()) {
                 bridgeProperties.put(matcher.group(1), matcher.group(2));
@@ -185,7 +185,8 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
             String codeVersion = bridgeProperties.get("CODEVER");
             String macAddress = bridgeProperties.get("MACADDR");
 
-            if (StringUtils.isNotBlank(ipAddress) && StringUtils.isNotBlank(serialNumber)) {
+            if (ipAddress != null && !ipAddress.trim().isEmpty() && serialNumber != null
+                    && !serialNumber.trim().isEmpty()) {
                 Map<String, Object> properties = new HashMap<>();
 
                 properties.put(HOST, ipAddress);
@@ -196,17 +197,19 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                 } else if (PRODFAM_HWQS.equals(productFamily)) {
                     properties.put(PROPERTY_PRODFAM, "HomeWorks QS");
                 } else {
-                    properties.put(PROPERTY_PRODFAM, productFamily);
+                    if (productFamily != null) {
+                        properties.put(PROPERTY_PRODFAM, productFamily);
+                    }
                 }
 
-                if (StringUtils.isNotBlank(productType)) {
+                if (productType != null && !productType.trim().isEmpty()) {
                     properties.put(PROPERTY_PRODTYP, productType);
                 }
-                if (StringUtils.isNotBlank(codeVersion)) {
-                    properties.put(PROPERTY_CODEVER, codeVersion);
+                if (codeVersion != null && !codeVersion.trim().isEmpty()) {
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, codeVersion);
                 }
-                if (StringUtils.isNotBlank(macAddress)) {
-                    properties.put(PROPERTY_MACADDR, macAddress);
+                if (macAddress != null && !macAddress.trim().isEmpty()) {
+                    properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
                 }
 
                 ThingUID uid = new ThingUID(THING_TYPE_IPBRIDGE, serialNumber);
@@ -220,8 +223,9 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
             }
         }
 
-        private String generateLabel(String productFamily, String productType) {
-            if (StringUtils.isNotBlank(productFamily) && StringUtils.isNotBlank(productType)) {
+        private String generateLabel(@Nullable String productFamily, @Nullable String productType) {
+            if (productFamily != null && !productFamily.trim().isEmpty() && productType != null
+                    && !productType.trim().isEmpty()) {
                 return productFamily + " " + productType;
             }
 

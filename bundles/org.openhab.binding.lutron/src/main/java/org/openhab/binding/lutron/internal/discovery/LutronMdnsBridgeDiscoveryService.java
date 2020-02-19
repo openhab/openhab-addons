@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -118,11 +119,11 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
         }
 
         if (codever != null) {
-            properties.put(PROPERTY_CODEVER, codever);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, codever);
         }
 
         if (macaddr != null) {
-            properties.put(PROPERTY_MACADDR, macaddr);
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, macaddr);
         }
 
         String sn = getSerial(service);
