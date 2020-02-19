@@ -13,6 +13,7 @@
 package org.openhab.transform.exec.internal.profiles;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
 import org.eclipse.smarthome.core.thing.profiles.ProfileContext;
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * Profile to offer the ExecTransformationservice on a ItemChannelLink
  *
  * @author Stefan Triller - initial contribution
- *
  */
 @NonNullByDefault
 public class ExecTransformationProfile implements StateProfile {
@@ -47,10 +47,8 @@ public class ExecTransformationProfile implements StateProfile {
     private static final String FUNCTION_PARAM = "function";
     private static final String SOURCE_FORMAT_PARAM = "sourceFormat";
 
-    @NonNullByDefault({})
-    private final String function;
-    @NonNullByDefault({})
-    private final String sourceFormat;
+    private @Nullable String function;
+    private @Nullable String sourceFormat;
 
     public ExecTransformationProfile(ProfileCallback callback, ProfileContext context, TransformationService service) {
         this.service = service;
@@ -61,6 +59,7 @@ public class ExecTransformationProfile implements StateProfile {
 
         logger.debug("Profile configured with '{}'='{}', '{}'={}", FUNCTION_PARAM, paramFunction, SOURCE_FORMAT_PARAM,
                 paramSource);
+
         // SOURCE_FORMAT_PARAM is an advanced parameter and we assume "%s" if it is not set
         if (paramSource == null) {
             paramSource = "%s";
@@ -117,11 +116,19 @@ public class ExecTransformationProfile implements StateProfile {
 
     private Type transformState(Type state) {
         String result = state.toFullString();
-        try {
-            result = TransformationHelper.transform(service, function, sourceFormat, state.toFullString());
-        } catch (TransformationException e) {
+        String function = this.function;
+        String sourceFormat = this.sourceFormat;
+
+        if (function == null || sourceFormat == null) {
             logger.warn("Could not transform state '{}' with function '{}' and format '{}'", state, function,
                     sourceFormat);
+        } else {
+            try {
+                result = TransformationHelper.transform(service, function, sourceFormat, state.toFullString());
+            } catch (TransformationException e) {
+                logger.warn("Could not transform state '{}' with function '{}' and format '{}'", state, function,
+                        sourceFormat);
+            }
         }
         StringType resultType = new StringType(result);
         logger.debug("Transformed '{}' into '{}'", state, resultType);
