@@ -118,7 +118,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
                 .commandTopic(channelConfiguration.brightness_command_topic, channelConfiguration.retain)//
                 .build(false);
 
-        channels.put(colorChannelID, colorChannel);
+        channels.put(switchChannelID, colorChannel);
     }
 
     @Override
