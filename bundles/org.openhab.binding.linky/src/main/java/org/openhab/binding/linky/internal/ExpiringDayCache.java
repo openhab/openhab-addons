@@ -14,6 +14,7 @@ package org.openhab.binding.linky.internal;
 
 import java.lang.ref.SoftReference;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -105,14 +106,35 @@ public class ExpiringDayCache<V> {
      * @return true if the value is expired
      */
     public boolean isExpired() {
-        return !LocalDate.now().isBefore(expiresAt);
+        LocalDate now = LocalDate.now();
+        logger.debug("isExpired now = {} === {}", now.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                now.format(DateTimeFormatter.ISO_DATE));
+        logger.debug("isExpired expiresAt = {} === {}", expiresAt.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                expiresAt.format(DateTimeFormatter.ISO_DATE));
+        logger.debug("isExpired isBefore = {}", now.isBefore(expiresAt));
+        logger.debug("isExpired isAfter = {}", now.isAfter(expiresAt));
+        logger.debug("isExpired isEqual = {}", now.isEqual(expiresAt));
+        logger.debug("isExpired compareTo = {}", now.compareTo(expiresAt));
+        return !now.isBefore(expiresAt);
     }
 
     private LocalDate calcNextExpiresAt() {
-        return LocalDate.now().plusDays(1);
+        LocalDate now = LocalDate.now();
+        logger.debug("calcNextExpiresAt now = {} === {}", now.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                now.format(DateTimeFormatter.ISO_DATE));
+        LocalDate result = now.plusDays(1);
+        logger.debug("calcNextExpiresAt result = {} === {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                result.format(DateTimeFormatter.ISO_DATE));
+        return result;
     }
 
     private LocalDate calcAlreadyExpired() {
-        return LocalDate.now().minusDays(1);
+        LocalDate now = LocalDate.now();
+        logger.debug("calcAlreadyExpired now = {} === {}", now.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                now.format(DateTimeFormatter.ISO_DATE));
+        LocalDate result = now.minusDays(1);
+        logger.debug("calcAlreadyExpired result = {} === {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                result.format(DateTimeFormatter.ISO_DATE));
+        return result;
     }
 }
