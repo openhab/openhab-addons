@@ -72,7 +72,6 @@ public class ShellyUtils {
     }
 
     // as State
-
     public static StringType getStringType(@Nullable String value) {
         return new StringType(value != null ? value : "");
     }
