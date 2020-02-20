@@ -10,9 +10,7 @@ Fragment-Host: org.openhab.binding.nest
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
-    bnd.identity;id='org.apache.aries.javax.jax.rs-api',\
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
+    bnd.identity;id='org.apache.aries.javax.jax.rs-api'
 
 -runproperties: logback.configurationFile=file:${.}/logback.xml
 
@@ -68,6 +66,6 @@ Fragment-Host: org.openhab.binding.nest
 	org.eclipse.jetty.websocket.common;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.xml;version='[9.4.20,9.4.21)',\
 	slf4j.simple;version='[1.7.21,1.7.22)',\
-	jaxb-api;version='[2.2.11,2.2.12)',\
 	org.openhab.binding.nest;version='[2.5.3,2.5.4)',\
-	org.openhab.binding.nest.tests;version='[2.5.3,2.5.4)'
+	org.openhab.binding.nest.tests;version='[2.5.3,2.5.4)',\
+	org.apache.geronimo.specs.geronimo-activation_1.1_spec;version='[1.1.0,1.1.1)'

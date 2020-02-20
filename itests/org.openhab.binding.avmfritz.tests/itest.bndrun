@@ -5,11 +5,6 @@ Fragment-Host: org.openhab.binding.avmfritz
 
 -runrequires: bnd.identity;id='org.openhab.binding.avmfritz.tests'
 
-# If we would like to use a storage at all, we will use the "volatile" storage.
--runblacklist: \
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
-
 #
 # done
 #
@@ -65,6 +60,6 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.eclipse.jetty.xml;version='[9.4.20,9.4.21)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.2.11,7.2.12)',\
 	slf4j.simple;version='[1.7.21,1.7.22)',\
-	jaxb-api;version='[2.2.11,2.2.12)',\
 	org.openhab.binding.avmfritz;version='[2.5.3,2.5.4)',\
-	org.openhab.binding.avmfritz.tests;version='[2.5.3,2.5.4)'
+	org.openhab.binding.avmfritz.tests;version='[2.5.3,2.5.4)',\
+	org.apache.geronimo.specs.geronimo-activation_1.1_spec;version='[1.1.0,1.1.1)'

@@ -8,11 +8,6 @@ Fragment-Host: org.openhab.binding.systeminfo
     bnd.identity;id='org.openhab.core.binding.xml',\
     bnd.identity;id='org.openhab.core.thing.xml'
 
-# We would like to use the "volatile" storage only
--runblacklist: \
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
-
 -runsystemcapabilities: ${native_capability}
 #
 # done
@@ -60,6 +55,5 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.eclipse.jetty.server;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.servlet;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.util;version='[9.4.20,9.4.21)',\
-	jaxb-api;version='[2.2.11,2.2.12)',\
 	org.openhab.binding.systeminfo;version='[2.5.3,2.5.4)',\
 	org.openhab.binding.systeminfo.tests;version='[2.5.3,2.5.4)'
