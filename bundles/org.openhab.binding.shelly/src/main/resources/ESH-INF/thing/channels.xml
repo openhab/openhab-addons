@@ -325,8 +325,13 @@
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<description>Number of seconds since the device was powered up</description>
-		<state readOnly="true" pattern="%d %unit%">
-		</state>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 	<channel-type id="lastUpdate" advanced="true">
 		<item-type>DateTime</item-type>

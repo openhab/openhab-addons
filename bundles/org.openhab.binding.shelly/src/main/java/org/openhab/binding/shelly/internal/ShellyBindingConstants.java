@@ -222,6 +222,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
+    public static final String CHANNEL_DEVST_RSSI_RAW = "rssi";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
 
     // General

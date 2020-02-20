@@ -94,6 +94,7 @@ Every device has a channel group `device` with the following channels:
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |device    |uptime       |Number   |yes      |Number of seconds since the device was powered up                                |
 |          |wifiSignal   |Number   |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
+|          |rssi         |Number   |yes      |WiFi received signal strength indicator                                          |
 |          |alarm        |Trigger  |yes      |Most recent alarm for health check                                               |
 
 

@@ -24,7 +24,5 @@
 				<context>network-address</context>
 			</parameter>
 		</config-description>
-
 	</thing-type>
-
 </thing:thing-descriptions>
