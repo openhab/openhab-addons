@@ -6,11 +6,6 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 -runrequires: \
   bnd.identity;id='org.openhab.io.mqttembeddedbroker.tests'
 
-# We would like to use the "volatile" storage only
--runblacklist: \
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
-
 #
 # done
 #
