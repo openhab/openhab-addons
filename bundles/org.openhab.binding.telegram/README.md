@@ -20,6 +20,8 @@ As described in the Telegram Bot API, this is the manual procedure needed in ord
 - Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
 - Look at the JSON result to find the value of `id`. That is the chatId. Note that if using a Telegram group chat, the group chatIds are prefixed with a dash that must be included in the config file. (e.g. bot1.chatId: -22334455)
 
+If this does not work for you (the response may be empty), or you want to send *more* than one recipient (= chatID), the alternative is to contact (= open a chat with) a Telegram bot to respond with the chatID. There's a number of them such as @myidbot. Note they may work or not at any time so you eventually need to try another one.
+
 4. Test the bot
 
 - Open this URL in your web browser, replacing <token> with the authentication token and <chatId> with the chatId:
