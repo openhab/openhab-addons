@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.linky.internal;
 
-import java.lang.ref.SoftReference;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +28,10 @@ import org.slf4j.LoggerFactory;
  * There must be provided an action in order to retrieve/calculate the value. This action will be called only if the
  * answer from the last calculation is not valid anymore, i.e. if it is expired.
  *
+ * The cache expires after the current day; it is possible to shift the beginning time of the day.
+ *
+ * Soft Reference is not used to store the cached value because JVM Garbage Collector is clearing it too much often.
+ *
  * @author Laurent Garnier - Initial contribution
  *
  * @param <V> the type of the value
@@ -37,20 +41,23 @@ public class ExpiringDayCache<V> {
     private final Logger logger = LoggerFactory.getLogger(ExpiringDayCache.class);
 
     private String name;
+    private int beginningHour;
 
     private final Supplier<@Nullable V> action;
 
-    private SoftReference<@Nullable V> value = new SoftReference<>(null);
-    private LocalDate expiresAt;
+    private @Nullable V value;
+    private LocalDateTime expiresAt;
 
     /**
      * Create a new instance.
      *
      * @param name the name of this cache
+     * @param beginningHour the hour in the day at which the validity period is starting
      * @param action the action to retrieve/calculate the value
      */
-    public ExpiringDayCache(String name, Supplier<@Nullable V> action) {
+    public ExpiringDayCache(String name, int beginningHour, Supplier<@Nullable V> action) {
         this.name = name;
+        this.beginningHour = beginningHour;
         this.expiresAt = calcAlreadyExpired();
         this.action = action;
     }
@@ -60,12 +67,13 @@ public class ExpiringDayCache<V> {
      */
     public synchronized @Nullable V getValue() {
         @Nullable
-        V cachedValue = value.get();
+        V cachedValue = value;
         if (cachedValue == null || isExpired()) {
             logger.debug("getValue from cache \"{}\" is requiring a fresh value", name);
-            return refreshValue();
+            cachedValue = refreshValue();
+        } else {
+            logger.debug("getValue from cache \"{}\" is returing a cached value", name);
         }
-        logger.debug("getValue from cache \"{}\" is returing a cached value", name);
         return cachedValue;
     }
 
@@ -75,7 +83,7 @@ public class ExpiringDayCache<V> {
      * @param value the new value
      */
     public final synchronized void putValue(@Nullable V value) {
-        this.value = new SoftReference<>(value);
+        this.value = value;
         expiresAt = calcNextExpiresAt();
     }
 
@@ -83,7 +91,7 @@ public class ExpiringDayCache<V> {
      * Invalidates the value in the cache.
      */
     public final synchronized void invalidateValue() {
-        value = new SoftReference<>(null);
+        value = null;
         expiresAt = calcAlreadyExpired();
     }
 
@@ -93,11 +101,9 @@ public class ExpiringDayCache<V> {
      * @return the new value
      */
     public synchronized @Nullable V refreshValue() {
-        @Nullable
-        V freshValue = action.get();
-        value = new SoftReference<>(freshValue);
+        value = action.get();
         expiresAt = calcNextExpiresAt();
-        return freshValue;
+        return value;
     }
 
     /**
@@ -106,35 +112,18 @@ public class ExpiringDayCache<V> {
      * @return true if the value is expired
      */
     public boolean isExpired() {
-        LocalDate now = LocalDate.now();
-        logger.debug("isExpired now = {} === {}", now.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                now.format(DateTimeFormatter.ISO_DATE));
-        logger.debug("isExpired expiresAt = {} === {}", expiresAt.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                expiresAt.format(DateTimeFormatter.ISO_DATE));
-        logger.debug("isExpired isBefore = {}", now.isBefore(expiresAt));
-        logger.debug("isExpired isAfter = {}", now.isAfter(expiresAt));
-        logger.debug("isExpired isEqual = {}", now.isEqual(expiresAt));
-        logger.debug("isExpired compareTo = {}", now.compareTo(expiresAt));
-        return !now.isBefore(expiresAt);
+        return !LocalDateTime.now().isBefore(expiresAt);
     }
 
-    private LocalDate calcNextExpiresAt() {
-        LocalDate now = LocalDate.now();
-        logger.debug("calcNextExpiresAt now = {} === {}", now.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                now.format(DateTimeFormatter.ISO_DATE));
-        LocalDate result = now.plusDays(1);
-        logger.debug("calcNextExpiresAt result = {} === {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                result.format(DateTimeFormatter.ISO_DATE));
+    private LocalDateTime calcNextExpiresAt() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime limit = now.withHour(beginningHour).truncatedTo(ChronoUnit.HOURS);
+        LocalDateTime result = now.isBefore(limit) ? limit : limit.plusDays(1);
+        logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return result;
     }
 
-    private LocalDate calcAlreadyExpired() {
-        LocalDate now = LocalDate.now();
-        logger.debug("calcAlreadyExpired now = {} === {}", now.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                now.format(DateTimeFormatter.ISO_DATE));
-        LocalDate result = now.minusDays(1);
-        logger.debug("calcAlreadyExpired result = {} === {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                result.format(DateTimeFormatter.ISO_DATE));
-        return result;
+    private LocalDateTime calcAlreadyExpired() {
+        return LocalDateTime.now().minusDays(1);
     }
 }

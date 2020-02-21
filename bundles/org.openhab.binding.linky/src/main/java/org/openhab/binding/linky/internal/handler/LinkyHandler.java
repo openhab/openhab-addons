@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.Base64;
@@ -79,7 +78,7 @@ public class LinkyHandler extends BaseThingHandler {
             .add("gx_charset", "UTF-8").add("SunQueryParamsString",
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
 
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 3;
+    private static final int REFRESH_FIRST_HOUR_OF_DAY = 5;
     private static final int REFRESH_INTERVAL_IN_MIN = 360;
 
     private final OkHttpClient client = new OkHttpClient.Builder().followRedirects(false)
@@ -96,18 +95,21 @@ public class LinkyHandler extends BaseThingHandler {
     public LinkyHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
         this.weekFields = WeekFields.of(localeProvider.getLocale());
-        this.cachedDaylyData = new ExpiringDayCache<LinkyConsumptionData>("daily cache", () -> {
-            final LocalDate today = LocalDate.now();
-            return getConsumptionData(DAILY, today.minusDays(13), today, true);
-        });
-        this.cachedMonthlyData = new ExpiringDayCache<LinkyConsumptionData>("monthly cache", () -> {
-            final LocalDate today = LocalDate.now();
-            return getConsumptionData(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
-        });
-        this.cachedYearlyData = new ExpiringDayCache<LinkyConsumptionData>("yearly cache", () -> {
-            final LocalDate today = LocalDate.now();
-            return getConsumptionData(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
-        });
+        this.cachedDaylyData = new ExpiringDayCache<LinkyConsumptionData>("daily cache", REFRESH_FIRST_HOUR_OF_DAY,
+                () -> {
+                    final LocalDate today = LocalDate.now();
+                    return getConsumptionData(DAILY, today.minusDays(13), today, true);
+                });
+        this.cachedMonthlyData = new ExpiringDayCache<LinkyConsumptionData>("monthly cache", REFRESH_FIRST_HOUR_OF_DAY,
+                () -> {
+                    final LocalDate today = LocalDate.now();
+                    return getConsumptionData(MONTHLY, today.withDayOfMonth(1).minusMonths(1), today, true);
+                });
+        this.cachedYearlyData = new ExpiringDayCache<LinkyConsumptionData>("yearly cache", REFRESH_FIRST_HOUR_OF_DAY,
+                () -> {
+                    final LocalDate today = LocalDate.now();
+                    return getConsumptionData(YEARLY, LocalDate.of(today.getYear() - 1, 1, 1), today, true);
+                });
     }
 
     @Override
@@ -117,10 +119,10 @@ public class LinkyHandler extends BaseThingHandler {
         scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
 
         final LocalDateTime now = LocalDateTime.now();
-        final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1)
-                .with(ChronoField.HOUR_OF_DAY, REFRESH_FIRST_HOUR_OF_DAY).truncatedTo(ChronoUnit.HOURS);
+        final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                .truncatedTo(ChronoUnit.HOURS);
         refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN,
+                ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
                 REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
     }
 
