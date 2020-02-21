@@ -114,6 +114,7 @@ import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSTeachInVariation3Response;
+import org.openhab.binding.enocean.internal.eep.D0.D0_06;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_00;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_01;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_02;
@@ -201,6 +202,7 @@ public enum EEPType {
     
     BatteryStatus(RORG._4BS, 0x14, 0x01, false, "ELTAKO", ELTAKOID, A5_14_01_ELTAKO.class, THING_TYPE_CONTACT,
             CHANNEL_BATTERY_VOLTAGE, CHANNEL_ENERGY_STORAGE),
+    SigBatteryStatus(RORG.SIG, 0x06, 0x00, false, D0_06.class, null, CHANNEL_BATTERY_LEVEL),
 
     TemperatureSensor_A5_02_01(RORG._4BS, 0x02, 0x01, false, A5_02_01.class, THING_TYPE_TEMPERATURESENSOR,
             CHANNEL_TEMPERATURE),
