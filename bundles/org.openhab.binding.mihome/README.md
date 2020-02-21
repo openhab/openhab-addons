@@ -48,6 +48,9 @@ After setup, you can disconnect the gateway from the internet to keep your senso
         1.  Select your Gateway in the MiHome app
         2.  Go to the "..." menu on the top right corner and click "About"
         3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
+		NOTE: In newest version > 3.x.x
+		- Select your Gateway and go to About
+		- Tap on the About page (on the blank part) repeatedly.
         4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
         5.  Choose `wireless communication protocol`
         6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
