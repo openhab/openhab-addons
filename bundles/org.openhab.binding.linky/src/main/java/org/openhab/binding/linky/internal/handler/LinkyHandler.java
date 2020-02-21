@@ -67,13 +67,8 @@ public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
     private static final String LOGIN_BASE_URI = "https://espace-client-connexion.enedis.fr/auth/UI/Login";
-    // private static final String LOGIN_BODY_BUILDER =
-    // "encoded=true&gx_charset=UTF-8&SunQueryParamsString=%s&IDToken1=%s&IDToken2=%s";
     private static final String API_BASE_URI = "https://espace-client-particuliers.enedis.fr/group/espace-particuliers/suivi-de-consommation";
-    // private static final String DATA_BODY_BUILDER =
-    // "p_p_id=lincspartdisplaycdc_WAR_lincspartcdcportlet&p_p_lifecycle=2&p_p_resource_id=%s&_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateDebut=%s&_lincspartdisplaycdc_WAR_lincspartcdcportlet_dateFin=%s";
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    // private static final int HTTP_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
     private static final Builder LOGIN_BODY_BUILDER = new FormBody.Builder().add("encoded", "true")
             .add("gx_charset", "UTF-8").add("SunQueryParamsString",
                     Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
@@ -143,15 +138,6 @@ public class LinkyHandler extends BaseThingHandler {
                 logger.debug("Response status {} {}", response.code(), response.message());
             }
             response.close();
-            // String requestContent = String.format(LOGIN_BODY_BUILDER,
-            // Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)),
-            // URLEncoder.encode(config.username, StandardCharsets.UTF_8.name()),
-            // URLEncoder.encode(config.password, StandardCharsets.UTF_8.name()));
-            // InputStream stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
-            // logger.debug("POST {} requestContent {}", LOGIN_BASE_URI, requestContent);
-            // HttpUtil.executeUrl("POST", LOGIN_BASE_URI, stream, "application/x-www-form-urlencoded",
-            // HTTP_DEFAULT_TIMEOUT_MS);
-            // stream.close();
 
             // Do a first call to get data; this first call will fail with code 302
             getConsumptionData(DAILY, LocalDate.now(), LocalDate.now(), false);
@@ -310,26 +296,6 @@ public class LinkyHandler extends BaseThingHandler {
         if (tryRelog && login()) {
             result = getConsumptionData(timeScale, from, to, false);
         }
-        // String requestContent = String.format(DATA_BODY_BUILDER, timeScale.getId(), from.format(API_DATE_FORMAT),
-        // to.format(API_DATE_FORMAT));
-        // InputStream stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
-        // logger.debug("POST {} requestContent {}", API_BASE_URI, requestContent);
-        // try {
-        // String jsonResponse = HttpUtil.executeUrl("POST", API_BASE_URI, stream, "application/x-www-form-urlencoded",
-        // HTTP_DEFAULT_TIMEOUT_MS);
-        // if (jsonResponse != null) {
-        // result = GSON.fromJson(jsonResponse, LinkyConsumptionData.class);
-        // }
-        // } catch (IOException e) {
-        // logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-        // } catch (JsonSyntaxException e) {
-        // logger.debug("Exception while converting JSON response : {}", e.getMessage());
-        // }
-        // try {
-        // stream.close();
-        // } catch (IOException e) {
-        // }
         return result;
     }
 

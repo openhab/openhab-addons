@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class LinkyBindingConstants {
 
     public static final String BINDING_ID = "linky";
-    public static final String LOCAL = "local";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
