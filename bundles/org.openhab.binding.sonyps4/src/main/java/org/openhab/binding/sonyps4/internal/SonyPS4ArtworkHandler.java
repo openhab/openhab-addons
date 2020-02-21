@@ -39,24 +39,16 @@ public class SonyPS4ArtworkHandler {
     private final Logger logger = LoggerFactory.getLogger(SonyPS4ArtworkHandler.class);
     private final File artworkCacheFolder;
 
-    /**
-     * Service id
-     */
+    /** Service id */
     static final String SERVICE_ID = "sonyps4";
 
-    /**
-     * Service category
-     */
+    /** Service category */
     static final String SERVICE_CATEGORY = "binding";
 
-    /**
-     * Service pid
-     */
+    /** Service pid */
     static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
-    /**
-     * Cache folder under $userdata
-     */
+    /** Cache folder under $userdata */
     private static final String CACHE_FOLDER_NAME = "cache";
 
     SonyPS4ArtworkHandler() {
@@ -78,8 +70,33 @@ public class SonyPS4ArtworkHandler {
         this.artworkCacheFolder = cacheFolder;
     }
 
+    /**
+     * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
+     * Playstation store
+     *
+     * @param titleid Title ID of application.
+     * @param size Size in pixels of art work, max 1024.
+     * @param locale Locale used on Playstation store to find art work.
+     * @return A JPEG image as a RawType if an art work file is found otherwise null.
+     */
     @Nullable
     RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
+        return fetchArtworkForTitleid(titleid, size, locale, false);
+    }
+
+    /**
+     * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
+     * Playstation store
+     *
+     * @param titleid Title ID of application.
+     * @param size Size in pixels of art work, max 1024.
+     * @param locale Locale used on Playstation store to find art work.
+     * @param forceRefetch The tries to re-fetch art work from Playstation store, sometimes the art work is updated
+     *            along with the game.
+     * @return A JPEG image as a RawType if an art work file is found otherwise null.
+     */
+    @Nullable
+    RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale, boolean forceRefetch) {
         // Try to find the image in the cache first, then try to download it from PlayStation Store.
         RawType artwork = null;
         if (titleid.isEmpty()) {
@@ -87,7 +104,7 @@ public class SonyPS4ArtworkHandler {
         }
         String artworkFilename = titleid + "_" + size.toString() + ".jpg";
         File artworkFileInCache = new File(artworkCacheFolder, artworkFilename);
-        if (artworkFileInCache.exists()) {
+        if (artworkFileInCache.exists() && !forceRefetch) {
             logger.debug("Artwork file {} was found in cache.", artworkFileInCache.getName());
             int length = (int) artworkFileInCache.length();
             byte[] fileBuffer = new byte[length];
@@ -97,9 +114,11 @@ public class SonyPS4ArtworkHandler {
             } catch (FileNotFoundException ex) {
                 logger.debug("Could not find {} in cache. ", artworkFileInCache, ex);
             } catch (IOException ex) {
-                logger.error("Could not read {} from cache. ", artworkFileInCache, ex);
+                logger.warn("Could not read {} from cache. ", artworkFileInCache, ex);
             }
-            return artwork;
+            if (artwork != null) {
+                return artwork;
+            }
         }
         String storeLocale = locale.getCountry() + "/" + locale.getLanguage();
         artwork = HttpUtil.downloadImage("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/"
@@ -109,9 +128,9 @@ public class SonyPS4ArtworkHandler {
                 logger.debug("Caching artwork file {}", artworkFileInCache.getName());
                 fos.write(artwork.getBytes(), 0, artwork.getBytes().length);
             } catch (FileNotFoundException ex) {
-                logger.warn("Could not create {} in cache. ", artworkFileInCache, ex);
+                logger.info("Could not create {} in cache. ", artworkFileInCache, ex);
             } catch (IOException ex) {
-                logger.error("Could not write {} to cache. ", artworkFileInCache, ex);
+                logger.warn("Could not write {} to cache. ", artworkFileInCache, ex);
             }
         }
         return artwork;

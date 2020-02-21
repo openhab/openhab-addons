@@ -53,6 +53,31 @@ public class SonyPS4Configuration {
     public String userCredential = "";
 
     /**
+     * pass code for user (4 digits).
+     */
+    public String passCode = "";
+
+    /**
+     * pairing code for this device (8 digits).
+     */
+    public String pairingCode = "";
+
+    /**
+     * Timeout of connection in seconds.
+     */
+    public int connectionTimeout = 60;
+
+    /**
+     * Automatic connection as soon as PS4 is turned on.
+     */
+    public boolean autoConnect = false;
+
+    /**
+     * Size of artwork for applications.
+     */
+    public int artworkSize = 320;
+
+    /**
      * IP-address of PS4.
      */
     public String ipAddress = "";
@@ -63,24 +88,9 @@ public class SonyPS4Configuration {
     public int ipPort = SonyPS4BindingConstants.DEFAULT_COMMUNICATION_PORT;
 
     /**
-     * Size of artwork for applications.
-     */
-    public int artworkSize = 320;
-
-    /**
      * host-id of PS4.
      */
     public String hostId = "";
-
-    /**
-     * pin code for user (4 digits).
-     */
-    public String pinCode = "";
-
-    /**
-     * pairing code for this device (8 digits).
-     */
-    public String pairingCode = "";
 
     @Override
     public String toString() {

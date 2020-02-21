@@ -13,7 +13,8 @@
 			<channel id="applicationName" typeId="application-channel" />
 			<channel id="applicationTitleid" typeId="applicationId-channel" />
 			<channel id="applicationImage" typeId="applicationImage-channel" />
-			<channel id="logOut" typeId="logOut-channel" />
+			<channel id="oskText" typeId="oskText-channel" />
+			<channel id="disconnect" typeId="disconnect-channel" />
 			<channel id="keyUp" typeId="keyUp-channel" />
 			<channel id="keyDown" typeId="keyDown-channel" />
 			<channel id="keyRight" typeId="keyRight-channel" />
@@ -35,23 +36,36 @@
 				<label>User credential</label>
 				<description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
 			</parameter>
-			<parameter name="pinCode" type="text">
-				<label>Pin code</label>
-				<description>Pin code to log in to PlayStation 4, optional, 4 digits.</description>
+			<parameter name="passCode" type="text">
+				<label>Pass code</label>
+				<description>Pass code to log in to PlayStation 4, optional, 4 digits.</description>
 			</parameter>
 			<parameter name="pairingCode" type="text">
 				<label>Pairing code</label>
 				<description>Pairing code to pair OpenHAB device to PlayStation 4, only needed during pairing, 8 digits.</description>
 			</parameter>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>IP address</label>
-				<description>The local IP address or hostname of the PlayStation 4.</description>
+			<parameter name="connectionTimeout" type="integer">
+				<label>Connection timeout</label>
+				<description>How long after the last interaction the connection to the PS4 closes down. Use -1 to never close connection</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="autoConnect" type="boolean">
+				<label>Auto connect</label>
+				<description>Should the binding try to connect to the PS4 as soon as it's turned on, instead of when sending a command.</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="artworkSize" type="integer" min="128" max="1024">
 				<label>Artwork size</label>
 				<description>The width and height of the downloaded artwork.</description>
 				<default>320</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The local IP address or hostname of the PlayStation 4.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="ipPort" type="integer">
@@ -101,10 +115,15 @@
 		<description>Application artwork channel.</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="logOut-channel" advanced="true">
+	<channel-type id="oskText-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>OSK Text</label>
+		<description>The text from the OnScreenKeyboard.</description>
+	</channel-type>
+	<channel-type id="disconnect-channel" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Log out</label>
-		<description>Log out user from PS4.</description>
+		<label>Disconnect</label>
+		<description>Disconnect from PS4.</description>
 	</channel-type>
 	<channel-type id="keyUp-channel" advanced="true">
 		<item-type>Switch</item-type>

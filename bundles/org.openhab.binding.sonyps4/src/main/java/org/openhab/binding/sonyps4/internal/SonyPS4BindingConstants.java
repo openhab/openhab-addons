@@ -39,7 +39,7 @@ public class SonyPS4BindingConstants {
     static final String CHANNEL_APPLICATION_NAME = "applicationName";
     static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
     static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
-    static final String CHANNEL_LOG_OUT = "logOut";
+    static final String CHANNEL_OSK_TEXT = "oskText";
     static final String CHANNEL_KEY_UP = "keyUp";
     static final String CHANNEL_KEY_DOWN = "keyDown";
     static final String CHANNEL_KEY_RIGHT = "keyRight";
@@ -48,8 +48,9 @@ public class SonyPS4BindingConstants {
     static final String CHANNEL_KEY_BACK = "keyBack";
     static final String CHANNEL_KEY_OPTION = "keyOption";
     static final String CHANNEL_KEY_PS = "keyPS";
-
-    static final String CHANNEL_HOST_NAME = "hostName";
+    static final String CHANNEL_DISCONNECT = "disconnect";
+    static final String CHANNEL_LOG_OUT = "logOut";
+    static final String CHANNEL_SCREEN_SHOT = "screenShot";
 
     // List of all properties in the response from the PS4
     public static final String RESPONSE_HOST_ID = "host-id";
@@ -82,8 +83,6 @@ public class SonyPS4BindingConstants {
     static final int PS4_KEY_CANCEL = 1 << 9;
     static final int PS4_KEY_OPEN_RC = 1 << 10;
     static final int PS4_KEY_CLOSE_RC = 1 << 11;
-
-    static final String PS4COMS_SYNC = "Ps4Sync";
 
     /**
      * Default port numbers PS4 uses.

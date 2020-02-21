@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class SonyPS4Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SonyPS4Handler.class);
-    private final SonyPS4PacketHandler ps4PacketHandler = new SonyPS4PacketHandler();
+    private final SonyPS4Crypto ps4Crypto = new SonyPS4Crypto();
     private final SonyPS4ArtworkHandler ps4ArtworkHandler = new SonyPS4ArtworkHandler();
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
@@ -68,6 +68,7 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private @Nullable LocaleProvider localeProvider;
     private @Nullable ScheduledFuture<?> refreshTimer;
+    private @Nullable ScheduledFuture<?> timeoutTimer;
     private @Nullable SocketChannelHandler socketChannelHandler;
 
     // State of PS4
@@ -85,15 +86,17 @@ public class SonyPS4Handler extends BaseThingHandler {
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
-        if (!config.pairingCode.isEmpty()) {
-            logger.debug("Pairing to PS4.");
-            if (pairDevice()) {
+        SocketChannelHandler scHandler = socketChannelHandler;
+        if (scHandler == null || !scHandler.loggedIn) {
+            boolean loggedIn = login();
+            if (loggedIn && !config.pairingCode.isEmpty()) {
                 // If we are paired, remove pairing code as it's one use only.
                 Configuration editedConfig = editConfiguration();
                 editedConfig.put(SonyPS4Configuration.PAIRING_CODE, "");
                 updateConfiguration(editedConfig);
             }
         }
+        setupConnectionTimeout(config.connectionTimeout);
     }
 
     @Override
@@ -106,7 +109,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 if (currentPower.equals(OnOffType.ON)) {
                     turnOnPS4();
                 } else if (currentPower.equals(OnOffType.OFF)) {
-                    standby();
+                    sendStandby();
                 }
             }
             if (CHANNEL_APPLICATION_TITLEID.equals(channelUID.getId()) && command instanceof StringType) {
@@ -115,10 +118,10 @@ public class SonyPS4Handler extends BaseThingHandler {
                     startApplication(currentApplicationId);
                 }
             }
+            if (CHANNEL_OSK_TEXT.equals(channelUID.getId()) && command instanceof StringType) {
+                setOSKText(((StringType) command).toString());
+            }
             if (command instanceof OnOffType) {
-                if (CHANNEL_LOG_OUT.equals(channelUID.getId())) {
-                    logOut();
-                }
                 if (CHANNEL_KEY_UP.equals(channelUID.getId())) {
                     sendRemoteKey(PS4_KEY_UP);
                 }
@@ -142,6 +145,15 @@ public class SonyPS4Handler extends BaseThingHandler {
                 }
                 if (CHANNEL_KEY_PS.equals(channelUID.getId())) {
                     sendRemoteKey(PS4_KEY_PS);
+                }
+                if (CHANNEL_DISCONNECT.equals(channelUID.getId())) {
+                    sendByeBye();
+                }
+                if (CHANNEL_LOG_OUT.equals(channelUID.getId())) {
+                    logOut();
+                }
+                if (CHANNEL_SCREEN_SHOT.equals(channelUID.getId())) {
+                    takeScreenShot();
                 }
             }
         }
@@ -167,16 +179,29 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     /**
-     * Sets up a refresh timer (using the scheduler) with the given interval.
+     * Sets up a timer for querying the PS4 (using the scheduler) with the given interval.
      *
-     * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *            initiate a refresh.
+     * @param initialWaitTime The delay before the first refresh in seconds. Maybe 0 to immediately initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
         refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, initialWaitTime, 10, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Sets up a timer for stopping the connection to the PS4 (using the scheduler) with the given time.
+     *
+     * @param waitTime The time in seconds before the connection is stopped.
+     */
+    private void setupConnectionTimeout(int waitTime) {
+        if (timeoutTimer != null) {
+            timeoutTimer.cancel(false);
+        }
+        if (waitTime > 0) {
+            timeoutTimer = scheduler.schedule(this::stopConnection, waitTime, TimeUnit.SECONDS);
+        }
     }
 
     private void refreshFromState(ChannelUID channelUID) {
@@ -194,6 +219,20 @@ public class SonyPS4Handler extends BaseThingHandler {
                 updateApplicationTitleid(currentApplicationId);
                 updateState(channelUID, currentArtwork);
                 break;
+            case CHANNEL_OSK_TEXT:
+                updateState(channelUID, StringType.valueOf(""));
+                break;
+            case CHANNEL_KEY_UP:
+            case CHANNEL_KEY_DOWN:
+            case CHANNEL_KEY_RIGHT:
+            case CHANNEL_KEY_LEFT:
+            case CHANNEL_KEY_ENTER:
+            case CHANNEL_KEY_BACK:
+            case CHANNEL_KEY_OPTION:
+            case CHANNEL_KEY_PS:
+            case CHANNEL_DISCONNECT:
+                updateState(channelUID, OnOffType.OFF);
+                break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
         }
@@ -206,7 +245,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
 
             // send discover
-            byte[] discover = ps4PacketHandler.makeSearchPacket();
+            byte[] discover = SonyPS4PacketHandler.makeSearchPacket();
             DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
 
@@ -217,7 +256,14 @@ public class SonyPS4Handler extends BaseThingHandler {
             parseSearchResponse(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Fetch status exception: {}", e.getMessage());
+            logger.info("Fetch status exception: {}", e.getMessage());
+        }
+    }
+
+    private void stopConnection() {
+        SocketChannelHandler handler = socketChannelHandler;
+        if (handler != null && handler.getChannel() != null) {
+            sendByeBye();
         }
     }
 
@@ -227,12 +273,12 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send wake-up
-            byte[] wakeup = ps4PacketHandler.makeWakeupPacket(config.userCredential);
+            byte[] wakeup = SonyPS4PacketHandler.makeWakeupPacket(config.userCredential);
             DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Wake up PS4 exception: {}", e.getMessage());
+            logger.info("Wake up PS4 exception: {}", e.getMessage());
         }
     }
 
@@ -241,53 +287,47 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send launch
-            byte[] launch = ps4PacketHandler.makeLaunchPacket(config.userCredential);
+            byte[] launch = SonyPS4PacketHandler.makeLaunchPacket(config.userCredential);
             DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
             return true;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Open coms exception: {}", e.getMessage());
+            logger.info("Open coms exception: {}", e.getMessage());
         }
         return false;
     }
 
     private boolean setupConnection(SocketChannel channel) throws IOException {
         logger.debug("TCP connecting");
-        String hostName = config.ipAddress;
+
+        channel.socket().setSoTimeout(2000);
         channel.configureBlocking(true);
+        channel.connect(new InetSocketAddress(config.ipAddress, currentComPort));
 
-        // TODO Loop here a couple of times and check if we are connected.
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            logger.info("Login interrupted: {}", e.getMessage());
-        }
-        channel.connect(new InetSocketAddress(hostName, currentComPort));
-        channel.finishConnect();
-
-        ByteBuffer outPacket = ps4PacketHandler.makeHelloPacket();
-        logger.debug("Sending hello packet.");
-        channel.write(outPacket);
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeHelloPacket();
+        sendPacketToPS4(outPacket, channel, false, false);
 
         // Read hello response
         final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
 
         int responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
-            ps4PacketHandler.parseResponsePacket(readBuffer);
+            ps4Crypto.parseHelloResponsePacket(readBuffer);
         } else {
             return false;
         }
 
-        outPacket = ps4PacketHandler.makeHandshakePacket();
-        logger.debug("Sending handshake packet.");
-        channel.write(outPacket);
+        outPacket = ps4Crypto.makeHandshakePacket();
+        sendPacketToPS4(outPacket, channel, false, false);
         return true;
     }
 
     private class SocketChannelHandler extends Thread {
         private @Nullable SocketChannel socketChannel;
+        private @Nullable SonyPS4Command lastCommand;
+        boolean loggedIn = false;
+        boolean oskOpen = false;
 
         public SocketChannelHandler(SocketChannel channel) {
             socketChannel = channel;
@@ -304,147 +344,280 @@ public class SonyPS4Handler extends BaseThingHandler {
                 return;
             }
             final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
-            int responseLength;
             try {
-                while ((responseLength = channel.read(readBuffer)) > 0) {
-                    byte[] respBuff = new byte[readBuffer.position()];
+                while (channel.read(readBuffer) > 0) {
+                    ByteBuffer messBuffer = ps4Crypto.decryptPacket(readBuffer);
+                    parseResponsePacket(messBuffer);
                     readBuffer.position(0);
-                    readBuffer.get(respBuff, 0, responseLength);
-                    int result = SonyPS4Handler.this.ps4PacketHandler.parseEncryptedPacket(readBuffer);
-                    readBuffer.position(0);
-                    // Read login response
-                    SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(result);
-                    if (status != null) {
-                        switch (status) {
-                            case STATUS_OK:
-                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
-                                break;
-                            case STATUS_NOT_PAIRED:
-                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                        status.message);
-                                break;
-                            case STATUS_MISSING_PAIRING_CODE:
-                            case STATUS_MISSING_PIN_CODE:
-                            case STATUS_WRONG_PAIRING_CODE:
-                            case STATUS_WRONG_PIN_CODE:
-                            case STATUS_WRONG_USER_CREDENTIAL:
-                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
-                                logger.info("Not logged in: {}", status.message);
-                                break;
-                            case STATUS_COULD_NOT_LOG_IN:
-                            case STATUS_ERROR_IN_COMMUNICATION:
-                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, status.message);
-                                break;
-                            case STATUS_OSK_OPEN:
-                            case STATUS_GAME_NOT_INSTALLED:
-                            case STATUS_COMMAND_NOT_GOOD:
-                            case STATUS_LOGIN_PACKET_WRONG:
-                                logger.debug("Response {}", status.message);
-                                break;
-                            default:
-                                logger.warn("Unhandled response id {}, message {}", result, status.message);
-                                break;
+
+                    if (lastCommand == SonyPS4Command.SERVER_STATUS_RSP) {
+                        if (oskOpen && isLinked(CHANNEL_OSK_TEXT)) {
+                            sendOSKStart();
+                        } else {
+                            sendStatus();
                         }
-                    } else {
-                        logger.info("Error code in login response:{}", result);
                     }
                 }
             } catch (IOException e) {
-                logger.debug("Connection read exception: {}", e.getMessage());
+                logger.info("Connection read exception: {}", e.getMessage());
             } finally {
                 try {
                     channel.close();
                 } catch (IOException e) {
-                    logger.debug("Connection close exception: {}", e.getMessage());
+                    logger.info("Connection close exception: {}", e.getMessage());
                 }
             }
             logger.debug("SocketHandler done.");
             socketChannel = null;
+            ps4Crypto.clearCiphers();
+            loggedIn = false;
         }
+
+        void parseResponsePacket(ByteBuffer rBuffer) {
+            rBuffer.rewind();
+            final int buffSize = rBuffer.remaining();
+            final int size = rBuffer.getInt();
+            if (size > buffSize || size < 12) {
+                logger.info("Response size ({}) not good, buffer size ({}).", size, buffSize);
+                return;
+            }
+            int cmdValue = rBuffer.getInt();
+            int statValue = rBuffer.getInt();
+            SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(statValue);
+            SonyPS4Command command = SonyPS4Command.valueOfTag(cmdValue);
+            byte[] respBuff = new byte[size];
+            rBuffer.rewind();
+            rBuffer.get(respBuff);
+            if (command != null) {
+                lastCommand = command;
+                if (status == null) {
+                    logger.debug("Resp; size:{}, command:{}, statValue:{}, data:{}.", size, command, statValue,
+                            respBuff);
+                } else {
+                    logger.debug("Resp; size:{}, command:{}, status:{}, data:{}.", size, command, status, respBuff);
+                }
+                switch (command) {
+                    case LOGIN_RSP:
+                        if (status == null) {
+                            logger.info("Unhandled Login status value: {}", statValue);
+                            return;
+                        }
+                        // Read login response
+                        switch (status) {
+                            case STATUS_OK:
+                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                                loggedIn = true;
+                                break;
+                            case STATUS_NOT_PAIRED:
+                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                                        status.message);
+                                loggedIn = false;
+                                break;
+                            case STATUS_MISSING_PAIRING_CODE:
+                            case STATUS_MISSING_PASS_CODE:
+                            case STATUS_WRONG_PAIRING_CODE:
+                            case STATUS_WRONG_PASS_CODE:
+                            case STATUS_WRONG_USER_CREDENTIAL:
+                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
+                                loggedIn = false;
+                                logger.info("Not logged in: {}", status.message);
+                                break;
+                            case STATUS_CAN_NOT_PLAY_NOW:
+                            case STATUS_CLOSE_OTHER_APP:
+                            case STATUS_COMMAND_NOT_GOOD:
+                            case STATUS_COULD_NOT_LOG_IN:
+                            case STATUS_DO_LOGIN:
+                            case STATUS_MAX_USERS:
+                            case STATUS_REGISTER_DEVICE_OVER:
+                            case STATUS_RESTART_APP:
+                            case STATUS_SOMEONE_ELSE_USING:
+                            case STATUS_UPDATE_APP:
+                            case STATUS_UPDATE_PS4:
+                                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                                loggedIn = false;
+                                logger.info("Not logged in: {}", status.message);
+                                break;
+                            default:
+                                logger.info("Unhandled Login response status:{}, message:{}", status, status.message);
+                                break;
+                        }
+                        break;
+                    case APP_START_RSP:
+                        if (status != null && status != SonyPS4ErrorStatus.STATUS_OK) {
+                            logger.info("App start response: {}", status.message);
+                        }
+                        break;
+                    case STANDBY_RSP:
+                        if (status != null && status != SonyPS4ErrorStatus.STATUS_OK) {
+                            logger.info("Standby response: {}", status.message);
+                        }
+                        break;
+                    case SERVER_STATUS_RSP:
+                        if ((statValue & 4) != 0) {
+                            oskOpen = true;
+                        } else {
+                            if (oskOpen) {
+                                updateState(CHANNEL_OSK_TEXT, StringType.valueOf(""));
+                            }
+                            oskOpen = false;
+                        }
+                        logger.debug("Server status value:{}", statValue);
+                        break;
+                    case HTTPD_STATUS_RSP:
+                        String httpdStat = SonyPS4PacketHandler.parseHTTPdPacket(rBuffer);
+                        logger.debug("HTTPd Response; {}", httpdStat);
+                        break;
+                    case OSK_CHANGE_STRING_REQ:
+                        String oskText = SonyPS4PacketHandler.parseOSKStringChangePacket(rBuffer);
+                        updateState(CHANNEL_OSK_TEXT, StringType.valueOf(oskText));
+                        break;
+                    case OSK_START_RSP:
+                    case OSK_CONTROL_REQ:
+                    case COMMENT_VIEWER_START_RESULT:
+                    case SCREEN_SHOT_RSP:
+                    case APP_START2_RSP:
+                    case LOGOUT_RSP:
+                        break;
+                    default:
+                        logger.info("Unknown response, command:{}. Missing case.", command);
+                        break;
+                }
+            } else {
+                logger.info("Unknown resp-cmd, size:{}, command:{}, status:{}, data:{}.", size, cmdValue, statValue,
+                        respBuff);
+            }
+        }
+
     }
 
     private SocketChannel getConnection() throws IOException {
-        return getConnection(false);
+        return getConnection(true);
     }
 
-    private SocketChannel getConnection(boolean skipLogin) throws IOException {
+    private SocketChannel getConnection(boolean requiresLogin) throws IOException {
         SocketChannel channel = null;
         SocketChannelHandler handler = socketChannelHandler;
-        if (handler != null) {
-            channel = handler.getChannel();
-            if (channel != null) {
-                return channel;
+        if (handler == null || handler.getChannel() == null) {
+            try {
+                channel = SocketChannel.open();
+                if (!openComs()) {
+                    throw new IOException("Open coms failed");
+                }
+                if (!setupConnection(channel)) {
+                    throw new IOException("Setup connection failed");
+                }
+                handler = new SocketChannelHandler(channel);
+                socketChannelHandler = handler;
+                handler.start();
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                throw e;
             }
         }
-
-        try {
-            channel = SocketChannel.open();
-            if (!openComs()) {
-                throw new IOException("Open coms failed");
-            }
-            if (!setupConnection(channel)) {
-                throw new IOException("Setup connection failed");
-            }
-            handler = new SocketChannelHandler(channel);
-            socketChannelHandler = handler;
-            handler.start();
-            if (!skipLogin) {
+        channel = handler.getChannel();
+        if (channel != null) {
+            if (!handler.loggedIn && requiresLogin) {
                 login(channel);
-                Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
+
+                if (handler.loggedIn) {
+                    try {
+                        Thread.sleep(1000);
+                        ByteBuffer outPacket = SonyPS4PacketHandler
+                                .makeClientIDPacket("com.playstation.mobile2ndscreen", "18.9.3");
+                        sendPacketEncrypted(outPacket, channel);
+
+                        Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
+                    } catch (InterruptedException e) {
+                        // Ignore, sleep just to make keyEvents behave better.
+                    }
+                }
             }
-        } catch (InterruptedException e) {
-            // Ignore, just to make keyEvents behave better.
+            return channel;
+        }
+        throw new IOException("No channel allocated");
+    }
+
+    private void sendPacketToPS4(ByteBuffer packet, SocketChannel channel, boolean encrypted, boolean restartTimeout) {
+        SonyPS4Command cmd = SonyPS4Command.valueOfTag(packet.getInt(4));
+        logger.debug("Sending {} packet.", cmd);
+        try {
+            if (encrypted) {
+                ByteBuffer outPacket = ps4Crypto.encryptPacket(packet);
+                channel.write(outPacket);
+            } else {
+                channel.write(packet);
+            }
+            if (restartTimeout) {
+                setupConnectionTimeout(config.connectionTimeout);
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            // logger.info("getConnection exception: {}", e.getMessage());
-            throw e;
+            logger.info("Send packet {} exception: {}", cmd, e.getMessage());
         }
-        return channel;
     }
 
-    private void sendPacket(ByteBuffer packet) throws IOException {
-        SocketChannel channel = getConnection();
-        channel.write(packet);
+    private void sendPacketEncrypted(ByteBuffer packet, SocketChannel channel) {
+        sendPacketToPS4(packet, channel, true, true);
     }
 
-    private boolean login(SocketChannel channel) throws IOException {
+    private void sendPacketEncrypted(ByteBuffer packet) {
+        sendPacketEncrypted(packet, true);
+    }
+
+    private void sendPacketEncrypted(ByteBuffer packet, boolean requiresLogin) {
+        try {
+            SocketChannel channel = getConnection(requiresLogin);
+            sendPacketToPS4(packet, channel, true, requiresLogin);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.info("Send packet exception: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * This is used as a heart beat to let the PS4 know that we are still listening.
+     */
+    private void sendStatus() {
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeStatusPacket(1);
+        sendPacketEncrypted(outPacket, false);
+    }
+
+    private boolean login(SocketChannel channel) {
         // Send login request
-        ByteBuffer outPacket = ps4PacketHandler.makeLoginPacket(config.userCredential, config.pinCode,
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeLoginPacket(config.userCredential, config.passCode,
                 config.pairingCode);
-        logger.debug("Sending login packet.");
-        channel.write(outPacket);
+        sendPacketEncrypted(outPacket, channel);
 
         return true;
     }
 
-    private boolean login() throws IOException {
-        SocketChannel channel = getConnection(true);
-        return login(channel);
+    private boolean login() {
+        try {
+            SocketChannel channel = getConnection(false);
+            return login(channel);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.info("Send packet exception: {}", e.getMessage());
+        }
+        return false;
     }
 
     private void logOut() {
-        try {
-            logger.debug("Sending logout packet");
-            ByteBuffer outPacket = ps4PacketHandler.makeLogoutPacket();
-            sendPacket(outPacket);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Log out exception: {}", e.getMessage());
-        }
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeLogoutPacket();
+        sendPacketEncrypted(outPacket);
+    }
+
+    private void takeScreenShot() {
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeScreenShotPacket();
+        sendPacketEncrypted(outPacket);
     }
 
     /**
      * This closes the connection with the PS4.
      */
     private void sendByeBye() {
-        try {
-            logger.debug("Sending byebye packet");
-            ByteBuffer outPacket = ps4PacketHandler.makeByebyePacket();
-            sendPacket(outPacket);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Send byebye exception: {}", e.getMessage());
-        }
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeByebyePacket();
+        sendPacketEncrypted(outPacket, false);
     }
 
     private void turnOnPS4() {
@@ -452,7 +625,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         try {
             Thread.sleep(15000);
         } catch (InterruptedException e) {
-            logger.debug("Login interrupted: {}", e.getMessage());
+            logger.debug("Trun on PS4 interrupted: {}", e.getMessage());
         }
         try {
             getConnection();
@@ -462,30 +635,28 @@ public class SonyPS4Handler extends BaseThingHandler {
         }
     }
 
-    private void standby() {
-        try {
-            ByteBuffer outPacket = ps4PacketHandler.makeStandbyPacket();
-            sendPacket(outPacket);
-
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Standby exception: {}", e.getMessage());
-        }
+    private void sendStandby() {
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeStandbyPacket();
+        sendPacketEncrypted(outPacket);
     }
 
     /**
-     * This sends a login packet with pairing code.
-     *
-     * @return true if pairing code was accepted.
+     * Ask PS4 if the OSK is open so we can get and set text.
      */
-    private boolean pairDevice() {
-        try {
-            return login();
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Pair device exception: {}", e.getMessage());
-        }
-        return false;
+    private void sendOSKStart() {
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeOSKStartPacket();
+        sendPacketEncrypted(outPacket);
+    }
+
+    /**
+     * Sets the entire OSK string on the PS4.
+     *
+     * @param text The text to set in the OSK.
+     */
+    private void setOSKText(String text) {
+        logger.debug("Sending osk text packet,\"{}\"", text);
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeOSKStringChangePacket(text);
+        sendPacketEncrypted(outPacket);
     }
 
     /**
@@ -494,43 +665,35 @@ public class SonyPS4Handler extends BaseThingHandler {
      * @param applicationId The unique id for the application (CUSAxxxxx).
      */
     private void startApplication(String applicationId) {
-        try {
-            logger.debug("Sending app start packet");
-            ByteBuffer outPacket = ps4PacketHandler.makeApplicationPacket(applicationId);
-            sendPacket(outPacket);
-
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Start application exception: {}", e.getMessage());
-        }
+        ByteBuffer outPacket = SonyPS4PacketHandler.makeApplicationPacket(applicationId);
+        sendPacketEncrypted(outPacket);
     }
 
     private void sendRemoteKey(int pushedKey) {
         try {
             SocketChannel channel = getConnection();
 
-            logger.debug("Sending remoteKey");
-            ByteBuffer outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
-            channel.write(outPacket);
+            ByteBuffer outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
+            sendPacketEncrypted(outPacket, channel);
             Thread.sleep(MIN_SENDKEY_DELAY);
 
             // Send remote key
-            outPacket = ps4PacketHandler.makeRemoteControlPacket(pushedKey);
-            channel.write(outPacket);
+            outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(pushedKey);
+            sendPacketEncrypted(outPacket, channel);
             Thread.sleep(MIN_HOLDKEY_DELAY);
 
-            outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
-            channel.write(outPacket);
+            outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
+            sendPacketEncrypted(outPacket, channel);
             Thread.sleep(MIN_SENDKEY_DELAY);
 
-            outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
-            channel.write(outPacket);
+            outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
+            sendPacketEncrypted(outPacket, channel);
 
         } catch (InterruptedException e) {
             logger.debug("RemoteKey interrupted: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("RemoteKey exception: {}", e.getMessage());
+            logger.info("RemoteKey exception: {}", e.getMessage());
         }
     }
 
@@ -551,9 +714,14 @@ public class SonyPS4Handler extends BaseThingHandler {
                     power = OnOffType.OFF;
                 }
                 if (power != null) {
-                    if (currentPower != power) {
+                    if (!currentPower.equals(power)) {
                         currentPower = power;
                         updateState(CHANNEL_POWER, currentPower);
+                        if (power.equals(OnOffType.ON) && config.autoConnect
+                                && (socketChannelHandler == null || !socketChannelHandler.loggedIn)) {
+                            logger.debug("Trying to login after power on.");
+                            scheduler.schedule(() -> login(), 20, TimeUnit.SECONDS);
+                        }
                     }
                     if (thing.getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
