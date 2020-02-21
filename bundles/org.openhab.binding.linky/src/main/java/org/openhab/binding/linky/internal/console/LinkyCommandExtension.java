@@ -1,0 +1,135 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.linky.internal.console;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.console.Console;
+import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
+import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
+import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * The {@link LinkyCommandExtension} is responsible for handling console commands
+ *
+ * @author Laurent Garnier - Initial contribution
+ */
+@Component(service = ConsoleCommandExtension.class)
+public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
+
+    private static final String REPORT = "report";
+
+    private ThingRegistry thingRegistry;
+
+    public LinkyCommandExtension() {
+        super("linky", "Interact with the Linky binding.");
+    }
+
+    @Override
+    public void execute(String[] args, Console console) {
+        if (args.length >= 2) {
+            LinkyHandler handler = null;
+            try {
+                ThingUID thingUID = new ThingUID(args[0]);
+                Thing thing = thingRegistry.get(thingUID);
+                if ((thing != null) && (thing.getHandler() != null) && (thing.getHandler() instanceof LinkyHandler)) {
+                    handler = (LinkyHandler) thing.getHandler();
+                }
+            } catch (Exception e) {
+                handler = null;
+            }
+            if (handler == null) {
+                console.println("Bad thing id '" + args[0] + "'");
+                printUsage(console);
+            } else {
+                switch (args[1]) {
+                    case REPORT:
+                        LocalDate now = LocalDate.now();
+                        LocalDate start = now.minusDays(7);
+                        LocalDate end = now.minusDays(1);
+                        String separator = " ";
+                        if (args.length >= 3) {
+                            try {
+                                start = LocalDate.parse(args[2], DateTimeFormatter.ISO_LOCAL_DATE);
+                            } catch (DateTimeParseException e) {
+                                console.println("Invalid format for start day '" + args[2] + "'");
+                                printUsage(console);
+                                break;
+                            }
+                        }
+                        if (args.length >= 4) {
+                            try {
+                                end = LocalDate.parse(args[3], DateTimeFormatter.ISO_LOCAL_DATE);
+                            } catch (DateTimeParseException e) {
+                                console.println("Invalid format for end day '" + args[3] + "'");
+                                printUsage(console);
+                                break;
+                            }
+                        }
+                        if (!start.isBefore(now)) {
+                            console.println("Start day must be in the past");
+                            printUsage(console);
+                            break;
+                        }
+                        if (start.isAfter(end)) {
+                            console.println("Start day must be earlier than end day");
+                            printUsage(console);
+                            break;
+                        }
+                        if (end.isAfter(now.minusDays(1))) {
+                            end = now.minusDays(1);
+                        }
+                        if (args.length >= 5) {
+                            separator = args[4];
+                        }
+                        for (String line : handler.reportValues(start, end, separator).split("\n")) {
+                            console.println(line);
+                        }
+                        break;
+                    default:
+                        console.println("Unknown Linky sub command '" + args[1] + "'");
+                        printUsage(console);
+                        break;
+                }
+            }
+        } else {
+            printUsage(console);
+        }
+    }
+
+    @Override
+    public List<String> getUsages() {
+        return Arrays.asList(
+                new String[] { buildCommandUsage("<thingUID> " + REPORT + " <start day> <end day> [<separator>]",
+                        "report daily consumptions between two dates") });
+    }
+
+    @Reference
+    protected void setThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
+
+    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = null;
+    }
+
+}

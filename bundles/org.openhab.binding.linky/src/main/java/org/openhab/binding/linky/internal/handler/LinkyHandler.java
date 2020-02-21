@@ -259,6 +259,55 @@ public class LinkyHandler extends BaseThingHandler {
                 consumption != -1 ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR) : UnDefType.UNDEF);
     }
 
+    /**
+     * Produce a report of all daily values between two dates
+     *
+     * @param startDay the start day of the report
+     * @param endDay the end day of the report
+     * @param separator the separator to be used betwwen the date and the value
+     *
+     * @return the report as a string
+     */
+    public String reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
+        String dump = "";
+        if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
+            // All values in the same month
+            LinkyConsumptionData result = getConsumptionData(DAILY, startDay, endDay, true);
+            if (result != null && result.success()) {
+                LocalDate currentDay = startDay;
+                int jump = result.getDecalage();
+                while (jump < result.getData().size() && !currentDay.isAfter(endDay)) {
+                    double consumption = result.getData().get(jump).valeur;
+                    dump += currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
+                    if (consumption >= 0) {
+                        dump += String.valueOf(consumption);
+                    }
+                    dump += "\n";
+                    jump++;
+                    currentDay = currentDay.plusDays(1);
+                }
+            } else {
+                LocalDate currentDay = startDay;
+                while (!currentDay.isAfter(endDay)) {
+                    dump += currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator + "\n";
+                    currentDay = currentDay.plusDays(1);
+                }
+            }
+        } else {
+            // Concatenate the report produced for each month between the two dates
+            LocalDate first = startDay;
+            do {
+                LocalDate last = first.withDayOfMonth(first.lengthOfMonth());
+                if (last.isAfter(endDay)) {
+                    last = endDay;
+                }
+                dump += reportValues(first, last, separator);
+                first = last.plusDays(1);
+            } while (!first.isAfter(endDay));
+        }
+        return dump;
+    }
+
     private @Nullable LinkyConsumptionData getConsumptionData(LinkyTimeScale timeScale, LocalDate from, LocalDate to,
             boolean reLog) {
         logger.debug("getConsumptionData {}", timeScale);
