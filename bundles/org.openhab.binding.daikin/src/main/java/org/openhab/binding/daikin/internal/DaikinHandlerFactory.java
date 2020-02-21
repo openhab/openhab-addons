@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Activate;
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
-    final private DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
