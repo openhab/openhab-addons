@@ -108,7 +108,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     private void sendNextFrame() {
-        BlueGigaUniqueCommand nextFrame = sendQueue.poll();
+        BlueGigaUniqueCommand nextFrame = getNextFrame();
         if (nextFrame == null) {
             // Nothing to send
             logger.trace("Send frame: nothing to send");
@@ -119,6 +119,24 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
         ongoingTransactionId = nextFrame.getTransactionId();
         serialHandler.sendFrame(nextFrame.getMessage());
         startTransactionTimer();
+    }
+
+    private BlueGigaUniqueCommand getNextFrame() {
+        while (!sendQueue.isEmpty()) {
+            BlueGigaUniqueCommand frame = sendQueue.poll();
+            if (frame != null) {
+                if (frame.getMessage() != null) {
+                    return frame;
+                } else {
+                    logger.debug("Null message found from queue, skip it");
+                    continue;
+                }
+            } else {
+                logger.debug("Null frame found from queue, skip it");
+                continue;
+            }
+        }
+        return null;
     }
 
     /**
