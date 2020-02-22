@@ -10,15 +10,15 @@
 
 		<config-description>
 			<parameter name="host" type="text">
-				<label>Host</label>
 				<default>LCM1.local</default>
+				<label>Host</label>
 				<description>
 					Host name or IP address.
 				</description>
 			</parameter>
 			<parameter name="port" type="integer">
-				<label>Port</label>
 				<default>2112</default>
+				<label>Port</label>
 			</parameter>
 		</config-description>
 	</bridge-type>
