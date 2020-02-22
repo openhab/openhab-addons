@@ -29,9 +29,6 @@ public class DataTypeBoolean implements ComfoAirDataType {
 
     private Logger logger = LoggerFactory.getLogger(DataTypeBoolean.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
 
@@ -52,9 +49,6 @@ public class DataTypeBoolean implements ComfoAirDataType {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
 
@@ -79,5 +73,4 @@ public class DataTypeBoolean implements ComfoAirDataType {
             }
         }
     }
-
 }

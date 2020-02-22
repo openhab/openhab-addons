@@ -17,6 +17,7 @@ The connection should be made with a 3-wire cable connecting pins: GND, TX, RX o
 
 * Take care that the user that runs openHAB has rights to access the serial port
 * On Ubuntu/Debian based systems (incl. openHABian) that usually means adding the user (e.g. openhab) to the group "dialout", i.e.
+
 ```
 sudo usermod -a -G dialout openhab
 ```
@@ -224,11 +225,13 @@ The ComfoAir binding supports the following channels
 ## Full Example
 
 `.things` file:
+
 ```
 Thing comfoair:comfoair:myComfoAir "ComfoAir" [serialPort="/dev/ttyUSB0", refreshInterval="60"]
 ```
 
 `.items` file:
+
 ```
 // ComfoAir
 Group	ComfoAir				"ComfoAir"					<recu>		(devices)
@@ -282,6 +285,7 @@ Switch	comfoairFreezeMode			"Freeze [MAP(comfoair_freeze.map):%s]"		<climate>	(C
 ```
 
 `.sitemap` file:
+
 ```
 sitemap comfoair label="ComfoAir" {
 	Frame label="Main" {
@@ -325,6 +329,7 @@ sitemap comfoair label="ComfoAir" {
 ```
 
 `comfoair_bypass.map` file:
+
 ```
 1=Opened
 0=Closed
@@ -333,6 +338,7 @@ undefined=unknown
 ```
 
 `comfoair_on-off.map` file:
+
 ```
 ON=active
 OFF=inactive
@@ -341,6 +347,7 @@ undefined=unknown
 ```
 
 `comfoair_is-not.map` file:
+
 ```
 ON=installed
 OFF=not installed
@@ -349,6 +356,7 @@ undefined=unknown
 ```
 
 `comfoair_freeze.map` file:
+
 ```
 ON=frozen
 OFF=OK
@@ -357,6 +365,7 @@ undefined=unknown
 ```
 
 `comfoair.rules` file:
+
 ```
 import java.lang.Math
 import java.util.Date

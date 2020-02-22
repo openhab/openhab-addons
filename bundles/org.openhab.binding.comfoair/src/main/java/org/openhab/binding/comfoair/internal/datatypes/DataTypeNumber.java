@@ -27,9 +27,6 @@ public class DataTypeNumber implements ComfoAirDataType {
 
     private Logger logger = LoggerFactory.getLogger(DataTypeNumber.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
 
@@ -73,9 +70,6 @@ public class DataTypeNumber implements ComfoAirDataType {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
 
@@ -104,5 +98,4 @@ public class DataTypeNumber implements ComfoAirDataType {
             return template;
         }
     }
-
 }

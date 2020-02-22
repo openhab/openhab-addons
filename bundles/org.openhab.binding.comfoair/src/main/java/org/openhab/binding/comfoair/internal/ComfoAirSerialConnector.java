@@ -436,9 +436,6 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
         } catch (IOException e) {
             logger.debug("Error writing to serial port {}: {}", serialPortName, e.getLocalizedMessage());
             return false;
-        } catch (NullPointerException e) {
-            logger.debug("Error writing to serial port {}: {}", serialPortName, e.getLocalizedMessage());
-            return false;
         }
     }
 

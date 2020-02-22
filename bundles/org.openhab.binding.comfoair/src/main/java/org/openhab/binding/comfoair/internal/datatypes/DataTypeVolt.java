@@ -23,16 +23,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Class to handle volt values
  *
- * @author Grzegorz Miasko
+ * @author Grzegorz Miasko - Initial Contribution
  * @author Hans Böhm - QuantityTypes
  */
 public class DataTypeVolt implements ComfoAirDataType {
 
     private Logger logger = LoggerFactory.getLogger(DataTypeVolt.class);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
 
@@ -50,9 +47,6 @@ public class DataTypeVolt implements ComfoAirDataType {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
 
@@ -68,5 +62,4 @@ public class DataTypeVolt implements ComfoAirDataType {
             return template;
         }
     }
-
 }

@@ -2113,8 +2113,8 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
-            Integer getCmd = commandType.read_command == 0 ? null : new Integer(commandType.read_command);
-            Integer replyCmd = new Integer(commandType.read_reply_command);
+            Integer getCmd = commandType.read_command == 0 ? null : Integer.valueOf(commandType.read_command);
+            Integer replyCmd = Integer.valueOf(commandType.read_reply_command);
 
             return new ComfoAirCommand(key, getCmd, replyCmd, new int[0], null, null);
         }
@@ -2162,8 +2162,8 @@ public enum ComfoAirCommandType {
 
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
         if (commandType.read_reply_command != 0) {
-            Integer getCmd = commandType.read_command == 0 ? null : new Integer(commandType.read_command);
-            Integer replyCmd = new Integer(commandType.read_reply_command);
+            Integer getCmd = commandType.read_command == 0 ? null : Integer.valueOf(commandType.read_command);
+            Integer replyCmd = Integer.valueOf(commandType.read_reply_command);
 
             ComfoAirCommand command = new ComfoAirCommand(key, getCmd, replyCmd, new int[0], null, null);
             commands.put(command.getReplyCmd(), command);
@@ -2178,8 +2178,8 @@ public enum ComfoAirCommandType {
             ComfoAirCommandType affectedCommandType = ComfoAirCommandType.getCommandTypeByKey(affectedKey);
 
             Integer getCmd = affectedCommandType.read_command == 0 ? null
-                    : new Integer(affectedCommandType.read_command);
-            Integer replyCmd = new Integer(affectedCommandType.read_reply_command);
+                    : Integer.valueOf(affectedCommandType.read_command);
+            Integer replyCmd = Integer.valueOf(affectedCommandType.read_reply_command);
 
             ComfoAirCommand command = commands.get(replyCmd);
 
@@ -2210,8 +2210,8 @@ public enum ComfoAirCommandType {
                 continue;
             }
 
-            Integer getCmd = entry.read_command == 0 ? null : new Integer(entry.read_command);
-            Integer replyCmd = new Integer(entry.read_reply_command);
+            Integer getCmd = entry.read_command == 0 ? null : Integer.valueOf(entry.read_command);
+            Integer replyCmd = Integer.valueOf(entry.read_reply_command);
 
             ComfoAirCommand command = commands.get(replyCmd);
 
