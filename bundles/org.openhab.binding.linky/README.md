@@ -42,6 +42,21 @@ The information that is retrieved is available as these channels:
 | yearly#thisYear   | Number:Energy | Current year energy usage  |
 | yearly#lastYear   | Number:Energy | Last year energy usage     |
 
+## Console Commands
+
+The binding provides one specific command you can use in the console.
+Enter the command `smarthome:linky` to get the usage.
+
+```
+openhab> smarthome:linky
+Usage: smarthome:linky <thingUID> report <start day> <end day> [<separator>] - report daily consumptions between two dates
+```
+
+The command `report` reports in the console the daily consumptions between two dates.
+If no dates are provided, the last 7 are considered by default.
+
+Here is an example of command you can run: `smarthome:linky linky:linky:local report 2020-11-15 2020-12-15`.
+
 ## Full Example
 
 ### Thing

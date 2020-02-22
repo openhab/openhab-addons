@@ -71,7 +71,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                             try {
                                 start = LocalDate.parse(args[2], DateTimeFormatter.ISO_LOCAL_DATE);
                             } catch (DateTimeParseException e) {
-                                console.println("Invalid format for start day '" + args[2] + "'");
+                                console.println("Invalid format for start day '" + args[2]
+                                        + "'; expected format is YYYY-MM-DD");
                                 printUsage(console);
                                 break;
                             }
@@ -80,7 +81,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                             try {
                                 end = LocalDate.parse(args[3], DateTimeFormatter.ISO_LOCAL_DATE);
                             } catch (DateTimeParseException e) {
-                                console.println("Invalid format for end day '" + args[3] + "'");
+                                console.println(
+                                        "Invalid format for end day '" + args[3] + "'; expected format is YYYY-MM-DD");
                                 printUsage(console);
                                 break;
                             }
