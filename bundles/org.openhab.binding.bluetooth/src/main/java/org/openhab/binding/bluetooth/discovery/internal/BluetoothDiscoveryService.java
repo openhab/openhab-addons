@@ -177,7 +177,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         public synchronized DiscoveryCache removeDiscoveries(BluetoothDevice device) {
             // we remove any discoveries that have been published for this device
             discoveryFutures.computeIfPresent(device.getAdapter(), (adapter, snapshotFuture) -> {
-                snapshotFuture.future.thenAccept(result -> thingRemoved(createThingUIDWithBridge(result, adapter)));
+                snapshotFuture.future.thenAccept(result -> thingRemoved(result.getThingUID()));
                 return null;
             });
             if (discoveryFutures.isEmpty()) {
