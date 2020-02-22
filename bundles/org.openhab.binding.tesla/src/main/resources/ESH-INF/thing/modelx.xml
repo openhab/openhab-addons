@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="models">
+	<thing-type id="modelx">
 
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
@@ -14,7 +14,6 @@
 		<description>A Tesla Model X Vehicle</description>
 
 		<channels>
-			<channel id="allowwakeup" typeId="allowwakeup" />
 			<channel id="autoconditioning" typeId="autoconditioning" />
 			<channel id="autoparkstate" typeId="autoparkstate" />
 			<channel id="autoparkstate2" typeId="autoparkstate" />

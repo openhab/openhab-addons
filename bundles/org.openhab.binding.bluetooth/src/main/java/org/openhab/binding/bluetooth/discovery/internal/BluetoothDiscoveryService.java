@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
 
     private static final int SEARCH_TIME = 15;
+    private static final int DISCOVERY_TTL = 30;
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
@@ -72,7 +73,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     protected void activate(Map<String, Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
-        startScan();
     }
 
     @Override
@@ -170,7 +170,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
 
         // Create the discovery result and add to the inbox
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
+                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS).withTTL(DISCOVERY_TTL)
                 .withBridge(adapter.getUID()).withLabel(label).build();
         thingDiscovered(discoveryResult);
     }

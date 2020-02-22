@@ -192,29 +192,29 @@ Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
 demo.items:
 
 ```
-Switch               TeslaCharge                 {channel="tesla:model3:myaccount:mycar::charge"}
-Location             TeslaLocation               {channel="tesla:model3:myaccount:mycar::location"}
-Dimmer               TeslaChargeLimit            {channel="tesla:model3:myaccount:mycar::chargelimit"}
-String               TeslaChargeRate             {channel="tesla:model3:myaccount:mycar::chargerate"}
-String               TeslaChargingState          {channel="tesla:model3:myaccount:mycar::chargingstate"}
-Number               TeslaTimeToFullCharge       {channel="tesla:model3:myaccount:mycar::timetofullcharge"}
-Number               TeslaChargerPower           {channel="tesla:model3:myaccount:mycar::chargerpower"}
-DateTime             TeslaScheduledChargingStart {channel="tesla:model3:myaccount:mycar::scheduledchargingstart"}
-Dimmer               TeslaSoC                    {channel="tesla:model3:myaccount:mycar::soc"}
-Number:Speed         TeslaSpeed                  {channel="tesla:model3:myaccount:mycar::speed"}
-String               TeslaState                  {channel="tesla:model3:myaccount:mycar::state"}
-Number               TeslaPower                  {channel="tesla:model3:myaccount:mycar::power"}
-Number:Temperature   TeslaInsideTemperature      {channel="tesla:model3:myaccount:mycar::insidetemp"}
-Number:Temperature   TeslaOutsideTemperature     {channel="tesla:model3:myaccount:mycar::outsidetemp"}
-Switch               TeslaAutoconditioning       {channel="tesla:model3:myaccount:mycar::autoconditioning"}
-Number:Temperature   TeslaTemperature            {channel="tesla:model3:myaccount:mycar::temperature"}
-String               TeslaShiftState             {channel="tesla:model3:myaccount:mycar::shiftstate"}
-Number               TeslaBatteryCurrent         {channel="tesla:model3:myaccount:mycar::batterycurrent"}
-Number               TeslaBatteryLevel           {channel="tesla:model3:myaccount:mycar::batterylevel"}
-DateTime             TeslaEventstamp             {channel="tesla:model3:myaccount:mycar::eventstamp"}
-Number:Length        TeslaOdometer               {channel="tesla:model3:myaccount:mycar::odometer"}
-Number               TeslaHeading                {channel="tesla:model3:myaccount:mycar::heading"}
-DateTime             TeslaGPSStamp               {channel="tesla:model3:myaccount:mycar::gpstimestamp"}
+Switch               TeslaCharge                 {channel="tesla:model3:myaccount:mycar:charge"}
+Location             TeslaLocation               {channel="tesla:model3:myaccount:mycar:location"}
+Dimmer               TeslaChargeLimit            {channel="tesla:model3:myaccount:mycar:chargelimit"}
+String               TeslaChargeRate             {channel="tesla:model3:myaccount:mycar:chargerate"}
+String               TeslaChargingState          {channel="tesla:model3:myaccount:mycar:chargingstate"}
+Number               TeslaTimeToFullCharge       {channel="tesla:model3:myaccount:mycar:timetofullcharge"}
+Number               TeslaChargerPower           {channel="tesla:model3:myaccount:mycar:chargerpower"}
+DateTime             TeslaScheduledChargingStart {channel="tesla:model3:myaccount:mycar:scheduledchargingstart"}
+Dimmer               TeslaSoC                    {channel="tesla:model3:myaccount:mycar:soc"}
+Number:Speed         TeslaSpeed                  {channel="tesla:model3:myaccount:mycar:speed"}
+String               TeslaState                  {channel="tesla:model3:myaccount:mycar:state"}
+Number               TeslaPower                  {channel="tesla:model3:myaccount:mycar:power"}
+Number:Temperature   TeslaInsideTemperature      {channel="tesla:model3:myaccount:mycar:insidetemp"}
+Number:Temperature   TeslaOutsideTemperature     {channel="tesla:model3:myaccount:mycar:outsidetemp"}
+Switch               TeslaAutoconditioning       {channel="tesla:model3:myaccount:mycar:autoconditioning"}
+Number:Temperature   TeslaTemperature            {channel="tesla:model3:myaccount:mycar:temperature"}
+String               TeslaShiftState             {channel="tesla:model3:myaccount:mycar:shiftstate"}
+Number               TeslaBatteryCurrent         {channel="tesla:model3:myaccount:mycar:batterycurrent"}
+Number               TeslaBatteryLevel           {channel="tesla:model3:myaccount:mycar:batterylevel"}
+DateTime             TeslaEventstamp             {channel="tesla:model3:myaccount:mycar:eventstamp"}
+Number:Length        TeslaOdometer               {channel="tesla:model3:myaccount:mycar:odometer"}
+Number               TeslaHeading                {channel="tesla:model3:myaccount:mycar:heading"}
+DateTime             TeslaGPSStamp               {channel="tesla:model3:myaccount:mycar:gpstimestamp"}
 ```
 
 demo.sitemap:

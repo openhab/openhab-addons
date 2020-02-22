@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.onewire;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
@@ -23,6 +24,7 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class OwserverDeviceParameterTest {
     private final SensorId sensorId = new SensorId("/1F.0123456789ab/main/00.1234567890ab");
 

@@ -9,11 +9,11 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>2.5.3-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
-  <name>openHAB 2 Add-ons</name>
+  <name>openHAB Add-ons</name>
   <description>This project contains the official add-ons of openHAB</description>
 
   <organization>
@@ -36,15 +36,14 @@
   </modules>
 
   <scm>
-    <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
-    <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://github.com/openhab/openhab2-addons</url>
+    <connection>scm:git:https://github.com/openhab/openhab-addons.git</connection>
+    <developerConnection>scm:git:https://github.com/openhab/openhab-addons.git</developerConnection>
+    <url>https://github.com/openhab/openhab-addons</url>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/openhab/openhab2-addons/issues</url>
+    <url>https://github.com/openhab/openhab-addons/issues</url>
   </issueManagement>
 
   <distributionManagement>
@@ -66,9 +65,10 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
+    <ohc.version>2.5.0</ohc.version>
     <bnd.version>4.3.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
-    <sat.version>0.8.0</sat.version>
+    <sat.version>0.9.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage/>
@@ -85,35 +85,35 @@
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.compile</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.compile-model</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.openhab-core</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.runtime</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.test</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>test</scope>
       </dependency>
@@ -406,7 +406,7 @@ Import-Package: \\
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2019</year>
+              <year>2020</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
@@ -547,10 +547,30 @@ Import-Package: \\
                 <excludes>
                   <exclude>**/pom.xml</exclude>
                 </excludes>
+                <excludes>
+                  <exclude>**/feature.xml</exclude>
+                  <exclude>features/openhab-addons/src/main/resources/header.xml</exclude>
+                  <exclude>features/openhab-addons/src/main/resources/footer.xml</exclude>
+                </excludes>
                 <eclipseWtp>
                   <type>XML</type>
                   <files>
                     <file>openhab_wst_xml_files.prefs</file>
+                  </files>
+                  <version>4.12.0</version>
+                </eclipseWtp>
+                <trimTrailingWhitespace/>
+                <endWithNewline/>
+              </format>
+              <format>
+                <!-- feature.xml -->
+                <includes>
+                  <include>src/main/feature/feature.xml</include>
+                </includes>
+                <eclipseWtp>
+                  <type>XML</type>
+                  <files>
+                    <file>openhab_wst_feature_file.prefs</file>
                   </files>
                   <version>4.12.0</version>
                 </eclipseWtp>
@@ -636,7 +656,18 @@ Import-Package: \\
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+      </plugin>
     </plugins>
+    <extensions>
+       <extension>
+          <groupId>org.openhab.tools.sat</groupId>
+          <artifactId>sat-extension</artifactId>
+          <version>${sat.version}</version>
+       </extension>
+    </extensions>
   </build>
 
   <profiles>

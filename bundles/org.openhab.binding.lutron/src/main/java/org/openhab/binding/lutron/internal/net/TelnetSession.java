@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,8 @@ import org.apache.commons.net.telnet.SuppressGAOptionHandler;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
 import org.apache.commons.net.telnet.TelnetOptionHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Fix to readInput and added debug logging
  */
+@NonNullByDefault
 public class TelnetSession implements Closeable {
 
     private static final int BUFSIZE = 8192;
@@ -47,13 +50,13 @@ public class TelnetSession implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(TelnetSession.class);
 
     private TelnetClient telnetClient;
-    private BufferedReader reader;
-    private PrintStream outstream;
+    private @Nullable BufferedReader reader;
+    private @Nullable PrintStream outstream;
 
     private CharBuffer charBuffer;
     private List<TelnetSessionListener> listeners = new ArrayList<>();
 
-    private TelnetOptionHandler suppressGAOptionHandler;
+    private @Nullable TelnetOptionHandler suppressGAOptionHandler;
 
     public TelnetSession() {
         logger.trace("Creating new TelnetSession");
@@ -256,14 +259,14 @@ public class TelnetSession implements Closeable {
     public void writeLine(String line) throws IOException {
         synchronized (charBuffer) {
             logger.trace("TelnetSession writeLine called with {}", line);
-            if (outstream == null) {
+            PrintStream out = outstream;
+            if (out == null) {
                 logger.debug("TelnetSession writeLine: outstream is null - session is closed");
                 throw new IOException("Session is closed");
             }
+            out.print(line + "\r\n");
 
-            outstream.print(line + "\r\n");
-
-            if (outstream.checkError()) {
+            if (out.checkError()) {
                 logger.debug("TelnetSession writeLine: error writing to outstream");
                 throw new IOException("Could not write to stream");
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,12 @@ package org.openhab.binding.satel.internal.handler;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -38,15 +41,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public abstract class SatelStateThingHandler extends SatelThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SatelStateThingHandler.class);
 
-    private AtomicBoolean requiresRefresh;
+    private final AtomicBoolean requiresRefresh = new AtomicBoolean(true);
 
     public SatelStateThingHandler(Thing thing) {
         super(thing);
-        this.requiresRefresh = new AtomicBoolean(true);
     }
 
     @Override
@@ -55,11 +58,15 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
 
         if (command == RefreshType.REFRESH) {
             this.requiresRefresh.set(true);
-        } else if (bridgeHandler != null && StringUtils.isNotEmpty(bridgeHandler.getUserCode())) {
-            SatelCommand satelCommand = convertCommand(channelUID, command);
-            if (satelCommand != null) {
-                bridgeHandler.sendCommand(satelCommand, true);
-            }
+        } else {
+            withBridgeHandlerPresent(bridgeHandler -> {
+                if (StringUtils.isEmpty(bridgeHandler.getUserCode())) {
+                    logger.info("Cannot control devices without providing valid user code. Command has not been sent.");
+                } else {
+                    convertCommand(channelUID, command)
+                            .ifPresent(satelCommand -> bridgeHandler.sendCommand(satelCommand, true));
+                }
+            });
         }
     }
 
@@ -75,22 +82,24 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
             }
         } else if (event instanceof NewStatesEvent) {
             // refresh all states that have changed
-            for (SatelCommand command : getRefreshCommands((NewStatesEvent) event)) {
-                bridgeHandler.sendCommand(command, true);
-            }
+            withBridgeHandlerPresent(bridgeHandler -> {
+                for (SatelCommand command : getRefreshCommands((NewStatesEvent) event)) {
+                    bridgeHandler.sendCommand(command, true);
+                }
+            });
         } else if (event instanceof IntegraStateEvent) {
             // update thing's state unless it should accept commands only
             IntegraStateEvent stateEvent = (IntegraStateEvent) event;
-            if (thingConfig.isCommandOnly()) {
+            if (getThingConfig().isCommandOnly()) {
                 return;
             }
             for (Channel channel : getThing().getChannels()) {
                 ChannelUID channelUID = channel.getUID();
                 if (isLinked(channel.getUID())) {
                     StateType stateType = getStateType(channelUID.getId());
-                    if (stateType != null && stateEvent.hasDataForState(stateType)) {
+                    if (stateType != StateType.NONE && stateEvent.hasDataForState(stateType)) {
                         int bitNbr = getStateBitNbr(stateType);
-                        boolean invertState = thingConfig.isStateInverted();
+                        boolean invertState = getThingConfig().isStateInverted();
                         updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
                     }
                 }
@@ -107,7 +116,7 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
      * @return bit number in state bit set
      */
     protected int getStateBitNbr(StateType stateType) {
-        return thingConfig.getId() - 1;
+        return getThingConfig().getId() - 1;
     }
 
     /**
@@ -117,10 +126,11 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
      * @param command sent command
      * @return Satel message that reflects sent command
      */
-    protected abstract SatelCommand convertCommand(ChannelUID channel, Command command);
+    protected abstract Optional<SatelCommand> convertCommand(ChannelUID channel, Command command);
 
     /**
      * Derived handlers must return appropriate state type for channels they support.
+     * If given channel is not supported by a handler, it should return {@linkplain StateType#NONE}.
      *
      * @param channelId channel identifier to get state type for
      * @return object that represents state type
@@ -135,9 +145,9 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
      * @return channel object
      * @see #getStateType(String)
      */
-    protected Channel getChannel(StateType stateType) {
-        String channelId = stateType.toString().toLowerCase();
-        Channel channel = getThing().getChannel(channelId);
+    protected @Nullable Channel getChannel(StateType stateType) {
+        final String channelId = stateType.toString().toLowerCase();
+        final Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.debug("Missing channel for {}", stateType);
         }
@@ -151,13 +161,14 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
      * @return collection of {@link IntegraStateCommand}
      */
     protected Collection<SatelCommand> getRefreshCommands(NewStatesEvent event) {
-        Collection<SatelCommand> result = new LinkedList<>();
-        boolean forceRefresh = requiresRefresh();
+        final boolean hasExtPayload = getBridgeHandler().getIntegraType().hasExtPayload();
+        final Collection<SatelCommand> result = new LinkedList<>();
+        final boolean forceRefresh = requiresRefresh();
         for (Channel channel : getThing().getChannels()) {
             StateType stateType = getStateType(channel.getUID().getId());
-            if (stateType != null && isLinked(channel.getUID())) {
+            if (stateType != StateType.NONE && isLinked(channel.getUID())) {
                 if (forceRefresh || event.isNew(stateType.getRefreshCommand())) {
-                    result.add(new IntegraStateCommand(stateType, bridgeHandler.getIntegraType().hasExtPayload()));
+                    result.add(new IntegraStateCommand(stateType, hasExtPayload));
                 }
             }
         }

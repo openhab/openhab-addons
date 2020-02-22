@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
@@ -61,6 +62,12 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
     @Mock
     TransformationServiceProvider transformationServiceProvider;
 
+    @Mock
+    ChannelStateUpdateListener channelStateUpdateListener;
+
+    @Mock
+    AvailabilityTracker availabilityTracker;
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -83,19 +90,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
-                scheduler, new ChannelStateUpdateListener() {
-                    @Override
-                    public void updateChannelState(@NonNull ChannelUID channelUID, @NonNull State value) {
-                    }
-
-                    @Override
-                    public void triggerChannel(@NonNull ChannelUID channelUID, @NonNull String eventPayload) {
-                    }
-
-                    @Override
-                    public void postChannelCommand(@NonNull ChannelUID channelUID, @NonNull Command value) {
-                    }
-                }, gson, transformationServiceProvider));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant",
                 Collections.singletonList("switch/object"));

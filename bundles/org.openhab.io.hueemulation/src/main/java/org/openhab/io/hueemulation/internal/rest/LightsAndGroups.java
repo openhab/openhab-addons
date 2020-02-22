@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -380,6 +380,8 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }
+            hueDevice.lastCommand = command;
+            hueDevice.lastHueChange = newState;
         }
 
         return Response.ok(cs.gson.toJson(responses, new TypeToken<List<?>>() {

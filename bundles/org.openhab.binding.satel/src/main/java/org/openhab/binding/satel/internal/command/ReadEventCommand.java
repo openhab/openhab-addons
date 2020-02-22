@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.satel.internal.command;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ReadEventCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -59,8 +61,7 @@ public class ReadEventCommand extends SatelCommandBase {
     /**
      * Creates new command class instance to read a record under given index.
      *
-     * @param eventIndex
-     *                       index of event record to retrieve, -1 for the most recent one
+     * @param eventIndex index of event record to retrieve, -1 for the most recent one
      */
     public ReadEventCommand(int eventIndex) {
         super(COMMAND_CODE, getIndexBytes(eventIndex));
@@ -77,7 +78,7 @@ public class ReadEventCommand extends SatelCommandBase {
      *         record in the log)
      */
     public boolean isEmpty() {
-        return (response.getPayload()[0] & 0x20) == 0;
+        return (getResponse().getPayload()[0] & 0x20) == 0;
     }
 
     /**
@@ -86,7 +87,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return <code>true</code> if event data is present in the response
      */
     public boolean isEventPresent() {
-        return (response.getPayload()[0] & 0x10) != 0;
+        return (getResponse().getPayload()[0] & 0x10) != 0;
     }
 
     /**
@@ -95,17 +96,18 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return date and time of the event
      */
     public LocalDateTime getTimestamp() {
-        int currentYear = LocalDateTime.now().getYear();
-        int yearBase = currentYear / 4;
-        int yearMarker = (response.getPayload()[0] >> 6) & 0x03;
+        final byte[] payload = getResponse().getPayload();
+        final int currentYear = LocalDateTime.now().getYear();
+        final int yearBase = currentYear / 4;
+        final int yearMarker = (payload[0] >> 6) & 0x03;
         int year = 4 * yearBase + yearMarker;
-        int minutes = ((response.getPayload()[2] & 0x0f) << 8) + (response.getPayload()[3] & 0xff);
+        final int minutes = ((payload[2] & 0x0f) << 8) + (payload[3] & 0xff);
 
         if (year > currentYear) {
             year -= 4;
         }
-        LocalDateTime result = LocalDateTime.of(year, (response.getPayload()[2] >> 4) & 0x0f,
-                response.getPayload()[1] & 0x1f, minutes / 60, minutes % 60);
+        LocalDateTime result = LocalDateTime.of(year, (payload[2] >> 4) & 0x0f, payload[1] & 0x1f, minutes / 60,
+                minutes % 60);
         return result;
     }
 
@@ -116,7 +118,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @see EventClass
      */
     public EventClass getEventClass() {
-        int eventClassIdx = (response.getPayload()[1] >> 5) & 0x07;
+        final int eventClassIdx = (getResponse().getPayload()[1] >> 5) & 0x07;
         return EventClass.values()[eventClassIdx];
     }
 
@@ -126,7 +128,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return partition number
      */
     public int getPartition() {
-        return ((response.getPayload()[4] >> 3) & 0x1f) + 1;
+        return ((getResponse().getPayload()[4] >> 3) & 0x1f) + 1;
     }
 
     /**
@@ -136,7 +138,8 @@ public class ReadEventCommand extends SatelCommandBase {
      * @see ReadEventDescCommand
      */
     public int getEventCode() {
-        return ((response.getPayload()[4] & 0x03) << 8) + (response.getPayload()[5] & 0xff);
+        final byte[] payload = getResponse().getPayload();
+        return ((payload[4] & 0x03) << 8) + (payload[5] & 0xff);
     }
 
     /**
@@ -147,7 +150,7 @@ public class ReadEventCommand extends SatelCommandBase {
      *         flag)
      */
     public boolean isRestore() {
-        return (response.getPayload()[4] & 0x04) != 0;
+        return (getResponse().getPayload()[4] & 0x04) != 0;
     }
 
     /**
@@ -156,7 +159,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return event source (zone number, user number, etc depending on event)
      */
     public int getSource() {
-        return response.getPayload()[6] & 0xff;
+        return getResponse().getPayload()[6] & 0xff;
     }
 
     /**
@@ -165,7 +168,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return object number (0..7)
      */
     public int getObject() {
-        return (response.getPayload()[7] >> 5) & 0x07;
+        return (getResponse().getPayload()[7] >> 5) & 0x07;
     }
 
     /**
@@ -174,7 +177,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return user control number
      */
     public int getUserControlNumber() {
-        return response.getPayload()[7] & 0x1f;
+        return getResponse().getPayload()[7] & 0x1f;
     }
 
     /**
@@ -183,8 +186,8 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return index of previous event record in the log
      */
     public int getNextIndex() {
-        return (response.getPayload()[8] << 16) + ((response.getPayload()[9] & 0xff) << 8)
-                + (response.getPayload()[10] & 0xff);
+        final byte[] payload = getResponse().getPayload();
+        return (payload[8] << 16) + ((payload[9] & 0xff) << 8) + (payload[10] & 0xff);
     }
 
     /**
@@ -193,8 +196,8 @@ public class ReadEventCommand extends SatelCommandBase {
      * @return index of current record echoed by communication module
      */
     public int getCurrentIndex() {
-        return (response.getPayload()[11] << 16) + ((response.getPayload()[12] & 0xff) << 8)
-                + (response.getPayload()[13] & 0xff);
+        final byte[] payload = getResponse().getPayload();
+        return (payload[11] << 16) + ((payload[12] & 0xff) << 8) + (payload[13] & 0xff);
     }
 
     @Override

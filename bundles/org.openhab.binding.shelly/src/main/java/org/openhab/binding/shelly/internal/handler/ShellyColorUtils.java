@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import java.math.BigDecimal;
 
@@ -168,11 +168,11 @@ public class ShellyColorUtils {
         return values;
     }
 
-    private static PercentType toPercent(Integer value) {
+    public static PercentType toPercent(Integer value) {
         return toPercent(value, 0, SHELLY_MAX_COLOR);
     }
 
-    private static PercentType toPercent(@Nullable Integer _value, Integer min, Integer max) {
+    public static PercentType toPercent(@Nullable Integer _value, Integer min, Integer max) {
         Double range = max.doubleValue() - min.doubleValue();
         Double value = _value != null ? _value.doubleValue() : 0;
         value = value < min ? min.doubleValue() : value;

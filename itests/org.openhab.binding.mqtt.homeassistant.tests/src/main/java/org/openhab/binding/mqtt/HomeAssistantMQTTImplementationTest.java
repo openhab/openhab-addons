@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
@@ -76,6 +77,9 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     ChannelStateUpdateListener channelStateUpdateListener;
 
     @Mock
+    AvailabilityTracker availabilityTracker;
+
+    @Mock
     TransformationServiceProvider transformationServiceProvider;
 
     /**
@@ -99,9 +103,6 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
 
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "ha_mqtt");
-        connection.setQos(1);
-        connection.setRetain(true);
-        connection.setPersistencePath(Paths.get("subconn"));
         connection.start().get(1000, TimeUnit.MILLISECONDS);
         assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
 
@@ -159,9 +160,8 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
-        DiscoverComponents discover = spy(
-                new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing, scheduler,
-                        channelStateUpdateListener, gson, transformationServiceProvider));
+        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map

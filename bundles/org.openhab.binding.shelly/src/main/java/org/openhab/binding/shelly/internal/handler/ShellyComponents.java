@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,12 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import java.io.IOException;
 
@@ -25,10 +24,10 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsMeter;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 
 /***
@@ -86,8 +85,10 @@ public class ShellyComponents {
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
                                         toQuantityType(getDouble(meter.counters[2]), DIGITS_WATT, SmartHomeUnits.WATT));
                             }
-                            th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                                    getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
+                            if (updated) {
+                                th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
+                                        getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
+                            }
                             m++;
                         }
                     }
@@ -108,8 +109,9 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, SmartHomeUnits.WATT));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
-                            th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                                    getTimestamp(getString(profile.settings.timezone), getLong(emeter.timestamp)));
+                            if (updated) {
+                                th.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
+                            }
                             m++;
                         }
                     }
@@ -152,8 +154,10 @@ public class ShellyComponents {
                 updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                         toQuantityType(getDouble(totalWatts), DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
 
-                updated |= th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                        getTimestamp(getString(profile.settings.timezone), timestamp));
+                if (updated) {
+                    th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
+                            getTimestamp(getString(profile.settings.timezone), timestamp));
+                }
             }
         }
         return updated;
@@ -204,15 +208,15 @@ public class ShellyComponents {
                     th.logger.trace("{}: Updating flood", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, getOnOff(sdata.flood));
                 }
-                if (sdata.bat != null) {
+                if ((sdata.bat != null) && (sdata.bat.value != null)) { // no update for Sense
                     th.logger.trace("{}: Updating battery", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                             toQuantityType(getDouble(sdata.bat.value), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
-                    if (sdata.bat.value != null) { // no update for Sense
-                        updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                                getDouble(sdata.bat.value) < th.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
-                        updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT,
-                                toQuantityType(getDouble(sdata.bat.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                    updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT,
+                            toQuantityType(getDouble(sdata.bat.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                    updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
+                            getDouble(sdata.bat.value) < th.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
+                    if (getDouble(sdata.bat.value) < th.config.lowBattery) {
                         th.postAlarm(ALARM_TYPE_LOW_BATTERY, false);
                     }
                 }
@@ -221,7 +225,9 @@ public class ShellyComponents {
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHARGER, getOnOff(sdata.charger));
                 }
 
-                th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+                if (updated) {
+                    th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+                }
             }
         }
         return updated;

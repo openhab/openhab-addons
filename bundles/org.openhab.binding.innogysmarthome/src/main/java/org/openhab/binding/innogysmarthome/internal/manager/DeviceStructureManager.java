@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -166,7 +166,7 @@ public class DeviceStructureManager {
      * @param id
      * @return the {@link Device} or null, if it does not exist
      */
-    public Device getDeviceById(String id) {
+    public @Nullable Device getDeviceById(String id) {
         logger.debug("getDeviceById {}:{}", id, getDeviceMap().containsKey(id));
         return getDeviceMap().get(id);
     }
@@ -177,7 +177,7 @@ public class DeviceStructureManager {
      * @param capabilityId
      * @return {@link Device} or null
      */
-    public Device getDeviceByCapabilityId(String capabilityId) {
+    public @Nullable Device getDeviceByCapabilityId(String capabilityId) {
         return capabilityIdToDeviceMap.get(capabilityId);
     }
 

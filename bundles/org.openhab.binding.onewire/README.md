@@ -21,16 +21,9 @@ The `owserver` is the bridge that connects to an existing OWFS installation.
 
 There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`), Embedded Data System (www.embeddeddatasystems.com)(`edsenv`) and Brain4Home (www.brain4home.eu) (`bae091x`). 
 
-** Important: Breaking Change with next release **
+** Important: Breaking Change **
  
-The thing types `ms-th` and `ms-tv` have been marked deprecated and will be updated to `ms-tx` automatically. 
-The thing types `counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature` have been marked deprecated and will be updated to `basic` automatically. 
-Please note that auto-upgraded things keep their thing UID _including the deprecated thing type_.
-
-Manually (via textual configuration) defined things need to be changed to `ms-tx` or `basic` respectively.
-The thing UID changes and the item links need to be adjusted to the new UID.
-
-Deprecated thing types will will be removed with the next official release.
+The thing types `ms-th`, `ms-tv`, `counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature` have been removed.
 
 ## Discovery
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -487,6 +487,15 @@ public abstract class BluetoothDevice {
      */
     public void removeListener(BluetoothDeviceListener listener) {
         eventListeners.remove(listener);
+    }
+
+    /**
+     * Checks if this device has any listeners
+     * 
+     * @return true if this device has listeners
+     */
+    public boolean hasListeners() {
+        return !eventListeners.isEmpty();
     }
 
     /**

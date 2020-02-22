@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,14 @@ import java.security.Key;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Helper class for encrypting ETHM-1 messages.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class EncryptionHelper {
     private Key key;
     private Cipher encipher;
@@ -31,8 +34,7 @@ public class EncryptionHelper {
     /**
      * Creates new instance of encryption helper with given key.
      *
-     * @param keyString
-     *            key for integration encryption
+     * @param keyString key for integration encryption
      * @throws GeneralSecurityException on JCE errors
      */
     public EncryptionHelper(String keyString) throws GeneralSecurityException {
@@ -61,9 +63,9 @@ public class EncryptionHelper {
      * Decrypts given buffer of bytes in place.
      *
      * @param buffer
-     *            bytes to decrypt
+     *                   bytes to decrypt
      * @throws GeneralSecurityException
-     *             on decryption errors
+     *                                      on decryption errors
      */
     public void decrypt(byte buffer[]) throws GeneralSecurityException {
         byte[] cv = new byte[16];
@@ -99,10 +101,8 @@ public class EncryptionHelper {
     /**
      * Encrypts given buffer of bytes in place.
      *
-     * @param buffer
-     *            bytes to encrypt
-     * @throws GeneralSecurityException
-     *             on encryption errors
+     * @param buffer bytes to encrypt
+     * @throws GeneralSecurityException on encryption errors
      */
     public void encrypt(byte buffer[]) throws GeneralSecurityException {
         byte[] cv = new byte[16];
@@ -132,4 +132,5 @@ public class EncryptionHelper {
             }
         }
     }
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,7 @@ public class OpenSprinklerBindingConstants {
     // List of all Channel ids
     public static final String SENSOR_RAIN = "rainsensor";
     public static final String STATION_STATE = "stationState";
+    public static final String STATION_QUEUED = "queued";
     public static final String REMAINING_WATER_TIME = "remainingWaterTime";
     public static final String NEXT_DURATION = "nextDuration";
 }
