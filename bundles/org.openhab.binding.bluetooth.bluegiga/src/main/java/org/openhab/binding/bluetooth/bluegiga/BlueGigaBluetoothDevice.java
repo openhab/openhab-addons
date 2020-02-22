@@ -137,11 +137,11 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             return false;
         }
 
-        if (!bgHandler.bgReadCharacteristic(connection, characteristic.getHandle())) {
+        if (procedureProgress != BlueGigaProcedure.NONE) {
             return false;
         }
 
-        if (procedureProgress != BlueGigaProcedure.NONE) {
+        if (!bgHandler.bgReadCharacteristic(connection, characteristic.getHandle())) {
             return false;
         }
 
