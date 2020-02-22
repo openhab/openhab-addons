@@ -219,23 +219,23 @@ public class BluetoothDiscoveryServiceTest {
 
         discoveryService.deviceDiscovered(device1);
 
-        Mockito.verify(device1, Mockito.timeout(1000).times(1)).connect();
-        Mockito.verify(device1, Mockito.timeout(1000).times(1)).readCharacteristic(
-                ArgumentMatchers.argThat(ch -> ch.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME));
-        Mockito.verify(device1, Mockito.timeout(1000).times(1)).disconnect();
-
         Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
-                        && arg.getBridgeUID().equals(mockAdapter1.getUID())
+                        && mockAdapter1.getUID().equals(arg.getBridgeUID())
                         && arg.getThingUID().getId().equals(deviceName)));
+
+        Mockito.verify(device1, Mockito.times(1)).connect();
+        Mockito.verify(device1, Mockito.times(1)).readCharacteristic(
+                ArgumentMatchers.argThat(ch -> ch.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME));
+        Mockito.verify(device1, Mockito.times(1)).disconnect();
 
         discoveryService.deviceDiscovered(device2);
 
         Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
-                        && arg.getBridgeUID().equals(mockAdapter2.getUID())
+                        && mockAdapter2.getUID().equals(arg.getBridgeUID())
                         && arg.getThingUID().getId().equals(deviceName)));
 
         Mockito.verify(device2, Mockito.never()).connect();
