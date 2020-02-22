@@ -63,9 +63,6 @@ public class BluetoothDiscoveryServiceTest {
     @Mock
     private @NonNullByDefault({}) DiscoveryListener mockDiscoveryListener;
 
-    // @Mock
-    // private BluetoothAdapter mockAdapter;
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -74,10 +71,6 @@ public class BluetoothDiscoveryServiceTest {
         discoveryService.addBluetoothDiscoveryParticipant(participant1);
     }
 
-    /**
-     * simple test where we send a discovered bluetooth device to the
-     * BluetoothDiscoveryService and make sure that discovery result is published
-     */
     @Test
     public void ignoreDuplicateTest() {
         BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();

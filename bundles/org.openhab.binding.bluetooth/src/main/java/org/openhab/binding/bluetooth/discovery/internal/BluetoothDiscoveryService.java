@@ -247,43 +247,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             return CompletableFuture.supplyAsync(new BluetoothDiscoveryProcess(device, participants), scheduler);
         }
 
-        // private CompletableFuture<DiscoveryResult> createDiscoveryFuture(BluetoothDeviceSnapshot snapshot,
-        // BluetoothDevice device) {
-        // // first see if any of the participants that don't require a connection recognize this device
-        // List<BluetoothDiscoveryParticipant> connectionParticipants = new ArrayList<>();
-        // for (BluetoothDiscoveryParticipant participant : participants) {
-        // if (!participant.requiresConnection(device)) {
-        // try {
-        // DiscoveryResult result = participant.createResult(snapshot);
-        // if (result != null) {
-        // return CompletableFuture.completedFuture(result);
-        // }
-        // } catch (RuntimeException e) {
-        // logger.warn("Participant '{}' threw an exception", participant.getClass().getName(), e);
-        // }
-        // } else {
-        // connectionParticipants.add(participant);
-        // }
-        // }
-        //
-        // if (connectionParticipants.isEmpty()) {
-        // // we can skip connection discovery
-        // return CompletableFuture.completedFuture(createDefaultResult(device));
-        // }
-        //
-        // return CompletableFuture
-        // .supplyAsync(new BluetoothDiscoveryProcess(snapshot, device, connectionParticipants), scheduler)
-        // .exceptionally(exception -> {
-        // // This might happen if a device throws an exception during an attempt to disconnect
-        // logger.warn("Error occurred during bluetooth discovery for device {} on adapter {}",
-        // device.getAddress(), device.getAdapter().getAddress(), exception);
-        // // treat as a non result so a default one gets created in the next stage
-        // return null;
-        // })
-        // // if the participants don't produce any results we create a default one
-        // .thenApply(result -> result != null ? result : createDefaultResult(device));
-        // }
-
     }
 
     private static class SnapshotFuture {
