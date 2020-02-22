@@ -205,6 +205,46 @@ public class BluetoothDiscoveryServiceTest {
     }
 
     @Test
+    public void multiDiscoverySingleConnectionTest() {
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothAdapter mockAdapter2 = new MockBluetoothAdapter();
+        MockBluetoothDevice mockDevice1 = mockAdapter1.getDevice(connectionRequiredAddress);
+        MockBluetoothDevice mockDevice2 = mockAdapter2.getDevice(connectionRequiredAddress);
+        String deviceName = RandomStringUtils.randomAlphanumeric(10);
+        mockDevice1.setDeviceName(deviceName);
+        mockDevice2.setDeviceName(deviceName);
+
+        BluetoothDevice device1 = Mockito.spy(mockDevice1);
+        BluetoothDevice device2 = Mockito.spy(mockDevice2);
+
+        discoveryService.deviceDiscovered(device1);
+
+        Mockito.verify(device1, Mockito.timeout(1000).times(1)).connect();
+        Mockito.verify(device1, Mockito.timeout(1000).times(1)).readCharacteristic(
+                ArgumentMatchers.argThat(ch -> ch.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME));
+        Mockito.verify(device1, Mockito.timeout(1000).times(1)).disconnect();
+
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+                ArgumentMatchers.same(discoveryService),
+                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
+                        && arg.getBridgeUID().equals(mockAdapter1.getUID())
+                        && arg.getThingUID().getId().equals(deviceName)));
+
+        discoveryService.deviceDiscovered(device2);
+
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+                ArgumentMatchers.same(discoveryService),
+                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
+                        && arg.getBridgeUID().equals(mockAdapter2.getUID())
+                        && arg.getThingUID().getId().equals(deviceName)));
+
+        Mockito.verify(device2, Mockito.never()).connect();
+        Mockito.verify(device2, Mockito.never()).readCharacteristic(
+                ArgumentMatchers.argThat(ch -> ch.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME));
+        Mockito.verify(device2, Mockito.never()).disconnect();
+    }
+
+    @Test
     public void nonConnectionParticipantTest() {
         MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice = mockAdapter1.getDevice(TestUtils.randomAddress());
