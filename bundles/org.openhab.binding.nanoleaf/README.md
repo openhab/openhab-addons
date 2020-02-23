@@ -65,6 +65,7 @@ Don't worry: the binding comes with some helpful support in the background (this
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
 
 Compare the following output with the right picture at the beginning of the article
+
 ```                                     
             31413                    9162       13276     
 
@@ -127,9 +128,20 @@ A lightpanel thing has the following channels:
 
 The color and panelColor channels support full color control with hue, saturation and brightness values. 
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
-The same applies to the panelColor channel of a lightpanel thing.
+The same applies to the panelColor channel of an individual lightpanel thing.
 
-What might not be obvious and even maybe confusing is the fact that brightness and color use the *same* channel but two different *itemTypes*. While the Color-itemtype controls the color, the Dimmer-itemtype controls the brightness on the same channel 
+What might not be obvious and even maybe confusing is the fact that brightness and color use the *same* channel but two different *itemTypes*. While the Color-itemtype controls the color, the Dimmer-itemtype controls the brightness on the same channel.
+
+**Limitations assigning specific colors on individual panels:**
+
+- Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
+- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that the following happens 
+  - As soon as you set an individual panel a so called "static effect" is created which replaces the chosen dynamic effect. You can even see that in the nanoleaf app that shows that a static effect is now running.
+  - Unfortunately, at least at the moment, the colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF
+  - The the first panelColor command is applied to that panel (and of course then all subsequent commands)
+  - The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.
+  
+  
 
 **Touch Support**
 
@@ -268,6 +280,7 @@ then
             hue = 0
             direction = direction * -1            
         }        
+        // replace NanoleafColor with Panel1Color to run rainbow on a single panel
         NanoleafColor.sendCommand(new HSBType(new DecimalType(hue), saturation, brightness))
     }
 end
