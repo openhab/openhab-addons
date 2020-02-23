@@ -1,51 +1,105 @@
-# <bindingName> Binding
+# Sony PS4 Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding allows you to monitor the on/off status and which application that is currently running on your Playstation 4.
+By providing your user-credentials you can also change the power, which application that is running and more.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+This binding should support all PS4 variants.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Discovery should find all your PS4s within a few seconds as long as they are in standby mode and not completely turned off.
 
 ## Thing Configuration
 
+If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker.
+Then you need to pair your OpenHAB device with the PS4.
+Then, if you have a pass code when you log in to your PS4 you have specify that as well.
+ 
 _Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
 
 _Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Channel Type ID | Item Type | Description                                                              | Read/Write |
+|-----------------|-----------|--------------------------------------------------------------------------|------------|
+| power           | Switch    | Shows if PS4 is ON or in standby.                                        | RW         |
+| application     | String    | Name of the currently running application.                               | R          |
+| applicationId   | String    | Id of the currently running application.                                 | RW         |
+| applicationImage| Image     | Application artwork.                                                     | R          |
+| oskText         | String    | The text from the OnScreenKeyboard.                                      | RW         |
+| disconnect      | Switch    | Disconnect from PS4.                                                     | W          |
+| keyUp           | Switch    | Push Up button.                                                          | W          |
+| keyDown         | Switch    | Push Down button.                                                        | W          |
+| keyRight        | Switch    | Push Right button.                                                       | W          |
+| keyLeft         | Switch    | Push Left button.                                                        | W          |
+| keyEnter        | String    | Push Enter button.                                                       | W          |
+| keyBack         | Switch    | Push Back button.                                                        | W          |
+| keyOption       | Switch    | Push Option button.                                                      | W          |
+| keyPS           | Switch    | Push PS button.                                                          | W          |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Example of how to configure a thing.
+
+demo.thing
+
+```
+Thing sonyps4:SonyPS4:myplaystation4 "Playstation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+```
+
+Here are some examples on how to map the channels to items.
+
+demo.items:
+
+```
+Switch PS4_Power "Power"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:power" }
+String PS4_Application "Application [%s]"        { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:application" }
+String PS4_ApplicationId "Application id [%s]"   { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationId" }
+Image PS4_ArtWork "Artwork"                      { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationImage" }
+String PS4_OSKText "OSK Text"                    { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:oskText" }
+Switch PS4_Disconnect "Disconnect"               { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:disconnect" }
+Switch PS4_Up "Up"                               { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyUp" }
+Switch PS4_Down "Down"                           { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyDown" }
+Switch PS4_Right "Right"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyRight" }
+Switch PS4_Left "Left"                           { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyLeft" }
+Switch PS4_Enter "Enter"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyEnter" }
+Switch PS4_Back "Back"                           { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyBack" }
+Switch PS4_Option "Option"                       { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyOption" }
+Switch PS4_PS "PS"                               { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyPS" }
+```
+
+demo.sitemap:
+
+```
+sitemap demo label="Main Menu"
+{
+    Frame label="Playstation 4" {
+        Switch item=PS4_Power
+        Text item=PS4_Application
+        Text item=PS4_ApplicationId
+        Selection item=PS4_ApplicationId mappings=[
+            "CUSA00127"="Netflix",
+            "CUSA01116"="Youtube",
+            "CUSA02827"="HBO",
+            "CUSA01780"="Spotify",
+            "CUSA11993"="Marvel's Spider-Man" ]
+        Image item=PS4_Artwork
+        Text item=PS4_OSKText
+        Switch item=PS4_Disconnect
+        Switch item=PS4_Up
+        Switch item=PS4_Down
+        Switch item=PS4_Right
+        Switch item=PS4_Left
+        Switch item=PS4_Enter
+        Switch item=PS4_Back
+        Switch item=PS4_Option
+        Switch item=PS4_PS
+    }
+}
+```
 
 ## Any custom content here!
 

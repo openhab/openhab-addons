@@ -11,7 +11,7 @@
 		<channels>
 			<channel id="power" typeId="power-channel" />
 			<channel id="applicationName" typeId="application-channel" />
-			<channel id="applicationTitleid" typeId="applicationId-channel" />
+			<channel id="applicationId" typeId="applicationId-channel" />
 			<channel id="applicationImage" typeId="applicationImage-channel" />
 			<channel id="oskText" typeId="oskText-channel" />
 			<channel id="disconnect" typeId="disconnect-channel" />
@@ -44,15 +44,15 @@
 				<label>Pairing code</label>
 				<description>Pairing code to pair OpenHAB device to PlayStation 4, only needed during pairing, 8 digits.</description>
 			</parameter>
-			<parameter name="connectionTimeout" type="integer">
+			<parameter name="connectionTimeout" type="integer" min="0">
 				<label>Connection timeout</label>
-				<description>How long after the last interaction the connection to the PS4 closes down. Use -1 to never close connection</description>
+				<description>How many seconds after the last command the connection to the PS4 closes down. Use 0 to never close connection.</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="autoConnect" type="boolean">
 				<label>Auto connect</label>
-				<description>Should the binding try to connect to the PS4 as soon as it's turned on, instead of when sending a command.</description>
+				<description>Should the binding try to connect to the PS4 as soon as it's turned on.</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -81,7 +81,7 @@
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
 		<label>PS4 Power</label>
-		<description>Power channel for SonyPS4 Binding.</description>
+		<description>Shows if PS4 is on or in standby.</description>
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
@@ -89,13 +89,13 @@
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
 		<label>Application</label>
-		<description>Application channel for SonyPS4 Binding.</description>
+		<description>Name of the currently running application.</description>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 	<channel-type id="applicationId-channel">
 		<item-type>String</item-type>
 		<label>Application ID</label>
-		<description>Application ID channel for SonyPS4 Binding.</description>
+		<description>ID of the currently running application.</description>
 		<category>MediaControl</category>
 		<state>
 			<options>
@@ -112,7 +112,7 @@
 	<channel-type id="applicationImage-channel">
 		<item-type>Image</item-type>
 		<label>Artwork</label>
-		<description>Application artwork channel.</description>
+		<description>Application artwork.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="oskText-channel" advanced="true">

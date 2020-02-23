@@ -112,7 +112,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                     sendStandby();
                 }
             }
-            if (CHANNEL_APPLICATION_TITLEID.equals(channelUID.getId()) && command instanceof StringType) {
+            if (CHANNEL_APPLICATION_ID.equals(channelUID.getId()) && command instanceof StringType) {
                 if (!currentApplicationId.equals(((StringType) command).toString())) {
                     updateApplicationTitleid(((StringType) command).toString());
                     startApplication(currentApplicationId);
@@ -212,7 +212,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             case CHANNEL_APPLICATION_NAME:
                 updateState(channelUID, StringType.valueOf(currentApplication));
                 break;
-            case CHANNEL_APPLICATION_TITLEID:
+            case CHANNEL_APPLICATION_ID:
                 updateState(channelUID, StringType.valueOf(currentApplicationId));
                 break;
             case CHANNEL_APPLICATION_IMAGE:

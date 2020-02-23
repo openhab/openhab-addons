@@ -30,7 +30,7 @@ public class SonyPS4Configuration {
     public static final String USER_CREDENTIAL = "userCredential";
 
     /**
-     * Constant field used in config update to see if pairingCode is set.
+     * Constant field used in configuration update to see if pairingCode is set.
      * Value of this field needs to match {@link #pairingCode}.
      */
     public static final String PAIRING_CODE = "pairingCode";

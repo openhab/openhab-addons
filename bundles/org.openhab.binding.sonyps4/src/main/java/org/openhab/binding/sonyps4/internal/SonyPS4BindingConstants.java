@@ -37,7 +37,7 @@ public class SonyPS4BindingConstants {
     // List of all Channel ids
     static final String CHANNEL_POWER = "power";
     static final String CHANNEL_APPLICATION_NAME = "applicationName";
-    static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
+    static final String CHANNEL_APPLICATION_ID = "applicationId";
     static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
     static final String CHANNEL_OSK_TEXT = "oskText";
     static final String CHANNEL_KEY_UP = "keyUp";
@@ -49,6 +49,7 @@ public class SonyPS4BindingConstants {
     static final String CHANNEL_KEY_OPTION = "keyOption";
     static final String CHANNEL_KEY_PS = "keyPS";
     static final String CHANNEL_DISCONNECT = "disconnect";
+    static final String CHANNEL_2ND_SCREEN = "secondScreen";
     static final String CHANNEL_LOG_OUT = "logOut";
     static final String CHANNEL_SCREEN_SHOT = "screenShot";
 
