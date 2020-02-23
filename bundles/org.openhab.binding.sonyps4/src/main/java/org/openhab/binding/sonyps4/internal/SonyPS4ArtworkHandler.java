@@ -72,11 +72,11 @@ public class SonyPS4ArtworkHandler {
 
     /**
      * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
-     * Playstation store
+     * PlayStation store
      *
      * @param titleid Title ID of application.
      * @param size Size in pixels of art work, max 1024.
-     * @param locale Locale used on Playstation store to find art work.
+     * @param locale Locale used on PlayStation store to find art work.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
     @Nullable
@@ -86,12 +86,12 @@ public class SonyPS4ArtworkHandler {
 
     /**
      * Fetch artwork for PS4 application. First looks for the file on disc, if the file is not on the disc it checks
-     * Playstation store
+     * PlayStation store
      *
      * @param titleid Title ID of application.
      * @param size Size in pixels of art work, max 1024.
-     * @param locale Locale used on Playstation store to find art work.
-     * @param forceRefetch The tries to re-fetch art work from Playstation store, sometimes the art work is updated
+     * @param locale Locale used on PlayStation store to find art work.
+     * @param forceRefetch The tries to re-fetch art work from PlayStation store, sometimes the art work is updated
      *            along with the game.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */

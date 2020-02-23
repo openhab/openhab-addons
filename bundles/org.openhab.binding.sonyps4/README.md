@@ -1,6 +1,6 @@
 # Sony PS4 Binding
 
-This binding allows you to monitor the on/off status and which application that is currently running on your Playstation 4.
+This binding allows you to monitor the on/off status and which application that is currently running on your PlayStation 4.
 By providing your user-credentials you can also change the power, which application that is running and more.
 
 ## Supported Things
@@ -13,7 +13,7 @@ Discovery should find all your PS4s within a few seconds as long as they are in 
 
 ## Thing Configuration
 
-If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker.
+If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker. The result file is called ".ps4-wake.credentials.json" in your home directory.
 Then you need to pair your OpenHAB device with the PS4.
 Then, if you have a pass code when you log in to your PS4 you have specify that as well.
  
@@ -26,7 +26,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | Channel Type ID | Item Type | Description                                                              | Read/Write |
 |-----------------|-----------|--------------------------------------------------------------------------|------------|
 | power           | Switch    | Shows if PS4 is ON or in standby.                                        | RW         |
-| application     | String    | Name of the currently running application.                               | R          |
+| applicationName | String    | Name of the currently running application.                               | R          |
 | applicationId   | String    | Id of the currently running application.                                 | RW         |
 | applicationImage| Image     | Application artwork.                                                     | R          |
 | oskText         | String    | The text from the OnScreenKeyboard.                                      | RW         |
@@ -47,7 +47,7 @@ Example of how to configure a thing.
 demo.thing
 
 ```
-Thing sonyps4:SonyPS4:myplaystation4 "Playstation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+Thing sonyps4:SonyPS4:myplaystation4 "PlayStation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
 ```
 
 Here are some examples on how to map the channels to items.
@@ -56,7 +56,7 @@ demo.items:
 
 ```
 Switch PS4_Power "Power"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:power" }
-String PS4_Application "Application [%s]"        { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:application" }
+String PS4_Application "Application [%s]"        { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationName" }
 String PS4_ApplicationId "Application id [%s]"   { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationId" }
 Image PS4_ArtWork "Artwork"                      { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationImage" }
 String PS4_OSKText "OSK Text"                    { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:oskText" }
@@ -76,7 +76,7 @@ demo.sitemap:
 ```
 sitemap demo label="Main Menu"
 {
-    Frame label="Playstation 4" {
+    Frame label="PlayStation 4" {
         Switch item=PS4_Power
         Text item=PS4_Application
         Text item=PS4_ApplicationId
