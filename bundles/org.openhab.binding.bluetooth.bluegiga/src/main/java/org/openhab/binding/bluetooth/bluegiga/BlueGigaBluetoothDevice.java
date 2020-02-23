@@ -279,6 +279,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (manufacturerData != null) {
+                setManufacturerData(manufacturerData);
                 scanNotification.setManufacturerData(manufacturerData);
             }
 

@@ -96,6 +96,11 @@ public abstract class BluetoothDevice {
     protected Integer manufacturer = null;
 
     /**
+     * The manufacturer specific data
+     */
+    protected byte[] manufacturerData = null;
+
+    /**
      * Device name.
      * <p>
      * Uses the devices long name if known, otherwise the short name if known
@@ -176,6 +181,24 @@ public abstract class BluetoothDevice {
      */
     public Integer getManufacturerId() {
         return manufacturer;
+    }
+
+    /**
+     * Sets the manufacturer data for the device
+     *
+     * @param manufacturerData the manufacturer data
+     */
+    public void setManufacturerData(byte[] manufacturerData) {
+        this.manufacturerData = manufacturerData.clone();
+    }
+
+    /**
+     * Returns the manufacturer data of the device
+     *
+     * @return an byte array with manufacturer data of the device, or null if not known
+     */
+    public byte[] getManufacturerData() {
+        return (manufacturerData == null) ? null : manufacturerData.clone();
     }
 
     /**
@@ -491,7 +514,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {

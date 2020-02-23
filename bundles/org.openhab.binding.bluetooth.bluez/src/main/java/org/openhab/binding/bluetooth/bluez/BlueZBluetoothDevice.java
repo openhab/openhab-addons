@@ -130,6 +130,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Received manufacturer data for '{}': {}", address, HexUtils.bytesToHex(data, " "));
                 }
+                setManufacturerData(data);
                 notification.setManufacturerData(data);
                 notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
             }
