@@ -18,6 +18,8 @@ import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.service.AbstractWatchService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +42,8 @@ import static java.nio.file.StandardWatchEventKinds.*;
 public class ExecTransformationWhitelistWatchService extends AbstractWatchService {
     private static final String COMMAND_WHITELIST_PATH = ConfigConstants.getConfigFolder() + File.separator + "misc";
     private static final String COMMAND_WHITELIST_FILE = "exec.whitelist";
+
+    private final Logger logger = LoggerFactory.getLogger(ExecTransformationWhitelistWatchService.class);
     private final Set<String> commandWhitelist = new HashSet<>();
 
     @Activate
