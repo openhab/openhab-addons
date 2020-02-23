@@ -320,7 +320,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         } catch (NanoleafNotFoundException nfe) {
             logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}",
                     nfe.getMessage());
-        }catch (NanoleafBadRequestException nfe) {
+        } catch (NanoleafBadRequestException nfe) {
             logger.debug("Panel data could not be retrieved as request not expected(static type missing / dynamic type on) : {}",
                     nfe.getMessage());
         } catch (NanoleafException nue) {
