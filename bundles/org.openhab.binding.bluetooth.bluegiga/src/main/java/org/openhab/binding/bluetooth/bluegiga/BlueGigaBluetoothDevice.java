@@ -15,7 +15,12 @@ package org.openhab.binding.bluetooth.bluegiga;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.joda.time.DateTime;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
@@ -50,6 +55,8 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  */
 public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGigaEventListener {
+    private final long TIMEOUT_SEC = 60;
+
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBluetoothDevice.class);
 
     // BlueGiga needs to know the address type when connecting
@@ -76,6 +83,33 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     private int connection = -1;
 
     private DateTime lastSeenTime;
+
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
+    private @Nullable ScheduledFuture<?> connectTimer;
+    private @Nullable ScheduledFuture<?> procedureTimer;
+
+    private Runnable connectTimeoutTask = new Runnable() {
+
+        @Override
+        public void run() {
+            if (connectionState == ConnectionState.CONNECTING) {
+                logger.debug("Connection timeout for device {}", address);
+                connectionState = ConnectionState.DISCONNECTED;
+            }
+
+        }
+    };
+
+    private Runnable procedureTimeoutTask = new Runnable() {
+
+        @Override
+        public void run() {
+            logger.debug("Procedure {} timeout for device {}", procedureProgress, address);
+            procedureProgress = BlueGigaProcedure.NONE;
+            procedureCharacteristic = null;
+        }
+    };
 
     /**
      * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BluetoothDevice} for the BlueGiga
@@ -105,8 +139,10 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             return false;
         }
 
+        cancelTimer(connectTimer);
         if (bgHandler.bgConnect(address, addressType)) {
             connectionState = ConnectionState.CONNECTING;
+            connectTimer = startTimer(connectTimeoutTask, TIMEOUT_SEC);
             return true;
         } else {
             connectionState = ConnectionState.DISCONNECTED;
@@ -126,9 +162,18 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
     @Override
     public boolean discoverServices() {
-        // Start by requesting all the services
+        if (procedureProgress != BlueGigaProcedure.NONE) {
+            return false;
+        }
+
+        cancelTimer(procedureTimer);
+        if (!bgHandler.bgFindPrimaryServices(connection)) {
+            return false;
+        }
+
+        procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
         procedureProgress = BlueGigaProcedure.GET_SERVICES;
-        return bgHandler.bgFindPrimaryServices(connection);
+        return true;
     }
 
     @Override
@@ -141,10 +186,11 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             return false;
         }
 
+        cancelTimer(procedureTimer);
         if (!bgHandler.bgReadCharacteristic(connection, characteristic.getHandle())) {
             return false;
         }
-
+        procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
         procedureProgress = BlueGigaProcedure.CHARACTERISTIC_READ;
         procedureCharacteristic = characteristic;
 
@@ -161,10 +207,12 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             return false;
         }
 
+        cancelTimer(procedureTimer);
         if (!bgHandler.bgWriteCharacteristic(connection, characteristic.getHandle(), characteristic.getValue())) {
             return false;
         }
 
+        procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
         procedureProgress = BlueGigaProcedure.CHARACTERISTIC_WRITE;
         procedureCharacteristic = characteristic;
 
@@ -356,14 +404,19 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
+            cancelTimer(procedureTimer);
             updateLastSeenTime();
 
             // The current procedure is now complete - move on...
             switch (procedureProgress) {
                 case GET_SERVICES:
                     // We've downloaded all services, now get the characteristics
-                    procedureProgress = BlueGigaProcedure.GET_CHARACTERISTICS;
-                    bgHandler.bgFindCharacteristics(connection);
+                    if (bgHandler.bgFindCharacteristics(connection)) {
+                        procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
+                        procedureProgress = BlueGigaProcedure.GET_CHARACTERISTICS;
+                    } else {
+                        procedureProgress = BlueGigaProcedure.NONE;
+                    }
                     break;
                 case GET_CHARACTERISTICS:
                     // We've downloaded all characteristics
@@ -401,19 +454,16 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
+            cancelTimer(connectTimer);
             updateLastSeenTime();
 
             // If we're connected, then remember the connection handle
             if (connectionEvent.getFlags().contains(ConnectionStatusFlag.CONNECTION_CONNECTED)) {
                 connectionState = ConnectionState.CONNECTED;
                 connection = connectionEvent.getConnection();
-            }
-
-            if (connectionEvent.getFlags().contains(ConnectionStatusFlag.CONNECTION_CONNECTED)) {
                 notifyListeners(BluetoothEventType.CONNECTION_STATE,
                         new BluetoothConnectionStatusNotification(connectionState));
             }
-
             return;
         }
 
@@ -425,8 +475,11 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
+            cancelTimer(procedureTimer);
             connectionState = ConnectionState.DISCONNECTED;
             connection = -1;
+            procedureProgress = BlueGigaProcedure.NONE;
+
             notifyListeners(BluetoothEventType.CONNECTION_STATE,
                     new BluetoothConnectionStatusNotification(connectionState));
 
@@ -469,7 +522,15 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
      * Clean up and release memory.
      */
     public void dispose() {
+        if (connectionState == ConnectionState.CONNECTED) {
+            disconnect();
+        }
+        cancelTimer(connectTimer);
+        cancelTimer(procedureTimer);
         bgHandler.removeEventListener(this);
+        procedureProgress = BlueGigaProcedure.NONE;
+        connectionState = ConnectionState.DISCOVERING;
+        connection = -1;
     }
 
     /**
@@ -483,5 +544,15 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
     private void updateLastSeenTime() {
         this.lastSeenTime = DateTime.now();
+    }
+
+    private void cancelTimer(ScheduledFuture<?> task) {
+        if (task != null) {
+            task.cancel(true);
+        }
+    }
+
+    private ScheduledFuture<?> startTimer(Runnable command, long timeout) {
+        return scheduler.schedule(command, timeout, TimeUnit.SECONDS);
     }
 }
