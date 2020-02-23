@@ -13,8 +13,6 @@
 package org.openhab.binding.bluetooth.bluegiga;
 
 import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +40,6 @@ import org.openhab.binding.bluetooth.bluegiga.internal.eir.EirPacket;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddressType;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ConnectionStatusFlag;
-import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ScanResponseType;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification.BluetoothBeaconType;
@@ -304,8 +301,8 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
             if (connectionState == ConnectionState.DISCOVERING) {
                 // TODO: It could make sense to wait with discovery for non-connectable devices until scan response is
-                //  received to eventually retrieve more about the device before it gets discovered. Anyhow, devices
-                //  that don't send a scan response at all also have to be supported. See also PR #6995.
+                // received to eventually retrieve more about the device before it gets discovered. Anyhow, devices
+                // that don't send a scan response at all also have to be supported. See also PR #6995.
 
                 // Set our state to disconnected
                 connectionState = ConnectionState.DISCONNECTED;
@@ -313,7 +310,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
                 // But notify listeners that the state is now DISCOVERED
                 notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
+                        new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
 
                 // Notify the bridge - for inbox notifications
                 bgHandler.deviceDiscovered(this);
