@@ -40,7 +40,7 @@ public class SamsungTvConfiguration {
     public String protocol;
     public String hostName;
     public String macAddress;
-    public int port;
-    public int refreshInterval;
+    public Integer port;
+    public Integer refreshInterval;
     public String websocketToken;
 }

@@ -123,7 +123,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
             remoteController.openConnection();
             remoteController.close();
             result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_LEGACY);
-            result.put(SamsungTvConfiguration.PORT, SamsungTvConfiguration.PORT_DEFAULT_LEGACY);
+            result.put(SamsungTvConfiguration.PORT, Integer.valueOf(SamsungTvConfiguration.PORT_DEFAULT_LEGACY));
             return result;
         } catch (RemoteControllerException e) {
             // ignore error
@@ -138,10 +138,11 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
 
             if (properties.device.TokenAuthSupport) {
                 result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_SECUREWEBSOCKET);
-                result.put(SamsungTvConfiguration.PORT, SamsungTvConfiguration.PORT_DEFAULT_SECUREWEBSOCKET);
+                result.put(SamsungTvConfiguration.PORT,
+                        Integer.valueOf(SamsungTvConfiguration.PORT_DEFAULT_SECUREWEBSOCKET));
             } else {
                 result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_WEBSOCKET);
-                result.put(SamsungTvConfiguration.PORT, SamsungTvConfiguration.PORT_DEFAULT_WEBSOCKET);
+                result.put(SamsungTvConfiguration.PORT, Integer.valueOf(SamsungTvConfiguration.PORT_DEFAULT_WEBSOCKET));
             }
         } catch (URISyntaxException | IOException e) {
             LoggerFactory.getLogger(RemoteControllerService.class).debug("Cannot retrieve info from TV", e);

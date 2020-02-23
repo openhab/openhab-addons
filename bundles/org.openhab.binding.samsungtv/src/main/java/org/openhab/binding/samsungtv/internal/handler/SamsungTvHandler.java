@@ -241,9 +241,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             SamsungTvService existingService = findServiceInstance(type);
 
             if (existingService == null || !existingService.isUpnp()) {
-                int port = ((Integer) getConfig(SamsungTvConfiguration.PORT)).intValue();
                 SamsungTvService newService = ServiceFactory.createService(type, upnpIOService, udn,
-                        configuration.refreshInterval, configuration.hostName, port);
+                        configuration.refreshInterval.intValue(), configuration.hostName,
+                        ((Integer) getConfig(SamsungTvConfiguration.PORT)).intValue());
 
                 if (newService != null) {
                     if (existingService != null) {
@@ -283,8 +283,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             RemoteControllerService service = (RemoteControllerService) findServiceInstance(
                     RemoteControllerService.SERVICE_NAME);
             if (service == null) {
-                int port = ((Integer) getConfig(SamsungTvConfiguration.PORT)).intValue();
-                service = RemoteControllerService.createNonUpnpService(configuration.hostName, port);
+                service = RemoteControllerService.createNonUpnpService(configuration.hostName,
+                        ((Integer) getConfig(SamsungTvConfiguration.PORT)).intValue());
                 startService(service);
             } else {
                 // open connection again if needed
