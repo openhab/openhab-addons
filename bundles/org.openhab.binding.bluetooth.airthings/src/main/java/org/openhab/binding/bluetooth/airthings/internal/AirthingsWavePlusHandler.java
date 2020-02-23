@@ -47,7 +47,6 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
 
     private static final String DATA_UUID = "b42e2a68-ade7-11e4-89d3-123b93f75cba";
     private static final int CHECK_PERIOD_SEC = 10;
-    private static final int TIMEOUT_SEC = 120;
 
     private final Logger logger = LoggerFactory.getLogger(AirthingsWavePlusHandler.class);
     private final UUID uuid = UUID.fromString(DATA_UUID);
@@ -117,12 +116,6 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
         ConnectionState connectionState = device.getConnectionState();
         logger.debug("Device {} state is {}, serviceState {}, readState {}", address, connectionState, serviceState,
                 readState);
-
-        if (isTimeout()) {
-            logger.debug("Timeout occured");
-            disconnect();
-            return;
-        }
 
         switch (connectionState) {
             case DISCOVERED:
@@ -257,12 +250,5 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
         int sinceLastRead = sinceLastReadSec.get();
         logger.debug("Time since last update: {} sec", sinceLastRead);
         return sinceLastRead >= refreshInterval;
-    }
-
-    private boolean isTimeout() {
-        if (sinceLastReadSec.get() - TIMEOUT_SEC > refreshInterval) {
-            return true;
-        }
-        return false;
     }
 }
