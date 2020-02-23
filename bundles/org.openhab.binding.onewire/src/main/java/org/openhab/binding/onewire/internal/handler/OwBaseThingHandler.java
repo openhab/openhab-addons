@@ -139,10 +139,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
 
         refreshInterval = configuration.refresh * 1000;
 
-        if (thing.getChannel(CHANNEL_PRESENT) != null) {
-            showPresence = true;
-        }
-
         // check if all required properties are present. update if not
         for (String property : requiredProperties) {
             if (!properties.containsKey(property)) {
@@ -187,6 +183,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         } catch (OwException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
+        }
+
+        if (thing.getChannel(CHANNEL_PRESENT) != null) {
+            showPresence = true;
         }
 
         validConfig = true;
