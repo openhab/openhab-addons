@@ -132,6 +132,15 @@ public class ReadEventCommand extends SatelCommandBase {
     }
 
     /**
+     * Returns number of partition keypad related to the event.
+     *
+     * @return partition keypad number
+     */
+    public int getPartitionKeypad() {
+        return ((getResponse().getPayload()[4] >> 2) & 0x3f) + 1;
+    }
+
+    /**
      * Returns event code the describes the event. It can be used to retrieve description text for this event.
      *
      * @return event code
