@@ -31,7 +31,7 @@ public class EnOceanBridgeConfig {
 
         public static ESPVersion getESPVersion(String espVersion) {
             for (ESPVersion version : values()) {
-                if (version.version.equalsIgnoreCase (espVersion)) {
+                if (version.version.equalsIgnoreCase(espVersion)) {
                     return version;
                 }
             }
