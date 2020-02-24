@@ -30,8 +30,8 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  */
 public class A5_30_03 extends _4BSMessage {
 
-    protected byte ALL_DIGITALPINS_HIGH = 0x0F;
-    protected byte WAKEUPPIN_HIGH = 0x10;
+    protected static final byte ALL_DIGITALPINS_HIGH = 0x0F;
+    protected static final byte WAKEUPPIN_HIGH = 0x10;
 
     public A5_30_03() {
         super();

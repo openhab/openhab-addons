@@ -489,14 +489,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Time Since Last Maintenance</label>
 		<description>Time since last maintenance was done.</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="remainingPLT">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Product Life Time</label>
 		<description>Countdown time until product end of life.</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="hygroComfortIndex">

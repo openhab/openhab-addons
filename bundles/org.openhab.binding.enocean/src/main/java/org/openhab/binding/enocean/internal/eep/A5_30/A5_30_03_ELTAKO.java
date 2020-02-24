@@ -29,8 +29,8 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  */
 public class A5_30_03_ELTAKO extends A5_30_03 {
 
-    protected byte ALARM_ON = 0x0F;
-    protected byte ALARM_OFF = 0x10;
+    protected static final byte ALARM_ON = 0x0F;
+    protected static final byte ALARM_OFF = 0x10;
 
     public A5_30_03_ELTAKO() {
         super();
@@ -47,10 +47,12 @@ public class A5_30_03_ELTAKO extends A5_30_03 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
+
+        byte db1 = getDB_1();
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
-                return getDB_1() == ALARM_ON ? OnOffType.ON
-                        : (getDB_1() == ALARM_OFF ? OnOffType.OFF : UnDefType.UNDEF);
+                return db1 == ALARM_ON ? OnOffType.ON
+                        : (db1 == ALARM_OFF ? OnOffType.OFF : UnDefType.UNDEF);
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
