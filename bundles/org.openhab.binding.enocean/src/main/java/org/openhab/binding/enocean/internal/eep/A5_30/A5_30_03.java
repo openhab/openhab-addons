@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.eep.A5_02;
+package org.openhab.binding.enocean.internal.eep.A5_30;
+
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
@@ -26,38 +28,32 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Daniel Weber - Initial contribution
  */
-public abstract class A5_02 extends _4BSMessage {
+public class A5_30_03 extends _4BSMessage {
 
-    public A5_02(ERP1Message packet) {
+    protected static final byte ALL_DIGITALPINS_HIGH = 0x0F;
+    protected static final byte WAKEUPPIN_HIGH = 0x10;
+
+    public A5_30_03() {
+        super();
+
+        this.supportsTeachInVariation3 = true;
+    }
+
+    public A5_30_03(ERP1Message packet) {
         super(packet);
-    }
 
-    protected double getUnscaledMin() {
-        return 255;
-    }
-
-    protected double getUnscaledMax() {
-        return 0;
-    }
-
-    protected abstract double getScaledMin();
-
-    protected abstract double getScaledMax();
-
-    protected int getUnscaledTemperatureValue() {
-        return getDB_1Value();
+        this.supportsTeachInVariation3 = true;
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
+        switch (channelId) {
+            case CHANNEL_TEMPERATURE:
+                double temp = (getDB_1Value() - 255) / -6.375;
+                return new QuantityType<>(temp, SIUnits.CELSIUS);
         }
 
-        double scaledTemp = getScaledMin()
-                - (((getUnscaledMin() - getUnscaledTemperatureValue()) * (getScaledMin() - getScaledMax()))
-                        / getUnscaledMin());
-        return new QuantityType<>(scaledTemp, SIUnits.CELSIUS);
+        return UnDefType.UNDEF;
     }
 }
