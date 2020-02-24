@@ -10,48 +10,49 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.eep.F6_10;
+package org.openhab.binding.enocean.internal.eep.F6_05;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
- * @author Holger Englert - Initial contribution
+ * @author Daniel Weber - Initial contribution
  */
-public class F6_10_00_EltakoFPE extends _RPSMessage {
+public class F6_05_02 extends _RPSMessage {
 
-    final byte OPEN = 0x00;
-    final byte CLOSED = 0x10;
+    protected static final byte ALARM_OFF = 0x00;
+    protected static final byte ALARM_ON = 0x10;
+    protected static final byte ENERGY_LOW = 0x30;
 
-    public F6_10_00_EltakoFPE() {
+    public F6_05_02() {
         super();
     }
 
-    public F6_10_00_EltakoFPE(ERP1Message packet) {
+    public F6_05_02(ERP1Message packet) {
         super(packet);
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
+        if (!isValid()) {
+            return UnDefType.UNDEF;
+        }
 
-        if (channelId.equals(CHANNEL_CONTACT)) {
-            EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
-            if (c.inverted) {
-                return bytes[0] == CLOSED ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            } else {
-                return bytes[0] == CLOSED ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-            }
+        switch (channelId) {
+            case CHANNEL_SMOKEDETECTION:
+                return bytes[0] == ALARM_OFF ? OnOffType.OFF : (bytes[0] == ALARM_ON ? OnOffType.ON : UnDefType.UNDEF);
+            case CHANNEL_BATTERYLOW:
+                return bytes[0] == ENERGY_LOW ? OnOffType.ON : UnDefType.UNDEF;
         }
 
         return UnDefType.UNDEF;
@@ -59,8 +60,6 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
 
     @Override
     protected boolean validateData(byte[] bytes) {
-        // FPE just sends 0b00010000 or 0b00000000 value, so we apply mask 0b11101111
-        return super.validateData(bytes) && ((bytes[0] & (byte) 0xEF) == (byte) 0x00);
+        return super.validateData(bytes) && (bytes[0] == ALARM_OFF || bytes[0] == ALARM_ON || bytes[0] == ENERGY_LOW);
     }
-
 }
