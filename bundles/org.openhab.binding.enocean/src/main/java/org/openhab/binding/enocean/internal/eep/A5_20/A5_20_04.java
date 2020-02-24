@@ -174,7 +174,8 @@ public class A5_20_04 extends A5_20 {
             byte db3 = getPos(getCurrentStateFunc);
             byte db2 = getTsp(getCurrentStateFunc);
             byte db1 = (byte) (0x00 | getMc(getCurrentStateFunc) | getWuc(getCurrentStateFunc));
-            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TeachInBit | getBlc(getCurrentStateFunc) | getSer(getCurrentStateFunc));
+            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TeachInBit | getBlc(getCurrentStateFunc)
+                    | getSer(getCurrentStateFunc));
 
             setData(db3, db2, db1, db0);
 
@@ -183,8 +184,8 @@ public class A5_20_04 extends A5_20 {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         switch (channelId) {
             case CHANNEL_VALVE_POSITION:
