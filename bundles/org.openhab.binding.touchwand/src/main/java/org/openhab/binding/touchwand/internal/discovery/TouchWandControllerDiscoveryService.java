@@ -136,7 +136,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
                 }
             } catch (IOException e) {
                 if (!isInterrupted()) {
-                    logger.warn("Error while receiving", e);
+                    logger.warn("Error while receiving {}", e.getMessage());
                 } else {
                     logger.trace("Receiver thread was interrupted");
                 }

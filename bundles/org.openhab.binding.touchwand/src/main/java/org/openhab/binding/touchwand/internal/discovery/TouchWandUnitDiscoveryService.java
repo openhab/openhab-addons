@@ -75,7 +75,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         if (touchWandBridgeHandler.touchWandClient == null) {
-            logger.warn("Could not scan units without bridge handler {}");
+            logger.warn("Could not scan units without bridge handler");
             return;
         }
 
@@ -139,7 +139,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
             }
         } catch (JsonSyntaxException msg) {
-            logger.warn("Could not parse list units response {}", msg);
+            logger.warn("Could not parse list units response {}", msg.getMessage());
         }
 
     }
