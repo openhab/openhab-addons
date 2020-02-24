@@ -1107,7 +1107,7 @@
 
 	<channel-type id="cookerhood_delay" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P20</label>
+		<label>Cookerhood Delay (P20)</label>
 		<description>End delay for cooker hood control (min)</description>
 		<category>Time</category>
 		<state min="0" max="180" step="1" readOnly="false" />
@@ -1115,7 +1115,7 @@
 
 	<channel-type id="bathroom_start_delay" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P21</label>
+		<label>Bathroom Switch Start Delay (P21)</label>
 		<description>Start delay for bathroom switch (min)</description>
 		<category>Time</category>
 		<state min="0" max="120" step="1" readOnly="false" />
@@ -1123,7 +1123,7 @@
 
 	<channel-type id="bathroom_end_delay" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P22</label>
+		<label>Bathroom Switch End Delay (P22)</label>
 		<description>End delay for bathroom switch (min)</description>
 		<category>Time</category>
 		<state min="0" max="120" step="1" readOnly="false" />
@@ -1131,7 +1131,7 @@
 
 	<channel-type id="L1_end_delay" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P23</label>
+		<label>L1 Switch End Delay (P23)</label>
 		<description>End delay for L1 switch (min)</description>
 		<category>Time</category>
 		<state min="0" max="120" step="1" readOnly="false" />
@@ -1139,7 +1139,7 @@
 
 	<channel-type id="filter_weeks" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P24</label>
+		<label>Filter Period (P24)</label>
 		<description>Usage period until filter pollution message (weeks)</description>
 		<category>Time</category>
 		<state min="10" max="26" step="1" readOnly="false" />
@@ -1147,7 +1147,7 @@
 
 	<channel-type id="RF_short_delay" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P25</label>
+		<label>RF Short Delay (P25)</label>
 		<description>End delay (RF short actuation) for ventilation level 3 (min)</description>
 		<category>Time</category>
 		<state min="1" max="20" step="1" readOnly="false" />
@@ -1155,7 +1155,7 @@
 
 	<channel-type id="RF_long_delay" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P26</label>
+		<label>RF Long Delay (P26)</label>
 		<description>End delay (RF long actuation) for ventilation level 3 (min)</description>
 		<category>Time</category>
 		<state min="1" max="120" step="1" readOnly="false" />
@@ -1163,7 +1163,7 @@
 
 	<channel-type id="pulse_ventilation" advanced="true">
 		<item-type>Number</item-type>
-		<label>Menu P27</label>
+		<label>Pulse Ventilation Period (P27)</label>
 		<description>Period for pulse ventilation (min)</description>
 		<category>Time</category>
 		<state min="0" max="120" step="1" readOnly="false" />
