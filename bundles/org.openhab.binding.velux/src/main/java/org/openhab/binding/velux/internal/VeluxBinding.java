@@ -108,7 +108,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
      */
     public VeluxBridgeConfiguration checked() {
         logger.trace("checked() called.");
-        logger.info("{}Config[{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={}]",
+        logger.debug("{}Config[{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={}]",
                 VeluxBindingConstants.BINDING_ID, VeluxBridgeConfiguration.BRIDGE_PROTOCOL, protocol,
                 VeluxBridgeConfiguration.BRIDGE_IPADDRESS, this.ipAddress, VeluxBridgeConfiguration.BRIDGE_TCPPORT,
                 tcpPort, VeluxBridgeConfiguration.BRIDGE_PASSWORD, password.replaceAll(".", "*"),
