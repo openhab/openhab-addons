@@ -15,7 +15,8 @@ package org.openhab.binding.goecharger.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link GoEStatusResponse} class represents a json response from the charger.
+ * The {@link GoEStatusResponse} class represents a json response from the
+ * charger.
  *
  * @author Samuel Brucksch - Initial contribution
  */
@@ -28,6 +29,9 @@ public class GoEStatusResponse {
 
   @SerializedName("amp")
   private Integer maxChargeAmps;
+
+  @SerializedName("nrg")
+  private Integer[] energy;
 
   @SerializedName("err")
   private Integer errorCode;
@@ -161,5 +165,19 @@ public class GoEStatusResponse {
 
   public void setFirmware(String firmware) {
     this.firmware = firmware;
+  }
+
+  public Integer[] getEnergy() {
+    return energy;
+  }
+
+  public void setEnergy(Integer[] energy) {
+    this.energy = energy;
+
+    if (Math.floor(getPhases() / 8) == 1 && this.energy[3] > this.energy[0]) {
+      this.energy[0] = this.energy[3];
+      this.energy[7] = this.energy[10];
+      this.energy[12] = this.energy[15];
+    }
   }
 }

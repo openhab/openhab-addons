@@ -31,6 +31,15 @@ public class GoEChargerBindingConstants {
     public static final String MAX_AMPERE       = "maxAmpere";
     public static final String PWM_SIGNAL       = "pwmSignal";
     public static final String ERROR            = "error";
+    public static final String VOLTAGE_L1       = "voltageL1";
+    public static final String VOLTAGE_L2       = "voltageL2";
+    public static final String VOLTAGE_L3       = "voltageL3";
+    public static final String CURRENT_L1       = "currentL1";
+    public static final String CURRENT_L2       = "currentL2";
+    public static final String CURRENT_L3       = "currentL3";
+    public static final String POWER_L1         = "powerL1";
+    public static final String POWER_L2         = "powerL2";
+    public static final String POWER_L3         = "powerL3";
     public static final String ALLOW_CHARGING   = "allowCharging";
     public static final String STOP_STATE       = "stopState";
     public static final String CABLE_ENCODING   = "cableEncoding";
