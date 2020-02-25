@@ -21,4 +21,5 @@ public class GoEChargerConfiguration {
 
     public String ip;
     public Integer refreshInterval;
+    
 }

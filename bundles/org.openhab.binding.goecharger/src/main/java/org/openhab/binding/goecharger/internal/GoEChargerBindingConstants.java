@@ -41,10 +41,8 @@ public class GoEChargerBindingConstants {
     public static final String TOTAL_CONSUMPTION = "totalConsumption";
     public static final String FIRMWARE         = "firmware";
 
-
     // default values
     public static final int DEFAULT_REFRESH_INTERVAL = 5000;
     public static final String API_URL = "http://%IP%/status";
     public static final String MQTT_URL = "http://%IP%/mqtt?payload=%PARAM%=%COMMAND%"; // TODO needs to be POST request
-
 }
