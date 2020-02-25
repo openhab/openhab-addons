@@ -233,9 +233,8 @@ public class GoEChargerHandler extends BaseThingHandler {
         GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
 
         String urlStr = GoEChargerBindingConstants.API_URL;
-        urlStr.replace("%IP%", StringUtils.trimToEmpty(config.ip));
-
-        logger.debug("URL = {}", urlStr);
+        urlStr = urlStr.replace("%IP%", StringUtils.trimToEmpty(config.ip));
+        logger.debug("URL = {}, IP = {}", urlStr, config.ip);
 
         try {
             // Run the HTTP request and get the JSON response
@@ -244,7 +243,6 @@ public class GoEChargerHandler extends BaseThingHandler {
 
             try {
                 String response = IOUtils.toString(connection.getInputStream());
-                logger.debug("goEResponse = {}", response);
 
                 // Map the JSON response to an object
                 result = gson.fromJson(response, GoEStatusResponse.class);
@@ -294,9 +292,11 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
             };
 
+            
             GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
             int delay = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_INTERVAL;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
+            logger.debug("Running refresh job with delay {} s", delay);
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.SECONDS);
         }
     }
 

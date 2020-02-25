@@ -5,28 +5,118 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
+	<thing-type id="goe">
 		<label>GoECharger Binding Thing</label>
 		<description>Sample thing for GoECharger Binding</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel" />
+			<channel id="maxAmpere" typeId="ama" />
+			<channel id="pwmSignal" typeId="pwm" />
+			<channel id="error" typeId="err" />
+			<channel id="voltageL1" typeId="vl1" />
+			<channel id="voltageL2" typeId="vl2" />
+			<channel id="voltageL3" typeId="vl3" />
+			<channel id="currentL1" typeId="cl1" />
+			<channel id="currentL2" typeId="cl2" />
+			<channel id="currentL3" typeId="cl3" />
+			<channel id="powerL1" typeId="pl1" />
+			<channel id="powerL2" typeId="pl2" />
+			<channel id="powerL3" typeId="pl3" />
+			<channel id="phases" typeId="pha" />
+			<!-- TODO -->
+			<channel id="allowCharging" typeId="alw" />
+			<channel id="stopState" typeId="stp" />
+			<channel id="cableEncoding" typeId="cbl" />
+			<channel id="temperature" typeId="tmp" />
+			<channel id="sessionChargeConsumption" typeId="scs" />
+			<channel id="sessionChargeConsumptionLimit" typeId="scl" />
+			<channel id="totalConsumption" typeId="tc" />
+			<channel id="firmware" typeId="fmw" />
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample Parameter</label>
-				<description>This is a sample text configuration parameter</description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP Adress</label>
+				<description>The IP adress of the Go-Echarger</description>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>goechargerItem</item-type>
-		<label>GoECharger Binding Channel</label>
-		<description>Sample channel for GoECharger Binding</description>
+	<channel-type id="ama">
+		<item-type>Number</item-type>
+		<label>Max Ampere</label>
+		<description>Max ampere per phase allowed to use for charging</description>
+		<state pattern="%d A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pwm">
+		<item-type>Number</item-type>
+		<label>PWM signal status</label>
+		<description>Signal status for PWM signal</description>
+	</channel-type>
+	<channel-type id="err">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<description>Error code of charger</description>
+	</channel-type>
+	<channel-type id="vl1">
+		<item-type>Number</item-type>
+		<label>Voltage L1</label>
+		<description>Voltage on L1</description>
+		<state pattern="%d V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="vl2">
+		<item-type>Number</item-type>
+		<label>Voltage L2</label>
+		<description>Voltage on L2</description>
+		<state pattern="%d V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="vl3">
+		<item-type>Number</item-type>
+		<label>Voltage L3</label>
+		<description>Voltage on L3</description>
+		<state pattern="%d V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cl1">
+		<item-type>Number</item-type>
+		<label>Current L1</label>
+		<description>Current on L1</description>
+		<state pattern="%.1f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cl2">
+		<item-type>Number</item-type>
+		<label>Current L2</label>
+		<description>Current on L2</description>
+		<state pattern="%.1f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cl3">
+		<item-type>Number</item-type>
+		<label>Current L3</label>
+		<description>Current on L3</description>
+		<state pattern="%.1f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pl1">
+		<item-type>Number</item-type>
+		<label>Power L1</label>
+		<description>Power on L1</description>
+		<state pattern="%.1f kW" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pl2">
+		<item-type>Number</item-type>
+		<label>Power L2</label>
+		<description>Power on L2</description>
+		<state pattern="%.1f kW" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pl3">
+		<item-type>Number</item-type>
+		<label>Power L3</label>
+		<description>Power on L3</description>
+		<state pattern="%.1f kW" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pha">
+		<item-type>Number</item-type>
+		<label>Phases</label>
+		<description>Connected lines to charger</description>
 	</channel-type>
 
 </thing:thing-descriptions>

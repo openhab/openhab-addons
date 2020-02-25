@@ -34,7 +34,7 @@ public class GoEStatusResponse {
   private Integer[] energy;
 
   @SerializedName("err")
-  private Integer errorCode;
+  private String errorCode;
 
   @SerializedName("alw")
   private Integer allowCharging;
@@ -87,12 +87,31 @@ public class GoEStatusResponse {
     this.maxChargeAmps = maxChargeAmps;
   }
 
-  public Integer getErrorCode() {
+  public String getErrorCode() {
     return errorCode;
   }
 
   public void setErrorCode(Integer errorCode) {
-    this.errorCode = errorCode;
+    switch (errorCode) {
+      case 0:
+        this.errorCode = "NONE"; // TODO evaluate
+        break;
+      case 1:
+        this.errorCode = "RCCB";
+        break;
+      case 3:
+        this.errorCode = "PHASE";
+        break;
+      case 8:
+        this.errorCode = "NO_GROUND";
+        break;
+      case 10:
+        this.errorCode = "INTERNAL";
+        break;
+      default:
+        this.errorCode = "NONE"; // TODO evaluate
+        break;
+    }
   }
 
   public Integer getAllowCharging() {
