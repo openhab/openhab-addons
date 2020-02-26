@@ -1,56 +1,101 @@
 # GoECharger Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This Binding controls and reads data from the [Go-eCharger](https://go-e.co/). It is a mobile wallbox for charging EVs and has an open REST API to read data and configure.
 
+**TODO**
 _If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+This binding supports go-eCharger HOME+ with 7.4kW or 22kW.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+There is no auto discovery. You need to get the IP from the Go-eCharger and put it into the configuration.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The thing has two configuration parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| Parameter | Description                                                              |
+|-----------|------------------------------------------------------------------------- |
+| Ip        | the ip-address of your go-eCharger |
+| refreshInterval  | Interval to read data (in seconds) |
+
+A .thing file would typically look similar to this:
+```
+Thing goecharger:goe:garage [ip="192.168.1.36",refreshInterval=5]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+Currently available channels are 
+| Channel ID | Item Type    | Description              |
+|------------|--------------|------------------------- |
+| maxAmpere | Number | Max ampere allowed to use for charging |
+| pwmSignal | Number | Signal status for PWM signal |
+| error | String | Error code of charger |
+| voltageL1 | Number | Voltage on L1 |
+| voltageL2 | Number | Voltage on L2 |
+| voltageL3 | Number | Voltage on L3 |
+| currentL1 | Number | Current on L1 |
+| currentL2 | Number | Current on L2 |
+| currentL3 | Number | Current on L3 |
+| powerL1 | Number | Power on L1 |
+| powerL2 | Number | Power on L2 |
+| powerL3 | Number | Power on L2 |
+| phases | Number | Connected lines to charger |
+| sessionChargeConsumptionLimit | Number | Wallbox stops charging after defined value |
+| sessionChargeConsumption | Number | Amount of kWh that have been charged in this session |
+| totalConsumption | Number | Amount of kWh that have been charged since installation |
+| allowCharging | Switch | If `ON` charging is allowed |
+| stopState | Switch | If `ON` charger will stop after reaching current session charge limit |
+| cableEncoding | Number | Specifies the max amps that can be charged with that cable |
+| temperature | Number | Temperature of the Go-eCharger |
+| firmware | String | Firmware Version |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+demo.things
+```
+Thing goecharger:goe:garage [ip="192.168.1.36",refreshInterval=5]
+```
 
-## Any custom content here!
+demo.items
+```
+Number   MaxAmpere                       "Max ampere"                      {channel="goecharger:goe:garage:maxAmpere"}
+Number   PwmSignal                       "Pwm signal status"               {channel="goecharger:goe:garage:pwmSignal"}
+String   Error                           "Error code"                      {channel="goecharger:goe:garage:error"}
+Number   VoltageL1                       "Voltage l1"                      {channel="goecharger:goe:garage:voltageL1"}
+Number   VoltageL2                       "Voltage l2"                      {channel="goecharger:goe:garage:voltageL2"}
+Number   VoltageL3                       "Voltage l3"                      {channel="goecharger:goe:garage:voltageL3"}
+Number   CurrentL1                       "Current l1"                      {channel="goecharger:goe:garage:currentL1"}
+Number   CurrentL2                       "Current l2"                      {channel="goecharger:goe:garage:currentL2"}
+Number   CurrentL3                       "Current l3"                      {channel="goecharger:goe:garage:currentL3"}
+Number   PowerL1                         "Power l1"                        {channel="goecharger:goe:garage:powerL1"}
+Number   PowerL2                         "Power l2"                        {channel="goecharger:goe:garage:powerL2"}
+Number   PowerL3                         "Power l3"                        {channel="goecharger:goe:garage:powerL3"}
+Number   Phases                          "Phases"                          {channel="goecharger:goe:garage:phases"}
+Number   SessionChargeConsumptionLimit   "Current session charge limit"    {channel="goecharger:goe:garage:sessionChargeConsumptionLimit"}
+Number   SessionChargeConsumption        "Current session charge amount"   {channel="goecharger:goe:garage:sessionChargeConsumption"}
+Switch   AllowCharging                   "Allow charging"                  {channel="goecharger:goe:garage:allowCharging"}
+Switch   StopState                       "Stop state"                      {channel="goecharger:goe:garage:stopState"}
+Number   CableEncoding                   "Cable encoding"                  {channel="goecharger:goe:garage:cableEncoding"}
+Number   Temperature                     "Temperature"                     {channel="goecharger:goe:garage:temperature"}
+String   Firmware                        "Firmware"                        {channel="goecharger:goe:garage:firmware"}
+Number   TotalConsumption                "Total charge amount"             {channel="goecharger:goe:garage:totalConsumption"}
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+## Settings charge current of Go-eCharger based on PV
+
+You can easily define rules to charge with PV power alone. Here is a simple sample how such a rule could look like:
+```
+rule "Set max amps for PV charging"
+when
+    Item availablePVCurrent received update
+then
+    logInfo("Amps available: ", receivedCommand.state)
+    MaxAmpere.sendCommand(receivedCommand.state)
+end
+```
+You can also define more advanced rules if you have multiple cars that charge with a different amount of phases. The used phases can be read from voltage L1-L3 or Power or Current. For example if your car charges with one phase only L1 will be most likely around 220V, L2 and L3 will be 0. With that you can get the amount of used phases and calculate the current you need to set.

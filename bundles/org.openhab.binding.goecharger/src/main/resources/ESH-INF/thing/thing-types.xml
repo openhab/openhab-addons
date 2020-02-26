@@ -4,10 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="goe">
-		<label>GoECharger Binding Thing</label>
-		<description>Sample thing for GoECharger Binding</description>
+		<label>Go-eCharger Binding Thing</label>
+		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
 
 		<channels>
 			<channel id="maxAmpere" typeId="amp" />
@@ -36,7 +35,7 @@
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<label>IP Adress</label>
-				<description>The IP adress of the Go-Echarger</description>
+				<description>The IP adress of the Go-eCharger</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
@@ -157,7 +156,7 @@
 	<channel-type id="tmp">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
-		<description>Temperature of the Go-Echarger</description>
+		<description>Temperature of the Go-eCharger</description>
 		<state pattern="%d °C" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fmw">
