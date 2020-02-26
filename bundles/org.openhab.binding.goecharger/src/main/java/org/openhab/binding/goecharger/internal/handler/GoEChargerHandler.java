@@ -62,6 +62,8 @@ import org.openhab.binding.goecharger.internal.api.GoEStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -125,11 +127,11 @@ public class GoEChargerHandler extends BaseThingHandler {
             case TEMPERATURE:
                 return goeResponse.getTemperature();
             case SESSION_CHARGE_CONSUMPTION:
-                return goeResponse.getSessionChargeConsumption();
+                return (Double) (goeResponse.getSessionChargeConsumption()/360000d);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                return goeResponse.getSessionChargeConsumptionLimit();
+                return (Double) (goeResponse.getSessionChargeConsumptionLimit()/10d);
             case TOTAL_CONSUMPTION:
-                return goeResponse.getTotalChargeConsumption();
+                return (Double) (goeResponse.getTotalChargeConsumption()/10d);
             case FIRMWARE:
                 return goeResponse.getFirmware();
             case VOLTAGE_L1:
@@ -175,7 +177,10 @@ public class GoEChargerHandler extends BaseThingHandler {
         }
 
         State state = null;
-        if (value instanceof Double) {
+        if (value instanceof Boolean) {
+            state = (Boolean)value ? OnOffType.ON : OnOffType.OFF;
+        }
+        else if (value instanceof Double) {
             state = new DecimalType((Double) value);
         } else if (value instanceof Long) {
             state = new DecimalType((Long) value);
