@@ -39,7 +39,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
-				<description>Refresh interval for acquiring data from charger</description>
+				<description>Refresh interval for acquiring data from Go-eCharger</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -58,7 +58,7 @@
 	<channel-type id="err">
 		<item-type>String</item-type>
 		<label>Error Code</label>
-		<description>Error code of charger</description>
+		<description>Error code of Go-eCharger</description>
 	</channel-type>
 	<channel-type id="vl1">
 		<item-type>Number</item-type>
@@ -117,7 +117,7 @@
 	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
-		<description>Connected lines to charger</description>
+		<description>Connected lines to Go-eCharger</description>
 	</channel-type>
 	<channel-type id="scl">
 		<item-type>Number</item-type>
@@ -145,7 +145,7 @@
 	<channel-type id="stp">
 		<item-type>Switch</item-type>
 		<label>Stop State</label>
-		<description>If enabled charger will stop after reaching current session charge limit</description>
+		<description>If enabled Go-eCharger will stop after reaching current session charge limit</description>
 	</channel-type>
 	<channel-type id="cbl">
 		<item-type>Number</item-type>

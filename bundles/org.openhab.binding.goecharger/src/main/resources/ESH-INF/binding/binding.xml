@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>GoECharger Binding</name>
-	<description>This is the binding for GoECharger.</description>
+	<name>Go-eCharger Binding</name>
+	<description>This is the binding for Go-eCharger.</description>
 	<author>Samuel Brucksch</author>
 
 </binding:binding>

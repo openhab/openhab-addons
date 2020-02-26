@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.binding.goecharger</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: GoECharger Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Go-eCharger Binding</name>
 
 </project>
