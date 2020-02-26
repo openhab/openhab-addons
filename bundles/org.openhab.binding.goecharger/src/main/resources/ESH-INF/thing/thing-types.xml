@@ -26,12 +26,10 @@
 			<channel id="sessionChargeConsumptionLimit" typeId="scl" />
 			<channel id="sessionChargeConsumption" typeId="scs" />
 			<channel id="totalConsumption" typeId="tc" />
-			<!-- TODO -->
 			<channel id="allowCharging" typeId="alw" />
 			<channel id="stopState" typeId="stp" />
 			<channel id="cableEncoding" typeId="cbl" />
 			<channel id="temperature" typeId="tmp" />
-			
 			<channel id="firmware" typeId="fmw" />
 		</channels>
 
@@ -39,6 +37,13 @@
 			<parameter name="ip" type="text" required="true">
 				<label>IP Adress</label>
 				<description>The IP adress of the Go-Echarger</description>
+			</parameter>
+		</config-description>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>Refresh interval for acquiring data from charger</description>
 			</parameter>
 		</config-description>
 
@@ -137,5 +142,32 @@
 		<label>Total Charge Amount</label>
 		<description>Amount of kWh that have been charged since installation</description>
 		<state pattern="%.1f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="alw">
+		<item-type>Switch</item-type>
+		<label>Allow Charging</label>
+		<description>If true charging is allowed</description>
+	</channel-type>
+	<channel-type id="stp">
+		<item-type>Switch</item-type>
+		<label>Stop State</label>
+		<description>If enabled charger will stop after reaching current session charge limit</description>
+	</channel-type>
+	<channel-type id="cbl">
+		<item-type>Number</item-type>
+		<label>Cable Encoding</label>
+		<description>Specifies the max amps that can be charged with that cable</description>
+		<state pattern="%d A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tmp">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Temperature of the Go-Echarger</description>
+		<state pattern="%d °C" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fmw">
+		<item-type>String</item-type>
+		<label>Firmware</label>
+		<description>Firmware Version</description>
 	</channel-type>
 </thing:thing-descriptions>

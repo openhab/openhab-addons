@@ -40,7 +40,7 @@ public class GoEStatusResponse {
   private Integer allowCharging;
 
   @SerializedName("stp")
-  private Integer automaticStop;
+  private boolean automaticStop;
 
   @SerializedName("cbl")
   private Integer cableEncoding;
@@ -122,12 +122,12 @@ public class GoEStatusResponse {
     this.allowCharging = allowCharging;
   }
 
-  public Integer getAutomaticStop() {
+  public boolean getAutomaticStop() {
     return automaticStop;
   }
 
   public void setAutomaticStop(Integer automaticStop) {
-    this.automaticStop = automaticStop;
+    this.automaticStop = automaticStop == 2;
   }
 
   public Integer getCableEncoding() {
