@@ -10,7 +10,7 @@
 		<description>Sample thing for GoECharger Binding</description>
 
 		<channels>
-			<channel id="maxAmpere" typeId="ama" />
+			<channel id="maxAmpere" typeId="amp" />
 			<channel id="pwmSignal" typeId="pwm" />
 			<channel id="error" typeId="err" />
 			<channel id="voltageL1" typeId="vl1" />
@@ -45,7 +45,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="ama">
+	<channel-type id="amp">
 		<item-type>Number</item-type>
 		<label>Max Ampere</label>
 		<description>Max ampere per phase allowed to use for charging</description>
@@ -124,7 +124,7 @@
 		<item-type>Number</item-type>
 		<label>Current Session Charge Limit</label>
 		<description>Wallbox stops charging after defined value</description>
-		<state pattern="%.1f kWh" readOnly="true"></state>
+		<state pattern="%.1f kWh" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="scs">
 		<item-type>Number</item-type>
