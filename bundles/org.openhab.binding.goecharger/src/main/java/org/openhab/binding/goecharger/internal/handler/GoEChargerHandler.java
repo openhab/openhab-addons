@@ -220,7 +220,7 @@ public class GoEChargerHandler extends BaseThingHandler {
             value = command.toString() == "ON" ? "1" : "0";
             break;
         case STOP_STATE:
-            key = "alw";
+            key = "stp";
             value = command.toString() == "ON" ? "1" : "0";
             break;
         default:
