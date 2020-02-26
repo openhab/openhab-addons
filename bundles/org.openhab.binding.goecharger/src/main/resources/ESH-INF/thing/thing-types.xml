@@ -25,7 +25,7 @@
 			<channel id="phases" typeId="pha" />
 			<channel id="sessionChargeConsumptionLimit" typeId="scl" />
 			<channel id="sessionChargeConsumption" typeId="scs" />
-			<channel id="totalConsumption" typeId="tc" />
+			<channel id="totalConsumption" typeId="eto" />
 			<channel id="allowCharging" typeId="alw" />
 			<channel id="stopState" typeId="stp" />
 			<channel id="cableEncoding" typeId="cbl" />
