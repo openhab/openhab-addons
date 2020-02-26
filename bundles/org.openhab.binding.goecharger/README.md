@@ -61,15 +61,15 @@ demo.items
 Number   MaxAmpere                       "Max ampere"                      {channel="goecharger:goe:garage:maxAmpere"}
 Number   PwmSignal                       "Pwm signal status"               {channel="goecharger:goe:garage:pwmSignal"}
 String   Error                           "Error code"                      {channel="goecharger:goe:garage:error"}
-Number   VoltageL1                       "Voltage l1"                      {channel="goecharger:goe:garage:voltageL1"}
-Number   VoltageL2                       "Voltage l2"                      {channel="goecharger:goe:garage:voltageL2"}
-Number   VoltageL3                       "Voltage l3"                      {channel="goecharger:goe:garage:voltageL3"}
-Number   CurrentL1                       "Current l1"                      {channel="goecharger:goe:garage:currentL1"}
-Number   CurrentL2                       "Current l2"                      {channel="goecharger:goe:garage:currentL2"}
-Number   CurrentL3                       "Current l3"                      {channel="goecharger:goe:garage:currentL3"}
-Number   PowerL1                         "Power l1"                        {channel="goecharger:goe:garage:powerL1"}
-Number   PowerL2                         "Power l2"                        {channel="goecharger:goe:garage:powerL2"}
-Number   PowerL3                         "Power l3"                        {channel="goecharger:goe:garage:powerL3"}
+Number   VoltageL1                       "Voltage L1"                      {channel="goecharger:goe:garage:voltageL1"}
+Number   VoltageL2                       "Voltage L2"                      {channel="goecharger:goe:garage:voltageL2"}
+Number   VoltageL3                       "Voltage L3"                      {channel="goecharger:goe:garage:voltageL3"}
+Number   CurrentL1                       "Current L1"                      {channel="goecharger:goe:garage:currentL1"}
+Number   CurrentL2                       "Current L2"                      {channel="goecharger:goe:garage:currentL2"}
+Number   CurrentL3                       "Current L3"                      {channel="goecharger:goe:garage:currentL3"}
+Number   PowerL1                         "Power L1"                        {channel="goecharger:goe:garage:powerL1"}
+Number   PowerL2                         "Power L2"                        {channel="goecharger:goe:garage:powerL2"}
+Number   PowerL3                         "Power L3"                        {channel="goecharger:goe:garage:powerL3"}
 Number   Phases                          "Phases"                          {channel="goecharger:goe:garage:phases"}
 Number   SessionChargeConsumptionLimit   "Current session charge limit"    {channel="goecharger:goe:garage:sessionChargeConsumptionLimit"}
 Number   SessionChargeConsumption        "Current session charge amount"   {channel="goecharger:goe:garage:sessionChargeConsumption"}
@@ -93,4 +93,4 @@ then
     MaxAmpere.sendCommand(receivedCommand.state)
 end
 ```
-You can also define more advanced rules if you have multiple cars that charge with a different amount of phases. The used phases can be read from voltage L1-L3 or Power or Current. For example if your car charges with one phase only L1 will be most likely around 220V, L2 and L3 will be 0. With that you can get the amount of used phases and calculate the current you need to set.
+You can also define more advanced rules if you have multiple cars that charge with a different amount of phases. The used phases can be read from Voltage L1-L3 or Power or Current. For example if your car charges with one phase only L1 will be most likely around 220V, L2 and L3 will be 0. With that you can get the amount of used phases and calculate the current you need to set.
