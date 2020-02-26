@@ -19,13 +19,8 @@ The thing has two configuration parameters:
 
 | Parameter | Description                                                              |
 |-----------|------------------------------------------------------------------------- |
-| Ip        | the ip-address of your go-eCharger |
+| ip        | the ip-address of your go-eCharger |
 | refreshInterval  | Interval to read data (in seconds) |
-
-A .thing file would typically look similar to this:
-```
-Thing goecharger:goe:garage [ip="192.168.1.36",refreshInterval=5]
-```
 
 ## Channels
 
