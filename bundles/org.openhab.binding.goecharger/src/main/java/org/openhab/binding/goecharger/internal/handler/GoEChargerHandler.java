@@ -94,50 +94,64 @@ public class GoEChargerHandler extends BaseThingHandler {
 
         if (goeResponse != null) {
             switch (fields[0]) {
-                case MAX_AMPERE:
-                    return goeResponse.getMaxChargeAmps();
-                case PWM_SIGNAL:
-                    return goeResponse.getPwmSignal();
-                case ERROR:
-                    return goeResponse.getErrorCode();
-                case ALLOW_CHARGING:
-                    return goeResponse.getAllowCharging();
-                case STOP_STATE:
-                    return goeResponse.getAutomaticStop();
-                case CABLE_ENCODING:
-                    return goeResponse.getCableEncoding();
-                case PHASES:
-                    return goeResponse.getPhases();
-                case TEMPERATURE:
-                    return goeResponse.getTemperature();
-                case SESSION_CHARGE_CONSUMPTION:
-                    return goeResponse.getSessionChargeConsumption();
-                case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                    return goeResponse.getSessionChargeConsumptionLimit();
-                case TOTAL_CONSUMPTION:
-                    return goeResponse.getTotalChargeConsumption();
-                case FIRMWARE:
-                    return goeResponse.getFirmware();
-                case VOLTAGE_L1:
-                    return goeResponse.getEnergy()[0];
-                case VOLTAGE_L2:
-                    return goeResponse.getEnergy()[1];
-                case VOLTAGE_L3:
-                    return goeResponse.getEnergy()[2];
-                case CURRENT_L1:
-                    return (Double) (goeResponse.getEnergy()[4] / 10d);
-                case CURRENT_L2:
-                    return (Double) (goeResponse.getEnergy()[5] / 10d);
-                case CURRENT_L3:
-                    return (Double) (goeResponse.getEnergy()[6] / 10d);
-                case POWER_L1:
-                    return (Double) (goeResponse.getEnergy()[7] / 10d);
-                case POWER_L2:
-                    return (Double) (goeResponse.getEnergy()[8] / 10d);
-                case POWER_L3:
-                    return (Double) (goeResponse.getEnergy()[9] / 10d);
+            case MAX_AMPERE:
+                return goeResponse.getMaxChargeAmps();
+            case PWM_SIGNAL:
+                return goeResponse.getPwmSignal();
+            case ERROR:
+                int error = goeResponse.getErrorCode();
+                switch (error) {
+                case 0:
+                    return "NONE"; // TODO evaluate
+                case 1:
+                    return "RCCB";
+                case 3:
+                    return "PHASE";
+                case 8:
+                    return "NO_GROUND";
+                case 10:
+                    return "INTERNAL";
                 default:
-                    return null;
+                    return "NONE"; // TODO evaluate
+                }
+            case ALLOW_CHARGING:
+                return goeResponse.getAllowCharging() == 1;
+            case STOP_STATE:
+                return goeResponse.getAutomaticStop() == 2;
+            case CABLE_ENCODING:
+                return goeResponse.getCableEncoding();
+            case PHASES:
+                return goeResponse.getPhases();
+            case TEMPERATURE:
+                return goeResponse.getTemperature();
+            case SESSION_CHARGE_CONSUMPTION:
+                return goeResponse.getSessionChargeConsumption();
+            case SESSION_CHARGE_CONSUMPTION_LIMIT:
+                return goeResponse.getSessionChargeConsumptionLimit();
+            case TOTAL_CONSUMPTION:
+                return goeResponse.getTotalChargeConsumption();
+            case FIRMWARE:
+                return goeResponse.getFirmware();
+            case VOLTAGE_L1:
+                return goeResponse.getEnergy()[0];
+            case VOLTAGE_L2:
+                return goeResponse.getEnergy()[1];
+            case VOLTAGE_L3:
+                return goeResponse.getEnergy()[2];
+            case CURRENT_L1:
+                return (Double) (goeResponse.getEnergy()[4] / 10d);
+            case CURRENT_L2:
+                return (Double) (goeResponse.getEnergy()[5] / 10d);
+            case CURRENT_L3:
+                return (Double) (goeResponse.getEnergy()[6] / 10d);
+            case POWER_L1:
+                return (Double) (goeResponse.getEnergy()[7] / 10d);
+            case POWER_L2:
+                return (Double) (goeResponse.getEnergy()[8] / 10d);
+            case POWER_L3:
+                return (Double) (goeResponse.getEnergy()[9] / 10d);
+            default:
+                return null;
             }
 
         }
@@ -292,7 +306,6 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
             };
 
-            
             GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
             int delay = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_INTERVAL;
             logger.debug("Running refresh job with delay {} s", delay);

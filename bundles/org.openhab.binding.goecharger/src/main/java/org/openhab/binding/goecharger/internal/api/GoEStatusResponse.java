@@ -34,13 +34,13 @@ public class GoEStatusResponse {
   private Integer[] energy;
 
   @SerializedName("err")
-  private String errorCode;
+  private Integer errorCode;
 
   @SerializedName("alw")
   private Integer allowCharging;
 
   @SerializedName("stp")
-  private boolean automaticStop;
+  private Integer automaticStop;
 
   @SerializedName("cbl")
   private Integer cableEncoding;
@@ -87,31 +87,12 @@ public class GoEStatusResponse {
     this.maxChargeAmps = maxChargeAmps;
   }
 
-  public String getErrorCode() {
+  public Integer getErrorCode() {
     return errorCode;
   }
 
   public void setErrorCode(Integer errorCode) {
-    switch (errorCode) {
-      case 0:
-        this.errorCode = "NONE"; // TODO evaluate
-        break;
-      case 1:
-        this.errorCode = "RCCB";
-        break;
-      case 3:
-        this.errorCode = "PHASE";
-        break;
-      case 8:
-        this.errorCode = "NO_GROUND";
-        break;
-      case 10:
-        this.errorCode = "INTERNAL";
-        break;
-      default:
-        this.errorCode = "NONE"; // TODO evaluate
-        break;
-    }
+    this.errorCode = errorCode;
   }
 
   public Integer getAllowCharging() {
@@ -122,12 +103,12 @@ public class GoEStatusResponse {
     this.allowCharging = allowCharging;
   }
 
-  public boolean getAutomaticStop() {
+  public Integer getAutomaticStop() {
     return automaticStop;
   }
 
   public void setAutomaticStop(Integer automaticStop) {
-    this.automaticStop = automaticStop == 2;
+    this.automaticStop = automaticStop;
   }
 
   public Integer getCableEncoding() {
