@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="heating-easy-mode-operating">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<category>Heating</category>
+
+		<state>
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="SCHEDULE">Schedule</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hot_water-easy-mode-operating">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<category>Heating</category>
+
+		<state>
+			<options>
+				<option value="ON">On</option>
+				<option value="SCHEDULE">Schedule</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="easy-mode-boost">
+		<item-type>Switch</item-type>
+		<label>Boost</label>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="easy-state-is_on">
+		<item-type>Switch</item-type>
+		<label>Is On</label>
+		<category>Heating</category>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>

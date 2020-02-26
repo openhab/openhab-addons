@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="heating-mode-operating" advanced="true">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<category>Heating</category>
+
+		<state>
+			<options>
+				<option value="SCHEDULE">Schedule</option>
+				<option value="MANUAL">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heating-mode-on_off" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On/Off Mode</label>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="temperature-target">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<category>Heating</category>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="state-operating" advanced="true">
+		<item-type>String</item-type>
+		<label>Operating State</label>
+		<category>Heating</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="temperature-target-boost">
+		<item-type>Number:Temperature</item-type>
+		<label>Boost Target Temperature</label>
+		<category>Heating</category>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+</thing:thing-descriptions>

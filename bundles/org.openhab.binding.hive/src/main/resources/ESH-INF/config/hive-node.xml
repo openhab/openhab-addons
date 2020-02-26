@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+		xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:hive:node">
+		<parameter name="nodeId" type="text" required="true">
+			<label>Node ID</label>
+			<description>The Hive API Node ID for this thing</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

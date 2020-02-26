@@ -1,0 +1,15 @@
+{
+  "meta": {},
+  "links": {},
+  "linked": {},
+  "sessions": [
+    {
+      "id": "mytoken",
+      "username": "hiveuser@example.com",
+      "userId": "deadbeef-dead-beef-dead-beefdeadbeef",
+      "extCustomerLevel": 1,
+      "latestSupportedApiVersion": "6",
+      "sessionId": "mytoken"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="battery-state">
+		<item-type>String</item-type>
+		<label>Battery State</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="battery-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="battery-notification_state" advanced="true">
+		<item-type>String</item-type>
+		<label>Battery Notification State</label>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>

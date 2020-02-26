@@ -1,0 +1,1566 @@
+{
+  "meta": {},
+  "links": {},
+  "linked": {},
+  "nodes": [
+    {
+      "id": "deadbeef-dead-beef-dead-beefdeadbeef",
+      "href": "https://api.prod.bgchprod.info/omnia/nodes/deadbeef-dead-beef-dead-beefdeadbeef",
+      "name": "Thermostat 1",
+      "nodeType": "http://alertme.com/schema/json/node.class.thermostat.json#",
+      "parentNodeId": "deadbeef-dead-beef-dead-beefdeadbeef",
+      "createdOn": 1513173613796,
+      "firstInstall": 1513173925623,
+      "userId": "deadbeef-dead-beef-dead-beefdeadbeef",
+      "ownerId": "deadbeef-dead-beef-dead-beefdeadbeef",
+      "homeId": "deadbeef-dead-beef-dead-beefdeadbeef",
+      "features": {
+        "autoboost_v1": {
+          "autoBoostDuration": {
+            "reportedValue": 30,
+            "displayValue": 30,
+            "reportReceivedTime": 1580088557573,
+            "reportChangedTime": 1580088557423
+          },
+          "autoBoostTargetHeatTemperature": {
+            "reportedValue": 19,
+            "displayValue": 19,
+            "reportReceivedTime": 1582534962795,
+            "reportChangedTime": 1582534962698
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.autoboost.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.autoboost.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.autoboost.v1.json#"
+          }
+        },
+        "failure_alert_v1": {
+          "failureStatus": {
+            "reportedValue": "NORMAL",
+            "displayValue": "NORMAL",
+            "reportReceivedTime": 1580088560757,
+            "reportChangedTime": 1580088560428
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.failure_alert.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.failure_alert.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.failure_alert.v1.json#"
+          }
+        },
+        "lifecycle_state_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.lifecycle_state.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.lifecycle_state.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.lifecycle_state.v1.json#"
+          },
+          "lifeCycleState": {
+            "reportedValue": "NORMAL",
+            "displayValue": "NORMAL",
+            "reportReceivedTime": 1580088569616,
+            "reportChangedTime": 1580088569252
+          }
+        },
+        "standby_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.standby.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.standby.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.standby.v1.json#"
+          },
+          "isActive": {
+            "reportedValue": false,
+            "displayValue": false,
+            "reportReceivedTime": 1582891616180,
+            "reportChangedTime": 1582891615961
+          },
+          "previousConfiguration": {
+            "reportedValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "operatingMode",
+                "value": "SCHEDULE"
+              },
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "14.0"
+              }
+            ],
+            "displayValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "operatingMode",
+                "value": "SCHEDULE"
+              },
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "14.0"
+              }
+            ],
+            "reportReceivedTime": 1582955849075,
+            "reportChangedTime": 1582955848675
+          }
+        },
+        "frost_protect_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.frost_protect.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.frost_protect.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.frost_protect.v1.json#"
+          },
+          "frostProtectTemperature": {
+            "reportedValue": 7,
+            "displayValue": 7,
+            "reportReceivedTime": 1580088582935,
+            "reportChangedTime": 1580088579088
+          }
+        },
+        "heating_temperature_control_v1": {
+          "controlMode": {
+            "reportedValue": "TPI",
+            "displayValue": "TPI",
+            "reportReceivedTime": 1580088577031,
+            "reportChangedTime": 1580088574442
+          },
+          "delayCompensatedTemperature": {
+            "reportedValue": 0,
+            "displayValue": 0,
+            "reportReceivedTime": 1580088624129,
+            "reportChangedTime": 1580088623620
+          },
+          "delayCompensationTime": {
+            "reportedValue": 0,
+            "displayValue": 0,
+            "reportReceivedTime": 1580088577312,
+            "reportChangedTime": 1580088574783
+          },
+          "errorIntegral": {
+            "reportedValue": 0.27,
+            "displayValue": 0.27,
+            "reportReceivedTime": 1583098705492,
+            "reportChangedTime": 1583098705425
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.heating_temperature_control.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.heating_temperature_control.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.heating_temperature_control.v1.json#"
+          },
+          "heatingRateEstimate": {
+            "reportedValue": 124,
+            "displayValue": 124,
+            "reportReceivedTime": 1583049923890,
+            "reportChangedTime": 1583049923798
+          },
+          "minimumOffCycles": {
+            "reportedValue": 3,
+            "displayValue": 3,
+            "reportReceivedTime": 1580088577496,
+            "reportChangedTime": 1580088575039
+          },
+          "optimumStartAdvanceTimeFactor": {
+            "reportedValue": 100,
+            "displayValue": 100,
+            "reportReceivedTime": 1580088579476,
+            "reportChangedTime": 1580088576012
+          },
+          "optimumStartAdvanceTimeOffset": {
+            "reportedValue": 15,
+            "displayValue": 15,
+            "reportReceivedTime": 1580088578998,
+            "reportChangedTime": 1580088575778
+          },
+          "optimumStartEnabled": {
+            "reportedValue": false,
+            "displayValue": false,
+            "reportReceivedTime": 1580088576937,
+            "reportChangedTime": 1580088574444
+          },
+          "optimumStartMaximumAdvanceTime": {
+            "reportedValue": 60,
+            "displayValue": 60,
+            "reportReceivedTime": 1580088577731,
+            "reportChangedTime": 1580088575294
+          },
+          "optimumStartMinimumTemperatureChange": {
+            "reportedValue": 0.5,
+            "displayValue": 0.5,
+            "reportReceivedTime": 1580088578570,
+            "reportChangedTime": 1580088575573
+          },
+          "proportionalThreshold": {
+            "reportedValue": 0.05,
+            "displayValue": 0.05,
+            "reportReceivedTime": 1583049923780,
+            "reportChangedTime": 1583049923712
+          }
+        },
+        "device_alerts_v1": {
+          "deviceAlerts": {
+            "reportedValue": {},
+            "displayValue": {},
+            "reportReceivedTime": 1581538930290,
+            "reportChangedTime": 1581538930130
+          },
+          "deviceStatus": {
+            "reportedValue": "NORMAL",
+            "displayValue": "NORMAL",
+            "reportReceivedTime": 1581538930194,
+            "reportChangedTime": 1581538930131
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.device_alerts.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.device_alerts.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.device_alerts.v1.json#"
+          }
+        },
+        "transient_mode_v1": {
+          "actions": {
+            "reportedValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "19.0"
+              }
+            ],
+            "displayValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "19.0"
+              }
+            ],
+            "reportReceivedTime": 1582924865774,
+            "reportChangedTime": 1582924865608
+          },
+          "duration": {
+            "reportedValue": 1800,
+            "displayValue": 1800,
+            "reportReceivedTime": 1582924866820,
+            "reportChangedTime": 1582924865663
+          },
+          "endDatetime": {
+            "reportedValue": "2020-03-01T22:05:44.442+0000",
+            "displayValue": "2020-03-01T22:05:44.442+0000",
+            "reportReceivedTime": 1583098545214,
+            "reportChangedTime": 1583098544465
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.transient_mode.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.transient_mode.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.transient_mode.v1.json#"
+          },
+          "isEnabled": {
+            "reportedValue": true,
+            "displayValue": true,
+            "reportReceivedTime": 1580088563191,
+            "reportChangedTime": 1580088563131
+          },
+          "previousConfiguration": {
+            "reportedValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "operatingMode",
+                "value": "SCHEDULE"
+              },
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "14.0"
+              }
+            ],
+            "displayValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "operatingMode",
+                "value": "SCHEDULE"
+              },
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "14.0"
+              }
+            ],
+            "reportReceivedTime": 1582955849009,
+            "reportChangedTime": 1582955848647
+          },
+          "startDatetime": {
+            "reportedValue": "2020-03-01T21:35:44.442+0000",
+            "displayValue": "2020-03-01T21:35:44.442+0000",
+            "reportReceivedTime": 1583098545133,
+            "reportChangedTime": 1583098544444
+          }
+        },
+        "boilermodule_interlock_v1": {
+          "callingForHeatUUIDs": {
+            "reportedValue": [],
+            "displayValue": [],
+            "reportReceivedTime": 1583099141612,
+            "reportChangedTime": 1583099141438
+          },
+          "enableControlState": {
+            "reportedValue": "ENABLED",
+            "displayValue": "ENABLED",
+            "reportReceivedTime": 1582975130034,
+            "reportChangedTime": 1582975129955
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.boilermodule_interlock.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.boilermodule_interlock.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.boilermodule_interlock.v1.json#"
+          }
+        },
+        "device_management_v1": {
+          "defaultNameFlag": {
+            "reportedValue": false,
+            "displayValue": false,
+            "reportReceivedTime": 1580088508559,
+            "reportChangedTime": 1580088468170
+          },
+          "deviceName": {
+            "reportedValue": "Thermostat 1",
+            "displayValue": "Thermostat 1",
+            "reportReceivedTime": 1580088508560,
+            "reportChangedTime": 1580088468159
+          },
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.device_management.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.device_management.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.device_management.v1.json#"
+          },
+          "parentNodeId": {
+            "reportedValue": "deadbeef-dead-beef-dead-beefdeadbeef",
+            "displayValue": "deadbeef-dead-beef-dead-beefdeadbeef",
+            "reportReceivedTime": 1580088508560,
+            "reportChangedTime": 1580088468146
+          },
+          "productType": {
+            "reportedValue": "HEATING",
+            "displayValue": "HEATING",
+            "reportReceivedTime": 1580088569222,
+            "reportChangedTime": 1580088569075
+          },
+          "supportedFeatures": {
+            "reportedValue": [
+              "http://alertme.com/schema/json/feature/node.feature.transient_mode.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.heating_temperature_control.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.lifecycle_state.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.autoboost.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.device_management.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.device_alerts.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.links.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.temperature_sensor.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.failure_alert.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.boilermodule_interlock.v1.json#",
+              "http://alertme.com/schema/json/node.class.thermostat.json#",
+              "http://alertme.com/schema/json/feature/node.feature.standby.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.frost_protect.v1.json#"
+            ],
+            "displayValue": [
+              "http://alertme.com/schema/json/feature/node.feature.transient_mode.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.heating_temperature_control.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.lifecycle_state.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.autoboost.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.device_management.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.device_alerts.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.links.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.temperature_sensor.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.failure_alert.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.boilermodule_interlock.v1.json#",
+              "http://alertme.com/schema/json/node.class.thermostat.json#",
+              "http://alertme.com/schema/json/feature/node.feature.standby.v1.json#",
+              "http://alertme.com/schema/json/feature/node.feature.frost_protect.v1.json#"
+            ],
+            "reportReceivedTime": 1582099810519,
+            "reportChangedTime": 1582099810216
+          }
+        },
+        "heating_thermostat_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#"
+          },
+          "heatSchedule": {
+            "reportedValue": {
+              "scheduleType": "http://alertme.com/schema/json/configuration/configuration.device.schedule.weekly.v1.json#",
+              "maxNumSetpointsPerDay": 6,
+              "setpoints": [
+                {
+                  "dayIndex": 1,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                }
+              ],
+              "setpointOverridden": false
+            },
+            "displayValue": {
+              "scheduleType": "http://alertme.com/schema/json/configuration/configuration.device.schedule.weekly.v1.json#",
+              "maxNumSetpointsPerDay": 6,
+              "setpoints": [
+                {
+                  "dayIndex": 1,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 1,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 2,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 3,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 4,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 5,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 6,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "05:45",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                      "attribute": "targetHeatTemperature",
+                      "value": "14.0"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                },
+                {
+                  "dayIndex": 7,
+                  "time": "22:00",
+                  "actions": [
+                    {
+                      "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                      "featureType": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+                      "attribute": "mode",
+                      "value": "OFF"
+                    }
+                  ]
+                }
+              ],
+              "setpointOverridden": false
+            },
+            "reportReceivedTime": 1582896748230,
+            "reportChangedTime": 1582896748033
+          },
+          "maxHeatTargetTemperature": {
+            "reportedValue": 32,
+            "displayValue": 32,
+            "reportReceivedTime": 1580088554789,
+            "reportChangedTime": 1580088554543
+          },
+          "minHeatTargetTemperature": {
+            "reportedValue": 5,
+            "displayValue": 5,
+            "reportReceivedTime": 1580088554653,
+            "reportChangedTime": 1580088554593
+          },
+          "operatingMode": {
+            "reportedValue": "SCHEDULE",
+            "displayValue": "SCHEDULE",
+            "reportReceivedTime": 1582894946674,
+            "reportChangedTime": 1582894946331
+          },
+          "operatingState": {
+            "reportedValue": "OFF",
+            "displayValue": "OFF",
+            "reportReceivedTime": 1583099144393,
+            "reportChangedTime": 1583099143158
+          },
+          "operatingStateReason": {
+            "reportedValue": "NORMAL",
+            "displayValue": "NORMAL",
+            "reportReceivedTime": 1583099141806,
+            "reportChangedTime": 1583099141483
+          },
+          "previousConfiguration": {
+            "reportedValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "operatingMode",
+                "value": "SCHEDULE"
+              },
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "14.0"
+              }
+            ],
+            "displayValue": [
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "operatingMode",
+                "value": "SCHEDULE"
+              },
+              {
+                "actionType": "http://alertme.com/schema/json/configuration/configuration.device.action.generic.v1.json#",
+                "featureType": "http://alertme.com/schema/json/feature/node.feature.heating_thermostat.v1.json#",
+                "attribute": "targetHeatTemperature",
+                "value": "14.0"
+              }
+            ],
+            "reportReceivedTime": 1582955848949,
+            "reportChangedTime": 1582955848624
+          },
+          "targetHeatTemperature": {
+            "reportedValue": 7,
+            "displayValue": 7,
+            "reportReceivedTime": 1583100005689,
+            "reportChangedTime": 1583100005567
+          },
+          "temporaryOperatingModeOverride": {
+            "reportedValue": "NONE",
+            "displayValue": "NONE",
+            "reportReceivedTime": 1583099143088,
+            "reportChangedTime": 1583099142419
+          }
+        },
+        "temperature_sensor_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.temperature_sensor.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.temperature_sensor.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.temperature_sensor.v1.json#"
+          },
+          "temperature": {
+            "reportedValue": 19,
+            "displayValue": 19,
+            "reportReceivedTime": 1583101678598,
+            "reportChangedTime": 1583101678475
+          }
+        },
+        "on_off_device_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.on_off_device.v1.json#"
+          },
+          "mode": {
+            "reportedValue": "ON",
+            "displayValue": "ON",
+            "reportReceivedTime": 1581357337075,
+            "reportChangedTime": 1581357336967
+          }
+        },
+        "links_v1": {
+          "featureType": {
+            "reportedValue": "http://alertme.com/schema/json/feature/node.feature.links.v1.json#",
+            "targetValue": "http://alertme.com/schema/json/feature/node.feature.links.v1.json#",
+            "displayValue": "http://alertme.com/schema/json/feature/node.feature.links.v1.json#"
+          },
+          "reverseLinks": {
+            "reportedValue": [
+              {
+                "bindingGroupIds": [
+                  "trvbm"
+                ],
+                "boundNode": "deadbeef-dead-beef-dead-beefdeadbeef"
+              },
+              {
+                "bindingGroupIds": [
+                  "trvbm"
+                ],
+                "boundNode": "deadbeef-dead-beef-dead-beefdeadbeef"
+              }
+            ],
+            "displayValue": [
+              {
+                "bindingGroupIds": [
+                  "trvbm"
+                ],
+                "boundNode": "deadbeef-dead-beef-dead-beefdeadbeef"
+              },
+              {
+                "bindingGroupIds": [
+                  "trvbm"
+                ],
+                "boundNode": "deadbeef-dead-beef-dead-beefdeadbeef"
+              }
+            ],
+            "reportReceivedTime": 1582975101358,
+            "reportChangedTime": 1582975101227
+          }
+        }
+      },
+      "lastUpgradeSucceeded": false
+    }
+  ]
+}

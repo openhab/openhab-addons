@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hot_water">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Hive Hot Water</label>
+		<description>A virtual thing that controls your hot water supply</description>
+		<category>HVAC</category>
+
+		<channels>
+			<channel id="easy-mode-operating" typeId="hot_water-easy-mode-operating" />
+			<channel id="easy-mode-boost" typeId="easy-mode-boost" />
+			<channel id="easy-state-is_on" typeId="easy-state-is_on" />
+
+			<channel id="mode-operating" typeId="hot_water-mode-operating" />
+			<channel id="mode-on_off" typeId="hot_water-mode-on_off" />
+
+			<channel id="mode-operating-override" typeId="mode-operating-override" />
+
+			<channel id="transient-duration" typeId="transient-duration" />
+			<channel id="transient-enabled" typeId="transient-enabled" />
+			<channel id="transient-start_time" typeId="transient-start_time" />
+			<channel id="transient-end_time" typeId="transient-end_time" />
+			<channel id="transient-remaining" typeId="transient-remaining" />
+		</channels>
+
+		<config-description-ref uri="thing-type:hive:node" />
+	</thing-type>
+</thing:thing-descriptions>

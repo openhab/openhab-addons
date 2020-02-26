@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="boiler_module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Hive Boiler Module</label>
+		<description>The physical module that controls when your boiler turns on for heating (and optionally hot water)</description>
+		<category>HVAC</category>
+
+		<channels>
+			<channel id="radio-lqi-average" typeId="radio-lqi-average" />
+			<channel id="radio-lqi-last_known" typeId="radio-lqi-last_known" />
+			<channel id="radio-rssi-average" typeId="radio-rssi-average" />
+			<channel id="radio-rssi-last_known" typeId="radio-rssi-last_known" />
+		</channels>
+
+		<config-description-ref uri="thing-type:hive:node" />
+	</thing-type>
+</thing:thing-descriptions>
