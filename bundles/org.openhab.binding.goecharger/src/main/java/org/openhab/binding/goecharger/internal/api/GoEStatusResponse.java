@@ -52,13 +52,13 @@ public class GoEStatusResponse {
   private Integer temperature;
 
   @SerializedName("dws")
-  private Long sessionChargeConsumption;
+  private Double sessionChargeConsumption;
 
   @SerializedName("dwo")
-  private Integer sessionChargeConsumptionLimit;
+  private Double sessionChargeConsumptionLimit;
 
   @SerializedName("eto")
-  private Long totalChargeConsumption;
+  private Double totalChargeConsumption;
 
   @SerializedName("fmw")
   private String firmware;
@@ -154,28 +154,28 @@ public class GoEStatusResponse {
     this.temperature = temperature;
   }
 
-  public Long getSessionChargeConsumption() {
+  public Double getSessionChargeConsumption() {
     return sessionChargeConsumption;
   }
 
   public void setSessionChargeConsumption(Long sessionChargeConsumption) {
-    this.sessionChargeConsumption = sessionChargeConsumption;
+    this.sessionChargeConsumption = sessionChargeConsumption/360000d;
   }
 
-  public Integer getSessionChargeConsumptionLimit() {
+  public Double getSessionChargeConsumptionLimit() {
     return sessionChargeConsumptionLimit;
   }
 
   public void setSessionChargeConsumptionLimit(Integer sessionChargeConsumptionLimit) {
-    this.sessionChargeConsumptionLimit = sessionChargeConsumptionLimit;
+    this.sessionChargeConsumptionLimit = sessionChargeConsumptionLimit/10d;
   }
 
-  public Long getTotalChargeConsumption() {
+  public Double getTotalChargeConsumption() {
     return totalChargeConsumption;
   }
 
   public void setTotalChargeConsumption(Long totalChargeConsumption) {
-    this.totalChargeConsumption = totalChargeConsumption;
+    this.totalChargeConsumption = totalChargeConsumption/10d;
   }
 
   public String getFirmware() {

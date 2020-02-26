@@ -23,14 +23,15 @@
 			<channel id="powerL2" typeId="pl2" />
 			<channel id="powerL3" typeId="pl3" />
 			<channel id="phases" typeId="pha" />
+			<channel id="sessionChargeConsumptionLimit" typeId="scl" />
+			<channel id="sessionChargeConsumption" typeId="scs" />
+			<channel id="totalConsumption" typeId="tc" />
 			<!-- TODO -->
 			<channel id="allowCharging" typeId="alw" />
 			<channel id="stopState" typeId="stp" />
 			<channel id="cableEncoding" typeId="cbl" />
 			<channel id="temperature" typeId="tmp" />
-			<channel id="sessionChargeConsumption" typeId="scs" />
-			<channel id="sessionChargeConsumptionLimit" typeId="scl" />
-			<channel id="totalConsumption" typeId="tc" />
+			
 			<channel id="firmware" typeId="fmw" />
 		</channels>
 
@@ -118,5 +119,23 @@
 		<label>Phases</label>
 		<description>Connected lines to charger</description>
 	</channel-type>
-
+	<channel-type id="scl">
+		<item-type>Number</item-type>
+		<label>Current Session Charge Limit</label>
+		<description>Wallbox stops charging after defined value</description>
+		<state pattern="%.1f kWh" readOnly="true"></state>
+	</channel-type>
+		<channel-type id="scs">
+		<item-type>Number</item-type>
+		<label>Current Session Charge Amount</label>
+		<description>Amount of kWh that have been charged in this session</description>
+		<state pattern="%.1f kWh" readOnly="true"></state>
+	</channel-type>
+	</channel-type>
+		<channel-type id="eto">
+		<item-type>Number</item-type>
+		<label>Total Charge Amount</label>
+		<description>Amount of kWh that have been charged since installation</description>
+		<state pattern="%.1f kWh" readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>
