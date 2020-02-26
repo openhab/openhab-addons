@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.bluetooth.BluetoothDevice.ServiceContext;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -150,28 +151,11 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     @Override
+    public void onServicesDiscovered(ServiceContext services) {
+    }
+
+    @Override
     public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
-    }
-
-    @Override
-    public void onServicesDiscovered() {
-    }
-
-    @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-    }
-
-    @Override
-    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
 
 }

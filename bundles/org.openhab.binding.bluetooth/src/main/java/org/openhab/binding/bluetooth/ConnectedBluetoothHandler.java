@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +33,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic.GattCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
@@ -134,29 +134,30 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     @Override
     public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
         switch (connectionNotification.getConnectionState()) {
-            case DISCOVERED:
-                // The device is now known on the Bluetooth network, so we can do something...
-                scheduler.submit(() -> {
-                    synchronized (connectionJob) {
-                        if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                            if (!device.connect()) {
-                                logger.debug("Error connecting to device after discovery.");
-                            }
-                        }
-                    }
-                });
-                break;
             case CONNECTED:
                 updateStatus(ThingStatus.ONLINE);
-                scheduler.submit(() -> {
-                    synchronized (resolved) {
-                        if (!resolved) {
-                            if (!device.discoverServices()) {
-                                logger.debug("Error while discovering services");
+                scheduler.submit(() -> device.discoverServices().whenComplete((context, th) -> {
+                    if (th != null) {
+                        logger.debug("Error while discovering services", th);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        return;
+                    }
+                    logger.debug("Service discovery completed for '{}'", address);
+                    for (BluetoothService service : context.getServices()) {
+                        for (BluetoothCharacteristic characteristic : service.getCharacteristics()) {
+                            if (characteristic.getGattCharacteristic() != null) {
+                                if (characteristic.getGattCharacteristic().equals(GattCharacteristic.BATTERY_LEVEL)) {
+                                    activateChannel(characteristic,
+                                            DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID(),
+                                            this::updateBatteryLevel);
+                                    continue;
+                                }
+                                logger.debug("Added GATT characteristic '{}'",
+                                        characteristic.getGattCharacteristic().name());
                             }
                         }
                     }
-                });
+                }));
                 break;
             case DISCONNECTED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -164,107 +165,47 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             default:
                 break;
         }
+
     }
 
-    @Override
-    public void onServicesDiscovered() {
-        if (!resolved) {
-            resolved = true;
-            logger.debug("Service discovery completed for '{}'", address);
-            for (BluetoothService service : device.getServices()) {
-                for (BluetoothCharacteristic characteristic : service.getCharacteristics()) {
-                    if (characteristic.getGattCharacteristic() != null) {
-                        if (characteristic.getGattCharacteristic().equals(GattCharacteristic.BATTERY_LEVEL)) {
-                            activateChannel(characteristic,
-                                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID());
-                            continue;
-                        }
-                        logger.debug("Added GATT characteristic '{}'", characteristic.getGattCharacteristic().name());
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
-                updateBatteryLevel(characteristic);
-            } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(),
-                            address, HexUtils.bytesToHex(characteristic.getByteValue()));
-                }
-            }
-        } else {
-            logger.debug("Characteristic {} from {} has been read - ERROR", characteristic.getUuid(), address);
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Wrote {} to characteristic {} of device {}: {}",
-                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
-        }
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Recieved update {} to characteristic {} of device {}",
-                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
-        }
-        if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
-            updateBatteryLevel(characteristic);
-        }
-    }
-
-    @Override
-    public void onDescriptorUpdate(BluetoothDescriptor descriptor) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(descriptor.getValue()),
-                    descriptor.getUuid(), address);
-        }
-    }
-
-    protected void updateBatteryLevel(BluetoothCharacteristic characteristic) {
+    protected void updateBatteryLevel(byte[] value) {
         // the byte has values from 0-255, which we need to map to 0-100
-        Double level = characteristic.getValue()[0] / 2.55;
-        updateState(characteristic.getGattCharacteristic().name(), new DecimalType(level.intValue()));
+        Double level = (value[0] & 0xFF) / 2.55;
+        updateState(BluetoothCharacteristic.GattCharacteristic.BATTERY_LEVEL.name(), new DecimalType(level.intValue()));
     }
 
     protected void activateChannel(@Nullable BluetoothCharacteristic characteristic, ChannelTypeUID channelTypeUID,
-            @Nullable String name) {
-        if (characteristic != null) {
-            String channelId = name != null ? name : characteristic.getGattCharacteristic().name();
-            if (channelId == null) {
-                // use the type id as a fallback
-                channelId = channelTypeUID.getId();
-            }
-            if (getThing().getChannel(channelId) == null) {
-                // the channel does not exist yet, so let's add it
-                ThingBuilder updatedThing = editThing();
-                Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelId), "Number")
-                        .withType(channelTypeUID).build();
-                updatedThing.withChannel(channel);
-                updateThing(updatedThing.build());
-                logger.debug("Added channel '{}' to Thing '{}'", channelId, getThing().getUID());
-            }
-            deviceCharacteristics.add(characteristic);
-            device.enableNotifications(characteristic);
-            if (isLinked(channelId)) {
-                device.readCharacteristic(characteristic);
-            }
-        } else {
+            Consumer<byte[]> handler, @Nullable String name) {
+        if (characteristic == null) {
             logger.debug("Characteristic is null - not activating any channel.");
+            return;
+        }
+        String channelId = name != null ? name : characteristic.getGattCharacteristic().name();
+        if (channelId == null) {
+            // use the type id as a fallback
+            channelId = channelTypeUID.getId();
+        }
+        if (getThing().getChannel(channelId) == null) {
+            // the channel does not exist yet, so let's add it
+            ThingBuilder updatedThing = editThing();
+            Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelId), "Number")
+                    .withType(channelTypeUID).build();
+            updatedThing.withChannel(channel);
+            updateThing(updatedThing.build());
+            logger.debug("Added channel '{}' to Thing '{}'", channelId, getThing().getUID());
+        }
+        if (deviceCharacteristics.add(characteristic)) {
+            device.enableNotifications(characteristic, handler);
+        }
+
+        if (isLinked(channelId)) {
+            device.readCharacteristic(characteristic).thenAccept(handler);
         }
     }
 
-    protected void activateChannel(@Nullable BluetoothCharacteristic characteristic, ChannelTypeUID channelTypeUID) {
-        activateChannel(characteristic, channelTypeUID, null);
+    protected void activateChannel(@Nullable BluetoothCharacteristic characteristic, ChannelTypeUID channelTypeUID,
+            Consumer<byte[]> handler) {
+        activateChannel(characteristic, channelTypeUID, handler, null);
     }
 
 }

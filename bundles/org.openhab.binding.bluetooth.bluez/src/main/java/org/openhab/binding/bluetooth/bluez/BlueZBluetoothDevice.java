@@ -15,24 +15,25 @@ package org.openhab.binding.bluetooth.bluez;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.BluetoothException;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.bluez.handler.BlueZBridgeHandler;
-import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
 import tinyb.BluetoothGattDescriptor;
 import tinyb.BluetoothGattService;
@@ -50,6 +51,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     private final Logger logger = LoggerFactory.getLogger(BlueZBluetoothDevice.class);
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
+    private final BluezServiceContext serviceContext = new BluezServiceContext();
 
     private long lastSeenTime;
 
@@ -105,11 +108,11 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                 this.manufacturer = manufacturerId & 0xFFFF);
 
         if (device.getConnected()) {
-            this.connectionState = ConnectionState.CONNECTED;
+            setConnectionState(ConnectionState.CONNECTED);
         }
 
         enableNotifications();
-        refreshServices();
+        serviceContext.refreshServices();
     }
 
     private void enableNotifications() {
@@ -118,7 +121,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             rssi = (int) n;
             BluetoothScanNotification notification = new BluetoothScanNotification();
             notification.setRssi(n);
-            notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
+            notifyScanRecordReceived(notification);
         });
         device.enableManufacturerDataNotifications(n -> {
             for (Map.Entry<Short, byte[]> entry : n.entrySet()) {
@@ -131,20 +134,19 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                     logger.debug("Received manufacturer data for '{}': {}", address, HexUtils.bytesToHex(data, " "));
                 }
                 notification.setManufacturerData(data);
-                notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
+                notifyScanRecordReceived(notification);
             }
         });
         device.enableConnectedNotifications(connected -> {
-            connectionState = connected ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
+            ConnectionState connectionState = connected ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
             logger.debug("Connection state of '{}' changed to {}", address, connectionState);
-            notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                    new BluetoothConnectionStatusNotification(connectionState));
+            setConnectionState(connectionState);
         });
         device.enableServicesResolvedNotifications(resolved -> {
             logger.debug("Received services resolved event for '{}': {}", address, resolved);
             if (resolved) {
-                refreshServices();
-                notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
+                serviceContext.refreshServices();
+                notifyServicesDiscovered(serviceContext);
             }
         });
         device.enableServiceDataNotifications(data -> {
@@ -167,189 +169,218 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         device.disableTrustedNotifications();
     }
 
-    protected void refreshServices() {
-        if (device.getServices().size() > getServices().size()) {
-            for (BluetoothGattService tinybService : device.getServices()) {
-                BluetoothService service = new BluetoothService(UUID.fromString(tinybService.getUUID()),
-                        tinybService.getPrimary());
-                for (BluetoothGattCharacteristic tinybCharacteristic : tinybService.getCharacteristics()) {
-                    BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
-                            UUID.fromString(tinybCharacteristic.getUUID()), 0);
-                    for (BluetoothGattDescriptor tinybDescriptor : tinybCharacteristic.getDescriptors()) {
-                        BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
-                                UUID.fromString(tinybDescriptor.getUUID()));
-                        characteristic.addDescriptor(descriptor);
-                    }
-                    service.addCharacteristic(characteristic);
-                }
-                addService(service);
-            }
-            notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
-        }
+    @Override
+    protected void doServiceDiscovery() throws BluetoothException {
+        ensureConnected();
+        serviceContext.refreshServices();
     }
 
     @Override
-    public boolean connect() {
-        if (device != null && !device.getConnected()) {
-            try {
-                return device.connect();
-            } catch (BluetoothException e) {
-                if ("Timeout was reached".equals(e.getMessage())) {
-                    notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                            new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
-                } else if (e.getMessage() != null && e.getMessage().contains("Protocol not available")) {
-                    // this device does not seem to be connectable at all - let's log a warning and ignore it.
-                    logger.warn("Bluetooth device '{}' does not allow a connection.", device.getAddress());
-                } else {
-                    logger.debug("Exception occurred when trying to connect device '{}': {}", device.getAddress(),
-                            e.getMessage());
-                }
-            }
+    public void doConnect() throws BluezException {
+        if (device == null) {
+            throw new BluezException(String.format("Cannot connect, tinyb device '%s' is missing", address));
         }
-        return false;
+        if (device.getConnected()) {
+            // mission accomplished!
+            setConnectionState(ConnectionState.CONNECTED);
+            return;
+        }
+        try {
+            if (device.connect()) {
+                return;
+            }
+        } catch (tinyb.BluetoothException e) {
+            if ("Timeout was reached".equals(e.getMessage())) {
+                setConnectionState(ConnectionState.DISCONNECTED);
+            } else if (e.getMessage() != null && e.getMessage().contains("Protocol not available")) {
+                // this device does not seem to be connectable at all - let's log a warning and ignore it.
+                logger.warn("Bluetooth device '{}' does not allow a connection.", address);
+            } else {
+                logger.debug("Exception occurred when trying to connect device '{}': {}", address, e.getMessage());
+            }
+            throw new BluezException(e);
+        }
+        throw new BluezException(String.format("Failed to connect to device '%s'", address));
     }
 
     @Override
-    public boolean disconnect() {
-        if (device != null && device.getConnected()) {
-            logger.debug("Disconnecting '{}'", address);
-            try {
-                return device.disconnect();
-            } catch (BluetoothException e) {
-                logger.debug("Exception occurred when trying to disconnect device '{}': {}", device.getAddress(),
-                        e.getMessage());
-            }
+    public void doDisconnect() throws BluezException {
+        if (device == null) {
+            throw new BluezException(String.format("Cannot connect, tinyb device '%s' is missing", address));
         }
-        return false;
+        if (!device.getConnected()) {
+            // mission accomplished!
+            setConnectionState(ConnectionState.DISCONNECTED);
+            return;
+        }
+        logger.debug("Disconnecting '{}'", address);
+        try {
+            if (device.disconnect()) {
+                return;
+            }
+        } catch (tinyb.BluetoothException e) {
+            logger.debug("Exception occurred when trying to disconnect device '{}': {}", address, e.getMessage());
+            throw new BluezException(e);
+        }
+        throw new BluezException(String.format("Failed to disconnect from device '%s'", address));
     }
 
-    private void ensureConnected() {
+    private void ensureConnected() throws BluetoothException {
         if (device == null || !device.getConnected()) {
-            throw new IllegalStateException("TinyB device is not set or not connected");
+            throw new BluezException("TinyB device '" + address + "'is not set");
+        }
+        if (!device.getConnected()) {
+            throw new BluetoothException("Device '" + address + "' is not connected");
         }
     }
 
     @Override
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        ensureConnected();
+    public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
+        try {
+            ensureConnected();
 
-        BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c == null) {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
-        }
-        scheduler.submit(() -> {
-            try {
-                byte[] value = c.readValue();
-                characteristic.setValue(value);
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.SUCCESS);
-            } catch (BluetoothException e) {
-                logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
-                        e.getMessage());
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.ERROR);
+            BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+            if (c == null) {
+                logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+                throw new BluetoothException(String.format("Characteristic '%s' is missing on device '%s'.",
+                        characteristic.getUuid(), address));
             }
-        });
-        return true;
-    }
+            CompletableFuture<byte[]> future = new CompletableFuture<>();
+            scheduler.submit(() -> {
+                try {
+                    byte[] value = c.readValue();
+                    future.complete(value);
+                } catch (tinyb.BluetoothException e) {
+                    logger.debug("Exception occurred when trying to read characteristic '{}': {}",
+                            characteristic.getUuid(), e.getMessage());
 
-    @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
-        ensureConnected();
-
-        BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c == null) {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
+                    future.completeExceptionally(e);
+                }
+            });
+            return future;
+        } catch (BluetoothException ex) {
+            return completedExceptionaly(ex);
         }
-        scheduler.submit(() -> {
-            try {
-                BluetoothCompletionStatus successStatus = c.writeValue(characteristic.getByteValue())
-                        ? BluetoothCompletionStatus.SUCCESS
-                        : BluetoothCompletionStatus.ERROR;
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic, successStatus);
-            } catch (BluetoothException e) {
-                logger.debug("Exception occurred when trying to write characteristic '{}': {}",
-                        characteristic.getUuid(), e.getMessage());
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.ERROR);
-            }
-        });
-        return true;
     }
 
     @Override
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        ensureConnected();
+    public CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
+        try {
+            ensureConnected();
 
-        BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c != null) {
+            BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+            if (c == null) {
+                logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+                throw new BluezException(String.format("Characteristic '%s' is missing on device '%s'.",
+                        characteristic.getUuid(), address));
+            }
+            CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
+            scheduler.submit(() -> {
+                try {
+                    if (c.writeValue(value)) {
+                        future.complete(null);
+                    } else {
+                        future.completeExceptionally(
+                                new BluezException(String.format("Failed to write characteristic %s on device '$s'",
+                                        characteristic.getUuid(), address)));
+                    }
+                } catch (tinyb.BluetoothException e) {
+                    logger.debug("Exception occurred when trying to write characteristic '{}': {}",
+                            characteristic.getUuid(), e.getMessage());
+                    future.completeExceptionally(e);
+                }
+            });
+            return future;
+        } catch (BluetoothException ex) {
+            return completedExceptionaly(ex);
+        }
+    }
+
+    @Override
+    public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic,
+            Consumer<byte[]> handler) {
+        try {
+            ensureConnected();
+
+            BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+            if (c == null) {
+                logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+                throw new BluezException(String.format("Characteristic '%s' is missing on device '%s'.",
+                        characteristic.getUuid(), address));
+            }
             try {
-                c.enableValueNotifications(value -> {
-                    characteristic.setValue(value);
-                    notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, characteristic);
-                });
-            } catch (BluetoothException e) {
+                c.enableValueNotifications(value -> scheduler.submit(() -> handler.accept(value)));
+            } catch (tinyb.BluetoothException e) {
                 if (e.getMessage().contains("Already notifying")) {
-                    return false;
+                    return CompletableFuture.completedFuture(null);
                 } else if (e.getMessage().contains("In Progress")) {
                     // let's retry in 10 seconds
-                    scheduler.schedule(() -> enableNotifications(characteristic), 10, TimeUnit.SECONDS);
+                    // scheduler.schedule(() -> enableNotifications(characteristic, handler), 10, TimeUnit.SECONDS);
+                    throw new BluezException(e);
                 } else {
                     logger.warn("Exception occurred while activating notifications on '{}'", address, e);
+                    throw new BluezException(e);
                 }
             }
-            return true;
-        } else {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
+        } catch (BluetoothException ex) {
+            return completedExceptionaly(ex);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        ensureConnected();
+    public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
+        try {
+            ensureConnected();
 
-        BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c != null) {
+            BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+            if (c == null) {
+                logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+                throw new BluezException(String.format("Characteristic '%s' is missing on device '%s'.",
+                        characteristic.getUuid(), address));
+            }
             c.disableValueNotifications();
-            return true;
-        } else {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
+        } catch (BluetoothException ex) {
+            return completedExceptionaly(ex);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public boolean enableNotifications(BluetoothDescriptor descriptor) {
-        ensureConnected();
+    public CompletableFuture<@Nullable Void> enableNotifications(BluetoothDescriptor descriptor,
+            Consumer<byte[]> handler) {
+        try {
+            ensureConnected();
 
-        BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
-        if (d != null) {
-            d.enableValueNotifications(value -> {
-                descriptor.setValue(value);
-                notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor);
-            });
-            return true;
-        } else {
-            logger.warn("Descriptor '{}' is missing on device '{}'.", descriptor.getUuid(), address);
-            return false;
+            BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
+            if (d == null) {
+                logger.warn("Descriptor '{}' is missing on device '{}'.", descriptor.getUuid(), address);
+                throw new BluezException(
+                        String.format("Descriptor '%s' is missing on device '%s'.", descriptor.getUuid(), address));
+            }
+            d.enableValueNotifications(value -> scheduler.submit(() -> handler.accept(value)));
+        } catch (BluetoothException ex) {
+            return completedExceptionaly(ex);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public boolean disableNotifications(BluetoothDescriptor descriptor) {
-        ensureConnected();
+    public CompletableFuture<@Nullable Void> disableNotifications(BluetoothDescriptor descriptor) {
+        try {
+            ensureConnected();
 
-        BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
-        if (d != null) {
+            BluetoothGattDescriptor d = getTinybDescriptorByUUID(descriptor.getUuid().toString());
+            if (d == null) {
+                logger.warn("Descriptor '{}' is missing on device '{}'.", descriptor.getUuid(), address);
+                throw new BluezException(
+                        String.format("Descriptor '%s' is missing on device '%s'.", descriptor.getUuid(), address));
+            }
             d.disableValueNotifications();
-            return true;
-        } else {
-            logger.warn("Descriptor '{}' is missing on device '{}'.", descriptor.getUuid(), address);
-            return false;
+        } catch (BluetoothException ex) {
+            return completedExceptionaly(ex);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     private BluetoothGattCharacteristic getTinybCharacteristicByUUID(String uuid) {
@@ -394,7 +425,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         disableNotifications();
         try {
             device.remove();
-        } catch (BluetoothException ex) {
+        } catch (tinyb.BluetoothException ex) {
             if (ex.getMessage().contains("Does Not Exist")) {
                 // this happens when the underlying device has already been removed
                 // but we don't have a way to check if that is the case beforehand so
@@ -405,4 +436,29 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             }
         }
     }
+
+    private class BluezServiceContext extends ServiceContext {
+
+        protected void refreshServices() {
+            if (device.getServices().size() > getServices().size()) {
+                for (BluetoothGattService tinybService : device.getServices()) {
+                    BluetoothService service = new BluetoothService(UUID.fromString(tinybService.getUUID()),
+                            tinybService.getPrimary());
+                    for (BluetoothGattCharacteristic tinybCharacteristic : tinybService.getCharacteristics()) {
+                        BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
+                                UUID.fromString(tinybCharacteristic.getUUID()), 0);
+                        for (BluetoothGattDescriptor tinybDescriptor : tinybCharacteristic.getDescriptors()) {
+                            BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
+                                    UUID.fromString(tinybDescriptor.getUUID()));
+                            characteristic.addDescriptor(descriptor);
+                        }
+                        service.addCharacteristic(characteristic);
+                    }
+                    addService(service);
+                }
+                notifyServicesDiscovered(this);
+            }
+        }
+    }
+
 }

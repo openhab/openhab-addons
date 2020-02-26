@@ -16,9 +16,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.slf4j.Logger;
@@ -30,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Refactored class to use Integer instead of int, fixed bugs, diverse improvements
  */
+@NonNullByDefault
 public abstract class BluetoothDevice {
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDevice.class);
@@ -40,13 +47,9 @@ public abstract class BluetoothDevice {
      */
     public enum ConnectionState {
         /**
-         * Device is still being discovered and is not available for use.
+         * Device is either still being discovered or an error occurred during connection
          */
-        DISCOVERING,
-        /**
-         * Device has been discovered. This is used for the initial notification that the device is available.
-         */
-        DISCOVERED,
+        UNKNOWN,
         /**
          * Device is disconnected.
          */
@@ -65,20 +68,11 @@ public abstract class BluetoothDevice {
         DISCONNECTING
     }
 
-    protected enum BluetoothEventType {
-        CONNECTION_STATE,
-        SCAN_RECORD,
-        CHARACTERISTIC_READ_COMPLETE,
-        CHARACTERISTIC_WRITE_COMPLETE,
-        CHARACTERISTIC_UPDATED,
-        DESCRIPTOR_UPDATED,
-        SERVICES_DISCOVERED
-    }
-
+    private final Object connectionStateLock = new Object();
     /**
      * Current connection state
      */
-    protected ConnectionState connectionState = ConnectionState.DISCOVERING;
+    private ConnectionState connectionState = ConnectionState.UNKNOWN;
 
     /**
      * The adapter the device is accessed through
@@ -93,34 +87,34 @@ public abstract class BluetoothDevice {
     /**
      * Manufacturer id
      */
-    protected Integer manufacturer = null;
+    protected @Nullable Integer manufacturer = null;
 
     /**
      * Device name.
      * <p>
      * Uses the devices long name if known, otherwise the short name if known
      */
-    protected String name;
-
-    /**
-     * List of supported services
-     */
-    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<UUID, BluetoothService>();
+    protected @Nullable String name;
 
     /**
      * Last known RSSI
      */
-    protected Integer rssi = null;
+    protected @Nullable Integer rssi = null;
 
     /**
      * Last reported transmitter power
      */
-    protected Integer txPower = null;
+    protected @Nullable Integer txPower = null;
 
     /**
      * The event listeners will be notified of device updates
      */
     private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<BluetoothDeviceListener>();
+
+    private @Nullable CompletableFuture<@Nullable Void> pendingConnectFuture = null;
+    private @Nullable CompletableFuture<@Nullable Void> pendingDisconnectFuture = null;
+
+    private AtomicReference<@Nullable CompletableFuture<ServiceContext>> discoveredServicesFuture = new AtomicReference<>();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address
@@ -138,7 +132,7 @@ public abstract class BluetoothDevice {
      *
      * @return The devices name
      */
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -174,26 +168,8 @@ public abstract class BluetoothDevice {
      *
      * @return an integer with manufacturer ID of the device, or null if not known
      */
-    public Integer getManufacturerId() {
+    public @Nullable Integer getManufacturerId() {
         return manufacturer;
-    }
-
-    /**
-     * Returns a {@link BluetoothService} if the requested service is supported
-     *
-     * @return the {@link BluetoothService} or null if the service is not supported.
-     */
-    public BluetoothService getServices(UUID uuid) {
-        return supportedServices.get(uuid);
-    }
-
-    /**
-     * Returns a list of supported service UUIDs
-     *
-     * @return list of supported {@link BluetoothService}s.
-     */
-    public Collection<BluetoothService> getServices() {
-        return supportedServices.values();
     }
 
     /**
@@ -210,7 +186,7 @@ public abstract class BluetoothDevice {
      *
      * @return the last reported transmitter power value in dBm
      */
-    public Integer getTxPower() {
+    public @Nullable Integer getTxPower() {
         return txPower;
     }
 
@@ -232,7 +208,7 @@ public abstract class BluetoothDevice {
      *
      * @return the last RSSI value in dBm
      */
-    public Integer getRssi() {
+    public @Nullable Integer getRssi() {
         return rssi;
     }
 
@@ -245,23 +221,34 @@ public abstract class BluetoothDevice {
         this.name = name;
     }
 
-    /**
-     * Check if the device supports the specified service
-     *
-     * @param uuid the service {@link UUID}
-     * @return true if the service is supported
-     */
-    public boolean supportsService(UUID uuid) {
-        return supportedServices.containsKey(uuid);
-    }
-
-    /**
-     * Get the current connection state for this device
-     *
-     * @return the current {@link ConnectionState}
-     */
-    public ConnectionState getConnectionState() {
-        return connectionState;
+    public CompletableFuture<@Nullable Void> connect() {
+        synchronized (connectionStateLock) {
+            switch (connectionState) {
+                case CONNECTING:
+                    Objects.requireNonNull(pendingConnectFuture);// make null checker happy
+                    return pendingConnectFuture;
+                case CONNECTED:
+                    return CompletableFuture.completedFuture(null);
+                case DISCONNECTING:
+                    Objects.requireNonNull(pendingDisconnectFuture);// make null checker happy
+                    // we will run a connect after the disconnect finishes
+                    return pendingDisconnectFuture.thenCompose(v -> connect());
+                default:
+                    // init connection
+                    connectionState = ConnectionState.CONNECTING;
+                    CompletableFuture<@Nullable Void> future = pendingConnectFuture = new CompletableFuture<@Nullable Void>();
+                    try {
+                        doConnect();
+                    } catch (BluetoothException e) {
+                        if (connectionState == ConnectionState.CONNECTING) {
+                            connectionState = ConnectionState.UNKNOWN;
+                            pendingConnectFuture = null;
+                        }
+                        return completedExceptionaly(e);
+                    }
+                    return future;
+            }
+        }
     }
 
     /**
@@ -272,8 +259,36 @@ public abstract class BluetoothDevice {
      *
      * @return true if the connection process is started successfully
      */
-    public boolean connect() {
-        return false;
+    protected abstract void doConnect() throws BluetoothException;
+
+    public CompletableFuture<@Nullable Void> disconnect() {
+        synchronized (connectionStateLock) {
+            switch (connectionState) {
+                case DISCONNECTING:
+                    Objects.requireNonNull(pendingDisconnectFuture);// make null checker happy
+                    return pendingDisconnectFuture;
+                case DISCONNECTED:
+                    return CompletableFuture.completedFuture(null);
+                case CONNECTING:
+                    Objects.requireNonNull(pendingConnectFuture);// make null checker happy
+                    // we will run a disconnect after the connection finishes
+                    return pendingConnectFuture.thenCompose(v -> disconnect());
+                default:
+                    // try to disconnect
+                    connectionState = ConnectionState.DISCONNECTING;
+                    CompletableFuture<@Nullable Void> future = pendingDisconnectFuture = new CompletableFuture<@Nullable Void>();
+                    try {
+                        doDisconnect();
+                    } catch (BluetoothException e) {
+                        if (connectionState == ConnectionState.DISCONNECTING) {
+                            connectionState = ConnectionState.UNKNOWN;
+                            pendingDisconnectFuture = null;
+                        }
+                        return completedExceptionaly(e);
+                    }
+                    return future;
+            }
+        }
     }
 
     /**
@@ -285,8 +300,20 @@ public abstract class BluetoothDevice {
      *
      * @return true if the disconnection process is started successfully
      */
-    public boolean disconnect() {
-        return false;
+    protected abstract void doDisconnect() throws BluetoothException;
+
+    public CompletableFuture<ServiceContext> discoverServices() {
+        return connect().thenCompose(v -> discoveredServicesFuture.updateAndGet(future -> {
+            if (future == null || future.isCompletedExceptionally()) {
+                future = new CompletableFuture<>();
+                try {
+                    doServiceDiscovery();
+                } catch (BluetoothException e) {
+                    future.completeExceptionally(e);
+                }
+            }
+            return future;
+        }));
     }
 
     /**
@@ -297,28 +324,7 @@ public abstract class BluetoothDevice {
      *
      * @return true if the discovery process is started successfully
      */
-    public boolean discoverServices() {
-        return false;
-    }
-
-    /**
-     * Gets a Bluetooth characteristic if it is known.
-     * <p>
-     * Note that this method will not search for a characteristic in the remote device if it is not known.
-     * You must have previously connected to the device so that the device services and characteristics can
-     * be retrieved.
-     *
-     * @param uuid the {@link UUID} of the characteristic to return
-     * @return the {@link BluetoothCharacteristic} or null if the characteristic is not found in the device
-     */
-    public BluetoothCharacteristic getCharacteristic(UUID uuid) {
-        for (BluetoothService service : supportedServices.values()) {
-            if (service.providesCharacteristic(uuid)) {
-                return service.getCharacteristic(uuid);
-            }
-        }
-        return null;
-    }
+    protected abstract void doServiceDiscovery() throws BluetoothException;
 
     /**
      * Reads a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
@@ -333,9 +339,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to read.
      * @return true if the characteristic read is started successfully
      */
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
-        return false;
-    }
+    public abstract CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic);
 
     /**
      * Writes a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
@@ -347,9 +351,8 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to read.
      * @return true if the characteristic write is started successfully
      */
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
-        return false;
-    }
+    public abstract CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic,
+            byte[] value);
 
     /**
      * Enables notifications for a characteristic. Only a single read or write operation can be requested at once.
@@ -361,9 +364,8 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to receive notifications for.
      * @return true if the characteristic notification is started successfully
      */
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        return false;
-    }
+    public abstract CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic,
+            Consumer<byte[]> handler);
 
     /**
      * Disables notifications for a characteristic. Only a single read or write operation can be requested at once.
@@ -373,9 +375,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to disable notifications for.
      * @return true if the characteristic notification is stopped successfully
      */
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
-        return false;
-    }
+    public abstract CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic);
 
     /**
      * Enables notifications for a descriptor. Only a single read or write operation can be requested at once.
@@ -387,9 +387,8 @@ public abstract class BluetoothDevice {
      * @param descriptor the {@link BluetoothDescriptor} to receive notifications for.
      * @return true if the descriptor notification is started successfully
      */
-    public boolean enableNotifications(BluetoothDescriptor descriptor) {
-        return false;
-    }
+    public abstract CompletableFuture<@Nullable Void> enableNotifications(BluetoothDescriptor descriptor,
+            Consumer<byte[]> handler);
 
     /**
      * Disables notifications for a descriptor. Only a single read or write operation can be requested at once.
@@ -399,74 +398,7 @@ public abstract class BluetoothDevice {
      * @param descriptor the {@link BluetoothDescriptor} to disable notifications for.
      * @return true if the descriptor notification is stopped successfully
      */
-    public boolean disableNotifications(BluetoothDescriptor descriptor) {
-        return false;
-    }
-
-    /**
-     * Adds a service to the device.
-     *
-     * @param service the new {@link BluetoothService} to add
-     * @return true if the service was added or false if the service was already supported
-     */
-    protected boolean addService(BluetoothService service) {
-        if (supportedServices.containsKey(service.getUuid())) {
-            return false;
-        }
-        logger.trace("Adding new service to device {}: {}", address, service);
-        supportedServices.put(service.getUuid(), service);
-        return true;
-    }
-
-    /**
-     * Adds a list of services to the device
-     *
-     * @param uuids
-     */
-    protected void addServices(List<UUID> uuids) {
-        for (UUID uuid : uuids) {
-            // Check if we already know about this service
-            if (supportsService(uuid)) {
-                continue;
-            }
-
-            // Create a new service and add it to the device
-            addService(new BluetoothService(uuid));
-        }
-    }
-
-    /**
-     * Gets a service based on the handle.
-     * This will return a service if the handle falls within the start and end handles for the service.
-     *
-     * @param handle the handle for the service
-     * @return the {@link BluetoothService} or null if the service was not found
-     */
-    protected BluetoothService getServiceByHandle(int handle) {
-        synchronized (supportedServices) {
-            for (BluetoothService service : supportedServices.values()) {
-                if (service.getHandleStart() <= handle && service.getHandleEnd() >= handle) {
-                    return service;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets a characteristic based on the handle.
-     *
-     * @param handle the handle for the characteristic
-     * @return the {@link BluetoothCharacteristic} or null if the characteristic was not found
-     */
-    protected BluetoothCharacteristic getCharacteristicByHandle(int handle) {
-        BluetoothService service = getServiceByHandle(handle);
-        if (service != null) {
-            return service.getCharacteristicByHandle(handle);
-        }
-
-        return null;
-    }
+    public abstract CompletableFuture<@Nullable Void> disableNotifications(BluetoothDescriptor descriptor);
 
     /**
      * Adds a device listener
@@ -474,9 +406,6 @@ public abstract class BluetoothDevice {
      * @param listener the {@link BluetoothDeviceListener} to add
      */
     public void addListener(BluetoothDeviceListener listener) {
-        if (listener == null) {
-            return;
-        }
         eventListeners.add(listener);
     }
 
@@ -491,7 +420,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {
@@ -499,39 +428,77 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Notify the listeners of an event
+     * Get the current connection state for this device
      *
-     * @param event the {@link BluetoothEventType} of this event
-     * @param args an array of arguments to pass to the callback
+     * @return the current {@link ConnectionState}
      */
-    protected void notifyListeners(BluetoothEventType event, Object... args) {
+    public ConnectionState getConnectionState() {
+        return connectionState;
+    }
+
+    protected void setConnectionState(ConnectionState newState) {
+        synchronized (connectionStateLock) {
+            this.connectionState = newState;
+            switch (newState) {
+                case CONNECTED: {
+                    if (pendingDisconnectFuture != null) {
+                        pendingDisconnectFuture.completeExceptionally(new BluetoothException("Failed to disconnect"));
+                    }
+                    pendingDisconnectFuture = null;
+
+                    if (pendingConnectFuture != null) {
+                        pendingConnectFuture.complete(null);
+                    }
+                    pendingConnectFuture = null;
+                    break;
+                }
+                case DISCONNECTED: {
+                    if (pendingConnectFuture != null) {
+                        pendingConnectFuture.completeExceptionally(new BluetoothException("Failed to connect"));
+                    }
+                    pendingConnectFuture = null;
+
+                    if (pendingDisconnectFuture != null) {
+                        pendingDisconnectFuture.complete(null);
+                    }
+                    pendingDisconnectFuture = null;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        BluetoothConnectionStatusNotification notification = new BluetoothConnectionStatusNotification(newState);
         for (BluetoothDeviceListener listener : eventListeners) {
             try {
-                switch (event) {
-                    case SCAN_RECORD:
-                        listener.onScanRecordReceived((BluetoothScanNotification) args[0]);
-                        break;
-                    case CONNECTION_STATE:
-                        listener.onConnectionStateChange((BluetoothConnectionStatusNotification) args[0]);
-                        break;
-                    case SERVICES_DISCOVERED:
-                        listener.onServicesDiscovered();
-                        break;
-                    case CHARACTERISTIC_READ_COMPLETE:
-                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_WRITE_COMPLETE:
-                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_UPDATED:
-                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
-                        break;
-                    case DESCRIPTOR_UPDATED:
-                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
-                        break;
-                }
+                listener.onConnectionStateChange(notification);
+            } catch (Exception e) {
+                logger.error("Failed to inform listener '{}': {}", listener, e.getMessage(), e);
+            }
+        }
+    }
+
+    protected void notifyServicesDiscovered(ServiceContext context) {
+        discoveredServicesFuture.updateAndGet(future -> {
+            if (future == null || future.isDone()) {
+                return CompletableFuture.completedFuture(context);
+            }
+            future.complete(context);
+            return future;
+        });
+        for (BluetoothDeviceListener listener : eventListeners) {
+            try {
+                listener.onServicesDiscovered(context);
+            } catch (Exception e) {
+                logger.error("Failed to inform listener '{}': {}", listener, e.getMessage(), e);
+            }
+        }
+    }
+
+    protected void notifyScanRecordReceived(BluetoothScanNotification scanNotification) {
+        for (BluetoothDeviceListener listener : eventListeners) {
+            try {
+                listener.onScanRecordReceived(scanNotification);
             } catch (Exception e) {
                 logger.error("Failed to inform listener '{}': {}", listener, e.getMessage(), e);
             }
@@ -557,4 +524,132 @@ public abstract class BluetoothDevice {
         builder.append(']');
         return builder.toString();
     }
+
+    public class ServiceContext {
+
+        /**
+         * List of supported services
+         */
+        protected final Map<UUID, BluetoothService> supportedServices = new HashMap<UUID, BluetoothService>();
+
+        /**
+         * Returns a {@link BluetoothService} if the requested service is supported
+         *
+         * @return the {@link BluetoothService} or null if the service is not supported.
+         */
+        public BluetoothService getServices(UUID uuid) {
+            return supportedServices.get(uuid);
+        }
+
+        /**
+         * Returns a list of supported service UUIDs
+         *
+         * @return list of supported {@link BluetoothService}s.
+         */
+        public Collection<BluetoothService> getServices() {
+            return supportedServices.values();
+        }
+
+        /**
+         * Check if the device supports the specified service
+         *
+         * @param uuid the service {@link UUID}
+         * @return true if the service is supported
+         */
+        public boolean supportsService(UUID uuid) {
+            return supportedServices.containsKey(uuid);
+        }
+
+        /**
+         * Adds a service to the device.
+         *
+         * @param service the new {@link BluetoothService} to add
+         * @return true if the service was added or false if the service was already supported
+         */
+        protected boolean addService(BluetoothService service) {
+            if (supportedServices.containsKey(service.getUuid())) {
+                return false;
+            }
+            logger.trace("Adding new service to device {}: {}", address, service);
+            supportedServices.put(service.getUuid(), service);
+            return true;
+        }
+
+        /**
+         * Adds a list of services to the device
+         *
+         * @param uuids
+         */
+        protected void addServices(List<UUID> uuids) {
+            for (UUID uuid : uuids) {
+                // Check if we already know about this service
+                if (supportsService(uuid)) {
+                    continue;
+                }
+
+                // Create a new service and add it to the device
+                addService(new BluetoothService(uuid));
+            }
+        }
+
+        /**
+         * Gets a service based on the handle.
+         * This will return a service if the handle falls within the start and end handles for the service.
+         *
+         * @param handle the handle for the service
+         * @return the {@link BluetoothService} or null if the service was not found
+         */
+        protected @Nullable BluetoothService getServiceByHandle(int handle) {
+            synchronized (supportedServices) {
+                for (BluetoothService service : supportedServices.values()) {
+                    if (service.getHandleStart() <= handle && service.getHandleEnd() >= handle) {
+                        return service;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Gets a Bluetooth characteristic if it is known.
+         * <p>
+         * Note that this method will not search for a characteristic in the remote device if it is not known.
+         * You must have previously connected to the device so that the device services and characteristics can
+         * be retrieved.
+         *
+         * @param uuid the {@link UUID} of the characteristic to return
+         * @return the {@link BluetoothCharacteristic} or null if the characteristic is not found in the device
+         */
+        public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
+            for (BluetoothService service : supportedServices.values()) {
+                if (service.providesCharacteristic(uuid)) {
+                    return service.getCharacteristic(uuid);
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Gets a characteristic based on the handle.
+         *
+         * @param handle the handle for the characteristic
+         * @return the {@link BluetoothCharacteristic} or null if the characteristic was not found
+         */
+        protected @Nullable BluetoothCharacteristic getCharacteristicByHandle(int handle) {
+            BluetoothService service = getServiceByHandle(handle);
+            if (service != null) {
+                return service.getCharacteristicByHandle(handle);
+            }
+
+            return null;
+        }
+
+    }
+
+    protected static <T> CompletableFuture<T> completedExceptionaly(Throwable th) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        future.completeExceptionally(th);
+        return future;
+    }
+
 }

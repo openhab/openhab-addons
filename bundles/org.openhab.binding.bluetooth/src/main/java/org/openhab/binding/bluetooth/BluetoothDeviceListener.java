@@ -36,7 +36,8 @@ public interface BluetoothDeviceListener {
     /**
      * Called when the connection status changes
      *
-     * @param connectionNotification the {@link BluetoothConnectionStatusNotification} providing the updated connection
+     * @param connectionNotification the {@link BluetoothConnectionStatusNotification} providing the updated
+     *            connection
      *            information
      */
     void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification);
@@ -44,37 +45,6 @@ public interface BluetoothDeviceListener {
     /**
      * Called when a devices services and characteristics have been completely read
      */
-    void onServicesDiscovered();
+    void onServicesDiscovered(BluetoothDevice.ServiceContext services);
 
-    /**
-     * Called when a read request completes
-     *
-     * @param characteristic the {@link BluetoothCharacteristic} that has completed the read request
-     * @param status the {@link BluetoothCompletionStatus} of the read request
-     */
-    void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status);
-
-    /**
-     * Called when a write request completes
-     *
-     * @param characteristic the {@link BluetoothCharacteristic} that has completed the write request
-     * @param status the {@link BluetoothCompletionStatus} of the write request
-     */
-    void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status);
-
-    /**
-     * Called when a characteristic value is received. Implementations should call this whenever a value
-     * is received from the BLE device even if there is no change to the value.
-     *
-     * @param characteristic the updated {@link BluetoothCharacteristic}
-     */
-    void onCharacteristicUpdate(BluetoothCharacteristic characteristic);
-
-    /**
-     * Called when a descriptor value is received. Implementations should call this whenever a value
-     * is received from the BLE device even if there is no change to the value.
-     *
-     * @param characteristic the updated {@link BluetoothCharacteristic}
-     */
-    void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor);
 }
