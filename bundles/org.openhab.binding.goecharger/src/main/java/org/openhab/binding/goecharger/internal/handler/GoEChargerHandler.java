@@ -155,7 +155,6 @@ public class GoEChargerHandler extends BaseThingHandler {
             default:
                 return null;
             }
-
         }
         return null;
     }
@@ -179,8 +178,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         State state = null;
         if (value instanceof Boolean) {
             state = (Boolean)value ? OnOffType.ON : OnOffType.OFF;
-        }
-        else if (value instanceof Double) {
+        } else if (value instanceof Double) {
             state = new DecimalType((Double) value);
         } else if (value instanceof Long) {
             state = new DecimalType((Long) value);
