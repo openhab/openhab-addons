@@ -126,14 +126,13 @@
 		<description>Wallbox stops charging after defined value</description>
 		<state pattern="%.1f kWh" readOnly="true"></state>
 	</channel-type>
-		<channel-type id="scs">
+	<channel-type id="scs">
 		<item-type>Number</item-type>
 		<label>Current Session Charge Amount</label>
 		<description>Amount of kWh that have been charged in this session</description>
 		<state pattern="%.1f kWh" readOnly="true"></state>
 	</channel-type>
-	<channel-type>
-		<channel-type id="eto">
+	<channel-type id="eto">
 		<item-type>Number</item-type>
 		<label>Total Charge Amount</label>
 		<description>Amount of kWh that have been charged since installation</description>
