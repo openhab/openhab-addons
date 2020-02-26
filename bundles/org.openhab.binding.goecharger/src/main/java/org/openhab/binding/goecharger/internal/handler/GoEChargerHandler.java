@@ -221,7 +221,7 @@ public class GoEChargerHandler extends BaseThingHandler {
             break;
         case STOP_STATE:
             key = "stp";
-            value = command.toString() == "ON" ? "1" : "0";
+            value = command.toString() == "ON" ? "2" : "0";
             break;
         default:
             break;
