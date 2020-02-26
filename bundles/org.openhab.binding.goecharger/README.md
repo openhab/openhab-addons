@@ -1,9 +1,6 @@
-# GoECharger Binding
+# Go-eCharger Binding
 
-This Binding controls and reads data from the [Go-eCharger](https://go-e.co/). It is a mobile wallbox for charging EVs and has an open REST API to read data and configure.
-
-**TODO**
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This Binding controls and reads data from the [Go-eCharger](https://go-e.co/). It is a mobile wallbox for charging EVs and has an open REST API for reading data and configuration.
 
 ## Supported Things
 
