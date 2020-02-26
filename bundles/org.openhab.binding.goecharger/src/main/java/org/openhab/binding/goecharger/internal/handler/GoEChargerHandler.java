@@ -274,12 +274,10 @@ public class GoEChargerHandler extends BaseThingHandler {
                     logger.warn("Error in getting data from Go-E charger, retrying once");
                     return getGoEData();
                 }
-                errorMsg = "no data available";
                 logger.warn("Error in Go-E charger response: {}", errorMsg);
             }
         } catch (MalformedURLException e) {
             errorMsg = e.getMessage();
-            logger.warn("Constructed url is not valid: {}", errorMsg);
         } catch (JsonSyntaxException e) {
             errorMsg = e.getMessage();
         } catch (IOException | IllegalStateException e) {
