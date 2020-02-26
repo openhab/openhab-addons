@@ -213,7 +213,7 @@ public class GoEChargerHandler extends BaseThingHandler {
             break;
         case SESSION_CHARGE_CONSUMPTION_LIMIT:
             key = "dwo";
-            value = (int) Double.parseDouble(command.toString()) * 10 + "";
+            value = (int) (Double.parseDouble(command.toString()) * 10) + "";
             break;
         case ALLOW_CHARGING:
             key = "alw";
