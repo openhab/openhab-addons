@@ -53,5 +53,5 @@ public class GoEChargerBindingConstants {
     // default values
     public static final int DEFAULT_REFRESH_INTERVAL = 5;
     public static final String API_URL = "http://%IP%/status";
-    public static final String MQTT_URL = "http://%IP%/mqtt?payload=%PARAM%=%COMMAND%"; // TODO needs to be POST request
+    public static final String MQTT_URL = "http://%IP%/mqtt?payload=%KEY%=%VALUE%";
 }

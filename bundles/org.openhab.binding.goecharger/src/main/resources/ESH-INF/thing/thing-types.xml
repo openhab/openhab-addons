@@ -49,7 +49,7 @@
 		<item-type>Number</item-type>
 		<label>Max Ampere</label>
 		<description>Max ampere per phase allowed to use for charging</description>
-		<state pattern="%d A" readOnly="true"></state>
+		<state pattern="%d A" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="pwm">
 		<item-type>Number</item-type>

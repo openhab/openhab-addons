@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -203,13 +204,18 @@ public class GoEChargerHandler extends BaseThingHandler {
             return;
         }
 
-        if (MAX_AMPERE.equals(channelUID.getId())) {
-            // TODO: handle commands
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        String key = null;
+        switch (channelUID.getId()) {
+            case MAX_AMPERE:
+            key = "amp";
+                break;
+            default:
+                break;
+        }
+        if (key != null) {
+            sendData(key, command.toString());
+        }else {
+            logger.warn("Could not update channel {} because it is read only", channelUID.getId());
         }
     }
 
@@ -235,6 +241,37 @@ public class GoEChargerHandler extends BaseThingHandler {
         logger.debug("Finished initializing!");
     }
 
+    private String getUrl(String type) {
+        String urlStr = type;
+        return urlStr.replace("%IP%", StringUtils.trimToEmpty(config.ip));
+    }
+
+    private void sendData(String key, String value) {
+        String errorMsg = null;
+        String urlStr = getUrl(GoEChargerBindingConstants.MQTT_URL).replace("%KEY%", key).replace("%VALUE%", value);
+        logger.debug("POST URL = {}", urlStr);
+
+        URL url;
+        HttpURLConnection connection = null;
+        try {
+            url = new URL(urlStr);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+
+            String response = IOUtils.toString(connection.getInputStream());
+            logger.debug("Response: {}", response.toString());
+        } catch (MalformedURLException e) {
+            errorMsg = e.getMessage();
+        } catch (IOException e) {
+            errorMsg = e.getMessage();
+        } 
+
+        if (errorMsg != null) {
+            // TODO might as well be wrong API
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
+        }
+    }
+
     /**
      * Request new data from Go-E charger
      *
@@ -247,9 +284,8 @@ public class GoEChargerHandler extends BaseThingHandler {
 
         GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
 
-        String urlStr = GoEChargerBindingConstants.API_URL;
-        urlStr = urlStr.replace("%IP%", StringUtils.trimToEmpty(config.ip));
-        logger.debug("URL = {}, IP = {}", urlStr, config.ip);
+        String urlStr = getUrl(GoEChargerBindingConstants.API_URL);
+        logger.debug("GET URL = {}", urlStr);
 
         try {
             // Run the HTTP request and get the JSON response
