@@ -205,7 +205,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         }
 
         String key = null;
-        Object value = null;
+        String value = null;
         switch (channelUID.getId()) {
         case MAX_AMPERE:
             key = "amp";
@@ -213,21 +213,21 @@ public class GoEChargerHandler extends BaseThingHandler {
             break;
         case SESSION_CHARGE_CONSUMPTION_LIMIT:
             key = "dwo";
-            value = (int) Double.parseDouble(command.toString()) * 10;
+            value = (int) Double.parseDouble(command.toString()) * 10 + "";
             break;
         case ALLOW_CHARGING:
             key = "alw";
-            value = command.toString() == "ON" ? 1 : 0;
+            value = command.toString() == "ON" ? "1" : "0";
             break;
         case STOP_STATE:
             key = "alw";
-            value = command.toString() == "ON" ? 1 : 0;
+            value = command.toString() == "ON" ? "1" : "0";
             break;
         default:
             break;
         }
         if (key != null) {
-            sendData(key, command.toString());
+            sendData(key, value);
         } else {
             logger.warn("Could not update channel {} because it is read only", channelUID.getId());
         }
