@@ -127,11 +127,11 @@ public class GoEChargerHandler extends BaseThingHandler {
             case TEMPERATURE:
                 return goeResponse.getTemperature();
             case SESSION_CHARGE_CONSUMPTION:
-                return (Double) (goeResponse.getSessionChargeConsumption()/360000d);
+                return (Double) (goeResponse.getSessionChargeConsumption() / 360000d);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                return (Double) (goeResponse.getSessionChargeConsumptionLimit()/10d);
+                return (Double) (goeResponse.getSessionChargeConsumptionLimit() / 10d);
             case TOTAL_CONSUMPTION:
-                return (Double) (goeResponse.getTotalChargeConsumption()/10d);
+                return (Double) (goeResponse.getTotalChargeConsumption() / 10d);
             case FIRMWARE:
                 return goeResponse.getFirmware();
             case VOLTAGE_L1:
@@ -177,13 +177,11 @@ public class GoEChargerHandler extends BaseThingHandler {
 
         State state = null;
         if (value instanceof Boolean) {
-            state = (Boolean)value ? OnOffType.ON : OnOffType.OFF;
+            state = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
         } else if (value instanceof Double) {
             state = new DecimalType((Double) value);
-        } else if (value instanceof Long) {
-            state = new DecimalType((Long) value);
         } else if (value instanceof Integer) {
-            state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
+            state = new DecimalType((Integer) value);
         } else if (value instanceof String) {
             state = new StringType((String) value);
         } else {
