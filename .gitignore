@@ -21,3 +21,4 @@ features/**/src/main/feature
 
 .vscode
 .factorypath
+*.jar

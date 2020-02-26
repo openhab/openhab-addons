@@ -78,4 +78,6 @@ public interface SqueezeBoxPlayerEventListener {
     void irCodeChangeEvent(String mac, String ircode);
 
     void updateFavoritesListEvent(List<Favorite> favorites);
+
+    void sourceChangeEvent(String mac, String source);
 }

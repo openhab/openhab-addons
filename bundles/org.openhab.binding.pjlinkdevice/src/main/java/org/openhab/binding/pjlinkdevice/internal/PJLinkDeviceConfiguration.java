@@ -31,6 +31,7 @@ public class PJLinkDeviceConfiguration {
   public boolean refreshPower;
   public boolean refreshMute;
   public boolean refreshInputChannel;
+  public boolean refreshLampState;
 
   public int autoReconnectInterval;
 }
