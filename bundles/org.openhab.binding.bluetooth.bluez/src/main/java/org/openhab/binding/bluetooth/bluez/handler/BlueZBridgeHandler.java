@@ -190,7 +190,12 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             // everything went fine, so lets switch to online
             updateStatus(ThingStatus.ONLINE);
         } catch (BluetoothException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            String message = ex.getMessage();
+            int idx = message.lastIndexOf(':');
+            if (idx != -1) {
+                message = message.substring(idx).trim();
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
