@@ -12,6 +12,20 @@
  */
 package org.openhab.binding.network.internal;
 
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -24,16 +38,6 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
 import org.openhab.binding.network.internal.utils.PingResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.*;
-import java.util.function.Consumer;
 
 /**
  * The {@link PresenceDetection} handles the connection to the Device
@@ -334,22 +338,22 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             });
         }
 
-        // ARP ping for IPv4 addresses. Use single executor for Windows tool and 
+        // ARP ping for IPv4 addresses. Use single executor for Windows tool and
         // each own executor for each network interface for other tools
         if (arpPingMethod == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
             executorService.execute(() -> {
-               Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
-               // arp-ping.exe tool capable of handling multiple interfaces by itself
-               performARPping("");
-               checkIfFinished();
+                Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
+                // arp-ping.exe tool capable of handling multiple interfaces by itself
+                performARPping("");
+                checkIfFinished();
             });
         } else if (interfaceNames != null) {
             for (final String interfaceName : interfaceNames) {
                 executorService.execute(() -> {
-                   Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
-                   performARPping(interfaceName);
-                   checkIfFinished();
-               });
+                    Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
+                    performARPping(interfaceName);
+                    checkIfFinished();
+                });
             }
         }
 
@@ -473,14 +477,16 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPort);
         try {
             InetAddress destinationAddress = destination.getValue();
-
-            networkUtils.servicePing(destinationAddress.getHostAddress(), tcpPort, timeoutInMS).ifPresent(o -> {
-                if(o.isSuccess()) {
-                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.TCP_CONNECTION, getLatency(o, preferResponseTimeAsLatency));
-                    v.addReachableTcpService(tcpPort);
-                    updateListener.partialDetectionResult(v);
-                }
-            });
+            if (destinationAddress != null) {
+                networkUtils.servicePing(destinationAddress.getHostAddress(), tcpPort, timeoutInMS).ifPresent(o -> {
+                    if (o.isSuccess()) {
+                        PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.TCP_CONNECTION,
+                                getLatency(o, preferResponseTimeAsLatency));
+                        v.addReachableTcpService(tcpPort);
+                        updateListener.partialDetectionResult(v);
+                    }
+                });
+            }
         } catch (IOException e) {
             // This should not happen and might be a user configuration issue, we log a warning message therefore.
             logger.warn("Could not create a socket connection", e);
@@ -510,10 +516,11 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
                     destinationAddress.getHostAddress(), timeoutInMS).ifPresent(o -> {
                         if (o.isSuccess()) {
-                            PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, getLatency(o, preferResponseTimeAsLatency));
+                            PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING,
+                                    getLatency(o, preferResponseTimeAsLatency));
                             updateListener.partialDetectionResult(v);
                         }
-            });
+                    });
         } catch (IOException e) {
             logger.trace("Failed to execute an arp ping for ip {}", hostname, e);
         } catch (InterruptedException ignored) {
@@ -537,7 +544,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
         networkUtils.javaPing(timeoutInMS, destinationAddress).ifPresent(o -> {
             if (o.isSuccess()) {
-                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, preferResponseTimeAsLatency));
+                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING,
+                        getLatency(o, preferResponseTimeAsLatency));
                 updateListener.partialDetectionResult(v);
             }
         });
@@ -553,11 +561,11 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
             networkUtils.nativePing(pingMethod, destinationAddress.getHostAddress(), timeoutInMS).ifPresent(o -> {
                 if (o.isSuccess()) {
-                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, preferResponseTimeAsLatency));
+                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING,
+                            getLatency(o, preferResponseTimeAsLatency));
                     updateListener.partialDetectionResult(v);
                 }
             });
-
 
         } catch (IOException e) {
             logger.trace("Failed to execute a native ping for ip {}", hostname, e);
@@ -567,7 +575,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     private double getLatency(PingResult pingResult, boolean preferResponseTimeAsLatency) {
-        logger.debug("Getting latency from ping result {} using latency mode {}", pingResult, preferResponseTimeAsLatency);
+        logger.debug("Getting latency from ping result {} using latency mode {}", pingResult,
+                preferResponseTimeAsLatency);
         // Execution time is always set and this value is also the default. So lets use it first.
         double latency = pingResult.getExecutionTimeInMS();
 

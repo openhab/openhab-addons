@@ -78,12 +78,14 @@ public class TradfriControllerHandler extends TradfriThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            logger.debug("Refreshing channel {}", channelUID);
-            coapClient.asyncGet(this);
-            return;
-        }
+        if (active) {
+            if (command instanceof RefreshType) {
+                logger.debug("Refreshing channel {}", channelUID);
+                coapClient.asyncGet(this);
+                return;
+            }
 
-        logger.debug("The controller is a read-only device and cannot handle commands.");
+            logger.debug("The controller is a read-only device and cannot handle commands.");
+        }
     }
 }

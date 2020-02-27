@@ -26,9 +26,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.homeassistant.internal.util.FutureCollector;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final ThingUID thingUID;
     private final ScheduledExecutorService scheduler;
     private final ChannelStateUpdateListener updateListener;
+    private final AvailabilityTracker tracker;
     private final TransformationServiceProvider transformationServiceProvider;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
@@ -72,12 +74,13 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * @param channelStateUpdateListener Channel update listener. Usually the handler.
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
-            ChannelStateUpdateListener channelStateUpdateListener, Gson gson,
+            ChannelStateUpdateListener channelStateUpdateListener, AvailabilityTracker tracker, Gson gson,
             TransformationServiceProvider transformationServiceProvider) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
         this.gson = gson;
+        this.tracker = tracker;
         this.transformationServiceProvider = transformationServiceProvider;
     }
 
@@ -93,7 +96,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         AbstractComponent<?> component = null;
 
         if (config.length() > 0) {
-            component = CFactory.createComponent(thingUID, haID, config, updateListener, gson,
+            component = CFactory.createComponent(thingUID, haID, config, updateListener, tracker, gson,
                     transformationServiceProvider);
         }
         if (component != null) {

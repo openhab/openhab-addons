@@ -14,6 +14,7 @@ package org.openhab.binding.enocean.internal.config;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.EMPTYENOCEANID;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -25,7 +26,8 @@ import org.eclipse.smarthome.core.util.HexUtils;
 public class EnOceanBaseConfig {
     public String enoceanId;
 
-    public List<String> receivingEEPId;
+    public List<String> receivingEEPId = new ArrayList<>();
+    public boolean receivingSIGEEP = false;
 
     public EnOceanBaseConfig() {
         enoceanId = EMPTYENOCEANID;

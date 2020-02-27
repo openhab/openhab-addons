@@ -138,9 +138,9 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (state == MqttConnectionState.CONNECTED) {
             updateStatus(ThingStatus.ONLINE);
-            channelStateByChannelUID.values().forEach(c -> c.start());
+            channelStateByChannelUID.values().forEach(PublishTriggerChannel::start);
         } else {
-            channelStateByChannelUID.values().forEach(c -> c.stop());
+            channelStateByChannelUID.values().forEach(PublishTriggerChannel::stop);
             if (error == null) {
                 updateStatus(ThingStatus.OFFLINE);
             } else {
@@ -159,7 +159,7 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
      */
     @Override
     public void dispose() {
-        channelStateByChannelUID.values().forEach(c -> c.stop());
+        channelStateByChannelUID.values().forEach(PublishTriggerChannel::stop);
         channelStateByChannelUID.clear();
 
         // keep topics, but stop subscriptions

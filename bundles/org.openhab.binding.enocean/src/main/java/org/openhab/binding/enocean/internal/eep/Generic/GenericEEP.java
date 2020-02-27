@@ -100,8 +100,8 @@ public class GenericEEP extends EEP {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (config != null) {
 
             EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);

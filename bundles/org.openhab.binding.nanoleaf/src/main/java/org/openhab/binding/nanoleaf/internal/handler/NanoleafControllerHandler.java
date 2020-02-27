@@ -648,7 +648,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         @Nullable
         Layout layout = controllerInfo.getPanelLayout().getLayout();
         String layoutView = (layout != null) ? layout.getLayoutView() : "";
-        logger.info("Panel layout and ids for controller {} \n {}", thing.getUID(), layoutView);
+        logger.info("Panel layout and ids for controller {} \n{}", thing.getUID(), layoutView);
     }
 
     private ControllerInfo receiveControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
