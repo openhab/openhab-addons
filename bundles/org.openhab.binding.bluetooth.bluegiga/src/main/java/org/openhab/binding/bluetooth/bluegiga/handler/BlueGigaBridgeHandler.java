@@ -611,7 +611,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 .withConnection(connectionHandle)
                 .withStart(1)
                 .withEnd(65535)
-                .withUuid(UUID.fromString("00002800-0000-0000-0000-000000000000"))
+                .withUuid(UUID.fromString("00002800-0000-1000-8000-00805F9B34FB"))
                 .build();
         // @formatter:on
         try {

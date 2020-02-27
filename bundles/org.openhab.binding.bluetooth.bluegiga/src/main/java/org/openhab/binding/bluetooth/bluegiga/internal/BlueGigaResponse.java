@@ -93,13 +93,15 @@ public abstract class BlueGigaResponse extends BlueGigaPacket {
         int length = buffer[position++];
         switch (length) {
             case 2:
-                low = 0;
-                high = ((long) buffer[position++] << 32) + ((long) buffer[position++] << 40);
+                // 0000xxxx-0000-1000-8000-00805F9B34FB
+                low = 0x800000805f9b34fbL;
+                high = ((long) buffer[position++] << 32) + ((long) buffer[position++] << 40) + 0x00001000L;
                 break;
             case 4:
-                low = 0;
+                // xxxxxxxx-0000-1000-8000-00805F9B34FB
+                low = 0x800000805f9b34fbL;
                 high = ((long) buffer[position++] << 32) + ((long) buffer[position++] << 40)
-                        + ((long) buffer[position++] << 48) + ((long) buffer[position++] << 56);
+                        + ((long) buffer[position++] << 48) + ((long) buffer[position++] << 56) + 0x00001000L;
                 break;
             case 16:
                 low = (buffer[position++]) + ((long) buffer[position++] << 8) + ((long) buffer[position++] << 16)
