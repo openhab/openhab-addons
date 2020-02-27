@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 public class BoschSHCBridgeHandler extends BaseBridgeHandler {
@@ -76,7 +75,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
 
         config = getConfigAs(BoschSHCBridgeConfiguration.class);
-        logger.warn("Initializating bridge: {} - HTTP client is: ", config.ipAddress, this.httpClient);
+        logger.warn("Initializing bridge: {} - HTTP client is: {} - version: 2020-02-20", config.ipAddress,
+                this.httpClient);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -178,44 +178,59 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
         if (this.httpClient != null) {
 
-            ContentResponse contentResponse;
-            try {
-                logger.debug("Sending subscribe request to Bosch");
+            logger.info("Sending subscribe request to Bosch");
 
-                String[] params = { "com/bosch/sh/remote/*", null }; // TODO Not sure about the tailing null, copied
-                                                                     // from NodeJs
-                JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/subscribe", params);
+            String[] params = { "com/bosch/sh/remote/*", null }; // TODO Not sure about the tailing null, copied
+                                                                 // from NodeJs
+            JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/subscribe", params);
 
-                Gson gson = new Gson();
-                String str_content = gson.toJson(r);
+            Gson gson = new Gson();
+            String str_content = gson.toJson(r);
 
-                logger.debug("Sending content: {}", str_content);
+            // XXX Maybe we should use a different httpClient here, to avoid a race with concurrent use from other
+            // functions.
+            logger.info("Subscribe: Sending content: {} - using httpClient {}", str_content, this.httpClient);
 
-                contentResponse = this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
-                        .header("Content-Type", "application/json").header("Accept", "application/json")
-                        .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
-                        .content(new StringContentProvider(str_content)).send();
+            class SubscribeListener extends BufferingResponseListener {
+                private BoschSHCBridgeHandler bridgeHandler;
 
-                // Seems like this should yield something like:
-                // content: [ [ '{"result":"e71k823d0-16","jsonrpc":"2.0"}\n' ] ]
+                public SubscribeListener(BoschSHCBridgeHandler bridgeHandler) {
 
-                // The key can then be used later for longPoll like this:
-                // body: [ [ '{"jsonrpc":"2.0","method":"RE/longPoll","params":["e71k823d0-16",20]}' ] ]
+                    super();
+                    this.bridgeHandler = bridgeHandler;
+                }
 
-                String content = contentResponse.getContentAsString();
-                logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                @Override
+                public void onComplete(@Nullable Result result) {
 
-                SubscribeResult result = gson.fromJson(content, SubscribeResult.class);
-                logger.info("Got subscription ID: {} {}", result.getResult(), result.getJsonrpc());
+                    // Seems like this should yield something like:
+                    // content: [ [ '{"result":"e71k823d0-16","jsonrpc":"2.0"}\n' ] ]
 
-                this.subscriptionId = result.getResult();
+                    // The key can then be used later for longPoll like this:
+                    // body: [ [ '{"jsonrpc":"2.0","method":"RE/longPoll","params":["e71k823d0-16",20]}' ] ]
 
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
+                    byte[] responseContent = getContent();
+                    String content = new String(responseContent);
 
-                this.subscriptionId = null;
+                    logger.info("Subscribe: response complete: {} - return code: {}", content,
+                            result.getResponse().getStatus());
+
+                    SubscribeResult subscribeResult = gson.fromJson(content, SubscribeResult.class);
+                    logger.info("Subscribe: Got subscription ID: {} {}", subscribeResult.getResult(),
+                            subscribeResult.getJsonrpc());
+
+                    bridgeHandler.subscriptionId = subscribeResult.getResult();
+                    longPoll();
+                }
             }
+
+            this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
+                    .header("Content-Type", "application/json").header("Accept", "application/json")
+                    .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
+                    .content(new StringContentProvider(str_content)).send(new SubscribeListener(this));
+
         }
+
     }
 
     /**
@@ -237,7 +252,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
         if (this.subscriptionId == null) {
 
+            logger.info("longPoll: Subscription outdated, requesting .. ");
             this.subscribe();
+            return;
         }
 
         if (this.httpClient != null && this.subscriptionId != null) {
@@ -280,73 +297,92 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                     result.getResponse().getStatus());
 
                             LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
+                            if (parsed.result != null) {
+                                for (DeviceStatusUpdate update : parsed.result) {
 
-                            for (DeviceStatusUpdate update : parsed.result) {
+                                    if (update != null && update.state != null) {
 
-                                if (update != null && update.state != null) {
+                                        logger.info("Got update: {} <- {}", update.deviceId, update.state.switchState);
 
-                                    logger.info("Got update: {} <- {}", update.deviceId, update.state.switchState);
+                                        Bridge bridge = bridgeHandler.getThing();
+                                        Thing thing = null;
 
-                                    Bridge bridge = bridgeHandler.getThing();
-                                    Thing thing = null;
+                                        List<Thing> things = bridge.getThings();
+                                        for (Thing childThing : things) {
+                                            BoschSHCHandler handler = (BoschSHCHandler) childThing.getHandler();
 
-                                    List<Thing> things = bridge.getThings();
-                                    for (Thing childThing : things) {
-                                        BoschSHCHandler handler = (BoschSHCHandler) childThing.getHandler();
+                                            if (handler != null) {
 
-                                        if (handler != null) {
+                                                logger.debug("Registered device: {} - looking for {}",
+                                                        handler.getBoschID(), update.deviceId);
 
-                                            logger.debug("Registered device: {} - looking for {}", handler.getBoschID(),
-                                                    update.deviceId);
-
-                                            if (update.deviceId.equals(handler.getBoschID())) {
-                                                thing = childThing;
+                                                if (update.deviceId.equals(handler.getBoschID())) {
+                                                    thing = childThing;
+                                                }
                                             }
+
                                         }
 
-                                    }
+                                        // TODO Probably should check if it is in fact, the correct handler. Depends a
+                                        // little
+                                        // one
+                                        // whether we add more of them or if we just have one Handler for all devices.
+                                        if (thing != null) {
 
-                                    // TODO Probably should check if it is in fact, the correct handler. Depends a
-                                    // little
-                                    // one
-                                    // whether we add more of them or if we just have one Handler for all devices.
-                                    if (thing != null) {
+                                            BoschSHCHandler thingHandler = (BoschSHCHandler) thing.getHandler();
 
-                                        BoschSHCHandler thingHandler = (BoschSHCHandler) thing.getHandler();
-
-                                        if (thingHandler != null) {
-                                            thingHandler.processUpdate(update);
+                                            if (thingHandler != null) {
+                                                thingHandler.processUpdate(update);
+                                            } else {
+                                                logger.warn("Could not convert thing handler to BoschSHCHandler");
+                                            }
                                         } else {
-                                            logger.warn("Could not convert thing handler to BoschSHCHandler");
+                                            logger.info("Could not find a thing for device ID: {}", update.deviceId);
                                         }
-                                    } else {
-                                        logger.info("Could not find a thing for device ID: {}", update.deviceId);
                                     }
+                                }
+
+                                bridgeHandler.subscriptionId = null;
+                                logger.warn("Invalidating subscription ID - temp");
+
+                            } else {
+
+                                logger.warn("Could not parse in onComplete: {}", content);
+
+                                // Check if we got a proper result from the SHC
+                                LongPollError parsedError = gson.fromJson(content, LongPollError.class);
+
+                                if (parsedError.error != null) {
+
+                                    logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
+
+                                    if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+
+                                        bridgeHandler.subscriptionId = null;
+                                        logger.warn("Invalidating subscription ID!");
+                                    }
+                                }
+
+                                // Timeout before retry
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException sleepError) {
+                                    logger.warn("Failed to sleep in longRun()");
                                 }
                             }
                         } else {
-
                             logger.warn("Failed in onComplete");
                         }
 
                     } catch (Exception e) {
 
+                        logger.warn("Execption in long polling - error: {}", e);
+
+                        // Timeout before retry
                         try {
-                            // Check if we got a proper result from the SHC
-                            LongPollError parsed = gson.fromJson(content, LongPollError.class);
-
-                            if (parsed.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-
-                                // TODO Do we need to use atomic operations here?
-                                bridgeHandler.subscriptionId = null;
-                            }
-
-                            logger.warn("Execption in long polling - result: {} - error: {}", parsed, e);
-
-                        } catch (JsonSyntaxException jsonError) {
-                            logger.warn(
-                                    "Exception in onComplete - ignoring to avoid breaking long polling: {} - json result: {}",
-                                    e, jsonError);
+                            Thread.sleep(5000);
+                        } catch (InterruptedException sleepError) {
+                            logger.warn("Failed to sleep in longRun()");
                         }
                     }
 
@@ -441,7 +477,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 // TODO: PowerSwitch is hard-coded
                 contentResponse = this.httpClient
                         .newRequest("https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID
-                                + "/services/PowerSwitch/state")
+                                + ")/services/PowerSwitch/state")
                         .header("Content-Type", "application/json").header("Accept", "application/json")
                         .header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
 
