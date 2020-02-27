@@ -9,7 +9,7 @@ This IP-interface provides access on the LAN.
 The binding does not require a Niko Home Control Gateway (550-00580), but does work with it in the LAN.
 It has also been confirmed to work with the Niko Home Control Connected Controller (550-00003) in a Niko Home Control I installation.
 
-For Niko Home Control II, the binding requires the Niko Home Control Connected Controller (550-00003).
+For Niko Home Control II, the binding requires the Niko Home Control Connected Controller (550-00003) or Niko Home Control Wireless Smart Hub (552-00001).
 The installation only needs to be 'connected' (registered on the Niko Home Control website) when first connecting to validate the authentication, and will work strictly in the LAN thereafter.
 
 For Niko Home Control I, the binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control I programming software.
@@ -242,7 +242,7 @@ The event message is the alarm or notice text coming from Niko Home Control.
 
 ## Limitations
 
-The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and Niko Home Control II.
+The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and II, and the Niko Home Control Wireless Smart Hub for Niko Home Control II.
 
 The action events implemented are limited to onOff, dimmer, allOff, scenes, PIR and rollershutter or blinds.
 Other actions have not been implemented.
@@ -319,7 +319,7 @@ Example trigger rule:
 rule "example trigger rule"
 when
     Channel 'nikohomecontrol:bridge:nhc1:alarm' triggered or
-    Channel 'nikohomecontrol:bridge:nhc1:notice' triggered
+    Channel 'nikohomecontrol:bridge2:nhc2:notice' triggered
 then
     var message = receivedEvent.getEvent()
     logInfo("nhcTriggerExample", "Message: {}", message)
