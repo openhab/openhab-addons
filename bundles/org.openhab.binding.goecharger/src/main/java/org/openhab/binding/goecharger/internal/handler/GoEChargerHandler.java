@@ -36,7 +36,6 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L3;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -56,6 +55,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.goecharger.internal.GoEChargerBindingConstants;
 import org.openhab.binding.goecharger.internal.GoEChargerConfiguration;
 import org.openhab.binding.goecharger.internal.api.GoEStatusResponse;
@@ -66,8 +66,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * The {@link GoEChargerHandler} is responsible for handling commands, which are
@@ -97,64 +97,66 @@ public class GoEChargerHandler extends BaseThingHandler {
 
         if (goeResponse != null) {
             switch (fields[0]) {
-            case MAX_AMPERE:
-                return goeResponse.getMaxChargeAmps();
-            case PWM_SIGNAL:
-                return goeResponse.getPwmSignal();
-            case ERROR:
-                int error = goeResponse.getErrorCode();
-                switch (error) {
-                case 0:
-                    return "NONE"; // TODO evaluate
-                case 1:
-                    return "RCCB";
-                case 3:
-                    return "PHASE";
-                case 8:
-                    return "NO_GROUND";
-                case 10:
-                    return "INTERNAL";
+                case MAX_AMPERE:
+                    return goeResponse.getMaxChargeAmps();
+                case PWM_SIGNAL:
+                    return goeResponse.getPwmSignal();
+                case ERROR:
+                    int error = goeResponse.getErrorCode();
+                    switch (error) {
+                        case 0:
+                            return "NONE"; // TODO evaluate
+                        case 1:
+                            return "RCCB";
+                        case 3:
+                            return "PHASE";
+                        case 8:
+                            return "NO_GROUND";
+                        case 10:
+                            return "INTERNAL";
+                        default:
+                            return "NONE"; // TODO evaluate
+                    }
+                case ALLOW_CHARGING:
+                    return goeResponse.getAllowCharging() == 1;
+                case STOP_STATE:
+                    return goeResponse.getAutomaticStop() == 2;
+                case CABLE_ENCODING:
+                    return goeResponse.getCableEncoding();
+                case PHASES:
+                    // TODO this value does not help much
+                    // need to calculate connected phases from nrg
+                    return goeResponse.getPhases();
+                case TEMPERATURE:
+                    return goeResponse.getTemperature();
+                case SESSION_CHARGE_CONSUMPTION:
+                    return (Double) (goeResponse.getSessionChargeConsumption() / 360000d);
+                case SESSION_CHARGE_CONSUMPTION_LIMIT:
+                    return (Double) (goeResponse.getSessionChargeConsumptionLimit() / 10d);
+                case TOTAL_CONSUMPTION:
+                    return (Double) (goeResponse.getTotalChargeConsumption() / 10d);
+                case FIRMWARE:
+                    return goeResponse.getFirmware();
+                case VOLTAGE_L1:
+                    return goeResponse.getEnergy()[0];
+                case VOLTAGE_L2:
+                    return goeResponse.getEnergy()[1];
+                case VOLTAGE_L3:
+                    return goeResponse.getEnergy()[2];
+                case CURRENT_L1:
+                    return (Double) (goeResponse.getEnergy()[4] / 10d);
+                case CURRENT_L2:
+                    return (Double) (goeResponse.getEnergy()[5] / 10d);
+                case CURRENT_L3:
+                    return (Double) (goeResponse.getEnergy()[6] / 10d);
+                case POWER_L1:
+                    return (Double) (goeResponse.getEnergy()[7] / 10d);
+                case POWER_L2:
+                    return (Double) (goeResponse.getEnergy()[8] / 10d);
+                case POWER_L3:
+                    return (Double) (goeResponse.getEnergy()[9] / 10d);
                 default:
-                    return "NONE"; // TODO evaluate
-                }
-            case ALLOW_CHARGING:
-                return goeResponse.getAllowCharging() == 1;
-            case STOP_STATE:
-                return goeResponse.getAutomaticStop() == 2;
-            case CABLE_ENCODING:
-                return goeResponse.getCableEncoding();
-            case PHASES:
-                return goeResponse.getPhases();
-            case TEMPERATURE:
-                return goeResponse.getTemperature();
-            case SESSION_CHARGE_CONSUMPTION:
-                return (Double) (goeResponse.getSessionChargeConsumption() / 360000d);
-            case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                return (Double) (goeResponse.getSessionChargeConsumptionLimit() / 10d);
-            case TOTAL_CONSUMPTION:
-                return (Double) (goeResponse.getTotalChargeConsumption() / 10d);
-            case FIRMWARE:
-                return goeResponse.getFirmware();
-            case VOLTAGE_L1:
-                return goeResponse.getEnergy()[0];
-            case VOLTAGE_L2:
-                return goeResponse.getEnergy()[1];
-            case VOLTAGE_L3:
-                return goeResponse.getEnergy()[2];
-            case CURRENT_L1:
-                return (Double) (goeResponse.getEnergy()[4] / 10d);
-            case CURRENT_L2:
-                return (Double) (goeResponse.getEnergy()[5] / 10d);
-            case CURRENT_L3:
-                return (Double) (goeResponse.getEnergy()[6] / 10d);
-            case POWER_L1:
-                return (Double) (goeResponse.getEnergy()[7] / 10d);
-            case POWER_L2:
-                return (Double) (goeResponse.getEnergy()[8] / 10d);
-            case POWER_L3:
-                return (Double) (goeResponse.getEnergy()[9] / 10d);
-            default:
-                return null;
+                    return null;
             }
         }
         return null;
@@ -171,13 +173,10 @@ public class GoEChargerHandler extends BaseThingHandler {
         }
 
         Object value = getValue(channelId);
-        if (value == null) {
-            logger.debug("Value retrieved for channel '{}' was null. Can't update.", channelId);
-            return;
-        }
-
         State state = null;
-        if (value instanceof Boolean) {
+        if (value == null) {
+            state = UnDefType.NULL;
+        } else if (value instanceof Boolean) {
             state = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
         } else if (value instanceof Double) {
             state = new DecimalType((Double) value);
@@ -188,8 +187,9 @@ public class GoEChargerHandler extends BaseThingHandler {
         } else {
             logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
         }
-        logger.debug("Update channel {} with state {} ({})", channelId, (state == null) ? "null" : state.toString(),
-                value.getClass().getSimpleName());
+        // logger.debug("Update channel {} with state {} ({})", channelId, (state ==
+        // null) ? "null" : state.toString(),
+        // value.getClass().getSimpleName());
 
         // Update the channel
         if (state != null) {
@@ -207,24 +207,24 @@ public class GoEChargerHandler extends BaseThingHandler {
         String key = null;
         String value = null;
         switch (channelUID.getId()) {
-        case MAX_AMPERE:
-            key = "amp";
-            value = command.toString();
-            break;
-        case SESSION_CHARGE_CONSUMPTION_LIMIT:
-            key = "dwo";
-            value = (int) (Double.parseDouble(command.toString()) * 10) + "";
-            break;
-        case ALLOW_CHARGING:
-            key = "alw";
-            value = command.toString() == "ON" ? "1" : "0";
-            break;
-        case STOP_STATE:
-            key = "stp";
-            value = command.toString() == "ON" ? "2" : "0";
-            break;
-        default:
-            break;
+            case MAX_AMPERE:
+                key = "amp";
+                value = command.toString();
+                break;
+            case SESSION_CHARGE_CONSUMPTION_LIMIT:
+                key = "dwo";
+                value = (int) (Double.parseDouble(command.toString()) * 10) + "";
+                break;
+            case ALLOW_CHARGING:
+                key = "alw";
+                value = command.toString() == "ON" ? "1" : "0";
+                break;
+            case STOP_STATE:
+                key = "stp";
+                value = command.toString() == "ON" ? "2" : "0";
+                break;
+            default:
+                break;
         }
         if (key != null) {
             sendData(key, value);
@@ -265,23 +265,31 @@ public class GoEChargerHandler extends BaseThingHandler {
         String urlStr = getUrl(GoEChargerBindingConstants.MQTT_URL).replace("%KEY%", key).replace("%VALUE%", value);
         logger.debug("POST URL = {}", urlStr);
 
-        URL url;
         HttpURLConnection connection = null;
         try {
-            url = new URL(urlStr);
+            URL url = new URL(urlStr);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
+            connection.setConnectTimeout(5000);
 
             String response = IOUtils.toString(connection.getInputStream());
             logger.debug("Response: {}", response.toString());
-        } catch (MalformedURLException e) {
+        } catch (SocketTimeoutException e) {
+            // timeout <- offline
             errorMsg = e.getMessage();
         } catch (IOException e) {
             errorMsg = e.getMessage();
+        } finally {
+            if (connection != null) {
+                try {
+                    IOUtils.closeQuietly(connection.getInputStream());
+                } catch (Exception e) {}
+            }
         }
 
         if (errorMsg != null) {
             // TODO might as well be wrong API
+            // really needed? get every 5s also sets this to offline if not available
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
         }
     }
@@ -296,42 +304,46 @@ public class GoEChargerHandler extends BaseThingHandler {
         GoEStatusResponse result = null;
         String errorMsg = null;
 
-        GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
-
         String urlStr = getUrl(GoEChargerBindingConstants.API_URL);
         logger.debug("GET URL = {}", urlStr);
 
+        // Run the HTTP request and get the JSON response
+        HttpURLConnection connection = null;
         try {
-            // Run the HTTP request and get the JSON response
             URL url = new URL(urlStr);
-            URLConnection connection = url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
 
-            try {
-                String response = IOUtils.toString(connection.getInputStream());
-
-                // Map the JSON response to an object
-                result = gson.fromJson(response, GoEStatusResponse.class);
-            } finally {
-                IOUtils.closeQuietly(connection.getInputStream());
-            }
-
-            if (result != null) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                return result;
-            } else {
-                retryCounter++;
-                if (retryCounter == 1) {
-                    logger.warn("Error in getting data from Go-E charger, retrying once");
-                    return getGoEData();
-                }
-                logger.warn("Error in Go-E charger response: {}", errorMsg);
-            }
-        } catch (MalformedURLException e) {
-            errorMsg = e.getMessage();
+            String response = IOUtils.toString(connection.getInputStream());
+            // logger.debug("Response: {}", response.toString());
+            // Map the JSON response to an object
+            result = gson.fromJson(response, GoEStatusResponse.class);
         } catch (JsonSyntaxException e) {
             errorMsg = e.getMessage();
-        } catch (IOException | IllegalStateException e) {
+        } catch (SocketTimeoutException e) {
+            // timeout <- offline
             errorMsg = e.getMessage();
+        } catch (IOException e) {
+            errorMsg = e.getMessage();
+        } finally {
+            if (connection != null) {
+                try {
+                    IOUtils.closeQuietly(connection.getInputStream());
+                } catch (Exception e) {}
+            }
+        }
+
+        if (result != null) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            return result;
+        } else {
+            retryCounter++;
+            if (retryCounter == 1) {
+                logger.warn("Error in getting data from Go-E charger, retrying once");
+                return getGoEData();
+            }
+            logger.warn("Error in Go-E charger response: {}", errorMsg);
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
