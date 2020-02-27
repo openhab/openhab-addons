@@ -83,6 +83,13 @@ public class BoschSHCHandler extends BaseThingHandler {
                         bridgeHandler.updateSwitchState(getThing(), command.toFullString());
                     }
                 }
+
+                /*
+                 * Response complete:
+                 * {"result":[{"path":"/devices/hdm:HomeMaticIP:3014F711A000009A185B02DE/services/ShutterContact",
+                 * "@type":"DeviceServiceData","id":"ShutterContact","state":{"@type":"shutterContactState","value":
+                 * "CLOSED"},"deviceId":"hdm:HomeMaticIP:3014F711A000009A185B02DE"}],"jsonrpc":"2.0"}
+                 */
             }
         }
 
@@ -97,7 +104,7 @@ public class BoschSHCHandler extends BaseThingHandler {
     public void initialize() {
 
         config = getConfigAs(BoschSHCConfiguration.class);
-        logger.warn("Initializating thing: {}", config.id);
+        logger.warn("Initializing thing: {}", config.id);
 
         // Mark immediately as online - if the bridge is online, the thing is too.
         updateStatus(ThingStatus.ONLINE);
