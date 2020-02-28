@@ -77,10 +77,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, NhcAction> actions = nhcComm.getActions();
 
-        for (Map.Entry<String, NhcAction> action : actions.entrySet()) {
-
-            String actionId = action.getKey();
-            NhcAction nhcAction = action.getValue();
+        actions.forEach((actionId, nhcAction) -> {
             String thingName = nhcAction.getName();
             String thingLocation = nhcAction.getLocation();
 
@@ -105,30 +102,24 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
                     logger.debug("Niko Home Control: unrecognized action type {} for {} {}", nhcAction.getType(),
                             actionId, thingName);
             }
-        }
+        });
 
         Map<String, NhcThermostat> thermostats = nhcComm.getThermostats();
 
-        for (Map.Entry<String, NhcThermostat> thermostatEntry : thermostats.entrySet()) {
-
-            String thermostatId = thermostatEntry.getKey();
-            NhcThermostat nhcThermostat = thermostatEntry.getValue();
+        thermostats.forEach((thermostatId, nhcThermostat) -> {
             String thingName = nhcThermostat.getName();
             String thingLocation = nhcThermostat.getLocation();
             addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, handler.getThing().getUID(), thermostatId),
                     thermostatId, thingName, thingLocation);
-        }
+        });
 
         Map<String, NhcEnergyMeter> energyMeters = nhcComm.getEnergyMeters();
 
-        for (Map.Entry<String, NhcEnergyMeter> energyMeterEntry : energyMeters.entrySet()) {
-
-            String energyMeterId = energyMeterEntry.getKey();
-            NhcEnergyMeter nhcEnergyMeter = energyMeterEntry.getValue();
+        energyMeters.forEach((energyMeterId, nhcEnergyMeter) -> {
             String thingName = nhcEnergyMeter.getName();
             addEnergyMeterDevice(new ThingUID(THING_TYPE_ENERGYMETER, handler.getThing().getUID(), energyMeterId),
                     energyMeterId, thingName);
-        }
+        });
     }
 
     private void addActionDevice(ThingUID uid, String actionId, String thingName, @Nullable String thingLocation) {
