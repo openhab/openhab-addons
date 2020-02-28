@@ -14,6 +14,9 @@ package org.openhab.binding.bluetooth.discovery.internal;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 
 /**
@@ -22,23 +25,47 @@ import org.openhab.binding.bluetooth.BluetoothDevice;
  *
  * @author Connor Petty - Initial Contribution
  */
-public class BluetoothDeviceSnapshot extends BluetoothDevice {
+@NonNullByDefault
+public class BluetoothDeviceSnapshot {
 
-    public BluetoothDeviceSnapshot(BluetoothDevice source) {
-        // snapshots don't have adapters so we use null
-        super(null, source.getAddress());
-        this.txPower = source.getTxPower();
-        this.manufacturer = source.getManufacturerId();
-        this.name = source.getName();
+    private @Nullable BluetoothAddress address;
+    private @Nullable Integer txPower;
+    private @Nullable Integer manufacturer;
+    private @Nullable String name;
+
+    public BluetoothDeviceSnapshot() {
+    }
+
+    public BluetoothDeviceSnapshot(BluetoothDevice device) {
+        this.address = device.getAddress();
+        this.txPower = device.getTxPower();
+        this.manufacturer = device.getManufacturerId();
+        this.name = device.getName();
+    }
+
+    public BluetoothDeviceSnapshot(BluetoothDeviceSnapshot device) {
+        this.address = device.address;
+        this.txPower = device.txPower;
+        this.manufacturer = device.manufacturer;
+        this.name = device.name;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAddress(), getTxPower(), getManufacturerId(), getName());
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((address == null) ? 0 : address.hashCode());
+        Integer manufacturerLocal = manufacturer;
+        result = prime * result + ((manufacturerLocal == null) ? 0 : manufacturerLocal.hashCode());
+        String nameLocal = name;
+        result = prime * result + ((nameLocal == null) ? 0 : nameLocal.hashCode());
+        Integer txPowerLocal = txPower;
+        result = prime * result + ((txPowerLocal == null) ? 0 : txPowerLocal.hashCode());
+        return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -48,41 +75,44 @@ public class BluetoothDeviceSnapshot extends BluetoothDevice {
         if (getClass() != obj.getClass()) {
             return false;
         }
-
         BluetoothDeviceSnapshot other = (BluetoothDeviceSnapshot) obj;
-
-        if (!Objects.equals(this.getAddress(), other.getAddress())) {
+        if (!Objects.equals(address, other.address)) {
             return false;
         }
-        if (!Objects.equals(this.getTxPower(), other.getTxPower())) {
+        if (!Objects.equals(manufacturer, other.manufacturer)) {
             return false;
         }
-        if (!Objects.equals(this.getManufacturerId(), other.getManufacturerId())) {
+        if (!Objects.equals(name, other.name)) {
             return false;
         }
-        if (!Objects.equals(this.getName(), other.getName())) {
+        if (!Objects.equals(txPower, other.txPower)) {
             return false;
         }
         return true;
     }
 
     /**
-     * This method handles merging of
+     * This merges non-null identity fields from the given device into this snapshot.
      *
+     * @return true if this snapshot changed as a result of this operation
      */
-    public boolean merge(BluetoothDeviceSnapshot snapshot) {
-        if (snapshot == null) {
-            return false;
-        }
+    public boolean merge(BluetoothDevice device) {
         BluetoothDeviceSnapshot original = new BluetoothDeviceSnapshot(this);
-        if (this.name == null && snapshot.getName() != null) {
-            this.name = snapshot.getName();
+        BluetoothAddress deviceAddr = device.getAddress();
+        if (this.address == null && deviceAddr != null) {
+            this.address = deviceAddr;
         }
-        if (this.txPower == null && snapshot.getTxPower() != null) {
-            this.txPower = snapshot.getTxPower();
+        String deviceName = device.getName();
+        if (this.name == null && deviceName != null) {
+            this.name = deviceName;
         }
-        if (this.manufacturer == null && snapshot.getManufacturerId() != null) {
-            this.manufacturer = snapshot.getManufacturerId();
+        Integer deviceTxPower = device.getTxPower();
+        if (this.txPower == null && deviceTxPower != null) {
+            this.txPower = deviceTxPower;
+        }
+        Integer deviceManufacturer = device.getManufacturerId();
+        if (this.manufacturer == null && deviceManufacturer != null) {
+            this.manufacturer = deviceManufacturer;
         }
         return !this.equals(original);
     }

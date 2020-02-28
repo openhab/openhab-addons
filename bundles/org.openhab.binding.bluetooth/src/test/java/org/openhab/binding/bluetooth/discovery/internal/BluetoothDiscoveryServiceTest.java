@@ -44,6 +44,7 @@ import org.openhab.binding.bluetooth.MockBluetoothAdapter;
 import org.openhab.binding.bluetooth.MockBluetoothDevice;
 import org.openhab.binding.bluetooth.TestUtils;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
+import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 
 /**
  * Tests {@link BluetoothDiscoveryService}.
@@ -302,6 +303,17 @@ public class BluetoothDiscoveryServiceTest {
                         .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
     }
 
+    @Test
+    public void bluezConnectionTimeoutTest() {
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BadConnectionDevice device = new BadConnectionDevice(mockAdapter1, connectionRequiredAddress, 100);
+        discoveryService.deviceDiscovered(device);
+
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
+                .thingDiscovered(ArgumentMatchers.same(discoveryService), ArgumentMatchers
+                        .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
+    }
+
     private class MockDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
         private ThingTypeUID typeUID;
@@ -336,6 +348,30 @@ public class BluetoothDiscoveryServiceTest {
             return device.getAddress().equals(connectionRequiredAddress);
         }
 
+    }
+
+    private class BadConnectionDevice extends MockBluetoothDevice {
+
+        private int sleepTime;
+
+        public BadConnectionDevice(BluetoothAdapter adapter, BluetoothAddress address, int sleepTime) {
+            super(adapter, address);
+            this.sleepTime = sleepTime;
+        }
+
+        @Override
+        public boolean connect() {
+            notifyListeners(BluetoothEventType.CONNECTION_STATE,
+                    new BluetoothConnectionStatusNotification(ConnectionState.CONNECTED));
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+            notifyListeners(BluetoothEventType.CONNECTION_STATE,
+                    new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+            return false;
+        }
     }
 
 }

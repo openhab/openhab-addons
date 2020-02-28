@@ -20,7 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -164,9 +163,9 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private class DiscoveryCache {
 
-        private @Nullable BluetoothDeviceSnapshot currentSnapshot;
-
         private Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
+
+        private BluetoothDeviceSnapshot currentSnapshot = new BluetoothDeviceSnapshot();
 
         /**
          * This is meant to be used as part of a Map.compute function
@@ -174,7 +173,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
          * @param device the device to remove from this cache
          * @return this DiscoveryCache if there are still snapshots, null otherwise
          */
-        public synchronized DiscoveryCache removeDiscoveries(BluetoothDevice device) {
+        public synchronized DiscoveryCache removeDiscoveries(final BluetoothDevice device) {
             // we remove any discoveries that have been published for this device
             discoveryFutures.computeIfPresent(device.getAdapter(), (adapter, snapshotFuture) -> {
                 snapshotFuture.future.thenAccept(result -> thingRemoved(result.getThingUID()));
@@ -188,12 +187,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
         public synchronized void handleDiscovery(BluetoothDevice device) {
             BluetoothAdapter adapter = device.getAdapter();
-            BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
             CompletableFuture<DiscoveryResult> future;
-            if (updateSnapshot(snapshot)) {
-                // we back-merge to make sure that our 'snapshot' is up-to-date
-                snapshot.merge(currentSnapshot);
-
+            if (currentSnapshot.merge(device)) {
                 // we need to make a new future result
                 if (!discoveryFutures.isEmpty()) {
                     future = CompletableFuture
@@ -205,7 +200,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                     future = createDiscoveryFuture(device);
                 }
             } else {
-                if (discoveryFutures.containsKey(adapter) && discoveryFutures.get(adapter).snapshot.equals(snapshot)) {
+                if (discoveryFutures.containsKey(adapter)
+                        && discoveryFutures.get(adapter).snapshot.equals(currentSnapshot)) {
                     // This adapter has already produced the most up-to-date result, so no further processing is
                     // necessary
                     return;
@@ -218,10 +214,11 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                  */
                 Optional<CompletableFuture<DiscoveryResult>> otherFuture = discoveryFutures.values().stream()
                         // make sure that we only get futures for the current snapshot
-                        .filter(sf -> sf.snapshot.equals(snapshot)).findAny().map(sf -> sf.future);
+                        .filter(sf -> sf.snapshot.equals(currentSnapshot)).findAny().map(sf -> sf.future);
                 future = otherFuture.get().thenApply(result -> adaptResult(result, adapter));
             }
-
+            // copy the current snapshot
+            BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(currentSnapshot);
             // now save it for later
             discoveryFutures.put(adapter, new SnapshotFuture(snapshot, future));
 
@@ -232,15 +229,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
              * If this discoveryFuture is already completed then this post-process will run in the current thread.
              */
             future.thenAccept(BluetoothDiscoveryService.this::thingDiscovered);
-        }
-
-        private boolean updateSnapshot(BluetoothDeviceSnapshot snapshot) {
-            BluetoothDeviceSnapshot currentSnapshot = this.currentSnapshot;
-            if (currentSnapshot == null) {
-                this.currentSnapshot = new BluetoothDeviceSnapshot(snapshot);
-                return true;
-            }
-            return currentSnapshot.merge(snapshot);
         }
 
         private CompletableFuture<DiscoveryResult> createDiscoveryFuture(BluetoothDevice device) {
