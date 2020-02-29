@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga;
 
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,9 +53,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
     // BlueGiga needs to know the address type when connecting
     private BluetoothAddressType addressType;
-
-    // Used to correlate the scans so we get as much information as possible before calling the device "discovered"
-    private final Set<ScanResponseType> scanResponses = new HashSet<ScanResponseType>();
 
     // The dongle handler
     private final BlueGigaBridgeHandler bgHandler;
@@ -193,10 +191,28 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                         case EIR_FLAGS:
                             break;
                         case EIR_MANUFACTURER_SPECIFIC:
-                            manufacturerData = (byte[]) eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
-                            if (manufacturerData.length > 2) {
-                                int id = manufacturerData[0] + (manufacturerData[1] << 8);
-                                manufacturer = id;
+                            Object obj = eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
+                            if (obj != null) {
+                                try {
+                                    @SuppressWarnings("unchecked")
+                                    Map<Short, int[]> eirRecord = (Map<Short, int[]>) obj;
+                                    Map.Entry<Short, int[]> eirEntry = eirRecord.entrySet().iterator().next();
+
+                                    manufacturer = (int) eirEntry.getKey();
+
+                                    int[] manufacturerInt = eirEntry.getValue();
+                                    manufacturerData = new byte[manufacturerInt.length + 2];
+                                    // Convert short Company ID to bytes and add it to manufacturerData
+                                    manufacturerData[0] = (byte) (manufacturer & 0xff);
+                                    manufacturerData[1] = (byte) ((manufacturer >> 8) & 0xff);
+                                    // Add Convert int custom data nd add it to manufacturerData
+                                    for (int i = 0; i < manufacturerInt.length; i++) {
+                                        manufacturerData[i + 2] = (byte) manufacturerInt[i];
+                                    }
+                                } catch (ClassCastException e) {
+                                    logger.debug("Unsupported manufacturer specific record received from device {}",
+                                            address);
+                                }
                             }
                             break;
                         case EIR_NAME_LONG:
@@ -229,27 +245,20 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (connectionState == ConnectionState.DISCOVERING) {
-                // We want to wait for an advertisement and a scan response before we call this discovered.
-                // The intention is to gather a reasonable amount of data about the device given devices send
-                // different data in different packets...
-                // Note that this is possible a bit arbitrary and may be refined later.
-                scanResponses.add(scanEvent.getPacketType());
+                // TODO: It could make sense to wait with discovery for non-connectable devices until scan response is
+                //  received to eventually retrieve more about the device before it gets discovered. Anyhow, devices
+                //  that don't send a scan response at all also have to be supported. See also PR #6995.
 
-                if ((scanResponses.contains(ScanResponseType.CONNECTABLE_ADVERTISEMENT)
-                        || scanResponses.contains(ScanResponseType.DISCOVERABLE_ADVERTISEMENT)
-                        || scanResponses.contains(ScanResponseType.NON_CONNECTABLE_ADVERTISEMENT))
-                        && scanResponses.contains(ScanResponseType.SCAN_RESPONSE)) {
-                    // Set our state to disconnected
-                    connectionState = ConnectionState.DISCONNECTED;
-                    connection = -1;
+                // Set our state to disconnected
+                connectionState = ConnectionState.DISCONNECTED;
+                connection = -1;
 
-                    // But notify listeners that the state is now DISCOVERED
-                    notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                            new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
+                // But notify listeners that the state is now DISCOVERED
+                notifyListeners(BluetoothEventType.CONNECTION_STATE,
+                new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
 
-                    // Notify the bridge - for inbox notifications
-                    bgHandler.deviceDiscovered(this);
-                }
+                // Notify the bridge - for inbox notifications
+                bgHandler.deviceDiscovered(this);
             }
 
             // Notify listeners of all scan records - for RSSI, beacon processing (etc)
@@ -270,7 +279,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (manufacturerData != null) {
-
                 scanNotification.setManufacturerData(manufacturerData);
             }
 

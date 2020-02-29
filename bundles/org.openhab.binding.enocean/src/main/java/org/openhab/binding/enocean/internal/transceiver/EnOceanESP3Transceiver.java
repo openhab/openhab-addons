@@ -21,10 +21,10 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
-import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 
 /**
  *
@@ -150,8 +150,8 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                                     HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(
                                                             Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
 
-                                            if(msg.getRORG() != RORG.Unknown) {
-                                                    informListeners(msg);
+                                            if (msg.getRORG() != RORG.Unknown) {
+                                                informListeners(msg);
                                             } else {
                                                 logger.debug("Received unknown RORG");
                                             }

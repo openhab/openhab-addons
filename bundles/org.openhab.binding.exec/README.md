@@ -8,8 +8,17 @@ Currently, the binding supports a single type of Thing, being the `command` Thin
 
 ## Binding Configuration
 
-The binding does not require any specific configuration.
+For security reasons all commands need to be whitelisted.
+Allowed commands need to be added to the `misc/exec.whitelist` file in the configuration directory.
+Every command needs to be on a separate line.
 
+Example:
+
+```shell
+/bin/echo "Hello world!"
+/usr/local/bin/apcaccess status
+php ./configurations/scripts/script.php %2$s
+```
 
 **Linux:**
 Note that the commands are executed in the context and with the privileges of the process running the Java Virtual Machine.
@@ -27,7 +36,6 @@ It is not advised to run the virtual machine as superuser/root.
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
-
 - `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result string.
 - `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid automatic repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
@@ -38,7 +46,6 @@ For each shell command, a separate Thing has to be defined.
 ```java
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
-
 
 The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
 The following parameters are automatically added:

@@ -39,6 +39,7 @@ import org.openhab.binding.bluetooth.bluez.BlueZBluetoothDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tinyb.BluetoothException;
 import tinyb.BluetoothManager;
 
 /**
@@ -127,7 +128,6 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             }
             if (adapter.getAddress().equals(adapterAddress.toString())) {
                 this.adapter = adapter;
-                updateStatus(ThingStatus.ONLINE);
                 discoveryJob = scheduler.scheduleWithFixedDelay(this::refreshDevices, 0, 10, TimeUnit.SECONDS);
                 return;
             }
@@ -155,6 +155,10 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
     }
 
     private void startDiscovery() {
+        // we need to make sure the adapter is powered first
+        if (!adapter.getPowered()) {
+            adapter.setPowered(true);
+        }
         if (!adapter.getDiscovering()) {
             adapter.setRssiDiscoveryFilter(-96);
             adapter.startDiscovery();
@@ -162,26 +166,39 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
     }
 
     private void refreshDevices() {
-        logger.debug("Refreshing Bluetooth device list...");
-        List<tinyb.BluetoothDevice> tinybDevices = adapter.getDevices();
-        logger.debug("Found {} Bluetooth devices.", tinybDevices.size());
-        for (tinyb.BluetoothDevice tinybDevice : tinybDevices) {
-            BlueZBluetoothDevice device = getDevice(new BluetoothAddress(tinybDevice.getAddress()));
-            device.updateTinybDevice(tinybDevice);
-            notifyDiscoveryListeners(device);
-        }
-        // clean up orphaned entries
-        synchronized (devices) {
-            for (BlueZBluetoothDevice device : devices.values()) {
-                if (shouldRemove(device)) {
-                    logger.debug("Removing device '{}' due to inactivity", device.getAddress());
-                    device.dispose();
-                    devices.remove(device.getAddress());
+        try {
+            logger.debug("Refreshing Bluetooth device list...");
+            List<tinyb.BluetoothDevice> tinybDevices = adapter.getDevices();
+            logger.debug("Found {} Bluetooth devices.", tinybDevices.size());
+            for (tinyb.BluetoothDevice tinybDevice : tinybDevices) {
+                BlueZBluetoothDevice device = getDevice(new BluetoothAddress(tinybDevice.getAddress()));
+                device.updateTinybDevice(tinybDevice);
+                notifyDiscoveryListeners(device);
+            }
+            // clean up orphaned entries
+            synchronized (devices) {
+                for (BlueZBluetoothDevice device : devices.values()) {
+                    if (shouldRemove(device)) {
+                        logger.debug("Removing device '{}' due to inactivity", device.getAddress());
+                        device.dispose();
+                        devices.remove(device.getAddress());
+                    }
                 }
             }
+            // For whatever reason, bluez will sometimes turn off scanning. So we just make sure it keeps running.
+            startDiscovery();
+            // everything went fine, so lets switch to online
+            updateStatus(ThingStatus.ONLINE);
+        } catch (BluetoothException ex) {
+            String message = ex.getMessage();
+            if (message != null) {
+                int idx = message.lastIndexOf(':');
+                if (idx != -1) {
+                    message = message.substring(idx).trim();
+                }
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
-        // For whatever reason, bluez will sometimes turn off scanning. So we just make sure it keeps running.
-        startDiscovery();
     }
 
     private boolean shouldRemove(BlueZBluetoothDevice device) {
