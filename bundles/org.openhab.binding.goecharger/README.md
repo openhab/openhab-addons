@@ -36,7 +36,7 @@ Currently available channels are
 | powerL1 | Number | Power on L1 |
 | powerL2 | Number | Power on L2 |
 | powerL3 | Number | Power on L2 |
-| phases | Number | Connected lines to charger |
+| phases | Number | Amount of phases currently used for charging |
 | sessionChargeConsumptionLimit | Number | Wallbox stops charging after defined value |
 | sessionChargeConsumption | Number | Amount of kWh that have been charged in this session |
 | totalConsumption | Number | Amount of kWh that have been charged since installation |

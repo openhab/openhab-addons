@@ -100,10 +100,11 @@ public class GoEChargerHandler extends BaseThingHandler {
                 case MAX_AMPERE:
                     return goeResponse.getMaxChargeAmps();
                 case PWM_SIGNAL:
+                    // TODO more readable string value?
                     return goeResponse.getPwmSignal();
                 case ERROR:
-                    int error = goeResponse.getErrorCode();
-                    switch (error) {
+                    // TODO use enum with getValue() instead?
+                    switch (goeResponse.getErrorCode()) {
                         case 0:
                             return "NONE"; // TODO evaluate
                         case 1:
@@ -115,7 +116,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                         case 10:
                             return "INTERNAL";
                         default:
-                            return "NONE"; // TODO evaluate
+                            return null; // TODO evaluate
                     }
                 case ALLOW_CHARGING:
                     return goeResponse.getAllowCharging() == 1;
@@ -124,9 +125,17 @@ public class GoEChargerHandler extends BaseThingHandler {
                 case CABLE_ENCODING:
                     return goeResponse.getCableEncoding();
                 case PHASES:
-                    // TODO this value does not help much
-                    // need to calculate connected phases from nrg
-                    return goeResponse.getPhases();
+                    int count = 0;
+                    if (goeResponse.getEnergy()[0] > 0) {
+                        count++;
+                    }
+                    if (goeResponse.getEnergy()[1] > 0) {
+                        count++;
+                    }
+                    if (goeResponse.getEnergy()[2] > 0) {
+                        count++;
+                    }
+                    return count;
                 case TEMPERATURE:
                     return goeResponse.getTemperature();
                 case SESSION_CHARGE_CONSUMPTION:
@@ -283,7 +292,8 @@ public class GoEChargerHandler extends BaseThingHandler {
             if (connection != null) {
                 try {
                     IOUtils.closeQuietly(connection.getInputStream());
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
         }
 
@@ -330,7 +340,8 @@ public class GoEChargerHandler extends BaseThingHandler {
             if (connection != null) {
                 try {
                     IOUtils.closeQuietly(connection.getInputStream());
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
         }
 

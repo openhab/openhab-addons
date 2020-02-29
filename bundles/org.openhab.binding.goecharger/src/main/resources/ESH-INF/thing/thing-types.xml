@@ -117,7 +117,7 @@
 	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
-		<description>Connected lines to Go-eCharger</description>
+		<description>Amount of phases currently used for charging</description>
 	</channel-type>
 	<channel-type id="scl">
 		<item-type>Number</item-type>
