@@ -10,13 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yeelight.internal.lib.listeners;
-
-import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+package org.openhab.binding.yeelight.internal.lib.device;
 
 /**
- * @author Coaster Li - Initial contribution
+ * Implemented by devices with the possibility to enable nightlight mode.
+ *
+ * @author Viktor Koop - Initial contribution
  */
-public interface DeviceStatusChangeListener {
-    void onStatusChanged(DeviceStatus status);
+public interface DeviceWithNightlight {
+
+    /**
+     * Toggle the nightlight mode on or off.
+     *
+     * @param mode
+     */
+    void toggleNightlightMode(boolean mode);
 }

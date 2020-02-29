@@ -14,24 +14,13 @@ package org.openhab.binding.yeelight.internal.lib.services;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
-import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
-import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.device.*;
 import org.openhab.binding.yeelight.internal.lib.enums.DeviceAction;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
 import org.slf4j.Logger;
@@ -55,21 +44,18 @@ public class DeviceManager {
 
     private static final int TIMEOUT = 10000;
 
-    public static DeviceManager sInstance;
+    public static final DeviceManager sInstance = new DeviceManager();
     public volatile boolean mSearching = false;
 
     public Map<String, DeviceBase> mDeviceList = new HashMap<>();
     public List<DeviceListener> mListeners = new ArrayList<>();
 
-    private ExecutorService executorService;
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     private DeviceManager() {
     }
 
     public static DeviceManager getInstance() {
-        if (sInstance == null) {
-            sInstance = new DeviceManager();
-        }
         return sInstance;
     }
 
@@ -116,20 +102,9 @@ public class DeviceManager {
 
         try {
             final InetAddress multicastAddress = InetAddress.getByName(MULTI_CAST_HOST);
+            final List<NetworkInterface> networkInterfaces = getNetworkInterfaces();
 
-            final List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-                    .stream().filter(device -> {
-                        try {
-                            return device.isUp() && !device.isLoopback();
-                        } catch (SocketException e) {
-                            logger.debug("Failed to get device information", e);
-                            return false;
-                        }
-                    }).collect(Collectors.toList());
-
-            executorService = Executors.newFixedThreadPool(networkInterfaces.size());
             mSearching = true;
-
             for (final NetworkInterface networkInterface : networkInterfaces) {
                 logger.debug("Starting Discovery on: {}", networkInterface.getDisplayName());
 
@@ -155,7 +130,7 @@ public class DeviceManager {
                                 StringBuilder buffer = new StringBuilder();
                                 for (int i = 0; i < dpRecv.getLength(); i++) {
                                     // parse /r
-                                    if (bytes[i] == 13) {
+                                    if (bytes[i] == Character.LINE_SEPARATOR) {
                                         continue;
                                     }
                                     buffer.append((char) bytes[i]);
@@ -214,6 +189,17 @@ public class DeviceManager {
         }
     }
 
+    private List<NetworkInterface> getNetworkInterfaces() throws SocketException {
+        return Collections.list(NetworkInterface.getNetworkInterfaces()).stream().filter(device -> {
+            try {
+                return device.isUp() && !device.isLoopback();
+            } catch (SocketException e) {
+                logger.debug("Failed to get device information", e);
+                return false;
+            }
+        }).collect(Collectors.toList());
+    }
+
     private void notifyDeviceFound(DeviceBase device) {
         for (DeviceListener listener : mListeners) {
             listener.onDeviceFound(device);
@@ -250,6 +236,40 @@ public class DeviceManager {
                     break;
                 case decrease_ct:
                     device.decreaseCt(action.intDuration());
+                    break;
+                case background_color:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        final String[] split = action.strValue().split(",");
+
+                        ((DeviceWithAmbientLight) device).setBackgroundColor(Integer.parseInt(split[0]),
+                                Integer.parseInt(split[1]), action.intDuration());
+                    }
+                    break;
+                case background_brightness:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        ((DeviceWithAmbientLight) device).setBackgroundBrightness(action.intValue(),
+                                action.intDuration());
+                    }
+                    break;
+                case background_on:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        ((DeviceWithAmbientLight) device).setBackgroundPower(true, action.intDuration());
+                    }
+                    break;
+                case background_off:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        ((DeviceWithAmbientLight) device).setBackgroundPower(false, action.intDuration());
+                    }
+                    break;
+                case nightlight_off:
+                    if (device instanceof DeviceWithNightlight) {
+                        ((DeviceWithNightlight) device).toggleNightlightMode(false);
+                    }
+                    break;
+                case nightlight_on:
+                    if (device instanceof DeviceWithNightlight) {
+                        ((DeviceWithNightlight) device).toggleNightlightMode(true);
+                    }
                     break;
                 default:
                     break;
@@ -290,6 +310,8 @@ public class DeviceManager {
             case ceiling1:
             case ceiling3:
                 return "Yeelight LED Ceiling";
+            case ceiling4:
+                return "Yeelight LED Ceiling with ambient light";
             case color:
                 return "Yeelight Color LED Bulb";
             case mono:
