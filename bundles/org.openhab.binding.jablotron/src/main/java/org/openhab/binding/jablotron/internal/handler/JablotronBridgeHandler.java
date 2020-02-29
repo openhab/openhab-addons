@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -86,7 +87,6 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override
@@ -162,7 +162,7 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (TimeoutException e) {
             logger.debug("Timeout during getting login cookie", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot login to Jablonet cloud");
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException | JsonSyntaxException e) {
             logger.debug("Cannot get Jablotron login cookie", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot login to Jablonet cloud");
         }
@@ -204,10 +204,12 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             }
 
             return response.getData().getServices();
-        } catch (TimeoutException ex) {
-            logger.debug("Timeout during discovering services", ex);
-        } catch (InterruptedException ex) {
-            logger.debug("Error during discovering services", ex);
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during discovering services", e);
+        } catch (InterruptedException e) {
+            logger.debug("Error during discovering services", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();
@@ -254,6 +256,8 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             logger.debug("sendUserCode timeout exception", e);
         } catch (InterruptedException e) {
             logger.debug("sendUserCode exception", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();
@@ -282,10 +286,12 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("Got error while getting history with http code: {}", response.getHttpCode());
             }
             return response.getData().getEvents();
-        } catch (TimeoutException ste) {
-            logger.debug("Timeout during getting alarm history!");
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during getting alarm history!", e);
         } catch (InterruptedException e) {
             logger.debug("sendGetEventHistory exception", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();
@@ -310,10 +316,12 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             logger.trace("get status: {}", line);
 
             return gson.fromJson(line, JablotronDataUpdateResponse.class);
-        } catch (TimeoutException ste) {
-            logger.debug("Timeout during getting alarm status!");
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during getting alarm status!", e);
         } catch (InterruptedException e) {
             logger.debug("sendGetStatusRequest exception", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();
@@ -338,10 +346,12 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             logger.trace("get programmable gates: {}", line);
 
             return gson.fromJson(line, JablotronGetPGResponse.class);
-        } catch (TimeoutException ste) {
-            logger.debug("Timeout during getting programmable gates!");
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during getting programmable gates!", e);
         } catch (InterruptedException e) {
             logger.debug("sendGetProgramambleGates exception", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();
@@ -366,10 +376,12 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             logger.trace("get sections: {}", line);
 
             return gson.fromJson(line, JablotronGetSectionsResponse.class);
-        } catch (TimeoutException ste) {
-            logger.debug("Timeout during getting alarm sections!");
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during getting alarm sections!", e);
         } catch (InterruptedException e) {
             logger.debug("sendGetSections exception", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();
@@ -406,10 +418,12 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
             logger.trace("control component: {}", line);
 
             return gson.fromJson(line, JablotronGetSectionsResponse.class);
-        } catch (TimeoutException ste) {
-            logger.debug("Timeout during getting alarm sections!");
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during getting alarm sections!", e);
         } catch (InterruptedException e) {
             logger.debug("controlComponent exception", e);
+        } catch (JsonSyntaxException e) {
+            logger.debug("JSON syntax exception", e);
         } catch (ExecutionException e) {
             if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
                 relogin();

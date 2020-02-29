@@ -78,7 +78,6 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService implemen
             discoveryJob = scheduler.scheduleWithFixedDelay(this::startDiscovery, 10, 3600,
                     TimeUnit.SECONDS);
         }
-
     }
 
     /**
