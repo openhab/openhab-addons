@@ -102,6 +102,16 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
         this.channelStateUpdateListener = builder.getUpdateListener();
         ColorValue value = new ColorValue(true, channelConfiguration.payload_on, channelConfiguration.payload_off, 100);
 
+        // HomeAssistant MQTT Discovery documentation is a bit unclear as to when to use value_template and
+        // when to use state_value_template. As a result, not all light implementations use state_value_template.
+        // Lights using the Tasmota firmware for example use value_template.
+        if (channelConfiguration.state_value_template == null) {
+            channelConfiguration.state_value_template = channelConfiguration.value_template;
+        }
+        if (channelConfiguration.value_template == null) {
+            channelConfiguration.value_template = channelConfiguration.state_value_template;
+        }
+
         // Create three MQTT subscriptions and use this class object as update listener
         switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name, this)//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.state_value_template)//
