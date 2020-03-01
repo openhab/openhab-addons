@@ -38,7 +38,7 @@ public class DoorbirdInfoDTO {
          * Contains information about the Doorbird configuration
          */
         @SerializedName("VERSION")
-        public DoorbirdInfoArray doorbirdInfoArray[];
+        public DoorbirdInfoArray[] doorbirdInfoArray;
 
         public class DoorbirdInfoArray {
             /**

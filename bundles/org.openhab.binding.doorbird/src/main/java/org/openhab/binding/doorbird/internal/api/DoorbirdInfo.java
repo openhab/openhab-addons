@@ -53,7 +53,7 @@ public class DoorbirdInfo {
                 deviceType = doorbirdInfo.deviceType;
                 for (String relay : doorbirdInfo.relays) {
                     relays.add(relay);
-                    String parts[] = relay.split("@");
+                    String[] parts = relay.split("@");
                     if (parts.length == 2) {
                         controllerId = parts[0];
                     }

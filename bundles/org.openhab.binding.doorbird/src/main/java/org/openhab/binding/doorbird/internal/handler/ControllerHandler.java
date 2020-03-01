@@ -14,7 +14,6 @@ package org.openhab.binding.doorbird.internal.handler;
 
 import static org.openhab.binding.doorbird.internal.DoorbirdBindingConstants.*;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -51,17 +50,17 @@ public class ControllerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         String host = getConfigAs(ControllerConfiguration.class).doorbirdHost;
-        if (StringUtils.isEmpty(host)) {
+        if (host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird host not provided");
             return;
         }
         String user = getConfigAs(ControllerConfiguration.class).userId;
-        if (StringUtils.isEmpty(user)) {
+        if (user == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User ID not provided");
             return;
         }
         String password = getConfigAs(ControllerConfiguration.class).userPassword;
-        if (StringUtils.isEmpty(password)) {
+        if (password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User password not provided");
             return;
         }
@@ -101,7 +100,7 @@ public class ControllerHandler extends BaseThingHandler {
             logger.debug("Unable to handle open door command because controller ID is not set");
             return;
         }
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
+        if (command.equals(OnOffType.ON)) {
             api.openDoorController(id, doorNumber);
         }
     }

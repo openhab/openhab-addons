@@ -38,7 +38,7 @@ public class SipStatusDTO {
          * Contains information about the Doorbird SIP status
          */
         @SerializedName("SIP")
-        public SipStatusArray sipStatusArray[];
+        public SipStatusArray[] sipStatusArray;
 
         public class SipStatusArray {
             @SerializedName("ENABLE")

@@ -124,11 +124,11 @@ public class DoorbellHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         stopUDPListenerJob();
         stopImageRefreshJob();
         stopDoorbellOffJob();
         stopMotionOffJob();
+        super.dispose();
     }
 
     // Callback used by listener to get Doorbird host name
@@ -292,22 +292,20 @@ public class DoorbellHandler extends BaseThingHandler {
 
     private void handleLight(Command command) {
         // It's only possible to energize the light relay
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
+        if (command.equals(OnOffType.ON)) {
             api.lightOn();
         }
     }
 
     private void handleOpenDoor(Command command, String doorNumber) {
         // It's only possible to energize the open door relay
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
+        if (command.equals(OnOffType.ON)) {
             api.openDoorDoorbell(doorNumber);
         }
     }
 
     private void handleGetImage() {
-        scheduler.execute(() -> {
-            updateImageAndTimestamp();
-        });
+        scheduler.execute(this::updateImageAndTimestamp);
     }
 
     private void handleHistoryImage(ChannelUID channelUID, Command command) {
@@ -453,7 +451,7 @@ public class DoorbellHandler extends BaseThingHandler {
         Integer numberOfImages = config.montageNumImages;
         if (numberOfImages != null) {
             for (int imageNumber = 1; imageNumber <= numberOfImages; imageNumber++) {
-                logger.debug("Downloading montage image {} for channel '{}'", imageNumber, channelId);
+                logger.trace("Downloading montage image {} for channel '{}'", imageNumber, channelId);
                 DoorbirdImage historyImage = CHANNEL_DOORBELL_IMAGE_MONTAGE.equals(channelId)
                         ? api.downloadDoorbellHistoryImage(String.valueOf(imageNumber))
                         : api.downloadMotionHistoryImage(String.valueOf(imageNumber));
@@ -483,6 +481,8 @@ public class DoorbellHandler extends BaseThingHandler {
         State state = null;
         Integer montageScaleFactor = config.montageScaleFactor;
         if (montageScaleFactor != null) {
+            // Assume all images are the same size, as the Doorbird image resolution cannot
+            // be changed by the user
             int height = (int) (images.get(0).getHeight() * (montageScaleFactor / 100.0));
             int width = (int) (images.get(0).getWidth() * (montageScaleFactor / 100.0));
             int widthTotal = width * images.size();
