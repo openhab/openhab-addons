@@ -16,9 +16,9 @@
 			</parameter>
 			<parameter name="discovery" type="boolean">
 				<label>Device Discovery</label>
-				<description>Whether this adapter actively participates in Bluetooth device discovery</description>
+				<description>Whether Bluetooth device discovery is always enabled for this adapter</description>
 				<advanced>true</advanced>
-				<default>true</default>
+				<default>false</default>
 			</parameter>
 		</config-description>
 
