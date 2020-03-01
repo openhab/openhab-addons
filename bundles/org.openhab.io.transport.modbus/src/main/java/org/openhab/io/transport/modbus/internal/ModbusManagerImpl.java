@@ -318,8 +318,9 @@ public class ModbusManagerImpl implements ModbusManager {
             @Override
             public void onSwallowException(@Nullable Exception e) {
                 LoggerFactory.getLogger(ModbusManagerImpl.class).error(
-                        "Connection pool swallowed unexpected exception: {}",
-                        Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"));
+                        "Connection pool swallowed unexpected exception:{} {}",
+                        Optional.ofNullable(e).map(ex -> ex.getClass().getSimpleName()).orElse(""),
+                        Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"), e);
             }
 
         });
