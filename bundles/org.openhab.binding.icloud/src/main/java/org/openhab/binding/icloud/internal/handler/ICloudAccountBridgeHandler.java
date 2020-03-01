@@ -65,7 +65,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Nullable
     ServiceRegistration<?> service;
 
-    private Object synchronizeRefresh = new Object();
+    private final Object synchronizeRefresh = new Object();
 
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
             .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
@@ -167,6 +167,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
             try {
                 ICloudAccountDataResponse iCloudData = deviceInformationParser.parse(json);
+                if(iCloudData == null) {
+                    return;
+                }
                 int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());
                 if (statusCode == 200) {
                     updateStatus(ThingStatus.ONLINE);
