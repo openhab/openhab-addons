@@ -220,10 +220,9 @@ public class LinkyHandler extends BaseThingHandler {
         double thisMonth = -1;
         LinkyConsumptionData result = cachedMonthlyData.getValue();
         if (result != null && result.success()) {
-            lastMonth = result.getData().stream().filter(LinkyConsumptionData.Data::isPositive).findFirst()
-                    .get().valeur;
-            thisMonth = result.getData().stream().filter(LinkyConsumptionData.Data::isPositive)
-                    .reduce((first, second) -> second).get().valeur;
+            int jump = result.getDecalage();
+            lastMonth = result.getData().get(jump++).valeur;
+            thisMonth = result.getData().get(jump).valeur;
         } else {
             cachedMonthlyData.invalidateValue();
         }
