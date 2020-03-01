@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyps4.internal;
+package org.openhab.binding.playstation.internal;
 
 import java.util.HashMap;
 import java.util.Map;

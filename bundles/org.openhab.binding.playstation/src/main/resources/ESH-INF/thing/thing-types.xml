@@ -22,12 +22,12 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP address</label>
-				<description>The local IP address or hostname of the PlayStation 4.</description>
+				<description>The local IP address or hostname of the PlayStation 3.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="ipPort" type="integer">
 				<label>IP port</label>
-				<description>The TCP port used to communicate with the PlayStation 4.</description>
+				<description>The TCP port used to communicate with the PlayStation 3.</description>
 				<default>997</default>
 				<advanced>true</advanced>
 			</parameter>

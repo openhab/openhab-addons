@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyps4.internal.discovery;
+package org.openhab.binding.playstation.internal.discovery;
 
-import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.*;
-import static org.openhab.binding.sonyps4.internal.SonyPS4Configuration.*;
+import static org.openhab.binding.playstation.internal.PlayStationBindingConstants.*;
+import static org.openhab.binding.playstation.internal.SonyPS4Configuration.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -37,20 +37,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SonyPS4Discovery} is responsible for discovering
+ * The {@link PlayStationDiscovery} is responsible for discovering
  * all PS4 devices
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class, SonyPS4Discovery.class }, configurationPid = "binding.sonyps4")
-public class SonyPS4Discovery extends AbstractDiscoveryService {
+@Component(service = { DiscoveryService.class, PlayStationDiscovery.class }, configurationPid = "binding.playstation")
+public class PlayStationDiscovery extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS4Discovery.class);
+    private final Logger logger = LoggerFactory.getLogger(PlayStationDiscovery.class);
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 2;
 
-    public SonyPS4Discovery() {
+    public PlayStationDiscovery() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS * 2, true);
     }
 

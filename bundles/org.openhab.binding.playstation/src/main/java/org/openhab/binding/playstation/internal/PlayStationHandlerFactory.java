@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyps4.internal;
+package org.openhab.binding.playstation.internal;
 
-import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.*;
+import static org.openhab.binding.playstation.internal.PlayStationBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +40,7 @@ public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SonyPS4BindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return PlayStationBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override

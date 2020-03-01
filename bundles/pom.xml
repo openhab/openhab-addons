@@ -215,6 +215,7 @@
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
+    <module>org.openhab.binding.playstation</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.powermax</module>
@@ -251,7 +252,6 @@
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.sonyprojector</module>
-    <module>org.openhab.binding.sonyps4</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.synopanalyzer</module>

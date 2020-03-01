@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyps4.internal;
+package org.openhab.binding.playstation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sonyps4.internal.discovery.SonyPS4Discovery;
+import org.openhab.binding.playstation.internal.discovery.PlayStationDiscovery;
 
 /**
  * The {@link SonyPS4Configuration} class contains fields mapping thing configuration parameters.
@@ -24,7 +24,7 @@ import org.openhab.binding.sonyps4.internal.discovery.SonyPS4Discovery;
 public class SonyPS4Configuration {
 
     /**
-     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
      * Value of this field needs to match {@link #userCredential}.
      */
     public static final String USER_CREDENTIAL = "userCredential";
@@ -36,13 +36,13 @@ public class SonyPS4Configuration {
     public static final String PAIRING_CODE = "pairingCode";
 
     /**
-     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
      * Value of this field needs to match {@link #ipAddress}.
      */
     public static final String IP_ADDRESS = "ipAddress";
 
     /**
-     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
      * Value of this field needs to match {@link #ipPort}.
      */
     public static final String IP_PORT = "ipPort";
@@ -85,7 +85,7 @@ public class SonyPS4Configuration {
     /**
      * IP-port of PS4.
      */
-    public int ipPort = SonyPS4BindingConstants.DEFAULT_COMMUNICATION_PORT;
+    public int ipPort = PlayStationBindingConstants.DEFAULT_COMMUNICATION_PORT;
 
     /**
      * host-id of PS4.

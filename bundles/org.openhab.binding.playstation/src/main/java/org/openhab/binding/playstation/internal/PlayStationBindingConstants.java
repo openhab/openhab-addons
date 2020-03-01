@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyps4.internal;
+package org.openhab.binding.playstation.internal;
 
 import java.util.Collections;
 import java.util.Set;
@@ -21,15 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link SonyPS4BindingConstants} class defines common constants, which are
+ * The {@link PlayStationBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class SonyPS4BindingConstants {
+public class PlayStationBindingConstants {
 
-    private static final String BINDING_ID = "sonyps4";
+    private static final String BINDING_ID = "playstation";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SONYPS3 = new ThingTypeUID(BINDING_ID, "SonyPS3");
@@ -122,7 +122,7 @@ public class SonyPS4BindingConstants {
     public static final int DEFAULT_PS3_BROADCAST_PORT = 9293;
     public static final int DEFAULT_PS3_COMMUNICATION_PORT = 5223;
 
-    private SonyPS4BindingConstants() {
+    private PlayStationBindingConstants() {
         // No need to instance this class.
     }
 

@@ -8,8 +8,8 @@
     <version>2.5.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.sonyps4</artifactId>
+  <artifactId>org.openhab.binding.playstation</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Sony PS4 Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Sony PlayStation Binding</name>
 
 </project>

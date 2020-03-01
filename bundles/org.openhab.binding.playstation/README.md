@@ -1,4 +1,4 @@
-# Sony PS4 Binding
+# Sony PlayStation Binding
 
 This binding allows you to monitor the on/off status and which application that is currently running on your PlayStation 4.
 By providing your user-credentials you can also change the power, which application that is running and more.
@@ -47,7 +47,7 @@ Example of how to configure a thing.
 demo.thing
 
 ```
-Thing sonyps4:SonyPS4:myplaystation4 "PlayStation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+Thing playstation:PS4:myplaystation4 "PlayStation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
 ```
 
 Here are some examples on how to map the channels to items.
@@ -55,20 +55,20 @@ Here are some examples on how to map the channels to items.
 demo.items:
 
 ```
-Switch PS4_Power "Power"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:power" }
-String PS4_Application "Application [%s]"        { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationName" }
-String PS4_ApplicationId "Application id [%s]"   { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationId" }
-Image PS4_ArtWork "Artwork"                      { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:applicationImage" }
-String PS4_OSKText "OSK Text"                    { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:oskText" }
-Switch PS4_Disconnect "Disconnect"               { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:disconnect" }
-Switch PS4_Up "Up"                               { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyUp" }
-Switch PS4_Down "Down"                           { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyDown" }
-Switch PS4_Right "Right"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyRight" }
-Switch PS4_Left "Left"                           { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyLeft" }
-Switch PS4_Enter "Enter"                         { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyEnter" }
-Switch PS4_Back "Back"                           { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyBack" }
-Switch PS4_Option "Option"                       { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyOption" }
-Switch PS4_PS "PS"                               { channel="sonyps4:SonyPS4:a4_24_56_8f_2c_5b:keyPS" }
+Switch PS4_Power "Power"                         { channel="playstation:PS4:a4_24_56_8f_2c_5b:power" }
+String PS4_Application "Application [%s]"        { channel="playstation:PS4:a4_24_56_8f_2c_5b:applicationName" }
+String PS4_ApplicationId "Application id [%s]"   { channel="playstation:PS4:a4_24_56_8f_2c_5b:applicationId" }
+Image PS4_ArtWork "Artwork"                      { channel="playstation:PS4:a4_24_56_8f_2c_5b:applicationImage" }
+String PS4_OSKText "OSK Text"                    { channel="playstation:PS4:a4_24_56_8f_2c_5b:oskText" }
+Switch PS4_Disconnect "Disconnect"               { channel="playstation:PS4:a4_24_56_8f_2c_5b:disconnect" }
+Switch PS4_Up "Up"                               { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyUp" }
+Switch PS4_Down "Down"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyDown" }
+Switch PS4_Right "Right"                         { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyRight" }
+Switch PS4_Left "Left"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyLeft" }
+Switch PS4_Enter "Enter"                         { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyEnter" }
+Switch PS4_Back "Back"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyBack" }
+Switch PS4_Option "Option"                       { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyOption" }
+Switch PS4_PS "PS"                               { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyPS" }
 ```
 
 demo.sitemap:
