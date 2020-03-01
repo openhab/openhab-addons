@@ -5,7 +5,8 @@ It was tested with Raspberry Pi 2 and Raspberry Pi 3, but probably should work w
 
 On Raspberry Pi the user on which openHAB is running (default user name is "openhab") needs to be added to groups "i2c" and  "gpio".
 As the MCP23017 has 3 address pins, you are restricted to 8 devices on a I2C bus.
-To use more devices you have to open further I2C busses. Therefore you can use overlays to enable bit banging I2C busses on the Raspberry Pi connector, up to I2C6.
+To use more devices you have to open further I2C busses.
+Therefore you can use overlays to enable bit banging I2C busses on the Raspberry Pi connector, up to I2C6.
 (https://github.com/raspberrypi/firmware/tree/master/boot/overlays)
 
 ## Dependencies
