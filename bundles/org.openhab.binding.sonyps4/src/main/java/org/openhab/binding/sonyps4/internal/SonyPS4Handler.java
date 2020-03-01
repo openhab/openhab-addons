@@ -88,8 +88,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         super.handleConfigurationUpdate(configurationParameters);
         SocketChannelHandler scHandler = socketChannelHandler;
         if (scHandler == null || !scHandler.loggedIn) {
-            boolean loggedIn = login();
-            if (loggedIn && !config.pairingCode.isEmpty()) {
+            if (login() && !config.pairingCode.isEmpty()) {
                 // If we are paired, remove pairing code as it's one use only.
                 Configuration editedConfig = editConfiguration();
                 editedConfig.put(SonyPS4Configuration.PAIRING_CODE, "");
@@ -165,7 +164,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         config = getConfigAs(SonyPS4Configuration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
-        setupRefreshTimer(1);
+        setupRefreshTimer();
 
         logger.debug("Finished initializing!");
     }
@@ -176,18 +175,21 @@ public class SonyPS4Handler extends BaseThingHandler {
             refreshTimer.cancel(false);
             refreshTimer = null;
         }
+        if (timeoutTimer != null) {
+            timeoutTimer.cancel(false);
+            timeoutTimer = null;
+        }
+        stopConnection();
     }
 
     /**
      * Sets up a timer for querying the PS4 (using the scheduler) with the given interval.
-     *
-     * @param initialWaitTime The delay before the first refresh in seconds. Maybe 0 to immediately initiate a refresh.
      */
-    private void setupRefreshTimer(int initialWaitTime) {
+    private void setupRefreshTimer() {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
-        refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, initialWaitTime, 10, TimeUnit.SECONDS);
+        refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 0, 10, TimeUnit.SECONDS);
     }
 
     /**

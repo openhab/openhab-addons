@@ -32,7 +32,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +48,10 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SonyPS4Discovery.class);
 
-    private static final int DISCOVERY_TIMEOUT_SECONDS = 3;
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 2;
 
     public SonyPS4Discovery() {
-        super(SonyPS4BindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS * 2, true);
     }
 
     /**
@@ -73,6 +72,7 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("Updating discovered things (new scan)");
         discover();
+        discoverPS3();
     }
 
     private synchronized void discover() {
@@ -86,8 +86,7 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
 
             // send discover
             byte[] discover = "SRCH * HTTP/1.1\ndevice-discovery-protocol-version:00020020\n".getBytes();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
-                    SonyPS4BindingConstants.DEFAULT_BROADCAST_PORT);
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
             logger.debug("Disover message sent: '{}'", discover);
 
@@ -101,14 +100,47 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
                     break; // leave the endless loop
                 }
 
-                parsePacket(packet);
+                parsePS4Packet(packet);
             }
         } catch (IOException e) {
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
         }
     }
 
-    private boolean parsePacket(DatagramPacket packet) {
+    private synchronized void discoverPS3() {
+        logger.debug("Trying to discover all PS3 devices");
+
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setBroadcast(true);
+            socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
+
+            InetAddress inetAddress = InetAddress.getByName("255.255.255.255");
+
+            // send discover
+            byte[] discover = "SRCH".getBytes();
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
+                    DEFAULT_PS3_BROADCAST_PORT);
+            socket.send(packet);
+            logger.debug("Disover message sent: '{}'", discover);
+
+            // wait for responses
+            while (true) {
+                byte[] rxbuf = new byte[256];
+                packet = new DatagramPacket(rxbuf, rxbuf.length);
+                try {
+                    socket.receive(packet);
+                } catch (SocketTimeoutException e) {
+                    break; // leave the endless loop
+                }
+
+                parsePS3Packet(packet);
+            }
+        } catch (IOException e) {
+            logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());
+        }
+    }
+
+    private boolean parsePS4Packet(DatagramPacket packet) {
         byte[] data = packet.getData();
         String message = new String(data, StandardCharsets.UTF_8);
 
@@ -145,20 +177,64 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
                 case RESPONSE_SYSTEM_VERSION:
                     systemVersion = value;
                     break;
-
                 default:
                     break;
             }
+        }
+        String modelID = hostType;
+        switch (hostType) {
+            case "PS4":
+                modelID = "PlayStation 4";
+                break;
+            case "PS5":
+                modelID = "PlayStation 5";
+                break;
+            default:
+                break;
         }
         logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", hostType, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, Integer.valueOf(hostPort));
-        properties.put(Thing.PROPERTY_MODEL_ID, hostType.equals("PS4") ? "PlayStation 4" : hostType);
+        properties.put(Thing.PROPERTY_MODEL_ID, modelID);
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
-        ThingUID uid = new ThingUID(THING_TYPE_SONYPS4, hostId);
+        ThingUID uid = hostType.equals("PS5") ? new ThingUID(THING_TYPE_SONYPS5, hostId)
+                : new ThingUID(THING_TYPE_SONYPS4, hostId);
+
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
+                .build();
+        thingDiscovered(result);
+        logger.debug("Thing discovered '{}'", result);
+        return true;
+    }
+
+    private boolean parsePS3Packet(DatagramPacket packet) {
+        byte[] data = packet.getData();
+        logger.debug("PS3 data '{}', length:{}", data, packet.getLength());
+        String resp = new String(data, 0, 4);
+        if (!"RESP".equals(resp) || packet.getLength() < 156) {
+            return false;
+        }
+
+        String ipAddress = packet.getAddress().toString().split("/")[1];
+        String hostId = String.format("%02x%02x%02x%02x%02x%02x", data[10], data[11], data[12], data[13], data[14],
+                data[15]);
+        String hostType = "Playstation 3";
+        String hostName = new String(data, 16, 128);
+        String systemVersion = String.format("%d.%d", data[5], data[6]);
+        String unknown = new String(data, 144, 12);
+
+        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", hostType, ipAddress, hostId);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(IP_ADDRESS, ipAddress);
+        properties.put(IP_PORT, Integer.valueOf(DEFAULT_PS3_BROADCAST_PORT));
+        properties.put(Thing.PROPERTY_MODEL_ID, hostType);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, PS3HW_CECHXXXX);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
+        ThingUID uid = new ThingUID(THING_TYPE_SONYPS3, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
                 .build();
@@ -181,10 +257,10 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
     }
 
     private static String hostIdToHWVersion(String hostId) {
-        String hwVersion = "CUH-XXXX";
+        String hwVersion = PS4HW_CUHXXXX;
         if (hostId.length() >= 12) {
-            String manufacturer = hostId.substring(0, 6).toLowerCase();
-            String ethId = hostId.substring(6, 8).toLowerCase();
+            final String manufacturer = hostId.substring(0, 6).toLowerCase();
+            final String ethId = hostId.substring(6, 8).toLowerCase();
             switch (manufacturer) {
                 // Ethernet
                 case "2ccc44":

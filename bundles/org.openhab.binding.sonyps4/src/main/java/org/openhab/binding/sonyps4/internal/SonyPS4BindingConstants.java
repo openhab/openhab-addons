@@ -14,6 +14,8 @@ package org.openhab.binding.sonyps4.internal;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -30,9 +32,12 @@ public class SonyPS4BindingConstants {
     private static final String BINDING_ID = "sonyps4";
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_SONYPS3 = new ThingTypeUID(BINDING_ID, "SonyPS3");
     public static final ThingTypeUID THING_TYPE_SONYPS4 = new ThingTypeUID(BINDING_ID, "SonyPS4");
+    public static final ThingTypeUID THING_TYPE_SONYPS5 = new ThingTypeUID(BINDING_ID, "SonyPS5");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SONYPS4);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_SONYPS3, THING_TYPE_SONYPS4, THING_TYPE_SONYPS5).collect(Collectors.toSet()));
 
     // List of all Channel ids
     static final String CHANNEL_POWER = "power";
@@ -63,12 +68,34 @@ public class SonyPS4BindingConstants {
     public static final String RESPONSE_RUNNING_APP_NAME = "running-app-name";
     public static final String RESPONSE_RUNNING_APP_TITLEID = "running-app-titleid";
 
+    public static final String PS3HW_CECHXXXX = "CECHXXXX";
+    public static final String PS3HW_CECHA00 = "CECHA00";
+    public static final String PS3HW_CECHB00 = "CECHB00";
+    public static final String PS3HW_CECHC00 = "CECHC00";
+    public static final String PS3HW_CECHE00 = "CECHE00";
+    public static final String PS3HW_CECHG00 = "CECHG00";
+    public static final String PS3HW_CECHH00 = "CECHH00";
+    public static final String PS3HW_CECHJ00 = "CECHJ00";
+    public static final String PS3HW_CECHK00 = "CECHK00";
+    public static final String PS3HW_CECHL00 = "CECHL00";
+    public static final String PS3HW_CECHM00 = "CECHM00";
+    public static final String PS3HW_CECHP00 = "CECHP00";
+    public static final String PS3HW_CECHQ00 = "CECHQ00";
+    public static final String PS3HW_CECH2000 = "CECH-2000";
+    public static final String PS3HW_CECH2100 = "CECH-2100";
+    public static final String PS3HW_CECH2500 = "CECH-2500";
+    public static final String PS3HW_CECH3000 = "CECH-3000";
+    public static final String PS3HW_CECH4000 = "CECH-4000";
+    public static final String PS3HW_CECH4200 = "CECH-4200";
+    public static final String PS3HW_CECH4300 = "CECH-4300";
+
     public static final String PS4HW_CUHXXXX = "CUH-XXXX";
     public static final String PS4HW_CUH1000 = "CUH-1000";
     public static final String PS4HW_CUH1100 = "CUH-1100";
     public static final String PS4HW_CUH1200 = "CUH-1200";
     public static final String PS4HW_CUH2000 = "CUH-2000";
     public static final String PS4HW_CUH2100 = "CUH-2100";
+    public static final String PS4HW_CUH2200 = "CUH-2200";
     public static final String PS4HW_CUH7000 = "CUH-7000";
     public static final String PS4HW_CUH7100 = "CUH-7100";
 
@@ -90,6 +117,10 @@ public class SonyPS4BindingConstants {
      */
     public static final int DEFAULT_BROADCAST_PORT = 987;
     public static final int DEFAULT_COMMUNICATION_PORT = 997;
+
+    /** Default port for PS3. */
+    public static final int DEFAULT_PS3_BROADCAST_PORT = 9293;
+    public static final int DEFAULT_PS3_COMMUNICATION_PORT = 5223;
 
     private SonyPS4BindingConstants() {
         // No need to instance this class.

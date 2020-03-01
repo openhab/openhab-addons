@@ -4,6 +4,37 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<thing-type id="SonyPS3">
+		<label>PlayStation 3</label>
+		<description>Sony PlayStation 3 console.</description>
+
+		<channels>
+			<channel id="power" typeId="power-channel" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Sony</property>
+			<property name="modelId">PlayStation 3</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The local IP address or hostname of the PlayStation 4.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ipPort" type="integer">
+				<label>IP port</label>
+				<description>The TCP port used to communicate with the PlayStation 4.</description>
+				<default>997</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
 	<thing-type id="SonyPS4">
 		<label>PlayStation 4</label>
 		<description>Sony PlayStation 4 console.</description>
@@ -42,7 +73,7 @@
 			</parameter>
 			<parameter name="pairingCode" type="text">
 				<label>Pairing code</label>
-				<description>Pairing code to pair OpenHAB device to PlayStation 4, only needed during pairing, 8 digits.</description>
+				<description>Code to pair OpenHAB device to PlayStation 4, only needed during pairing, 8 digits.</description>
 			</parameter>
 			<parameter name="connectionTimeout" type="integer" min="0">
 				<label>Connection timeout</label>
@@ -80,8 +111,8 @@
 
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
-		<label>PS4 Power</label>
-		<description>Shows if PS4 is on or in standby.</description>
+		<label>PlayStation Power</label>
+		<description>Shows if PlayStation is on or in standby/off.</description>
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
@@ -129,49 +160,49 @@
 		<item-type>Switch</item-type>
 		<label>Up button</label>
 		<description>Push Up button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyDown-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Down button</label>
 		<description>Push Down button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyRight-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Right button</label>
 		<description>Push Right button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyLeft-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Left button</label>
 		<description>Push Left button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyEnter-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enter button</label>
 		<description>Push Enter button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyBack-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Back button</label>
 		<description>Push Back button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyOption-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Option button</label>
 		<description>Push Option button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 	<channel-type id="keyPS-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>PS button</label>
 		<description>Push PS button.</description>
-		<category>MediaControl</category>
+		<category>MoveControl</category>
 	</channel-type>
 
 </thing:thing-descriptions>

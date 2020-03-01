@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sonyps4.internal;
 
-import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.THING_TYPE_SONYPS4;
+import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,8 +47,11 @@ public class SonyPS4HandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SONYPS4.equals(thingTypeUID)) {
+        if (THING_TYPE_SONYPS4.equals(thingTypeUID) || THING_TYPE_SONYPS5.equals(thingTypeUID)) {
             return new SonyPS4Handler(thing, localeProvider);
+        }
+        if (THING_TYPE_SONYPS3.equals(thingTypeUID)) {
+            return new SonyPS3Handler(thing);
         }
 
         return null;
