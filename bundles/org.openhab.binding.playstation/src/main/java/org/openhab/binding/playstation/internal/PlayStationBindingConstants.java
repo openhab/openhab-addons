@@ -32,12 +32,12 @@ public class PlayStationBindingConstants {
     private static final String BINDING_ID = "playstation";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SONYPS3 = new ThingTypeUID(BINDING_ID, "SonyPS3");
-    public static final ThingTypeUID THING_TYPE_SONYPS4 = new ThingTypeUID(BINDING_ID, "SonyPS4");
-    public static final ThingTypeUID THING_TYPE_SONYPS5 = new ThingTypeUID(BINDING_ID, "SonyPS5");
+    public static final ThingTypeUID THING_TYPE_PS3 = new ThingTypeUID(BINDING_ID, "PS3");
+    public static final ThingTypeUID THING_TYPE_PS4 = new ThingTypeUID(BINDING_ID, "PS4");
+    public static final ThingTypeUID THING_TYPE_PS5 = new ThingTypeUID(BINDING_ID, "PS5");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_SONYPS3, THING_TYPE_SONYPS4, THING_TYPE_SONYPS5).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PS3, THING_TYPE_PS4, THING_TYPE_PS5).collect(Collectors.toSet()));
 
     // List of all Channel ids
     static final String CHANNEL_POWER = "power";
@@ -120,6 +120,7 @@ public class PlayStationBindingConstants {
 
     /** Default port for PS3. */
     public static final int DEFAULT_PS3_BROADCAST_PORT = 9293;
+    public static final int DEFAULT_PS3_UNKNOWN_PORT = 9309;
     public static final int DEFAULT_PS3_COMMUNICATION_PORT = 5223;
 
     private PlayStationBindingConstants() {

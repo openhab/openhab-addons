@@ -200,8 +200,8 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
-        ThingUID uid = hostType.equals("PS5") ? new ThingUID(THING_TYPE_SONYPS5, hostId)
-                : new ThingUID(THING_TYPE_SONYPS4, hostId);
+        ThingUID uid = hostType.equals("PS5") ? new ThingUID(THING_TYPE_PS5, hostId)
+                : new ThingUID(THING_TYPE_PS4, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
                 .build();
@@ -234,7 +234,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, PS3HW_CECHXXXX);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
-        ThingUID uid = new ThingUID(THING_TYPE_SONYPS3, hostId);
+        ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
                 .build();
@@ -262,14 +262,35 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
             final String manufacturer = hostId.substring(0, 6).toLowerCase();
             final String ethId = hostId.substring(6, 8).toLowerCase();
             switch (manufacturer) {
-                // Ethernet
-                case "2ccc44":
+                case "d44b5e":
+                    hwVersion = "PS-Vita";
+                    break;
+                case "001315":
+                case "001fa7":
+                case "a8e3ee":
+                case "fc0fe6":
+                case "00248d":
+                case "280dfc":
+                case "0015c1":
+                case "0019c5":
+                case "0022a6":
+                case "0cfe45":
+                case "f8d0ac":
+                case "00041f":
+                case "001d0d":
+                    hwVersion = PS3HW_CECHXXXX;
+                    break;
+                case "00d9d1":
+                    hwVersion = PS3HW_CECH4000;
+                    break;
+                case "2ccc44": // Ethernet
                     hwVersion = PS4HW_CUH7100;
                     break;
-                case "709e29":
+                case "709e29": // Ethernet
+                case "b00594": // WiFi
                     hwVersion = PS4HW_CUH1000;
                     break;
-                case "bc60a7":
+                case "bc60a7": // Ethernet
                     if (ethId.equals("7b")) {
                         hwVersion = PS4HW_CUH2000;
                     }
@@ -277,17 +298,14 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                         hwVersion = PS4HW_CUH7000;
                     }
                     break;
-                case "c863f1":
-                case "f8461c":
+                case "c863f1": // Ethernet
+                case "f8461c": // Ethernet
+                case "5cea1d": // WiFi
+                case "f8da0c": // WiFi
                     hwVersion = PS4HW_CUH2000;
                     break;
-
-                // WiFi
-                case "b00594":
-                    hwVersion = PS4HW_CUH1000;
-                    break;
-                case "40490f":
-                case "5c9656":
+                case "40490f": // WiFi
+                case "5c9656": // WiFi
                     if (ethId.equals("07")) {
                         hwVersion = PS4HW_CUH2000;
                     }
@@ -295,11 +313,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                         hwVersion = PS4HW_CUH7000;
                     }
                     break;
-                case "5cea1d":
-                case "f8da0c":
-                    hwVersion = PS4HW_CUH2000;
-                    break;
-                case "dca266":
+                case "dca266": // WiFi
                     hwVersion = PS4HW_CUH7100;
                     break;
 

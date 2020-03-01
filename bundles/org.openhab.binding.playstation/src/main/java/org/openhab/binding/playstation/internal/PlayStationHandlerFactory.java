@@ -47,10 +47,10 @@ public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SONYPS4.equals(thingTypeUID) || THING_TYPE_SONYPS5.equals(thingTypeUID)) {
+        if (THING_TYPE_PS4.equals(thingTypeUID) || THING_TYPE_PS5.equals(thingTypeUID)) {
             return new SonyPS4Handler(thing, localeProvider);
         }
-        if (THING_TYPE_SONYPS3.equals(thingTypeUID)) {
+        if (THING_TYPE_PS3.equals(thingTypeUID)) {
             return new SonyPS3Handler(thing);
         }
 

@@ -40,7 +40,7 @@ public class SonyPS4ArtworkHandler {
     private final File artworkCacheFolder;
 
     /** Service id */
-    static final String SERVICE_ID = "sonyps4";
+    static final String SERVICE_ID = "playstation";
 
     /** Service category */
     static final String SERVICE_CATEGORY = "binding";
