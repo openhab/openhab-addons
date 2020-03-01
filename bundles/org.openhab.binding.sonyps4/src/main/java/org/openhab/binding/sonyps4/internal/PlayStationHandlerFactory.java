@@ -27,14 +27,14 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
- * The {@link SonyPS4HandlerFactory} is responsible for creating things and thing
+ * The {@link PlayStationHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.sonyps4", service = ThingHandlerFactory.class)
-public class SonyPS4HandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.playstation", service = ThingHandlerFactory.class)
+public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable LocaleProvider localeProvider;
 
