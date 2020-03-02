@@ -17,7 +17,6 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PWM_SIGNAL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ALLOW_CHARGING;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.STOP_STATE;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CABLE_ENCODING;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMPERATURE;
@@ -65,7 +64,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
@@ -106,33 +104,29 @@ public class GoEChargerHandler extends BaseThingHandler {
                     // TODO use enum with getValue() instead?
                     switch (goeResponse.getErrorCode()) {
                         case 0:
-                            return "NONE"; // TODO evaluate
+                            return "NONE";
                         case 1:
                             return "RCCB";
                         case 3:
                             return "PHASE";
                         case 8:
                             return "NO_GROUND";
-                        case 10:
-                            return "INTERNAL";
                         default:
-                            return null; // TODO evaluate
+                            return "INTERNAL";
                     }
                 case ALLOW_CHARGING:
                     return goeResponse.getAllowCharging() == 1;
-                case STOP_STATE:
-                    return goeResponse.getAutomaticStop() == 2;
                 case CABLE_ENCODING:
                     return goeResponse.getCableEncoding();
                 case PHASES:
                     int count = 0;
-                    if (goeResponse.getEnergy()[0] > 0) {
+                    if (goeResponse.getEnergy()[4] > 0) { // amps P1
                         count++;
                     }
-                    if (goeResponse.getEnergy()[1] > 0) {
+                    if (goeResponse.getEnergy()[5] > 0) { // amps P2
                         count++;
                     }
-                    if (goeResponse.getEnergy()[2] > 0) {
+                    if (goeResponse.getEnergy()[6] > 0) { // amps P3
                         count++;
                     }
                     return count;
@@ -227,10 +221,6 @@ public class GoEChargerHandler extends BaseThingHandler {
             case ALLOW_CHARGING:
                 key = "alw";
                 value = command.toString() == "ON" ? "1" : "0";
-                break;
-            case STOP_STATE:
-                key = "stp";
-                value = command.toString() == "ON" ? "2" : "0";
                 break;
             default:
                 break;

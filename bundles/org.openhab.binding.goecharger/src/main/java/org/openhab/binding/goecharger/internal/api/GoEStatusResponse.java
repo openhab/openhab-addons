@@ -39,9 +39,6 @@ public class GoEStatusResponse {
   @SerializedName("alw")
   private Integer allowCharging;
 
-  @SerializedName("stp")
-  private Integer automaticStop;
-
   @SerializedName("cbl")
   private Integer cableEncoding;
 
@@ -60,7 +57,7 @@ public class GoEStatusResponse {
   @SerializedName("eto")
   private Long totalChargeConsumption;
 
-  @SerializedName("fmw")
+  @SerializedName("fwv")
   private String firmware;
 
   public String getVersion() {
@@ -101,14 +98,6 @@ public class GoEStatusResponse {
 
   public void setAllowCharging(Integer allowCharging) {
     this.allowCharging = allowCharging;
-  }
-
-  public Integer getAutomaticStop() {
-    return automaticStop;
-  }
-
-  public void setAutomaticStop(Integer automaticStop) {
-    this.automaticStop = automaticStop;
   }
 
   public Integer getCableEncoding() {

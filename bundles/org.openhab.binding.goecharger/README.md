@@ -37,11 +37,10 @@ Currently available channels are
 | powerL2 | Number | Power on L2 |
 | powerL3 | Number | Power on L2 |
 | phases | Number | Amount of phases currently used for charging |
-| sessionChargeConsumptionLimit | Number | Wallbox stops charging after defined value |
+| sessionChargeConsumptionLimit | Number | Wallbox stops charging after defined value, disable with 0 |
 | sessionChargeConsumption | Number | Amount of kWh that have been charged in this session |
 | totalConsumption | Number | Amount of kWh that have been charged since installation |
 | allowCharging | Switch | If `ON` charging is allowed |
-| stopState | Switch | If `ON` charger will stop after reaching current session charge limit |
 | cableEncoding | Number | Specifies the max amps that can be charged with that cable |
 | temperature | Number | Temperature of the Go-eCharger |
 | firmware | String | Firmware Version |

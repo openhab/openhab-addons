@@ -122,7 +122,7 @@
 	<channel-type id="scl">
 		<item-type>Number</item-type>
 		<label>Current Session Charge Limit</label>
-		<description>Wallbox stops charging after defined value</description>
+		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
 		<state pattern="%.1f kWh" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="scs">
@@ -141,11 +141,6 @@
 		<item-type>Switch</item-type>
 		<label>Allow Charging</label>
 		<description>If true charging is allowed</description>
-	</channel-type>
-	<channel-type id="stp">
-		<item-type>Switch</item-type>
-		<label>Stop State</label>
-		<description>If enabled Go-eCharger will stop after reaching current session charge limit</description>
 	</channel-type>
 	<channel-type id="cbl">
 		<item-type>Number</item-type>
