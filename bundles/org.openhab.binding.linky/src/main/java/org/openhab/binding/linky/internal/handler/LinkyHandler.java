@@ -223,6 +223,9 @@ public class LinkyHandler extends BaseThingHandler {
             int jump = result.getDecalage();
             lastMonth = result.getData().get(jump++).valeur;
             thisMonth = result.getData().get(jump).valeur;
+            if (thisMonth < 0) {
+                thisMonth = 0;
+            }
         } else {
             cachedMonthlyData.invalidateValue();
         }
