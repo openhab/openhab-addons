@@ -155,7 +155,7 @@ public class TelegramHandler extends BaseThingHandler {
         Integer proxyPort = config.getProxyPort();
         String proxyType = config.getProxyType();
 
-        if (proxyHost != null) {
+        if (proxyHost != null && proxyPort !=null) {
             InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
 
             Proxy.Type proxyTypeParam = Proxy.Type.SOCKS;
