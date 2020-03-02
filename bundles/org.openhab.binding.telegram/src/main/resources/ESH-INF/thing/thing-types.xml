@@ -36,7 +36,7 @@
 				<default></default>
 				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
 			</parameter>
-			<parameter name="proxyHost" type="text" required="false">
+			<parameter name="proxyHost" type="text">
 				<context>network-address</context>
 				<label>Proxy Host</label>
 				<description>Enter your proxy host. It will be used for telegram binding only and doesn't affect entire system.</description>
