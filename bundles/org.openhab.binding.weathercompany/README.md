@@ -173,11 +173,11 @@ Number:Length WC_PWS_PrecipitationTotal "Precipitation Total [%.1f %unit%]" <rai
 Number:Intensity WC_PWS_SolarRadiation "Solar Radiation [%.1f %unit%]" <sun> { channel="weathercompany:weather-observations:observations:currentSolarRadiation" }
 Number WC_PWS_UV "UV Index [%.0f]" <sun> { channel="weathercompany:weather-observations:observations:currentUv" }
 Number:Angle WC_PWS_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindDirection" }
-Number:Speed WC_PWS_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeed" }
-Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeedGust" }
+Number:Speed WC_PWS_WindSpeed "Wind Speed [%.1f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeed" }
+Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.1f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeedGust" }
 String WC_PWS_Country "Country [%s]" <none> { channel="weathercompany:weather-observations:observations:country" }
 Location WC_PWS_Location "Lat/Lon [%2$s°N, %3$s°W]" <none> { channel="weathercompany:weather-observations:observations:location" }
-Number:Length WC_PWS_Elevation "Elevation [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:elevation" }
+Number:Length WC_PWS_Elevation "Elevation [%.1f %unit%]" <none> { channel="weathercompany:weather-observations:observations:elevation" }
 String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:observations:neighborhood" }
 DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:observations:observationTimeLocal" }
 Number WC_PWS_QcStatus "QC Status [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:qcStatus" }
