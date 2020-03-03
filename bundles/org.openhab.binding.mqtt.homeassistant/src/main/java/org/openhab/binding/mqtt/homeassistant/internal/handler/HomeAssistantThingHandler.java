@@ -297,7 +297,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     @Override
     protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
-        if (messageReceived || availabilityTopicsSeen) {
+        if (!messageReceived || availabilityTopicsSeen) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
