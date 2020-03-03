@@ -48,11 +48,13 @@ Currently available channels are
 ## Full Example
 
 demo.things
+
 ```
 Thing goecharger:goe:garage [ip="192.168.1.36",refreshInterval=5]
 ```
 
 demo.items
+
 ```
 Number   MaxAmpere                       "Max ampere"                      {channel="goecharger:goe:garage:maxAmpere"}
 Number   PwmSignal                       "Pwm signal status"               {channel="goecharger:goe:garage:pwmSignal"}
@@ -80,6 +82,7 @@ Number   TotalConsumption                "Total charge amount"             {chan
 ## Settings charge current of Go-eCharger based on PV
 
 You can easily define rules to charge with PV power alone. Here is a simple sample how such a rule could look like:
+
 ```
 rule "Set max amps for PV charging"
 when
