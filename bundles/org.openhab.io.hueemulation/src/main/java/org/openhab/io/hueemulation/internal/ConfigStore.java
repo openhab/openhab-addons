@@ -252,7 +252,7 @@ public class ConfigStore {
         }
     }
 
-    private String getConfiguredHostAddress(InetAddress configuredAddress){
+    private String getConfiguredHostAddress(InetAddress configuredAddress) {
         String hostAddress = configuredAddress.getHostAddress();
         int percentIndex = hostAddress.indexOf("%");
         if(percentIndex != -1){
