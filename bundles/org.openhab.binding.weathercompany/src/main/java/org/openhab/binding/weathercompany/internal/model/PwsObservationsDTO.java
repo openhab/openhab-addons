@@ -13,12 +13,12 @@
 package org.openhab.binding.weathercompany.internal.model;
 
 /**
- * The {@link PwsObservations} contains the most recent weather condition
+ * The {@link PwsObservationsDTO} contains the most recent weather condition
  * observations from the Personl Weather Station (PWS).
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class PwsObservations {
+public class PwsObservationsDTO {
     /*
      * An array of length 1 of observations that represent the
      * most recent PWS observations
@@ -123,7 +123,7 @@ public class PwsObservations {
         /*
          * Elevation of the PWS in feet
          */
-        public Integer elev;
+        public Double elev;
 
         /*
          * An apparent temperature. It represents what the air
@@ -162,13 +162,13 @@ public class PwsObservations {
         /*
          * Sudden and temporary variations of the average Wind Speed.
          */
-        public Integer windGust;
+        public Double windGust;
 
         /*
          * The wind is treated as a vector; hence, winds must have direction and magnitude (speed).
          * The wind information reported in the hourly current conditions corresponds to
          * a 10-minute average called the sustained wind speed
          */
-        public Integer windSpeed;
+        public Double windSpeed;
     }
 }
