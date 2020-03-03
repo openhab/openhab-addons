@@ -27,8 +27,8 @@
 			</parameter>
 			<parameter name="ipPort" type="integer">
 				<label>IP port</label>
-				<description>The TCP port used to communicate with the PlayStation 3.</description>
-				<default>997</default>
+				<description>The IP port used to communicate with the PlayStation 3.</description>
+				<default>9293</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -54,6 +54,7 @@
 			<channel id="keyBack" typeId="keyBack-channel" />
 			<channel id="keyOption" typeId="keyOption-channel" />
 			<channel id="keyPS" typeId="keyPS-channel" />
+			<channel id="secondScreen" typeId="secondScreen-channel" />
 		</channels>
 
 		<properties>
@@ -203,6 +204,12 @@
 		<label>PS button</label>
 		<description>Push PS button.</description>
 		<category>MoveControl</category>
+	</channel-type>
+	<channel-type id="secondScreen-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Second screen</label>
+		<description>Link to 2ndScreen HTTP server.</description>
+		<state pattern="%s" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>

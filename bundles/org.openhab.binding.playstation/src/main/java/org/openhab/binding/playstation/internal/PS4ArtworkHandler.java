@@ -28,15 +28,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SonyPS4ArtworkHandler} is responsible for fetching and caching
+ * The {@link PS4ArtworkHandler} is responsible for fetching and caching
  * application artwork.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class SonyPS4ArtworkHandler {
+public class PS4ArtworkHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS4ArtworkHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PS4ArtworkHandler.class);
     private final File artworkCacheFolder;
 
     /** Service id */
@@ -51,7 +51,7 @@ public class SonyPS4ArtworkHandler {
     /** Cache folder under $userdata */
     private static final String CACHE_FOLDER_NAME = "cache";
 
-    SonyPS4ArtworkHandler() {
+    PS4ArtworkHandler() {
         // create home folder
         File userData = new File(ConfigConstants.getUserDataFolder());
         File homeFolder = new File(userData, CACHE_FOLDER_NAME);

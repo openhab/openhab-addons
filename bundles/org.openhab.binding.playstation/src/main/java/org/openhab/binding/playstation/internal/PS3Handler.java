@@ -36,25 +36,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SonyPS3Handler} is responsible for handling commands, which are
+ * The {@link PS3Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class SonyPS3Handler extends BaseThingHandler {
+public class PS3Handler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS3Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(PS3Handler.class);
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
 
-    private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
+    private PS4Configuration config = getConfigAs(PS4Configuration.class);
 
     private @Nullable ScheduledFuture<?> refreshTimer;
 
     // State of PS3
     private OnOffType currentPower = OnOffType.OFF;
 
-    public SonyPS3Handler(Thing thing) {
+    public PS3Handler(Thing thing) {
         super(thing);
     }
 
@@ -75,7 +75,7 @@ public class SonyPS3Handler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        config = getConfigAs(SonyPS4Configuration.class);
+        config = getConfigAs(PS4Configuration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer();
@@ -123,17 +123,17 @@ public class SonyPS3Handler extends BaseThingHandler {
             // logger.debug("PS3 power connect");
             // socket.connect(inetAddress, DEFAULT_PS3_COMMUNICATION_PORT);
 
-            byte[] discover = SonyPS4PacketHandler.makeSearchPacket();
+            byte[] discover = PS4PacketHandler.makeSearchPacket();
             DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
-                    DEFAULT_PS3_COMMUNICATION_PORT);
+                    DEFAULT_PS3_UNKNOWN_PORT);
             logger.debug("PS3 power send");
             socket.send(packet);
 
             // wait for response
             byte[] rxbuf = new byte[256];
             packet = new DatagramPacket(rxbuf, rxbuf.length);
-            logger.debug("PS3 power receive");
             socket.receive(packet);
+            logger.debug("PS3 power received{}", rxbuf);
             updateState(CHANNEL_POWER, OnOffType.ON);
         } catch (PortUnreachableException e) {
             logger.info("PS3 read power, PortUnreachableException: {}", e.getMessage());

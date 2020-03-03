@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-enum SonyPS4Command {
+enum PS4Command {
     UNKNOWN1_REQ(0x02),
     BUFFER_SIZE_RSP(0x03),
     BYEBYE_REQ(0x04),
@@ -59,17 +59,17 @@ enum SonyPS4Command {
     COMMENT_VIEWER_SEND(0x32),
     HELLO_REQ(0x6f636370);
 
-    private static final Map<Integer, SonyPS4Command> TAG_MAP = new HashMap<>();
+    private static final Map<Integer, PS4Command> TAG_MAP = new HashMap<>();
 
     static {
-        for (SonyPS4Command cmd : SonyPS4Command.values()) {
+        for (PS4Command cmd : PS4Command.values()) {
             TAG_MAP.put(cmd.value, cmd);
         }
     }
 
     public final int value;
 
-    private SonyPS4Command(int value) {
+    private PS4Command(int value) {
         this.value = value;
     }
 
@@ -79,7 +79,7 @@ enum SonyPS4Command {
      * @param tag the tag string
      * @return accessoryType or null if not found
      */
-    public static @Nullable SonyPS4Command valueOfTag(int value) {
+    public static @Nullable PS4Command valueOfTag(int value) {
         return TAG_MAP.get(value);
     }
 }

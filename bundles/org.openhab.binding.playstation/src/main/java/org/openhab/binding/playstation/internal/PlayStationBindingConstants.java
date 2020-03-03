@@ -121,6 +121,8 @@ public class PlayStationBindingConstants {
     /** Default port for PS3. */
     public static final int DEFAULT_PS3_BROADCAST_PORT = 9293;
     public static final int DEFAULT_PS3_UNKNOWN_PORT = 9309;
+    public static final int DEFAULT_PS3_UNKNOWN_PORT1 = 56235;
+    public static final int DEFAULT_PS3_UNKNOWN_PORT2 = 56259;
     public static final int DEFAULT_PS3_COMMUNICATION_PORT = 5223;
 
     private PlayStationBindingConstants() {

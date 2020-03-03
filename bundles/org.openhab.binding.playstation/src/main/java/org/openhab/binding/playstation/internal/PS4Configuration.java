@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.playstation.internal.discovery.PlayStationDiscovery;
 
 /**
- * The {@link SonyPS4Configuration} class contains fields mapping thing configuration parameters.
+ * The {@link PS4Configuration} class contains fields mapping thing configuration parameters.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class SonyPS4Configuration {
+public class PS4Configuration {
 
     /**
      * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.

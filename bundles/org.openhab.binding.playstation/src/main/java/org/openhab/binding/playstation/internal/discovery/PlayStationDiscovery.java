@@ -13,7 +13,7 @@
 package org.openhab.binding.playstation.internal.discovery;
 
 import static org.openhab.binding.playstation.internal.PlayStationBindingConstants.*;
-import static org.openhab.binding.playstation.internal.SonyPS4Configuration.*;
+import static org.openhab.binding.playstation.internal.PS4Configuration.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -231,7 +231,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, Integer.valueOf(DEFAULT_PS3_BROADCAST_PORT));
         properties.put(Thing.PROPERTY_MODEL_ID, hostType);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, PS3HW_CECHXXXX);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
         ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);

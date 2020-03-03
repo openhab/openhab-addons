@@ -48,23 +48,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SonyPS4Handler} is responsible for handling commands, which are
+ * The {@link PS4Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class SonyPS4Handler extends BaseThingHandler {
+public class PS4Handler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS4Handler.class);
-    private final SonyPS4Crypto ps4Crypto = new SonyPS4Crypto();
-    private final SonyPS4ArtworkHandler ps4ArtworkHandler = new SonyPS4ArtworkHandler();
+    private final Logger logger = LoggerFactory.getLogger(PS4Handler.class);
+    private final PS4Crypto ps4Crypto = new PS4Crypto();
+    private final PS4ArtworkHandler ps4ArtworkHandler = new PS4ArtworkHandler();
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
     private static final int MIN_SENDKEY_DELAY = 250; // min delay between sendKey sends
     private static final int MIN_HOLDKEY_DELAY = 300; // min delay after Key set
 
-    private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
+    private PS4Configuration config = getConfigAs(PS4Configuration.class);
 
     private @Nullable LocaleProvider localeProvider;
     private @Nullable ScheduledFuture<?> refreshTimer;
@@ -78,7 +78,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     private State currentArtwork = UnDefType.UNDEF;
     private int currentComPort = DEFAULT_COMMUNICATION_PORT;
 
-    public SonyPS4Handler(Thing thing, @Nullable LocaleProvider localeProvider) {
+    public PS4Handler(Thing thing, @Nullable LocaleProvider localeProvider) {
         super(thing);
         this.localeProvider = localeProvider;
     }
@@ -91,7 +91,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             if (login() && !config.pairingCode.isEmpty()) {
                 // If we are paired, remove pairing code as it's one use only.
                 Configuration editedConfig = editConfiguration();
-                editedConfig.put(SonyPS4Configuration.PAIRING_CODE, "");
+                editedConfig.put(PS4Configuration.PAIRING_CODE, "");
                 updateConfiguration(editedConfig);
             }
         }
@@ -161,7 +161,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        config = getConfigAs(SonyPS4Configuration.class);
+        config = getConfigAs(PS4Configuration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer();
@@ -222,6 +222,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 updateState(channelUID, currentArtwork);
                 break;
             case CHANNEL_OSK_TEXT:
+            case CHANNEL_2ND_SCREEN:
                 updateState(channelUID, StringType.valueOf(""));
                 break;
             case CHANNEL_KEY_UP:
@@ -247,7 +248,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
 
             // send discover
-            byte[] discover = SonyPS4PacketHandler.makeSearchPacket();
+            byte[] discover = PS4PacketHandler.makeSearchPacket();
             DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
 
@@ -275,7 +276,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send wake-up
-            byte[] wakeup = SonyPS4PacketHandler.makeWakeupPacket(config.userCredential);
+            byte[] wakeup = PS4PacketHandler.makeWakeupPacket(config.userCredential);
             DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
         } catch (IOException e) {
@@ -289,13 +290,16 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send launch
-            byte[] launch = SonyPS4PacketHandler.makeLaunchPacket(config.userCredential);
+            byte[] launch = PS4PacketHandler.makeLaunchPacket(config.userCredential);
             DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
+            Thread.sleep(20);
             return true;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("Open coms exception: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            return true;
         }
         return false;
     }
@@ -307,7 +311,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         channel.configureBlocking(true);
         channel.connect(new InetSocketAddress(config.ipAddress, currentComPort));
 
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeHelloPacket();
+        ByteBuffer outPacket = PS4PacketHandler.makeHelloPacket();
         sendPacketToPS4(outPacket, channel, false, false);
 
         // Read hello response
@@ -327,7 +331,7 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private class SocketChannelHandler extends Thread {
         private @Nullable SocketChannel socketChannel;
-        private @Nullable SonyPS4Command lastCommand;
+        private @Nullable PS4Command lastCommand;
         boolean loggedIn = false;
         boolean oskOpen = false;
 
@@ -352,7 +356,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                     parseResponsePacket(messBuffer);
                     readBuffer.position(0);
 
-                    if (lastCommand == SonyPS4Command.SERVER_STATUS_RSP) {
+                    if (lastCommand == PS4Command.SERVER_STATUS_RSP) {
                         if (oskOpen && isLinked(CHANNEL_OSK_TEXT)) {
                             sendOSKStart();
                         } else {
@@ -385,8 +389,8 @@ public class SonyPS4Handler extends BaseThingHandler {
             }
             int cmdValue = rBuffer.getInt();
             int statValue = rBuffer.getInt();
-            SonyPS4ErrorStatus status = SonyPS4ErrorStatus.valueOfTag(statValue);
-            SonyPS4Command command = SonyPS4Command.valueOfTag(cmdValue);
+            PS4ErrorStatus status = PS4ErrorStatus.valueOfTag(statValue);
+            PS4Command command = PS4Command.valueOfTag(cmdValue);
             byte[] respBuff = new byte[size];
             rBuffer.rewind();
             rBuffer.get(respBuff);
@@ -445,12 +449,12 @@ public class SonyPS4Handler extends BaseThingHandler {
                         }
                         break;
                     case APP_START_RSP:
-                        if (status != null && status != SonyPS4ErrorStatus.STATUS_OK) {
+                        if (status != null && status != PS4ErrorStatus.STATUS_OK) {
                             logger.info("App start response: {}", status.message);
                         }
                         break;
                     case STANDBY_RSP:
-                        if (status != null && status != SonyPS4ErrorStatus.STATUS_OK) {
+                        if (status != null && status != PS4ErrorStatus.STATUS_OK) {
                             logger.info("Standby response: {}", status.message);
                         }
                         break;
@@ -466,11 +470,18 @@ public class SonyPS4Handler extends BaseThingHandler {
                         logger.debug("Server status value:{}", statValue);
                         break;
                     case HTTPD_STATUS_RSP:
-                        String httpdStat = SonyPS4PacketHandler.parseHTTPdPacket(rBuffer);
+                        String httpdStat = PS4PacketHandler.parseHTTPdPacket(rBuffer);
                         logger.debug("HTTPd Response; {}", httpdStat);
+                        String secondScrStr = "";
+                        int httpStatus = rBuffer.getInt(8);
+                        int port = rBuffer.getInt(12);
+                        if (httpStatus != 0 && port != 0) {
+                            secondScrStr = "http://" + config.ipAddress + ":" + Integer.toString(port);
+                        }
+                        updateState(CHANNEL_2ND_SCREEN, StringType.valueOf(secondScrStr));
                         break;
                     case OSK_CHANGE_STRING_REQ:
-                        String oskText = SonyPS4PacketHandler.parseOSKStringChangePacket(rBuffer);
+                        String oskText = PS4PacketHandler.parseOSKStringChangePacket(rBuffer);
                         updateState(CHANNEL_OSK_TEXT, StringType.valueOf(oskText));
                         break;
                     case OSK_START_RSP:
@@ -520,19 +531,6 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (channel != null) {
             if (!handler.loggedIn && requiresLogin) {
                 login(channel);
-
-                if (handler.loggedIn) {
-                    try {
-                        Thread.sleep(1000);
-                        ByteBuffer outPacket = SonyPS4PacketHandler
-                                .makeClientIDPacket("com.playstation.mobile2ndscreen", "18.9.3");
-                        sendPacketEncrypted(outPacket, channel);
-
-                        Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
-                    } catch (InterruptedException e) {
-                        // Ignore, sleep just to make keyEvents behave better.
-                    }
-                }
             }
             return channel;
         }
@@ -540,7 +538,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     private void sendPacketToPS4(ByteBuffer packet, SocketChannel channel, boolean encrypted, boolean restartTimeout) {
-        SonyPS4Command cmd = SonyPS4Command.valueOfTag(packet.getInt(4));
+        PS4Command cmd = PS4Command.valueOfTag(packet.getInt(4));
         logger.debug("Sending {} packet.", cmd);
         try {
             if (encrypted) {
@@ -580,16 +578,32 @@ public class SonyPS4Handler extends BaseThingHandler {
      * This is used as a heart beat to let the PS4 know that we are still listening.
      */
     private void sendStatus() {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeStatusPacket(1);
+        ByteBuffer outPacket = PS4PacketHandler.makeStatusPacket(0);
         sendPacketEncrypted(outPacket, false);
     }
 
     private boolean login(SocketChannel channel) {
         // Send login request
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeLoginPacket(config.userCredential, config.passCode,
+        ByteBuffer outPacket = PS4PacketHandler.makeLoginPacket(config.userCredential, config.passCode,
                 config.pairingCode);
         sendPacketEncrypted(outPacket, channel);
 
+        try {
+            SocketChannelHandler handler = socketChannelHandler;
+            if (handler != null && isLinked(CHANNEL_2ND_SCREEN)) {
+                for (int i = 0; i < 20; i++) {
+                    Thread.sleep(500);
+                    if (handler.loggedIn) {
+                        outPacket = PS4PacketHandler.makeClientIDPacket("com.playstation.mobile2ndscreen", "18.9.3");
+                        sendPacketEncrypted(outPacket, channel);
+                        break;
+                    }
+                }
+            }
+            Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
+        } catch (InterruptedException e) {
+            // Ignore, sleep just to make keyEvents behave better.
+        }
         return true;
     }
 
@@ -605,12 +619,12 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     private void logOut() {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeLogoutPacket();
+        ByteBuffer outPacket = PS4PacketHandler.makeLogoutPacket();
         sendPacketEncrypted(outPacket);
     }
 
     private void takeScreenShot() {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeScreenShotPacket();
+        ByteBuffer outPacket = PS4PacketHandler.makeScreenShotPacket();
         sendPacketEncrypted(outPacket);
     }
 
@@ -618,16 +632,16 @@ public class SonyPS4Handler extends BaseThingHandler {
      * This closes the connection with the PS4.
      */
     private void sendByeBye() {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeByebyePacket();
+        ByteBuffer outPacket = PS4PacketHandler.makeByebyePacket();
         sendPacketEncrypted(outPacket, false);
     }
 
     private void turnOnPS4() {
         wakeUpPS4();
         try {
-            Thread.sleep(15000);
+            Thread.sleep(13000);
         } catch (InterruptedException e) {
-            logger.debug("Trun on PS4 interrupted: {}", e.getMessage());
+            logger.debug("Turn on PS4 interrupted: {}", e.getMessage());
         }
         try {
             getConnection();
@@ -638,7 +652,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     }
 
     private void sendStandby() {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeStandbyPacket();
+        ByteBuffer outPacket = PS4PacketHandler.makeStandbyPacket();
         sendPacketEncrypted(outPacket);
     }
 
@@ -646,7 +660,7 @@ public class SonyPS4Handler extends BaseThingHandler {
      * Ask PS4 if the OSK is open so we can get and set text.
      */
     private void sendOSKStart() {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeOSKStartPacket();
+        ByteBuffer outPacket = PS4PacketHandler.makeOSKStartPacket();
         sendPacketEncrypted(outPacket);
     }
 
@@ -657,7 +671,7 @@ public class SonyPS4Handler extends BaseThingHandler {
      */
     private void setOSKText(String text) {
         logger.debug("Sending osk text packet,\"{}\"", text);
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeOSKStringChangePacket(text);
+        ByteBuffer outPacket = PS4PacketHandler.makeOSKStringChangePacket(text);
         sendPacketEncrypted(outPacket);
     }
 
@@ -667,7 +681,7 @@ public class SonyPS4Handler extends BaseThingHandler {
      * @param applicationId The unique id for the application (CUSAxxxxx).
      */
     private void startApplication(String applicationId) {
-        ByteBuffer outPacket = SonyPS4PacketHandler.makeApplicationPacket(applicationId);
+        ByteBuffer outPacket = PS4PacketHandler.makeApplicationPacket(applicationId);
         sendPacketEncrypted(outPacket);
     }
 
@@ -675,20 +689,20 @@ public class SonyPS4Handler extends BaseThingHandler {
         try {
             SocketChannel channel = getConnection();
 
-            ByteBuffer outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
+            ByteBuffer outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
             sendPacketEncrypted(outPacket, channel);
             Thread.sleep(MIN_SENDKEY_DELAY);
 
             // Send remote key
-            outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(pushedKey);
+            outPacket = PS4PacketHandler.makeRemoteControlPacket(pushedKey);
             sendPacketEncrypted(outPacket, channel);
             Thread.sleep(MIN_HOLDKEY_DELAY);
 
-            outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
+            outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
             sendPacketEncrypted(outPacket, channel);
             Thread.sleep(MIN_SENDKEY_DELAY);
 
-            outPacket = SonyPS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
+            outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
             sendPacketEncrypted(outPacket, channel);
 
         } catch (InterruptedException e) {

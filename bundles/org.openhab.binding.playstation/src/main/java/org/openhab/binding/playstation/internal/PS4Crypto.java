@@ -37,15 +37,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SonyPS4Crypto} is responsible for encryption and decryption of
+ * The {@link PS4Crypto} is responsible for encryption and decryption of
  * packets to / from the PS4.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class SonyPS4Crypto {
+public class PS4Crypto {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS4Crypto.class);
+    private final Logger logger = LoggerFactory.getLogger(PS4Crypto.class);
 
     private static final String PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----"
             + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxfAO/MDk5ovZpp7xlG9J"
@@ -62,7 +62,7 @@ public class SonyPS4Crypto {
     private @Nullable Cipher aesEncryptCipher;
     private @Nullable Cipher aesDecryptCipher;
 
-    SonyPS4Crypto() {
+    PS4Crypto() {
         ps4Cipher = getRsaCipher(PUBLIC_KEY);
     }
 
@@ -100,12 +100,12 @@ public class SonyPS4Crypto {
         }
         int cmdValue = rBuffer.getInt();
         int statusValue = rBuffer.getInt();
-        SonyPS4Command command = SonyPS4Command.valueOfTag(cmdValue);
+        PS4Command command = PS4Command.valueOfTag(cmdValue);
         byte[] respBuff = new byte[size];
         rBuffer.rewind();
         rBuffer.get(respBuff);
-        if (command == SonyPS4Command.HELLO_REQ) {
-            if (statusValue == SonyPS4PacketHandler.REQ_VERSION) {
+        if (command == PS4Command.HELLO_REQ) {
+            if (statusValue == PS4PacketHandler.REQ_VERSION) {
                 rBuffer.position(20);
                 rBuffer.get(remoteSeed, 0, 16);
                 initCiphers();
@@ -131,7 +131,7 @@ public class SonyPS4Crypto {
         if (msg == null || msg.length != 256) {
             return ByteBuffer.allocate(0);
         }
-        ByteBuffer packet = SonyPS4PacketHandler.newPacketOfSize(8 + 256 + 16, SonyPS4Command.HANDSHAKE_REQ);
+        ByteBuffer packet = PS4PacketHandler.newPacketOfSize(8 + 256 + 16, PS4Command.HANDSHAKE_REQ);
         packet.put(msg);
         packet.put(remoteSeed); // Seed = 16 bytes
         packet.rewind();

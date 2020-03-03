@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-enum SonyPS4ErrorStatus {
+enum PS4ErrorStatus {
     STATUS_OK(0x00, "Status OK."),
     STATUS_UPDATE_APP(0x02, "Plugin needs to be updated."),
     STATUS_UPDATE_PS4(0x03, "PS4 needs to update."),
@@ -50,10 +50,10 @@ enum SonyPS4ErrorStatus {
     STATUS_CAN_NOT_PLAY_NOW(0x21, "You can not log in right now."),
     STATUS_ERROR_IN_COMMUNICATION(-1, "Error in comunication with PS4!");
 
-    private static final Map<Integer, SonyPS4ErrorStatus> TAG_MAP = new HashMap<>();
+    private static final Map<Integer, PS4ErrorStatus> TAG_MAP = new HashMap<>();
 
     static {
-        for (SonyPS4ErrorStatus cmd : SonyPS4ErrorStatus.values()) {
+        for (PS4ErrorStatus cmd : PS4ErrorStatus.values()) {
             TAG_MAP.put(cmd.value, cmd);
         }
     }
@@ -61,7 +61,7 @@ enum SonyPS4ErrorStatus {
     public final int value;
     public final String message;
 
-    private SonyPS4ErrorStatus(int value, String message) {
+    private PS4ErrorStatus(int value, String message) {
         this.value = value;
         this.message = message;
     }
@@ -72,7 +72,7 @@ enum SonyPS4ErrorStatus {
      * @param tag the tag string
      * @return accessoryType or null if not found
      */
-    public static @Nullable SonyPS4ErrorStatus valueOfTag(int value) {
+    public static @Nullable PS4ErrorStatus valueOfTag(int value) {
         return TAG_MAP.get(value);
     }
 }

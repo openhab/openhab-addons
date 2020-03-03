@@ -48,10 +48,10 @@ public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_PS4.equals(thingTypeUID) || THING_TYPE_PS5.equals(thingTypeUID)) {
-            return new SonyPS4Handler(thing, localeProvider);
+            return new PS4Handler(thing, localeProvider);
         }
         if (THING_TYPE_PS3.equals(thingTypeUID)) {
-            return new SonyPS3Handler(thing);
+            return new PS3Handler(thing);
         }
 
         return null;
