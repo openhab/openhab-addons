@@ -192,6 +192,10 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         } catch (BluetoothException ex) {
             String message = ex.getMessage();
             if (message != null) {
+                if (message.contains("Operation already in progress")) {
+                    // we shouldn't go offline in this case
+                    return;
+                }
                 int idx = message.lastIndexOf(':');
                 if (idx != -1) {
                     message = message.substring(idx).trim();
