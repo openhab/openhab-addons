@@ -33,6 +33,7 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L3;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ACCESS_STATE;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -113,6 +114,20 @@ public class GoEChargerHandler extends BaseThingHandler {
                             return "NO_GROUND";
                         default:
                             return "INTERNAL";
+                    }
+                case ACCESS_STATE:
+                    // TODO use enum with getValue() instead?
+                    switch (goeResponse.getAccessState()) {
+                        case 0:
+                            return "OPEN";
+                        case 1:
+                            return "RFID";
+                        case 2:
+                            return "AWATTAR";
+                        case 3:
+                            return "TIMER";
+                        default:
+                            return "UNKNOWN";
                     }
                 case ALLOW_CHARGING:
                     return goeResponse.getAllowCharging() == 1;

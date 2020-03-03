@@ -26,10 +26,10 @@
 			<channel id="sessionChargeConsumption" typeId="scs" />
 			<channel id="totalConsumption" typeId="eto" />
 			<channel id="allowCharging" typeId="alw" />
-			<channel id="stopState" typeId="stp" />
 			<channel id="cableEncoding" typeId="cbl" />
 			<channel id="temperature" typeId="tmp" />
 			<channel id="firmware" typeId="fmw" />
+			<channel id="accessState" typeId="ast" />
 		</channels>
 
 		<config-description>
@@ -44,6 +44,11 @@
 		</config-description>
 	</thing-type>
 
+	<channel-type id="ast">
+		<item-type>String</item-type>
+		<label>Access State</label>
+		<description>Current access state of the go-eCharge</description>
+	</channel-type>
 	<channel-type id="amp">
 		<item-type>Number</item-type>
 		<label>Max Ampere</label>

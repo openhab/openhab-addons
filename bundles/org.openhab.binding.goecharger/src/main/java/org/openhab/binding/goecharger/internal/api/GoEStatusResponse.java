@@ -27,6 +27,9 @@ public class GoEStatusResponse {
   @SerializedName("car")
   private Integer pwmSignal;
 
+  @SerializedName("ast")
+  private Integer accessState;
+
   @SerializedName("amp")
   private Integer maxChargeAmps;
 
@@ -168,5 +171,13 @@ public class GoEStatusResponse {
       this.energy[7] = this.energy[10];
       this.energy[12] = this.energy[15];
     }
+  }
+
+  public Integer getAccessState() {
+    return accessState;
+  }
+
+  public void setAccessState(Integer accessState) {
+    this.accessState = accessState;
   }
 }

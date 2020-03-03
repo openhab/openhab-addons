@@ -44,6 +44,7 @@ Currently available channels are
 | cableEncoding | Number | Specifies the max amps that can be charged with that cable |
 | temperature | Number | Temperature of the Go-eCharger |
 | firmware | String | Firmware Version |
+| accessState | String | Access state, for example OPEN, RFID ... |
 
 ## Full Example
 
@@ -72,11 +73,11 @@ Number   Phases                          "Phases"                          {chan
 Number   SessionChargeConsumptionLimit   "Current session charge limit"    {channel="goecharger:goe:garage:sessionChargeConsumptionLimit"}
 Number   SessionChargeConsumption        "Current session charge amount"   {channel="goecharger:goe:garage:sessionChargeConsumption"}
 Switch   AllowCharging                   "Allow charging"                  {channel="goecharger:goe:garage:allowCharging"}
-Switch   StopState                       "Stop state"                      {channel="goecharger:goe:garage:stopState"}
 Number   CableEncoding                   "Cable encoding"                  {channel="goecharger:goe:garage:cableEncoding"}
 Number   Temperature                     "Temperature"                     {channel="goecharger:goe:garage:temperature"}
 String   Firmware                        "Firmware"                        {channel="goecharger:goe:garage:firmware"}
 Number   TotalConsumption                "Total charge amount"             {channel="goecharger:goe:garage:totalConsumption"}
+String   AccessState                      "Access state"                   {channel="goecharger:goe:garage:accessState"}
 ```
 
 ## Settings charge current of Go-eCharger based on PV
