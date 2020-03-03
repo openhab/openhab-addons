@@ -13,14 +13,14 @@
 package org.openhab.binding.weathercompany.internal.model;
 
 /**
- * The {@link DayPart} is the JSON object that contains the n-day forecast.
+ * The {@link DayPartDTO} is the JSON object that contains the n-day forecast.
  *
  * The daypart object as well as the temperatureMax field will
  * appear as null in the API after 3:00 pm Local Apparent Time.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class DayPart {
+public class DayPartDTO {
     /*
      * The name of a 12 hour daypart not including day names in the
      * first 48 hours (Today, Tonight)
