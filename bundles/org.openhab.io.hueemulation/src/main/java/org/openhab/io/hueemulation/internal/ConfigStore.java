@@ -12,6 +12,7 @@
  */
 package org.openhab.io.hueemulation.internal;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -211,14 +212,19 @@ public class ConfigStore {
             }
         }
 
-        if (discoveryIps.size() == 0) {
-            logger.warn("No interface IP address configured or found. Hue emulation service disabled!");
-            return;
+        if (discoveryIps.size() < 1) {
+            try {
+                logger.info("No discovery ip specified. Trying to determine the host address");
+                configuredAddress = InetAddress.getLocalHost();
+            } catch (Exception e) {
+                logger.info("Host address cannot be determined. Trying loopback address");
+                configuredAddress = InetAddress.getLoopbackAddress();
+            }
+        } else {
+            configuredAddress = discoveryIps.iterator().next();
         }
 
-        if (configuredAddress == null) {
-            configuredAddress = InetAddress.getLoopbackAddress();
-        }
+        logger.info("Using discovery ip {}", configuredAddress.getHostAddress());
 
         // Get and apply configurations
         ds.config.createNewUserOnEveryEndpoint = config.createNewUserOnEveryEndpoint;
@@ -237,12 +243,23 @@ public class ConfigStore {
 
         setLinkbutton(config.pairingEnabled, config.createNewUserOnEveryEndpoint, config.temporarilyEmulateV1bridge);
         ds.config.mac = NetworkUtils.getMAC(configuredAddress);
-        ds.config.ipaddress = configuredAddress.getHostAddress();
+        ds.config.ipaddress = getConfiguredHostAddress(configuredAddress);
         ds.config.netmask = networkPrefixLength < 32 ? NetUtil.networkPrefixLengthToNetmask(networkPrefixLength)
                 : "255.255.255.0";
 
         if (eventAdmin != null) {
             eventAdmin.postEvent(new Event(EVENT_ADDRESS_CHANGED, Collections.emptyMap()));
+        }
+    }
+
+    private String getConfiguredHostAddress(InetAddress configuredAddress) {
+        String hostAddress = configuredAddress.getHostAddress();
+        int percentIndex = hostAddress.indexOf("%");
+        if(percentIndex != -1){
+            return hostAddress.substring(0, percentIndex);
+        }
+        else{
+            return hostAddress;
         }
     }
 
