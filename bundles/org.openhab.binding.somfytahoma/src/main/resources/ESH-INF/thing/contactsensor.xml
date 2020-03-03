@@ -10,6 +10,7 @@
 		<label>Somfy Contact Sensor</label>
 		<channels>
 			<channel id="contact" typeId="contact"></channel>
+			<channel id="sensor_defect" typeId="sensor_defect"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

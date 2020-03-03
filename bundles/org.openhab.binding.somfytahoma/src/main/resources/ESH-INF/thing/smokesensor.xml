@@ -11,6 +11,9 @@
 		<channels>
 			<channel id="contact" typeId="contact"></channel>
 			<channel id="alarm_check" typeId="alarm_check"></channel>
+			<channel id="sensor_defect" typeId="sensor_defect"></channel>
+			<channel id="radio_battery" typeId="radio_battery"></channel>
+			<channel id="sensor_battery" typeId="sensor_battery"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
