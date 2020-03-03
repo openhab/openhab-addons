@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.WATER_DETECTION_STATE;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,5 +29,6 @@ public class SomfyTahomaWaterSensorHandler extends SomfyTahomaBaseThingHandler {
     public SomfyTahomaWaterSensorHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTACT, WATER_DETECTION_STATE);
+        stateNames.put(SENSOR_DEFECT, SENSOR_DEFECT_STATE);
     }
 }

@@ -530,7 +530,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
                 SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
-                if (gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
+                if (gatewayHandler != null && gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
                     gatewayHandler.refresh(STATUS);
                 }
             }
@@ -724,9 +724,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private String getThingLabelByURL(String io) {
         Thing th = getThingByDeviceUrl(io);
         if (th != null) {
-            if (th.getProperties().containsKey("label")) {
+            if (th.getProperties().containsKey(NAME_STATE)) {
                 //Return label from Tahoma
-                return th.getProperties().get("label").replace("\"", "");
+                return th.getProperties().get(NAME_STATE).replace("\"", "");
             }
             //Return label from OH2
             return th.getLabel() != null ? th.getLabel().replace("\"", "") : "";
