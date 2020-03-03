@@ -310,4 +310,25 @@
 		<description>Derogation activation state of the Somfy thermostat</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="sensor_defect">
+		<item-type>String</item-type>
+		<label>Sensor Defect State</label>
+		<description>State of the Somfy sensor (dead, lowBattery, noDefect...)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensor_battery">
+		<item-type>String</item-type>
+		<label>Sensor Part Battery State</label>
+		<description>State of the sensor part of the Somfy sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="radio_battery">
+		<item-type>String</item-type>
+		<label>Radio Part Battery State</label>
+		<description>State of the radio part of the Somfy sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

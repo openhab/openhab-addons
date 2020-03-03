@@ -144,6 +144,8 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // List of all Channel ids
+    public static final String RSSI = "rssi";
+
     // Gateway
     public static final String STATUS = "status";
 
@@ -171,12 +173,16 @@ public class SomfyTahomaBindingConstants {
 
     // Smoke sensor, Occupancy sensor, Contact sensor, Water sensor
     public static final String CONTACT = "contact";
+    public static final String SENSOR_DEFECT = "sensor_defect";
 
     // Humidity sensor
     public static final String HUMIDITY = "humidity";
 
     // Smoke sensor
     public static final String ALARM_CHECK = "alarm_check";
+    public static final String RADIO_BATTERY = "radio_battery";
+    public static final String SENSOR_BATTERY = "sensor_battery";
+
 
     // Light sensor
     public static final String LUMINANCE = "luminance";
@@ -277,6 +283,8 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_CHECK_TRIGGER = "checkEventTrigger";
 
     // States
+    public static final String NAME_STATE = "core:NameState";
+    public static final String RSSI_LEVEL_STATE = "core:RSSILevelState";
     public static final String STATUS_STATE = "core:StatusState";
     public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
     public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";
@@ -290,6 +298,10 @@ public class SomfyTahomaBindingConstants {
     public static final String BATTERY_LEVEL_STATE = "core:BatteryLevelState";
     public static final String SIREN_STATUS_STATE = "internal:SirenStatusState";
     public static final String TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState";
+    public static final String SMOKE_STATE = "core:SmokeState";
+    public static final String SENSOR_DEFECT_STATE = "core:SensorDefectState";
+    public static final String RADIO_PART_BATTERY_STATE = "io:MaintenanceRadioPartBatteryState";
+    public static final String SENSOR_PART_BATTERY_STATE = "io:MaintenanceSensorPartBatteryState";
 
     // supported uiClasses
     public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";
