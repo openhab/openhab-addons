@@ -25,7 +25,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 | Channel Type ID | Item Type | Description                                                              | Read/Write |
 |-----------------|-----------|--------------------------------------------------------------------------|------------|
-| power           | Switch    | Shows if PS4 is ON or in standby.                                        | RW         |
+| power           | Switch    | Shows if PlayStation is ON or in standby.                                | RW         |
 | applicationName | String    | Name of the currently running application.                               | R          |
 | applicationId   | String    | Id of the currently running application.                                 | RW         |
 | applicationImage| Image     | Application artwork.                                                     | R          |
@@ -39,6 +39,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | keyBack         | Switch    | Push Back button.                                                        | W          |
 | keyOption       | Switch    | Push Option button.                                                      | W          |
 | keyPS           | Switch    | Push PS button.                                                          | W          |
+| secondScreen    | String    | HTTP link to the second screen.                                          | R          |
 
 ## Full Example
 
@@ -69,6 +70,7 @@ Switch PS4_Enter "Enter"                         { channel="playstation:PS4:a4_2
 Switch PS4_Back "Back"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyBack" }
 Switch PS4_Option "Option"                       { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyOption" }
 Switch PS4_PS "PS"                               { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyPS" }
+String PS4_2ndScr "2ndScreen"                    { channel="playstation:PS4:a4_24_56_8f_2c_5b:secondScreen" }
 ```
 
 demo.sitemap:
@@ -97,6 +99,7 @@ sitemap demo label="Main Menu"
         Switch item=PS4_Back
         Switch item=PS4_Option
         Switch item=PS4_PS
+        Text item=PS4_2ndScr
     }
 }
 ```

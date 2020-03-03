@@ -44,6 +44,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.playstation.internal.discovery.PlayStationDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -765,7 +766,7 @@ public class PS4Handler extends BaseThingHandler {
                     }
                     break;
                 case RESPONSE_SYSTEM_VERSION:
-                    updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, value);
+                    updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, PlayStationDiscovery.formatPS4Version(value));
                     break;
 
                 default:

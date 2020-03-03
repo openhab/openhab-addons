@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.playstation.internal.discovery;
 
-import static org.openhab.binding.playstation.internal.PlayStationBindingConstants.*;
 import static org.openhab.binding.playstation.internal.PS4Configuration.*;
+import static org.openhab.binding.playstation.internal.PlayStationBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -181,24 +181,15 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                     break;
             }
         }
-        String modelID = hostType;
-        switch (hostType) {
-            case "PS4":
-                modelID = "PlayStation 4";
-                break;
-            case "PS5":
-                modelID = "PlayStation 5";
-                break;
-            default:
-                break;
-        }
-        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", hostType, ipAddress, hostId);
+        String hwVersion = hwVersionFromHostId(hostId);
+        String modelID = modelNameFromHostTypeAndHWVersion(hostType, hwVersion);
+        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", modelID, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, Integer.valueOf(hostPort));
         properties.put(Thing.PROPERTY_MODEL_ID, modelID);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, formatPS4Version(systemVersion));
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
         ThingUID uid = hostType.equals("PS5") ? new ThingUID(THING_TYPE_PS5, hostId)
                 : new ThingUID(THING_TYPE_PS4, hostId);
@@ -225,13 +216,14 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         String hostName = new String(data, 16, 128);
         String systemVersion = String.format("%d.%d", data[5], data[6]);
         String unknown = new String(data, 144, 12);
+        logger.debug("PS3 discovered, unknown data '{}'", unknown);
 
         logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", hostType, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, Integer.valueOf(DEFAULT_PS3_BROADCAST_PORT));
         properties.put(Thing.PROPERTY_MODEL_ID, hostType);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersionFromHostId(hostId));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
         ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
@@ -256,14 +248,36 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         return sb.toString();
     }
 
-    private static String hostIdToHWVersion(String hostId) {
+    public static String formatPS4Version(String fwVersion) {
+        String resultV = fwVersion;
+        int len = fwVersion.length();
+        for (Character c : fwVersion.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return resultV;
+            }
+        }
+        if (len > 4) {
+            resultV = resultV.substring(0, 4) + "." + resultV.substring(4, len);
+            len++;
+        }
+        if (len > 2) {
+            resultV = resultV.substring(0, 2) + "." + resultV.substring(2, len);
+        }
+
+        if (resultV.charAt(0) == '0') {
+            resultV = resultV.substring(1);
+        }
+        return resultV;
+    }
+
+    private static String hwVersionFromHostId(String hostId) {
         String hwVersion = PS4HW_CUHXXXX;
         if (hostId.length() >= 12) {
             final String manufacturer = hostId.substring(0, 6).toLowerCase();
             final String ethId = hostId.substring(6, 8).toLowerCase();
             switch (manufacturer) {
                 case "d44b5e":
-                    hwVersion = "PS-Vita";
+                    hwVersion = PSVHW_PCHXXXX;
                     break;
                 case "001315":
                 case "001fa7":
@@ -323,6 +337,34 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         }
 
         return hwVersion;
+    }
+
+    private static String modelNameFromHostTypeAndHWVersion(String hostType, String hwVersion) {
+        String modelName = "PlayStation 4";
+        switch (hostType) {
+            case "PS3":
+                modelName = "PlayStation 3";
+                if (hwVersion.startsWith("CECH-2") || hwVersion.startsWith("CECH-3")) {
+                    modelName = modelName + " Slim";
+                } else if (hwVersion.startsWith("CECH-4")) {
+                    modelName = modelName + " Super Slim";
+                }
+                break;
+            case "PS4":
+                modelName = "PlayStation 4";
+                if (hwVersion.startsWith("CUH-2")) {
+                    modelName = modelName + " Slim";
+                } else if (hwVersion.startsWith("CUH-7")) {
+                    modelName = modelName + " Pro";
+                }
+                break;
+            case "PS5":
+                modelName = "PlayStation 5";
+                break;
+            default:
+                break;
+        }
+        return modelName;
     }
 
 }

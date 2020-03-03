@@ -58,7 +58,7 @@ public class PlayStationBindingConstants {
     static final String CHANNEL_LOG_OUT = "logOut";
     static final String CHANNEL_SCREEN_SHOT = "screenShot";
 
-    // List of all properties in the response from the PS4
+    // List of all known properties in the response from the PS4
     public static final String RESPONSE_HOST_ID = "host-id";
     public static final String RESPONSE_HOST_TYPE = "host-type";
     public static final String RESPONSE_HOST_NAME = "host-name";
@@ -68,6 +68,16 @@ public class PlayStationBindingConstants {
     public static final String RESPONSE_RUNNING_APP_NAME = "running-app-name";
     public static final String RESPONSE_RUNNING_APP_TITLEID = "running-app-titleid";
 
+    // PlayStation Vita HW versions
+    public static final String PSVHW_PCHXXXX = "PCHXXXX";
+    public static final String PSVHW_PCH1000 = "PCH1000";
+    public static final String PSVHW_PCH1100 = "PCH1100";
+    public static final String PSVHW_PCH2000 = "PCH2000";
+
+    // PlayStation Vita TV HW versions
+    public static final String PSVTVHW_VTE1000 = "VTE1000";
+
+    // PlayStation 3 HW versions
     public static final String PS3HW_CECHXXXX = "CECHXXXX";
     public static final String PS3HW_CECHA00 = "CECHA00";
     public static final String PS3HW_CECHB00 = "CECHB00";
@@ -89,6 +99,7 @@ public class PlayStationBindingConstants {
     public static final String PS3HW_CECH4200 = "CECH-4200";
     public static final String PS3HW_CECH4300 = "CECH-4300";
 
+    // PlayStation 4 HW versions
     public static final String PS4HW_CUHXXXX = "CUH-XXXX";
     public static final String PS4HW_CUH1000 = "CUH-1000";
     public static final String PS4HW_CUH1100 = "CUH-1100";

@@ -17,8 +17,6 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PS4PacketHandler} is responsible for creating and parsing
@@ -28,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PS4PacketHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(PS4PacketHandler.class);
 
     private static final String APPLICATION_NAME = "OpenHAB PlayStation 4 Binding";
     private static final String DEVICE_NAME = "OpenHAB Server";
@@ -75,6 +71,12 @@ public class PS4PacketHandler {
         return packet.toString().getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * A packet to start up the PS4 from standby mode.
+     *
+     * @param userCredential A 64 character long hex string.
+     * @return A wake-up packet.
+     */
     static byte[] makeWakeupPacket(String userCredential) {
         StringBuilder packet = new StringBuilder("WAKEUP * HTTP/1.1\n");
         packet.append("client-type:a\n"); // i or a
@@ -86,6 +88,12 @@ public class PS4PacketHandler {
         return packet.toString().getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * A packet to start up communication with the PS4.
+     *
+     * @param userCredential A 64 character long hex string
+     * @return A launch packet.
+     */
     static byte[] makeLaunchPacket(String userCredential) {
         StringBuilder packet = new StringBuilder("LAUNCH * HTTP/1.1\n");
         packet.append("user-credential:" + userCredential + "\n");
