@@ -20,7 +20,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
-import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.openhab.binding.satel.internal.types.ControlType;
 
 /**
@@ -54,19 +53,14 @@ public class ControlObjectCommand extends ControlCommand {
     }
 
     @Override
-    public boolean handleResponse(final EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // force refresh states that might have changed
-            final BitSet newStates = this.controlType.getControlledStates();
-            if (!newStates.isEmpty()) {
-                // add delay to give a chance to process sent command
-                scheduler.schedule(() -> eventDispatcher.dispatchEvent(new NewStatesEvent(newStates)), REFRESH_DELAY,
-                        TimeUnit.MILLISECONDS);
-            }
-            return true;
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // force refresh states that might have changed
+        final BitSet newStates = controlType.getControlledStates();
+        if (!newStates.isEmpty()) {
+            // add delay to give a chance to process sent command
+            scheduler.schedule(() -> eventDispatcher.dispatchEvent(new NewStatesEvent(newStates)), REFRESH_DELAY,
+                    TimeUnit.MILLISECONDS);
         }
-
-        return false;
     }
 
 }
