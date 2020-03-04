@@ -60,7 +60,7 @@ public class PS4Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PS4Handler.class);
     private final PS4Crypto ps4Crypto = new PS4Crypto();
     private final PS4ArtworkHandler ps4ArtworkHandler = new PS4ArtworkHandler();
-    private static final int SOCKET_TIMEOUT_SECONDS = 4;
+    private static final int SOCKET_TIMEOUT_SECONDS = 5;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
     private static final int MIN_SENDKEY_DELAY = 250; // min delay between sendKey sends
     private static final int MIN_HOLDKEY_DELAY = 300; // min delay after Key set
@@ -266,7 +266,7 @@ public class PS4Handler extends BaseThingHandler {
 
     private void stopConnection() {
         SocketChannelHandler handler = socketChannelHandler;
-        if (handler != null && handler.getChannel() != null) {
+        if (handler != null && handler.isChannelOpen()) {
             sendByeBye();
         }
     }
@@ -286,70 +286,90 @@ public class PS4Handler extends BaseThingHandler {
         }
     }
 
-    private boolean openComs() {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setBroadcast(false);
-            InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
-            // send launch
-            byte[] launch = PS4PacketHandler.makeLaunchPacket(config.userCredential);
-            DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, DEFAULT_BROADCAST_PORT);
-            socket.send(packet);
-            Thread.sleep(20);
-            return true;
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Open coms exception: {}", e.getMessage());
-        } catch (InterruptedException e) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean setupConnection(SocketChannel channel) throws IOException {
-        logger.debug("TCP connecting");
-
-        channel.socket().setSoTimeout(2000);
-        channel.configureBlocking(true);
-        channel.connect(new InetSocketAddress(config.ipAddress, currentComPort));
-
-        ByteBuffer outPacket = PS4PacketHandler.makeHelloPacket();
-        sendPacketToPS4(outPacket, channel, false, false);
-
-        // Read hello response
-        final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
-
-        int responseLength = channel.read(readBuffer);
-        if (responseLength > 0) {
-            ps4Crypto.parseHelloResponsePacket(readBuffer);
-        } else {
-            return false;
-        }
-
-        outPacket = ps4Crypto.makeHandshakePacket();
-        sendPacketToPS4(outPacket, channel, false, false);
-        return true;
-    }
-
     private class SocketChannelHandler extends Thread {
-        private @Nullable SocketChannel socketChannel;
+        private SocketChannel socketChannel;
         private @Nullable PS4Command lastCommand;
         boolean loggedIn = false;
         boolean oskOpen = false;
 
-        public SocketChannelHandler(SocketChannel channel) {
-            socketChannel = channel;
+        public SocketChannelHandler() throws IOException {
+            socketChannel = setupChannel();
+            start();
         }
 
-        public @Nullable SocketChannel getChannel() {
+        public SocketChannel getChannel() {
+            if (!socketChannel.isOpen()) {
+                try {
+                    socketChannel = setupChannel();
+                } catch (IOException e) {
+                    logger.debug("Couldn't open SocketChannel.{}", e.getMessage());
+                }
+            }
             return socketChannel;
+        }
+
+        public boolean isChannelOpen() {
+            return socketChannel.isOpen();
+        }
+
+        private SocketChannel setupChannel() throws IOException {
+            SocketChannel channel = SocketChannel.open();
+            if (!openComs()) {
+                throw new IOException("Open coms failed");
+            }
+            if (!setupConnection(channel)) {
+                throw new IOException("Setup connection failed");
+            }
+            return channel;
+        }
+
+        private boolean openComs() {
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.setBroadcast(false);
+                InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
+                // send launch
+                byte[] launch = PS4PacketHandler.makeLaunchPacket(config.userCredential);
+                DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, DEFAULT_BROADCAST_PORT);
+                socket.send(packet);
+                Thread.sleep(100);
+                return true;
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                logger.info("Open coms exception: {}", e.getMessage());
+            } catch (InterruptedException e) {
+                return true;
+            }
+            return false;
+        }
+
+        private boolean setupConnection(SocketChannel channel) throws IOException {
+            logger.debug("TCP connecting");
+
+            channel.socket().setSoTimeout(2000);
+            channel.configureBlocking(true);
+            channel.connect(new InetSocketAddress(config.ipAddress, currentComPort));
+
+            ByteBuffer outPacket = PS4PacketHandler.makeHelloPacket();
+            sendPacketToPS4(outPacket, channel, false, false);
+
+            // Read hello response
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
+
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                ps4Crypto.parseHelloResponsePacket(readBuffer);
+            } else {
+                return false;
+            }
+
+            outPacket = ps4Crypto.makeHandshakePacket();
+            sendPacketToPS4(outPacket, channel, false, false);
+            return true;
         }
 
         @Override
         public void run() {
             SocketChannel channel = socketChannel;
-            if (channel == null) {
-                return;
-            }
             final ByteBuffer readBuffer = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
             try {
                 while (channel.read(readBuffer) > 0) {
@@ -375,7 +395,6 @@ public class PS4Handler extends BaseThingHandler {
                 }
             }
             logger.debug("SocketHandler done.");
-            socketChannel = null;
             ps4Crypto.clearCiphers();
             loggedIn = false;
         }
@@ -511,31 +530,20 @@ public class PS4Handler extends BaseThingHandler {
     private SocketChannel getConnection(boolean requiresLogin) throws IOException {
         SocketChannel channel = null;
         SocketChannelHandler handler = socketChannelHandler;
-        if (handler == null || handler.getChannel() == null) {
+        if (handler == null || !handler.isChannelOpen()) {
             try {
-                channel = SocketChannel.open();
-                if (!openComs()) {
-                    throw new IOException("Open coms failed");
-                }
-                if (!setupConnection(channel)) {
-                    throw new IOException("Setup connection failed");
-                }
-                handler = new SocketChannelHandler(channel);
+                handler = new SocketChannelHandler();
                 socketChannelHandler = handler;
-                handler.start();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 throw e;
             }
         }
         channel = handler.getChannel();
-        if (channel != null) {
-            if (!handler.loggedIn && requiresLogin) {
-                login(channel);
-            }
-            return channel;
+        if (!handler.loggedIn && requiresLogin) {
+            login(channel);
         }
-        throw new IOException("No channel allocated");
+        return channel;
     }
 
     private void sendPacketToPS4(ByteBuffer packet, SocketChannel channel, boolean encrypted, boolean restartTimeout) {
@@ -639,11 +647,10 @@ public class PS4Handler extends BaseThingHandler {
 
     private void turnOnPS4() {
         wakeUpPS4();
-        try {
-            Thread.sleep(13000);
-        } catch (InterruptedException e) {
-            logger.debug("Turn on PS4 interrupted: {}", e.getMessage());
-        }
+        scheduler.schedule(this::waitAndConnectToPS4, 13, TimeUnit.SECONDS);
+    }
+
+    private void waitAndConnectToPS4() {
         try {
             getConnection();
         } catch (IOException e) {

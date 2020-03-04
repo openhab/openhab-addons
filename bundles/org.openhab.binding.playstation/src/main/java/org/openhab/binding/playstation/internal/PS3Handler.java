@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.PortUnreachableException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -116,31 +119,21 @@ public class PS3Handler extends BaseThingHandler {
      * if the connection times out the PS3 is OFF, if connection is refused the PS3 is ON.
      */
     private void updateAllChannels() {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setBroadcast(false);
+        try (SocketChannel channel = SocketChannel.open()) {
+            Socket socket = channel.socket();
             socket.setSoTimeout(SOCKET_TIMEOUT_SECONDS * 1000);
-            InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
-            // logger.debug("PS3 power connect");
-            // socket.connect(inetAddress, DEFAULT_PS3_COMMUNICATION_PORT);
-
-            byte[] discover = PS4PacketHandler.makeSearchPacket();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
-                    DEFAULT_PS3_UNKNOWN_PORT);
-            logger.debug("PS3 power send");
-            socket.send(packet);
-
-            // wait for response
-            byte[] rxbuf = new byte[256];
-            packet = new DatagramPacket(rxbuf, rxbuf.length);
-            socket.receive(packet);
-            logger.debug("PS3 power received{}", rxbuf);
-            updateState(CHANNEL_POWER, OnOffType.ON);
-        } catch (PortUnreachableException e) {
-            logger.info("PS3 read power, PortUnreachableException: {}", e.getMessage());
+            channel.configureBlocking(true);
+            channel.connect(new InetSocketAddress(config.ipAddress, DEFAULT_PS3_COMMUNICATION_PORT));
         } catch (IOException e) {
-            updateState(CHANNEL_POWER, OnOffType.OFF);
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("PS3 read power, IOException: {}", e.getMessage());
+            String message = e.getMessage();
+            if (message.contains("refused")) {
+                updateState(CHANNEL_POWER, OnOffType.ON);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            } else if (message.contains("timed out")) {
+                updateState(CHANNEL_POWER, OnOffType.OFF);
+            } else {
+                logger.info("PS3 read power, IOException: {}", e.getMessage());
+            }
         }
     }
 

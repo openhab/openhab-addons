@@ -212,18 +212,19 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         String ipAddress = packet.getAddress().toString().split("/")[1];
         String hostId = String.format("%02x%02x%02x%02x%02x%02x", data[10], data[11], data[12], data[13], data[14],
                 data[15]);
-        String hostType = "Playstation 3";
         String hostName = new String(data, 16, 128);
         String systemVersion = String.format("%d.%d", data[5], data[6]);
         String unknown = new String(data, 144, 12);
         logger.debug("PS3 discovered, unknown data '{}'", unknown);
 
-        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", hostType, ipAddress, hostId);
+        String hwVersion = hwVersionFromHostId(hostId);
+        String modelID = modelNameFromHostTypeAndHWVersion("PS3", hwVersion);
+        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", modelID, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, Integer.valueOf(DEFAULT_PS3_BROADCAST_PORT));
-        properties.put(Thing.PROPERTY_MODEL_ID, hostType);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersionFromHostId(hostId));
+        properties.put(Thing.PROPERTY_MODEL_ID, modelID);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
         ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
