@@ -31,6 +31,8 @@ import org.openhab.binding.cbus.handler.CBusTriggerHandler;
 import org.openhab.binding.cbus.internal.discovery.CBusGroupDiscovery;
 import org.openhab.binding.cbus.internal.discovery.CBusNetworkDiscovery;
 import org.osgi.service.component.annotations.Component;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusHandlerFactory} is responsible for creating things and thing
@@ -38,6 +40,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.cbus")
 public class CBusHandlerFactory extends BaseThingHandlerFactory {
 
@@ -46,6 +49,7 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
         return CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    @Nullable
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();

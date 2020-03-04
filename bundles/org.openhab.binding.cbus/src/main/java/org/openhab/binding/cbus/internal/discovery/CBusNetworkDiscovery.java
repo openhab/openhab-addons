@@ -27,6 +27,7 @@ import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusNetworkDiscovery} class is used to discover CBus
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 public class CBusNetworkDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);

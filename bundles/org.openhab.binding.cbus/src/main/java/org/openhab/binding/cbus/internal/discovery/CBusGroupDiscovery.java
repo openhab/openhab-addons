@@ -30,6 +30,7 @@ import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusGroupDiscovery} class is used to discover CBus
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 public class CBusGroupDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
