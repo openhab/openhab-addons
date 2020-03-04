@@ -14,7 +14,7 @@
 
   <properties>
     <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
-    <jackson.version>2.9.10</jackson.version>
+    <jackson.version>2.10.3</jackson.version>
   </properties>
 
   <dependencies>
