@@ -263,7 +263,6 @@ public class GoEChargerHandler extends BaseThingHandler {
         if (errorMsg != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         } else {
-            // updateStatus(ThingStatus.ONLINE); // TODO should it already be online here???
             startAutomaticRefresh();
         }
         logger.debug("Finished initializing!");
@@ -280,14 +279,16 @@ public class GoEChargerHandler extends BaseThingHandler {
         logger.debug("POST URL = {}", urlStr);
 
         HttpURLConnection connection = null;
+        String result = null;
         try {
             URL url = new URL(urlStr);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setConnectTimeout(5000);
 
-            String response = IOUtils.toString(connection.getInputStream());
-            logger.debug("Response: {}", response.toString());
+            result = IOUtils.toString(connection.getInputStream());
+            // TODO check if value really changed
+            logger.debug("Response: {}", result.toString());
         } catch (SocketTimeoutException e) {
             // timeout <- offline
             errorMsg = e.getMessage();
@@ -302,11 +303,13 @@ public class GoEChargerHandler extends BaseThingHandler {
             }
         }
 
-        if (errorMsg != null) {
-            // TODO might as well be wrong API
-            // really needed? get every 5s also sets this to offline if not available
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
+        if (result != null) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            return;
         }
+            
+        logger.warn("Error in Go-eCharger request: {}", errorMsg);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
     }
 
     /**
