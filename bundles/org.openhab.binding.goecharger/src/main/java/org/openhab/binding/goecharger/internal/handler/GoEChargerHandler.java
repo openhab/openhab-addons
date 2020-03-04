@@ -85,9 +85,9 @@ public class GoEChargerHandler extends BaseThingHandler {
     private @Nullable GoEChargerConfiguration config;
 
     private Gson gson;
-    private GoEStatusResponse goeResponse;
+    private @Nullable GoEStatusResponse goeResponse;
 
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
     private int retryCounter = 0;
 
     public GoEChargerHandler(Thing thing) {
@@ -197,10 +197,10 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return new QuantityType<>((Double) (goeResponse.getEnergy()[9] / 10d),
                             SmartHomeUnits.KILOWATT_HOUR);
                 default:
-                    return null;
+                    return UnDefType.NULL;
             }
         }
-        return null;
+        return UnDefType.NULL;
     }
 
     /**
@@ -309,6 +309,7 @@ public class GoEChargerHandler extends BaseThingHandler {
      * @return the Go-E charger object mapping the JSON response or null in case of
      *         error
      */
+    @Nullable
     private GoEStatusResponse getGoEData() {
         GoEStatusResponse result = null;
         String errorMsg = null;
