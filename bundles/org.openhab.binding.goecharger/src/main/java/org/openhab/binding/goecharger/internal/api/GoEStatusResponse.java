@@ -14,12 +14,15 @@ package org.openhab.binding.goecharger.internal.api;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link GoEStatusResponse} class represents a json response from the
  * charger.
  *
  * @author Samuel Brucksch - Initial contribution
  */
+@NonNullByDefault
 public class GoEStatusResponse {
   @SerializedName("version")
   private String version;

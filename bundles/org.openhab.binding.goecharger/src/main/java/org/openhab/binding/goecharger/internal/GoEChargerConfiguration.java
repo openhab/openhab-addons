@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.goecharger.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link GoEChargerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Samuel Brucksch - Initial contribution
  */
+@NonNullByDefault
 public class GoEChargerConfiguration {
 
+    @Nullable
     public String ip;
-    public Integer refreshInterval;
-    
+    public Integer refreshInterval = 5;
 }

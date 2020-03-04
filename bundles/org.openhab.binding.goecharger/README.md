@@ -1,6 +1,7 @@
 # Go-eCharger Binding
 
-This Binding controls and reads data from the [Go-eCharger](https://go-e.co/). It is a mobile wallbox for charging EVs and has an open REST API for reading data and configuration.
+This Binding controls and reads data from the [Go-eCharger](https://go-e.co/).
+It is a mobile wallbox for charging EVs and has an open REST API for reading data and configuration.
 
 ## Supported Things
 
@@ -8,41 +9,42 @@ This binding supports go-eCharger HOME+ with 7.4kW or 22kW.
 
 ## Discovery
 
-There is no auto discovery. You need to get the IP from the Go-eCharger and put it into the configuration.
+There is no auto discovery.
+You need to get the IP from the Go-eCharger and put it into the configuration.
 
 ## Thing Configuration
 
 The thing has two configuration parameters:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| ip        | the ip-address of your go-eCharger |
-| refreshInterval  | Interval to read data (in seconds) |
+| Parameter | Description                                                              | Required |
+|-----------|------------------------------------------------------------------------- |----------|
+| ip        | the ip-address of your go-eCharger | yes |
+| refreshInterval  | Interval to read data, default 5 (in seconds) | no |
 
 ## Channels
 
 Currently available channels are 
 | Channel ID | Item Type    | Description              |
 |------------|--------------|------------------------- |
-| maxAmpere | Number | Max ampere allowed to use for charging |
+| maxAmpere | Number:ElectricCurrent | Maximum current allowed to use for charging |
 | pwmSignal | Number | Signal status for PWM signal |
 | error | String | Error code of charger |
-| voltageL1 | Number | Voltage on L1 |
-| voltageL2 | Number | Voltage on L2 |
-| voltageL3 | Number | Voltage on L3 |
-| currentL1 | Number | Current on L1 |
-| currentL2 | Number | Current on L2 |
-| currentL3 | Number | Current on L3 |
-| powerL1 | Number | Power on L1 |
-| powerL2 | Number | Power on L2 |
-| powerL3 | Number | Power on L2 |
+| voltageL1 | Number:ElectricPotential | Voltage on L1 |
+| voltageL2 | Number:ElectricPotential | Voltage on L2 |
+| voltageL3 | Number:ElectricPotential | Voltage on L3 |
+| currentL1 | Number:ElectricCurrent | Current on L1 |
+| currentL2 | Number:ElectricCurrent | Current on L2 |
+| currentL3 | Number:ElectricCurrent | Current on L3 |
+| powerL1 | Number:Power | Power on L1 |
+| powerL2 | Number:Power | Power on L2 |
+| powerL3 | Number:Power | Power on L2 |
 | phases | Number | Amount of phases currently used for charging |
-| sessionChargeConsumptionLimit | Number | Wallbox stops charging after defined value, disable with 0 |
-| sessionChargeConsumption | Number | Amount of kWh that have been charged in this session |
-| totalConsumption | Number | Amount of kWh that have been charged since installation |
+| sessionChargeConsumptionLimit | Number:Energy | Wallbox stops charging after defined value, disable with 0 |
+| sessionChargeConsumption | Number:Energy | Amount of kWh that have been charged in this session |
+| totalConsumption | Number:Energy | Amount of kWh that have been charged since installation |
 | allowCharging | Switch | If `ON` charging is allowed |
-| cableEncoding | Number | Specifies the max amps that can be charged with that cable |
-| temperature | Number | Temperature of the Go-eCharger |
+| cableEncoding | Number:ElectricCurrent | Specifies the max amps that can be charged with that cable |
+| temperature | Number:Temperature | Temperature of the Go-eCharger |
 | firmware | String | Firmware Version |
 | accessState | String | Access state, for example OPEN, RFID ... |
 
@@ -82,7 +84,8 @@ String   AccessState                      "Access state"                   {chan
 
 ## Settings charge current of Go-eCharger based on PV
 
-You can easily define rules to charge with PV power alone. Here is a simple sample how such a rule could look like:
+You can easily define rules to charge with PV power alone.
+Here is a simple sample how such a rule could look like:
 
 ```
 rule "Set max amps for PV charging"
@@ -93,4 +96,7 @@ then
     MaxAmpere.sendCommand(receivedCommand.state)
 end
 ```
-You can also define more advanced rules if you have multiple cars that charge with a different amount of phases. The used phases can be read from Voltage L1-L3 or Power or Current. For example if your car charges with one phase only L1 will be most likely around 220V, L2 and L3 will be 0. With that you can get the amount of used phases and calculate the current you need to set.
+You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
+The used phases can be read from Voltage L1-L3 or Power or Current.
+For example if your car charges with one phase only L1 will be most likely around 220V, L2 and L3 will be 0.
+With that you can get the amount of used phases and calculate the current you need to set.

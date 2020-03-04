@@ -16,6 +16,8 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 
 import java.util.Collections;
 import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -31,6 +33,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Samuel Brucksch - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.goecharger", service = ThingHandlerFactory.class)
 public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
 

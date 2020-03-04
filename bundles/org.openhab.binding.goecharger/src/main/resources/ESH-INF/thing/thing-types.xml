@@ -50,10 +50,10 @@
 		<description>Current access state of the go-eCharge</description>
 	</channel-type>
 	<channel-type id="amp">
-		<item-type>Number</item-type>
-		<label>Max Ampere</label>
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Current</label>
 		<description>Max ampere per phase allowed to use for charging</description>
-		<state pattern="%d A" readOnly="false"></state>
+		<state pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="pwm">
 		<item-type>Number</item-type>
@@ -66,58 +66,58 @@
 		<description>Error code of Go-eCharger</description>
 	</channel-type>
 	<channel-type id="vl1">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage L1</label>
 		<description>Voltage on L1</description>
-		<state pattern="%d V" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vl2">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage L2</label>
 		<description>Voltage on L2</description>
-		<state pattern="%d V" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vl3">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage L3</label>
 		<description>Voltage on L3</description>
-		<state pattern="%d V" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cl1">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current L1</label>
 		<description>Current on L1</description>
-		<state pattern="%.1f A" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cl2">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current L2</label>
 		<description>Current on L2</description>
-		<state pattern="%.1f A" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cl3">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current L3</label>
 		<description>Current on L3</description>
-		<state pattern="%.1f A" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pl1">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power L1</label>
 		<description>Power on L1</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pl2">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power L2</label>
 		<description>Power on L2</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pl3">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power L3</label>
 		<description>Power on L3</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pha">
 		<item-type>Number</item-type>
@@ -125,22 +125,22 @@
 		<description>Amount of phases currently used for charging</description>
 	</channel-type>
 	<channel-type id="scl">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Current Session Charge Limit</label>
 		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
-		<state pattern="%.1f kWh" readOnly="false"></state>
+		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="scs">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Current Session Charge Amount</label>
 		<description>Amount of kWh that have been charged in this session</description>
-		<state pattern="%.1f kWh" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="eto">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Charge Amount</label>
 		<description>Amount of kWh that have been charged since installation</description>
-		<state pattern="%.1f kWh" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="alw">
 		<item-type>Switch</item-type>
@@ -148,16 +148,16 @@
 		<description>If true charging is allowed</description>
 	</channel-type>
 	<channel-type id="cbl">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Cable Encoding</label>
 		<description>Specifies the max amps that can be charged with that cable</description>
-		<state pattern="%d A" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tmp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature of the Go-eCharger</description>
-		<state pattern="%d °C" readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fmw">
 		<item-type>String</item-type>

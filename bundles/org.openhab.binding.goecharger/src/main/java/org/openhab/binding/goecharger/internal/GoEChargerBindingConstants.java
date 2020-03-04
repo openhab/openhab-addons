@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.goecharger.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Samuel Brucksch - Initial contribution
  */
+@NonNullByDefault
 public class GoEChargerBindingConstants {
 
     private static final String BINDING_ID = "goecharger";
@@ -50,8 +52,6 @@ public class GoEChargerBindingConstants {
     public static final String TOTAL_CONSUMPTION = "totalConsumption";
     public static final String FIRMWARE         = "firmware";
 
-    // default values
-    public static final int DEFAULT_REFRESH_INTERVAL = 5;
     public static final String API_URL = "http://%IP%/status";
     public static final String MQTT_URL = "http://%IP%/mqtt?payload=%KEY%=%VALUE%";
 }
