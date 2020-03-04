@@ -40,9 +40,8 @@ import org.slf4j.LoggerFactory;
 public class ExpiringDayCache<V> {
     private final Logger logger = LoggerFactory.getLogger(ExpiringDayCache.class);
 
-    private String name;
-    private int beginningHour;
-
+    private final String name;
+    private final int beginningHour;
     private final Supplier<@Nullable V> action;
 
     private @Nullable V value;

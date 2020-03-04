@@ -54,6 +54,7 @@ Usage: smarthome:linky <thingUID> report <start day> <end day> [<separator>] - r
 
 The command `report` reports in the console the daily consumptions between two dates.
 If no dates are provided, the last 7 are considered by default.
+Start and end day are formatted yyyy-mm-dd.
 
 Here is an example of command you can run: `smarthome:linky linky:linky:local report 2020-11-15 2020-12-15`.
 
