@@ -251,22 +251,11 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         config = getConfigAs(GoEChargerConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        String errorMsg = null;
-
-        if (StringUtils.trimToNull(config.ip) == null) {
-            errorMsg = "Parameter 'ip' is mandatory and must be configured";
-        }
-
-        if (errorMsg != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-        } else {
-            startAutomaticRefresh();
-        }
+        startAutomaticRefresh();
         logger.debug("Finished initializing!");
     }
 
@@ -371,21 +360,21 @@ public class GoEChargerHandler extends BaseThingHandler {
         return null;
     }
 
+    private void refresh() {
+        // Request new GoE data
+        retryCounter = 0;
+        goeResponse = getGoEData();
+
+        // Update all channels from the updated GoE data
+        getThing().getChannels().forEach(channel -> updateChannel(channel.getUID().getId()));
+    }
+
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                // Request new GoE data
-                retryCounter = 0;
-                goeResponse = getGoEData();
-
-                // Update all channels from the updated GoE data
-                getThing().getChannels().forEach(channel -> updateChannel(channel.getUID().getId()));
-            };
-
             GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
             int delay = config.refreshInterval.intValue();
             logger.debug("Running refresh job with delay {} s", delay);
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, delay, TimeUnit.SECONDS);
         }
     }
 
@@ -393,6 +382,7 @@ public class GoEChargerHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing the Go-E Charger handler.");
 
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             this.refreshJob = null;
