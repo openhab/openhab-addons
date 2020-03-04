@@ -61,24 +61,8 @@ public class SipStatusTest {
     @Test
     public void testParsing() {
         SipStatus sipStatus = new SipStatus(sipStatusJson);
-
-        assertEquals("1", sipStatus.getReturnCode());
-        assertEquals("10", sipStatus.getEnable());
-        assertEquals("1", sipStatus.getPrioritizeApp());
-        assertEquals("192.168.178.1", sipStatus.getRegisterUrl());
-        assertEquals("xxxxx", sipStatus.getRegisterUser());
-        assertEquals("yyyyy", sipStatus.getRegisterPassword());
-        assertEquals("motion-url", sipStatus.getAutocallMotionSensorUrl());
-        assertEquals("doorbell-url", sipStatus.getAutocallDoorbellUrl());
         assertEquals("70", sipStatus.getSpeakerVolume());
         assertEquals("33", sipStatus.getMicrophoneVolume());
-        assertEquals("1", sipStatus.getDtmf());
-        assertEquals("0", sipStatus.getRelais1());
-        assertEquals("1", sipStatus.getRelais2());
-        assertEquals("light-passcode", sipStatus.getLightPasscode());
-        assertEquals("0", sipStatus.getIncomingCallEnable());
-        assertEquals("abcde", sipStatus.getIncomingCallUser());
-        assertEquals("1", sipStatus.getAutoNoiseCancellation());
         assertEquals("901", sipStatus.getLastErrorCode());
         assertEquals("OK", sipStatus.getLastErrorText());
         assertEquals("60", sipStatus.getRingTimeLimit());

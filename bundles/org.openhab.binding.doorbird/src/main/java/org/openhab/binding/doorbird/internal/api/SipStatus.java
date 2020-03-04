@@ -13,6 +13,7 @@
 package org.openhab.binding.doorbird.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.doorbird.internal.model.SipStatusDTO;
 import org.openhab.binding.doorbird.internal.model.SipStatusDTO.SipStatusBha;
 import org.openhab.binding.doorbird.internal.model.SipStatusDTO.SipStatusBha.SipStatusArray;
@@ -20,33 +21,20 @@ import org.openhab.binding.doorbird.internal.model.SipStatusDTO.SipStatusBha.Sip
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link SipStatus} holds SIP status information retrieved from the Doorbell.
+ * The {@link SipStatus} holds SIP status information retrieved from the Doorbell
+ * that is used in the binding handler.
  *
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
 public class SipStatus {
-    private String returnCode = "";
-    private String enable = "";
-    private String prioritizeApp = "";
-    private String registerUrl = "";
-    private String registerUser = "";
-    private String registerPassword = "";
-    private String autocallMotionSensorUrl = "";
-    private String autocallDoorbellUrl = "";
-    private String speakerVolume = "";
-    private String microphoneVolume = "";
-    private String dtmf = "";
-    private String relais1 = "";
-    private String relais2 = "";
-    private String lightPasscode = "";
-    private String incomingCallEnable = "";
-    private String incomingCallUser = "";
-    private String autoNoiseCancellation = "";
-    private String lastErrorCode = "";
-    private String lastErrorText = "";
-    private String ringTimeLimit = "";
-    private String callTimeLimit = "";
+    private @Nullable String returnCode;
+    private @Nullable String speakerVolume;
+    private @Nullable String microphoneVolume;
+    private @Nullable String lastErrorCode;
+    private @Nullable String lastErrorText;
+    private @Nullable String ringTimeLimit;
+    private @Nullable String callTimeLimit;
 
     @SuppressWarnings("null")
     public SipStatus(String sipStatusJson) throws JsonSyntaxException {
@@ -57,111 +45,48 @@ public class SipStatus {
             // SIP array should have only one entry
             if (bha.sipStatusArray.length == 1) {
                 SipStatusArray sip = bha.sipStatusArray[0];
-                enable = sip.enable != null ? sip.enable : "";
-                prioritizeApp = sip.prioritizeApp != null ? sip.prioritizeApp : "";
-                registerUrl = sip.registerUrl != null ? sip.registerUrl : "";
-                registerUser = sip.registerUser != null ? sip.registerUser : "";
-                registerPassword = sip.registerPassword != null ? sip.registerPassword : "";
-                autocallMotionSensorUrl = sip.autocallMotionSensorUrl != null ? sip.autocallMotionSensorUrl : "";
-                autocallDoorbellUrl = sip.autocallDoorbellUrl != null ? sip.autocallDoorbellUrl : "";
-                speakerVolume = sip.speakerVolume != null ? sip.speakerVolume : "";
-                microphoneVolume = sip.microphoneVolume != null ? sip.microphoneVolume : "";
-                dtmf = sip.dtmf != null ? sip.dtmf : "";
-                relais1 = sip.relais1 != null ? sip.relais1 : "";
-                relais2 = sip.relais2 != null ? sip.relais2 : "";
-                lightPasscode = sip.lightPasscode != null ? sip.lightPasscode : "";
-                incomingCallEnable = sip.incomingCallEnable != null ? sip.incomingCallEnable : "";
-                incomingCallUser = sip.incomingCallUser != null ? sip.incomingCallUser : "";
-                autoNoiseCancellation = sip.autoNoiseCancellation != null ? sip.autoNoiseCancellation : "";
-                lastErrorCode = sip.lastErrorCode != null ? sip.lastErrorCode : "";
-                lastErrorText = sip.lastErrorText != null ? sip.lastErrorText : "";
-                ringTimeLimit = sip.ringTimeLimit != null ? sip.ringTimeLimit : "";
-                callTimeLimit = sip.callTimeLimit != null ? sip.callTimeLimit : "";
+                speakerVolume = sip.speakerVolume;
+                microphoneVolume = sip.microphoneVolume;
+                lastErrorCode = sip.lastErrorCode;
+                lastErrorText = sip.lastErrorText;
+                ringTimeLimit = sip.ringTimeLimit;
+                callTimeLimit = sip.callTimeLimit;
             }
         }
     }
 
     public String getReturnCode() {
-        return returnCode;
-    }
-
-    public String getEnable() {
-        return enable;
-    }
-
-    public String getPrioritizeApp() {
-        return prioritizeApp;
-    }
-
-    public String getRegisterUrl() {
-        return registerUrl;
-    }
-
-    public String getRegisterUser() {
-        return registerUser;
-    }
-
-    public String getRegisterPassword() {
-        return registerPassword;
-    }
-
-    public String getAutocallMotionSensorUrl() {
-        return autocallMotionSensorUrl;
-    }
-
-    public String getAutocallDoorbellUrl() {
-        return autocallDoorbellUrl;
+        String value = returnCode;
+        return value != null ? value : "";
     }
 
     public String getSpeakerVolume() {
-        return speakerVolume;
+        String value = speakerVolume;
+        return value != null ? value : "";
     }
 
     public String getMicrophoneVolume() {
-        return microphoneVolume;
-    }
-
-    public String getDtmf() {
-        return dtmf;
-    }
-
-    public String getRelais1() {
-        return relais1;
-    }
-
-    public String getRelais2() {
-        return relais2;
-    }
-
-    public String getLightPasscode() {
-        return lightPasscode;
-    }
-
-    public String getIncomingCallEnable() {
-        return incomingCallEnable;
-    }
-
-    public String getIncomingCallUser() {
-        return incomingCallUser;
-    }
-
-    public String getAutoNoiseCancellation() {
-        return autoNoiseCancellation;
+        String value = microphoneVolume;
+        return value != null ? value : "";
     }
 
     public String getLastErrorCode() {
-        return lastErrorCode;
+        String value = lastErrorCode;
+        return value != null ? value : "";
     }
 
     public String getLastErrorText() {
-        return lastErrorText;
+        String value = lastErrorText;
+        return value != null ? value : "";
     }
 
     public String getRingTimeLimit() {
-        return ringTimeLimit;
+        String value = ringTimeLimit;
+        return value != null ? value : "";
     }
 
     public String getCallTimeLimit() {
-        return callTimeLimit;
+        String value = callTimeLimit;
+        return value != null ? value : "";
     }
 }

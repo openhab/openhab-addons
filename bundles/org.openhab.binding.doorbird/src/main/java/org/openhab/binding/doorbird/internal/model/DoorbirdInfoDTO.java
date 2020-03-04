@@ -69,7 +69,7 @@ public class DoorbirdInfoDTO {
              * Array of relays supported by this Doorbird
              */
             @SerializedName("RELAYS")
-            public String relays[];
+            public String[] relays;
 
             /**
              * Doorbird's model name

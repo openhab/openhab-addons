@@ -49,22 +49,22 @@ public class ControllerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        String host = getConfigAs(ControllerConfiguration.class).doorbirdHost;
+        ControllerConfiguration config = getConfigAs(ControllerConfiguration.class);
+        String host = config.doorbirdHost;
         if (host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird host not provided");
             return;
         }
-        String user = getConfigAs(ControllerConfiguration.class).userId;
+        String user = config.userId;
         if (user == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User ID not provided");
             return;
         }
-        String password = getConfigAs(ControllerConfiguration.class).userPassword;
+        String password = config.userPassword;
         if (password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User password not provided");
             return;
         }
-
         api.setAuthorization(host, user, password);
 
         // Get the Id of the controller for use in the open door API
