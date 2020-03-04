@@ -131,13 +131,13 @@ public class ValloxMVWebSocket {
         public ByteBuffer generateCustomRequest(Integer mode, Map<Integer, Integer> hmParameters) {
             // If we just want data the format is different so its just hardcoded here
             if (mode == 246) {
-                // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
+                // requestData (Length 3, Command to get data 246, 0, checksum [sum of everything before])
                 return ByteBuffer.wrap(new byte[] { 3, 0, (byte) 246, 0, 0, 0, (byte) 249, 0 });
             }
 
-            int numberParameters = (hmParameters.size() + 1) * 2; // Parameters + Checksum
+            int numberParameters = (hmParameters.size() * 2) + 2; // Parameters (key + value) + Mode + Checksum
             int checksum = numberParameters;
-            // Allocate for Content incl. Checksum + Length
+            // Allocate for bytebuffer incl. Length
             ByteBuffer bb = ByteBuffer.allocate((numberParameters + 1) * 2)
                     .put(convertIntegerIntoByteBuffer(numberParameters));
 
@@ -151,6 +151,13 @@ public class ValloxMVWebSocket {
                 checksum += i.getKey() + i.getValue();
             }
 
+            // We have to make sure that checksum is within the range
+            // Checksum may hold larger value than 65535 from the above loop
+            // We will never reach integer max value in the loop so it is ok to do this after the loop
+            // This is not needed if we make sure that conversion to bytes will take care of it
+            // bitwise AND inside convertIntegerIntoByteBuffer() takes care of this
+            // checksum = checksum & 0xffff; 
+
             bb.put(convertIntegerIntoByteBuffer(checksum));
             bb.position(0);
             return bb;
@@ -158,8 +165,9 @@ public class ValloxMVWebSocket {
 
         // Convert Integer to ByteBuffer in Little-endian
         public ByteBuffer convertIntegerIntoByteBuffer(Integer i) {
-            byte b1 = (byte) (i % 256);
-            byte b2 = (byte) ((i - i % 256) / 256);
+            // Use bitwise operators to extract two rightmost bytes from the integer
+            byte b1 = (byte) (i & 0xff); // Rightmost byte
+            byte b2 = (byte) ((i >> 8) & 0xff); // Second rightmost byte
 
             return ByteBuffer.wrap(new byte[] { b1, b2 });
         }
@@ -173,8 +181,13 @@ public class ValloxMVWebSocket {
             if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
                 if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_FIREPLACE) {
                     // 15 Min fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
-                    // CYC_FIREPLACE_TIMER
-                    // (4613) = 15, checksum)
+                    // CYC_FIREPLACE_TIMER (4613) = 15, checksum)
+                    // To do: we should check this case already in 'request' function and first request Vallox
+                    // to provide value from modbus address 20545. Data to send: (3,250,20545,checksum)
+                    // Vallox will reply with binary data (4,249,20545,value,checksum) from here we can save value to
+                    // variable. After this 'request' function can request this state update, here we can use variable
+                    // for setting timer value to modbus address 4613.
+                    // Note: we should be able to request 2 values at a time, same if clause could be used for both
                     request.put(4612, 0);
                     request.put(4613, 15);
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_ATHOME) {
@@ -192,6 +205,12 @@ public class ValloxMVWebSocket {
                 } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_BOOST) {
                     // 30 Min boost (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 30, CYC_FIREPLACE_TIMER
                     // (4613) = 0, checksum)
+                    // To do: we should check this case already in 'request' function and first request Vallox
+                    // to provide value from modbus address 20544. Data to send: (3,250,20544,checksum)
+                    // Vallox will reply with binary data (4,249,20544,value,checksum) from here we can save value to
+                    // variable. After this 'request' function can request this state update, here we can use variable
+                    // for setting timer value to modbus address 4612.
+                    // Note: we should be able to request 2 values at a time, same if clause could be used for both
                     request.put(4612, 30);
                     request.put(4613, 0);
                 }
@@ -213,6 +232,30 @@ public class ValloxMVWebSocket {
                 request.put(20502, Integer.parseInt(updateState));
             } else if (ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET.equals(channelUID.getId())) {
                 request.put(20514, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_TIME.equals(channelUID.getId())) {
+                request.put(20544, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED.equals(channelUID.getId())) {
+                request.put(21766, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN.equals(channelUID.getId())) {
+                request.put(20487, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN.equals(channelUID.getId())) {
+                request.put(20488, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME.equals(channelUID.getId())) {
+                request.put(20545, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED.equals(channelUID.getId())) {
+                request.put(21767, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET.equals(channelUID.getId())) {
+                request.put(20493, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN.equals(channelUID.getId())) {
+                request.put(20494, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN.equals(channelUID.getId())) {
+                request.put(20495, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_TIME.equals(channelUID.getId())) {
+                request.put(20496, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED.equals(channelUID.getId())) {
+                request.put(21772, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED.equals(channelUID.getId())) {
+                request.put(4615, Integer.parseInt(updateState));
             } else {
                 return null;
             }
@@ -299,6 +342,19 @@ public class ValloxMVWebSocket {
                 BigDecimal bdAwayAirTempTarget = getTemperature(bytes, 408);
                 BigDecimal bdBoostAirTempTarget = getTemperature(bytes, 432);
 
+                int iBoostTime = getNumber(bytes, 492);
+                int iBoostTimerEnabled = getNumber(bytes, 528);
+                int iFireplaceExtrFan = getNumber(bytes, 378);
+                int iFireplaceSuppFan = getNumber(bytes, 380);
+                int iFireplaceTime = getNumber(bytes, 494);
+                int iFireplaceTimerEnabled = getNumber(bytes, 530);
+                BigDecimal bdExtraAirTempTarget = getTemperature(bytes, 390);
+                int iExtraExtrFan = getNumber(bytes, 392);
+                int iExtraSuppFan = getNumber(bytes, 394);
+                int iExtraTime = getNumber(bytes, 396);
+                int iExtraTimerEnabled = getNumber(bytes, 540);
+                int iWeeklyTimerEnabled = getNumber(bytes, 226);
+
                 BigDecimal bdState;
                 if (iFireplaceTimer > 0) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_FIREPLACE);
@@ -360,6 +416,27 @@ public class ValloxMVWebSocket {
                         new QuantityType<>(bdAwayAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET,
                         new QuantityType<>(bdBoostAirTempTarget, SIUnits.CELSIUS));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIME, new DecimalType(iBoostTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED,
+                        new DecimalType(iBoostTimerEnabled));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN,
+                        new QuantityType<>(iFireplaceExtrFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN,
+                        new QuantityType<>(iFireplaceSuppFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME, new DecimalType(iFireplaceTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED,
+                        new DecimalType(iFireplaceTimerEnabled));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET,
+                        new QuantityType<>(bdExtraAirTempTarget, SIUnits.CELSIUS));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN,
+                        new QuantityType<>(iExtraExtrFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN,
+                        new QuantityType<>(iExtraSuppFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_TIME, new DecimalType(iExtraTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED,
+                        new DecimalType(iExtraTimerEnabled));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED,
+                        new DecimalType(iWeeklyTimerEnabled));
 
                 voHandler.updateStatus(ThingStatus.ONLINE);
                 voHandler.dataUpdated();
@@ -379,10 +456,10 @@ public class ValloxMVWebSocket {
 
         @SuppressWarnings("null")
         private BigDecimal getTemperature(byte[] bytes, int pos) {
-            // Fetch 2 byte number out of bytearray representing the temperature in milli degree kelvin
-            BigDecimal bdTemperatureMiliKelvin = new BigDecimal(getNumber(bytes, pos));
-            // Return number converted to degree celsius
-            return (new QuantityType<>(bdTemperatureMiliKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
+            // Fetch 2 byte number out of bytearray representing the temperature in centKelvin
+            BigDecimal bdTemperatureCentKelvin = new BigDecimal(getNumber(bytes, pos));
+            // Return number converted to degree celsius (= (centKelvin - 27315) / 100 )
+            return (new QuantityType<>(bdTemperatureCentKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
                     .toUnit(SIUnits.CELSIUS)).toBigDecimal();
         }
 

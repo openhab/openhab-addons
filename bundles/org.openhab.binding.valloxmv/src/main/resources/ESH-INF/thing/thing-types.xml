@@ -32,6 +32,18 @@
 			<channel id="homeairtemptarget" typeId="homeairtemptarget" />
 			<channel id="awayairtemptarget" typeId="awayairtemptarget" />
 			<channel id="boostairtemptarget" typeId="boostairtemptarget" />
+			<channel id="boosttime" typeId="boosttime" />
+			<channel id="boosttimerenabled" typeId="boosttimerenabled" />
+			<channel id="fireplaceextrfan" typeId="fireplaceextrfan" />
+			<channel id="fireplacesuppfan" typeId="fireplacesuppfan" />
+			<channel id="fireplacetime" typeId="fireplacetime" />
+			<channel id="fireplacetimerenabled" typeId="fireplacetimerenabled" />
+			<channel id="extraairtemptarget" typeId="extraairtemptarget" />
+			<channel id="extraextrfan" typeId="extraextrfan" />
+			<channel id="extrasuppfan" typeId="extrasuppfan" />
+			<channel id="extratime" typeId="extratime" />
+			<channel id="extratimerenabled" typeId="extratimerenabled" />
+			<channel id="weeklytimerenabled" typeId="weeklytimerenabled" />
 		</channels>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
@@ -246,4 +258,110 @@
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="false" />
 	</channel-type>
+
+	<channel-type id="boosttime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Boost profile timer value</label>
+		<description>Boost profile timer value in minutes</description>
+		<state readOnly="false" min="1" max="65535" pattern="%d min" />
+	</channel-type>
+
+	<channel-type id="boosttimerenabled">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Boost profile timer enabled</label>
+		<description>Timer enabled setting in boost profile</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Enabled</option>
+				<option value="0">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fireplaceextrfan" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fireplace extract fan speed</label>
+		<description>Fireplace profile extract fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="fireplacesuppfan" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fireplace supply fan speed</label>
+		<description>Fireplace profile supply fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="fireplacetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fireplace profile timer value</label>
+		<description>Fireplace profile timer value in minutes</description>
+		<state readOnly="false" min="1" max="65535" pattern="%d min" />
+	</channel-type>
+
+	<channel-type id="fireplacetimerenabled">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fireplace profile timer enabled</label>
+		<description>Timer enabled setting in fireplace profile</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Enabled</option>
+				<option value="0">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="extraairtemptarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Programmable profile Target Temperature</label>
+		<description>Target temperature in programmable profile</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="5" max="25" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="extraextrfan" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Programmable profile extract fan speed</label>
+		<description>Programmable profile extract fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="extrasuppfan" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Programmable profile supply fan speed</label>
+		<description>Programmable profile supply fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="extratime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Programmable profile timer value</label>
+		<description>Programmable profile timer value in minutes</description>
+		<state readOnly="false" min="1" max="65535" pattern="%d min" />
+	</channel-type>
+
+	<channel-type id="extratimerenabled">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Programmable profile timer enabled</label>
+		<description>Timer enabled setting in programmable profile</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Enabled</option>
+				<option value="0">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="weeklytimerenabled">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Weekly timer enabled</label>
+		<description>Weekly Timer enabled setting</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Enabled</option>
+				<option value="0">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
