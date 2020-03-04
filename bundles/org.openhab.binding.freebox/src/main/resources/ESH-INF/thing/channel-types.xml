@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="freebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="lcd_brightness" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Screen Brightness</label>
+		<description>Brightness level of the screen in percent</description>
+		<category>DimmableLight</category>
+		<state pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="lcd_orientation">
+		<item-type>Number</item-type>
+		<label>Screen Orientation</label>
+		<description>Screen Orientation in degrees</description>
+		<state pattern="%d °">
+			<options>
+				<option value="0">Horizontal</option>
+				<option value="90">Turned left</option>
+				<option value="180">Reversed</option>
+				<option value="270">Turned right</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lcd_forced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Forced Orientation</label>
+		<description>Indicates whether the screen orientation forced</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Actual measured switch temperature of the Freebox Server</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="fanspeed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>Actual measured fan speed (rpm) of the Freebox Server</description>
+		<state readOnly="true" pattern="%d rpm" />
+	</channel-type>
+
+	<channel-type id="fileshare_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Window File Sharing Enabled</label>
+		<description>Indicates whether Window File Sharing is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="printershare_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Window Printer Sharing Enabled</label>
+		<description>Indicates whether Window Printer Sharing is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="rate_up" advanced="true">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Upload Rate</label>
+		<description>Current upload rate</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="rate_down" advanced="true">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Download Rate</label>
+		<description>Current download rate</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="bytes_up" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Uploaded</label>
+		<description>Total data uploaded since last connection</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="bytes_down" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Downloaded</label>
+		<description>Total data downloaded since last connection</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="bandwidthUp" advanced="true">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Bandwidth Up</label>
+		<description>Available upload bandwidth</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="bandwidthDown" advanced="true">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Bandwidth Down</label>
+		<description>Available download bandwidth</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Server Uptime</label>
+		<description>Time since last reboot of the Freebox Server</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="ipv4" advanced="true">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>Public IP Address of the Freebox Server</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="xdsl_status">
+		<item-type>String</item-type>
+		<label>xDSL Status</label>
+		<description>Status of the xDSL line</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="ftth_status">
+		<item-type>Switch</item-type>
+		<label>FTTH Status</label>
+		<description>Status of the Fiber Optic line</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="line_status">
+		<item-type>String</item-type>
+		<label>Line Status</label>
+		<description>Status of network line connexion</description>
+		<state readOnly="true">
+			<options>
+				<option value="GOING_UP">Connection is initializing</option>
+				<option value="UP">Connection is active</option>
+				<option value="GOING_DOWN">Connection is about to become inactive</option>
+				<option value="DOWN">Connection is inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="wifi_status">
+		<item-type>Switch</item-type>
+		<label>Wifi Enabled</label>
+		<description>Indicates whether the wifi network is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="ftp_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FTP Server Enabled</label>
+		<description>Indicates whether the FTP server is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="airmedia_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Air Media Enabled</label>
+		<description>Indicates whether Air Media is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="upnpav_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>UPnP AV Enabled</label>
+		<description>Indicates whether UPnP AV is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="onhook">
+		<item-type>Switch</item-type>
+		<label>On-hook</label>
+		<description>Indicates whether the phone is on hook</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ringing">
+		<item-type>Switch</item-type>
+		<label>Ringing</label>
+		<description>Is the phone ringing</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<channel-type id="call_number">
+		<item-type>String</item-type>
+		<label>Phone Number</label>
+		<description>Called number for outgoing calls. Caller number for incoming calls</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="called_number">
+		<item-type>String</item-type>
+		<label>Phone Number</label>
+		<description>Called number</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="caller_number">
+		<item-type>String</item-type>
+		<label>Phone Number</label>
+		<description>Caller number</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="call_duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Call duration in seconds</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="call_timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Call creation timestamp</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="call_status">
+		<item-type>String</item-type>
+		<label>Call Type</label>
+		<description>Call Type (ingoing, outgoing, missed)</description>
+		<state readOnly="true">
+			<options>
+				<option value="ingoing">Ingoing call</option>
+				<option value="outgoing">Outgoing call</option>
+				<option value="missing">Missed call</option>
+				<option value="incoming">Incoming call</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="call_name">
+		<item-type>String</item-type>
+		<label>Call Name</label>
+		<description>Called name for outgoing calls. Caller name for incoming calls</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="called_name">
+		<item-type>String</item-type>
+		<label>Called Name</label>
+		<description>Called name</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="caller_name">
+		<item-type>String</item-type>
+		<label>Caller Name</label>
+		<description>Caller name</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="reachable">
+		<item-type>Switch</item-type>
+		<label>Reachable</label>
+		<description>Indicates whether the network device is reachable</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>VM Status</label>
+	</channel-type>
+
+	<channel-type id="boxevent">
+		<kind>trigger</kind>
+		<label>Server event</label>
+		<description>Triggers when an event related to the Freebox server has been detected</description>
+	</channel-type>
+
+</thing:thing-descriptions>

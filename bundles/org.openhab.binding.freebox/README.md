@@ -26,9 +26,13 @@ Note that the discovered thing will be setup to use only HTTP API (and not HTTPS
 
 The binding has the following configuration options, which can be set for "binding:freebox":
 
-| Parameter   | Name         | Description                                                                | Required |
-|-------------|--------------|----------------------------------------------------------------------------|----------|
-| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
+| Parameter               | Name         | Description                                                                | Required |
+|-------------------------|--------------|----------------------------------------------------------------------------|----------|
+| callbackUrl             | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
+| discoverPhone           |  |  | no       |
+| discoverNetDevice       |  |  | no       |
+| discoverNetInterface    |  |  | no       |
+| discoverAirPlayReceiver |  |  | no       |
 
 ## Thing Configuration
 
@@ -55,9 +59,9 @@ The bridge thing will initialize only if a valid application token (parameter *a
 The *phone* thing requires the following configuration parameters:
 
 | Parameter Label              | Parameter ID              | Description                                                                                 | Required | Default |
-|------------------------------|---------------------------|---------------------------------------------------------------------------------------------|----------|---------|
-| Phone State Refresh Interval | refreshPhoneInterval      | The refresh interval in seconds which is used to poll given Freebox Server for phone state. | false    | 2       |
-| Phone Calls Refresh Interval | refreshPhoneCallsInterval | The refresh interval in seconds which is used to poll given Freebox Server for phone calls. | false    | 60      |
+|------------------------------|----------------------|---------------------------------------------------------------------------------------------|----------|---------|
+| Phone State Refresh Interval | refreshInterval      | The refresh interval in seconds which is used to poll given Freebox Server for phone state. | false    | 2       |
+| Phone Calls Refresh Interval | refreshCallsInterval | The refresh interval in seconds which is used to poll given Freebox Server for phone calls. | false    | 60      |
 
 ### Network device
 
@@ -128,8 +132,8 @@ The following channels are supported:
 | server        | ftp_status               | Switch    | RW          | Indicates whether the FTP server  is enabled                                    |
 | server        | airmedia_status          | Switch    | RW          | Indicates whether Air Media  is enabled                                         |
 | server        | upnpav_status            | Switch    | RW          | Indicates whether UPnP AV  is enabled                                           |
-| server        | sambafileshare_status    | Switch    | RW          | Indicates whether Window File Sharing  is enabled                               |
-| server        | sambaprintershare_status | Switch    | RW          | Indicates whether Window Printer Sharing  is enabled                            |
+| server        | fileshare_status    | Switch    | RW          | Indicates whether Window File Sharing  is enabled                               |
+| server        | printershare_status | Switch    | RW          | Indicates whether Window Printer Sharing  is enabled                            |
 | server        | xdsl_status              | String    | R           | Status of the xDSL line                                                         |
 | server        | ftth_status              | Switch    | R           | Status of the Ftth line                                                         |
 | server        | line_status              | String    | R           | Status of network line connexion                                                |
@@ -159,6 +163,10 @@ The following channels are supported:
 | phone         | outgoing#call_name       | String    | R           | Last outgoing call: called name                                                 |
 | net_device    | reachable                | Switch    | R           | Indicates whether the network device is reachable                               |
 | net_interface | reachable                | Switch    | R           | Indicates whether the network interface is reachable                            |
+
+
+## Actions
+Serveur reboot
 | airplay       | playurl                  | String    | W           | Play an audio or video media from the given URL                                 |
 | airplay       | stop                     | Switch    | W           | Stop the media playback                                                         |
 
@@ -182,7 +190,7 @@ Here is another example overwritting default configuration parameters:
 
 ```java
 Bridge freebox:server:fb "Freebox Revolution" [ fqdn="abcdefgh.fbxos.fr", appToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", refreshInterval=20, useOnlyHttp=false, discoverPhone=false, discoverNetDevice=false, discoverNetInterface=false, discoverAirPlayReceiver=false ] {
-    Thing phone Phone "Phone" [ refreshPhoneInterval=10, refreshPhoneCallsInterval=120 ]
+    Thing phone Phone "Phone" [ refreshInterval=10, refreshCallsInterval=120 ]
     Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
     Thing net_interface tv2 "TV bedroom" [ ipAddress="192.168.0.100" ]
     Thing airplay player "Freebox Player (AirPlay)" [ name="Freebox Player", password="1111", acceptAllMp3=false ]
@@ -212,8 +220,8 @@ Switch FreeboWifi "Wifi" {channel="freebox:server:fb:wifi_status"}
 Switch FreeboxFTP "FTP" {channel="freebox:server:fb:ftp_status"}
 Switch FreeboxUPnPAV "UPnP AV" {channel="freebox:server:fb:upnpav_status"}
 Switch FreeboxAirMedia "AirMedia" {channel="freebox:server:fb:airmedia_status"}
-Switch FreeboxSambaFiles "Win File Share" {channel="freebox:server:fb:sambafileshare_status"}
-Switch FreeboxSambaPrinters "Win Print Share" {channel="freebox:server:fb:sambaprintershare_status"}
+Switch FreeboxSambaFiles "Win File Share" {channel="freebox:server:fb:fileshare_status"}
+Switch FreeboxSambaPrinters "Win Print Share" {channel="freebox:server:fb:printershare_status"}
 Number Freebox_lcd_brightness "Brightness [%d %%]" {channel="freebox:server:fb:lcd_brightness"}
 Number Freebox_lcd_orientation "Orientation [%d Â°]" {channel="freebox:server:fb:lcd_orientation"}
 Switch Freebox_lcd_forced "LCD Forced" {channel="freebox:server:fb:lcd_forced"}

@@ -12,20 +12,17 @@
  */
 package org.openhab.binding.freebox.internal;
 
-import java.util.Dictionary;
-import java.util.HashMap;
+import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
+
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,12 +32,19 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
-import org.openhab.binding.freebox.internal.handler.FreeboxHandler;
-import org.openhab.binding.freebox.internal.handler.FreeboxThingHandler;
+import org.openhab.binding.freebox.internal.handler.AirMediaHandler;
+import org.openhab.binding.freebox.internal.handler.DeltaHandler;
+import org.openhab.binding.freebox.internal.handler.FreeboxAPIHandler;
+import org.openhab.binding.freebox.internal.handler.LanHostHandler;
+import org.openhab.binding.freebox.internal.handler.PhoneHandler;
+import org.openhab.binding.freebox.internal.handler.PlayerHandler;
+import org.openhab.binding.freebox.internal.handler.RevolutionHandler;
+import org.openhab.binding.freebox.internal.handler.VirtualMachineHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,157 +56,94 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - several thing types and handlers + discovery service
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.freebox")
 public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
-
     private final Logger logger = LoggerFactory.getLogger(FreeboxHandlerFactory.class);
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
-    private AudioHTTPServer audioHTTPServer;
-    private NetworkAddressService networkAddressService;
-
-    private Map<ThingUID, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
-
-    // url (scheme+server+port) to use for playing notification sounds
+    private final AudioHTTPServer audioHTTPServer;
+    private final NetworkAddressService networkAddressService;
+    private final TimeZoneProvider timeZoneProvider;
     private @Nullable String callbackUrl;
+    private final Map<ThingUID, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(FreeboxBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS.stream(),
-                    FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream())
-            .collect(Collectors.toSet());
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
+    @Activate
+    public FreeboxHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
         super.activate(componentContext);
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        callbackUrl = (String) properties.get("callbackUrl");
+        this.audioHTTPServer = audioHTTPServer;
+        this.networkAddressService = networkAddressService;
+        this.timeZoneProvider = timeZoneProvider;
+        setCallbackUrl(componentContext.getProperties().get(CALLBACK_URL));
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        logger.debug("Updated binding configuration to {}", config);
+        setCallbackUrl(config.get(CALLBACK_URL));
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_API) || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
-        if (thingTypeUID.equals(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER)) {
-            return super.createThing(thingTypeUID, configuration, thingUID, null);
-        } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            ThingUID newThingUID;
-            if (bridgeUID != null && thingUID != null) {
-                newThingUID = new ThingUID(thingTypeUID, bridgeUID, thingUID.getId());
-            } else {
-                newThingUID = thingUID;
-            }
-            return super.createThing(thingTypeUID, configuration, newThingUID, bridgeUID);
-        }
-        throw new IllegalArgumentException(
-                "The thing type " + thingTypeUID + " is not supported by the Freebox binding.");
-    }
-
-    @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER)) {
-            FreeboxHandler handler = new FreeboxHandler((Bridge) thing);
-            registerDiscoveryService(handler);
-            return handler;
-        } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            FreeboxThingHandler handler = new FreeboxThingHandler(thing);
-            if (FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY.equals(thingTypeUID)) {
-                registerAudioSink(handler);
+        if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_API)) {
+            return new FreeboxAPIHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_AIRPLAY)) {
+            if (callbackUrl != null) {
+                AirMediaHandler handler = new AirMediaHandler(thing, timeZoneProvider, audioHTTPServer, callbackUrl);
+                @SuppressWarnings("unchecked")
+                ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                        .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
+                audioSinkRegistrations.put(thing.getUID(), reg);
+                return handler;
             }
-            return handler;
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_SERVER)) {
+            return new RevolutionHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_DELTA)) {
+            return new DeltaHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PLAYER)) {
+            return new PlayerHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_NET_DEVICE)) {
+            return new LanHostHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PHONE)) {
+            return new PhoneHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_VM)) {
+            return new VirtualMachineHandler(thing, timeZoneProvider);
         }
-
         return null;
     }
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof FreeboxHandler) {
-            unregisterDiscoveryService(thingHandler.getThing());
-        } else if (thingHandler instanceof FreeboxThingHandler) {
-            unregisterAudioSink(thingHandler.getThing());
-        }
-    }
-
-    private synchronized void registerDiscoveryService(FreeboxHandler bridgeHandler) {
-        FreeboxDiscoveryService discoveryService = new FreeboxDiscoveryService(bridgeHandler);
-        discoveryService.activate(null);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-    }
-
-    private synchronized void unregisterDiscoveryService(Thing thing) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
-        if (serviceReg != null) {
-            // remove discovery service, if bridge handler is removed
-            FreeboxDiscoveryService service = (FreeboxDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
-        }
-    }
-
-    private synchronized void registerAudioSink(FreeboxThingHandler thingHandler) {
-        String callbackUrl = createCallbackUrl();
-        FreeboxAirPlayAudioSink audioSink = new FreeboxAirPlayAudioSink(thingHandler, audioHTTPServer, callbackUrl);
-        @SuppressWarnings("unchecked")
-        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
-        audioSinkRegistrations.put(thingHandler.getThing().getUID(), reg);
-    }
-
-    private synchronized void unregisterAudioSink(Thing thing) {
-        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.remove(thing.getUID());
-        if (reg != null) {
+        if (thingHandler instanceof AirMediaHandler) {
+            ServiceRegistration<AudioSink> reg = audioSinkRegistrations.remove(thingHandler.getThing().getUID());
             reg.unregister();
         }
     }
 
-    private String createCallbackUrl() {
-        if (callbackUrl != null) {
-            return callbackUrl;
+    private void setCallbackUrl(@Nullable Object url) {
+        if (url != null) {
+            callbackUrl = (String) url;
         } else {
             String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress == null) {
+            if (ipAddress != null) {
+                int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+                if (port != -1) {
+                    // we do not use SSL as it can cause certificate validation issues.
+                    callbackUrl = String.format("http://%s:%d", ipAddress, port);
+                } else {
+                    logger.warn("Cannot find port of the http service.");
+                }
+            } else {
                 logger.warn("No network interface could be found.");
-                return null;
             }
-
-            // we do not use SSL as it can cause certificate validation issues.
-            int port = HttpServiceUtil.getHttpServicePort(bundleContext);
-            if (port == -1) {
-                logger.warn("Cannot find port of the http service.");
-                return null;
-            }
-
-            return "http://" + ipAddress + ":" + port;
         }
-    }
-
-    @Reference
-    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = audioHTTPServer;
-    }
-
-    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 
 }

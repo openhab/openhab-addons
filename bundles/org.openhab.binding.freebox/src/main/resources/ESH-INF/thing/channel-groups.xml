@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freebox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel Groups -->
+
+	<channel-group-type id="state">
+		<label>Phone</label>
+		<description>The phone state</description>
+		<channels>
+			<channel id="onhook" typeId="onhook" />
+			<channel id="ringing" typeId="ringing" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="any">
+		<label>Call</label>
+		<description>The last phone call</description>
+		<channels>
+			<channel id="call_number" typeId="call_number" />
+			<channel id="call_duration" typeId="call_duration" />
+			<channel id="call_timestamp" typeId="call_timestamp" />
+			<channel id="call_status" typeId="call_status" />
+			<channel id="call_name" typeId="call_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="accepted">
+		<label>Accepted Call</label>
+		<description>The last accepted phone call</description>
+		<channels>
+			<channel id="call_number" typeId="caller_number" />
+			<channel id="call_duration" typeId="call_duration" />
+			<channel id="call_timestamp" typeId="call_timestamp" />
+			<channel id="call_name" typeId="caller_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="missed">
+		<label>Missed Call</label>
+		<description>The last missed phone call</description>
+		<channels>
+			<channel id="call_number" typeId="caller_number" />
+			<channel id="call_duration" typeId="call_duration" />
+			<channel id="call_timestamp" typeId="call_timestamp" />
+			<channel id="call_name" typeId="caller_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="outgoing">
+		<label>Outgoing Call</label>
+		<description>The last outgoing phone call</description>
+		<channels>
+			<channel id="call_number" typeId="called_number" />
+			<channel id="call_duration" typeId="call_duration" />
+			<channel id="call_timestamp" typeId="call_timestamp" />
+			<channel id="call_name" typeId="called_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="display">
+		<label>Front display panel</label>
+		<channels>
+			<channel id="lcd_brightness" typeId="lcd_brightness" />
+			<channel id="lcd_orientation" typeId="lcd_orientation" />
+			<channel id="lcd_forced" typeId="lcd_forced" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sensors">
+		<label>System sensors</label>
+	</channel-group-type>
+
+	<channel-group-type id="samba">
+		<label>Windows file sharing</label>
+		<channels>
+			<channel id="fileshare_status" typeId="fileshare_status" />
+			<channel id="printershare_status" typeId="printershare_status" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="connectionStatus">
+		<label>Connection Status details</label>
+		<channels>
+			<channel id="line_status" typeId="line_status" />
+			<channel id="ipv4" typeId="ipv4" />
+			<channel id="rate_up" typeId="rate_up" />
+			<channel id="rate_down" typeId="rate_down" />
+			<channel id="bytes_up" typeId="bytes_up" />
+			<channel id="bytes_down" typeId="bytes_down" />
+			<channel id="bandwidthUp" typeId="bandwidthUp" />
+			<channel id="bandwidthDown" typeId="bandwidthDown" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="connectivity">
+		<label>Network Connectivity</label>
+		<channels>
+			<channel id="reachable" typeId="reachable" />
+			<channel id="lastSeen" typeId="timestamp">
+				<label>Last Activity</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="vmstatus">
+		<label>VM Status</label>
+		<channels>
+			<channel id="status" typeId="status" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sysinfo">
+		<label>System Informations</label>
+		<channels>
+			<channel id="uptime" typeId="uptime" />
+			<channel id="boxevent" typeId="boxevent" />
+			<channel id="xdsl_status" typeId="xdsl_status" />
+			<channel id="ftth_status" typeId="ftth_status" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="actions">
+		<label>Freebox server behaviour</label>
+		<channels>
+			<channel id="wifi_status" typeId="wifi_status" />
+			<channel id="ftp_status" typeId="ftp_status" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="playeractions">
+		<label>Freebox player behaviour</label>
+		<channels>
+			<channel id="airmedia_status" typeId="airmedia_status" />
+			<channel id="upnpav_status" typeId="upnpav_status" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
