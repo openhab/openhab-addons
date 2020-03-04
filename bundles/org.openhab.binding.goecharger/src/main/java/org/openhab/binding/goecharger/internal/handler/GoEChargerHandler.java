@@ -165,7 +165,8 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return new QuantityType<>(goeResponse.getTemperature(), SIUnits.CELSIUS);
                 case SESSION_CHARGE_CONSUMPTION:
                     // TODO deca watt seconds
-                    return new QuantityType<>((Double)(goeResponse.getSessionChargeConsumption()/36000d), SmartHomeUnits.KILOWATT_HOUR);
+                    return new QuantityType<>((Double) (goeResponse.getSessionChargeConsumption() / 36000d),
+                            SmartHomeUnits.KILOWATT_HOUR);
                 case SESSION_CHARGE_CONSUMPTION_LIMIT:
                     return new QuantityType<>((Double) (goeResponse.getSessionChargeConsumptionLimit() / 10d),
                             SmartHomeUnits.KILOWATT_HOUR);
@@ -187,11 +188,14 @@ public class GoEChargerHandler extends BaseThingHandler {
                 case CURRENT_L3:
                     return new QuantityType<>((Double) (goeResponse.getEnergy()[6] / 10d), SmartHomeUnits.AMPERE);
                 case POWER_L1:
-                    return new QuantityType<>((Double) (goeResponse.getEnergy()[7] / 10d), SmartHomeUnits.KILOWATT_HOUR);
+                    return new QuantityType<>((Double) (goeResponse.getEnergy()[7] / 10d),
+                            SmartHomeUnits.KILOWATT_HOUR);
                 case POWER_L2:
-                    return new QuantityType<>((Double) (goeResponse.getEnergy()[8] / 10d), SmartHomeUnits.KILOWATT_HOUR);
+                    return new QuantityType<>((Double) (goeResponse.getEnergy()[8] / 10d),
+                            SmartHomeUnits.KILOWATT_HOUR);
                 case POWER_L3:
-                    return new QuantityType<>((Double) (goeResponse.getEnergy()[9] / 10d), SmartHomeUnits.KILOWATT_HOUR);
+                    return new QuantityType<>((Double) (goeResponse.getEnergy()[9] / 10d),
+                            SmartHomeUnits.KILOWATT_HOUR);
                 default:
                     return null;
             }
@@ -370,16 +374,12 @@ public class GoEChargerHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                try {
-                    // Request new GoE data
-                    retryCounter = 0;
-                    goeResponse = getGoEData();
+                // Request new GoE data
+                retryCounter = 0;
+                goeResponse = getGoEData();
 
-                    // Update all channels from the updated GoE data
-                    getThing().getChannels().forEach(channel -> updateChannel(channel.getUID().getId()));
-                } catch (Exception e) {
-                    logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
-                }
+                // Update all channels from the updated GoE data
+                getThing().getChannels().forEach(channel -> updateChannel(channel.getUID().getId()));
             };
 
             GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
