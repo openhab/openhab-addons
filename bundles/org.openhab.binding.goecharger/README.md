@@ -59,27 +59,27 @@ Thing goecharger:goe:garage [ip="192.168.1.36",refreshInterval=5]
 demo.items
 
 ```
-Number   MaxAmpere                       "Max ampere"                      {channel="goecharger:goe:garage:maxAmpere"}
-Number   PwmSignal                       "Pwm signal status"               {channel="goecharger:goe:garage:pwmSignal"}
-String   Error                           "Error code"                      {channel="goecharger:goe:garage:error"}
-Number   VoltageL1                       "Voltage L1"                      {channel="goecharger:goe:garage:voltageL1"}
-Number   VoltageL2                       "Voltage L2"                      {channel="goecharger:goe:garage:voltageL2"}
-Number   VoltageL3                       "Voltage L3"                      {channel="goecharger:goe:garage:voltageL3"}
-Number   CurrentL1                       "Current L1"                      {channel="goecharger:goe:garage:currentL1"}
-Number   CurrentL2                       "Current L2"                      {channel="goecharger:goe:garage:currentL2"}
-Number   CurrentL3                       "Current L3"                      {channel="goecharger:goe:garage:currentL3"}
-Number   PowerL1                         "Power L1"                        {channel="goecharger:goe:garage:powerL1"}
-Number   PowerL2                         "Power L2"                        {channel="goecharger:goe:garage:powerL2"}
-Number   PowerL3                         "Power L3"                        {channel="goecharger:goe:garage:powerL3"}
-Number   Phases                          "Phases"                          {channel="goecharger:goe:garage:phases"}
-Number   SessionChargeConsumptionLimit   "Current session charge limit"    {channel="goecharger:goe:garage:sessionChargeConsumptionLimit"}
-Number   SessionChargeConsumption        "Current session charge amount"   {channel="goecharger:goe:garage:sessionChargeConsumption"}
-Switch   AllowCharging                   "Allow charging"                  {channel="goecharger:goe:garage:allowCharging"}
-Number   CableEncoding                   "Cable encoding"                  {channel="goecharger:goe:garage:cableEncoding"}
-Number   Temperature                     "Temperature"                     {channel="goecharger:goe:garage:temperature"}
-String   Firmware                        "Firmware"                        {channel="goecharger:goe:garage:firmware"}
-Number   TotalConsumption                "Total charge amount"             {channel="goecharger:goe:garage:totalConsumption"}
-String   AccessState                      "Access state"                   {channel="goecharger:goe:garage:accessState"}
+Number:ElectricCurrent     GoEChargerBindingThingMaxAmpere                       "Maximum current"                 {channel="goecharger:goe:garage:maxAmpere"}
+Number                     GoEChargerBindingThingPwmSignal                       "Pwm signal status"               {channel="goecharger:goe:garage:pwmSignal"}
+String                     GoEChargerBindingThingError                           "Error code"                      {channel="goecharger:goe:garage:error"}
+Number:ElectricPotential   GoEChargerBindingThingVoltageL1                       "Voltage l1"                      {channel="goecharger:goe:garage:voltageL1"}
+Number:ElectricPotential   GoEChargerBindingThingVoltageL2                       "Voltage l2"                      {channel="goecharger:goe:garage:voltageL2"}
+Number:ElectricPotential   GoEChargerBindingThingVoltageL3                       "Voltage l3"                      {channel="goecharger:goe:garage:voltageL3"}
+Number:ElectricCurrent     GoEChargerBindingThingCurrentL1                       "Current l1"                      {channel="goecharger:goe:garage:currentL1"}
+Number:ElectricCurrent     GoEChargerBindingThingCurrentL2                       "Current l2"                      {channel="goecharger:goe:garage:currentL2"}
+Number:ElectricCurrent     GoEChargerBindingThingCurrentL3                       "Current l3"                      {channel="goecharger:goe:garage:currentL3"}
+Number:Power               GoEChargerBindingThingPowerL1                         "Power l1"                        {channel="goecharger:goe:garage:powerL1"}
+Number:Power               GoEChargerBindingThingPowerL2                         "Power l2"                        {channel="goecharger:goe:garage:powerL2"}
+Number:Power               GoEChargerBindingThingPowerL3                         "Power l3"                        {channel="goecharger:goe:garage:powerL3"}
+Number                     GoEChargerBindingThingPhases                          "Phases"                          {channel="goecharger:goe:garage:phases"}
+Number:Energy              GoEChargerBindingThingSessionChargeConsumptionLimit   "Current session charge limit"    {channel="goecharger:goe:garage:sessionChargeConsumptionLimit"}
+Number:Energy              GoEChargerBindingThingSessionChargeConsumption        "Current session charge amount"   {channel="goecharger:goe:garage:sessionChargeConsumption"}
+Number:Energy              GoEChargerBindingThingTotalConsumption                "Total charge amount"             {channel="goecharger:goe:garage:totalConsumption"}
+Switch                     GoEChargerBindingThingAllowCharging                   "Allow charging"                  {channel="goecharger:goe:garage:allowCharging"}
+Number:ElectricCurrent     GoEChargerBindingThingCableEncoding                   "Cable encoding"                  {channel="goecharger:goe:garage:cableEncoding"}
+Number:Temperature         GoEChargerBindingThingTemperature                     "Temperature"                     {channel="goecharger:goe:garage:temperature"}
+String                     GoEChargerBindingThingFirmware                        "Firmware"                        {channel="goecharger:goe:garage:firmware"}
+String                     GoEChargerBindingThingAccessState                     "Access state"                    {channel="goecharger:goe:garage:accessState"}
 ```
 
 ## Settings charge current of Go-eCharger based on PV
