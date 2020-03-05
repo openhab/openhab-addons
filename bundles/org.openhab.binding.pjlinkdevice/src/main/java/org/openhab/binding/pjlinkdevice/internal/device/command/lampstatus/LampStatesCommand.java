@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for retrieving device information as described in
@@ -27,18 +26,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LampStatesCommand extends AbstractCommand<LampStatesRequest, LampStatesResponse> {
-  public LampStatesCommand(PJLinkDevice pjLinkDevice) {
-    super(pjLinkDevice);
-  }
+    public LampStatesCommand(PJLinkDevice pjLinkDevice) {
+        super(pjLinkDevice);
+    }
 
-  @Override
-  protected LampStatesRequest createRequest() {
-    return new LampStatesRequest();
-  }
+    @Override
+    protected LampStatesRequest createRequest() {
+        return new LampStatesRequest();
+    }
 
-  @Override
-  protected LampStatesResponse parseResponse(String response) throws ResponseException {
-    return new LampStatesResponse(response);
-  }
+    @Override
+    protected LampStatesResponse parseResponse(String response) throws ResponseException {
+        return new LampStatesResponse(response);
+    }
 
 }
