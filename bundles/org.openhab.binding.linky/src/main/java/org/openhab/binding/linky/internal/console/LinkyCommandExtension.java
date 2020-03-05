@@ -18,6 +18,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -33,15 +34,18 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Laurent Garnier - Initial contribution
  */
+
+@NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
 public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String REPORT = "report";
 
-    private ThingRegistry thingRegistry;
+    private final ThingRegistry thingRegistry;
 
-    public LinkyCommandExtension() {
+    public LinkyCommandExtension(final @Reference ThingRegistry thingRegistry) {
         super("linky", "Interact with the Linky binding.");
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -123,15 +127,6 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays.asList(
                 new String[] { buildCommandUsage("<thingUID> " + REPORT + " <start day> <end day> [<separator>]",
                         "report daily consumptions between two dates") });
-    }
-
-    @Reference
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
-
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
     }
 
 }

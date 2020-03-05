@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -39,9 +37,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     private final LocaleProvider localeProvider;
 
-    @Activate
-    public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider, ComponentContext componentContext) {
-        super.activate(componentContext);
+    public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
     }
 
