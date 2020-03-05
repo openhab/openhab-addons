@@ -4,7 +4,7 @@ This binding uses the REST API of [BSB-LPB-PPS-LAN](https://github.com/fredlcore
 
 ## Supported Things
 
-This binding supports the following thing types:
+Currently the binding supports the following thing types:
 
 | Thing Type  | Description                                                    |
 |-------------|----------------------------------------------------------------|
@@ -39,6 +39,8 @@ The binding has no configuration options, all configuration is done at Thing lev
 | id        | -       | Yes      | Integer | Specific parameter identifier (numeric value)                                            |
 | setId     | value of `id` | No       | Integer | Parameter identifier used for set requests (numeric value).<br />If not specified it falls back to the value of the `id` property. |
 | setType   | `SET`   | No       | String  | Message type used for set requests. Possible values are: `INF` or `SET`.<br />If not specified or unknown it falls back to `SET`. |
+
+Note: If you would also like to use the binding to set parameter values, ensure you have flashed the BSB-LAN adapter in write mode (see your `BSB_lan_config.h`)
 
 ## Channels
 
