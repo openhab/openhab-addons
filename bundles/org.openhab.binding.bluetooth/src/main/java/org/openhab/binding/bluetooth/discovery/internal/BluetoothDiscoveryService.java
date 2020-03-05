@@ -232,7 +232,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         }
 
         private CompletableFuture<DiscoveryResult> createDiscoveryFuture(BluetoothDevice device) {
-            return CompletableFuture.supplyAsync(new BluetoothDiscoveryProcess(device, participants), scheduler);
+            return CompletableFuture.supplyAsync(new BluetoothDiscoveryProcess(device, participants, adapters),
+                    scheduler);
         }
 
     }

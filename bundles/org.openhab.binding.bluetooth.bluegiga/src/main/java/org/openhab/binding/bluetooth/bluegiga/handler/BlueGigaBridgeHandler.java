@@ -402,6 +402,11 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         return device;
     }
 
+    @Override
+    public boolean hasDevice(BluetoothAddress address) {
+        return devices.containsKey(address);
+    }
+
     /*
      * The following methods provide adaptor level functions for the BlueGiga interface. Typically these methods
      * are used by the device but are provided in the adapter to allow common knowledge and to support conflict

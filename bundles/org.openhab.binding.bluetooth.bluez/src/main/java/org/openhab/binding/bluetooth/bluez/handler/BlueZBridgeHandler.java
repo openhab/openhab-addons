@@ -49,6 +49,7 @@ import tinyb.BluetoothManager;
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Hilbrand Bouwkamp - Simplified calling scan and better handling manual scanning
+ * @author Connor Petty - Simplified device scan logic
  */
 @NonNullByDefault
 public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAdapter {
@@ -182,7 +183,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
                         logger.debug("Removing device '{}' due to inactivity", device.getAddress());
                         device.dispose();
                         devices.remove(device.getAddress());
-                        notifyRemovalListeners(device);
+                        discoveryListeners.forEach(listener -> listener.deviceRemoved(device));
                     }
                 }
             }
@@ -247,6 +248,11 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
     }
 
     @Override
+    public boolean hasDevice(BluetoothAddress address) {
+        return devices.containsKey(address);
+    }
+
+    @Override
     public void dispose() {
         if (discoveryJob != null) {
             discoveryJob.cancel(true);
@@ -276,14 +282,9 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         }
     }
 
-    private void notifyRemovalListeners(BluetoothDevice device) {
-        for (BluetoothDiscoveryListener listener : discoveryListeners) {
-            listener.deviceRemoved(device);
-        }
-    }
-
     private boolean deviceReachable(BluetoothDevice device) {
         Integer rssi = device.getRssi();
         return rssi != null && rssi != 0;
     }
+
 }

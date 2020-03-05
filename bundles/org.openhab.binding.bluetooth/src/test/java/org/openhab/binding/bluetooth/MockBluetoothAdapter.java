@@ -62,4 +62,9 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
         return devices.computeIfAbsent(address, addr -> new MockBluetoothDevice(this, addr));
     }
 
+    @Override
+    public boolean hasDevice(BluetoothAddress address) {
+        return devices.containsKey(address);
+    }
+
 }

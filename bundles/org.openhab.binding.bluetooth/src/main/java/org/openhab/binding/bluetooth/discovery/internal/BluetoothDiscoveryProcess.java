@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -29,6 +30,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
@@ -63,14 +65,17 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     private final Condition serviceDiscoveryCondition = serviceDiscoveryLock.newCondition();
     private final Condition nameDiscoveryCondition = serviceDiscoveryLock.newCondition();
 
-    private final Collection<BluetoothDiscoveryParticipant> participants;
     private final BluetoothDevice device;
+    private final Collection<BluetoothDiscoveryParticipant> participants;
+    private final Set<BluetoothAdapter> adapters;
 
     private volatile boolean servicesDiscovered = false;
 
-    public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants) {
+    public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants,
+            Set<BluetoothAdapter> adapters) {
         this.participants = participants;
         this.device = device;
+        this.adapters = adapters;
     }
 
     @Override
@@ -98,7 +103,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
             BluetoothAddress address = device.getAddress();
             try {
                 BluetoothAddressLocker.lock(address);
-                if (!device.hasListeners()) {
+                if (isAddressAvailable(address)) {
                     result = findConnectionResult(connectionParticipants);
                     // make sure to disconnect before letting go of the device
                     if (device.getConnectionState() == ConnectionState.CONNECTED) {
@@ -120,6 +125,15 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
             result = createDefaultResult(device);
         }
         return result;
+    }
+
+    private boolean isAddressAvailable(BluetoothAddress address) {
+        // if a device with this address has a handler on any of the adapters, we abandon discovery
+        return adapters.stream().filter(adapter -> adapter.hasDevice(address))
+                // get adapter's corresponding device
+                .map(adapter -> adapter.getDevice(address))
+                // make sure nothing is listening to any of them
+                .noneMatch(d -> d.hasListeners());
     }
 
     private DiscoveryResult createDefaultResult(BluetoothDevice device) {
