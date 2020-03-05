@@ -107,14 +107,14 @@ public class ValloxMVHandler extends BaseThingHandler {
                 }
             } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_TEMPERATURE.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
-                    // Convert temperature to centKelvin (= (Celsius * 100) + 27315 )
+                    // Convert temperature to centiKelvin (= (Celsius * 100) + 27315 )
                     QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
                             .toUnit(SmartHomeUnits.KELVIN);
                     if (quantity == null) {
                         return;
                     }
-                    int centKelvin = quantity.multiply(new BigDecimal(100)).intValue();
-                    valloxSendSocket.request(channelUID, Integer.toString(centKelvin));
+                    int centiKelvin = quantity.multiply(new BigDecimal(100)).intValue();
+                    valloxSendSocket.request(channelUID, Integer.toString(centiKelvin));
                     valloxSendSocket.request(null, null);
                 }
             }
