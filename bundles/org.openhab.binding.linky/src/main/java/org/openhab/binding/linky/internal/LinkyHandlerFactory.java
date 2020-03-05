@@ -60,5 +60,4 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

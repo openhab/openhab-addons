@@ -21,7 +21,11 @@ import okhttp3.HttpUrl;
 
 /**
  * The {@link LinkyCookieJar} is responsible to holds cookies
+ * <<<<<<< HEAD
  * during API session
+ * =======
+ * during Enedis API session
+ * >>>>>>> [linky] Initial commit of Enedis Linky binding
  *
  * @author Gaël L'hopital - Initial contribution
  */
