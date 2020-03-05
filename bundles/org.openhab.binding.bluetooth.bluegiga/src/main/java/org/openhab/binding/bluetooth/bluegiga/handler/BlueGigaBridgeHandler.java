@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.bluegiga.handler;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -128,21 +129,21 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("BlueGiga");
 
     // The serial port.
-    private @Nullable SerialPort serialPort;
+    private Optional<SerialPort> serialPort = Optional.empty();
 
     private BlueGigaConfiguration configuration = new BlueGigaConfiguration();
 
     // The serial port input stream.
-    private @Nullable InputStream inputStream;
+    private Optional<InputStream> inputStream = Optional.empty();
 
     // The serial port output stream.
-    private @Nullable OutputStream outputStream;
+    private Optional<OutputStream> outputStream = Optional.empty();
 
     // The BlueGiga API handler
-    private @Nullable BlueGigaSerialHandler serialHandler;
+    private Optional<BlueGigaSerialHandler> serialHandler = Optional.empty();
 
     // The BlueGiga transaction manager
-    private @Nullable BlueGigaTransactionManager transactionManager;
+    private Optional<BlueGigaTransactionManager> transactionManager = Optional.empty();
 
     // The maximum number of connections this interface supports
     private int maxConnections = 0;
@@ -212,14 +213,10 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
                 logger.debug("Using configuration: {}", configuration);
                 stop(false);
                 if (openSerialPort(configuration.port, 115200)) {
-                    serialHandler = new BlueGigaSerialHandler(inputStream, outputStream);
-                    transactionManager = new BlueGigaTransactionManager(serialHandler, executor);
-                    if (serialHandler != null) {
-                        serialHandler.addHandlerListener(this);
-                    }
-                    if (transactionManager != null) {
-                        transactionManager.addEventListener(this);
-                    }
+                    serialHandler = Optional.of(new BlueGigaSerialHandler(inputStream.get(), outputStream.get()));
+                    transactionManager = Optional.of(new BlueGigaTransactionManager(serialHandler.get(), executor));
+                    serialHandler.get().addHandlerListener(this);
+                    transactionManager.get().addEventListener(this);
                     updateStatus(ThingStatus.UNKNOWN);
 
                     try {
@@ -261,15 +258,15 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     }
 
     private void stop(boolean exit) {
-        if (transactionManager != null) {
-            transactionManager.removeEventListener(this);
-            transactionManager.close();
-            transactionManager = null;
+        if (transactionManager.isPresent()) {
+            transactionManager.get().removeEventListener(this);
+            transactionManager.get().close();
+            transactionManager = Optional.empty();
         }
-        if (serialHandler != null) {
-            serialHandler.removeHandlerListener(this);
-            serialHandler.close();
-            serialHandler = null;
+        if (serialHandler.isPresent()) {
+            serialHandler.get().removeHandlerListener(this);
+            serialHandler.get().close();
+            serialHandler = Optional.empty();
         }
         address = null;
         initComplete = false;
@@ -406,13 +403,13 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             logger.info("Connected to serial port '{}'.", serialPortName);
 
             try {
-                inputStream = new BufferedInputStream(sp.getInputStream());
-                outputStream = sp.getOutputStream();
+                inputStream = Optional.of(new BufferedInputStream(sp.getInputStream()));
+                outputStream = Optional.of(new BufferedOutputStream(sp.getOutputStream()));
             } catch (IOException e) {
                 logger.error("Error getting serial streams", e);
                 return false;
             }
-            this.serialPort = sp;
+            serialPort = Optional.of(sp);
             return true;
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -426,23 +423,26 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     }
 
     private void closeSerialPort() {
-        if (serialPort != null) {
-            SerialPort sp = serialPort;
+        serialPort.ifPresent(sp -> {
             sp.removeEventListener();
             try {
                 sp.disableReceiveTimeout();
             } catch (Exception e) {
                 // Ignore all as RXTX seems to send arbitrary exceptions when BlueGiga module is detached
             } finally {
-                IOUtils.closeQuietly(outputStream);
-                IOUtils.closeQuietly(inputStream);
+                outputStream.ifPresent(output -> {
+                    IOUtils.closeQuietly(output);
+                });
+                inputStream.ifPresent(input -> {
+                    IOUtils.closeQuietly(input);
+                });
                 sp.close();
                 logger.debug("Closed serial port.");
-                serialPort = null;
-                inputStream = null;
-                outputStream = null;
+                serialPort = Optional.empty();
+                inputStream = Optional.empty();
+                outputStream = Optional.empty();
             }
-        }
+        });
     }
 
     @Override
@@ -787,12 +787,11 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     private <T extends BlueGigaResponse> T sendCommandWithoutChecks(BlueGigaCommand command, Class<T> expectedResponse)
             throws BlueGigaException {
-        if (transactionManager != null) {
-            return transactionManager.sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
+        if (transactionManager.isPresent()) {
+            return transactionManager.get().sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
         } else {
             throw new BlueGigaException("Transaction manager missing");
         }
-
     }
 
     /**
@@ -801,9 +800,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @param listener the {@link BlueGigaEventListener} to add
      */
     public void addEventListener(BlueGigaEventListener listener) {
-        if (transactionManager != null) {
-            transactionManager.addEventListener(listener);
-        }
+        transactionManager.ifPresent(manager -> {
+            manager.addEventListener(listener);
+        });
     }
 
     /**
@@ -812,9 +811,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      * @param listener the {@link BlueGigaEventListener} to remove
      */
     public void removeEventListener(BlueGigaEventListener listener) {
-        if (transactionManager != null) {
-            transactionManager.removeEventListener(listener);
-        }
+        transactionManager.ifPresent(manager -> {
+            manager.removeEventListener(listener);
+        });
     }
 
     @Override

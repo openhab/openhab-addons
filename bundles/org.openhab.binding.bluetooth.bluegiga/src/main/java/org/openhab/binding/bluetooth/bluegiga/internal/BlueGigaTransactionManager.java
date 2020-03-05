@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.bluegiga.internal;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -26,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  *
  */
+@NonNullByDefault
 public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
 
     private static final int TRANSACTION_TIMEOUT_PERIOD_MS = 100;
@@ -47,9 +51,9 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private AtomicInteger transactionId = new AtomicInteger();
 
     /**
-     * Ongoing transaction id. If null, no ongoing transaction.
+     * Ongoing transaction id. If not present, no ongoing transaction.
      */
-    private volatile Integer ongoingTransactionId = null;
+    private volatile Optional<Integer> ongoingTransactionId = Optional.empty();
 
     /**
      * Transaction listeners are used internally to correlate the commands and responses
@@ -65,15 +69,15 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private final ScheduledExecutorService executor;
     private final BlueGigaSerialHandler serialHandler;
 
-    private Future<?> transactionTimeoutTimer;
+    private @Nullable Future<?> transactionTimeoutTimer;
 
     /**
      * Internal interface for transaction listeners.
      */
     interface BluetoothListener<T extends BlueGigaResponse> {
-        boolean transactionEvent(BlueGigaResponse response, Integer transactionId);
+        boolean transactionEvent(BlueGigaResponse response, int transactionId);
 
-        boolean transactionTimeout(Integer transactionId);
+        boolean transactionTimeout(int transactionId);
     }
 
     public BlueGigaTransactionManager(BlueGigaSerialHandler serialHandler, ScheduledExecutorService executor) {
@@ -108,25 +112,22 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     private void sendNextFrame() {
-        BlueGigaUniqueCommand nextFrame = getNextFrame();
-        if (nextFrame == null) {
-            // Nothing to send
-            logger.trace("Send frame: nothing to send");
-            return;
-        }
-        cancelTransactionTimer();
-        logger.debug("Send frame #{}: {}", nextFrame.getTransactionId(), nextFrame.getMessage());
-        ongoingTransactionId = nextFrame.getTransactionId();
-        serialHandler.sendFrame(nextFrame.getMessage());
-        startTransactionTimer();
+        getNextFrame().ifPresent(frame -> {
+            cancelTransactionTimer();
+            logger.debug("Send frame #{}: {}", frame.getTransactionId(), frame.getMessage());
+            ongoingTransactionId = Optional.of(frame.getTransactionId());
+            serialHandler.sendFrame(frame.getMessage());
+            startTransactionTimer();
+        });
     }
 
-    private BlueGigaUniqueCommand getNextFrame() {
+    @SuppressWarnings({ "null", "unused" })
+    private Optional<BlueGigaUniqueCommand> getNextFrame() {
         while (!sendQueue.isEmpty()) {
             BlueGigaUniqueCommand frame = sendQueue.poll();
             if (frame != null) {
                 if (frame.getMessage() != null) {
-                    return frame;
+                    return Optional.of(frame);
                 } else {
                     logger.debug("Null message found from queue, skip it");
                     continue;
@@ -136,7 +137,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
                 continue;
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -156,7 +157,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private void sendNextTransactionIfNoOngoing() {
         synchronized (this) {
             logger.trace("Send next transaction if no ongoing");
-            if (ongoingTransactionId == null) {
+            if (!ongoingTransactionId.isPresent()) {
                 sendNextFrame();
             }
         }
@@ -165,7 +166,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     private void clearOngoingTransactionAndSendNext() {
         synchronized (this) {
             logger.trace("Clear ongoing transaction and send next frame from queue");
-            ongoingTransactionId = null;
+            ongoingTransactionId = Optional.empty();
             sendNextFrame();
         }
     }
@@ -192,7 +193,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
             final Class<T> expected) {
         class TransactionWaiter implements Callable<T>, BluetoothListener<T> {
             private volatile boolean complete;
-            private BlueGigaResponse response;
+            private Optional<BlueGigaResponse> response = Optional.empty();
             private BlueGigaUniqueCommand query = new BlueGigaUniqueCommand(bleCommand,
                     transactionId.getAndIncrement());
 
@@ -225,19 +226,16 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
                 // Send next transaction if any
                 executor.submit(BlueGigaTransactionManager.this::clearOngoingTransactionAndSendNext);
 
-                if (response == null) {
+                if (response.isPresent()) {
+                    return (T) response.get();
+                } else {
                     throw new TimeoutException("No response from BlueGiga controller");
                 }
-                return (T) response;
+
             }
 
             @Override
-            public boolean transactionEvent(BlueGigaResponse bleResponse, Integer transactionId) {
-                if (transactionId == null) {
-                    logger.trace("Transaction id is null");
-                    return false;
-                }
-
+            public boolean transactionEvent(BlueGigaResponse bleResponse, int transactionId) {
                 logger.trace("Expected transactionId: {}, received transactionId: {}", query.getTransactionId(),
                         transactionId);
 
@@ -270,7 +268,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
                 }
 
                 // Response received, notify waiter
-                response = bleResponse;
+                response = Optional.of(bleResponse);
                 complete = true;
                 logger.debug("Received frame #{}: {}", transactionId, bleResponse);
                 synchronized (this) {
@@ -280,11 +278,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
             }
 
             @Override
-            public boolean transactionTimeout(Integer transactionId) {
-                if (transactionId == null) {
-                    logger.trace("Transaction id is null");
-                    return false;
-                }
+            public boolean transactionTimeout(int transactionId) {
                 if (transactionId != query.getTransactionId()) {
                     return false;
                 }
@@ -337,7 +331,6 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
         } else {
             notifyTransactionComplete(event);
         }
-
     }
 
     /**
@@ -359,33 +352,32 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
      *
      * @param response
      *            the response data received
-     * @return true if the response was processed
      */
-    private boolean notifyTransactionComplete(final BlueGigaResponse response) {
-        boolean processed = false;
-
-        for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
-            if (listener.transactionEvent(response, ongoingTransactionId)) {
-                processed = true;
+    private void notifyTransactionComplete(final BlueGigaResponse response) {
+        ongoingTransactionId.ifPresent(id -> {
+            boolean processed = false;
+            for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
+                if (listener.transactionEvent(response, id)) {
+                    processed = true;
+                }
             }
-        }
-        if (!processed) {
-            logger.debug("No listener found for received response: {}", response);
-        }
-        return processed;
+            if (!processed) {
+                logger.debug("No listener found for received response: {}", response);
+            }
+        });
     }
 
-    private boolean notifyTransactionTimeout(final Integer transactionId) {
-        boolean processed = false;
-
-        for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
-            if (listener.transactionTimeout(transactionId)) {
-                processed = true;
+    private void notifyTransactionTimeout(final Optional<Integer> transactionId) {
+        transactionId.ifPresent(id -> {
+            boolean processed = false;
+            for (BluetoothListener<? extends BlueGigaResponse> listener : transactionListeners) {
+                if (listener.transactionTimeout(id)) {
+                    processed = true;
+                }
             }
-        }
-        if (!processed) {
-            logger.debug("No listener found for transaction timeout event, transaction id {}", transactionId);
-        }
-        return processed;
+            if (!processed) {
+                logger.debug("No listener found for transaction timeout event, transaction id {}", id);
+            }
+        });
     }
 }

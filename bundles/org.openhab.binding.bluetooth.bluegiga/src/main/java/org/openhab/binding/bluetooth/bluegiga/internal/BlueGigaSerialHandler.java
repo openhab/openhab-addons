@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.gap.BlueGigaEndProcedureCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Split serial handler and transaction management
  *
  */
+@NonNullByDefault
 public class BlueGigaSerialHandler {
 
     private static final int BLE_MAX_LENGTH = 64;
@@ -55,7 +57,7 @@ public class BlueGigaSerialHandler {
 
     private final OutputStream outputStream;
     private final InputStream inputStream;
-    private Thread parserThread = null;
+    private final Thread parserThread;
 
     public BlueGigaSerialHandler(final InputStream inputStream, final OutputStream outputStream) {
         this.outputStream = outputStream;
@@ -134,7 +136,7 @@ public class BlueGigaSerialHandler {
      * @return true if parser thread is alive.
      */
     public boolean isAlive() {
-        return parserThread != null && parserThread.isAlive() && !close;
+        return parserThread.isAlive() && !close;
     }
 
     public void sendFrame(BlueGigaCommand bleFrame) throws IllegalStateException {
