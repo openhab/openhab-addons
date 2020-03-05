@@ -30,36 +30,36 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public abstract class PrefixedResponse<ResponseType> implements Response<ResponseType> {
-  private String prefix;
-  private @Nullable Set<ErrorCode> specifiedErrors;
-  private ResponseType result;
+    private String prefix;
+    private @Nullable Set<ErrorCode> specifiedErrors;
+    private ResponseType result;
 
-  public PrefixedResponse(String prefix, String response) throws ResponseException {
-    this(prefix, null, response);
-  }
-
-  public PrefixedResponse(String prefix, @Nullable Set<ErrorCode> specifiedErrors, String response)
-      throws ResponseException {
-    this.prefix = prefix;
-    this.specifiedErrors = specifiedErrors;
-    this.result = parse(response);
-  }
-
-  public ResponseType getResult() {
-    return this.result;
-  }
-
-  @Override
-  public ResponseType parse(String response) throws ResponseException {
-    String fullPrefix = "%1" + this.prefix;
-    if (!response.toUpperCase().startsWith(fullPrefix)) {
-      throw new ResponseException(
-          MessageFormat.format("Expected prefix ''{0}'', instead got ''{1}''", fullPrefix, response));
+    public PrefixedResponse(String prefix, String response) throws ResponseException {
+        this(prefix, null, response);
     }
-    String result = response.substring(fullPrefix.length());
-    ErrorCode.checkForErrorStatus(result, this.specifiedErrors);
-    return parseResponseWithoutPrefix(result);
-  }
 
-  protected abstract ResponseType parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException;
+    public PrefixedResponse(String prefix, @Nullable Set<ErrorCode> specifiedErrors, String response)
+            throws ResponseException {
+        this.prefix = prefix;
+        this.specifiedErrors = specifiedErrors;
+        this.result = parse(response);
+    }
+
+    public ResponseType getResult() {
+        return this.result;
+    }
+
+    @Override
+    public ResponseType parse(String response) throws ResponseException {
+        String fullPrefix = "%1" + this.prefix;
+        if (!response.toUpperCase().startsWith(fullPrefix)) {
+            throw new ResponseException(
+                    MessageFormat.format("Expected prefix ''{0}'', instead got ''{1}''", fullPrefix, response));
+        }
+        String result = response.substring(fullPrefix.length());
+        ErrorCode.checkForErrorStatus(result, this.specifiedErrors);
+        return parseResponseWithoutPrefix(result);
+    }
+
+    protected abstract ResponseType parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException;
 }
