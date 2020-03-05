@@ -82,7 +82,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
-		<state pattern="%.3f %unit%"></state>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -25,9 +25,6 @@ import java.time.temporal.WeekFields;
 import java.util.Base64;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import javax.xml.ws.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,11 +39,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.omg.CORBA.Request;
 import org.openhab.binding.linky.internal.ExpiringDayCache;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.model.LinkyConsumptionData;
 import org.openhab.binding.linky.internal.model.LinkyTimeScale;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -55,6 +52,8 @@ import com.google.gson.JsonSyntaxException;
 import okhttp3.FormBody;
 import okhttp3.FormBody.Builder;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * The {@link LinkyHandler} is responsible for handling commands, which are
@@ -162,15 +161,6 @@ public class LinkyHandler extends BaseThingHandler {
     /**
      * Request new dayly/weekly data and updates channels
      */
-    private void updateData() {
-        updateDailyData();
-        updateMonthlyData();
-        updateYearlyData();
-    }
-
-    /**
-     * Request new dayly/weekly data and updates channels
-     */
     private synchronized void updateDailyData() {
         if (!isLinked(YESTERDAY) && !isLinked(LAST_WEEK) && !isLinked(THIS_WEEK)) {
             return;
@@ -210,18 +200,6 @@ public class LinkyHandler extends BaseThingHandler {
             }
         } else {
             cachedDaylyData.invalidateValue();
-        }
-        updateKwhChannel(YESTERDAY, yesterday);
-        updateKwhChannel(THIS_WEEK, thisWeek);
-        updateKwhChannel(LAST_WEEK, lastWeek);
-    }
-
-    /**
-     * Request new monthly data and updates channels
-     */
-    private synchronized void updateMonthlyData() {
-        if (!isLinked(LAST_MONTH) && !isLinked(THIS_MONTH)) {
-            return;
         }
         updateKwhChannel(YESTERDAY, yesterday);
         updateKwhChannel(THIS_WEEK, thisWeek);
