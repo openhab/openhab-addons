@@ -58,6 +58,7 @@ public class BlueGigaWriteCommand extends BlueGigaCommand {
     public void setHandle(int handle) {
         this.handle = handle;
     }
+
     /**
      * Attribute offset to write data
      *
@@ -66,6 +67,7 @@ public class BlueGigaWriteCommand extends BlueGigaCommand {
     public void setOffset(int offset) {
         this.offset = offset;
     }
+
     /**
      * Value of the attribute to write
      *

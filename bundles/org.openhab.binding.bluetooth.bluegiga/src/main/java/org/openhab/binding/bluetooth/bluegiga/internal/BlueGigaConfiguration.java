@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for {@link BlueGigaConfiguration} device.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class BlueGigaConfiguration {
     public boolean discovery;
-    public String port;
+    public String port = "";
     public int passiveScanIdleTime;
     public int passiveScanInterval;
     public int passiveScanWindow;

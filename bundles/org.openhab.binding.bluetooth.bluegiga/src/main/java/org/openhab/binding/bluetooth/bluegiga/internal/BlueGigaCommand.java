@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluegiga.internal;
 import java.util.Arrays;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddressType;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapConnectableMode;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapDiscoverMode;
@@ -28,6 +29,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.SmpIoCapabili
  * @author Chris Jackson - Initial contribution and API
  *
  */
+@NonNullByDefault
 public abstract class BlueGigaCommand extends BlueGigaPacket {
     protected int[] buffer = new int[131];
     protected int length = 0;

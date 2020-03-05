@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Abstract base class for all device responses.
  *
  * @author Pauli Anttila - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class BlueGigaDeviceResponse extends BlueGigaResponse {
 
     /**

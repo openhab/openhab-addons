@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
@@ -27,6 +28,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaUserReadRequestEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x01;

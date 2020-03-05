@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Container class to hold {@link BlueGigaCommand} and transaction id.
  *
  * @author Pauli Anttila - Initial contribution
  *
  */
+@NonNullByDefault
 public class BlueGigaUniqueCommand {
     private BlueGigaCommand msg;
     private int transactionId;

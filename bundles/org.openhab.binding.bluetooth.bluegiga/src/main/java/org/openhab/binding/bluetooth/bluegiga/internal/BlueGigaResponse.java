@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeChangeReason;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeValueType;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
@@ -30,6 +31,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ScanResponseT
  * @author Chris Jackson - Initial contribution and API
  *
  */
+@NonNullByDefault
 public abstract class BlueGigaResponse extends BlueGigaPacket {
     private int[] buffer = new int[131];
     private int position = 0;
