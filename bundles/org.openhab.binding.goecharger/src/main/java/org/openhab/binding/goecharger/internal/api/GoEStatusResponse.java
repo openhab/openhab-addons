@@ -14,7 +14,6 @@ package org.openhab.binding.goecharger.internal.api;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link GoEStatusResponse} class represents a json response from the
@@ -22,151 +21,165 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Samuel Brucksch - Initial contribution
  */
-@NonNullByDefault
 public class GoEStatusResponse {
+
+  
   @SerializedName("version")
   private String version;
 
+  
   @SerializedName("car")
   private Integer pwmSignal;
 
+  
   @SerializedName("ast")
   private Integer accessState;
 
+  
   @SerializedName("amp")
   private Integer maxChargeAmps;
 
+  
   @SerializedName("nrg")
   private Integer[] energy;
 
+  
   @SerializedName("err")
   private Integer errorCode;
 
+  
   @SerializedName("alw")
   private Integer allowCharging;
 
+  
   @SerializedName("cbl")
   private Integer cableEncoding;
 
+  
   @SerializedName("pha")
   private Integer phases;
 
+  
   @SerializedName("tmp")
   private Integer temperature;
 
+  
   @SerializedName("dws")
   private Long sessionChargeConsumption;
 
+  
   @SerializedName("dwo")
   private Integer sessionChargeConsumptionLimit;
 
+  
   @SerializedName("eto")
   private Long totalChargeConsumption;
 
+  
   @SerializedName("fwv")
   private String firmware;
 
-  public String getVersion() {
+  public  String getVersion() {
     return version;
   }
 
-  public void setVersion(String version) {
+  public void setVersion( String version) {
     this.version = version;
   }
 
-  public Integer getPwmSignal() {
+  public  Integer getPwmSignal() {
     return pwmSignal;
   }
 
-  public void setPwmSignal(Integer pwmSignal) {
+  public void setPwmSignal( Integer pwmSignal) {
     this.pwmSignal = pwmSignal;
   }
 
-  public Integer getMaxChargeAmps() {
+  public  Integer getMaxChargeAmps() {
     return maxChargeAmps;
   }
 
-  public void setMaxChargeAmps(Integer maxChargeAmps) {
+  public void setMaxChargeAmps( Integer maxChargeAmps) {
     this.maxChargeAmps = maxChargeAmps;
   }
 
-  public Integer getErrorCode() {
+  public  Integer getErrorCode() {
     return errorCode;
   }
 
-  public void setErrorCode(Integer errorCode) {
+  public void setErrorCode( Integer errorCode) {
     this.errorCode = errorCode;
   }
 
-  public Integer getAllowCharging() {
+  public  Integer getAllowCharging() {
     return allowCharging;
   }
 
-  public void setAllowCharging(Integer allowCharging) {
+  public void setAllowCharging( Integer allowCharging) {
     this.allowCharging = allowCharging;
   }
 
-  public Integer getCableEncoding() {
+  public  Integer getCableEncoding() {
     return cableEncoding;
   }
 
-  public void setCableEncoding(Integer cableEncoding) {
+  public void setCableEncoding( Integer cableEncoding) {
     this.cableEncoding = cableEncoding;
   }
 
-  public Integer getPhases() {
+  public  Integer getPhases() {
     return phases;
   }
 
-  public void setPhases(Integer phases) {
+  public void setPhases( Integer phases) {
     this.phases = phases;
   }
 
-  public Integer getTemperature() {
+  public  Integer getTemperature() {
     return temperature;
   }
 
-  public void setTemperature(Integer temperature) {
+  public void setTemperature( Integer temperature) {
     this.temperature = temperature;
   }
 
-  public Long getSessionChargeConsumption() {
+  public  Long getSessionChargeConsumption() {
     return sessionChargeConsumption;
   }
 
-  public void setSessionChargeConsumption(Long sessionChargeConsumption) {
+  public void setSessionChargeConsumption( Long sessionChargeConsumption) {
     this.sessionChargeConsumption = sessionChargeConsumption;
   }
 
-  public Integer getSessionChargeConsumptionLimit() {
+  public  Integer getSessionChargeConsumptionLimit() {
     return sessionChargeConsumptionLimit;
   }
 
-  public void setSessionChargeConsumptionLimit(Integer sessionChargeConsumptionLimit) {
+  public void setSessionChargeConsumptionLimit( Integer sessionChargeConsumptionLimit) {
     this.sessionChargeConsumptionLimit = sessionChargeConsumptionLimit;
   }
 
-  public Long getTotalChargeConsumption() {
+  public  Long getTotalChargeConsumption() {
     return totalChargeConsumption;
   }
 
-  public void setTotalChargeConsumption(Long totalChargeConsumption) {
+  public void setTotalChargeConsumption( Long totalChargeConsumption) {
     this.totalChargeConsumption = totalChargeConsumption;
   }
 
-  public String getFirmware() {
+  public  String getFirmware() {
     return firmware;
   }
 
-  public void setFirmware(String firmware) {
+  public void setFirmware( String firmware) {
     this.firmware = firmware;
   }
 
-  public Integer[] getEnergy() {
+  public  Integer[] getEnergy() {
     return energy;
   }
 
-  public void setEnergy(Integer[] energy) {
+  public void setEnergy( Integer[] energy) {
     this.energy = energy;
 
     if (Math.floor(getPhases() / 8) == 1 && this.energy[3] > this.energy[0]) {
@@ -176,11 +189,11 @@ public class GoEStatusResponse {
     }
   }
 
-  public Integer getAccessState() {
+  public  Integer getAccessState() {
     return accessState;
   }
 
-  public void setAccessState(Integer accessState) {
+  public void setAccessState( Integer accessState) {
     this.accessState = accessState;
   }
 }

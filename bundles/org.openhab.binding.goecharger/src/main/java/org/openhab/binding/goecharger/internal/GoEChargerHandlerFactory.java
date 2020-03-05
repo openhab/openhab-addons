@@ -19,17 +19,24 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.goecharger.internal.handler.GoEChargerHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link GoEChargerHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link GoEChargerHandlerFactory} is responsible for creating things and
+ * thing handlers.
  *
  * @author Samuel Brucksch - Initial contribution
  */
@@ -38,6 +45,14 @@ import org.osgi.service.component.annotations.Component;
 public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GOE);
+    private HttpClient httpClient;
+
+    @Activate
+    public GoEChargerHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
+            final @Reference TranslationProvider i18nProvider) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,7 +64,7 @@ public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_GOE.equals(thingTypeUID)) {
-            return new GoEChargerHandler(thing);
+            return new GoEChargerHandler(thing, httpClient);
         }
 
         return null;
