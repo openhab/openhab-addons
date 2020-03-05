@@ -97,6 +97,5 @@ then
 end
 ```
 You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
-The used phases can be read from Voltage L1-L3 or Power or Current.
-For example if your car charges with one phase only L1 will be most likely around 220V, L2 and L3 will be 0.
-With that you can get the amount of used phases and calculate the current you need to set.
+For example if your car charges on one phase only, you can set maxAmps to output of PV power, if your car charges on two phases you can set maxAmps to `pv output / 2`, and for 3 phases `pv output / 3`.
+In general the calculation would be ´maxAmps = pvOutput / phases`.
