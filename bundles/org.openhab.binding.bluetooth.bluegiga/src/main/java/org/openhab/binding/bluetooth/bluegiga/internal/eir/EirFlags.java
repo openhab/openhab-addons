@@ -17,8 +17,8 @@ import java.util.Map;
 
 /**
  * Definition of the EIR Flags field
- * 
- * @author Chris Jackson
+ *
+ * @author Chris Jackson - Initial contribution
  *
  */
 public enum EirFlags {

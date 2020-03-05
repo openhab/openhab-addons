@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * Defines an EIR record used in the BLE advertisement packets.
  *
- * @author Chris Jackson
+ * @author Chris Jackson - Initial contribution
  *
  */
 public class EirRecord {

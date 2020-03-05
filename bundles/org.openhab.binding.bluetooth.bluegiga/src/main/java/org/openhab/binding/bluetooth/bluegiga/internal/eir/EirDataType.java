@@ -18,10 +18,10 @@ import java.util.Map;
 /**
  * Assigned numbers are used in GAP for inquiry response, EIR data type values, manufacturer-specific data, advertising
  * data, low energy UUIDs and appearance characteristics, and class of device.
- * 
+ *
  * https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile
- * 
- * @author Chris Jackson
+ *
+ * @author Chris Jackson - Initial contribution
  *
  */
 public enum EirDataType {

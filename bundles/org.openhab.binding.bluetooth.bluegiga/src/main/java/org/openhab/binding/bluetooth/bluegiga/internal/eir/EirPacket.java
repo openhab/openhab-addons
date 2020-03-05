@@ -18,8 +18,8 @@ import java.util.Map;
 
 /**
  * This class processes the Extended Inquiry Response data used in the BLE advertisement frame
- * 
- * @author Chris Jackson
+ *
+ * @author Chris Jackson - Initial contribution
  *
  */
 public class EirPacket {
@@ -46,7 +46,7 @@ public class EirPacket {
 
     /**
      * Returns a map of all records decoded in the packet
-     * 
+     *
      * @return {@link Map} of {@link EirDataType} to {@link Object}
      */
     public Map<EirDataType, Object> getRecords() {
@@ -55,7 +55,7 @@ public class EirPacket {
 
     /**
      * Returns the specified record decoded in the packet or null if the record is not found
-     * 
+     *
      * @param recordType the requested {@link EirDataType}
      * @return {@link Map} of to {@link Object}
      */
