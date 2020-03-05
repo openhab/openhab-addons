@@ -82,7 +82,7 @@ String                     GoEChargerBindingThingFirmware                       
 String                     GoEChargerBindingThingAccessState                     "Access state"                    {channel="goecharger:goe:garage:accessState"}
 ```
 
-## Settings charge current of Go-eCharger based on PV
+## Setting charge current of Go-eCharger based on photovoltaik output
 
 You can easily define rules to charge with PV power alone.
 Here is a simple sample how such a rule could look like:
