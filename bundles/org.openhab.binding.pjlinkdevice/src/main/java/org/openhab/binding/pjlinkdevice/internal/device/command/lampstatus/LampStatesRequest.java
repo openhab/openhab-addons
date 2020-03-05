@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus;
 
-import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
 /**
  * The request part of {@link LampStatesCommand}
@@ -23,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LampStatesRequest implements Request {
-  @Override
-  public String getRequestString() {
-    return "%1LAMP ?";
-  }
+    @Override
+    public String getRequestString() {
+        return "%1LAMP ?";
+    }
 }

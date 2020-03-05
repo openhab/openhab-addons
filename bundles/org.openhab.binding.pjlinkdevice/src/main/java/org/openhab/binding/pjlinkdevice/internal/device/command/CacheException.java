@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CacheException extends RuntimeException {
-  private static final long serialVersionUID = -3319800607314286998L;
+    private static final long serialVersionUID = -3319800607314286998L;
 
-  public CacheException(Throwable cause) {
-    super(cause);
-  }
+    public CacheException(Throwable cause) {
+        super(cause);
+    }
 
 }
