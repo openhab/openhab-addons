@@ -177,9 +177,11 @@ public class ValloxMVWebSocket {
                 // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
                 return generateCustomRequest(246, new HashMap<Integer, Integer>());
             }
+            String strChannelUIDid = channelUID.getId();
+            Integer intUpdateState = Integer.parseInt(updateState);
             Map<Integer, Integer> request = new HashMap<>();
-            if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
-                if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_FIREPLACE) {
+            if (ValloxMVBindingConstants.CHANNEL_STATE == strChannelUIDid) {
+                if (intUpdateState == ValloxMVBindingConstants.STATE_FIREPLACE) {
                     // 15 Min fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 15, checksum)
                     // To do: we should check this case already in 'request' function and first request Vallox
@@ -190,19 +192,19 @@ public class ValloxMVWebSocket {
                     // Note: we should be able to request 2 values at a time, same if clause could be used for both
                     request.put(4612, 0);
                     request.put(4613, 15);
-                } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_ATHOME) {
+                } else if (intUpdateState == ValloxMVBindingConstants.STATE_ATHOME) {
                     // At Home (Length 8, Command to set data 249, CYC_STATE (4609) = 0, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
                     request.put(4609, 0);
                     request.put(4612, 0);
                     request.put(4613, 0);
-                } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_AWAY) {
+                } else if (intUpdateState == ValloxMVBindingConstants.STATE_AWAY) {
                     // Away (Length 8, Command to set data 249, CYC_STATE (4609) = 1, CYC_BOOST_TIMER (4612) = 0,
                     // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
                     request.put(4609, 1);
                     request.put(4612, 0);
                     request.put(4613, 0);
-                } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_BOOST) {
+                } else if (intUpdateState == ValloxMVBindingConstants.STATE_BOOST) {
                     // 30 Min boost (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 30, CYC_FIREPLACE_TIMER
                     // (4613) = 0, checksum)
                     // To do: we should check this case already in 'request' function and first request Vallox
@@ -214,48 +216,48 @@ public class ValloxMVWebSocket {
                     request.put(4612, 30);
                     request.put(4613, 0);
                 }
-            } else if (ValloxMVBindingConstants.CHANNEL_ONOFF.equals(channelUID.getId())) {
-                request.put(4610, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                request.put(20485, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                request.put(20486, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
-                request.put(20507, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING.equals(channelUID.getId())) {
-                request.put(20501, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING.equals(channelUID.getId())) {
-                request.put(20513, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20508, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20502, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20514, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_TIME.equals(channelUID.getId())) {
-                request.put(20544, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED.equals(channelUID.getId())) {
-                request.put(21766, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN.equals(channelUID.getId())) {
-                request.put(20487, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN.equals(channelUID.getId())) {
-                request.put(20488, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME.equals(channelUID.getId())) {
-                request.put(20545, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED.equals(channelUID.getId())) {
-                request.put(21767, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20493, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN.equals(channelUID.getId())) {
-                request.put(20494, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN.equals(channelUID.getId())) {
-                request.put(20495, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_TIME.equals(channelUID.getId())) {
-                request.put(20496, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED.equals(channelUID.getId())) {
-                request.put(21772, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED.equals(channelUID.getId())) {
-                request.put(4615, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_ONOFF == strChannelUIDid) {
+                request.put(4610, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE == strChannelUIDid) {
+                request.put(20485, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE == strChannelUIDid) {
+                request.put(20486, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING == strChannelUIDid) {
+                request.put(20507, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING == strChannelUIDid) {
+                request.put(20501, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING == strChannelUIDid) {
+                request.put(20513, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET == strChannelUIDid) {
+                request.put(20508, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET == strChannelUIDid) {
+                request.put(20502, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET == strChannelUIDid) {
+                request.put(20514, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_TIME == strChannelUIDid) {
+                request.put(20544, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED == strChannelUIDid) {
+                request.put(21766, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN == strChannelUIDid) {
+                request.put(20487, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN == strChannelUIDid) {
+                request.put(20488, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME == strChannelUIDid) {
+                request.put(20545, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED == strChannelUIDid) {
+                request.put(21767, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET == strChannelUIDid) {
+                request.put(20493, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN == strChannelUIDid) {
+                request.put(20494, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN == strChannelUIDid) {
+                request.put(20495, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_TIME == strChannelUIDid) {
+                request.put(20496, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED == strChannelUIDid) {
+                request.put(21772, intUpdateState);
+            } else if (ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED == strChannelUIDid) {
+                request.put(4615, intUpdateState);
             } else {
                 return null;
             }
@@ -456,10 +458,10 @@ public class ValloxMVWebSocket {
 
         @SuppressWarnings("null")
         private BigDecimal getTemperature(byte[] bytes, int pos) {
-            // Fetch 2 byte number out of bytearray representing the temperature in centKelvin
-            BigDecimal bdTemperatureCentKelvin = new BigDecimal(getNumber(bytes, pos));
-            // Return number converted to degree celsius (= (centKelvin - 27315) / 100 )
-            return (new QuantityType<>(bdTemperatureCentKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
+            // Fetch 2 byte number out of bytearray representing the temperature in centiKelvin
+            BigDecimal bdTemperatureCentiKelvin = new BigDecimal(getNumber(bytes, pos));
+            // Return number converted to degree celsius (= (centiKelvin - 27315) / 100 )
+            return (new QuantityType<>(bdTemperatureCentiKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
                     .toUnit(SIUnits.CELSIUS)).toBigDecimal();
         }
 
