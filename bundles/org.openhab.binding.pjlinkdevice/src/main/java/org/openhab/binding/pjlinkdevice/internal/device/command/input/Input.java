@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
-import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.regex.Pattern;
+import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
 /**
  * Describes an A/V source that can be selected on the PJLink device.
@@ -27,102 +26,102 @@ import java.util.regex.Pattern;
 @NonNullByDefault
 public class Input {
 
-  private static final Pattern INPUT_NUMBER_PATTERN = Pattern.compile("[0-9A-Z]");
+    private static final Pattern INPUT_NUMBER_PATTERN = Pattern.compile("[0-9A-Z]");
 
-  enum InputType {
-    RGB("RGB", '1'),
-    VIDEO("Video", '2'),
-    DIGITAL("Digital", '3'),
-    STORAGE("Storage", '4'),
-    NETWORK("Network", '5');
+    enum InputType {
+        RGB("RGB", '1'),
+        VIDEO("Video", '2'),
+        DIGITAL("Digital", '3'),
+        STORAGE("Storage", '4'),
+        NETWORK("Network", '5');
 
-    private String text;
-    private char code;
+        private String text;
+        private char code;
 
-    private InputType(String text, char code) {
-      this.text = text;
-      this.code = code;
-    }
-
-    public String getText() {
-      return this.text;
-    }
-
-    public static InputType parseString(String value) throws ResponseException {
-      for (InputType result : InputType.values()) {
-        if (result.code == value.charAt(0)) {
-          return result;
+        private InputType(String text, char code) {
+            this.text = text;
+            this.code = code;
         }
-      }
 
-      throw new ResponseException("Unknown input channel type: " + value);
-    }
-  }
+        public String getText() {
+            return this.text;
+        }
 
-  private String value;
+        public static InputType parseString(String value) throws ResponseException {
+            for (InputType result : InputType.values()) {
+                if (result.code == value.charAt(0)) {
+                    return result;
+                }
+            }
 
-  public Input(String value) throws ResponseException {
-    this.value = value;
-    validate();
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + value.hashCode();
-    return result;
-  }
-
-  @Override
-  public boolean equals(@Nullable Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    Input other = (Input) obj;
-    if (!value.equals(other.value)) {
-      return false;
-    }
-    return true;
-  }
-
-  public InputType getInputType() throws ResponseException {
-    return InputType.parseString(this.value);
-  }
-
-  public String getInputNumber() throws ResponseException {
-    String inputNumber = this.value.substring(1, 2);
-    if (!INPUT_NUMBER_PATTERN.matcher(inputNumber).matches()) {
-      throw new ResponseException("Illegal channel number: " + inputNumber);
+            throw new ResponseException("Unknown input channel type: " + value);
+        }
     }
 
-    return inputNumber;
-  }
+    private String value;
 
-  public void validate() throws ResponseException {
-    if (this.value.length() != 2) {
-      throw new ResponseException("Illegal input description: " + value);
+    public Input(String value) throws ResponseException {
+        this.value = value;
+        validate();
     }
-    // these method also validate
-    getInputType();
-    getInputNumber();
-  }
 
-  public String getValue() {
-    return this.value;
-  }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + value.hashCode();
+        return result;
+    }
 
-  public String getPJLinkRepresentation() {
-    return this.value;
-  }
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Input other = (Input) obj;
+        if (!value.equals(other.value)) {
+            return false;
+        }
+        return true;
+    }
 
-  public String getText() throws ResponseException {
-    return getInputType().getText() + " " + getInputNumber();
-  }
+    public InputType getInputType() throws ResponseException {
+        return InputType.parseString(this.value);
+    }
+
+    public String getInputNumber() throws ResponseException {
+        String inputNumber = this.value.substring(1, 2);
+        if (!INPUT_NUMBER_PATTERN.matcher(inputNumber).matches()) {
+            throw new ResponseException("Illegal channel number: " + inputNumber);
+        }
+
+        return inputNumber;
+    }
+
+    public void validate() throws ResponseException {
+        if (this.value.length() != 2) {
+            throw new ResponseException("Illegal input description: " + value);
+        }
+        // these method also validate
+        getInputType();
+        getInputNumber();
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public String getPJLinkRepresentation() {
+        return this.value;
+    }
+
+    public String getText() throws ResponseException {
+        return getInputType().getText() + " " + getInputNumber();
+    }
 }
