@@ -24,11 +24,11 @@
 		</parameter>
 		<parameter name="doorbellOffDelay" type="integer" min="1">
 			<label>Doorbell Released Delay</label>
-			<description>Delay after a doorbell event to send RELEASED event (blank to disable)</description>
+			<description>Delay in seconds after a doorbell event to send RELEASED event (blank to disable)</description>
 		</parameter>
 		<parameter name="motionOffDelay" type="integer" min="1">
 			<label>Motion Off Delay</label>
-			<description>Delay to set motion channel OFF after motion event (blank to disable)</description>
+			<description>Delay in seconds to set motion channel OFF after motion event (blank to disable)</description>
 		</parameter>
 		<parameter name="montageNumImages" type="integer" min="0" max="6">
 			<label>Montage Number of Images</label>
@@ -37,7 +37,7 @@
 		</parameter>
 		<parameter name="montageScaleFactor" type="integer" min="1" max="100">
 			<label>Montage Scale Factor</label>
-			<description>Scaling factor to apply to history montage</description>
+			<description>Scaling factor percentage to apply to history montage (e.g use 25 for 25%)</description>
 			<default>25</default>
 		</parameter>
 	</config-description>
