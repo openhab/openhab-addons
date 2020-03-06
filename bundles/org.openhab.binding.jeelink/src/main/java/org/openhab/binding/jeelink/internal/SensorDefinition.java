@@ -32,7 +32,7 @@ import org.openhab.binding.jeelink.internal.revolt.RevoltSensorDefinition;
  * @param <R> the Reading type this sensor provides.
  */
 public abstract class SensorDefinition<R extends Reading> {
-	public static final String ALL_TYPE = "All";
+    public static final String ALL_TYPE = "All";
     private static final Set<SensorDefinition<?>> SENSOR_DEFS = new HashSet<>();
     private static final Set<JeeLinkReadingConverter<?>> CONVERTERS = new HashSet<>();
 
