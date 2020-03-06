@@ -21,4 +21,6 @@ public interface ReadingHandler<R extends Reading> {
     public void handleReading(R r);
 
     public Class<R> getReadingClass();
+
+    public String getSensorType();
 }
