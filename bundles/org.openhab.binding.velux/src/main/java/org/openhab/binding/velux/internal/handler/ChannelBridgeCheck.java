@@ -106,7 +106,7 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
             } else {
                 result = thisBridgeHandler.localization.getText("channelValue.check-integrity-ok");
             }
-            LOGGER.info("{}", result);
+            LOGGER.debug("{}", result);
             newState = StateUtils.createState(result);
         } while (false); // common exit
         return newState;
