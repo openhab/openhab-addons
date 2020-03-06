@@ -26,6 +26,7 @@ import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -43,6 +44,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
 
     private final ThingRegistry thingRegistry;
 
+    @Activate
     public LinkyCommandExtension(final @Reference ThingRegistry thingRegistry) {
         super("linky", "Interact with the Linky binding.");
         this.thingRegistry = thingRegistry;
