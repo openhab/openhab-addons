@@ -13,12 +13,11 @@
 package org.openhab.binding.jeelink.internal.config;
 
 /**
- * Configuration for a LaCrossTemperatureSensorHandler.
+ * Configuration for a Handler that is able to buffer values.
  *
  * @author Volker Bier - Initial contribution
  */
-public class LaCrosseTemperatureSensorConfig extends BufferedSensorConfig {
-    public float minTemp;
-    public float maxTemp;
-    public float maxDiff;
+public class BufferedSensorConfig extends JeeLinkSensorConfig {
+    public int updateInterval;
+    public int bufferSize;
 }

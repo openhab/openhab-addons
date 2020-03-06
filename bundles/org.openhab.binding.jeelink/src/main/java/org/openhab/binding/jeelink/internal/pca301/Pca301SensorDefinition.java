@@ -41,7 +41,7 @@ public class Pca301SensorDefinition extends SensorDefinition<Pca301Reading> {
 
     @Override
     public JeeLinkSensorHandler<Pca301Reading> createHandler(Thing thing) {
-        return new Pca301SensorHandler(thing);
+        return new Pca301SensorHandler(thing, type);
     }
 
 }
