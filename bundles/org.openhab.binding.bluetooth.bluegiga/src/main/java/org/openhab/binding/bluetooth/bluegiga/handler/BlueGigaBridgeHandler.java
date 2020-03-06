@@ -495,33 +495,11 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         return device;
     }
 
-<<<<<<< Upstream, based on origin/2.5.x
     @Override
     public boolean hasDevice(BluetoothAddress address) {
         return devices.containsKey(address);
     }
 
-    /*
-     * The following methods provide adaptor level functions for the BlueGiga interface. Typically these methods
-     * are used by the device but are provided in the adapter to allow common knowledge and to support conflict
-     * resolution.
-     */
-
-    public BlueGigaSerialHandler getBgHandler() {
-        BlueGigaSerialHandler handler = bgHandler;
-        if (handler != null) {
-            return handler;
-        } else {
-            throw new IllegalStateException("bgHandler must not be null at that point!");
-        }
-    }
-
-    public void setBgHandler(BlueGigaSerialHandler bgHandler) {
-        this.bgHandler = bgHandler;
-    }
-
-=======
->>>>>>> 68f3371 [bluetooth.bluegiga] Introduced transaction manager
     /**
      * Connects to a device.
      * <p>
