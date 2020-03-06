@@ -68,7 +68,7 @@ public class ThingConfiguration {
         Thing thingOfChannel = bridge.getThingByUID(channelTUID);
         boolean exists = false;
         if (thingOfChannel == null) {
-            LOGGER.warn("exists(): Channel {} does not belong to a thing.", channelUID);
+            LOGGER.debug("exists(): Channel {} does not belong to a thing.", channelUID);
         } else {
             if (thingOfChannel.getConfiguration().get(configName) != null) {
                 exists = true;
