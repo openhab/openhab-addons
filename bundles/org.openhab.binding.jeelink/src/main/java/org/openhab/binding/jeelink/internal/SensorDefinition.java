@@ -100,7 +100,7 @@ public abstract class SensorDefinition<R extends Reading> {
     }
 
     public static Set<JeeLinkReadingConverter<?>> getDiscoveryConverters() {
-    	return CONVERTERS;
+        return CONVERTERS;
     }
 
     private String getSensorType() {
