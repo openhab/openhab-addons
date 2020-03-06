@@ -133,8 +133,6 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
             logger.debug("discovery for bridge {} found already known sensor id {}", bridge.getThing().getUID(), id);
         }
     }
-    
-    
 
     @Override
     public Class<Reading> getReadingClass() {
@@ -143,6 +141,6 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public String getSensorType() {
-        return "ALL";
+        return SensorDefinition.ALL_TYPE;
     }
 }

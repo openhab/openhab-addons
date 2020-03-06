@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.jeelink.internal;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -33,8 +32,9 @@ import org.openhab.binding.jeelink.internal.revolt.RevoltSensorDefinition;
  * @param <R> the Reading type this sensor provides.
  */
 public abstract class SensorDefinition<R extends Reading> {
-    private static final HashSet<SensorDefinition<?>> SENSOR_DEFS = new HashSet<>();
-    private static final List<JeeLinkReadingConverter<?>> CONVERTERS = new ArrayList<>();
+	public static final String ALL_TYPE = "All";
+    private static final Set<SensorDefinition<?>> SENSOR_DEFS = new HashSet<>();
+    private static final Set<JeeLinkReadingConverter<?>> CONVERTERS = new HashSet<>();
 
     protected final String type;
 
@@ -79,7 +79,7 @@ public abstract class SensorDefinition<R extends Reading> {
         return null;
     }
 
-    public static HashSet<SensorDefinition<?>> getDefinitions() {
+    public static Set<SensorDefinition<?>> getDefinitions() {
         return SENSOR_DEFS;
     }
 
@@ -102,7 +102,7 @@ public abstract class SensorDefinition<R extends Reading> {
         return null;
     }
 
-    public static List<JeeLinkReadingConverter<?>> getDiscoveryConverters() {
+    public static Set<JeeLinkReadingConverter<?>> getDiscoveryConverters() {
         synchronized (CONVERTERS) {
             if (CONVERTERS.isEmpty()) {
                 for (SensorDefinition<?> sensor : SENSOR_DEFS) {
