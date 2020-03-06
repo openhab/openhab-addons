@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jeelink.internal.ec3k;
+package org.openhab.binding.jeelink.internal.revolt;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.jeelink.internal.JeeLinkBindingConstants;
@@ -19,29 +19,27 @@ import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.SensorDefinition;
 
 /**
- * Sensor Defintion of a EC3000 Power Monitor.
+ * Sensor Definition of a Revolt Energy Meter.
  *
  * @author Volker Bier - Initial contribution
  */
-public class Ec3kSensorDefinition extends SensorDefinition<Ec3kReading> {
-
-    public Ec3kSensorDefinition() {
-        super(JeeLinkBindingConstants.EC3000_SENSOR_THING_TYPE, "EnergyCount 3000 Power Monitor", "22");
+public class RevoltSensorDefinition extends SensorDefinition<RevoltReading> {
+    public RevoltSensorDefinition() {
+        super(JeeLinkBindingConstants.REVOLT_SENSOR_THING_TYPE, "Revolt Power Monitor", "r");
     }
 
     @Override
-    public JeeLinkReadingConverter<Ec3kReading> createConverter() {
-        return new Ec3kReadingConverter();
+    public JeeLinkReadingConverter<RevoltReading> createConverter() {
+        return new RevoltReadingConverter();
     }
 
     @Override
-    public Class<Ec3kReading> getReadingClass() {
-        return Ec3kReading.class;
+    public Class<RevoltReading> getReadingClass() {
+        return RevoltReading.class;
     }
 
     @Override
-    public JeeLinkSensorHandler<Ec3kReading> createHandler(Thing thing) {
-        return new Ec3kSensorHandler(thing, type);
+    public JeeLinkSensorHandler<RevoltReading> createHandler(Thing thing) {
+        return new RevoltSensorHandler(thing, type);
     }
-
 }

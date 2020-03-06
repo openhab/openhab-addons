@@ -43,6 +43,7 @@ public class JeeLinkBindingConstants {
     public static final ThingTypeUID EC3000_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "ec3k");
     public static final ThingTypeUID PCA301_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "pca301");
     public static final ThingTypeUID TX22_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "tx22");
+    public static final ThingTypeUID REVOLT_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "revolt");
 
     // List of all channel ids for lacrosse sensor things
     public static final String TEMPERATURE_CHANNEL = "temperature";
@@ -63,6 +64,12 @@ public class JeeLinkBindingConstants {
     // List of all additional channel ids for pca301 sensor things
     public static final String SWITCHING_STATE_CHANNEL = "switchingState";
 
+    // List of all additional channel ids for revolt sensor things
+    public static final String POWER_FACTOR_CHANNEL = "powerFactor";
+    public static final String ELECTRIC_CURRENT_CHANNEL = "electricCurrent";
+    public static final String ELECTRIC_POTENTIAL_CHANNEL = "electricPotential";
+    public static final String FREQUENCY_CHANNEL = "powerFrequency";
+    
     // List of all additional channel ids for tx22 sensor things
     public static final String PRESSURE_CHANNEL = "pressure";
     public static final String RAIN_CHANNEL = "rain";
