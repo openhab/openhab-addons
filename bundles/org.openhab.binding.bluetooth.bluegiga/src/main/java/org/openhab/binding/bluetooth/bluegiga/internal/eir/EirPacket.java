@@ -16,16 +16,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This class processes the Extended Inquiry Response data used in the BLE advertisement frame
  *
  * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public class EirPacket {
     private Map<EirDataType, Object> records = new HashMap<EirDataType, Object>();
 
-    public EirPacket(int[] data) {
+    public EirPacket(int @Nullable [] data) {
         if (data == null || data.length == 0) {
             return;
         }
@@ -59,7 +63,7 @@ public class EirPacket {
      * @param recordType the requested {@link EirDataType}
      * @return {@link Map} of to {@link Object}
      */
-    public Object getRecord(EirDataType recordType) {
+    public @Nullable Object getRecord(EirDataType recordType) {
         return records.get(recordType);
     }
 

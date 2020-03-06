@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.joda.time.DateTime;
@@ -51,13 +52,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGigaEventListener {
     private final long TIMEOUT_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBluetoothDevice.class);
 
     // BlueGiga needs to know the address type when connecting
-    private BluetoothAddressType addressType;
+    private BluetoothAddressType addressType = BluetoothAddressType.UNKNOWN;
 
     // The dongle handler
     private final BlueGigaBridgeHandler bgHandler;
@@ -74,12 +76,12 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     private BlueGigaProcedure procedureProgress = BlueGigaProcedure.NONE;
 
     // Somewhere to remember what characteristic we're working on
-    private BluetoothCharacteristic procedureCharacteristic = null;
+    private @Nullable BluetoothCharacteristic procedureCharacteristic;
 
     // The connection handle if the device is connected
     private int connection = -1;
 
-    private DateTime lastSeenTime;
+    private DateTime lastSeenTime = DateTime.now();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
@@ -174,7 +176,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     }
 
     @Override
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+    public boolean readCharacteristic(@Nullable BluetoothCharacteristic characteristic) {
         if (characteristic == null || characteristic.getHandle() == 0) {
             return false;
         }
@@ -195,7 +197,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     }
 
     @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+    public boolean writeCharacteristic(@Nullable BluetoothCharacteristic characteristic) {
         if (characteristic == null || characteristic.getHandle() == 0) {
             return false;
         }
@@ -236,17 +238,18 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             byte[] manufacturerData = null;
 
             // If the packet contains data, then process it and add anything relevant to the device...
-            if (scanEvent.getData() != null) {
+            if (scanEvent.getData().length > 0) {
                 EirPacket eir = new EirPacket(scanEvent.getData());
                 for (EirDataType record : eir.getRecords().keySet()) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("  EirDataType: {}={}", record, eir.getRecord(record));
                     }
+                    Object obj;
                     switch (record) {
                         case EIR_FLAGS:
                             break;
                         case EIR_MANUFACTURER_SPECIFIC:
-                            Object obj = eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
+                            obj = eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
                             if (obj != null) {
                                 try {
                                     @SuppressWarnings("unchecked")
@@ -291,7 +294,10 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                             // addServices((List<UUID>) eir.getRecord(record));
                             break;
                         case EIR_TXPOWER:
-                            txPower = (int) eir.getRecord(EirDataType.EIR_TXPOWER);
+                            obj = eir.getRecord(EirDataType.EIR_TXPOWER);
+                            if (obj != null) {
+                                txPower = (int) obj;
+                            }
                             break;
                         default:
                             break;
@@ -395,7 +401,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                 return;
             }
 
-            if (procedureProgress == null) {
+            if (procedureProgress == BlueGigaProcedure.NONE) {
                 logger.debug("BlueGiga procedure completed but procedure is null with connection {}, address {}",
                         connection, address);
                 return;
@@ -543,7 +549,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         this.lastSeenTime = DateTime.now();
     }
 
-    private void cancelTimer(ScheduledFuture<?> task) {
+    private void cancelTimer(@Nullable ScheduledFuture<?> task) {
         if (task != null) {
             task.cancel(true);
         }

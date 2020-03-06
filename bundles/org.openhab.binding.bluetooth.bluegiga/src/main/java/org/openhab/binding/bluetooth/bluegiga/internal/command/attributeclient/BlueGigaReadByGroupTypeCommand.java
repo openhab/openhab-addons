@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
@@ -31,6 +32,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  * @author Chris Jackson - Initial contribution of Java code generator
  * @author Pauli Anttila - Added message builder
  */
+@NonNullByDefault
 public class BlueGigaReadByGroupTypeCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x01;
@@ -96,7 +98,7 @@ public class BlueGigaReadByGroupTypeCommand extends BlueGigaDeviceCommand {
         private int connection;
         private int start;
         private int end;
-        private UUID uuid;
+        private UUID uuid = new UUID(0, 0);
 
         /**
          * Set connection handle.

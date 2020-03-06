@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
@@ -28,6 +29,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaFindByTypeValueCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x00;
@@ -51,14 +53,14 @@ public class BlueGigaFindByTypeValueCommand extends BlueGigaDeviceCommand {
      * <p>
      * BlueGiga API type is <i>uuid</i> - Java type is {@link UUID}
      */
-    private UUID uuid;
+    private UUID uuid = new UUID(0, 0);
 
     /**
      * Attribute value to find
      * <p>
      * BlueGiga API type is <i>uint8array</i> - Java type is {@link int[]}
      */
-    private int[] value;
+    private int[] value = new int[0];
 
     /**
      * First requested handle number

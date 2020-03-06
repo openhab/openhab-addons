@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
@@ -26,6 +27,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaWriteCommandCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x06;
@@ -42,7 +44,7 @@ public class BlueGigaWriteCommandCommand extends BlueGigaDeviceCommand {
      * <p>
      * BlueGiga API type is <i>uint8array</i> - Java type is {@link int[]}
      */
-    private int[] data;
+    private int[] data = new int[0];
 
     /**
      * Attribute handle to write

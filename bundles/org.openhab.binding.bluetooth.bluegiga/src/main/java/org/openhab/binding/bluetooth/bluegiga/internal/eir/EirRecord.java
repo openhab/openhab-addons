@@ -19,17 +19,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Defines an EIR record used in the BLE advertisement packets.
  *
  * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public class EirRecord {
-    private EirDataType type;
-    private Object record;
+    private EirDataType type = EirDataType.UNKNOWN;
+    private Object record = new Object();
 
-    EirRecord(int[] data) {
+    EirRecord(int @Nullable [] data) {
         if (data == null || data.length == 0) {
             return;
         }

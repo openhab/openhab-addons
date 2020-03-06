@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddressType;
 
@@ -37,6 +38,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddr
  * @author Chris Jackson - Initial contribution of Java code generator
  * @author Pauli Anttila - Added message builder
  */
+@NonNullByDefault
 public class BlueGigaConnectDirectCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x03;
@@ -139,8 +141,8 @@ public class BlueGigaConnectDirectCommand extends BlueGigaCommand {
     }
 
     public static class CommandBuilder {
-        private String address;
-        private BluetoothAddressType addrType;
+        private String address = "";
+        private BluetoothAddressType addrType = BluetoothAddressType.UNKNOWN;
         private int connIntervalMin;
         private int connIntervalMax;
         private int timeout;
