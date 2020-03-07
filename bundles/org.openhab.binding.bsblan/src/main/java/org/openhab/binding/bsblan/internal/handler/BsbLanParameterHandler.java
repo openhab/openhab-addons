@@ -89,7 +89,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
     private void updateChannel(String channelId, BsbLanApiParameterQueryResponse data) {
         if (data == null) {
-            logger.warn("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
+            logger.debug("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE,
                 "No data received from BSB-LAN device");
             return;

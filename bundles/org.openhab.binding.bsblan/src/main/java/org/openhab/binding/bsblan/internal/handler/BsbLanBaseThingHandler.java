@@ -79,7 +79,7 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Update all Channels
+     * Update all channels
      */
     protected void updateChannels() {
         for (Channel channel : getThing().getChannels()) {
@@ -101,7 +101,7 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
     /**
      * Set new value for channel
      *
-     * @param channelId the id identifying the channel to be updated
+     * @param channelId the id identifying the channel
      */
     protected abstract void setChannel(String channelId, Command command);
 
