@@ -7,8 +7,7 @@
 	<config-description uri="thing-type:mqtt:trigger_channel">
 		<parameter-group name="transformations">
 			<label>Transform Values</label>
-			<description>These configuration parameters allow you to alter a value before it is published to MQTT or before a
-				received value is used in the trigger.</description>
+			<description>These configuration parameters allow you to alter before a received value is used in the trigger.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 
@@ -20,9 +19,9 @@
 			<label>Incoming Value Transformations</label>
 			<description><![CDATA[
 			Applies transformations to an incoming MQTT topic value.
-			A transformation example for a received JSON would be "JSONPATH:$.device.status.temperature" for
-			a json {device: {status: { temperature: 23.2 }}}.
-
+			This can be used to map the events sent by the device to common values for all devices using,
+			for example, the MAP transformation 
+			
 			You can chain transformations by separating them with the intersection character ∩.
 			]]></description>
 			<advanced>true</advanced>
