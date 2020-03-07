@@ -53,9 +53,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
-    @Nullable private OpenThermGatewayConfiguration config;
+    private @Nullable OpenThermGatewayConfiguration config;
 
-    @Nullable private OpenThermGatewayConnector connector;
+    private @Nullable OpenThermGatewayConnector connector;
 
     private boolean connecting = false;
 

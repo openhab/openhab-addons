@@ -106,8 +106,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 logger.info("OpenThermGatewaySocketConnector disconnected");
                 callback.disconnected();
             }
-        }     
-        catch (IOException ex) {
+        } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway." , ex);
         }        
     }
