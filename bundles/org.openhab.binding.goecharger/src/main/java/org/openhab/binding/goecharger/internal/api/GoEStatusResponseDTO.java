@@ -14,7 +14,6 @@ package org.openhab.binding.goecharger.internal.api;
 
 import com.google.gson.annotations.SerializedName;
 
-
 /**
  * The {@link GoEStatusResponse} class represents a json response from the
  * charger.
@@ -22,59 +21,44 @@ import com.google.gson.annotations.SerializedName;
  * @author Samuel Brucksch - Initial contribution
  */
 public class GoEStatusResponseDTO {
-
-  
   @SerializedName("version")
   public String version;
-
   
   @SerializedName("car")
   public Integer pwmSignal;
-
   
   @SerializedName("ast")
   public Integer accessState;
-
   
   @SerializedName("amp")
   public Integer maxChargeAmps;
 
-  
   @SerializedName("nrg")
   public Integer[] energy;
-
   
   @SerializedName("err")
   public Integer errorCode;
-
   
   @SerializedName("alw")
   public Integer allowCharging;
 
-  
   @SerializedName("cbl")
   public Integer cableEncoding;
 
-  
   @SerializedName("pha")
   public Integer phases;
-
   
   @SerializedName("tmp")
   public Integer temperature;
-
   
   @SerializedName("dws")
   public Long sessionChargeConsumption;
-
   
   @SerializedName("dwo")
   public Integer sessionChargeConsumptionLimit;
-
   
   @SerializedName("eto")
   public Long totalChargeConsumption;
-
   
   @SerializedName("fwv")
   public String firmware;
