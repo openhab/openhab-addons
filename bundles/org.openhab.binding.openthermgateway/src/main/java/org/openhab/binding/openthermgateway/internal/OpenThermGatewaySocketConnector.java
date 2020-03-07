@@ -134,6 +134,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         if (connected) {
             logger.debug("Sending message: {}", msg);
             writer.printf("%s\r\n", msg);
+            writer.flush();
         } else {
             logger.debug("Unable to send message: {}. OpenThermGatewaySocketConnector is not connected.", msg);
         }
