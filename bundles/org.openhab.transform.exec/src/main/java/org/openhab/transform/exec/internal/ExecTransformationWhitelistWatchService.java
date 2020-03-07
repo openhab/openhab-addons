@@ -65,10 +65,10 @@ public class ExecTransformationWhitelistWatchService extends AbstractWatchServic
     @Override
     protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
             @Nullable Path path) {
-        if (path.endsWith(COMMAND_WHITELIST_FILE)) {
+        if (path != null && path.endsWith(COMMAND_WHITELIST_FILE)) {
             commandWhitelist.clear();
             try {
-                Files.lines(path).filter(line -> !line.startsWith("#")).forEach(commandWhitelist::add);
+                Files.lines(path).filter(line -> !line.trim().startsWith("#")).forEach(commandWhitelist::add);
                 logger.debug("Updated command whitelist: {}", commandWhitelist);
             } catch (IOException e) {
                 logger.warn("Cannot read whitelist file, exec transformations won't be processed: {}", e.getMessage());
