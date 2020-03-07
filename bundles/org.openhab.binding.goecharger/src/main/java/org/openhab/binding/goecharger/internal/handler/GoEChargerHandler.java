@@ -290,30 +290,22 @@ public class GoEChargerHandler extends BaseThingHandler {
             result = gson.fromJson(contentResponse.getContentAsString(), GoEStatusResponseDTO.class);
             // logger.debug("Response: {}", contentResponse.getContentAsString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            retryCounter++;
-            if (retryCounter == 1) {
-                logger.warn("Error in getting data from Go-E charger, retrying once");
-                return getGoEData();
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No response received");
             result = null;
         }
 
-        if (result != null) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            return result;
-        }
-
-        return null;
+        return result;
     }
 
     private void refresh() {
         // Request new GoE data
         retryCounter = 0;
         GoEStatusResponseDTO goeResponse = getGoEData();
+
         if (goeResponse == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No response received");
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
         }
     }
