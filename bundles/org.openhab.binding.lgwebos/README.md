@@ -93,7 +93,7 @@ A sample HABPanel remote control widget can be found [in this github repository.
 
 ## Example
 
-demo.items:
+demo.things:
 
 ```
 Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
