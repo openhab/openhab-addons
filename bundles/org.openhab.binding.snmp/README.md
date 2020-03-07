@@ -123,7 +123,7 @@ Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch
 demo.things:
 
 ```
-Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
+Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c", refresh=60, timeout=2500 ] {
     Channels:
         Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
         Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
@@ -143,6 +143,12 @@ Number if4Status "Router interface 4 status [%d]" { channel="snmp:target:router:
 Switch if4Command "Router interface 4 switch [%s]" { channel="snmp:target:router:if4Command" }
 Switch devicePresent "Phone connected [%s]" { channel="snmp:target:router:devicePresent" }
 Switch receivedValue "Received 00 AA 11 [%s]" { channel="snmp:target:router:valueReceived" }
+String cpuTemperature "Temperature [%s °C]"   (grCoreSwitch) { channel="snmp:target:coreswitch:cpu_temp" [profile="transform:JS", function="divide_by_10.js"] }
+```
+../openhab2-conf/transform/divide_by_10.js
+
+```
+(function(i){ return (i / 10); })(input)
 ```
 
 demo.sitemap:
