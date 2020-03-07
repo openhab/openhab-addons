@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -69,7 +70,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void initialize() {
         logger.debug("Initializing OpenTherm Gateway handler for uid '{}'", getThing().getUID());
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initializing");
 
         config = getConfigAs(OpenThermGatewayConfiguration.class);
 
@@ -102,7 +103,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void connecting() {
         connecting = true;
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
     }
 
     @Override
@@ -115,7 +116,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void disconnected() {
         connecting = false;
         
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
 
         // retry connection if disconnect is not explicitly requested
         if (!explicitDisconnect && config.connectionRetryInterval > 0) {
