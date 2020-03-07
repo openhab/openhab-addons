@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.bluetooth.airthings.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for {@link AirthingsBinding} device.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class AirthingsConfiguration {
-    public String address;
+    public String address = "";
     public int refreshInterval;
 
     @Override
