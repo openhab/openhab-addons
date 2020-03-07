@@ -71,6 +71,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import javax.measure.quantity.ElectricCurrent;
+
 /**
  * The {@link GoEChargerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -209,22 +211,32 @@ public class GoEChargerHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case MAX_AMPERE:
                 key = "amp";
-                value = ((DecimalType) command).intValue() + "";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue());
+                } else if (command instanceof QuantityType<?>) {
+                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.AMPERE).intValue());
+                }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 key = "dwo";
-                value = ((DecimalType) command).intValue() * 10 + "";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue() * 10);
+                } else if (command instanceof QuantityType<?>) {
+                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.KILOWATT_HOUR).intValue() * 10);
+                }
                 break;
             case ALLOW_CHARGING:
                 key = "alw";
-                value = command == OnOffType.ON ? "1" : "0";
+                if (command instanceof OnOffType) {
+                    value = command == OnOffType.ON ? "1" : "0";
+                }
                 break;
             default:
         }
-        if (key != null) {
+        if (key != null && value !=null) {
             sendData(key, value);
         } else {
-            logger.warn("Could not update channel {} because it is read only", channelUID.getId());
+            logger.warn("Could not update channel {} with key {} and value {}", channelUID.getId(), key, value);
         }
     }
 
