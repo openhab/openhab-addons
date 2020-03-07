@@ -268,7 +268,10 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             case REGISTERED:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
                 channelHandlers.forEach((k, v) -> {
-                    v.refreshSubscription(k, this);
+                    // Subscriptions for the TV channel will be requested when the current app is set
+                    if (!CHANNEL_CHANNEL.equals(k) && !CHANNEL_CHANNEL_NAME.equals(k)) {
+                        v.refreshSubscription(k, subscribeOnlyIfLinked(k), this);
+                    }
                     v.onDeviceReady(k, this);
                 });
                 break;
@@ -293,6 +296,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     public void postUpdate(String channelId, State state) {
         updateState(channelId, state);
+        // When the app is updated, refresh the subscriptions for the TV channel
+        if (CHANNEL_APP_LAUNCHER.equals(channelId)) {
+            refreshChannelSubscription(CHANNEL_CHANNEL);
+            refreshChannelSubscription(CHANNEL_CHANNEL_NAME);
+        }
     }
 
     public boolean isChannelInUse(String channelId) {
@@ -303,25 +311,27 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
+        refreshChannelSubscription(channelUID.getId());
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
+        refreshChannelSubscription(channelUID.getId());
     }
 
     /**
      * Refresh channel subscription for one specific channel.
      *
-     * @param channelUID must not be <code>null</code>
+     * @param channelId must not be <code>null</code>
      */
-    private void refreshChannelSubscription(ChannelUID channelUID) {
-        String channelId = channelUID.getId();
+    private void refreshChannelSubscription(String channelId) {
         if (getSocket().isConnected()) {
-            channelHandlers.get(channelId).refreshSubscription(channelId, this);
+            channelHandlers.get(channelId).refreshSubscription(channelId, subscribeOnlyIfLinked(channelId), this);
         }
+    }
 
+    private boolean subscribeOnlyIfLinked(String channelId) {
+        return !CHANNEL_APP_LAUNCHER.equals(channelId);
     }
 
     @Override

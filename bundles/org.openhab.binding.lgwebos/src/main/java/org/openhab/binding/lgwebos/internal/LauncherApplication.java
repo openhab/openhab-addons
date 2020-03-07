@@ -103,6 +103,7 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
             @Override
             public void onSuccess(@Nullable AppInfo appInfo) {
+                logger.debug("appInfo received from subscription: {}", appInfo);
                 if (appInfo == null) {
                     handler.postUpdate(channelId, UnDefType.UNDEF);
                 } else {

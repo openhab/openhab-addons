@@ -43,9 +43,10 @@ public interface ChannelHandler {
      * and handler.
      *
      * @param channelId must not be <code>null</code>
+     * @param checkIfLinked if true, check if the channel is linked before requesting a new subscription
      * @param handler must not be <code>null</code>
      */
-    void refreshSubscription(String channelId, LGWebOSHandler handler);
+    void refreshSubscription(String channelId, boolean checkIfLinked, LGWebOSHandler handler);
 
     /**
      * Removes subscriptions if there are any.

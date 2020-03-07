@@ -100,6 +100,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
 
             @Override
             public void onSuccess(@Nullable ChannelInfo channelInfo) {
+                logger.debug("channelInfo received from subscription: {}", channelInfo);
                 if (channelInfo == null) {
                     return;
                 }

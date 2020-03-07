@@ -65,9 +65,10 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
     }
 
     @Override
-    public final synchronized void refreshSubscription(String channelId, LGWebOSHandler handler) {
+    public final synchronized void refreshSubscription(String channelId, boolean checkIfLinked,
+            LGWebOSHandler handler) {
         removeAnySubscription(handler);
-        if (handler.isChannelInUse(channelId)) { // only listen if least one item is configured for this channel
+        if (!checkIfLinked || handler.isChannelInUse(channelId)) {
             Optional<ServiceSubscription<T>> listener = getSubscription(channelId, handler);
 
             if (listener.isPresent()) {
