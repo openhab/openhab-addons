@@ -64,7 +64,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         if (thingUID == null) {
             return null;
         }
-        String label = "Airthings Wave Plus";
+        String label = "Airthings Wave+";
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "Airthings AS");

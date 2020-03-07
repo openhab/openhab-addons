@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bluez" />
 		</supported-bridge-type-refs>
 
-		<label>Airthings Wave Plus</label>
+		<label>Airthings Wave+</label>
 		<description>Indoor air quality monitor with radon detection</description>
 
 		<channels>

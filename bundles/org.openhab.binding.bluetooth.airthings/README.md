@@ -8,7 +8,7 @@ Following thing types are supported by this extension:
 
 | Thing Type ID       | Description               |
 | ------------------- | ------------------------- |
-| airthings_wave_plus | Airthings Wave Plus       |
+| airthings_wave_plus | Airthings Wave+           |
 
 
 ## Discovery
@@ -17,7 +17,7 @@ As any other Bluetooth device, Airthings devices are discovered automatically by
 
 ## Thing Configuration
 
-Supported configuration parameters for `Airthings Wave Plus` thing:
+Supported configuration parameters for `Airthings Wave+` thing:
 
 | Property                        | Type    | Default | Required | Description                                                     |
 |---------------------------------|---------|---------|----------|-----------------------------------------------------------------|
@@ -26,7 +26,7 @@ Supported configuration parameters for `Airthings Wave Plus` thing:
 
 ## Channels
 
-Following channels are supported for `Airthings Wave Plus` thing:
+Following channels are supported for `Airthings Wave+` thing:
 
 | Channel ID         | Item Type                | Description                                 |
 | ------------------ | ------------------------ | ------------------------------------------- |
