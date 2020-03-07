@@ -97,7 +97,8 @@ public class LGWebOSTVSocket {
         REGISTERED
     }
 
-    private State state = State.DISCONNECTED;
+    @Nullable
+    private State state = null;
 
     private final ConfigProvider config;
     private final WebSocketClient client;
@@ -138,14 +139,15 @@ public class LGWebOSTVSocket {
     }
 
     public State getState() {
-        return state;
+        State state = this.state;
+        return state == null ? State.DISCONNECTED : state;
     }
 
     private void setState(State state) {
         State oldState = this.state;
         if (oldState != state) {
             this.state = state;
-            Optional.ofNullable(this.listener).ifPresent(l -> l.onStateChanged(this.state));
+            Optional.ofNullable(this.listener).ifPresent(l -> l.onStateChanged(state));
         }
     }
 
@@ -191,6 +193,7 @@ public class LGWebOSTVSocket {
         }
         if (cause instanceof ConnectException && "Connection refused".equals(cause.getMessage())) {
             // this is expected during TV startup or shutdown
+            setState(State.DISCONNECTED);
             return;
         }
 
@@ -278,7 +281,7 @@ public class LGWebOSTVSocket {
     }
 
     public void sendCommand(ServiceCommand<?> command) {
-        switch (state) {
+        switch (getState()) {
             case REGISTERED:
                 int requestId = nextRequestId();
                 requests.put(requestId, command);

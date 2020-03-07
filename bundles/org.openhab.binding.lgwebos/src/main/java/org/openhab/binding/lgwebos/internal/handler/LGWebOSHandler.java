@@ -247,6 +247,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void onStateChanged(LGWebOSTVSocket.State state) {
+        logger.debug("Connection state changed to {}", state);
         switch (state) {
             case DISCONNECTED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
@@ -280,15 +281,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     @Override
     public void onError(String error) {
         logger.debug("Connection failed - error: {}", error);
-
-        switch (getSocket().getState()) {
-            case DISCONNECTED:
-                break;
-            case REGISTERING:
-            case REGISTERED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
-                break;
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
     }
 
     public void postUpdate(String channelId, State state) {
