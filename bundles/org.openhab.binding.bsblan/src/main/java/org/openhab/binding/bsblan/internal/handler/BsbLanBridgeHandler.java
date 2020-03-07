@@ -136,7 +136,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
                 "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
             // continue processing, so things can go to OFFLINE too
         } else {
-            // response received, thread device as reachable, refresh state now
+            // response received, tread device as reachable, refresh state now
             updateStatus(ThingStatus.ONLINE);
         }
 

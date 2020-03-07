@@ -26,7 +26,6 @@ import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryRes
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResult;
-import org.openhab.binding.bsblan.internal.api.BsbLanApiContentConverter;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
