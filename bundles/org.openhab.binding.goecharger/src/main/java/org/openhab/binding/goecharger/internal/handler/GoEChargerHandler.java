@@ -100,7 +100,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-    public State getValue(String channelId, GoEStatusResponseDTO goeResponse) {
+    private State getValue(String channelId, GoEStatusResponseDTO goeResponse) {
         switch (channelId) {
             case MAX_AMPERE:
                 return new QuantityType<>(goeResponse.maxChargeAmps, SmartHomeUnits.AMPERE);
@@ -199,7 +199,6 @@ public class GoEChargerHandler extends BaseThingHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             // we can not update single channels and refresh is triggered automatically
