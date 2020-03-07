@@ -42,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import javax.measure.quantity.ElectricCurrent;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,8 +72,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import javax.measure.quantity.ElectricCurrent;
 
 /**
  * The {@link GoEChargerHandler} is responsible for handling commands, which are
@@ -214,7 +214,8 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.AMPERE).intValue());
+                    value = String.valueOf(
+                            ((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.AMPERE).intValue());
                 }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
@@ -222,7 +223,9 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue() * 10);
                 } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.KILOWATT_HOUR).intValue() * 10);
+                    value = String.valueOf(
+                            ((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.KILOWATT_HOUR).intValue()
+                                    * 10);
                 }
                 break;
             case ALLOW_CHARGING:
@@ -233,7 +236,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 break;
             default:
         }
-        if (key != null && value !=null) {
+        if (key != null && value != null) {
             sendData(key, value);
         } else {
             logger.warn("Could not update channel {} with key {} and value {}", channelUID.getId(), key, value);
