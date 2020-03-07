@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
@@ -81,6 +83,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private final Map<String, ChannelHandler> channelHandlers;
 
     private final LauncherApplication appLauncher = new LauncherApplication();
+
     private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
@@ -226,6 +229,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             return;
         }
 
+        if (RefreshType.REFRESH.equals(command)) {
+            // do nothing - handlers don't support this yet.
+            return;
+        }
+
         handler.onReceiveCommand(channelUID.getId(), this, command);
     }
 
@@ -305,35 +313,12 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     public void postUpdate(String channelId, State state) {
         updateState(channelId, state);
-    }
 
-    public boolean isChannelInUse(String channelId) {
-        return isLinked(channelId);
-    }
-
-    // channel linking modifications
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
-    }
-
-    /**
-     * Refresh channel subscription for one specific channel.
-     *
-     * @param channelUID must not be <code>null</code>
-     */
-    private void refreshChannelSubscription(ChannelUID channelUID) {
-        String channelId = channelUID.getId();
-        if (getSocket().isConnected()) {
-            channelHandlers.get(channelId).refreshSubscription(channelId, this);
+        // When the app is updated, refresh the subscriptions for channel name and number
+        if (CHANNEL_APP_LAUNCHER.equals(channelId) && !state.toString().isEmpty()) {
+            Stream.of(CHANNEL_CHANNEL, CHANNEL_CHANNEL_NAME)
+                    .forEach(k -> channelHandlers.get(k).refreshSubscription(k, this));
         }
-
     }
 
     @Override

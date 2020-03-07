@@ -67,14 +67,13 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
     @Override
     public final synchronized void refreshSubscription(String channelId, LGWebOSHandler handler) {
         removeAnySubscription(handler);
-        if (handler.isChannelInUse(channelId)) { // only listen if least one item is configured for this channel
-            Optional<ServiceSubscription<T>> listener = getSubscription(channelId, handler);
 
-            if (listener.isPresent()) {
-                logger.debug("Subscribed {} on IP: {}", this.getClass().getName(), handler.getThing().getUID());
-                subscriptions.put(handler.getThing().getUID(), listener.get());
-            }
+        Optional<ServiceSubscription<T>> listener = getSubscription(channelId, handler);
+        if (listener.isPresent()) {
+            logger.debug("Subscribed {} on Thing: {}", this.getClass().getName(), handler.getThing().getUID());
+            subscriptions.put(handler.getThing().getUID(), listener.get());
         }
+
     }
 
     /**
@@ -95,7 +94,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
         ServiceSubscription<T> l = subscriptions.remove(handler.getThing().getUID());
         if (l != null) {
             handler.getSocket().unsubscribe(l);
-            logger.debug("Unsubscribed {} on IP: {}", this.getClass().getName(), handler.getThing().getUID());
+            logger.debug("Unsubscribed {} on Thing: {}", this.getClass().getName(), handler.getThing().getUID());
         }
     }
 
