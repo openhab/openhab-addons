@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 
@@ -21,6 +22,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public class BlueGigaAdapterConstants {
 
     // List of all Thing Type UIDs
