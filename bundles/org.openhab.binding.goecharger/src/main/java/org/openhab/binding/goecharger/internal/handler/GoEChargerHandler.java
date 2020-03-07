@@ -209,11 +209,11 @@ public class GoEChargerHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case MAX_AMPERE:
                 key = "amp";
-                value = ((QuantityType<?>) command).intValue() + "";
+                value = ((DecimalType) command).intValue() + "";
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 key = "dwo";
-                value = ((QuantityType<?>) command).intValue() * 10 + "";
+                value = ((DecimalType) command).intValue() * 10 + "";
                 break;
             case ALLOW_CHARGING:
                 key = "alw";
