@@ -97,8 +97,7 @@ public class LGWebOSTVSocket {
         REGISTERED
     }
 
-    @Nullable
-    private State state = null;
+    private @Nullable State state;
 
     private final ConfigProvider config;
     private final WebSocketClient client;
