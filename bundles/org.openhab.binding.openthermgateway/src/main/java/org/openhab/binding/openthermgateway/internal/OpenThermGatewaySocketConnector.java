@@ -53,6 +53,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
+    private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new HashMap<>();
+
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
         this.callback = callback;
         this.ipaddress = ipaddress;
@@ -121,8 +123,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     public boolean isConnected() {
         return connected;
     }
-
-    Map<String, Entry<Long, GatewayCommand>> pendingCommands = new HashMap<>();
 
     @Override
     public void sendCommand(GatewayCommand command) {
