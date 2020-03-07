@@ -89,7 +89,6 @@ public class GoEChargerHandler extends BaseThingHandler {
     private final Gson gson = new Gson();
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private int retryCounter = 0;
 
     private final HttpClient httpClient;
 
@@ -298,7 +297,6 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     private void refresh() {
         // Request new GoE data
-        retryCounter = 0;
         GoEStatusResponseDTO goeResponse = getGoEData();
 
         if (goeResponse == null) {
