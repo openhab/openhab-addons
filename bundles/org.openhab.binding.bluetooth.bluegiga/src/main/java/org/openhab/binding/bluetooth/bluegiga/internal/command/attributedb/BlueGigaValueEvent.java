@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeChangeReason;
 
 /**
@@ -27,16 +28,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeChan
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaValueEvent extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaValueEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x00;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Reason why value has changed see: enum Attribute Change Reason
@@ -84,16 +79,6 @@ public class BlueGigaValueEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * Reason why value has changed see: enum Attribute Change Reason
      * <p>
      * BlueGiga API type is <i>AttributeChangeReason</i> - Java type is {@link AttributeChangeReason}
@@ -103,6 +88,7 @@ public class BlueGigaValueEvent extends BlueGigaResponse {
     public AttributeChangeReason getReason() {
         return reason;
     }
+
     /**
      * Attribute handle, which was changed
      * <p>
@@ -113,6 +99,7 @@ public class BlueGigaValueEvent extends BlueGigaResponse {
     public int getHandle() {
         return handle;
     }
+
     /**
      * Offset into attribute value where data starts
      * <p>
@@ -123,6 +110,7 @@ public class BlueGigaValueEvent extends BlueGigaResponse {
     public int getOffset() {
         return offset;
     }
+
     /**
      * Attribute value
      * <p>

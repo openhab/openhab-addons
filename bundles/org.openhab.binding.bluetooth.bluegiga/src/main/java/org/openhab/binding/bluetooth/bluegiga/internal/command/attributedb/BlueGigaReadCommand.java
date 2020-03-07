@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -27,6 +28,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaReadCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x01;
@@ -53,6 +55,7 @@ public class BlueGigaReadCommand extends BlueGigaCommand {
     public void setHandle(int handle) {
         this.handle = handle;
     }
+
     /**
      * Offset to read from. Maximum of 32 bytes can be read at a time.
      *

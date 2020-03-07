@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Listener interface for events
  *
  * @author Chris Jackson - Initial contribution and API
  *
  */
+@NonNullByDefault
 public interface BlueGigaEventListener {
     /**
      * Called when an event is received

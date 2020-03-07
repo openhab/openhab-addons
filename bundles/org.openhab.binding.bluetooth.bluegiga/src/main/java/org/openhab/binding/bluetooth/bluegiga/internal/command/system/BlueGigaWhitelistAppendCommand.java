@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.system;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -29,6 +30,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaWhitelistAppendCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x00;
     public static int COMMAND_METHOD = 0x0A;
@@ -39,7 +41,7 @@ public class BlueGigaWhitelistAppendCommand extends BlueGigaCommand {
      * <p>
      * BlueGiga API type is <i>bd_addr</i> - Java type is {@link String}
      */
-    private String address;
+    private String address = "";
 
     /**
      * Bluetooth device address to add to the running white list. Maximum of 8 can be stored before
