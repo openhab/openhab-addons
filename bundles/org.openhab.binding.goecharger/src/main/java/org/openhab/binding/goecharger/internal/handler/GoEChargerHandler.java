@@ -34,10 +34,13 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L3;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ACCESS_STATE;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
@@ -80,118 +83,114 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     private @Nullable GoEChargerConfiguration config;
 
-    private final Gson gson;
+    private List<String> allChannels = new ArrayList<>();
+
+    private final Gson gson = new Gson();
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private int retryCounter = 0;
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public GoEChargerHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        gson = new Gson();
         this.httpClient = httpClient;
     }
 
-    public State getValue(String channelId, GoEStatusResponseDTO goeResponse) {
-        if (goeResponse != null) {
-            switch (channelId) {
-                case MAX_AMPERE:
-                    return new QuantityType<>(goeResponse.maxChargeAmps, SmartHomeUnits.AMPERE);
-                case PWM_SIGNAL:
-                    // TODO more readable string value?
-                    return new DecimalType(goeResponse.pwmSignal);
-                case ERROR:
-                    String error = null;
-                    switch (goeResponse.errorCode) {
-                        case 0:
-                            error = "NONE";
-                            break;
-                        case 1:
-                            error = "RCCB";
-                            break;
-                        case 3:
-                            error = "PHASE";
-                            break;
-                        case 8:
-                            error = "NO_GROUND";
-                            break;
-                        default:
-                            error = "INTERNAL";
-                            break;
-                    }
-                    return new StringType(error);
-                case ACCESS_STATE:
-                    String accessState = null;
-                    switch (goeResponse.accessState) {
-                        case 0:
-                            accessState = "OPEN";
-                            break;
-                        case 1:
-                            accessState = "RFID";
-                            break;
-                        case 2:
-                            accessState = "AWATTAR";
-                            break;
-                        case 3:
-                            accessState = "TIMER";
-                            break;
-                        default:
-                            accessState = "UNKNOWN";
-                            break;
-                    }
-                    return new StringType(accessState);
-                case ALLOW_CHARGING:
-                    return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
-                case CABLE_ENCODING:
-                    return new QuantityType<>(goeResponse.cableEncoding, SmartHomeUnits.AMPERE);
-                case PHASES:
-                    int count = 0;
-                    if (goeResponse.energy[4] > 0) { // amps P1
-                        count++;
-                    }
-                    if (goeResponse.energy[5] > 0) { // amps P2
-                        count++;
-                    }
-                    if (goeResponse.energy[6] > 0) { // amps P3
-                        count++;
-                    }
-                    return new DecimalType(count);
-                case TEMPERATURE:
-                    return new QuantityType<>(goeResponse.temperature, SIUnits.CELSIUS);
-                case SESSION_CHARGE_CONSUMPTION:
-                    return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
-                            SmartHomeUnits.KILOWATT_HOUR);
-                case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                    return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 10d),
-                            SmartHomeUnits.KILOWATT_HOUR);
-                case TOTAL_CONSUMPTION:
-                    return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d),
-                            SmartHomeUnits.KILOWATT_HOUR);
-                case FIRMWARE:
-                    return new StringType(goeResponse.firmware);
-                case VOLTAGE_L1:
-                    return new QuantityType<>(goeResponse.energy[0], SmartHomeUnits.VOLT);
-                case VOLTAGE_L2:
-                    return new QuantityType<>(goeResponse.energy[1], SmartHomeUnits.VOLT);
-                case VOLTAGE_L3:
-                    return new QuantityType<>(goeResponse.energy[2], SmartHomeUnits.VOLT);
-                case CURRENT_L1:
-                    return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), SmartHomeUnits.AMPERE);
-                case CURRENT_L2:
-                    return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), SmartHomeUnits.AMPERE);
-                case CURRENT_L3:
-                    return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), SmartHomeUnits.AMPERE);
-                case POWER_L1:
-                    return new QuantityType<>((Double) (goeResponse.energy[7] / 10d),
-                            SmartHomeUnits.WATT);
-                case POWER_L2:
-                    return new QuantityType<>((Double) (goeResponse.energy[8] / 10d),
-                            SmartHomeUnits.WATT);
-                case POWER_L3:
-                    return new QuantityType<>((Double) (goeResponse.energy[9] / 10d),
-                            SmartHomeUnits.WATT);
-            }
+    public State getValue(String channelId, @Nullable GoEStatusResponseDTO goeResponse) {
+        switch (channelId) {
+            case MAX_AMPERE:
+                return new QuantityType<>(goeResponse.maxChargeAmps, SmartHomeUnits.AMPERE);
+            case PWM_SIGNAL:
+                // TODO more readable string value?
+                return new DecimalType(goeResponse.pwmSignal);
+            case ERROR:
+                String error = null;
+                switch (goeResponse.errorCode) {
+                    case 0:
+                        error = "NONE";
+                        break;
+                    case 1:
+                        error = "RCCB";
+                        break;
+                    case 3:
+                        error = "PHASE";
+                        break;
+                    case 8:
+                        error = "NO_GROUND";
+                        break;
+                    default:
+                        error = "INTERNAL";
+                        break;
+                }
+                return new StringType(error);
+            case ACCESS_STATE:
+                String accessState = null;
+                switch (goeResponse.accessState) {
+                    case 0:
+                        accessState = "OPEN";
+                        break;
+                    case 1:
+                        accessState = "RFID";
+                        break;
+                    case 2:
+                        accessState = "AWATTAR";
+                        break;
+                    case 3:
+                        accessState = "TIMER";
+                        break;
+                    default:
+                        accessState = "UNKNOWN";
+                        break;
+                }
+                return new StringType(accessState);
+            case ALLOW_CHARGING:
+                return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
+            case CABLE_ENCODING:
+                return new QuantityType<>(goeResponse.cableEncoding, SmartHomeUnits.AMPERE);
+            case PHASES:
+                int count = 0;
+                if (goeResponse.energy[4] > 0) { // current P1
+                    count++;
+                }
+                if (goeResponse.energy[5] > 0) { // current P2
+                    count++;
+                }
+                if (goeResponse.energy[6] > 0) { // current P3
+                    count++;
+                }
+                return new DecimalType(count);
+            case TEMPERATURE:
+                return new QuantityType<>(goeResponse.temperature, SIUnits.CELSIUS);
+            case SESSION_CHARGE_CONSUMPTION:
+                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
+                        SmartHomeUnits.KILOWATT_HOUR);
+            case SESSION_CHARGE_CONSUMPTION_LIMIT:
+                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 10d),
+                        SmartHomeUnits.KILOWATT_HOUR);
+            case TOTAL_CONSUMPTION:
+                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d),
+                        SmartHomeUnits.KILOWATT_HOUR);
+            case FIRMWARE:
+                return new StringType(goeResponse.firmware);
+            case VOLTAGE_L1:
+                return new QuantityType<>(goeResponse.energy[0], SmartHomeUnits.VOLT);
+            case VOLTAGE_L2:
+                return new QuantityType<>(goeResponse.energy[1], SmartHomeUnits.VOLT);
+            case VOLTAGE_L3:
+                return new QuantityType<>(goeResponse.energy[2], SmartHomeUnits.VOLT);
+            case CURRENT_L1:
+                return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), SmartHomeUnits.AMPERE);
+            case CURRENT_L2:
+                return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), SmartHomeUnits.AMPERE);
+            case CURRENT_L3:
+                return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), SmartHomeUnits.AMPERE);
+            case POWER_L1:
+                return new QuantityType<>((Double) (goeResponse.energy[7] / 10d), SmartHomeUnits.WATT);
+            case POWER_L2:
+                return new QuantityType<>((Double) (goeResponse.energy[8] / 10d), SmartHomeUnits.WATT);
+            case POWER_L3:
+                return new QuantityType<>((Double) (goeResponse.energy[9] / 10d), SmartHomeUnits.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -200,7 +199,8 @@ public class GoEChargerHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refresh();
+            // we can not update single channels and refresh is triggered automatically
+            // anyways
             return;
         }
 
@@ -209,16 +209,17 @@ public class GoEChargerHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case MAX_AMPERE:
                 key = "amp";
-                value = ((QuantityType<?>)command).intValue() + "";
+                value = ((QuantityType<?>) command).intValue() + "";
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 key = "dwo";
-                value = ((QuantityType<?>)command).intValue()*10  + "";
+                value = ((QuantityType<?>) command).intValue() * 10 + "";
                 break;
             case ALLOW_CHARGING:
                 key = "alw";
                 value = command == OnOffType.ON ? "1" : "0";
                 break;
+            default:
         }
         if (key != null) {
             sendData(key, value);
@@ -230,6 +231,7 @@ public class GoEChargerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GoEChargerConfiguration.class);
+        allChannels = getThing().getChannels().stream().map(channel -> channel.getUID().getId()).collect(Collectors.toList());
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -255,7 +257,8 @@ public class GoEChargerHandler extends BaseThingHandler {
             // TODO check if value really changed
             logger.debug("Response: {}", result);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No response received on command");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "No response received on command");
             return;
         }
 
@@ -306,9 +309,11 @@ public class GoEChargerHandler extends BaseThingHandler {
         // Request new GoE data
         retryCounter = 0;
         GoEStatusResponseDTO goeResponse = getGoEData();
-
-        // Update all channels from the updated GoE data
-        getThing().getChannels().forEach(channel -> updateState(channel.getUID().getId(), getValue(channel.getUID().getId(), goeResponse)));
+        if (goeResponse == null) {
+            allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
+        } else {
+           allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
+        }
     }
 
     private void startAutomaticRefresh() {
