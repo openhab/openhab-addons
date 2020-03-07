@@ -12,27 +12,27 @@
  */
 package org.openhab.binding.goecharger.internal.handler;
 
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_AMPERE;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PWM_SIGNAL;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ACCESS_STATE;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ALLOW_CHARGING;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CABLE_ENCODING;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMPERATURE;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION_LIMIT;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TOTAL_CONSUMPTION;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L1;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L2;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L3;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CURRENT_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CURRENT_L2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CURRENT_L3;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_AMPERE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L2;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L3;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ACCESS_STATE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PWM_SIGNAL;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.SESSION_CHARGE_CONSUMPTION_LIMIT;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TEMPERATURE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.TOTAL_CONSUMPTION;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L1;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L2;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.VOLTAGE_L3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +42,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -66,9 +68,8 @@ import org.openhab.binding.goecharger.internal.GoEChargerConfiguration;
 import org.openhab.binding.goecharger.internal.api.GoEStatusResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link GoEChargerHandler} is responsible for handling commands, which are
@@ -97,7 +98,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-    public State getValue(String channelId, @Nullable GoEStatusResponseDTO goeResponse) {
+    public State getValue(String channelId, GoEStatusResponseDTO goeResponse) {
         switch (channelId) {
             case MAX_AMPERE:
                 return new QuantityType<>(goeResponse.maxChargeAmps, SmartHomeUnits.AMPERE);
@@ -231,7 +232,8 @@ public class GoEChargerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GoEChargerConfiguration.class);
-        allChannels = getThing().getChannels().stream().map(channel -> channel.getUID().getId()).collect(Collectors.toList());
+        allChannels = getThing().getChannels().stream().map(channel -> channel.getUID().getId())
+                .collect(Collectors.toList());
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -312,7 +314,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         if (goeResponse == null) {
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
-           allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
+            allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
         }
     }
 

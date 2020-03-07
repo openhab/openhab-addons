@@ -21,45 +21,45 @@ import com.google.gson.annotations.SerializedName;
  * @author Samuel Brucksch - Initial contribution
  */
 public class GoEStatusResponseDTO {
-  @SerializedName("version")
-  public String version;
-  
-  @SerializedName("car")
-  public Integer pwmSignal;
-  
-  @SerializedName("ast")
-  public Integer accessState;
-  
-  @SerializedName("amp")
-  public Integer maxChargeAmps;
+    @SerializedName("version")
+    public String version;
 
-  @SerializedName("nrg")
-  public Integer[] energy;
-  
-  @SerializedName("err")
-  public Integer errorCode;
-  
-  @SerializedName("alw")
-  public Integer allowCharging;
+    @SerializedName("car")
+    public Integer pwmSignal;
 
-  @SerializedName("cbl")
-  public Integer cableEncoding;
+    @SerializedName("ast")
+    public Integer accessState;
 
-  @SerializedName("pha")
-  public Integer phases;
-  
-  @SerializedName("tmp")
-  public Integer temperature;
-  
-  @SerializedName("dws")
-  public Long sessionChargeConsumption;
-  
-  @SerializedName("dwo")
-  public Integer sessionChargeConsumptionLimit;
-  
-  @SerializedName("eto")
-  public Long totalChargeConsumption;
-  
-  @SerializedName("fwv")
-  public String firmware;
+    @SerializedName("amp")
+    public Integer maxChargeAmps;
+
+    @SerializedName("nrg")
+    public Integer[] energy;
+
+    @SerializedName("err")
+    public Integer errorCode;
+
+    @SerializedName("alw")
+    public Integer allowCharging;
+
+    @SerializedName("cbl")
+    public Integer cableEncoding;
+
+    @SerializedName("pha")
+    public Integer phases;
+
+    @SerializedName("tmp")
+    public Integer temperature;
+
+    @SerializedName("dws")
+    public Long sessionChargeConsumption;
+
+    @SerializedName("dwo")
+    public Integer sessionChargeConsumptionLimit;
+
+    @SerializedName("eto")
+    public Long totalChargeConsumption;
+
+    @SerializedName("fwv")
+    public String firmware;
 }
