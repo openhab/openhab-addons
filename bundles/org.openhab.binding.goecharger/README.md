@@ -7,46 +7,41 @@ It is a mobile wallbox for charging EVs and has an open REST API for reading dat
 
 This binding supports go-eCharger HOME+ with 7.4kW or 22kW.
 
-## Discovery
-
-There is no auto discovery.
-You need to get the IP from the Go-eCharger and put it into the configuration.
-
 ## Thing Configuration
 
 The thing has two configuration parameters:
 
-| Parameter | Description                                                              | Required |
-|-----------|------------------------------------------------------------------------- |----------|
-| ip        | the ip-address of your go-eCharger | yes |
-| refreshInterval  | Interval to read data, default 5 (in seconds) | no |
+| Parameter       | Description                                   | Required |
+|-----------------|-----------------------------------------------|----------|
+| ip              | the ip-address of your go-eCharger            | yes      |
+| refreshInterval | Interval to read data, default 5 (in seconds) | no       |
 
 ## Channels
 
 Currently available channels are 
-| Channel ID | Item Type    | Description              |
-|------------|--------------|------------------------- |
-| maxAmpere | Number:ElectricCurrent | Maximum current allowed to use for charging |
-| pwmSignal | Number | Signal status for PWM signal |
-| error | String | Error code of charger |
-| voltageL1 | Number:ElectricPotential | Voltage on L1 |
-| voltageL2 | Number:ElectricPotential | Voltage on L2 |
-| voltageL3 | Number:ElectricPotential | Voltage on L3 |
-| currentL1 | Number:ElectricCurrent | Current on L1 |
-| currentL2 | Number:ElectricCurrent | Current on L2 |
-| currentL3 | Number:ElectricCurrent | Current on L3 |
-| powerL1 | Number:Power | Power on L1 |
-| powerL2 | Number:Power | Power on L2 |
-| powerL3 | Number:Power | Power on L2 |
-| phases | Number | Amount of phases currently used for charging |
-| sessionChargeConsumptionLimit | Number:Energy | Wallbox stops charging after defined value, disable with 0 |
-| sessionChargeConsumption | Number:Energy | Amount of kWh that have been charged in this session |
-| totalConsumption | Number:Energy | Amount of kWh that have been charged since installation |
-| allowCharging | Switch | If `ON` charging is allowed |
-| cableEncoding | Number:ElectricCurrent | Specifies the max amps that can be charged with that cable |
-| temperature | Number:Temperature | Temperature of the Go-eCharger |
-| firmware | String | Firmware Version |
-| accessState | String | Access state, for example OPEN, RFID ... |
+| Channel ID                    | Item Type                | Description                                                |
+|-------------------------------|--------------------------|------------------------------------------------------------|
+| maxAmpere                     | Number:ElectricCurrent   | Maximum current allowed to use for charging                |
+| pwmSignal                     | Number                   | Signal status for PWM signal                               |
+| error                         | String                   | Error code of charger                                      |
+| voltageL1                     | Number:ElectricPotential | Voltage on L1                                              |
+| voltageL2                     | Number:ElectricPotential | Voltage on L2                                              |
+| voltageL3                     | Number:ElectricPotential | Voltage on L3                                              |
+| currentL1                     | Number:ElectricCurrent   | Current on L1                                              |
+| currentL2                     | Number:ElectricCurrent   | Current on L2                                              |
+| currentL3                     | Number:ElectricCurrent   | Current on L3                                              |
+| powerL1                       | Number:Power             | Power on L1                                                |
+| powerL2                       | Number:Power             | Power on L2                                                |
+| powerL3                       | Number:Power             | Power on L2                                                |
+| phases                        | Number                   | Amount of phases currently used for charging               |
+| sessionChargeConsumptionLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0 |
+| sessionChargeConsumption      | Number:Energy            | Amount of kWh that have been charged in this session       |
+| totalConsumption              | Number:Energy            | Amount of kWh that have been charged since installation    |
+| allowCharging                 | Switch                   | If `ON` charging is allowed                                |
+| cableEncoding                 | Number:ElectricCurrent   | Specifies the max amps that can be charged with that cable |
+| temperature                   | Number:Temperature       | Temperature of the Go-eCharger                             |
+| firmware                      | String                   | Firmware Version                                           |
+| accessState                   | String                   | Access state, for example OPEN, RFID ...                   |
 
 ## Full Example
 

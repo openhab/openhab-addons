@@ -45,12 +45,10 @@ import org.osgi.service.component.annotations.Reference;
 public class GoEChargerHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GOE);
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
-    public GoEChargerHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
-            final @Reference TranslationProvider i18nProvider) {
+    public GoEChargerHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 

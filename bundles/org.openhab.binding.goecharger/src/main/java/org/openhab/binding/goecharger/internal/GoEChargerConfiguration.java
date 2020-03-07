@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class GoEChargerConfiguration {
 
-    @Nullable
-    public String ip;
+    public @Nullable String ip;
     public Integer refreshInterval = 5;
 }
