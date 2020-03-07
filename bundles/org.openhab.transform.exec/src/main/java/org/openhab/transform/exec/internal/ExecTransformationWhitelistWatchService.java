@@ -12,14 +12,7 @@
  */
 package org.openhab.transform.exec.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.ConfigConstants;
-import org.eclipse.smarthome.core.service.AbstractWatchService;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +23,14 @@ import java.nio.file.WatchEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.core.service.AbstractWatchService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ExecTransformationWhitelistWatchService} provides a whitelist check for exec commands
@@ -63,11 +63,12 @@ public class ExecTransformationWhitelistWatchService extends AbstractWatchServic
     }
 
     @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event,  WatchEvent.@Nullable Kind<?> kind, @Nullable Path path) {
-        if (path.endsWith(COMMAND_WHITELIST_FILE)) {
+    protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
+            @Nullable Path path) {
+        if (path != null && path.endsWith(COMMAND_WHITELIST_FILE)) {
             commandWhitelist.clear();
-            try  {
-                Files.lines(path).forEach(commandWhitelist::add);
+            try {
+                Files.lines(path).filter(line -> !line.trim().startsWith("#")).forEach(commandWhitelist::add);
                 logger.debug("Updated command whitelist: {}", commandWhitelist);
             } catch (IOException e) {
                 logger.warn("Cannot read whitelist file, exec transformations won't be processed: {}", e.getMessage());
