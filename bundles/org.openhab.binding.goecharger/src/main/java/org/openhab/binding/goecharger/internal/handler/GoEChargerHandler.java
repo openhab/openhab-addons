@@ -43,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.Energy;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -224,8 +225,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                     value = String.valueOf(((DecimalType) command).intValue() * 10);
                 } else if (command instanceof QuantityType<?>) {
                     value = String.valueOf(
-                            ((QuantityType<ElectricCurrent>) command).toUnit(SmartHomeUnits.KILOWATT_HOUR).intValue()
-                                    * 10);
+                            ((QuantityType<Energy>) command).toUnit(SmartHomeUnits.KILOWATT_HOUR).intValue() * 10);
                 }
                 break;
             case ALLOW_CHARGING:
