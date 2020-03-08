@@ -31,7 +31,7 @@ public class GoEStatusResponseDTO {
     public Integer accessState;
 
     @SerializedName("amp")
-    public Integer maxChargeAmps;
+    public Integer maxCurrent;
 
     @SerializedName("nrg")
     public Integer[] energy;

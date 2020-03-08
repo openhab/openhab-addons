@@ -20,7 +20,7 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CURRENT_L3;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_AMPERE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L2;
@@ -102,11 +102,26 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     private State getValue(String channelId, GoEStatusResponseDTO goeResponse) {
         switch (channelId) {
-            case MAX_AMPERE:
-                return new QuantityType<>(goeResponse.maxChargeAmps, SmartHomeUnits.AMPERE);
+            case MAX_CURRENT:
+                return new QuantityType<>(goeResponse.maxCurrent, SmartHomeUnits.AMPERE);
             case PWM_SIGNAL:
-                // TODO more readable string value?
-                return new DecimalType(goeResponse.pwmSignal);
+                String pwmSignal = null;
+                switch (goeResponse.pwmSignal) {
+                    case 1:
+                        pwmSignal = "READY_NO_CAR";
+                        break;
+                    case 2:
+                        pwmSignal = "CHARGING";
+                        break;
+                    case 3:
+                        pwmSignal = "WAITING_FOR_CAR";
+                        break;
+                    case 4:
+                        pwmSignal = "CHARGING_DONE_CAR_CONNECTED";
+                        break;
+                    default:
+                }
+                return new StringType(pwmSignal);
             case ERROR:
                 String error = null;
                 switch (goeResponse.errorCode) {
@@ -209,7 +224,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         String key = null;
         String value = null;
         switch (channelUID.getId()) {
-            case MAX_AMPERE:
+            case MAX_CURRENT:
                 key = "amp";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
@@ -255,31 +270,23 @@ public class GoEChargerHandler extends BaseThingHandler {
     }
 
     private String getUrl(String type) {
-        String urlStr = type;
-        return urlStr.replace("%IP%", StringUtils.trimToEmpty(config.ip));
+        return type.replace("%IP%", StringUtils.trimToEmpty(config.ip));
     }
 
     private void sendData(String key, String value) {
         String urlStr = getUrl(GoEChargerBindingConstants.MQTT_URL).replace("%KEY%", key).replace("%VALUE%", value);
         logger.debug("POST URL = {}", urlStr);
 
-        String result = null;
         try {
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.POST)
                     .timeout(5, TimeUnit.SECONDS).send();
-
-            result = contentResponse.getContentAsString();
-            // TODO check if value really changed
-            logger.debug("Response: {}", result);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response: {}", contentResponse.getContentAsString());
+            }
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "No response received on command");
-            return;
-        }
-
-        if (result != null) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            return;
         }
     }
 
@@ -301,7 +308,9 @@ public class GoEChargerHandler extends BaseThingHandler {
                     .timeout(5, TimeUnit.SECONDS).send();
 
             result = gson.fromJson(contentResponse.getContentAsString(), GoEStatusResponseDTO.class);
-            // logger.debug("Response: {}", contentResponse.getContentAsString());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response: {}", contentResponse.getContentAsString());
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             result = null;
         }

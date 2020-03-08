@@ -19,29 +19,29 @@ The thing has two configuration parameters:
 ## Channels
 
 Currently available channels are 
-| Channel ID                    | Item Type                | Description                                                |
-|-------------------------------|--------------------------|------------------------------------------------------------|
-| maxAmpere                     | Number:ElectricCurrent   | Maximum current allowed to use for charging                |
-| pwmSignal                     | Number                   | Signal status for PWM signal                               |
-| error                         | String                   | Error code of charger                                      |
-| voltageL1                     | Number:ElectricPotential | Voltage on L1                                              |
-| voltageL2                     | Number:ElectricPotential | Voltage on L2                                              |
-| voltageL3                     | Number:ElectricPotential | Voltage on L3                                              |
-| currentL1                     | Number:ElectricCurrent   | Current on L1                                              |
-| currentL2                     | Number:ElectricCurrent   | Current on L2                                              |
-| currentL3                     | Number:ElectricCurrent   | Current on L3                                              |
-| powerL1                       | Number:Power             | Power on L1                                                |
-| powerL2                       | Number:Power             | Power on L2                                                |
-| powerL3                       | Number:Power             | Power on L2                                                |
-| phases                        | Number                   | Amount of phases currently used for charging               |
-| sessionChargeConsumptionLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0 |
-| sessionChargeConsumption      | Number:Energy            | Amount of kWh that have been charged in this session       |
-| totalConsumption              | Number:Energy            | Amount of kWh that have been charged since installation    |
-| allowCharging                 | Switch                   | If `ON` charging is allowed                                |
-| cableEncoding                 | Number:ElectricCurrent   | Specifies the max amps that can be charged with that cable |
-| temperature                   | Number:Temperature       | Temperature of the Go-eCharger                             |
-| firmware                      | String                   | Firmware Version                                           |
-| accessState                   | String                   | Access state, for example OPEN, RFID ...                   |
+| Channel ID               | Item Type                | Description                                                   |
+|--------------------------|--------------------------|---------------------------------------------------------------|
+| maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   |
+| pwmSignal                | String                   | Signal status for PWM signal                                  |
+| error                    | String                   | Error code of charger                                         |
+| voltageL1                | Number:ElectricPotential | Voltage on L1                                                 |
+| voltageL2                | Number:ElectricPotential | Voltage on L2                                                 |
+| voltageL3                | Number:ElectricPotential | Voltage on L3                                                 |
+| currentL1                | Number:ElectricCurrent   | Current on L1                                                 |
+| currentL2                | Number:ElectricCurrent   | Current on L2                                                 |
+| currentL3                | Number:ElectricCurrent   | Current on L3                                                 |
+| powerL1                  | Number:Power             | Power on L1                                                   |
+| powerL2                  | Number:Power             | Power on L2                                                   |
+| powerL3                  | Number:Power             | Power on L2                                                   |
+| phases                   | Number                   | Amount of phases currently used for charging                  |
+| sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    |
+| sessionChargedEnergy     | Number:Energy            | Amount of kWh that have been charged in this session          |
+| totalChargedEnergy       | Number:Energy            | Amount of kWh that have been charged since installation       |
+| allowCharging            | Switch                   | If `ON` charging is allowed                                   |
+| cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable |
+| temperature              | Number:Temperature       | Temperature of the Go-eCharger                                |
+| firmware                 | String                   | Firmware Version                                              |
+| accessState              | String                   | Access state, for example OPEN, RFID ...                      |
 
 ## Full Example
 
@@ -54,27 +54,27 @@ Thing goecharger:goe:garage [ip="192.168.1.36",refreshInterval=5]
 demo.items
 
 ```
-Number:ElectricCurrent     GoEChargerBindingThingMaxAmpere                       "Maximum current"                 {channel="goecharger:goe:garage:maxAmpere"}
-Number                     GoEChargerBindingThingPwmSignal                       "Pwm signal status"               {channel="goecharger:goe:garage:pwmSignal"}
-String                     GoEChargerBindingThingError                           "Error code"                      {channel="goecharger:goe:garage:error"}
-Number:ElectricPotential   GoEChargerBindingThingVoltageL1                       "Voltage l1"                      {channel="goecharger:goe:garage:voltageL1"}
-Number:ElectricPotential   GoEChargerBindingThingVoltageL2                       "Voltage l2"                      {channel="goecharger:goe:garage:voltageL2"}
-Number:ElectricPotential   GoEChargerBindingThingVoltageL3                       "Voltage l3"                      {channel="goecharger:goe:garage:voltageL3"}
-Number:ElectricCurrent     GoEChargerBindingThingCurrentL1                       "Current l1"                      {channel="goecharger:goe:garage:currentL1"}
-Number:ElectricCurrent     GoEChargerBindingThingCurrentL2                       "Current l2"                      {channel="goecharger:goe:garage:currentL2"}
-Number:ElectricCurrent     GoEChargerBindingThingCurrentL3                       "Current l3"                      {channel="goecharger:goe:garage:currentL3"}
-Number:Power               GoEChargerBindingThingPowerL1                         "Power l1"                        {channel="goecharger:goe:garage:powerL1"}
-Number:Power               GoEChargerBindingThingPowerL2                         "Power l2"                        {channel="goecharger:goe:garage:powerL2"}
-Number:Power               GoEChargerBindingThingPowerL3                         "Power l3"                        {channel="goecharger:goe:garage:powerL3"}
-Number                     GoEChargerBindingThingPhases                          "Phases"                          {channel="goecharger:goe:garage:phases"}
-Number:Energy              GoEChargerBindingThingSessionChargeConsumptionLimit   "Current session charge limit"    {channel="goecharger:goe:garage:sessionChargeConsumptionLimit"}
-Number:Energy              GoEChargerBindingThingSessionChargeConsumption        "Current session charge amount"   {channel="goecharger:goe:garage:sessionChargeConsumption"}
-Number:Energy              GoEChargerBindingThingTotalConsumption                "Total charge amount"             {channel="goecharger:goe:garage:totalConsumption"}
-Switch                     GoEChargerBindingThingAllowCharging                   "Allow charging"                  {channel="goecharger:goe:garage:allowCharging"}
-Number:ElectricCurrent     GoEChargerBindingThingCableEncoding                   "Cable encoding"                  {channel="goecharger:goe:garage:cableEncoding"}
-Number:Temperature         GoEChargerBindingThingTemperature                     "Temperature"                     {channel="goecharger:goe:garage:temperature"}
-String                     GoEChargerBindingThingFirmware                        "Firmware"                        {channel="goecharger:goe:garage:firmware"}
-String                     GoEChargerBindingThingAccessState                     "Access state"                    {channel="goecharger:goe:garage:accessState"}
+Number:ElectricCurrent     GoEChargerMaxCurrent                 "Maximum current"                       {channel="goecharger:goe:garage:maxCurrent"}
+String                     GoEChargerPwmSignal                  "Pwm signal status"                     {channel="goecharger:goe:garage:pwmSignal"}
+String                     GoEChargerError                      "Error code"                            {channel="goecharger:goe:garage:error"}
+Number:ElectricPotential   GoEChargerVoltageL1                  "Voltage l1"                            {channel="goecharger:goe:garage:voltageL1"}
+Number:ElectricPotential   GoEChargerVoltageL2                  "Voltage l2"                            {channel="goecharger:goe:garage:voltageL2"}
+Number:ElectricPotential   GoEChargerVoltageL3                  "Voltage l3"                            {channel="goecharger:goe:garage:voltageL3"}
+Number:ElectricCurrent     GoEChargerCurrentL1                  "Current l1"                            {channel="goecharger:goe:garage:currentL1"}
+Number:ElectricCurrent     GoEChargerCurrentL2                  "Current l2"                            {channel="goecharger:goe:garage:currentL2"}
+Number:ElectricCurrent     GoEChargerCurrentL3                  "Current l3"                            {channel="goecharger:goe:garage:currentL3"}
+Number:Power               GoEChargerPowerL1                    "Power l1"                              {channel="goecharger:goe:garage:powerL1"}
+Number:Power               GoEChargerPowerL2                    "Power l2"                              {channel="goecharger:goe:garage:powerL2"}
+Number:Power               GoEChargerPowerL3                    "Power l3"                              {channel="goecharger:goe:garage:powerL3"}
+Number                     GoEChargerPhases                     "Phases"                                {channel="goecharger:goe:garage:phases"}
+Number:Energy              GoEChargerSessionChargeEnergyLimit   "Current session charge energy limit"   {channel="goecharger:goe:garage:sessionChargeEnergyLimit"}
+Number:Energy              GoEChargerSessionChargedEnergy       "Current session charged energy"        {channel="goecharger:goe:garage:sessionChargedEnergy"}
+Number:Energy              GoEChargerTotalChargedEnergy         "Total charged energy"                  {channel="goecharger:goe:garage:totalChargedEnergy"}
+Switch                     GoEChargerAllowCharging              "Allow charging"                        {channel="goecharger:goe:garage:allowCharging"}
+Number:ElectricCurrent     GoEChargerCableCurrent               "Cable encoding"                        {channel="goecharger:goe:garage:cableCurrent"}
+Number:Temperature         GoEChargerTemperature                "Temperature"                           {channel="goecharger:goe:garage:temperature"}
+String                     GoEChargerFirmware                   "Firmware"                              {channel="goecharger:goe:garage:firmware"}
+String                     GoEChargerAccessState                "Access state"                          {channel="goecharger:goe:garage:accessState"}
 ```
 
 ## Setting charge current of Go-eCharger based on photovoltaik output

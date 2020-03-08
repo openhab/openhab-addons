@@ -5,11 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="goe">
-		<label>Go-eCharger Binding Thing</label>
+		<label>Go-eCharger</label>
 		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
 
 		<channels>
-			<channel id="maxAmpere" typeId="amp" />
+			<channel id="maxCurrent" typeId="current" />
 			<channel id="pwmSignal" typeId="pwm" />
 			<channel id="error" typeId="err" />
 			<channel id="voltageL1" typeId="vl1" />
@@ -22,11 +22,11 @@
 			<channel id="powerL2" typeId="pl2" />
 			<channel id="powerL3" typeId="pl3" />
 			<channel id="phases" typeId="pha" />
-			<channel id="sessionChargeConsumptionLimit" typeId="scl" />
-			<channel id="sessionChargeConsumption" typeId="scs" />
-			<channel id="totalConsumption" typeId="eto" />
+			<channel id="sessionChargeEnergyLimit" typeId="scl" />
+			<channel id="sessionChargedEnergy" typeId="scs" />
+			<channel id="totalChargedEnergy" typeId="eto" />
 			<channel id="allowCharging" typeId="alw" />
-			<channel id="cableEncoding" typeId="cbl" />
+			<channel id="cableCurrent" typeId="cbl" />
 			<channel id="temperature" typeId="tmp" />
 			<channel id="firmware" typeId="fmw" />
 			<channel id="accessState" typeId="ast" />
@@ -34,12 +34,14 @@
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">
-				<label>IP Adress</label>
-				<description>The IP adress of the Go-eCharger</description>
+				<label>IP Address</label>
+				<description>The IP address of the Go-eCharger</description>
+				<context>network-address</context>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false">
+			<parameter name="refreshInterval" type="integer" required="false" unit="s">
 				<label>Refresh Interval</label>
 				<description>Refresh interval for acquiring data from Go-eCharger in seconds</description>
+				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -49,16 +51,16 @@
 		<label>Access State</label>
 		<description>Current access state of the go-eCharge</description>
 	</channel-type>
-	<channel-type id="amp">
+	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Current</label>
 		<description>Max ampere per phase allowed to use for charging</description>
 		<state pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="pwm">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>PWM signal status</label>
-		<description>Signal status for PWM signal</description>
+		<description>Pulse-width modulation signal status</description>
 	</channel-type>
 	<channel-type id="err">
 		<item-type>String</item-type>
@@ -126,20 +128,20 @@
 	</channel-type>
 	<channel-type id="scl">
 		<item-type>Number:Energy</item-type>
-		<label>Current Session Charge Limit</label>
+		<label>Current Session Charge Energy Limit</label>
 		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
 		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="scs">
 		<item-type>Number:Energy</item-type>
-		<label>Current Session Charge Amount</label>
-		<description>Amount of kWh that have been charged in this session</description>
+		<label>Current Session Charged Energy</label>
+		<description>Amount of energy that has been charged in this session</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="eto">
 		<item-type>Number:Energy</item-type>
-		<label>Total Charge Amount</label>
-		<description>Amount of kWh that have been charged since installation</description>
+		<label>Total Charged Energy</label>
+		<description>Amount of energy that has been charged since installation</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="alw">
