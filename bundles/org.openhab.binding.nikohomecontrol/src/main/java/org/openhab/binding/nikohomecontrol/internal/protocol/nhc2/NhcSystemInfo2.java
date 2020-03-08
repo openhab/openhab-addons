@@ -42,25 +42,17 @@ public class NhcSystemInfo2 {
     ArrayList<NhcSwVersion> swVersions = new ArrayList<>();
 
     /**
-     * @return the lastConfig
+     * @return the NhcVersion
      */
     public String getNhcVersion() {
-        if (swVersions.size() > 0) {
-            return swVersions.get(0).nhcVersion;
-        } else {
-            return "";
-        }
+        return swVersions.stream().map(p -> p.nhcVersion).filter(v -> !v.isEmpty()).findFirst().orElse("");
     }
 
     /**
-     * @return the lastConfig
+     * @return the CocoImage version
      */
     public String getCocoImage() {
-        if (swVersions.size() > 0) {
-            return swVersions.get(0).cocoImage;
-        } else {
-            return "";
-        }
+        return swVersions.stream().map(p -> p.cocoImage).filter(v -> !v.isEmpty()).findFirst().orElse("");
     }
 
     /**

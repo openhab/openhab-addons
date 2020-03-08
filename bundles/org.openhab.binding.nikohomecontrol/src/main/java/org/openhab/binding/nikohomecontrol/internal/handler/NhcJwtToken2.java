@@ -10,16 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
+package org.openhab.binding.nikohomecontrol.internal.handler;
+
+import java.util.List;
 
 /**
- * {@link NhcLocation2} represents a Niko Home Control II location. It is used when parsing the location response json.
+ * {@link NhcJwtToken2} represents the Niko Home Control II hobby API token payload.
  *
  * @author Mark Herwege - Initial Contribution
  */
-class NhcLocation2 {
-    String name;
-    String uuid;
-    String index;
-    String icon;
+class NhcJwtToken2 {
+    String sub;
+    String iat;
+    String exp;
+    String aud;
+    String iss;
+    String jti;
+    List<String> role;
 }
