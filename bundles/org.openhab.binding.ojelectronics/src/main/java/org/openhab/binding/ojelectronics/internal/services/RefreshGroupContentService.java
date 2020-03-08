@@ -15,7 +15,6 @@ package org.openhab.binding.ojelectronics.internal.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.ojelectronics.internal.OJElectronicsThermostatHandler;
@@ -31,7 +30,7 @@ import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
 public class RefreshGroupContentService {
 
     private final List<GroupContent> groupContentList;
-    private List<@NonNull Thing> things;
+    private List<Thing> things;
 
     /**
      * Creates a new instance of {@link RefreshGroupContentService}
@@ -39,7 +38,7 @@ public class RefreshGroupContentService {
      * @param groupContents {@link GroupContent}
      * @param things Things
      */
-    public RefreshGroupContentService(List<GroupContent> groupContents, List<@NonNull Thing> things) {
+    public RefreshGroupContentService(List<GroupContent> groupContents, List<Thing> things) {
         this.groupContentList = groupContents;
         this.things = things;
     }

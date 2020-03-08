@@ -22,7 +22,6 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.ojelectronics.internal.OJElectronicsBridgeHandler;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInQueryModel;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInResponseModel;
@@ -40,7 +39,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class SignInService {
 
-    private final Logger logger = LoggerFactory.getLogger(OJElectronicsBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SignInService.class);
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private final HttpClient httpClient;
