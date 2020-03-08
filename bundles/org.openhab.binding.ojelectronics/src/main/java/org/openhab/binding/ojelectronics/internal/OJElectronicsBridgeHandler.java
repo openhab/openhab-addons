@@ -126,7 +126,7 @@ public class OJElectronicsBridgeHandler extends BaseBridgeHandler implements Bri
     }
 
     private void handleUnauthorized() {
-        logger.trace("OJElectronicsBridgeHandler.handleUnauthorized({})");
+        logger.trace("OJElectronicsBridgeHandler.handleUnauthorized()");
         if (refreshService != null) {
             refreshService.stop();
         }
@@ -134,7 +134,7 @@ public class OJElectronicsBridgeHandler extends BaseBridgeHandler implements Bri
     }
 
     private void handleUnauthorizedWhileSignIn() {
-        logger.trace("OJElectronicsBridgeHandler.handleUnauthorizedWhileSignIn({})");
+        logger.trace("OJElectronicsBridgeHandler.handleUnauthorizedWhileSignIn()");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         if (refreshService != null) {
             refreshService.stop();
@@ -142,7 +142,7 @@ public class OJElectronicsBridgeHandler extends BaseBridgeHandler implements Bri
     }
 
     private void handleConnectionLost() {
-        logger.trace("OJElectronicsBridgeHandler.handleConnectionLost({})");
+        logger.trace("OJElectronicsBridgeHandler.handleConnectionLost()");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         if (refreshService != null) {
             refreshService.stop();

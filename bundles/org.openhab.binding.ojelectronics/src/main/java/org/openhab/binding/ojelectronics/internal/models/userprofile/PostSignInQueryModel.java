@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ojelectronics.internal.models.userprofile;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,27 +22,28 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Christian Kittel - Initial contribution
  */
+@NonNullByDefault
 public class PostSignInQueryModel {
 
     @SerializedName("APIKEY")
     @Expose
-    public String aPIKEY;
+    public String aPIKEY = "";
 
     @SerializedName("UserName")
     @Expose
-    public String userName;
+    public String userName = "";
 
     @SerializedName("Password")
     @Expose
-    public String password;
+    public String password = "";
 
     @SerializedName("CustomerId")
     @Expose
-    public Integer customerId;
+    public Integer customerId = 0;
 
     @SerializedName("ClientSWVersion")
     @Expose
-    public Integer clientSWVersion;
+    public Integer clientSWVersion = 0;
 
     /**
      * Add API-Key

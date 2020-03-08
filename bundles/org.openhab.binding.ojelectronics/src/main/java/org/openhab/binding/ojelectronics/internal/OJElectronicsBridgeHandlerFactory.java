@@ -17,6 +17,7 @@ import static org.openhab.binding.ojelectronics.internal.OJElectronicsBindingCon
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Kittel - Initial Contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.ojelectronics", service = ThingHandlerFactory.class)
 public class OJElectronicsBridgeHandlerFactory extends BaseThingHandlerFactory {
 
