@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
@@ -228,11 +227,6 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             logger.warn(
                     "Unable to handle command {}. No handler found for channel {}. This must not happen. Please report as a bug.",
                     command, channelUID);
-            return;
-        }
-
-        if (RefreshType.REFRESH.equals(command)) {
-            // do nothing - handlers don't support this yet.
             return;
         }
 
