@@ -1,112 +1,132 @@
-
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.ojelectronics.internal.models.groups;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Model for a thermostat
+ *
+ * @author Christian Kittel - Initial contribution
+ */
+@NonNullByDefault
 public class Thermostat {
 
     @SerializedName("Id")
     @Expose
-    public Integer id;
+    public Integer id = 0;
     @SerializedName("Action")
     @Expose
-    public Integer action;
+    public Integer action = 0;
     @SerializedName("SerialNumber")
     @Expose
-    public String serialNumber;
+    public String serialNumber = "";
     @SerializedName("GroupName")
     @Expose
-    public String groupName;
+    public String groupName = "";
     @SerializedName("GroupId")
     @Expose
-    public Integer groupId;
+    public Integer groupId = 0;
     @SerializedName("CustomerId")
     @Expose
-    public Integer customerId;
+    public Integer customerId = 0;
     @SerializedName("SWversion")
     @Expose
-    public String sWversion;
+    public String sWversion = "";
     @SerializedName("Online")
     @Expose
-    public Boolean online;
+    public Boolean online = false;
     @SerializedName("Heating")
     @Expose
-    public Boolean heating;
+    public Boolean heating = false;
     @SerializedName("RoomTemperature")
     @Expose
-    public Integer roomTemperature;
+    public Integer roomTemperature = 0;
     @SerializedName("FloorTemperature")
     @Expose
-    public Integer floorTemperature;
+    public Integer floorTemperature = 0;
     @SerializedName("RegulationMode")
     @Expose
-    public Integer regulationMode;
+    public Integer regulationMode = 0;
     @SerializedName("Schedule")
     @Expose
-    public Schedule schedule;
+    public @Nullable Schedule schedule;
     @SerializedName("ComfortSetpoint")
     @Expose
-    public Integer comfortSetpoint;
+    public Integer comfortSetpoint = 0;
     @SerializedName("ComfortEndTime")
     @Expose
-    public String comfortEndTime;
+    public String comfortEndTime = "";
     @SerializedName("ManualModeSetpoint")
     @Expose
-    public Integer manualModeSetpoint;
+    public Integer manualModeSetpoint = 0;
     @SerializedName("VacationEnabled")
     @Expose
-    public Boolean vacationEnabled;
+    public Boolean vacationEnabled = false;
     @SerializedName("VacationBeginDay")
     @Expose
-    public String vacationBeginDay;
+    public String vacationBeginDay = "";
     @SerializedName("VacationEndDay")
     @Expose
-    public String vacationEndDay;
+    public String vacationEndDay = "";
     @SerializedName("VacationTemperature")
     @Expose
-    public Integer vacationTemperature;
+    public Integer vacationTemperature = 0;
     @SerializedName("LastPrimaryModeIsAuto")
     @Expose
-    public Boolean lastPrimaryModeIsAuto;
+    public Boolean lastPrimaryModeIsAuto = false;
     @SerializedName("BoostEndTime")
     @Expose
-    public String boostEndTime;
+    public String boostEndTime = "";
     @SerializedName("FrostProtectionTemperature")
     @Expose
-    public Integer frostProtectionTemperature;
+    public Integer frostProtectionTemperature = 0;
     @SerializedName("ErrorCode")
     @Expose
-    public Integer errorCode;
+    public Integer errorCode = 0;
     @SerializedName("ThermostatName")
     @Expose
-    public String thermostatName;
+    public String thermostatName = "";
     @SerializedName("OpenWindow")
     @Expose
-    public Boolean openWindow;
+    public Boolean openWindow = false;
     @SerializedName("AdaptiveMode")
     @Expose
-    public Boolean adaptiveMode;
+    public Boolean adaptiveMode = false;
     @SerializedName("DaylightSaving")
     @Expose
-    public Boolean daylightSaving;
+    public Boolean daylightSaving = false;
     @SerializedName("SensorAppl")
     @Expose
-    public Integer sensorAppl;
+    public Integer sensorAppl = 0;
     @SerializedName("MinSetpoint")
     @Expose
-    public Integer minSetpoint;
+    public Integer minSetpoint = 0;
     @SerializedName("MaxSetpoint")
     @Expose
-    public Integer maxSetpoint;
+    public Integer maxSetpoint = 0;
     @SerializedName("TimeZone")
     @Expose
-    public Integer timeZone;
+    public Integer timeZone = 0;
     @SerializedName("DaylightSavingActive")
     @Expose
-    public Boolean daylightSavingActive;
+    public Boolean daylightSavingActive = false;
     @SerializedName("FloorType")
     @Expose
-    public Integer floorType;
+    public Integer floorType = 0;
 
 }
