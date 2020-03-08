@@ -260,7 +260,7 @@ public class SenseBoxHandler extends BaseThingHandler {
 
                     switch (data.getUnit()) {
                         case "%":
-                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                            result = new QuantityType<>(bd, SmartHomeUnits.PERCENT);
                             break;
                         case "°C":
                             result = new QuantityType<>(bd, SIUnits.CELSIUS);
