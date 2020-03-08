@@ -62,14 +62,14 @@ public abstract class NhcThermostat {
      * Update all values of the thermostat without touching the thermostat definition (id, name and location) and
      * without changing the ThingHandler callback.
      *
-     * @param measured     current temperature in 0.1°C multiples
-     * @param setpoint     the setpoint temperature in 0.1°C multiples
-     * @param mode         thermostat mode 0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog1, 6 = prog2, 7 =
-     *                         prog3
-     * @param overrule     the overrule temperature in 0.1°C multiples
+     * @param measured current temperature in 0.1°C multiples
+     * @param setpoint the setpoint temperature in 0.1°C multiples
+     * @param mode thermostat mode 0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog1, 6 = prog2, 7 =
+     *            prog3
+     * @param overrule the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      * @param ecosave
-     * @param demand       0 if no demand, > 0 if heating, < 0 if cooling
+     * @param demand 0 if no demand, > 0 if heating, < 0 if cooling
      */
     public void updateState(int measured, int setpoint, int mode, int overrule, int overruletime, int ecosave,
             int demand) {
@@ -88,7 +88,7 @@ public abstract class NhcThermostat {
      * Update overrule values of the thermostat without touching the thermostat definition (id, name and location) and
      * without changing the ThingHandler callback.
      *
-     * @param overrule     the overrule temperature in 0.1°C multiples
+     * @param overrule the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      */
     public void updateState(int overrule, int overruletime) {
@@ -102,13 +102,24 @@ public abstract class NhcThermostat {
      * Update overrule values of the thermostat without touching the thermostat definition (id, name and location) and
      * without changing the ThingHandler callback.
      *
-     * @param overrule     the overrule temperature in 0.1°C multiples
+     * @param overrule the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      */
     public void updateState(int mode) {
         setMode(mode);
 
         updateChannels();
+    }
+
+    /**
+     * Method called when thermostat is removed from the Niko Home Control Controller.
+     */
+    public void thermostatRemoved() {
+        logger.warn("Niko Home Control: action removed {}, {}", id, name);
+        NhcThermostatEvent eventHandler = this.eventHandler;
+        if (eventHandler != null) {
+            eventHandler.thermostatRemoved();
+        }
     }
 
     private void updateChannels() {
@@ -276,7 +287,7 @@ public abstract class NhcThermostat {
      * {@link NhcThermostat2}.
      *
      * @param overrule temperature to overrule the setpoint in 0.1°C multiples
-     * @param time     time duration in min for overrule
+     * @param time time duration in min for overrule
      */
     public abstract void executeOverrule(int overrule, int overruletime);
 

@@ -10,29 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
+package org.openhab.binding.nikohomecontrol.internal.handler;
 
 /**
- * {@link NhcProfile2} represents a Niko Home Control II profile. It is used when parsing the profile response json.
+ * {@link NikoHomeControlEnergyMeterConfig} is the config class for Niko Home Control Thermostats.
  *
  * @author Mark Herwege - Initial Contribution
- *
  */
-class NhcProfile2 {
-
-    String name;
-    String type;
-    String uuid;
-
-    String name() {
-        return name;
-    }
-
-    String uuid() {
-        return uuid;
-    }
-
-    String profile() {
-        return "(" + name + ": " + uuid + ")";
-    }
+public class NikoHomeControlEnergyMeterConfig {
+    public String energyMeterId;
 }
