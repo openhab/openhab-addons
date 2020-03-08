@@ -234,7 +234,15 @@ public class ValloxMVBindingConstants {
 
 
     /**
-     * Set of writable channels that are dimensionless
+     * Set of writable channels that are Switches
+     */
+    public final static Set<String> WRITABLE_CHANNELS_SWITCHES = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(CHANNEL_ONOFF, CHANNEL_BOOST_TIMER_ENABLED,
+                    CHANNEL_FIREPLACE_TIMER_ENABLED, CHANNEL_EXTRA_TIMER_ENABLED, CHANNEL_WEEKLY_TIMER_ENABLED)));
+
+    /**
+
+    * Set of writable channels that are dimensionless
      */
     public final static Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections.unmodifiableSet(
             new HashSet<String>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,

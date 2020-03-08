@@ -75,6 +75,7 @@ public class ValloxMVHandler extends BaseThingHandler {
                 valloxSendSocket.request(null, null);
             }
         } else {
+            String strUpdateValue = "";
             if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
                 try {
                     int cmd = Integer.parseInt(command.toString());
@@ -82,28 +83,25 @@ public class ValloxMVHandler extends BaseThingHandler {
                             || (cmd == ValloxMVBindingConstants.STATE_ATHOME)
                             || (cmd == ValloxMVBindingConstants.STATE_AWAY)
                             || (cmd == ValloxMVBindingConstants.STATE_BOOST)) {
-                        logger.debug("Changing state to: {}", command);
-                        // Open WebSocket
-                        valloxSendSocket.request(channelUID, command.toString());
-                        valloxSendSocket.request(null, null);
+                        //logger.debug("Changing state to: {}", command);
+                        strUpdateValue = command.toString();
                     }
                 } catch (NumberFormatException nfe) {
                     // Other commands like refresh
                     return;
                 }
-            } else if (ValloxMVBindingConstants.CHANNEL_ONOFF.equals(channelUID.getId())) {
-                if (OnOffType.ON.equals(command)) {
-                    valloxSendSocket.request(channelUID, "0");
-                    valloxSendSocket.request(null, null);
-                } else if (OnOffType.OFF.equals(command)) {
-                    valloxSendSocket.request(channelUID, "5");
-                    valloxSendSocket.request(null, null);
+            } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_SWITCHES.contains(channelUID.getId())) {
+                if (ValloxMVBindingConstants.CHANNEL_ONOFF.equals(channelUID.getId())) {
+                    // Vallox MV MODE: Normal mode = 0, Switch off = 5
+                    strUpdateValue = (OnOffType.ON.equals(command)) ? "0" : "5";
+                } else {
+                    // Switches with ON = 1, OFF = 0
+                    strUpdateValue = (OnOffType.ON.equals(command)) ? "1" : "0";
                 }
             } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_DIMENSIONLESS.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
                     QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
-                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                    valloxSendSocket.request(null, null);
+                    strUpdateValue = Integer.toString(quantity.intValue());
                 }
             } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_TEMPERATURE.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
@@ -114,9 +112,23 @@ public class ValloxMVHandler extends BaseThingHandler {
                         return;
                     }
                     int centiKelvin = quantity.multiply(new BigDecimal(100)).intValue();
-                    valloxSendSocket.request(channelUID, Integer.toString(centiKelvin));
-                    valloxSendSocket.request(null, null);
+                    strUpdateValue = Integer.toString(centiKelvin);
                 }
+            } else {
+                // Not writable channel
+                return;
+            }
+            if (strUpdateValue != "") {
+                // Open WebSocket
+                valloxSendSocket.request(channelUID, strUpdateValue);
+                // We should wait some time to let device process the data
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    // sleep interrupted, we will get updated values during next data update cycle
+                    return;
+                }
+                valloxSendSocket.request(null, null);
             }
         }
     }

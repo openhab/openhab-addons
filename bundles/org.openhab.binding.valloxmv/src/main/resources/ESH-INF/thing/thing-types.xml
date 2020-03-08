@@ -259,23 +259,17 @@
 		<state pattern="%.2f %unit%" readOnly="false" />
 	</channel-type>
 
-	<channel-type id="boosttime">
+	<channel-type id="boosttime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Boost profile timer value</label>
 		<description>Boost profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min" />
 	</channel-type>
 
-	<channel-type id="boosttimerenabled">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="boosttimerenabled" advanced="true">
+		<item-type>Switch</item-type>
 		<label>Boost profile timer enabled</label>
 		<description>Timer enabled setting in boost profile</description>
-		<state readOnly="false">
-			<options>
-				<option value="1">Enabled</option>
-				<option value="0">Disabled</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="fireplaceextrfan" advanced="true">
@@ -292,23 +286,17 @@
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
-	<channel-type id="fireplacetime">
+	<channel-type id="fireplacetime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fireplace profile timer value</label>
 		<description>Fireplace profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min" />
 	</channel-type>
 
-	<channel-type id="fireplacetimerenabled">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="fireplacetimerenabled" advanced="true">
+		<item-type>Switch</item-type>
 		<label>Fireplace profile timer enabled</label>
 		<description>Timer enabled setting in fireplace profile</description>
-		<state readOnly="false">
-			<options>
-				<option value="1">Enabled</option>
-				<option value="0">Disabled</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="extraairtemptarget" advanced="true">
@@ -333,35 +321,23 @@
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
-	<channel-type id="extratime">
+	<channel-type id="extratime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Programmable profile timer value</label>
 		<description>Programmable profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min" />
 	</channel-type>
 
-	<channel-type id="extratimerenabled">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="extratimerenabled" advanced="true">
+		<item-type>Switch</item-type>
 		<label>Programmable profile timer enabled</label>
 		<description>Timer enabled setting in programmable profile</description>
-		<state readOnly="false">
-			<options>
-				<option value="1">Enabled</option>
-				<option value="0">Disabled</option>
-			</options>
-		</state>
 	</channel-type>
 
-	<channel-type id="weeklytimerenabled">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="weeklytimerenabled" advanced="true">
+		<item-type>Switch</item-type>
 		<label>Weekly timer enabled</label>
 		<description>Weekly Timer enabled setting</description>
-		<state readOnly="false">
-			<options>
-				<option value="1">Enabled</option>
-				<option value="0">Disabled</option>
-			</options>
-		</state>
 	</channel-type>
 
 </thing:thing-descriptions>
