@@ -104,7 +104,9 @@ public class DigiplexZoneHandler extends BaseThingHandler {
                 break;
             case ZONE_LAST_TRIGGERED:
                 if (command == RefreshType.REFRESH) {
-                    updateState(ZONE_LAST_TRIGGERED, lastTriggered);
+                    if (lastTriggered != UnDefType.NULL) {
+                        updateState(ZONE_LAST_TRIGGERED, lastTriggered);
+                    }
                 }
                 break;
         }
@@ -138,7 +140,9 @@ public class DigiplexZoneHandler extends BaseThingHandler {
     private void updateChannels(boolean allChannels) {
         updateState(ZONE_STATUS, status);
         updateState(ZONE_EXTENDED_STATUS, extendedStatus);
-        updateState(ZONE_LAST_TRIGGERED, lastTriggered);
+        if (lastTriggered != UnDefType.NULL) {
+            updateState(ZONE_LAST_TRIGGERED, lastTriggered);
+        }
         if (allChannels) {
             updateState(ZONE_ALARM, alarm);
             updateState(ZONE_FIRE_ALARM, fireAlarm);
