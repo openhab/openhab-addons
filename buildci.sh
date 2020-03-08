@@ -34,7 +34,7 @@ COMMITS=${1:-"master...HEAD"}
 CHANGED_BUNDLE_DIR=`git diff --dirstat=files,0 ${COMMITS} bundles/ | sed 's/^[ 0-9.]\+% bundles\///g' | grep -o -P "^([^/]*)" | uniq`
 # Determine if this is a single changed itest -> Perform build with tests + integration tests and all SAT checks
 # for this we have to remove '.tests' from the folder name.
-CHANGED_ITEST_DIR=`git diff --dirstat=files,0 ${COMMITS} itests/ | sed 's/^[ 0-9.]\+% itests\///g' | sed 's/\.tests\///g' | uniq`
+CHANGED_ITEST_DIR=`git diff --dirstat=files,0 ${COMMITS} itests/ | sed 's/^[ 0-9.]\+% itests\///g' | sed 's/\.tests\/.*//g' | uniq`
 CDIR=`pwd`
 
 # if a bundle and (optionally the linked itests) where changed build the module and its tests
