@@ -35,8 +35,8 @@ Currently available channels are
 | powerL3                  | Number:Power             | Power on L2                                                   |
 | phases                   | Number                   | Amount of phases currently used for charging                  |
 | sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    |
-| sessionChargedEnergy     | Number:Energy            | Amount of kWh that have been charged in this session          |
-| totalChargedEnergy       | Number:Energy            | Amount of kWh that have been charged since installation       |
+| sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        |
+| totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable |
 | temperature              | Number:Temperature       | Temperature of the Go-eCharger                                |
