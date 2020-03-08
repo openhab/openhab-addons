@@ -1,5 +1,13 @@
 # Niko Home Control Binding
 
+Upgrade notice for Niko Home Control II:
+The current version of the binding uses Niko Home Control hobby API token based authentication.
+The Niko Home Control hobby API is available with Niko Home Control system version 2.5.1 or newer.
+If currently using a profile and password based authentication with the binding, you will need to start using hobby API token based authentication.
+Request a hobby API token at [mynikohomecontrol](https://mynikohomecontrol.niko.eu).
+In the bridge configuration, put the received token in the API Token parameter.
+Delete the values for Bridge Port and Profile parameters.
+
 The Niko Home Control binding integrates with a [Niko Home Control](https://www.niko.eu/) system through a Niko Home Control IP-interface or Niko Home Control Connected Controller.
 
 The binding supports both Niko Home Control I and Niko Home Control II.
@@ -89,16 +97,25 @@ Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", 
 For Niko Home Control II:
 
 ```
-Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           token="<token>", refresh=<Refresh interval> ]
+Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>, profile="<profile>",
+                                           password="<token>", refresh=<Refresh interval> ]
 ```
 
 `bridgeId` can have any value.
 
 `addr` is the fixed Niko Home Connected Controller address and is required.
 `port` will be the port used to connect and is 8884 by default.
-`token` is the API token retrieved from the Niko Home Control website, cannot be empty.
+`profile` is the profile UUID being used, hobby by default.
+`password` is the API token retrieved from the Niko Home Control website, cannot be empty.
 `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
+
+Advanced configuration note:
+It is possible to use authentication based on a touch panel profile, bypassing the hobby API token authentication.
+To make this work, you have to define a password protected touch profile in the Niko Home Control programming software.
+Extract the embedded SQLite database from the configuration file.
+Look for the profile you created in the profile table (using a SQLite database browser tool) and copy the CreationId into the profile parameter for the bridge.
+The port parameter on the bridge has to be set to 8883.
+The API token parameter should be set to the profile password.
 
 The Thing configuration for **Niko Home Control actions** has the following syntax:
 
@@ -266,7 +283,7 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
     thermostat 5 [ thermostatId="0", overruleTime=10 ]
 }
 
-Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, token="A.B.C", refresh=300 ] {
+Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, password="A.B.C", refresh=300 ] {
     pushButton 1 "AllOff" [ actionId="12345678-abcd-1234-ef01-aa12bb34ee89" ]
     onOff 2 "Office" @ "Downstairs" [ actionId="12345678-abcd-1234-ef01-aa12bb34cc56" ]
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
