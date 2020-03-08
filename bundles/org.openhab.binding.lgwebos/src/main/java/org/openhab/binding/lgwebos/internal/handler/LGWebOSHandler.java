@@ -72,6 +72,8 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private static final int RECONNECT_INTERVAL_SECONDS = 10;
     private static final int RECONNECT_START_UP_DELAY_SECONDS = 0;
 
+    private static final String APP_ID_LIVETV = "com.webos.app.livetv";
+
     /*
      * error messages
      */
@@ -282,10 +284,16 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 break;
             case REGISTERED:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
+
                 channelHandlers.forEach((k, v) -> {
-                    v.refreshSubscription(k, this);
+                    // refresh subscriptions except on channel, which can only be subscribe in livetv app. see
+                    // postUpdate method
+                    if (!CHANNEL_CHANNEL.equals(k) && !CHANNEL_CHANNEL_NAME.equals(k)) {
+                        v.refreshSubscription(k, this);
+                    }
                     v.onDeviceReady(k, this);
                 });
+
                 break;
 
         }
@@ -314,8 +322,8 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     public void postUpdate(String channelId, State state) {
         updateState(channelId, state);
 
-        // When the app is updated, refresh the subscriptions for channel name and number
-        if (CHANNEL_APP_LAUNCHER.equals(channelId) && !state.toString().isEmpty()) {
+        // channel subscription only works when on livetv app.
+        if (CHANNEL_APP_LAUNCHER.equals(channelId) && APP_ID_LIVETV.equals(state.toString())) {
             Stream.of(CHANNEL_CHANNEL, CHANNEL_CHANNEL_NAME)
                     .forEach(k -> channelHandlers.get(k).refreshSubscription(k, this));
         }
