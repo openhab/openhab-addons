@@ -62,9 +62,8 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                 channelListCache.put(handler.getThing().getUID(), channels);
                 List<StateOption> options = new ArrayList<>();
                 for (ChannelInfo channel : channels) {
-                    String name = channel.getName();
-                    options.add(new StateOption(channel.getChannelNumber(),
-                            (name == null || name.isEmpty()) ? channel.getChannelNumber() : name));
+                    String name = channel.getName() == null ? "" : channel.getName();
+                    options.add(new StateOption(channel.getChannelNumber(), channel.getChannelNumber() + " - " + name));
                 }
                 handler.setOptions(channelId, options);
             }
