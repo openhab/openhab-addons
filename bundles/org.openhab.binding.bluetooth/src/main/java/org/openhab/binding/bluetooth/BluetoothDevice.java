@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -118,6 +119,11 @@ public abstract class BluetoothDevice {
     protected Integer txPower = null;
 
     /**
+     * Last time when activity occurred on this device.
+     */
+    protected ZonedDateTime lastSeenTime;
+
+    /**
      * The event listeners will be notified of device updates
      */
     private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<BluetoothDeviceListener>();
@@ -134,7 +140,25 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Returns the the name of the Bluetooth device.
+     * Returns the last time this device was active
+     *
+     * @return The last time this device was active
+     */
+    public ZonedDateTime getLastSeenTime() {
+        return lastSeenTime;
+    }
+
+    /**
+     * Updates the last activity timestamp for this device.
+     * Should be called whenever activity occurs on this device.
+     *
+     */
+    public void updateLastSeenTime() {
+        lastSeenTime = ZonedDateTime.now();
+    }
+
+    /**
+     * Returns the name of the Bluetooth device.
      *
      * @return The devices name
      */
@@ -491,11 +515,19 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {
         return !eventListeners.isEmpty();
+    }
+
+    /**
+     * Releases resources that this device is using.
+     *
+     */
+    protected void dispose() {
+
     }
 
     /**
