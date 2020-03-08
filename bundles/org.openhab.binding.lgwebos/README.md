@@ -106,12 +106,12 @@ Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwe
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
 Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-String LG_TV0_Channel "Channel [%s]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
+Default LG_TV0_Channel "Channel [%s]"        { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
 String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
-String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
+Default LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
 Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaPlayer"}
 
 // this assumes you also have the wake on lan binding configured and your TV's IP address is on this network - You would need to update your broadcast and mac address accordingly
