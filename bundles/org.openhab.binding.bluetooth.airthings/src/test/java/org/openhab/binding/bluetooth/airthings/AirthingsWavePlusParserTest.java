@@ -41,7 +41,7 @@ public class AirthingsWavePlusParserTest {
 
     @Test(expected = AirthingsParserException.class)
     public void testWrongDataLen() throws AirthingsParserException {
-        int[] data = { 5, 55, 51, 0, 122, 0, 61, 0, 119, 9, 11, 194, 169, 2, 46, 0, 0 };
+        int[] data = { 1, 55, 51, 0, 122, 0, 61, 0, 119, 9, 11, 194, 169, 2, 46, 0, 0 };
         new AirthingsWavePlusDataParser(data);
     }
 
