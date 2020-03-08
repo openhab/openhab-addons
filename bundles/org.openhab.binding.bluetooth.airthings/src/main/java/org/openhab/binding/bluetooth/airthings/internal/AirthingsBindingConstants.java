@@ -25,7 +25,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 
 import tec.uom.se.format.SimpleUnitFormat;
 import tec.uom.se.function.RationalConverter;
-import tec.uom.se.unit.AlternateUnit;
+import tec.uom.se.unit.ProductUnit;
 import tec.uom.se.unit.TransformedUnit;
 import tec.uom.se.unit.Units;
 
@@ -53,11 +53,11 @@ public class AirthingsBindingConstants {
 
     public static final Unit<Dimensionless> PARTS_PER_BILLION = new TransformedUnit<>(SmartHomeUnits.ONE,
             new RationalConverter(BigInteger.ONE, BigInteger.valueOf(1000000000)));
-    public static final Unit<Density> BECQUEREL_PER_CUBIC_METRE = new AlternateUnit<Density>(
-            Units.BECQUEREL.divide(Units.CUBIC_METRE), "Bq/m³");
+    public static final Unit<Density> BECQUEREL_PER_CUBIC_METRE = new ProductUnit<>(
+            Units.BECQUEREL.divide(Units.CUBIC_METRE));
 
     static {
         SimpleUnitFormat.getInstance().label(PARTS_PER_BILLION, "ppb");
-        SimpleUnitFormat.getInstance().label(BECQUEREL_PER_CUBIC_METRE, BECQUEREL_PER_CUBIC_METRE.getSymbol());
+        SimpleUnitFormat.getInstance().label(BECQUEREL_PER_CUBIC_METRE, "Bq/m³");
     }
 }
