@@ -80,7 +80,7 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
         logger.debug("Initialize");
         super.initialize();
         configuration = Optional.of(getConfigAs(AirthingsConfiguration.class));
-        logger.debug("Using configuration: {}", configuration);
+        logger.debug("Using configuration: {}", configuration.get());
         cancelScheduledTask();
         configuration.ifPresent(cfg -> {
             refreshInterval = cfg.refreshInterval;
