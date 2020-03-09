@@ -44,7 +44,7 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
         } else if (OnOffType.ON == command || OnOffType.OFF == command) {
             handler.getSocket().setMute(OnOffType.ON == command, objResponseListener);
         } else {
-            logger.warn("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
+            logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
     }
 

@@ -108,7 +108,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
     @Override
     protected Optional<ServiceSubscription<AppInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
         return Optional.of(handler.getSocket().subscribeRunningApp(createResponseListener(channelId, handler)));
-
     }
 
     private ResponseListener<AppInfo> createResponseListener(String channelId, LGWebOSHandler handler) {

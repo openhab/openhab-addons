@@ -45,7 +45,7 @@ public class MediaControlPlayer extends BaseChannelHandler<CommandConfirmation> 
         } else if (RewindFastforwardType.REWIND == command) {
             handler.getSocket().rewind(getDefaultResponseListener());
         } else {
-            logger.warn("Only accept PlayPauseType, RewindFastforwardType, RefreshType. Type was {}.",
+            logger.info("Only accept PlayPauseType, RewindFastforwardType, RefreshType. Type was {}.",
                     command.getClass());
         }
     }

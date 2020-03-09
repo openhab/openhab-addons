@@ -97,7 +97,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
             if (channelInfo.isPresent()) {
                 handler.getSocket().setChannel(channelInfo.get(), objResponseListener);
             } else {
-                logger.warn("TV does not have a channel: {}.", value);
+                logger.info("TV does not have a channel: {}.", value);
             }
         }
 
@@ -106,7 +106,6 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
     @Override
     protected Optional<ServiceSubscription<ChannelInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
         return Optional.of(handler.getSocket().subscribeCurrentChannel(createResponseListener(channelId, handler)));
-
     }
 
     private ResponseListener<ChannelInfo> createResponseListener(String channelId, LGWebOSHandler handler) {

@@ -68,7 +68,7 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
         } else if (OnOffType.OFF == command || OnOffType.ON == command) {
             handler.getSocket().setMute(OnOffType.OFF == command, objResponseListener);
         } else {
-            logger.warn("Only accept PercentType, DecimalType, StringType, RefreshType. Type was {}.",
+            logger.info("Only accept PercentType, DecimalType, StringType, RefreshType. Type was {}.",
                     command.getClass());
         }
     }

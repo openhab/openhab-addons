@@ -51,7 +51,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
         } else if (OnOffType.OFF == command) {
             handler.getSocket().powerOff(getDefaultResponseListener());
         } else {
-            logger.warn("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
+            logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
 
     }

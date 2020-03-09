@@ -49,7 +49,6 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelInfo> {
     @Override
     protected Optional<ServiceSubscription<ChannelInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
         return Optional.of(handler.getSocket().subscribeCurrentChannel(createResponseListener(channelId, handler)));
-
     }
 
     private ResponseListener<ChannelInfo> createResponseListener(String channelId, LGWebOSHandler handler) {
