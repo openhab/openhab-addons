@@ -108,6 +108,7 @@
 
         <channels>
             <channel id="name" typeId="name" />
+            <channel id="tap" typeId="tap" />
         </channels>
 
         <representation-property>applianceId</representation-property>
@@ -178,4 +179,9 @@
 			</parameter>
 		</config-description>
 	</channel-type>
+	<channel-type id="tap">
+        <item-type>Switch</item-type>
+        <label>Open tap</label>
+        <description>Open the tap for the configured time</description>
+    </channel-type>
 </thing:thing-descriptions>
