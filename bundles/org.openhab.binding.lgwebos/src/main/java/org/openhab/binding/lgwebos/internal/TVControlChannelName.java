@@ -38,7 +38,6 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelInfo> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
-
         if (RefreshType.REFRESH == command) {
             handler.getSocket().getCurrentChannel(createResponseListener(channelId, handler));
             return;
