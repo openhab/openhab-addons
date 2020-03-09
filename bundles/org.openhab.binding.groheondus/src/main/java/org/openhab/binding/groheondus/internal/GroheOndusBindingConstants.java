@@ -26,6 +26,7 @@ public class GroheOndusBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_SENSEGUARD = new ThingTypeUID(BINDING_ID, "senseguard");
     public static final ThingTypeUID THING_TYPE_SENSE = new ThingTypeUID(BINDING_ID, "sense");
+    public static final ThingTypeUID THING_TYPE_BLUE = new ThingTypeUID(BINDING_ID, "blue");
 
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_PRESSURE = "pressure";
@@ -35,6 +36,7 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_BATTERY = "battery";
+    public static final String CHANNEL_TAP = "tap";
 
     public static final String CHANNEL_CONFIG_TIMEFRAME = "timeframe";
 }

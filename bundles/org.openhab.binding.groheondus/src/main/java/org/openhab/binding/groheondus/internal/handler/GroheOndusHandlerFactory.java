@@ -63,7 +63,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
-            THING_TYPE_SENSE, THING_TYPE_BRIDGE_ACCOUNT);
+            THING_TYPE_SENSE, THING_TYPE_BRIDGE_ACCOUNT, THING_TYPE_BLUE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -84,6 +84,8 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
             return new GroheOndusSenseGuardHandler(thing);
         } else if (THING_TYPE_SENSE.equals(thingTypeUID)) {
             return new GroheOndusSenseHandler(thing);
+        } else if (THING_TYPE_BLUE.equals(thingTypeUID)) {
+            return new GroheOndusBlueHandler(thing);
         }
 
         return null;

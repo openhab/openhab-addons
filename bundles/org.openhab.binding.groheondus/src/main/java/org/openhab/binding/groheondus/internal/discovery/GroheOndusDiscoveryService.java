@@ -50,8 +50,8 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
     private final GroheOndusAccountHandler bridgeHandler;
 
     public GroheOndusDiscoveryService(GroheOndusAccountHandler bridgeHandler) {
-        super(Collections
-                .unmodifiableSet(Stream.of(THING_TYPE_SENSE, THING_TYPE_SENSEGUARD).collect(Collectors.toSet())), 30);
+        super(Collections.unmodifiableSet(
+                Stream.of(THING_TYPE_SENSE, THING_TYPE_SENSEGUARD, THING_TYPE_BLUE).collect(Collectors.toSet())), 30);
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
         this.activate(null);
@@ -83,6 +83,9 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
                     break;
                 case org.grohe.ondus.api.model.sense.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSE, appliance.getApplianceId());
+                    break;
+                case org.grohe.ondus.api.model.blue.Appliance.TYPE:
+                    thingUID = new ThingUID(THING_TYPE_BLUE, appliance.getApplianceId());
                     break;
                 default:
                     return;
