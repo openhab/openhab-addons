@@ -53,17 +53,17 @@ Overview of provided channels
 | awayairtemptarget         | A_CYC_AWAY_AIR_TEMP_TARGET  | Target temperature in away state  |rw| Number (°C)          |
 | boostairtemptarget        | A_CYC_BOOST_AIR_TEMP_TARGET | Target temperature in boost state |rw| Number (°C)          |
 | boosttime                 | A_CYC_BOOST_TIME            | Timer value in boost profile      |rw| 1 - 65535 (min)      |
-| boosttimerenabled         | A_CYC_BOOST_TIMER_ENABLED   | Timer enabled setting in boost profile |rw| 1=Enabled, 0=Disabled |
+| boosttimerenabled         | A_CYC_BOOST_TIMER_ENABLED   | Timer enabled setting in boost profile |rw| On/Off               |
 | fireplaceextrfan          | A_CYC_FIREPLACE_EXTR_FAN    | Fireplace profile extract fan speed |rw| 0 - 100 (%)          |
 | fireplacesuppfan          | A_CYC_FIREPLACE_SUPP_FAN    | Fireplace profile supply fan speed |rw| 0 - 100 (%)          |
 | fireplacetime             | A_CYC_FIREPLACE_TIME        | Timer value in fireplace profile  |rw| 1 - 65535 (min)      |
-| fireplacetimerenabled     | A_CYC_FIREPLACE_TIMER_ENABLED | Timer enabled setting in fireplace profile |rw| 1=Enabled, 0=Disabled |
+| fireplacetimerenabled     | A_CYC_FIREPLACE_TIMER_ENABLED | Timer enabled setting in fireplace profile |rw| On/Off               |
 | extraairtemptarget        | A_CYC_EXTRA_AIR_TEMP_TARGET | Target temperature in programmable profile |rw| Number (°C)          |
 | extraextrfan              | A_CYC_EXTRA_EXTR_FAN        | Programmable profile extract fan speed |rw| 0 - 100 (%)          |
 | extrasuppfan              | A_CYC_EXTRA_EXTR_FAN        | Programmable profile supply fan speed |rw| 0 - 100 (%)          |
 | extratime                 | A_CYC_EXTRA_TIME            | Timer value in programmable profile |rw| 1 - 65535 (min)      |
-| extratimerenabled         | A_CYC_EXTRA_TIMER_ENABLED   | Timer enabled setting in programmable profile |rw| 1=Enabled, 0=Disabled |
-| weeklytimerenabled        | A_CYC_WEEKLY_TIMER_ENABLED  | Weekly Timer enabled setting      |rw| 1=Enabled, 0=Disabled |
+| extratimerenabled         | A_CYC_EXTRA_TIMER_ENABLED   | Timer enabled setting in programmable profile |rw| On/Off               |
+| weeklytimerenabled        | A_CYC_WEEKLY_TIMER_ENABLED  | Weekly Timer enabled setting      |rw| On/Off               |
 
 ## Example
 
