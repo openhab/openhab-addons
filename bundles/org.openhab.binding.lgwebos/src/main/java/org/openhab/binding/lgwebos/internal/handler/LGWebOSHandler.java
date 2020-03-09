@@ -314,7 +314,9 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     public void postUpdate(String channelId, State state) {
-        updateState(channelId, state);
+        if (isLinked(channelId)) {
+            updateState(channelId, state);
+        }
 
         // channel subscription only works when on livetv app.
         if (CHANNEL_APP_LAUNCHER.equals(channelId) && APP_ID_LIVETV.equals(state.toString())) {
