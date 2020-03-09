@@ -17,6 +17,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -353,7 +354,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             return false;
         }
 
-        return device.getLastSeenTime().plusMinutes(5).isBeforeNow();
+        return device.getLastSeenTime().plusMinutes(5).isBefore(ZonedDateTime.now());
     }
 
     private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
