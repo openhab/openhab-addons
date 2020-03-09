@@ -36,15 +36,27 @@ Once the bridge has been added as a thing, a manual scan can be launched to disc
 
 ## Thing Configuration
 
-The Velbus bridge needs to be added first in the things file or through Paper UI.
+The Velbus Serial bridge needs to be added first in the things file or through Paper UI.
 It is necessary to specify the serial port device used for communication.
 On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a higher  number than `0` if multiple devices are present).
 On Windows it will be `COM1`, `COM2`, etc.
 
-In the things file, this looks e.g. like
+In the things file, this might look like
 
 ```
-Bridge velbus:bridge:1 [ port="COM1" ]
+Bridge velbus:bridge:VelbusSerialBridge [ port="COM1" ]
+```
+
+**Velbus Network Bridge only available in later bindings**
+
+The Velbus Network bridge needs to be added first in the things file or through Paper UI.
+It is necessary to specify the TCP address and port for the server used for communication.
+This will usually be either the loopback address `127.0.0.1`, and port number. Or the specific IP of the machine `10.0.0.110` , and port number
+
+In the things file, this might look like
+
+```
+Bridge velbus:networkbridge:VelbusNetworkBridge "Velbus Network Bridge - Loopback" @ "Control" [ address="127.0.0.1", port=6000 ]
 ```
 
 For the other Velbus devices, the thing configuration has the following syntax:
@@ -115,7 +127,7 @@ The trigger channels can be used as a trigger to rules. The event message can be
 .things:
 
 ```
-Bridge velbus:bridge:1 [ port="COM1"] {
+Bridge velbus:bridge:VelbusSerialBridge [ port="COM1"] {
     vmb2ble     01
     vmb2pbn     02
     vmb6pbn     03
@@ -136,13 +148,13 @@ Bridge velbus:bridge:1 [ port="COM1"] {
 .items:
 
 ```
-Switch LivingRoom           {channel="velbus:vmb4ryld:1:06:CH1"}                # Switch for onOff type action
-Dimmer TVRoom               {channel="velbus:vmb4dc:1:07:CH2"}                  # Changing brightness dimmer type action
-Rollershutter Kitchen       {channel="velbus:vmb2ble:1:01"}                     # Controlling rollershutter or blind type action
+Switch LivingRoom           {channel="velbus:vmb4ryld:VelbusSerialBridge:06:CH1"}                # Switch for onOff type action
+Dimmer TVRoom               {channel="velbus:vmb4dc:VelbusSerialBridge:07:CH2"}                  # Changing brightness dimmer type action
+Rollershutter Kitchen       {channel="velbus:vmb2ble:VelbusSerialBridge:01"}                     # Controlling rollershutter or blind type action
 
-Number Temperature_LivingRoom   "Temperature [%.1f °C]"     <temperature> channel="velbus:vmbgp1:1:08:CH09"}  
-Number Temperature_Corridor   "Temperature [%.1f °C]"     <temperature> channel="velbus:vmbgpo:1:0C:CH33"}  
-Number Temperature_Outside   "Temperature [%.1f °C]"     <temperature> channel="velbus:vmbpiro:1:0E:CH09"}  
+Number Temperature_LivingRoom   "Temperature [%.1f °C]"     <temperature> channel="velbus:vmbgp1:VelbusSerialBridge:08:CH09"}  
+Number Temperature_Corridor   "Temperature [%.1f °C]"     <temperature> channel="velbus:vmbgpo:VelbusSerialBridge:0C:CH33"}  
+Number Temperature_Outside   "Temperature [%.1f °C]"     <temperature> channel="velbus:vmbpiro:VelbusSerialBridge:0E:CH09"}  
 ```
 
 .sitemap:
@@ -159,7 +171,7 @@ Example trigger rule:
 ```
 rule "example trigger rule"
 when
-    Channel 'velbus:vmb7in:1:05:CH5' triggered PRESSED
+    Channel 'velbus:vmb7in:VelbusSerialBridge:05:CH5' triggered PRESSED
 then
     var message = receivedEvent.getEvent()
     logInfo("velbusTriggerExample", "Message: {}", message)
