@@ -71,7 +71,6 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
         this.portManager = portManager;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.debug("Disposing vallox");
@@ -82,7 +81,6 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
         closeConnection();
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing Vallox SE handler");
@@ -105,7 +103,6 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
      * Connect to Vallox using the connector received from {@link ConnectorFactory}.
      * Start refresher only after successful connection.
      */
-    @SuppressWarnings("null")
     private void connect() {
         if (!isConnected()) {
             try {
@@ -131,7 +128,9 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
         }
     }
 
-    @SuppressWarnings("null")
+    /**
+     * Close the connection and stop refresh job
+     */
     private void closeConnection() {
         logger.debug("Closing connection");
         if (connector != null) {
@@ -147,7 +146,6 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
     /**
      * Check if connection is initialized and open
      */
-    @SuppressWarnings("null")
     private boolean isConnected() {
         if (connector != null) {
             if (connector.isConnected()) {
@@ -406,7 +404,6 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
      *
      * @param channel the channel to be polled
      */
-    @SuppressWarnings("null")
     public void sendPoll(byte channel) {
         if (connector != null) {
             connector.sendTelegram(TelegramFactory.createPoll(panelNumber, channel));
@@ -419,7 +416,6 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
      * @param channel the channel which the command is sent to
      * @param value the command to send
      */
-    @SuppressWarnings("null")
     public void sendCommand(byte channel, byte value) {
         if (connector != null) {
             connector.sendTelegram(TelegramFactory.createCommand(panelNumber, channel, value));

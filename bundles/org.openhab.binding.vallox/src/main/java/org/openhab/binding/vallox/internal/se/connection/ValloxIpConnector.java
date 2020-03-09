@@ -73,7 +73,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
     public void close() {
         super.close();
         if (readerThread != null) {
-            logger.debug("Interrupt message listener");
+            logger.debug("Interrupting telegram listener");
             readerThread.interrupt();
             try {
                 readerThread.join();
@@ -84,7 +84,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         try {
             socket.close();
         } catch (Exception e) {
-            logger.debug("Exception closing connection {}", e);
+            logger.debug("Exception closing connection: ", e);
         }
         readerThread = null;
         connected = false;
