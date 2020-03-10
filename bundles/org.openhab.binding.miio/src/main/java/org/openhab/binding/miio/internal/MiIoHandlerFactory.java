@@ -42,7 +42,6 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
-        miIoDatabaseWatchService.getSourcePath();
     }
 
     @Override

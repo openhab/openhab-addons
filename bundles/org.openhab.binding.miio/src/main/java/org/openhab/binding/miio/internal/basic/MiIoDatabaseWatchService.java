@@ -100,10 +100,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
      * @return URL with the definition for the model
      */
     public @Nullable URL getDatabaseUrl(String modelId) {
-        if (databaseList.containsKey(modelId)) {
-            return databaseList.get(modelId);
-        }
-        return null;
+        return databaseList.get(modelId);
     }
 
     private void populateDatabase() {
