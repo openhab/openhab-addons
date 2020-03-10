@@ -249,7 +249,21 @@ public class GoEChargerHandler extends BaseThingHandler {
             case ACCESS_CONFIGURATION:
                 key = "ast";
                 if (command instanceof StringType) {
-                    value = command.toString();
+                    switch (command.toString().toUpperCase()) {
+                        case "OPEN":
+                            value = "0";
+                            break;
+                        case "RFID":
+                            value = "1";
+                            break;
+                        case "AWATTAR":
+                            value = "2";
+                            break;
+                        case "TIMER":
+                            value = "3";
+                            break;
+                        default:
+                    }
                 }
                 break;
             default:
@@ -287,7 +301,9 @@ public class GoEChargerHandler extends BaseThingHandler {
             if (logger.isDebugEnabled()) {
                 logger.debug("Response: {}", contentResponse.getContentAsString());
             }
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            GoEStatusResponseDTO result = gson.fromJson(contentResponse.getContentAsString(),
+                    GoEStatusResponseDTO.class);
+            updateChannelsAndStatus(result);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "No response received on command");
@@ -322,10 +338,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         return result;
     }
 
-    private void refresh() {
-        // Request new GoE data
-        GoEStatusResponseDTO goeResponse = getGoEData();
-
+    private void updateChannelsAndStatus(GoEStatusResponseDTO goeResponse) {
         if (goeResponse == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No response received");
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
@@ -333,6 +346,12 @@ public class GoEChargerHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
         }
+    }
+
+    private void refresh() {
+        // Request new GoE data
+        GoEStatusResponseDTO goeResponse = getGoEData();
+        updateChannelsAndStatus(goeResponse);
     }
 
     private void startAutomaticRefresh() {
