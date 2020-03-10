@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -240,7 +239,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         }
 
         @Override
-        public void handleArmDisarmAreaResponse(@NonNull AreaArmDisarmResponse response) {
+        public void handleArmDisarmAreaResponse(AreaArmDisarmResponse response) {
             if (response.areaNo == DigiplexAreaHandler.this.areaNo) {
                 if (response.success) {
                     updateControlChannel(COMMAND_OK);
@@ -251,7 +250,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         }
 
         @Override
-        public void handleAreaEvent(@NonNull AreaEvent event) {
+        public void handleAreaEvent(AreaEvent event) {
             if (event.isForArea(DigiplexAreaHandler.this.areaNo)) {
                 switch (event.getType()) {
                     case READY: // TODO: not sure what it means. Let's send status update request

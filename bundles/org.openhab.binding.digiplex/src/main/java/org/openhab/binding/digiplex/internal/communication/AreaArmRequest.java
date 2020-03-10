@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Command for arming area
  *
  * @author Robert Michalak - Initial contribution
  */
-
+@NonNullByDefault
 public class AreaArmRequest implements DigiplexRequest {
 
     private int areaNo;

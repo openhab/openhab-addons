@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.events.AreaEvent;
 import org.openhab.binding.digiplex.internal.communication.events.AreaEventType;
 import org.openhab.binding.digiplex.internal.communication.events.GenericEvent;
@@ -30,6 +31,7 @@ import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEven
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class DigiplexResponseResolver {
 
     private static final String OK = "&ok";

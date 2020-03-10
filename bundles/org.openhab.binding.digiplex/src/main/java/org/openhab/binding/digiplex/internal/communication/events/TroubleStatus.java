@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal.communication.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Trouble status.
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public enum TroubleStatus {
     TROUBLE_STARTED,
     TROUBLE_RESTORED;

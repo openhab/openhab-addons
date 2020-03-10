@@ -17,7 +17,6 @@ import static org.openhab.binding.digiplex.internal.handler.TypeUtils.openClosed
 
 import java.time.ZonedDateTime;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -206,7 +205,7 @@ public class DigiplexZoneHandler extends BaseThingHandler {
         }
 
         @Override
-        public void handleZoneEvent(@NonNull ZoneEvent event) {
+        public void handleZoneEvent(ZoneEvent event) {
             if (event.getZoneNo() == DigiplexZoneHandler.this.zoneNo) {
                 switch (event.getType()) {
                     case ALARM:

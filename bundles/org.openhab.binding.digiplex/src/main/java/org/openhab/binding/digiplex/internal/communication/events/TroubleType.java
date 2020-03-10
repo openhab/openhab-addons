@@ -14,12 +14,15 @@ package org.openhab.binding.digiplex.internal.communication.events;
 
 import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Trouble event type.
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public enum TroubleType {
     TLM_TROUBLE(BRIDGE_TLM_TROUBLE),
     AC_FAILURE(BRIDGE_AC_FAILURE),
