@@ -112,11 +112,11 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         for (URL db : urlEntries) {
             logger.trace("Adding devices for db file: {}", db);
             try {
-                JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                Gson gson = new GsonBuilder().serializeNulls().create();
                 @Nullable
-                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                if (devdb != null) {
+                JsonObject deviceMapping = Utils.convertFileToJSON(db);
+                if (deviceMapping != null) {
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     for (String id : devdb.getDevice().getId()) {
                         workingDatabaseList.put(id, db);
                     }

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -391,7 +392,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    private void updateChannel(MiIoBasicChannel basicChannel, String param, JsonElement val) {
+    private void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
+        JsonElement val = value;
         if (basicChannel != null) {
             if (basicChannel.getTransfortmation() != null) {
                 JsonElement transformed = Conversions.execute(basicChannel.getTransfortmation(), val);
