@@ -39,7 +39,7 @@
 				<description>Serial number of your smart strip.</description>
 			</parameter>
 			<parameter name="pollInterval" type="integer">
-				<label>Poll Intervall</label>
+				<label>Poll Interval</label>
 				<default>60</default>
 				<description>How often (seconds) should the smart strip status be polled?</description>
 			</parameter>
