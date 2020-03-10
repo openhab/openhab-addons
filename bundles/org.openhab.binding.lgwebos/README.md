@@ -106,12 +106,12 @@ Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwe
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
 Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-Default LG_TV0_Channel "Channel [%s]"        { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
+String LG_TV0_Channel "Channel [%s]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
 String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
-Default LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
+String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
 Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaPlayer"}
 
 // this assumes you also have the wake on lan binding configured and your TV's IP address is on this network - You would need to update your broadcast and mac address accordingly
@@ -128,25 +128,11 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_Mute
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_Channel
+        Default item=LG_TV0_Channel
         Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
-        Text item=LG_TV0_Application
-        Selection item=LG_TV0_Application mappings=[
-            "com.webos.app.livetv"="TV",
-            "com.webos.app.tvguide"="TV Guide",
-            "netflix" = "Netflix",
-            "youtube.leanback.v4" = "Youtube",
-            "spotify-beehive" = "Spotify",
-            "com.webos.app.hdmi1" = "HDMI 1",
-            "com.webos.app.hdmi2" = "HDMI 2",
-            "com.webos.app.hdmi3" = "HDMI 3",
-            "com.webos.app.hdmi4" = "HDMI 4",
-            "com.webos.app.externalinput.av1" = "AV1",
-            "com.webos.app.externalinput.av2" = "AV2",
-            "com.webos.app.externalinput.component" = "Component",
-            "com.webos.app.externalinput.scart" = "Scart"]
+        Default item=LG_TV0_Application
     }
 }
 ```
