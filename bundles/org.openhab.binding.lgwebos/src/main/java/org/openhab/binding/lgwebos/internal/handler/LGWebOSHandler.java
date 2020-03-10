@@ -17,6 +17,7 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +34,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
 import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
+import org.openhab.binding.lgwebos.internal.LGWebOSStateDescriptionOptionProvider;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
 import org.openhab.binding.lgwebos.internal.MediaControlStop;
@@ -81,14 +84,18 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
+    private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
+
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;
 
     private @Nullable LGWebOSConfiguration config;
 
-    public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient) {
+    public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient,
+            LGWebOSStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
         this.webSocketClient = webSocketClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
 
         Map<String, ChannelHandler> handlers = new HashMap<>();
         handlers.put(CHANNEL_VOLUME, new VolumeControlVolume());
@@ -289,6 +296,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
                 break;
         }
+    }
+
+    public void setOptions(String channelId, List<StateOption> options) {
+        logger.debug("setOptions channelId={} options.size()={}", channelId, options.size());
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
     }
 
     public void postUpdate(String channelId, State state) {
