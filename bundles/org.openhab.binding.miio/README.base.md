@@ -32,8 +32,7 @@ Look at the openhab forum, or the openhab github repository for the modelId of s
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files. This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The config/misc/miio (e.g. in Linux `/opt/openhab2/config/misc/miio/`) is scanned for database files and will be used for your devices. 
-Note that local database files take preference over build-in ones. 
-Hence if a json file is local and in the database the local file will be used. 
+Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in Openhab github.
 
 # Discovery

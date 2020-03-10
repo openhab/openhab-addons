@@ -65,7 +65,6 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     @Activate
     public MiIoDatabaseWatchService() {
         super(LOCAL_DATABASE_PATH);
-        logger.warn("Miio is watching: {}", LOCAL_DATABASE_PATH);
         processWatchEvent(null, null, Paths.get(LOCAL_DATABASE_PATH));
         populateDatabase();
         if (logger.isTraceEnabled()) {
@@ -89,7 +88,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
             @Nullable Path path) {
         if (path != null && path.getFileName().toString().endsWith(DATABASE_FILES)) {
-            logger.debug("Local Databases file {} changed. Refreshing device database", path.getFileName());
+            logger.debug("Local Databases file {} changed. Refreshing device database.", path.getFileName());
             populateDatabase();
         }
     }

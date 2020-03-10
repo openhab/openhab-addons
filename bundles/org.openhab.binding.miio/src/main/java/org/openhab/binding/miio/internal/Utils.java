@@ -91,5 +91,4 @@ public final class Utils {
         jsonObject = jsonElement.getAsJsonObject();
         return jsonObject;
     }
-
 }
