@@ -312,7 +312,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
     }
 
-    @SuppressWarnings("null")
     private void updateDeviceIdConfig(String deviceId) {
         if (deviceId != null) {
             updateProperty(Thing.PROPERTY_SERIAL_NUMBER, deviceId);
