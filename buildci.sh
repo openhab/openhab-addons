@@ -63,7 +63,7 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
     if [[ -e "itests/$CHANGED_DIR.tests" ]]; then
         echo "Single addon pull request: Building itest $CHANGED_DIR"
         #build the index projects so the dependencies are downloaded before the OSGi resolve step occurs before running the test
-        mvn -pl ":org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index, :$CHANGED_DIR.tests" clean install -B 2>&1 |
+        mvn -pl ":org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index, itests/$CHANGED_DIR.tests" clean install -B 2>&1 |
 	      stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	      stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
 	      tee -a ${CDIR}/.build.log
