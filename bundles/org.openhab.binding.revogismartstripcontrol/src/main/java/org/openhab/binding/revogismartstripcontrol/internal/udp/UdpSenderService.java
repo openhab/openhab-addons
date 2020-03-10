@@ -42,7 +42,15 @@ import static java.util.stream.Collectors.toList;
 @NonNullByDefault
 public class UdpSenderService {
 
+    /**
+     * Limit timeout waiting time, as we have to deal with UDP
+     *
+     * How it works: for every loop, we'll wait a bit longer, so the timeout counter is multiplied with the timeout base
+     * value. Let max timeout count be 2 and timeout base value 800, then we'll have a maximum of loops of 3, waiting
+     * 800ms in the 1st loop, 1600ms in the 2nd loop and 2400ms in the third loop.
+     */
     private static final int MAX_TIMEOUT_COUNT = 2;
+    public static final long TIMEOUT_BASE_VALUE = 800L;
     private static final int REVOGI_PORT = 8888;
 
     private final Logger logger = LoggerFactory.getLogger(UdpSenderService.class);
@@ -103,7 +111,7 @@ public class UdpSenderService {
                 timeoutCounter++;
                 logger.info("Socket receive time no. {}", timeoutCounter);
                 try {
-                    TimeUnit.MILLISECONDS.sleep(timeoutCounter * 800L);
+                    TimeUnit.MILLISECONDS.sleep(timeoutCounter * TIMEOUT_BASE_VALUE);
                 } catch (InterruptedException ex) {
                     logger.warn("Interrupted sleep");
                     Thread.currentThread().interrupt();
