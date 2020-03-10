@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
@@ -58,6 +60,12 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                     channels.forEach(c -> logger.debug("Channel {} - {}", c.getChannelNumber(), c.getName()));
                 }
                 channelListCache.put(handler.getThing().getUID(), channels);
+                List<StateOption> options = new ArrayList<>();
+                for (ChannelInfo channel : channels) {
+                    String name = channel.getName() == null ? "" : channel.getName();
+                    options.add(new StateOption(channel.getChannelNumber(), channel.getChannelNumber() + " - " + name));
+                }
+                handler.setOptions(channelId, options);
             }
         });
 
