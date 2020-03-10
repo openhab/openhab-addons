@@ -200,7 +200,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         explicitDisconnect = false;
 
         connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
-        new Thread(connector).start();
+
+        Thread thread = new Thread(connector, "OpenTherm Gateway Binding - socket listener thread");
+        thread.setDaemon(true);
+        thread.start();
 
         logger.info("OpenTherm Gateway connector started");
 
