@@ -241,13 +241,13 @@ public class InnogyClient {
 
                     switch (error.getCode()) {
                         case ErrorResponse.ERR_SESSION_EXISTS:
-                            logger.debug("Session exists: {}", error.toString());
+                            logger.debug("Session exists: {}", error);
                             throw new SessionExistsException(error.getDescription());
                         case ErrorResponse.ERR_SESSION_NOT_FOUND:
-                            logger.debug("Session not found: {}", error.toString());
+                            logger.debug("Session not found: {}", error);
                             throw new SessionNotFoundException(error.getDescription());
                         case ErrorResponse.ERR_CONTROLLER_OFFLINE:
-                            logger.debug("Controller offline: {}", error.toString());
+                            logger.debug("Controller offline: {}", error);
                             throw new ControllerOfflineException(error.getDescription());
                         case ErrorResponse.ERR_REMOTE_ACCESS_NOT_ALLOWED:
                             logger.debug(
@@ -258,8 +258,8 @@ public class InnogyClient {
                             logger.debug("Invalid action triggered. Message: {}", error.getMessages());
                             throw new InvalidActionTriggeredException(error.getDescription());
                         default:
-                            logger.debug("Unknown error: {}", error.toString());
-                            throw new ApiException("Unknown error: " + error.toString());
+                            logger.debug("Unknown error: {}", error);
+                            throw new ApiException("Unknown error: " + error);
                     }
                 } catch (final JsonSyntaxException e) {
                     throw new ApiException("Invalid JSON syntax in error response: " + content);

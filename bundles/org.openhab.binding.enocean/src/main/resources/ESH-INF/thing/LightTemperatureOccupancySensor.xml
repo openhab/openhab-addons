@@ -30,6 +30,10 @@
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
 			</parameter>
+			<parameter name="receivingSIGEEP" type="boolean">
+				<label>Receive Battery Status Signal Messages</label>
+				<default>false</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>

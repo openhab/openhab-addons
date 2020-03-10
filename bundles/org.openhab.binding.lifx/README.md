@@ -33,6 +33,8 @@ The following table lists the thing types of the supported LIFX devices:
 | White 800 (Low Voltage)      | whitelight   |
 | White 800 (High Voltage)     | whitelight   |
 | White 900 BR30 (Low Voltage) | whitelight   |
+| LIFX Candle Warm to White    | whitelight   |
+| LIFX Filament                | whitelight   |
 | LIFX Mini Day and Dusk       | whitelight   |
 | LIFX Mini White              | whitelight   |
 

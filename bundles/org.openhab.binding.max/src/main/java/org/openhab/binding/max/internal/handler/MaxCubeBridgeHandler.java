@@ -46,6 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -164,6 +165,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
+    private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(10);
+    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        logger.debug("Refreshing.");
+        refreshData();
+        return true;
+    });
+
     private ScheduledFuture<?> pollingJob;
     private Thread queueConsumerThread;
     private BackupState backup = BackupState.REQUESTED;
@@ -177,7 +185,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Refresh command received.");
-            refreshData();
+            refreshCache.getValue();
         } else {
             logger.warn("No bridge commands defined. Cannot process '{}'.", command);
         }

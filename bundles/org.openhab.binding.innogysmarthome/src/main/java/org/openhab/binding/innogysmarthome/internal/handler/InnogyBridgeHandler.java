@@ -651,7 +651,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.trace("Message: {}", gson.toJson(message));
             logger.trace("Messagetype: {}", message.getType());
         }
-        if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType())) {
+        if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDeviceLinkList() != null) {
             for (final String link : message.getDeviceLinkList()) {
                 deviceStructMan.refreshDevice(Link.getId(link));
                 final Device device = deviceStructMan.getDeviceById(Link.getId(link));
@@ -688,11 +688,17 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
         logger.debug("handleMessageDeletedEvent with messageId '{}'", messageId);
         Device device = deviceStructMan.getDeviceWithMessageId(messageId);
+
         if (device != null) {
-            deviceStructMan.refreshDevice(device.getId());
-            device = deviceStructMan.getDeviceById(device.getId());
-            for (final DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                deviceStatusListener.onDeviceStateChanged(device);
+            String id = device.getId();
+            deviceStructMan.refreshDevice(id);
+            device = deviceStructMan.getDeviceById(id);
+            if (device != null) {
+                for (final DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+                    deviceStatusListener.onDeviceStateChanged(device);
+                }
+            } else {
+                logger.debug("No device with id {} found after refresh.", id);
             }
         } else {
             logger.debug("No device found with message id {}.", messageId);
@@ -888,7 +894,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.debug("IO error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof ApiException) {
-            logger.warn("Unexcepted API error: {}", e.getMessage(), e);
+            logger.warn("Unexpected API error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());

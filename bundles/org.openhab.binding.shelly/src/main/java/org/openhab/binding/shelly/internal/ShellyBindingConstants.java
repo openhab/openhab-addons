@@ -131,6 +131,8 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_UPDATE_CURR_VERS = "updateCurrentVersion";
     public static final String PROPERTY_UPDATE_NEW_VERS = "updateNewVersion";
     public static final String PROPERTY_COAP_DESCR = "coapDeviceDescr";
+    public static final String PROPERTY_STATS_TIMEOUTS = "statsTimeoutErrors";
+    public static final String PROPERTY_STATS_TRECOVERED = "statsTimeoutsRecovered";
 
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
@@ -143,6 +145,12 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_TIMER_AUTOON = "autoOn";
     public static final String CHANNEL_TIMER_AUTOOFF = "autoOff";
     public static final String CHANNEL_TIMER_ACTIVE = "timerActive";
+
+    // External sensors for Shelly1/1PM
+    public static final String CHANNEL_GROUP_ETEMP_SENSORS = "sensors";
+    public static final String CHANNEL_ETEMP_SENSOR1 = "temperature1";
+    public static final String CHANNEL_ETEMP_SENSOR2 = "temperature2";
+    public static final String CHANNEL_ETEMP_SENSOR3 = "temperature3";
 
     // Roller
     public static final String CHANNEL_GROUP_ROL_CONTROL = "roller";
@@ -223,11 +231,10 @@ public class ShellyBindingConstants {
 
     public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.5.2";
-    public static final int SHELLY_API_TIMEOUT_MS = 6000;
+    public static final int SHELLY_API_TIMEOUT_MS = 5000;
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
-    public static final String ALARM_TYPE_WEAKSIGNAL = "WEAK_SIGNAL";
     public static final String ALARM_TYPE_RESTARTED = "RESTARTED";
     public static final String ALARM_TYPE_OVERTEMP = "OVERTEMP";
     public static final String ALARM_TYPE_OVERPOWER = "OVERPOWER";
@@ -298,7 +305,6 @@ public class ShellyBindingConstants {
 
     // Minimum signal strength for basic connectivity. Packet delivery may be unreliable.
     public static final int HEALTH_CHECK_INTERVAL_SEC = 300;
-    public static final int SIGNAL_ALARM_MIN_RSSI = -80;
 
     public static final int DIM_STEPSIZE = 5;
 

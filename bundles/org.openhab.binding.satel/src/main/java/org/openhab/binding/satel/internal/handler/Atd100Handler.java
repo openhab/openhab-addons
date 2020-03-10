@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.satel.internal.command.ReadZoneTemperature;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.Atd100Config;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.ZoneTemperatureEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,16 +104,10 @@ public class Atd100Handler extends WirelessChannelsHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof ZoneTemperatureEvent) {
-            logger.trace("Handling incoming event: {}", event);
-            ZoneTemperatureEvent statusEvent = (ZoneTemperatureEvent) event;
-            if (statusEvent.getZoneNbr() == getThingConfig().getId()) {
-                updateState(CHANNEL_TEMPERATURE,
-                        new QuantityType<Temperature>(statusEvent.getTemperature(), SIUnits.CELSIUS));
-            }
-        } else {
-            super.incomingEvent(event);
+    public void incomingEvent(ZoneTemperatureEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        if (event.getZoneNbr() == getThingConfig().getId()) {
+            updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(event.getTemperature(), SIUnits.CELSIUS));
         }
     }
 

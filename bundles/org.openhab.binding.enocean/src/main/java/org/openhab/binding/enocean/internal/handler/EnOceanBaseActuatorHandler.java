@@ -39,7 +39,7 @@ import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 
 /**
  *
@@ -100,24 +100,24 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         if (sendingEEPType == null) {
             return r;
         }
-        
-        return Collections.unmodifiableCollection(Stream.concat(r.stream(), Collections.singletonList(sendingEEPType).stream()).collect(Collectors.toList()));
+
+        return Collections.unmodifiableCollection(Stream
+                .concat(r.stream(), Collections.singletonList(sendingEEPType).stream()).collect(Collectors.toList()));
     }
 
     @Override
     boolean validateConfig() {
-        
+
         EnOceanActuatorConfig config = getConfiguration();
-        if(config == null) {
+        if (config == null) {
             configurationErrorDescription = "Configuration is not valid";
             return false;
         }
 
-        if(config.sendingEEPId == null || config.sendingEEPId.isEmpty()) {
+        if (config.sendingEEPId == null || config.sendingEEPId.isEmpty()) {
             configurationErrorDescription = "Sending EEP must be provided";
             return false;
         }
-
 
         try {
             sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
@@ -125,10 +125,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             configurationErrorDescription = "Sending EEP is not supported";
             return false;
         }
-        
+
         if (super.validateConfig()) {
             try {
-                
+
                 if (sendingEEPType.getSupportsRefresh()) {
                     if (getConfiguration().pollingInterval > 0) {
                         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -248,11 +248,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
             if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
-                   .hasData()) {
-                ESP3Packet msg = eep.setSenderId(senderId)
-                                    .setDestinationId(destinationId)
-                                    .setSuppressRepeating(getConfiguration().suppressRepeating)
-                                    .getERP1Message();
+                    .hasData()) {
+                BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
+                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
             }

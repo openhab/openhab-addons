@@ -14,14 +14,15 @@ package org.openhab.binding.shelly.internal.coap;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
-import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.CoAP.Code;
@@ -34,20 +35,20 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrBlk;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrSen;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDevDescription;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotGenericSensorList;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotSensor;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotSensorTypeAdapter;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDevDescription;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotGenericSensorList;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -344,7 +345,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             return;
         }
 
-        logger.debug("{}: {} status updates received", thingName, list.generic.size());
+        logger.debug("{}: {} status updates received", thingName, new Integer(list.generic.size()).toString());
         for (int i = 0; i < list.generic.size(); i++) {
             CoIotSensor s = list.generic.get(i);
             CoIotDescrSen sen = sensorMap.get(s.index);
@@ -389,6 +390,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER : CHANNEL_GROUP_METER + rIndex;
                         updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
                                 toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                        if (profile.isEMeter) {
+                            updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+                        }
                         break;
                     case "o": // Overtemp
                         // will be handled by status update
@@ -420,19 +424,22 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                         toQuantityType(pos, SmartHomeUnits.PERCENT));
                                 break;
                             case "input":
-                                if (!profile.isDimmer) {
-                                    // Device has 1 input: 0=off, 1+2 depend on switch mode
-                                    updateChannel(updates, rGroup, CHANNEL_INPUT,
-                                            s.value == 0 ? OnOffType.OFF : OnOffType.ON);
-                                } else {
-                                    // only Dimmer has 2 inputs
-                                    Integer idx = getInputId(sen.id);
-                                    if (idx != null) {
-                                        updateChannel(updates, rGroup, CHANNEL_INPUT + idx.toString(),
-                                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                Integer idx = getInputId(sen.id);
+                                String iGroup = rGroup;
+                                String iChannel = CHANNEL_INPUT;
+                                if (idx != null) {
+                                    if (profile.isDimmer || profile.isRoller) {
+                                        // Dimmer and Roller things have 2 inputs
+                                        iChannel = CHANNEL_INPUT + idx.toString();
+                                    } else {
+                                        // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
+                                        iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
+                                                : CHANNEL_GROUP_RELAY_CONTROL + idx;
                                     }
                                 }
+                                updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
                                 break;
+
                             case "flood":
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
@@ -449,27 +456,27 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             // RGBW2/Bulb
                             case "red":
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
-                                        new DecimalType(s.value));
+                                        ShellyColorUtils.toPercent((int) s.value));
                                 break;
                             case "green":
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
-                                        new DecimalType(s.value));
+                                        ShellyColorUtils.toPercent((int) s.value));
                                 break;
                             case "blue":
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
-                                        new DecimalType(s.value));
+                                        ShellyColorUtils.toPercent((int) s.value));
                                 break;
                             case "white":
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
-                                        new DecimalType(s.value));
+                                        ShellyColorUtils.toPercent((int) s.value));
                                 break;
                             case "gain":
                                 updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
-                                        new DecimalType(s.value));
+                                        ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                                 break;
                             case "temp":
-                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_TEMP,
-                                        new DecimalType(s.value));
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_TEMP, ShellyColorUtils
+                                        .toPercent((int) s.value, MIN_COLOR_TEMPERATURE, MAX_COLOR_TEMPERATURE));
 
                                 break;
 
@@ -494,7 +501,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             logger.debug("{}: Process {} CoIoT channel updates", thingName, updates.size());
             int i = 0;
             for (Map.Entry<String, State> u : updates.entrySet()) {
-                logger.debug("{}:  Update[{}] channel {}, value={}", thingName, i, u.getKey(), u.getValue());
+                logger.debug("{}:  Update[{}] channel {}, value={} (type {})", thingName, i, u.getKey(), u.getValue(),
+                        u.getValue().getClass());
                 thingHandler.updateChannel(u.getKey(), u.getValue(), true);
                 i++;
             }
@@ -690,18 +698,23 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @param sensorId The id from the sensor update
      * @return Index of found entry (+1 will be the suffix for the channel name) or null if sensorId is not found
      */
+    @SuppressWarnings("null")
     @Nullable
     private Integer getInputId(String sensorId) {
-        Integer idx = 1;
+        Integer idx = 0;
         for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
             @Nullable
             CoIotDescrSen sen = se.getValue();
-            if (sen.id.equalsIgnoreCase(sensorId)) {
-                logger.trace("{}:    map to input{} channel", thingName, idx);
-                return idx;
-            }
             if (sen.id.equalsIgnoreCase("Input")) {
                 idx++; // iterate from input1..2..n
+            }
+            if (sen.id.equalsIgnoreCase(sensorId)) {
+                CoIotDescrBlk blk = blockMap.get(sen.links);
+                if ((blk != null) && StringUtils.substring(blk.desc, 5).equalsIgnoreCase("Relay")) {
+                    idx = Integer.parseInt(StringUtils.substringAfter(blk.desc, "Relay"));
+                }
+                logger.trace("{}:    map to input{} channel", thingName, idx);
+                return idx;
             }
         }
         logger.debug("{}: sensorId {} not found in sensorMap!", thingName, sensorId);

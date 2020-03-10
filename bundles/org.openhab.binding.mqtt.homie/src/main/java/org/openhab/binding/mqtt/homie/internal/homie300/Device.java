@@ -175,7 +175,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> stop() {
         return attributes.unsubscribe().thenCompose(
-                b -> CompletableFuture.allOf(nodes.stream().map(n -> n.stop()).toArray(CompletableFuture[]::new)));
+                b -> CompletableFuture.allOf(nodes.stream().map(Node::stop).toArray(CompletableFuture[]::new)));
     }
 
     /**

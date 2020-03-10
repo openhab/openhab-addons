@@ -62,19 +62,51 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
+| rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
+
+### Remote Control Buttons
+
+The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
+This list has been compiled mostly through trial and error. Your mileage may vary.
+
+| Code String | Description                                              |
+|-------------|----------------------------------------------------------|
+| LEFT        | Left button in cursor control group                      |
+| RIGHT       | Right button in cursor control group                     |
+| UP          | Up button in cursor control group                        |
+| DOWN        | Down button in cursor control group                      |
+| ENTER       | "OK" button in the center of the cursor control group    |
+| BACK        | "BACK" button                                            |
+| EXIT        | "EXIT" button                                            |
+| 0-9         | Number buttons                                           |
+| HOME        | "HOME" button                                            |
+| RED         | "RED"  button                                            |
+| GREEN       | "GREEN" button                                           |
+| YELLOW      | "YELLOW" button                                          |
+| BLUE        | "BLUE" button                                            |
+| PLAY        | "PLAY" button                                            |
+| PAUSE       | "PAUSE" button                                           |
+| STOP        | "STOP" button                                            |
+
+
+A sample HABPanel remote control widget can be found [in this github repository.](https://github.com/bbrodt/openhab2-misc)
 
 ## Example
 
-Assuming your ThingID is lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
+demo.things:
+
+```
+Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+```
 
 demo.items:
 
 ```
 Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:power" }
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
-Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
+Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-String LG_TV0_Channel "Channel [%d]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
+String LG_TV0_Channel "Channel [%s]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
 String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
@@ -96,25 +128,11 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_Mute
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_Channel
+        Default item=LG_TV0_Channel
         Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
-        Text item=LG_TV0_Application
-        Selection item=LG_TV0_Application mappings=[
-            "com.webos.app.livetv"="TV",
-            "com.webos.app.tvguide"="TV Guide",
-            "netflix" = "Netflix",
-            "youtube.leanback.v4" = "Youtube",
-            "spotify-beehive" = "Spotify",
-            "com.webos.app.hdmi1" = "HDMI 1",
-            "com.webos.app.hdmi2" = "HDMI 2",
-            "com.webos.app.hdmi3" = "HDMI 3",
-            "com.webos.app.hdmi4" = "HDMI 4",
-            "com.webos.app.externalinput.av1" = "AV1",
-            "com.webos.app.externalinput.av2" = "AV2",
-            "com.webos.app.externalinput.component" = "Component",
-            "com.webos.app.externalinput.scart" = "Scart"]
+        Default item=LG_TV0_Application
     }
 }
 ```

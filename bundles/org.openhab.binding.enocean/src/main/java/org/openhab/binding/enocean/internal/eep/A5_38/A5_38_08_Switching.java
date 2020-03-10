@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
+
 import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -44,9 +46,9 @@ public class A5_38_08_Switching extends _4BSMessage {
             Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if ((OnOffType) outputCommand == OnOffType.ON) {
-            setData(CommandId, Zero, Zero, (byte) (TeachInBit | SwitchOn));
+            setData(CommandId, ZERO, ZERO, (byte) (TeachInBit | SwitchOn));
         } else {
-            setData(CommandId, Zero, Zero, (byte) (TeachInBit | SwitchOff));
+            setData(CommandId, ZERO, ZERO, (byte) (TeachInBit | SwitchOff));
         }
     }
 }

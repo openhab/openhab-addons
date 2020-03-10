@@ -105,6 +105,9 @@ public class OpenAPIUtils {
                     throw new NanoleafUnauthorizedException("OpenAPI request unauthorized");
                 } else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
                     throw new NanoleafNotFoundException("OpenAPI request did not get any result back");
+                } else if (openAPIResponse.getStatus() == HttpStatus.BAD_REQUEST_400) {
+                    throw new NanoleafBadRequestException(String.format("Nanoleaf did not expect this request. HTTP response code %s",
+                            openAPIResponse.getStatus()));
                 } else {
                     throw new NanoleafException(String.format("OpenAPI request failed. HTTP response code %s",
                             openAPIResponse.getStatus()));
@@ -112,9 +115,10 @@ public class OpenAPIUtils {
             }
         } catch (ExecutionException | TimeoutException | InterruptedException clientException) {
             if (clientException.getCause() instanceof HttpResponseException
-                    && ((HttpResponseException) clientException.getCause()).getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                    LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
-                    throw new NanoleafUnauthorizedException("Invalid authorization token");
+                    && ((HttpResponseException) clientException.getCause()).getResponse()
+                            .getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
+                throw new NanoleafUnauthorizedException("Invalid authorization token");
             }
             throw new NanoleafException("Failed to send OpenAPI request", clientException);
         }
@@ -126,8 +130,7 @@ public class OpenAPIUtils {
         }
         LOGGER.trace("Sending Request {} {}", request.getURI(),
                 request.getQuery() == null ? "no query parameters" : request.getQuery());
-        LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(),
-                request.getParams());
+        LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(), request.getParams());
         if (request.getContent() != null) {
             Iterator<ByteBuffer> iter = request.getContent().iterator();
             if (iter != null) {

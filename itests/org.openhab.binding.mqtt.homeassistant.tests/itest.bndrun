@@ -9,11 +9,6 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 	bnd.identity;id='org.openhab.core.thing.xml',\
 	bnd.identity;id='org.openhab.io.mqttembeddedbroker'
 
-# We would like to use the "volatile" storage only
--runblacklist: \
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
-
 #
 # done
 #

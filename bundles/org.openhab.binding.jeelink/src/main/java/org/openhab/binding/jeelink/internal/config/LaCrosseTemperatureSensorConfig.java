@@ -17,7 +17,7 @@ package org.openhab.binding.jeelink.internal.config;
  *
  * @author Volker Bier - Initial contribution
  */
-public class LaCrosseTemperatureSensorConfig extends JeeLinkSensorConfig {
+public class LaCrosseTemperatureSensorConfig extends BufferedSensorConfig {
     public float minTemp;
     public float maxTemp;
     public float maxDiff;

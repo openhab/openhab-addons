@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.miio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -20,12 +23,13 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoSendCommand {
 
     private final int id;
     private final MiIoCommand command;
     private final String commandString;
-    private JsonObject response;
+    private @Nullable JsonObject response;
 
     public void setResponse(JsonObject response) {
         this.response = response;
@@ -50,14 +54,23 @@ public class MiIoSendCommand {
     }
 
     public JsonObject getResponse() {
-        return response;
+        final @Nullable JsonObject response = this.response;
+        return response != null ? response : new JsonObject();
     }
 
     public boolean isError() {
-        return response.get("error") != null;
+        final @Nullable JsonObject response = this.response;
+        if (response != null) {
+            return response.has("error");
+        }
+        return true;
     }
 
     public JsonElement getResult() {
-        return response.get("result");
+        final @Nullable JsonObject response = this.response;
+        if (response != null && response.has("result")) {
+            return response.get("result");
+        }
+        return new JsonObject();
     }
 }

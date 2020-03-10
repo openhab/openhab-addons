@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
  * Class to implement the BlueGiga command <b>getStatus</b>.
@@ -25,16 +26,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaGetStatusResponse extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaGetStatusResponse extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x07;
-
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Response constructor
@@ -47,17 +42,6 @@ public class BlueGigaGetStatusResponse extends BlueGigaResponse {
 
         // Deserialize the fields
         connection = deserializeUInt8();
-    }
-
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
     }
 
     @Override

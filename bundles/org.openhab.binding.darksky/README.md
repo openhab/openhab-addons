@@ -234,11 +234,11 @@ Number:Temperature localDailyForecastDay2MinTemperature "Minimum temperature in 
 Number:Temperature localDailyForecastDay2MaxTemperature "Maximum temperature in 2 days [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastDay2#max-temperature" }
 ...
 
-String localAlert1Title "Weather warning! [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#title" }
-String localAlert1Description "Description [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#description" }
-String localAlert1Severity "Severity [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#severity" }
-DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alert1#issued" }
-DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alert1#expires" }
+String localAlert1Title "Weather warning! [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alerts1#title" }
+String localAlert1Description "Description [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alerts1#description" }
+String localAlert1Severity "Severity [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alerts1#severity" }
+DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alerts1#issued" }
+DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alerts1#expires" }
 
 String miamiCurrentCondition "Current condition in Miami [%s]" <sun_clouds> { channel="darksky:weather-and-forecast:api:miami:current#condition" }
 Image miamiCurrentConditionIcon "Icon" { channel="darksky:weather-and-forecast:api:miami:current#icon" }

@@ -14,7 +14,8 @@ package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
 import java.util.UUID;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
  * Class to implement the BlueGiga command <b>findInformationFoundEvent</b>.
@@ -29,16 +30,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaFindInformationFoundEvent extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaFindInformationFoundEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x04;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Characteristics handle
@@ -70,16 +65,6 @@ public class BlueGigaFindInformationFoundEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * Characteristics handle
      * <p>
      * BlueGiga API type is <i>uint16</i> - Java type is {@link int}
@@ -89,6 +74,7 @@ public class BlueGigaFindInformationFoundEvent extends BlueGigaResponse {
     public int getChrHandle() {
         return chrHandle;
     }
+
     /**
      * Characteristics type (UUID)
      * <p>
