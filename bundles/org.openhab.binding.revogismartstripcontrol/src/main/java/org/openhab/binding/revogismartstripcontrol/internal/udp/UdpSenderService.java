@@ -100,8 +100,7 @@ public class UdpSenderService {
             DatagramPacket answer = new DatagramPacket(receivedBuf, receivedBuf.length);
             try {
                 datagramSocketWrapper.receiveAnswer(answer);
-            }
-            catch (SocketTimeoutException e) {
+            } catch (SocketTimeoutException e) {
                 timeoutCounter++;
                 logger.info("Socket receive time no. {}", timeoutCounter);
                 try {
