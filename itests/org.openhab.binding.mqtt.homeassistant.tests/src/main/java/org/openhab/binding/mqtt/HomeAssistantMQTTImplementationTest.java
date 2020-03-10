@@ -180,7 +180,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
                     return null;
                 });
 
-        assertTrue(latch.await(2500, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
         // The line below not working, not clear why
         // future.get(800, TimeUnit.MILLISECONDS);
 
