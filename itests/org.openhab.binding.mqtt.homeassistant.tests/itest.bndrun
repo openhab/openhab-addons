@@ -11,9 +11,8 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml',\
 	bnd.identity;id='org.openhab.io.mqttembeddedbroker',\
-	bnd.identity;id='org.eclipse.paho.client.mqttv3',\
-	bnd.identity;id='org.openhab.binding.mqtt.generic',\
-	bnd.identity;id='org.openhab.binding.mqtt.homeassistant'
+	bnd.identity;id='biz.aQute.tester'
+
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
@@ -24,10 +23,9 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 
 
-#
-# done
-#
+-runvm: -Dio.netty.noUnsafe=true
 -runbundles: \
+	biz.aQute.tester;version='[5.0.0,5.0.1)',\
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
 	com.google.dagger;version='[2.20.0,2.20.1)',\
 	com.google.gson;version='[2.8.2,2.8.3)',\
@@ -66,7 +64,6 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 	org.eclipse.jetty.server;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.servlet;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.util;version='[9.4.20,9.4.21)',\
-	org.eclipse.paho.client.mqttv3;version='[1.2.2,1.2.3)',\
 	org.glassfish.hk2.external.javax.inject;version='[2.4.0,2.4.1)',\
 	org.jctools.core;version='[2.1.2,2.1.3)',\
 	org.mockito.mockito-core;version='[3.1.0,3.1.1)',\
@@ -92,8 +89,6 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
-	slf4j.simple;version='[1.7.25,1.7.26)',\
+	slf4j.simple;version='[1.7.21,1.7.22)',\
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)'
-
--runvm: -Dio.netty.noUnsafe=true
