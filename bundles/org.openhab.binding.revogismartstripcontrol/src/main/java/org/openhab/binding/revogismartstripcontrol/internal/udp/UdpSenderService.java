@@ -75,7 +75,7 @@ public class UdpSenderService {
     }
 
     private List<UdpResponse> sendMessage(String content, InetAddress inetAddress) {
-        logger.info("Using address {}", inetAddress);
+        logger.debug("Using address {}", inetAddress);
         byte[] buf = content.getBytes(Charset.defaultCharset());
         DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress, REVOGI_PORT);
         List<UdpResponse> responses = new ArrayList<>();
