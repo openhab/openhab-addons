@@ -122,7 +122,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
                     }
                 }
             } catch (JsonIOException | JsonSyntaxException | IOException e) {
-                logger.debug("Error while searching for {} in database '{}': {}", db, e.getMessage());
+                logger.debug("Error while processing database '{}': {}", db, e.getMessage());
             }
             databaseList = workingDatabaseList;
         }
