@@ -102,6 +102,12 @@ public abstract class BluetoothDevice {
      */
     protected String name;
 
+    protected String model;
+    protected String serialNumber;
+    protected String hwRevision;
+    protected String fwRevision;
+    protected String swRevision;
+
     /**
      * List of supported services
      */
@@ -140,6 +146,51 @@ public abstract class BluetoothDevice {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the model of the Bluetooth device.
+     *
+     * @return The devices model, null if not known
+     */
+    public String getModel() {
+        return model;
+    }
+
+    /**
+     * Returns the serial number of the Bluetooth device.
+     *
+     * @return The serial model, null if not known
+     */
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    /**
+     * Returns the HW revision of the Bluetooth device.
+     *
+     * @return The HW revision, null if not known
+     */
+    public String getHwRevision() {
+        return hwRevision;
+    }
+
+    /**
+     * Returns the FW revision of the Bluetooth device.
+     *
+     * @return The FW revision, null if not known
+     */
+    public String getFwRevision() {
+        return fwRevision;
+    }
+
+    /**
+     * Returns the SW revision of the Bluetooth device.
+     *
+     * @return The SW revision, null if not known
+     */
+    public String getSwRevision() {
+        return swRevision;
     }
 
     /**
@@ -243,6 +294,51 @@ public abstract class BluetoothDevice {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Set the model of the device
+     *
+     * @param model a {@link String} defining the device model
+     */
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    /**
+     * Set the serial number of the device
+     *
+     * @param model a {@link String} defining the serial number
+     */
+    public void setSerialNumberl(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    /**
+     * Set the HW revision of the device
+     *
+     * @param model a {@link String} defining the HW revision
+     */
+    public void setHwRevision(String hwRevision) {
+        this.hwRevision = hwRevision;
+    }
+
+    /**
+     * Set the FW revision of the device
+     *
+     * @param model a {@link String} defining the FW revision
+     */
+    public void setFwRevision(String fwRevision) {
+        this.fwRevision = fwRevision;
+    }
+
+    /**
+     * Set the SW revision of the device
+     *
+     * @param model a {@link String} defining the SW revision
+     */
+    public void setSwRevision(String swRevision) {
+        this.swRevision = swRevision;
     }
 
     /**
@@ -491,7 +587,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {
@@ -543,12 +639,22 @@ public abstract class BluetoothDevice {
         StringBuilder builder = new StringBuilder();
         builder.append("BluetoothDevice [address=");
         builder.append(address);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", rssi=");
-        builder.append(rssi);
         builder.append(", manufacturer=");
         builder.append(manufacturer);
+        builder.append(", name=");
+        builder.append(name);
+        builder.append(", model=");
+        builder.append(model);
+        builder.append(", serialNumber=");
+        builder.append(serialNumber);
+        builder.append(", hwRevision=");
+        builder.append(hwRevision);
+        builder.append(", fwRevision=");
+        builder.append(fwRevision);
+        builder.append(", swRevision=");
+        builder.append(swRevision);
+        builder.append(", rssi=");
+        builder.append(rssi);
         if (BluetoothCompanyIdentifiers.get(manufacturer) != null) {
             builder.append(" (");
             builder.append(BluetoothCompanyIdentifiers.get(manufacturer));

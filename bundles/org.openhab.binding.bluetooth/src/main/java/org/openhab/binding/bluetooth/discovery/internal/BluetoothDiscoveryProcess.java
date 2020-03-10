@@ -13,11 +13,14 @@
 package org.openhab.binding.bluetooth.discovery.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -63,13 +66,27 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     private final Lock serviceDiscoveryLock = new ReentrantLock();
     private final Condition connectionCondition = serviceDiscoveryLock.newCondition();
     private final Condition serviceDiscoveryCondition = serviceDiscoveryLock.newCondition();
-    private final Condition nameDiscoveryCondition = serviceDiscoveryLock.newCondition();
+    private final Condition infoDiscoveryCondition = serviceDiscoveryLock.newCondition();
 
     private final BluetoothDevice device;
     private final Collection<BluetoothDiscoveryParticipant> participants;
     private final Set<BluetoothAdapter> adapters;
 
     private volatile boolean servicesDiscovered = false;
+
+    /**
+     * List of UUID's which will be fetched from the device when connection based discovery is required.
+     */
+    private final List<UUID> deviceInformationUUIDs = new ArrayList<UUID>(Arrays.asList(
+            GattCharacteristic.DEVICE_NAME.getUUID(), GattCharacteristic.MODEL_NUMBER_STRING.getUUID(),
+            GattCharacteristic.SERIAL_NUMBER_STRING.getUUID(), GattCharacteristic.HARDWARE_REVISION_STRING.getUUID(),
+            GattCharacteristic.FIRMWARE_REVISION_STRING.getUUID(),
+            GattCharacteristic.SOFTWARE_REVISION_STRING.getUUID()));
+
+    /**
+     * Contains UUID which reading is ongoing or empty if no ongoing readings.
+     */
+    private Optional<UUID> ongoingDevInfoUUID = Optional.empty();
 
     public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants,
             Set<BluetoothAdapter> adapters) {
@@ -183,13 +200,14 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
                     }
                     if (!servicesDiscovered) {
                         device.discoverServices();
-                        if (!awaitServiceDiscovery(1, TimeUnit.SECONDS)) {
+                        if (!awaitServiceDiscovery(5, TimeUnit.SECONDS)) {
                             logger.debug("Service discovery for device {} timed out", device.getAddress());
                             // something failed, so we abandon connection discovery
                             return null;
                         }
                     }
-                    tryToDiscoverNameIfMissing();
+                    readDeviceInformationIfMissing();
+                    logger.debug("Device information fetched from the device: {}", device);
                 }
 
                 try {
@@ -227,18 +245,60 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
         }
     }
 
-    private void tryToDiscoverNameIfMissing() throws InterruptedException {
-        BluetoothCharacteristic characteristic = device.getCharacteristic(GattCharacteristic.DEVICE_NAME.getUUID());
-        if (characteristic == null || device.getName() != null) {
-            return;
-        }
-        if (!device.readCharacteristic(characteristic)) {
-            logger.debug("Failed to aquire name for device {}", device.getAddress());
-            return;
-        }
-        if (!awaitNameDiscovery(1, TimeUnit.SECONDS)) {
-            logger.debug("Name discovery for device {} timed out", device.getAddress());
-        }
+    private void readDeviceInformationIfMissing() {
+        deviceInformationUUIDs.forEach(uuid -> {
+            BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
+            if (characteristic == null) {
+                logger.debug("Device '{}' doesn't support uuid '{}'", device.getAddress(), uuid);
+                return;
+            }
+            switch (characteristic.getGattCharacteristic()) {
+                case DEVICE_NAME:
+                    if (device.getName() != null) {
+                        return;
+                    }
+                    break;
+                case MODEL_NUMBER_STRING:
+                    if (device.getModel() != null) {
+                        return;
+                    }
+                    break;
+                case SERIAL_NUMBER_STRING:
+                    if (device.getSerialNumber() != null) {
+                        return;
+                    }
+                    break;
+                case HARDWARE_REVISION_STRING:
+                    if (device.getHwRevision() != null) {
+                        return;
+                    }
+                    break;
+                case FIRMWARE_REVISION_STRING:
+                    if (device.getFwRevision() != null) {
+                        return;
+                    }
+                    break;
+                case SOFTWARE_REVISION_STRING:
+                    if (device.getSwRevision() != null) {
+                        return;
+                    }
+                    break;
+                default:
+                    return;
+            }
+            if (!device.readCharacteristic(characteristic)) {
+                logger.debug("Failed to aquire uuid {} from device {}", uuid, device.getAddress());
+                return;
+            }
+            ongoingDevInfoUUID = Optional.of(uuid);
+            try {
+                if (!awaitInfoResponse(2, TimeUnit.SECONDS)) {
+                    logger.debug("Device info (uuid {}) for device {} timed out", uuid, device.getAddress());
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException("InterruptedException caught when reading device info " + uuid, e);
+            }
+        });
     }
 
     private boolean awaitConnection(long timeout, TimeUnit unit) throws InterruptedException {
@@ -257,15 +317,15 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
         return true;
     }
 
-    private boolean awaitNameDiscovery(long timeout, TimeUnit unit) throws InterruptedException {
+    private boolean awaitInfoResponse(long timeout, TimeUnit unit) throws InterruptedException {
         serviceDiscoveryLock.lock();
         try {
             long nanosTimeout = unit.toNanos(timeout);
-            while (device.getName() == null) {
+            while (ongoingDevInfoUUID.isPresent()) {
                 if (nanosTimeout <= 0L) {
                     return false;
                 }
-                nanosTimeout = nameDiscoveryCondition.awaitNanos(nanosTimeout);
+                nanosTimeout = infoDiscoveryCondition.awaitNanos(nanosTimeout);
             }
         } finally {
             serviceDiscoveryLock.unlock();
@@ -304,10 +364,38 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
         serviceDiscoveryLock.lock();
         try {
-            if (characteristic.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME) {
-                device.setName(characteristic.getStringValue(0));
-                nameDiscoveryCondition.signal();
+            if (status == BluetoothCompletionStatus.SUCCESS) {
+                switch (characteristic.getGattCharacteristic()) {
+                    case DEVICE_NAME:
+                        device.setName(characteristic.getStringValue(0));
+                        break;
+                    case MODEL_NUMBER_STRING:
+                        device.setModel(characteristic.getStringValue(0));
+                        break;
+                    case SERIAL_NUMBER_STRING:
+                        device.setSerialNumberl(characteristic.getStringValue(0));
+                        break;
+                    case HARDWARE_REVISION_STRING:
+                        device.setHwRevision(characteristic.getStringValue(0));
+                        break;
+                    case FIRMWARE_REVISION_STRING:
+                        device.setFwRevision(characteristic.getStringValue(0));
+                        break;
+                    case SOFTWARE_REVISION_STRING:
+                        device.setSwRevision(characteristic.getStringValue(0));
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            ongoingDevInfoUUID.ifPresent(uuid -> {
+                if (uuid == characteristic.getGattCharacteristic().getUUID()) {
+                    ongoingDevInfoUUID = Optional.empty();
+                    infoDiscoveryCondition.signal();
+                }
+            });
+
         } finally {
             serviceDiscoveryLock.unlock();
         }
