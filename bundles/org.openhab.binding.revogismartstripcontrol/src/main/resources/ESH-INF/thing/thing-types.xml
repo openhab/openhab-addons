@@ -75,16 +75,16 @@
 		<description>Switch a single plug</description>
 	</channel-type>
 	<channel-type id="watts" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Watt</label>
 		<description>Contains the current watt value for the given plug</description>
-		<state readOnly="true" pattern="%.1f W" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 	<channel-type id="amps" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Amp</label>
 		<description>Contains the current Amp value for the given plug</description>
-		<state readOnly="true" pattern="%.1f A" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 </thing:thing-descriptions>
