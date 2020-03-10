@@ -116,7 +116,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(testObjectTopic + "/state", "true".getBytes(), 0, true));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(4000, TimeUnit.MILLISECONDS);
 
         failure = null;
 
