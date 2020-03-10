@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.goecharger.internal.handler;
 
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ACCESS_STATE;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ACCESS_CONFIGURATION;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ALLOW_CHARGING;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CABLE_ENCODING;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.CURRENT_L1;
@@ -142,26 +142,24 @@ public class GoEChargerHandler extends BaseThingHandler {
                         break;
                 }
                 return new StringType(error);
-            case ACCESS_STATE:
-                String accessState = null;
-                switch (goeResponse.accessState) {
+            case ACCESS_CONFIGURATION:
+                String accessConfiguration = null;
+                switch (goeResponse.accessConfiguration) {
                     case 0:
-                        accessState = "OPEN";
+                        accessConfiguration = "OPEN";
                         break;
                     case 1:
-                        accessState = "RFID";
+                        accessConfiguration = "RFID";
                         break;
                     case 2:
-                        accessState = "AWATTAR";
+                        accessConfiguration = "AWATTAR";
                         break;
                     case 3:
-                        accessState = "TIMER";
+                        accessConfiguration = "TIMER";
                         break;
                     default:
-                        accessState = "UNKNOWN";
-                        break;
                 }
-                return new StringType(accessState);
+                return new StringType(accessConfiguration);
             case ALLOW_CHARGING:
                 return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
             case CABLE_ENCODING:
@@ -246,6 +244,12 @@ public class GoEChargerHandler extends BaseThingHandler {
                 key = "alw";
                 if (command instanceof OnOffType) {
                     value = command == OnOffType.ON ? "1" : "0";
+                }
+                break;
+            case ACCESS_CONFIGURATION:
+                key = "ast";
+                if (command instanceof StringType) {
+                    value = command.toString();
                 }
                 break;
             default:

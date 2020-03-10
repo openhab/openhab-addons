@@ -28,7 +28,7 @@ public class GoEStatusResponseDTO {
     public Integer pwmSignal;
 
     @SerializedName("ast")
-    public Integer accessState;
+    public Integer accessConfiguration;
 
     @SerializedName("amp")
     public Integer maxCurrent;

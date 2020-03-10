@@ -5,7 +5,7 @@ It is a mobile wallbox for charging EVs and has an open REST API for reading dat
 
 ## Supported Things
 
-This binding supports go-eCharger HOME+ with 7.4kW or 22kW.
+This binding supports Go-eCharger HOME+ with 7.4kW or 22kW.
 
 ## Thing Configuration
 
@@ -13,7 +13,7 @@ The thing has two configuration parameters:
 
 | Parameter       | Description                                   | Required |
 |-----------------|-----------------------------------------------|----------|
-| ip              | the ip-address of your go-eCharger            | yes      |
+| ip              | The IP-address of your Go-eCharger            | yes      |
 | refreshInterval | Interval to read data, default 5 (in seconds) | no       |
 
 ## Channels
@@ -41,7 +41,7 @@ Currently available channels are
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable |
 | temperature              | Number:Temperature       | Temperature of the Go-eCharger                                |
 | firmware                 | String                   | Firmware Version                                              |
-| accessState              | String                   | Access state, for example OPEN, RFID ...                      |
+| accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              |
 
 ## Full Example
 
@@ -74,7 +74,7 @@ Switch                     GoEChargerAllowCharging              "Allow charging"
 Number:ElectricCurrent     GoEChargerCableCurrent               "Cable encoding"                        {channel="goecharger:goe:garage:cableCurrent"}
 Number:Temperature         GoEChargerTemperature                "Temperature"                           {channel="goecharger:goe:garage:temperature"}
 String                     GoEChargerFirmware                   "Firmware"                              {channel="goecharger:goe:garage:firmware"}
-String                     GoEChargerAccessState                "Access state"                          {channel="goecharger:goe:garage:accessState"}
+String                     GoEChargerAccessConfiguration        "Access configuration"                  {channel="goecharger:goe:garage:accessConfiguration"}
 ```
 
 ## Setting charge current of Go-eCharger based on photovoltaik output
