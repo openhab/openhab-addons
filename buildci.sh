@@ -62,45 +62,11 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
     # add the postfix to make sure we actually find the correct itest
     if [[ -e "itests/$CHANGED_DIR.tests" ]]; then
         echo "Single addon pull request: Building itest $CHANGED_DIR"
-        # build the core index project so the OSGI index.xml file is generated in the target directory
-        # needed for resolving the OSGI bundle wiring later
-        cd "bom/openhab-core-index"
-        mvn clean install -B 2>&1 |
-          stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
-          stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
-          tee -a ${CDIR}/.build.log
-        if [[ $? -ne 0 ]]; then
-            exit 1
-        fi
-         
-        # build the runtime index project so the OSGI index.xml file is generated in the target directory
-        # needed for resolving the OSGI bundle wiring later
-        cd "../runtime-index"
-        mvn clean install -B 2>&1 |
-          stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
-          stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
-          tee -a ${CDIR}/.build.log
-        if [[ $? -ne 0 ]]; then
-            exit 1
-        fi
-    
-        # build the test index project so the OSGI index.xml file is generated in the target directory
-        # needed for resolving the OSGI bundle wiring later
-        cd "../test-index"
-        mvn clean install -B 2>&1 |
-          stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
-          stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
-          tee -a ${CDIR}/.build.log
-        if [[ $? -ne 0 ]]; then
-            exit 1
-        fi
-          
-        # now finally build and run the tests
-        cd "../../itests/$CHANGED_DIR.tests"
-        mvn clean install -B 2>&1 |
-          stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
-          stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
-          tee -a ${CDIR}/.build.log
+        #build the index projects so the dependencies are downloaded before the OSGi resolve step occurs before running the test
+        mvn -pl ":org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index, :$CHANGED_DIR.tests"  install -B 2>&1 |
+	      stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
+	      stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
+	      tee -a ${CDIR}/.build.log
         if [[ $? -ne 0 ]]; then
             exit 1
         fi
