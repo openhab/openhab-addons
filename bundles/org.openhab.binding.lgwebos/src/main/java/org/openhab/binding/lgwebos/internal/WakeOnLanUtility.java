@@ -39,18 +39,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WakeOnLanUtility {
 
-    private static final Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
 
     /**
-     * Get MAC address for host
-     * uses "arp" tool
+     * Get MAC address for host usesing "arping" tool
      *
      * @param hostName Host Name (or IP address) of host to retrieve MAC address for
      * @return MAC address
      */
     public static @Nullable String getMACAddress(String hostName) {
         try {
-            Process proc = Runtime.getRuntime().exec("arping -r -c 1 -C 1 " + hostName); // arp on linux
+            Process proc = Runtime.getRuntime().exec("arping -r -c 1 -C 1 " + hostName);
             int returnCode = proc.waitFor();
             String s;
             StringBuilder builder = new StringBuilder();
@@ -61,11 +61,9 @@ public class WakeOnLanUtility {
             }
 
             if (returnCode != 0) {
-                logger.debug("getMacAddress error stream: {}", builder.toString());
+                LOGGER.debug("getMacAddress error stream: {}", builder.toString());
             } else {
-
-                Pattern macPattern = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
-                Matcher matcher = macPattern.matcher(builder.toString());
+                Matcher matcher = MAC_REGEX.matcher(builder.toString());
                 String macAddress = null;
 
                 while (matcher.find()) {
@@ -77,12 +75,12 @@ public class WakeOnLanUtility {
                 }
 
                 if (macAddress != null) {
-                    logger.debug("MAC address of host {} is {}", hostName, macAddress);
+                    LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
                     return macAddress;
                 }
             }
         } catch (IOException | InterruptedException e) {
-            logger.debug("Problem getting MAC address: {}", e.getMessage());
+            LOGGER.debug("Problem getting MAC address: {}", e.getMessage());
         }
         return null;
     }
@@ -108,20 +106,18 @@ public class WakeOnLanUtility {
                         continue;
                     }
 
-                    try {
-                        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
-                        DatagramSocket socket = new DatagramSocket();
+                    DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
+                    try (DatagramSocket socket = new DatagramSocket()) {
                         socket.send(packet);
-                        socket.close();
-                        logger.trace("Sent WOL packet to {} {}", broadcast, macAddress);
+                        LOGGER.trace("Sent WOL packet to {} {}", broadcast, macAddress);
                     } catch (IOException e) {
-                        logger.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
+                        LOGGER.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
                     }
                 }
             }
 
         } catch (IOException e) {
-            logger.warn("Problem with interface while sending WOL packet to {}", macAddress);
+            LOGGER.warn("Problem with interface while sending WOL packet to {}", macAddress);
         }
     }
 
