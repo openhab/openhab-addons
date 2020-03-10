@@ -18,6 +18,14 @@
   </properties>
 
   <dependencies>
+<!-- https://mvnrepository.com/artifact/junit/junit -->
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>3.8.2</version>
+</dependency>
+
+
 <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
 <dependency>
     <groupId>org.eclipse.jetty</groupId>
@@ -235,6 +243,9 @@
 	    <scope>runtime</scope>
 	</dependency>
 	
+
+
+
 
   </dependencies>
 </project>
