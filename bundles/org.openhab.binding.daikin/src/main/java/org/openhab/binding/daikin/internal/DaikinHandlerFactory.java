@@ -20,7 +20,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.daikin.internal.handler.DaikinAcUnitHandler;
+import org.openhab.binding.daikin.internal.handler.DaikinAirbaseUnitHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.Activate;
 
 /**
  * The {@link DaikinHandlerFactory} is responsible for creating things and thing
@@ -34,6 +37,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
+    private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return DaikinBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -43,10 +53,11 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT) || thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
-            return new DaikinAcUnitHandler(thing);
+        if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
+            return new DaikinAcUnitHandler(thing, stateDescriptionProvider);
+        } else if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
+            return new DaikinAirbaseUnitHandler(thing, stateDescriptionProvider);
         }
-
         return null;
     }
 }
