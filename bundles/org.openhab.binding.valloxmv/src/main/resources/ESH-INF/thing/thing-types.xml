@@ -261,83 +261,83 @@
 
 	<channel-type id="boosttime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Boost profile timer value</label>
+		<label>Boost Timer</label>
 		<description>Boost profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min" />
 	</channel-type>
 
 	<channel-type id="boosttimerenabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Boost profile timer enabled</label>
+		<label>Boost Timer Enabled</label>
 		<description>Timer enabled setting in boost profile</description>
 	</channel-type>
 
 	<channel-type id="fireplaceextrfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fireplace extract fan speed</label>
+		<label>Fireplace Extract Fan Speed</label>
 		<description>Fireplace profile extract fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="fireplacesuppfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fireplace supply fan speed</label>
+		<label>Fireplace Supply Fan Speed</label>
 		<description>Fireplace profile supply fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="fireplacetime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fireplace profile timer value</label>
+		<label>Fireplace Timer</label>
 		<description>Fireplace profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min" />
 	</channel-type>
 
 	<channel-type id="fireplacetimerenabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fireplace profile timer enabled</label>
+		<label>Fireplace Timer Enabled</label>
 		<description>Timer enabled setting in fireplace profile</description>
 	</channel-type>
 
 	<channel-type id="extraairtemptarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Programmable profile Target Temperature</label>
-		<description>Target temperature in programmable profile</description>
+		<label>Extra Target Temperature</label>
+		<description>Target temperature in extra profile</description>
 		<category>Temperature</category>
 		<state readOnly="false" min="5" max="25" pattern="%.2f %unit%" />
 	</channel-type>
 
 	<channel-type id="extraextrfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Programmable profile extract fan speed</label>
-		<description>Programmable profile extract fan speed in % (0-100)</description>
+		<label>Extra Extract Fan Speed</label>
+		<description>Extra profile extract fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="extrasuppfan" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Programmable profile supply fan speed</label>
-		<description>Programmable profile supply fan speed in % (0-100)</description>
+		<label>Extra Supply Fan Speed</label>
+		<description>Extra profile supply fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="extratime" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Programmable profile timer value</label>
-		<description>Programmable profile timer value in minutes</description>
+		<label>Extra Timer</label>
+		<description>Extra profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min" />
 	</channel-type>
 
 	<channel-type id="extratimerenabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Programmable profile timer enabled</label>
-		<description>Timer enabled setting in programmable profile</description>
+		<label>Extra Timer Enabled</label>
+		<description>Timer enabled setting in extra profile</description>
 	</channel-type>
 
 	<channel-type id="weeklytimerenabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Weekly timer enabled</label>
-		<description>Weekly Timer enabled setting</description>
+		<label>Weekly Timer Enabled</label>
+		<description>Weekly timer enabled setting</description>
 	</channel-type>
 
 </thing:thing-descriptions>

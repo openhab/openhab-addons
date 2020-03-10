@@ -58,12 +58,12 @@ Overview of provided channels
 | fireplacesuppfan          | A_CYC_FIREPLACE_SUPP_FAN    | Fireplace profile supply fan speed |rw| 0 - 100 (%)          |
 | fireplacetime             | A_CYC_FIREPLACE_TIME        | Timer value in fireplace profile  |rw| 1 - 65535 (min)      |
 | fireplacetimerenabled     | A_CYC_FIREPLACE_TIMER_ENABLED | Timer enabled setting in fireplace profile |rw| On/Off               |
-| extraairtemptarget        | A_CYC_EXTRA_AIR_TEMP_TARGET | Target temperature in programmable profile |rw| Number (°C)          |
-| extraextrfan              | A_CYC_EXTRA_EXTR_FAN        | Programmable profile extract fan speed |rw| 0 - 100 (%)          |
-| extrasuppfan              | A_CYC_EXTRA_EXTR_FAN        | Programmable profile supply fan speed |rw| 0 - 100 (%)          |
-| extratime                 | A_CYC_EXTRA_TIME            | Timer value in programmable profile |rw| 1 - 65535 (min)      |
-| extratimerenabled         | A_CYC_EXTRA_TIMER_ENABLED   | Timer enabled setting in programmable profile |rw| On/Off               |
-| weeklytimerenabled        | A_CYC_WEEKLY_TIMER_ENABLED  | Weekly Timer enabled setting      |rw| On/Off               |
+| extraairtemptarget        | A_CYC_EXTRA_AIR_TEMP_TARGET | Target temperature in extra profile |rw| Number (°C)          |
+| extraextrfan              | A_CYC_EXTRA_EXTR_FAN        | Extra profile extract fan speed   |rw| 0 - 100 (%)          |
+| extrasuppfan              | A_CYC_EXTRA_EXTR_FAN        | Extra profile supply fan speed    |rw| 0 - 100 (%)          |
+| extratime                 | A_CYC_EXTRA_TIME            | Timer value in extra profile      |rw| 1 - 65535 (min)      |
+| extratimerenabled         | A_CYC_EXTRA_TIMER_ENABLED   | Timer enabled setting in extra profile |rw| On/Off               |
+| weeklytimerenabled        | A_CYC_WEEKLY_TIMER_ENABLED  | Weekly timer enabled setting      |rw| On/Off               |
 
 ## Example
 
