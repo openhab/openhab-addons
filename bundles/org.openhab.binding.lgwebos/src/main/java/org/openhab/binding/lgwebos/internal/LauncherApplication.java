@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
@@ -62,6 +64,11 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                     }
                 }
                 applicationListCache.put(handler.getThing().getUID(), appInfos);
+                List<StateOption> options = new ArrayList<>();
+                for (AppInfo appInfo : appInfos) {
+                    options.add(new StateOption(appInfo.getId(), appInfo.getName()));
+                }
+                handler.setOptions(channelId, options);
             }
         });
 
