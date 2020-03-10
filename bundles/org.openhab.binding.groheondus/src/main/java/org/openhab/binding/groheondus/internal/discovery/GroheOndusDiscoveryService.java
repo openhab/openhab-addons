@@ -30,7 +30,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.grohe.ondus.api.OndusService;
 import org.grohe.ondus.api.model.BaseAppliance;
-import org.grohe.ondus.api.model.sense.Appliance;
 import org.openhab.binding.groheondus.internal.handler.GroheOndusAccountHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,7 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
                 case org.grohe.ondus.api.model.guard.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSEGUARD, appliance.getApplianceId());
                     break;
-                case Appliance.TYPE:
+                case org.grohe.ondus.api.model.sense.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSE, appliance.getApplianceId());
                     break;
                 default:
