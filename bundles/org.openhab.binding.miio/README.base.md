@@ -31,7 +31,10 @@ Look at the openhab forum, or the openhab github repository for the modelId of s
 # Advanced: adding local database files to support new devices
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files. This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The User Data Folder/miio (e.g. in Linux `/opt/openhab2/userdata/miio/`) is scanned for database files and will be used for your devices. Note that local database files take preference over build-in ones. Hence if a json file is local and in the database the local file will be used. For format, please check the current database files in Openhab github.
+The config/misc/miio (e.g. in Linux `/opt/openhab2/config/misc/miio/`) is scanned for database files and will be used for your devices. 
+Note that local database files take preference over build-in ones. 
+Hence if a json file is local and in the database the local file will be used. 
+For format, please check the current database files in Openhab github.
 
 # Discovery
 
@@ -45,12 +48,12 @@ Accept only one of the 2 discovery results, the alternate one can further be ign
 
 The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
 Some devices provide the token upon discovery. This may depends on the firmware version.
-
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
-Note: latest Android MiHome no longer has the tokens in the database. Use 5.0.19 version or lower 
-The token needs to be retrieved from the application database. The easiest way on Android to do is by using [MiToolkit](https://github.com/ultrara1n/MiToolkit/releases).
 
-Alternatively, on Android open a backup file, or browse a rooted device, find the mio2db file with and read it sqlite.
+The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
+It seems that version was released with debug messages turned on by mistake. 
+An APK file with the old version can be easily found using one of the popular web search engines. 
+After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
 
 For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
 Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.

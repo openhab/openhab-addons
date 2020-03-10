@@ -15,16 +15,13 @@ package org.openhab.binding.miio.internal.handler;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -47,13 +44,11 @@ import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
-import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -83,6 +78,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
 
     private final Logger logger = LoggerFactory.getLogger(MiIoAbstractHandler.class);
+    protected MiIoDatabaseWatchService miIoDatabaseWatchService;
 
     @NonNullByDefault
     public MiIoAbstractHandler(Thing thing) {
@@ -395,7 +391,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     configuration.model);
         }
         if (miDevice.getThingType().equals(getThing().getThingTypeUID())
-                && !(miDevice.getThingType().equals(THING_TYPE_UNSUPPORTED) && findDatabaseEntry(model) != null)) {
+                && !(miDevice.getThingType().equals(THING_TYPE_UNSUPPORTED)
+                        && miIoDatabaseWatchService.getDatabaseUrl(model) != null)) {
             logger.info("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
             return true;
@@ -432,7 +429,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());
             ThingTypeUID thingTypeUID = MiIoDevices.getType(modelId).getThingType();
-            if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED) && findDatabaseEntry(modelId) != null) {
+            if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED)
+                    && miIoDatabaseWatchService.getDatabaseUrl(modelId) != null) {
                 thingTypeUID = THING_TYPE_BASIC;
             }
             changeThingType(thingTypeUID, getConfig());
@@ -475,26 +473,4 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
     }
 
-    @Nullable
-    protected URL findDatabaseEntry(String deviceName) {
-        List<URL> urlEntries = new Utils().findDatabaseFiles(logger);
-        for (URL db : urlEntries) {
-            logger.trace("Testing for {} in db file: {}", deviceName, db);
-            try {
-                JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                Gson gson = new GsonBuilder().serializeNulls().create();
-                @Nullable
-                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                for (String id : devdb.getDevice().getId()) {
-                    if (deviceName.equals(id)) {
-                        return db;
-                    }
-                }
-            } catch (Exception e) {
-                // not relevant
-                logger.debug("Error while searching for {} in database '{}': {}", deviceName, db, e.getMessage());
-            }
-        }
-        return null;
-    }
 }

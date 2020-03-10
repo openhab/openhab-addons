@@ -45,6 +45,7 @@ import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.Conversions;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
@@ -80,8 +81,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<String, MiIoDeviceAction> actions;
 
     @NonNullByDefault
-    public MiIoBasicHandler(Thing thing) {
+    public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
     @Override
@@ -275,7 +277,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     private boolean buildChannelStructure(String deviceName) {
         logger.debug("Building Channel Structure for {} - Model: {}", getThing().getUID().toString(), deviceName);
-        URL fn = findDatabaseEntry(deviceName);
+        URL fn = miIoDatabaseWatchService.getDatabaseUrl(deviceName);
         if (fn == null) {
             logger.warn("Database entry for model '{}' cannot be found.", deviceName);
             return false;
@@ -405,10 +407,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
                 }
                 if (basicChannel.getType().equals("Switch")) {
-                    updateState(basicChannel.getChannel(),
-                            val.getAsString().toLowerCase().equals("on")
-                                    || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON
-                                    : OnOffType.OFF);
+                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
+                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
                 }
                 if (basicChannel.getType().equals("Color")) {
                     Color rgb = new Color(val.getAsInt());
