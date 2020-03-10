@@ -63,7 +63,6 @@ public class UdpSenderService {
                 .map( address -> sendMessage(content, address))
                 .flatMap(Collection::stream)
                 .collect(toList());
-
     }
 
     public List<UdpResponse> sendMessage(String content, String ipAddress) {

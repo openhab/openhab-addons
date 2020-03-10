@@ -56,8 +56,6 @@ public class StatusService {
                 .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(), statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
                 .findFirst()
                 .orElse(new Status(false, 503, null, null, null));
-
-
     }
 
     private StatusRaw deserializeString(String response) {

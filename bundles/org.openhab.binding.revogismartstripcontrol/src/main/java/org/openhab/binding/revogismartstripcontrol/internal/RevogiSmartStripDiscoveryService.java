@@ -64,7 +64,6 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
         List<DiscoveryRawResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
         discoveryResponses.forEach(response -> {
             ThingUID thingUID = getThingUID(response.getData());
@@ -83,7 +82,6 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
                                 .build();
                         thingDiscovered(discoveryResult);
                     }
-
                 }
         );
     }
