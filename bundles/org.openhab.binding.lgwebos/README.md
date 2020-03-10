@@ -128,25 +128,11 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_Mute
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_Channel
+        Default item=LG_TV0_Channel
         Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
-        Text item=LG_TV0_Application
-        Selection item=LG_TV0_Application mappings=[
-            "com.webos.app.livetv"="TV",
-            "com.webos.app.tvguide"="TV Guide",
-            "netflix" = "Netflix",
-            "youtube.leanback.v4" = "Youtube",
-            "spotify-beehive" = "Spotify",
-            "com.webos.app.hdmi1" = "HDMI 1",
-            "com.webos.app.hdmi2" = "HDMI 2",
-            "com.webos.app.hdmi3" = "HDMI 3",
-            "com.webos.app.hdmi4" = "HDMI 4",
-            "com.webos.app.externalinput.av1" = "AV1",
-            "com.webos.app.externalinput.av2" = "AV2",
-            "com.webos.app.externalinput.component" = "Component",
-            "com.webos.app.externalinput.scart" = "Scart"]
+        Default item=LG_TV0_Application
     }
 }
 ```
