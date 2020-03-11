@@ -25,8 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ZoneLabelResponse extends AbstractResponse {
 
     public final int zoneNo;
-    @Nullable
-    public final String zoneName;
+    public final @Nullable String zoneName;
 
     private ZoneLabelResponse(int zoneNo, String zoneName) {
         super(true);

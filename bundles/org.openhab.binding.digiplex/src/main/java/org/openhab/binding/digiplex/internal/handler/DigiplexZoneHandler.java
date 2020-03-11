@@ -51,8 +51,7 @@ import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEven
 @NonNullByDefault
 public class DigiplexZoneHandler extends BaseThingHandler {
 
-    @Nullable
-    private DigiplexBridgeHandler bridgeHandler;
+    private @Nullable DigiplexBridgeHandler bridgeHandler;
     private DigiplexZoneMessageHandler messageHandler = new DigiplexZoneMessageHandler();
     private int zoneNo;
     private int areaNo = 0; // not known at the beginning (protocol limitation)

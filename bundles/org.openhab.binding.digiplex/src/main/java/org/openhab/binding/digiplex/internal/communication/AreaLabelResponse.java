@@ -25,8 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class AreaLabelResponse extends AbstractResponse {
 
     public final int areaNo;
-    @Nullable
-    public final String areaName;
+    public final @Nullable String areaName;
 
     private AreaLabelResponse(int areaNo, String areaName) {
         super(true);

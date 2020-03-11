@@ -55,10 +55,8 @@ import org.openhab.binding.digiplex.internal.communication.events.AreaEvent;
 @NonNullByDefault
 public class DigiplexAreaHandler extends BaseThingHandler {
 
-    @Nullable
-    private DigiplexAreaConfiguration config;
-    @Nullable
-    private DigiplexBridgeHandler bridgeHandler;
+    private @Nullable DigiplexAreaConfiguration config;
+    private @Nullable DigiplexBridgeHandler bridgeHandler;
     private DigiplexAreaMessageHandler visitor = new DigiplexAreaMessageHandler();
     private int areaNo;
     private OpenClosedType armed = OpenClosedType.CLOSED;
@@ -71,8 +69,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
     private OpenClosedType strobe = OpenClosedType.CLOSED;
     private StringType lastCommandResult = new StringType();
 
-    @Nullable
-    private ScheduledFuture<?> refreshTask;
+    private @Nullable ScheduledFuture<?> refreshTask;
 
     public DigiplexAreaHandler(Thing thing) {
         super(thing);
