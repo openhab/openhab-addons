@@ -16,27 +16,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 
 /**
- * Message providing information about special alarm events
+ * Message providing global trouble status
  *
  * @author Robert Michalak - Initial contribution
  *
  */
 @NonNullByDefault
-public class SpecialAlarmEvent extends AbstractEvent {
+public class TroubleEvent extends AbstractEvent {
 
-    private SpecialAlarmType type;
+    private TroubleStatus status;
+    private TroubleType type;
 
-    public SpecialAlarmEvent(int areaNo, SpecialAlarmType type) {
+    public TroubleEvent(TroubleType type, TroubleStatus status, int areaNo) {
         super(areaNo);
         this.type = type;
+        this.status = status;
     }
 
-    public SpecialAlarmType getType() {
+    public TroubleStatus getStatus() {
+        return status;
+    }
+
+    public TroubleType getType() {
         return type;
     }
 
     @Override
     public void accept(DigiplexMessageHandler visitor) {
-        visitor.handleSpecialAlarmEvent(this);
+        visitor.handleTroubleEvent(this);
     }
 }
