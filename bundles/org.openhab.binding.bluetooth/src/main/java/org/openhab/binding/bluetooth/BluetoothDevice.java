@@ -104,9 +104,9 @@ public abstract class BluetoothDevice {
 
     protected String model;
     protected String serialNumber;
-    protected String hwRevision;
-    protected String fwRevision;
-    protected String swRevision;
+    protected String hardwareRevision;
+    protected String firmwareRevision;
+    protected String softwareRevision;
 
     /**
      * List of supported services
@@ -167,30 +167,30 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Returns the HW revision of the Bluetooth device.
+     * Returns the hardware revision of the Bluetooth device.
      *
-     * @return The HW revision, null if not known
+     * @return The hardware revision, null if not known
      */
-    public String getHwRevision() {
-        return hwRevision;
+    public String getHardwareRevision() {
+        return hardwareRevision;
     }
 
     /**
-     * Returns the FW revision of the Bluetooth device.
+     * Returns the firmware revision of the Bluetooth device.
      *
-     * @return The FW revision, null if not known
+     * @return The firmware revision, null if not known
      */
-    public String getFwRevision() {
-        return fwRevision;
+    public String getFirmwareRevision() {
+        return firmwareRevision;
     }
 
     /**
-     * Returns the SW revision of the Bluetooth device.
+     * Returns the software revision of the Bluetooth device.
      *
-     * @return The SW revision, null if not known
+     * @return The software revision, null if not known
      */
-    public String getSwRevision() {
-        return swRevision;
+    public String getSoftwareRevision() {
+        return softwareRevision;
     }
 
     /**
@@ -315,30 +315,30 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Set the HW revision of the device
+     * Set the hardware revision of the device
      *
-     * @param model a {@link String} defining the HW revision
+     * @param model a {@link String} defining the hardware revision
      */
-    public void setHwRevision(String hwRevision) {
-        this.hwRevision = hwRevision;
+    public void setHardwareRevision(String hardwareRevision) {
+        this.hardwareRevision = hardwareRevision;
     }
 
     /**
-     * Set the FW revision of the device
+     * Set the firmware revision of the device
      *
-     * @param model a {@link String} defining the FW revision
+     * @param model a {@link String} defining the firmware revision
      */
-    public void setFwRevision(String fwRevision) {
-        this.fwRevision = fwRevision;
+    public void setFirmwareRevision(String firmwareRevision) {
+        this.firmwareRevision = firmwareRevision;
     }
 
     /**
-     * Set the SW revision of the device
+     * Set the software revision of the device
      *
-     * @param model a {@link String} defining the SW revision
+     * @param model a {@link String} defining the software revision
      */
-    public void setSwRevision(String swRevision) {
-        this.swRevision = swRevision;
+    public void setSoftwareRevision(String softwareRevision) {
+        this.softwareRevision = softwareRevision;
     }
 
     /**
@@ -641,25 +641,25 @@ public abstract class BluetoothDevice {
         builder.append(address);
         builder.append(", manufacturer=");
         builder.append(manufacturer);
+        if (BluetoothCompanyIdentifiers.get(manufacturer) != null) {
+            builder.append(" (");
+            builder.append(BluetoothCompanyIdentifiers.get(manufacturer));
+            builder.append(')');
+        }
         builder.append(", name=");
         builder.append(name);
         builder.append(", model=");
         builder.append(model);
         builder.append(", serialNumber=");
         builder.append(serialNumber);
-        builder.append(", hwRevision=");
-        builder.append(hwRevision);
-        builder.append(", fwRevision=");
-        builder.append(fwRevision);
-        builder.append(", swRevision=");
-        builder.append(swRevision);
+        builder.append(", hardwareRevision=");
+        builder.append(hardwareRevision);
+        builder.append(", firmwareRevision=");
+        builder.append(firmwareRevision);
+        builder.append(", softwareRevision=");
+        builder.append(softwareRevision);
         builder.append(", rssi=");
         builder.append(rssi);
-        if (BluetoothCompanyIdentifiers.get(manufacturer) != null) {
-            builder.append(" (");
-            builder.append(BluetoothCompanyIdentifiers.get(manufacturer));
-            builder.append(')');
-        }
         builder.append(']');
         return builder.toString();
     }

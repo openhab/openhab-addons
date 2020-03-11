@@ -13,7 +13,6 @@
 package org.openhab.binding.bluetooth.discovery.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -73,15 +72,6 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     private final Set<BluetoothAdapter> adapters;
 
     private volatile boolean servicesDiscovered = false;
-
-    /**
-     * List of UUID's which will be fetched from the device when connection based discovery is required.
-     */
-    private final List<UUID> deviceInformationUUIDs = new ArrayList<UUID>(Arrays.asList(
-            GattCharacteristic.DEVICE_NAME.getUUID(), GattCharacteristic.MODEL_NUMBER_STRING.getUUID(),
-            GattCharacteristic.SERIAL_NUMBER_STRING.getUUID(), GattCharacteristic.HARDWARE_REVISION_STRING.getUUID(),
-            GattCharacteristic.FIRMWARE_REVISION_STRING.getUUID(),
-            GattCharacteristic.SOFTWARE_REVISION_STRING.getUUID()));
 
     /**
      * Contains UUID which reading is ongoing or empty if no ongoing readings.
@@ -245,60 +235,41 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
         }
     }
 
-    private void readDeviceInformationIfMissing() {
-        deviceInformationUUIDs.forEach(uuid -> {
-            BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
-            if (characteristic == null) {
-                logger.debug("Device '{}' doesn't support uuid '{}'", device.getAddress(), uuid);
-                return;
-            }
-            switch (characteristic.getGattCharacteristic()) {
-                case DEVICE_NAME:
-                    if (device.getName() != null) {
-                        return;
-                    }
-                    break;
-                case MODEL_NUMBER_STRING:
-                    if (device.getModel() != null) {
-                        return;
-                    }
-                    break;
-                case SERIAL_NUMBER_STRING:
-                    if (device.getSerialNumber() != null) {
-                        return;
-                    }
-                    break;
-                case HARDWARE_REVISION_STRING:
-                    if (device.getHwRevision() != null) {
-                        return;
-                    }
-                    break;
-                case FIRMWARE_REVISION_STRING:
-                    if (device.getFwRevision() != null) {
-                        return;
-                    }
-                    break;
-                case SOFTWARE_REVISION_STRING:
-                    if (device.getSwRevision() != null) {
-                        return;
-                    }
-                    break;
-                default:
-                    return;
-            }
-            if (!device.readCharacteristic(characteristic)) {
-                logger.debug("Failed to aquire uuid {} from device {}", uuid, device.getAddress());
-                return;
-            }
-            ongoingDevInfoUUID = Optional.of(uuid);
-            try {
-                if (!awaitInfoResponse(2, TimeUnit.SECONDS)) {
-                    logger.debug("Device info (uuid {}) for device {} timed out", uuid, device.getAddress());
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException("InterruptedException caught when reading device info " + uuid, e);
-            }
-        });
+    private void readDeviceInformationIfMissing() throws InterruptedException {
+        if (device.getName() == null) {
+            fecthUUID(GattCharacteristic.DEVICE_NAME.getUUID());
+        }
+        if (device.getModel() == null) {
+            fecthUUID(GattCharacteristic.MODEL_NUMBER_STRING.getUUID());
+        }
+        if (device.getSerialNumber() == null) {
+            fecthUUID(GattCharacteristic.SERIAL_NUMBER_STRING.getUUID());
+        }
+        if (device.getHardwareRevision() == null) {
+            fecthUUID(GattCharacteristic.HARDWARE_REVISION_STRING.getUUID());
+        }
+        if (device.getFirmwareRevision() == null) {
+            fecthUUID(GattCharacteristic.FIRMWARE_REVISION_STRING.getUUID());
+        }
+        if (device.getSoftwareRevision() == null) {
+            fecthUUID(GattCharacteristic.SOFTWARE_REVISION_STRING.getUUID());
+        }
+    }
+
+    private void fecthUUID(UUID uuid) throws InterruptedException {
+        BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
+        if (characteristic == null) {
+            logger.debug("Device '{}' doesn't support uuid '{}'", device.getAddress(), uuid);
+            return;
+        }
+        if (!device.readCharacteristic(characteristic)) {
+            logger.debug("Failed to aquire uuid {} from device {}", uuid, device.getAddress());
+            return;
+        }
+        ongoingDevInfoUUID = Optional.of(uuid);
+        if (!awaitInfoResponse(1, TimeUnit.SECONDS)) {
+            logger.debug("Device info (uuid {}) for device {} timed out", uuid, device.getAddress());
+        }
     }
 
     private boolean awaitConnection(long timeout, TimeUnit unit) throws InterruptedException {
@@ -376,13 +347,13 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
                         device.setSerialNumberl(characteristic.getStringValue(0));
                         break;
                     case HARDWARE_REVISION_STRING:
-                        device.setHwRevision(characteristic.getStringValue(0));
+                        device.setHardwareRevision(characteristic.getStringValue(0));
                         break;
                     case FIRMWARE_REVISION_STRING:
-                        device.setFwRevision(characteristic.getStringValue(0));
+                        device.setFirmwareRevision(characteristic.getStringValue(0));
                         break;
                     case SOFTWARE_REVISION_STRING:
-                        device.setSwRevision(characteristic.getStringValue(0));
+                        device.setSoftwareRevision(characteristic.getStringValue(0));
                         break;
                     default:
                         break;
