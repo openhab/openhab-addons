@@ -254,7 +254,7 @@ public class TelegramActions implements ThingActions {
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
-            @ActionInput(name = "message") @Nullable String format,
+            @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
         return sendTelegram(chatId, String.format(message, args));
     }
