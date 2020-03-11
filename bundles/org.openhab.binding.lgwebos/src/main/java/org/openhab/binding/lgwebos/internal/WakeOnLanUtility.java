@@ -42,15 +42,31 @@ public class WakeOnLanUtility {
     private static final Logger LOGGER = LoggerFactory.getLogger(WakeOnLanUtility.class);
     private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
 
+    private static String COMMAND;
+    static {
+        String os = System.getProperty("os.name").toLowerCase();
+        LOGGER.debug("os: {}", os);
+        if ((os.indexOf("win") >= 0)) {
+            COMMAND = "arp -a %s";
+        } else if ((os.indexOf("mac") >= 0)) {
+            COMMAND = "arp %s";
+        } else { // linux, docker
+            COMMAND = "arping -r -c 1 -C 1 %s";
+        }
+    }
+
     /**
-     * Get MAC address for host usesing "arping" tool
+     * Get MAC address for host
      *
      * @param hostName Host Name (or IP address) of host to retrieve MAC address for
      * @return MAC address
      */
     public static @Nullable String getMACAddress(String hostName) {
+        String cmd = String.format(COMMAND, hostName);
+        LOGGER.debug("cmd: {}", cmd);
+
         try {
-            Process proc = Runtime.getRuntime().exec("arping -r -c 1 -C 1 " + hostName);
+            Process proc = Runtime.getRuntime().exec(cmd);
             int returnCode = proc.waitFor();
             String s;
             StringBuilder builder = new StringBuilder();
@@ -61,7 +77,7 @@ public class WakeOnLanUtility {
             }
 
             if (returnCode != 0) {
-                LOGGER.debug("getMacAddress error stream: {}", builder.toString());
+                LOGGER.debug("{} failed with error: {}", cmd, builder.toString());
             } else {
                 Matcher matcher = MAC_REGEX.matcher(builder.toString());
                 String macAddress = null;
@@ -80,7 +96,7 @@ public class WakeOnLanUtility {
                 }
             }
         } catch (IOException | InterruptedException e) {
-            LOGGER.debug("Problem getting MAC address: {}", e.getMessage());
+            LOGGER.debug("Problem executing command {} to retrieve MAC address {}: {}", cmd, hostName, e.getMessage());
         }
         return null;
     }

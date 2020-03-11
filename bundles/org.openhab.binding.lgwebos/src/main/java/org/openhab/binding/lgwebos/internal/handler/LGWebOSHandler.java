@@ -390,7 +390,6 @@ public class LGWebOSHandler extends BaseThingHandler
             try {
                 // validate host, so that no command can be injected
                 String macAddress = WakeOnLanUtility.getMACAddress(InetAddress.getByName(host).getHostAddress());
-                logger.debug("Determined MAC address: {} for host: {}", macAddress, host);
                 if (macAddress != null && !macAddress.equals(c.macAddress)) {
                     c.macAddress = macAddress;
                     // persist the configuration change
