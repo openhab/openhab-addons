@@ -265,7 +265,7 @@ public class TelegramActions implements ThingActions {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             for (Long chatId : localHandler.getChatIds()) {
-                if (!sendTelegram(chatId, format, args)) {
+                if (!sendTelegram(chatId, message, args)) {
                     return false;
                 }
             }
