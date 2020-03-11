@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,8 +60,6 @@ import org.openhab.binding.bluetooth.am43.internal.data.MotorSettings;
 import org.openhab.binding.bluetooth.am43.internal.data.OperationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.MetricPrefix;
 
 /**
  * The {@link AM43Handler} is responsible for handling commands, which are
