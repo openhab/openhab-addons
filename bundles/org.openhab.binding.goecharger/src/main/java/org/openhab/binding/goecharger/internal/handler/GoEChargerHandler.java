@@ -298,11 +298,9 @@ public class GoEChargerHandler extends BaseThingHandler {
         try {
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.POST)
                     .timeout(5, TimeUnit.SECONDS).send();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Response: {}", contentResponse.getContentAsString());
-            }
-            GoEStatusResponseDTO result = gson.fromJson(contentResponse.getContentAsString(),
-                    GoEStatusResponseDTO.class);
+            String response = contentResponse.getContentAsString();
+            logger.debug("POST Response: {}", response);
+            GoEStatusResponseDTO result = gson.fromJson(response, GoEStatusResponseDTO.class);
             updateChannelsAndStatus(result);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -327,10 +325,9 @@ public class GoEChargerHandler extends BaseThingHandler {
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                     .timeout(5, TimeUnit.SECONDS).send();
 
-            result = gson.fromJson(contentResponse.getContentAsString(), GoEStatusResponseDTO.class);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Response: {}", contentResponse.getContentAsString());
-            }
+            String response = contentResponse.getContentAsString();
+            logger.debug("GET Response: {}", response);
+            result = gson.fromJson(response, GoEStatusResponseDTO.class);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             result = null;
         }
