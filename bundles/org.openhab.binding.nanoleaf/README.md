@@ -174,6 +174,11 @@ Bridge nanoleaf:controller:MyLightPanels [ address="192.168.1.100", port=16021, 
 }
 ```
 
+If you define your device statically in the thing file, autodiscovery of the same thing is suppressed by using
+* the [address="..." ]  of the controller 
+* and the [id=123] of the lightpanel
+in the bracket to identify the uniqueness of the discovered device. Therefore it is recommended to the give the controller a fixed ip address.
+
 Note: To generate the `authToken`:
     
 * On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.
