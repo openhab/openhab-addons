@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,6 +42,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.digiplex.internal.DigiplexBridgeConfiguration;
 import org.openhab.binding.digiplex.internal.communication.CommunicationStatus;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
@@ -48,6 +50,8 @@ import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponse;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponseResolver;
 import org.openhab.binding.digiplex.internal.communication.events.AbstractEvent;
+import org.openhab.binding.digiplex.internal.communication.events.TroubleEvent;
+import org.openhab.binding.digiplex.internal.communication.events.TroubleStatus;
 import org.openhab.binding.digiplex.internal.discovery.DigiplexDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,14 +80,10 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     private final Logger logger = LoggerFactory.getLogger(DigiplexBridgeHandler.class);
 
-    @Nullable
-    private DigiplexBridgeConfiguration config;
-    @Nullable
-    private RXTXPort serialPort;
-    @Nullable
-    private DigiplexReceiverThread receiverThread;
-    @Nullable
-    private DigiplexSenderThread senderThread;
+    private @Nullable DigiplexBridgeConfiguration config;
+    private @Nullable RXTXPort serialPort;
+    private @Nullable DigiplexReceiverThread receiverThread;
+    private @Nullable DigiplexSenderThread senderThread;
     private BlockingQueue<DigiplexRequest> sendQueue = new LinkedBlockingQueue<>();
     private Set<DigiplexMessageHandler> handlers = ConcurrentHashMap.newKeySet();
 
@@ -253,6 +253,15 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }
+
+        @Override
+        public void handleTroubleEvent(TroubleEvent troubleEvent) {
+            if (troubleEvent.getAreaNo() == GLOBAL_AREA_NO) {
+                String channel = troubleEvent.getType().getBridgeChannel();
+                State state = OnOffType.from(troubleEvent.getStatus() == TroubleStatus.TROUBLE_STARTED);
+                updateState(channel, state);
             }
         }
     }
