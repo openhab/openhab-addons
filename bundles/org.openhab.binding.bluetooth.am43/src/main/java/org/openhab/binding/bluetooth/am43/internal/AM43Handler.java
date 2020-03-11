@@ -134,14 +134,6 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         }
     }
 
-    private Executor getCommandExecutor() {
-        Executor executor = commandExecutor;
-        if (executor == null) {
-            throw new IllegalStateException("commandExecutor has not been initialized");
-        }
-        return executor;
-    }
-
     private MotorSettings getMotorSettings() {
         MotorSettings settings = motorSettings;
         if (settings == null) {
@@ -159,7 +151,10 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
     }
 
     private void submitCommand(AM43Command command) {
-        getCommandExecutor().execute(() -> processCommand(command));
+        Executor executor = commandExecutor;
+        if (executor != null) {
+            executor.execute(() -> processCommand(command));
+        }
     }
 
     private void processCommand(AM43Command command) {
