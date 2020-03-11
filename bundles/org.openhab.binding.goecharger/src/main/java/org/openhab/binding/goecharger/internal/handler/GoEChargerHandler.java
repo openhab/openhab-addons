@@ -73,6 +73,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link GoEChargerHandler} is responsible for handling commands, which are
@@ -103,8 +104,14 @@ public class GoEChargerHandler extends BaseThingHandler {
     private State getValue(String channelId, GoEStatusResponseDTO goeResponse) {
         switch (channelId) {
             case MAX_CURRENT:
+                if (goeResponse.maxCurrent == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>(goeResponse.maxCurrent, SmartHomeUnits.AMPERE);
             case PWM_SIGNAL:
+                if (goeResponse.pwmSignal == null) {
+                    return UnDefType.UNDEF;
+                }
                 String pwmSignal = null;
                 switch (goeResponse.pwmSignal) {
                     case 1:
@@ -123,6 +130,9 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
                 return new StringType(pwmSignal);
             case ERROR:
+                if (goeResponse.errorCode == null) {
+                    return UnDefType.UNDEF;
+                }
                 String error = null;
                 switch (goeResponse.errorCode) {
                     case 0:
@@ -143,6 +153,9 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
                 return new StringType(error);
             case ACCESS_CONFIGURATION:
+                if (goeResponse.accessConfiguration == null) {
+                    return UnDefType.UNDEF;
+                }
                 String accessConfiguration = null;
                 switch (goeResponse.accessConfiguration) {
                     case 0:
@@ -161,10 +174,19 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
                 return new StringType(accessConfiguration);
             case ALLOW_CHARGING:
+                if (goeResponse.allowCharging == null) {
+                    return UnDefType.UNDEF;
+                }
                 return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
             case CABLE_ENCODING:
+                if (goeResponse.cableEncoding == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>(goeResponse.cableEncoding, SmartHomeUnits.AMPERE);
             case PHASES:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 int count = 0;
                 if (goeResponse.energy[4] > 0) { // current P1
                     count++;
@@ -177,35 +199,77 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
                 return new DecimalType(count);
             case TEMPERATURE:
+                if (goeResponse.temperature == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>(goeResponse.temperature, SIUnits.CELSIUS);
             case SESSION_CHARGE_CONSUMPTION:
+                if (goeResponse.sessionChargeConsumption == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
                         SmartHomeUnits.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
+                if (goeResponse.sessionChargeConsumptionLimit == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 10d),
                         SmartHomeUnits.KILOWATT_HOUR);
             case TOTAL_CONSUMPTION:
+                if (goeResponse.totalChargeConsumption == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d),
                         SmartHomeUnits.KILOWATT_HOUR);
             case FIRMWARE:
+                if (goeResponse.firmware == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new StringType(goeResponse.firmware);
             case VOLTAGE_L1:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>(goeResponse.energy[0], SmartHomeUnits.VOLT);
             case VOLTAGE_L2:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>(goeResponse.energy[1], SmartHomeUnits.VOLT);
             case VOLTAGE_L3:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>(goeResponse.energy[2], SmartHomeUnits.VOLT);
             case CURRENT_L1:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), SmartHomeUnits.AMPERE);
             case CURRENT_L2:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), SmartHomeUnits.AMPERE);
             case CURRENT_L3:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), SmartHomeUnits.AMPERE);
             case POWER_L1:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.energy[7] / 10d), SmartHomeUnits.WATT);
             case POWER_L2:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.energy[8] / 10d), SmartHomeUnits.WATT);
             case POWER_L3:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
                 return new QuantityType<>((Double) (goeResponse.energy[9] / 10d), SmartHomeUnits.WATT);
         }
         return UnDefType.UNDEF;
@@ -301,10 +365,9 @@ public class GoEChargerHandler extends BaseThingHandler {
             String response = contentResponse.getContentAsString();
             logger.debug("POST Response: {}", response);
             GoEStatusResponseDTO result = gson.fromJson(response, GoEStatusResponseDTO.class);
-            updateChannelsAndStatus(result);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "No response received on command");
+            updateChannelsAndStatus(result, null);
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
+            updateChannelsAndStatus(null, e.getMessage());
         }
     }
 
@@ -313,31 +376,27 @@ public class GoEChargerHandler extends BaseThingHandler {
      *
      * @return the Go-E charger object mapping the JSON response or null in case of
      *         error
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
      */
     @Nullable
-    private GoEStatusResponseDTO getGoEData() {
-        GoEStatusResponseDTO result = null;
-
+    private GoEStatusResponseDTO getGoEData()
+            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String urlStr = getUrl(GoEChargerBindingConstants.API_URL);
         logger.debug("GET URL = {}", urlStr);
 
-        try {
-            ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
-                    .timeout(5, TimeUnit.SECONDS).send();
+        ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
+                .timeout(5, TimeUnit.SECONDS).send();
 
-            String response = contentResponse.getContentAsString();
-            logger.debug("GET Response: {}", response);
-            result = gson.fromJson(response, GoEStatusResponseDTO.class);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            result = null;
-        }
-
-        return result;
+        String response = contentResponse.getContentAsString();
+        logger.debug("GET Response: {}", response);
+        return gson.fromJson(response, GoEStatusResponseDTO.class);
     }
 
-    private void updateChannelsAndStatus(GoEStatusResponseDTO goeResponse) {
+    private void updateChannelsAndStatus(@Nullable GoEStatusResponseDTO goeResponse, @Nullable String message) {
         if (goeResponse == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "No response received");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
@@ -347,8 +406,13 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     private void refresh() {
         // Request new GoE data
-        GoEStatusResponseDTO goeResponse = getGoEData();
-        updateChannelsAndStatus(goeResponse);
+        try {
+            GoEStatusResponseDTO goeResponse = getGoEData();
+            updateChannelsAndStatus(goeResponse, null);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            updateChannelsAndStatus(null, e.getMessage());
+        }
+
     }
 
     private void startAutomaticRefresh() {
