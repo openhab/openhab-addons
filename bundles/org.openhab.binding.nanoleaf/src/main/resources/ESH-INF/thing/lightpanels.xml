@@ -27,6 +27,8 @@
 			<property name="modelId" />
 		</properties>
 
+		<representation-property>address</representation-property>
+
 		<config-description-ref uri="thing-type:nanoleaf:controller" />
 	</bridge-type>
 
@@ -41,6 +43,8 @@
 			<channel id="singleTap" typeId="singleTap" />
 			<channel id="doubleTap" typeId="doubleTap" />
 		</channels>
+
+		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:nanoleaf:lightpanel" />
 	</thing-type>
