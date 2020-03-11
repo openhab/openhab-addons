@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
  * The {@link NanoleafMDNSDiscoveryParticipant} is responsible for discovering new Nanoleaf controllers (bridges).
  *
  * @author Martin Raepple - Initial contribution
+ * @author Stefan Höhn
+ * @see <a href="https://www.eclipse.org/smarthome/documentation/development/bindings/discovery-services.html">MSDN Discovery</a>
  */
 @Component(immediate = true, configurationPid = "discovery.nanoleaf")
 @NonNullByDefault
@@ -71,10 +73,12 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         String modelId = service.getPropertyString("md");
         properties.put(Thing.PROPERTY_MODEL_ID, modelId);
         properties.put(Thing.PROPERTY_VENDOR, "Nanoleaf");
+        String qualifiedName = service.getQualifiedName();
+        logger.debug("AVR found: {}", qualifiedName);
 
-        logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {}", host, port, firmwareVersion,
-                modelId);
-        logger.debug("Adding Nanoleaf controller with FW version {} found at {} {} to inbox", firmwareVersion, host,
+        logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port, firmwareVersion,
+                modelId, qualifiedName);
+        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {} {} to inbox", qualifiedName, firmwareVersion, host,
                 port);
         if (!OpenAPIUtils.checkRequiredFirmware(service.getPropertyString("md"), firmwareVersion)) {
             logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",

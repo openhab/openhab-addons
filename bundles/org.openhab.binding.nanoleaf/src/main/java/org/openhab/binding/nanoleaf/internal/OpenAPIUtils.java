@@ -106,8 +106,9 @@ public class OpenAPIUtils {
                 } else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
                     throw new NanoleafNotFoundException("OpenAPI request did not get any result back");
                 } else if (openAPIResponse.getStatus() == HttpStatus.BAD_REQUEST_400) {
-                    throw new NanoleafBadRequestException(String.format("Nanoleaf did not expect this request. HTTP response code %s",
-                            openAPIResponse.getStatus()));
+                    throw new NanoleafBadRequestException(
+                            String.format("Nanoleaf did not expect this request. HTTP response code %s",
+                                    openAPIResponse.getStatus()));
                 } else {
                     throw new NanoleafException(String.format("OpenAPI request failed. HTTP response code %s",
                             openAPIResponse.getStatus()));
