@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
@@ -79,6 +80,11 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        if (RefreshType.REFRESH == command) {
+            handler.getSocket().getCurrentChannel(createResponseListener(channelId, handler));
+            return;
+        }
+
         final String value = command.toString();
 
         List<ChannelInfo> channels = channelListCache.get(handler.getThing().getUID());
@@ -91,7 +97,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
             if (channelInfo.isPresent()) {
                 handler.getSocket().setChannel(channelInfo.get(), objResponseListener);
             } else {
-                logger.warn("TV does not have a channel: {}.", value);
+                logger.info("TV does not have a channel: {}.", value);
             }
         }
 
@@ -99,11 +105,15 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
 
     @Override
     protected Optional<ServiceSubscription<ChannelInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
-        return Optional.of(handler.getSocket().subscribeCurrentChannel(new ResponseListener<ChannelInfo>() {
+        return Optional.of(handler.getSocket().subscribeCurrentChannel(createResponseListener(channelId, handler)));
+    }
+
+    private ResponseListener<ChannelInfo> createResponseListener(String channelId, LGWebOSHandler handler) {
+        return new ResponseListener<ChannelInfo>() {
 
             @Override
             public void onError(@Nullable String error) {
-                logger.debug("Error in listening to channel changes: {}.", error);
+                logger.debug("Error in retrieving channel: {}.", error);
             }
 
             @Override
@@ -113,7 +123,6 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                 }
                 handler.postUpdate(channelId, new StringType(channelInfo.getChannelNumber()));
             }
-        }));
-
+        };
     }
 }
