@@ -75,7 +75,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     /**
      * Contains characteristic which reading is ongoing or null if no ongoing readings.
      */
-    private volatile @Nullable BluetoothCharacteristic ongoingCharacteristic;
+    private volatile @Nullable GattCharacteristic ongoingGattCharacteristic;
 
     public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants,
             Set<BluetoothAdapter> adapters) {
@@ -266,10 +266,10 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
             logger.debug("Failed to aquire uuid {} from device {}", uuid, device.getAddress());
             return;
         }
-        ongoingCharacteristic = characteristic;
+        ongoingGattCharacteristic = gattCharacteristic;
         if (!awaitInfoResponse(1, TimeUnit.SECONDS)) {
             logger.debug("Device info (uuid {}) for device {} timed out", uuid, device.getAddress());
-            ongoingCharacteristic = null;
+            ongoingGattCharacteristic = null;
         }
     }
 
@@ -293,7 +293,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
         serviceDiscoveryLock.lock();
         try {
             long nanosTimeout = unit.toNanos(timeout);
-            while (ongoingCharacteristic != null) {
+            while (ongoingGattCharacteristic != null) {
                 if (nanosTimeout <= 0L) {
                     return false;
                 }
@@ -361,11 +361,9 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
                 }
             }
 
-            if (ongoingCharacteristic != null) {
-                if (ongoingCharacteristic.getUuid() == characteristic.getUuid()) {
-                    ongoingCharacteristic = null;
-                    infoDiscoveryCondition.signal();
-                }
+            if (ongoingGattCharacteristic == characteristic.getGattCharacteristic()) {
+                ongoingGattCharacteristic = null;
+                infoDiscoveryCondition.signal();
             }
         } finally {
             serviceDiscoveryLock.unlock();
