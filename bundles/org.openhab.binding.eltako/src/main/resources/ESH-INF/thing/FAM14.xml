@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="eltako"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+    <bridge-type id="FAM14">
+        <label>FAM14</label>
+        <description>Funk-Antennenmodul für den Eltako-RS485-Bus mit austauschbarer Antenne. Mit integriertem Schaltnetzteil 12 V DC/8 W. Bidirektional.</description>
+        <properties>
+            <!-- Properties are shown to the user but can NOT be modified by him -->
+            <property name="Version">---</property>
+        </properties>
+        <!-- Config-Descriptions are shown to the user and (must/can) be set upon thing creation -->
+        <config-description>
+            <parameter name="SerialComPort" type="text" required="true">
+                <label>Serial Comport Number</label>
+                <description>e.g. "COM1" under Windows or "/dev/ttyUSB0" under Linux</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+</thing:thing-descriptions>

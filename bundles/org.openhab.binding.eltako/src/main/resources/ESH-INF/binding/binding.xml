@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="eltako" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+	<name>Eltako Binding</name>
+	<description>The Eltako binding integrates the Eltako FAM14 device family. It allows control over a number of sensors/actors.</description>
+	<author>Martin Wenske</author>
+</binding:binding>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="eltako"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="FSB14">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="FAM14" />
+            <bridge-type-ref id="FGW14" />
+        </supported-bridge-type-refs>
+		<label>FSB14</label>
+		<description>Schaltaktor Beschattungselemente und Rollladen mit 2 Kanälen für zwei 230V-Motoren</description>
+		<channels>
+			<!-- Channels represent the state of the Thing which can be linked to an Item -->
+            <channel id="control" typeId="control" />
+            <channel id="runtime" typeId="runtime" />
+		</channels>
+		<properties>
+			<!-- Properties are shown to the user but can NOT be modified by him -->
+            <property name="vendor">Eltako</property>
+            <property name="modelId">006</property>
+            <property name="hardwareVersion">---</property>
+		</properties>
+        <!-- Config-Descriptions are shown to the user and (must/can) be set upon thing creation -->
+        <config-description-ref uri="thing-type:eltako:genericthing" />
+	</thing-type>
+    <!-- Control Channel Type -->
+    <channel-type id="control" advanced="false">
+        <item-type>Rollershutter</item-type>
+        <label>Control</label>
+        <description>Allows to control the devices connected to this channel or group by sending UP, DOWN, STOP commands.</description>
+    </channel-type>
+    <channel-type id="runtime" advanced="false">
+        <item-type>Number</item-type>
+        <label>Runtime</label>
+        <category>Blinds</category>
+        <state min="0" max="255" step="1" pattern="%d" readOnly="false" />
+    </channel-type>
+</thing:thing-descriptions>

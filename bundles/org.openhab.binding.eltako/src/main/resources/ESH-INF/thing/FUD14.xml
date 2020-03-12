@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="eltako"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="FUD14">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="FAM14" />
+            <bridge-type-ref id="FGW14" />
+        </supported-bridge-type-refs>
+		<label>FUD14</label>
+		<description>Universal-Dimmschalter, Power MOSFET bis 400 W</description>
+		<channels>
+			<!-- Channels represent the state of the Thing which can be linked to an Item -->
+            <channel id="brightness" typeId="brightness" />
+            <channel id="speed" typeId="speed" />
+            <channel id="blocking" typeId="blocking" />
+		</channels>
+		<properties>
+			<!-- Properties are shown to the user but can NOT be modified by him -->
+            <property name="vendor">Eltako</property>
+            <property name="modelId">004</property>
+            <property name="HardwareVersion">---</property>
+		</properties>
+        <!-- Config-Descriptions are shown to the user and (must/can) be set upon thing creation -->
+        <config-description-ref uri="thing-type:eltako:genericthing" />
+	</thing-type>
+    <channel-type id="brightness" advanced="false">
+        <item-type>Dimmer</item-type>
+        <label>Brightness</label>
+        <state min="0" max="255" step="1" pattern="%d" readOnly="false" />
+    </channel-type>
+    <channel-type id="speed" advanced="false">
+        <item-type>Number</item-type>
+        <label>Speed</label>
+        <state min="0" max="255" step="1" pattern="%d" readOnly="false" />
+    </channel-type>
+    <channel-type id="blocking" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Blocking</label>
+        <description>Prevent dimming value from being changed by switch telegram</description>
+    </channel-type>
+</thing:thing-descriptions>

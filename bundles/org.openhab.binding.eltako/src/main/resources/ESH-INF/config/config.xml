@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+    
+    <config-description uri="bridge-type:eltako:genericbridge">
+        <parameter name="DeviceId" type="text" pattern="(25[0-4]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])" required="true">
+            <label>Device ID number</label>
+            <description>Needs to match the device ID set by PCT14</description>
+        </parameter>
+	    <parameter name="SerialComPort" type="text" required="true">
+	        <label>Serial Comport Number</label>
+	        <description>e.g. "COM1" under Windows or "/dev/ttyUSB0" under Linux</description>
+	    </parameter>
+	    <parameter name="SerialBaudRate" type="text" required="true">
+	        <label>Serial Comport Baudrate</label>
+	        <description>Baudrate used by the serial comport to connect to device</description>
+	        <default>58000</default>
+	        <options>
+	            <option value="300">300</option>
+	            <option value="600">600</option>
+	            <option value="1200">1200</option>
+	            <option value="2400">2400</option>
+	            <option value="4800">4800</option>
+	            <option value="9600">9600</option>
+	            <option value="14400">14400</option>
+	            <option value="19200">19200</option>
+	            <option value="28800">28800</option>
+	            <option value="38400">38400</option>
+	            <option value="56000">56000</option>
+	            <option value="57600">57600</option>
+	            <option value="58000">58000</option>
+	            <option value="115200">115200</option>
+	            <option value="128000">128000</option>
+	            <option value="256000">256000</option>
+	        </options>
+	        <advanced>true</advanced>
+	        <limitToOptions>true</limitToOptions>
+	    </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:eltako:genericthing">
+        <parameter name="DeviceId" type="text" pattern="(25[0-4]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])" required="true">
+            <label>Device ID number</label>
+            <description>Needs to match the device ID set by PCT14</description>
+        </parameter>
+    </config-description>
+    
+</config-description:config-descriptions>

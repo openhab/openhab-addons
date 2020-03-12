@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="eltako"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+    <bridge-type id="FGW14">
+        <label>FGW14</label>
+        <description>Mehrfach-Gateway. Bidirektional.</description>
+        <!-- Config-Descriptions are shown to the user and (must/can) be set upon thing creation -->
+        <config-description-ref uri="bridge-type:eltako:genericbridge" />
+    </bridge-type>
+</thing:thing-descriptions>
