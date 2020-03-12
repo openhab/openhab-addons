@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -74,9 +73,9 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     private volatile boolean servicesDiscovered = false;
 
     /**
-     * Contains UUID which reading is ongoing or empty if no ongoing readings.
+     * Contains characteristic which reading is ongoing or null if no ongoing readings.
      */
-    private Optional<UUID> ongoingDevInfoUUID = Optional.empty();
+    private volatile @Nullable BluetoothCharacteristic ongoingCharacteristic;
 
     public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants,
             Set<BluetoothAdapter> adapters) {
@@ -237,26 +236,27 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
 
     private void readDeviceInformationIfMissing() throws InterruptedException {
         if (device.getName() == null) {
-            fecthUUID(GattCharacteristic.DEVICE_NAME.getUUID());
+            fecthGattCharacteristic(GattCharacteristic.DEVICE_NAME);
         }
         if (device.getModel() == null) {
-            fecthUUID(GattCharacteristic.MODEL_NUMBER_STRING.getUUID());
+            fecthGattCharacteristic(GattCharacteristic.MODEL_NUMBER_STRING);
         }
         if (device.getSerialNumber() == null) {
-            fecthUUID(GattCharacteristic.SERIAL_NUMBER_STRING.getUUID());
+            fecthGattCharacteristic(GattCharacteristic.SERIAL_NUMBER_STRING);
         }
         if (device.getHardwareRevision() == null) {
-            fecthUUID(GattCharacteristic.HARDWARE_REVISION_STRING.getUUID());
+            fecthGattCharacteristic(GattCharacteristic.HARDWARE_REVISION_STRING);
         }
         if (device.getFirmwareRevision() == null) {
-            fecthUUID(GattCharacteristic.FIRMWARE_REVISION_STRING.getUUID());
+            fecthGattCharacteristic(GattCharacteristic.FIRMWARE_REVISION_STRING);
         }
         if (device.getSoftwareRevision() == null) {
-            fecthUUID(GattCharacteristic.SOFTWARE_REVISION_STRING.getUUID());
+            fecthGattCharacteristic(GattCharacteristic.SOFTWARE_REVISION_STRING);
         }
     }
 
-    private void fecthUUID(UUID uuid) throws InterruptedException {
+    private void fecthGattCharacteristic(GattCharacteristic gattCharacteristic) throws InterruptedException {
+        UUID uuid = gattCharacteristic.getUUID();
         BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
         if (characteristic == null) {
             logger.debug("Device '{}' doesn't support uuid '{}'", device.getAddress(), uuid);
@@ -266,9 +266,10 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
             logger.debug("Failed to aquire uuid {} from device {}", uuid, device.getAddress());
             return;
         }
-        ongoingDevInfoUUID = Optional.of(uuid);
+        ongoingCharacteristic = characteristic;
         if (!awaitInfoResponse(1, TimeUnit.SECONDS)) {
             logger.debug("Device info (uuid {}) for device {} timed out", uuid, device.getAddress());
+            ongoingCharacteristic = null;
         }
     }
 
@@ -292,7 +293,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
         serviceDiscoveryLock.lock();
         try {
             long nanosTimeout = unit.toNanos(timeout);
-            while (ongoingDevInfoUUID.isPresent()) {
+            while (ongoingCharacteristic != null) {
                 if (nanosTimeout <= 0L) {
                     return false;
                 }
@@ -360,13 +361,12 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
                 }
             }
 
-            ongoingDevInfoUUID.ifPresent(uuid -> {
-                if (uuid == characteristic.getGattCharacteristic().getUUID()) {
-                    ongoingDevInfoUUID = Optional.empty();
+            if (ongoingCharacteristic != null) {
+                if (ongoingCharacteristic.getUuid() == characteristic.getUuid()) {
+                    ongoingCharacteristic = null;
                     infoDiscoveryCondition.signal();
                 }
-            });
-
+            }
         } finally {
             serviceDiscoveryLock.unlock();
         }
