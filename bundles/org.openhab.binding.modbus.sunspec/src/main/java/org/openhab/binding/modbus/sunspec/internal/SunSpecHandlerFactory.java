@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.sunspec.internal;
 
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.THING_TYPE_INVERTER_SINGLE_PHASE;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,10 +52,8 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
      */
     private ModbusManager manager;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_INVERTER_SINGLE_PHASE);
-    }
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(THING_TYPE_INVERTER_SINGLE_PHASE);
 
     /**
      * This factory needs a reference to the ModbusManager wich is provided
