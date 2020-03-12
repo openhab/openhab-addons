@@ -31,49 +31,27 @@ public class InverterModelParser extends AbstractBaseParser implements SunspecPa
         InverterModelBlock block = new InverterModelBlock();
 
         block.phaseConfiguration = extractUInt16(raw, 0, SunSpecConstants.INVERTER_SINGLE_PHASE);
-
         block.length = extractUInt16(raw, 1, raw.size());
-
         block.acCurrentTotal = extractUInt16(raw, 2, 0);
-
         block.acCurrentSF = extractSunSSF(raw, 6);
-
         block.acPower = extractInt16(raw, 14, (short) 0);
-
         block.acPowerSF = extractSunSSF(raw, 15);
-
         block.acFrequency = extractUInt16(raw, 16, 0);
-
         block.acFrequencySF = extractSunSSF(raw, 17);
-
         block.acApparentPower = extractOptionalInt16(raw, 18);
-
         block.acApparentPowerSF = extractOptionalSunSSF(raw, 19);
-
         block.acReactivePower = extractOptionalInt16(raw, 20);
-
         block.acReactivePowerSF = extractOptionalSunSSF(raw, 21);
-
         block.acPowerFactor = extractOptionalInt16(raw, 22);
-
         block.acPowerFactorSF = extractOptionalSunSSF(raw, 23);
-
         block.acEnergyLifetime = extractAcc32(raw, 24, 0);
-
         block.acEnergyLifetimeSF = extractSunSSF(raw, 26);
-
         block.temperatureCabinet = extractInt16(raw, 33, (short) 0);
-
         block.temperatureHeatsink = extractOptionalInt16(raw, 34);
-
         block.temperatureTransformer = extractOptionalInt16(raw, 35);
-
         block.temperatureOther = extractOptionalInt16(raw, 36);
-
         block.temperatureSF = extractSunSSF(raw, 37);
-
         block.status = extractUInt16(raw, 38, 1);
-
         block.statusVendor = extractOptionalUInt16(raw, 39);
 
         return block;
