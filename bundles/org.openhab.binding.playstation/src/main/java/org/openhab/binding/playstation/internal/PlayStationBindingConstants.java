@@ -58,11 +58,15 @@ public class PlayStationBindingConstants {
     static final String CHANNEL_LOG_OUT = "logOut";
     static final String CHANNEL_SCREEN_SHOT = "screenShot";
 
-    // List of all known properties in the response from the PS4
+    // List of all known properties in the response from the PS3/PS4
     public static final String RESPONSE_HOST_ID = "host-id";
     public static final String RESPONSE_HOST_TYPE = "host-type";
     public static final String RESPONSE_HOST_NAME = "host-name";
+    public static final String RESPONSE_HOST_MTP_PROTOCOL_VERSION = "host-mtp-protocol-version";
     public static final String RESPONSE_HOST_REQUEST_PORT = "host-request-port";
+    public static final String RESPONSE_HOST_WIRELESS_PROTOCOL_VERSION = "host-wireless-protocol-version";
+    public static final String RESPONSE_HOST_MAC_ADDRESS = "host-mac-address";
+    public static final String RESPONSE_HOST_SUPPORTED_DEVICE = "host-supported-device";
     public static final String RESPONSE_DEVICE_DISCOVERY_PROTOCOL_VERSION = "device_discovery_protocol-version";
     public static final String RESPONSE_SYSTEM_VERSION = "system-version";
     public static final String RESPONSE_RUNNING_APP_NAME = "running-app-name";
@@ -130,14 +134,14 @@ public class PlayStationBindingConstants {
     public static final int DEFAULT_COMMUNICATION_PORT = 997;
 
     /** Default port for PS3. */
-    public static final int DEFAULT_PS3_BROADCAST_PORT = 9293;
-    public static final int DEFAULT_PS3_UNKNOWN_PORT = 9309;
-    public static final int DEFAULT_PS3_UNKNOWN_PORT1 = 56235;
-    public static final int DEFAULT_PS3_UNKNOWN_PORT2 = 56259;
-    public static final int DEFAULT_PS3_COMMUNICATION_PORT = 5223;
+    public static final int DEFAULT_PS3_WAKE_ON_LAN_PORT = 5223;
+    public static final int DEFAULT_PS3_REMOTE_PLAY_PORT = 9293;
+    public static final int DEFAULT_PS3_MEDIA_MANAGER_PORT = 9309;
+    public static final int DEFAULT_PS3_DLNA_PORT1 = 56235;
+    public static final int DEFAULT_PS3_DLNA_PORT2 = 56259;
 
     private PlayStationBindingConstants() {
-        // No need to instance this class.
+        // Don't instantiate this class.
     }
 
 }

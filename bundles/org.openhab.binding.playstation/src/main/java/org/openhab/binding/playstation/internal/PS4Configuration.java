@@ -13,7 +13,6 @@
 package org.openhab.binding.playstation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.playstation.internal.discovery.PlayStationDiscovery;
 
 /**
  * The {@link PS4Configuration} class contains fields mapping thing configuration parameters.

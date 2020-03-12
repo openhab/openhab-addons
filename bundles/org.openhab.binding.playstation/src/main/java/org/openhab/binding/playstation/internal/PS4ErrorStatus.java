@@ -67,7 +67,7 @@ enum PS4ErrorStatus {
     }
 
     /**
-     * get command from int
+     * Get command from value
      *
      * @param tag the tag string
      * @return accessoryType or null if not found

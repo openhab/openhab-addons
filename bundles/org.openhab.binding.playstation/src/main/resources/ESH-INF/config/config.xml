@@ -11,12 +11,6 @@
 			<description>The local IP address or hostname of the PlayStation 3.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="ipPort" type="integer">
-			<label>IP port</label>
-			<description>The IP port used to communicate with the PlayStation 3.</description>
-			<default>9293</default>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:playstation:PS4">

@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -48,9 +47,9 @@ import org.slf4j.LoggerFactory;
 public class PS3Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PS3Handler.class);
-    private static final int SOCKET_TIMEOUT_SECONDS = 4;
+    private static final int SOCKET_TIMEOUT_SECONDS = 2;
 
-    private PS4Configuration config = getConfigAs(PS4Configuration.class);
+    private PS3Configuration config = getConfigAs(PS3Configuration.class);
 
     private @Nullable ScheduledFuture<?> refreshTimer;
 
@@ -78,9 +77,9 @@ public class PS3Handler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        config = getConfigAs(PS4Configuration.class);
+        config = getConfigAs(PS3Configuration.class);
 
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.ONLINE);
         setupRefreshTimer();
 
         logger.debug("Finished initializing!");
@@ -88,29 +87,29 @@ public class PS3Handler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(false);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(false);
             refreshTimer = null;
         }
     }
 
     /**
-     * Sets up a timer for querying the PS3 (using the scheduler) with the given interval.
+     * Sets up a timer for querying the PS3 (using the scheduler) every 10 seconds.
      */
     private void setupRefreshTimer() {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(false);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(false);
         }
         refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 0, 10, TimeUnit.SECONDS);
     }
 
     private void refreshFromState(ChannelUID channelUID) {
-        switch (channelUID.getId()) {
-            case CHANNEL_POWER:
-                updateState(channelUID, currentPower);
-                break;
-            default:
-                logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
+        if (channelUID.getId().equals(CHANNEL_POWER)) {
+            updateState(channelUID, currentPower);
+        } else {
+            logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
         }
     }
 
@@ -123,13 +122,13 @@ public class PS3Handler extends BaseThingHandler {
             Socket socket = channel.socket();
             socket.setSoTimeout(SOCKET_TIMEOUT_SECONDS * 1000);
             channel.configureBlocking(true);
-            channel.connect(new InetSocketAddress(config.ipAddress, DEFAULT_PS3_COMMUNICATION_PORT));
+            channel.connect(new InetSocketAddress(config.ipAddress, DEFAULT_PS3_WAKE_ON_LAN_PORT));
         } catch (IOException e) {
             String message = e.getMessage();
             if (message.contains("refused")) {
                 updateState(CHANNEL_POWER, OnOffType.ON);
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            } else if (message.contains("timed out")) {
+                updateStatus(ThingStatus.ONLINE);
+            } else if (message.contains("timed out") || message.contains("is down")) {
                 updateState(CHANNEL_POWER, OnOffType.OFF);
             } else {
                 logger.info("PS3 read power, IOException: {}", e.getMessage());
@@ -137,51 +136,43 @@ public class PS3Handler extends BaseThingHandler {
         }
     }
 
-    private void wakeUpPS3() {
-        logger.debug("Waking up PS3...");
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setBroadcast(true);
-            InetAddress inetAddress = InetAddress.getByName("192.168.1.255");
+    private void turnOnPS3() {
+
+        try (DatagramSocket srchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
+            wakeSocket.setBroadcast(true);
+            srchSocket.setBroadcast(true);
+            srchSocket.setSoTimeout(1 * 1000);
+
+            InetAddress bcAddress = InetAddress.getByName("255.255.255.255");
+
             // send WOL magic packet
             byte[] magicPacket = makeWOLMagicPacket(thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS));
-            logger.info("PS3 wol packet: {}", magicPacket);
-            DatagramPacket packet = new DatagramPacket(magicPacket, magicPacket.length, inetAddress,
-                    DEFAULT_PS3_BROADCAST_PORT);
-            for (int i = 0; i < 4; i++) {
-                socket.send(packet);
-            }
-        } catch (IOException e) {
-            logger.info("Wake up PS3 exception: {}", e.getMessage());
-        }
-    }
-
-    private void turnOnPS3() {
-        wakeUpPS3();
-
-        try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setBroadcast(true);
-            socket.setSoTimeout(4 * 1000);
-
-            InetAddress inetAddress = InetAddress.getByName("192.168.1.255");
-
+            logger.debug("PS3 wol packet: {}", magicPacket);
+            DatagramPacket wakePacket = new DatagramPacket(magicPacket, magicPacket.length, bcAddress,
+                    DEFAULT_PS3_WAKE_ON_LAN_PORT);
             // send discover
             byte[] discover = "SRCH".getBytes();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
-                    DEFAULT_PS3_BROADCAST_PORT);
-            socket.send(packet);
-            logger.debug("Disover message sent: '{}'", discover);
+            DatagramPacket srchPacket = new DatagramPacket(discover, discover.length, bcAddress,
+                    DEFAULT_PS3_WAKE_ON_LAN_PORT);
+            logger.debug("Search message: '{}'", discover);
 
             // wait for responses
-            while (true) {
-                byte[] rxbuf = new byte[256];
-                packet = new DatagramPacket(rxbuf, rxbuf.length);
+            byte[] rxbuf = new byte[256];
+            DatagramPacket receivePacket = new DatagramPacket(rxbuf, rxbuf.length);
+            for (int i = 0; i < 34; i++) {
+                srchSocket.send(srchPacket);
                 try {
-                    socket.receive(packet);
+                    srchSocket.receive(receivePacket);
+                    logger.debug("PS3 started?: '{}'", receivePacket);
+                    // leave the loop
+                    break;
                 } catch (SocketTimeoutException e) {
-                    break; // leave the endless loop
+                    // try again
                 }
-
-                // parsePS3Packet(packet);
+                wakeSocket.send(wakePacket);
+                if (i >= 33) {
+                    logger.debug("PS3 not started!");
+                }
             }
         } catch (IOException e) {
             logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());

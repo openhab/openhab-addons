@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +32,11 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,22 +54,10 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 2;
 
+    private @Nullable NetworkAddressService network = null;
+
     public PlayStationDiscovery() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS * 2, true);
-    }
-
-    /**
-     * Activates the Discovery Service.
-     */
-    @Override
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-    }
-
-    /**
-     * Deactivates the Discovery Service.
-     */
-    @Override
-    public void deactivate() {
     }
 
     @Override
@@ -75,6 +67,43 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         discoverPS3();
     }
 
+    @Reference
+    public void bindNetworkAddressService(NetworkAddressService network) {
+        this.network = network;
+    }
+
+    private @Nullable InetAddress getBroadcastAdress() {
+        NetworkAddressService nwService = network;
+        if (nwService != null) {
+            try {
+                String address = nwService.getConfiguredBroadcastAddress();
+                if (address != null) {
+                    return InetAddress.getByName(address);
+                } else {
+                    return InetAddress.getByName("255.255.255.255");
+                }
+            } catch (UnknownHostException e) {
+                // We catch errors later.
+            }
+        }
+        return null;
+    }
+
+    private @Nullable InetAddress getIPv4Adress() {
+        NetworkAddressService nwService = network;
+        if (nwService != null) {
+            try {
+                String address = nwService.getPrimaryIpv4HostAddress();
+                if (address != null) {
+                    return InetAddress.getByName(address);
+                }
+            } catch (UnknownHostException e) {
+                // We catch errors later.
+            }
+        }
+        return null;
+    }
+
     private synchronized void discover() {
         logger.debug("Trying to discover all PS4 devices");
 
@@ -82,13 +111,13 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
             socket.setBroadcast(true);
             socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
 
-            InetAddress inetAddress = InetAddress.getByName("255.255.255.255");
+            InetAddress bcAddress = getBroadcastAdress();
 
             // send discover
             byte[] discover = "SRCH * HTTP/1.1\ndevice-discovery-protocol-version:00020020\n".getBytes();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, DEFAULT_BROADCAST_PORT);
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, bcAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
-            logger.debug("Disover message sent: '{}'", discover);
+            logger.debug("Discover message sent: '{}'", discover);
 
             // wait for responses
             while (true) {
@@ -96,11 +125,10 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                 packet = new DatagramPacket(rxbuf, rxbuf.length);
                 try {
                     socket.receive(packet);
+                    parsePS4Packet(packet);
                 } catch (SocketTimeoutException e) {
                     break; // leave the endless loop
                 }
-
-                parsePS4Packet(packet);
             }
         } catch (IOException e) {
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
@@ -108,20 +136,78 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
     }
 
     private synchronized void discoverPS3() {
-        logger.debug("Trying to discover all PS3 devices");
+        logger.debug("Trying to discover all PS3 devices that have \"Connect PS Vita System Using Network\" on.");
+
+        InetAddress bcAddress = getBroadcastAdress();
+        InetAddress localAddress = getIPv4Adress();
+
+        if (localAddress == null || bcAddress == null) {
+            logger.info("No IP/Broadcast address found. Make sure OpenHab is configured!");
+            return;
+        }
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setBroadcast(true);
+            socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
+
+            NetworkInterface nic = NetworkInterface.getByInetAddress(localAddress);
+            byte[] macAdr = nic.getHardwareAddress();
+            StringBuilder macBuilder = new StringBuilder();
+            for (int macIndex = 0; macIndex < macAdr.length; macIndex++) {
+                macBuilder.append(String.format("%02x", macAdr[macIndex]));
+            }
+            String macString = macBuilder.toString();
+            // send discover
+            StringBuilder srchBuilder = new StringBuilder("SRCH3 * HTTP/1.1\n");
+            srchBuilder.append("device-id:");
+            srchBuilder.append(macString);
+            srchBuilder.append("01010101010101010101\n");
+            srchBuilder.append("device-type:PS Vita\n");
+            srchBuilder.append("device-class:0\n");
+            srchBuilder.append("device-mac-address:");
+            srchBuilder.append(macString);
+            srchBuilder.append("\n");
+            srchBuilder.append("device-wireless-protocol-version:01000000\n\n");
+            byte[] discover = srchBuilder.toString().getBytes();
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, bcAddress,
+                    DEFAULT_PS3_MEDIA_MANAGER_PORT);
+            socket.send(packet);
+
+            // wait for responses
+            while (true) {
+                byte[] rxbuf = new byte[512];
+                packet = new DatagramPacket(rxbuf, rxbuf.length);
+                try {
+                    socket.receive(packet);
+                    parsePS3Packet(packet);
+                } catch (SocketTimeoutException e) {
+                    break; // leave the endless loop
+                }
+            }
+        } catch (IOException e) {
+            logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * This method is used to find all PS3 devices that are in Remote-Play mode.
+     * Unused as of now.
+     */
+    @SuppressWarnings("unused")
+    private synchronized void discoverPS3Old() {
+        logger.debug("Trying to discover all PS3 devices in Remote-Play mode.");
 
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
             socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
 
-            InetAddress inetAddress = InetAddress.getByName("255.255.255.255");
+            InetAddress bcAddress = getBroadcastAdress();
 
             // send discover
             byte[] discover = "SRCH".getBytes();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress,
-                    DEFAULT_PS3_BROADCAST_PORT);
+            DatagramPacket packet = new DatagramPacket(discover, discover.length, bcAddress,
+                    DEFAULT_PS3_REMOTE_PLAY_PORT);
             socket.send(packet);
-            logger.debug("Disover message sent: '{}'", discover);
+            logger.debug("Discover message sent: '{}'", discover);
 
             // wait for responses
             while (true) {
@@ -129,20 +215,36 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                 packet = new DatagramPacket(rxbuf, rxbuf.length);
                 try {
                     socket.receive(packet);
+                    parsePS3PacketOld(packet);
                 } catch (SocketTimeoutException e) {
                     break; // leave the endless loop
                 }
-
-                parsePS3Packet(packet);
             }
         } catch (IOException e) {
             logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());
         }
     }
 
+    /**
+     * The response from the PS4 looks something like this:
+     *
+     * HTTP/1.1 200 Ok
+     * host-id:0123456789AB
+     * host-type:PS4
+     * host-name:MyPS4
+     * host-request-port:997
+     * device-discovery-protocol-version:00020020
+     * system-version:07020001
+     * running-app-name:Youtube
+     * running-app-titleid:CUSA01116
+     *
+     * @param packet
+     * @return
+     */
     private boolean parsePS4Packet(DatagramPacket packet) {
         byte[] data = packet.getData();
         String message = new String(data, StandardCharsets.UTF_8);
+        logger.debug("PS4 data '{}', length:{}", message, packet.getLength());
 
         String ipAddress = packet.getAddress().toString().split("/")[1];
         String hostId = "";
@@ -152,7 +254,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         String protocolVersion = "";
         String systemVersion = "";
 
-        String[] ss = message.trim().split("\n");
+        String[] ss = message.trim().split("\\r?\\n");
         for (String row : ss) {
             int index = row.indexOf(':');
             index = index != -1 ? index : 0;
@@ -173,6 +275,9 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                     break;
                 case RESPONSE_DEVICE_DISCOVERY_PROTOCOL_VERSION:
                     protocolVersion = value;
+                    if (!"00020020".equals(protocolVersion)) {
+                        logger.debug("Different protocol version: '{}'", protocolVersion);
+                    }
                     break;
                 case RESPONSE_SYSTEM_VERSION:
                     systemVersion = value;
@@ -183,7 +288,6 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         }
         String hwVersion = hwVersionFromHostId(hostId);
         String modelID = modelNameFromHostTypeAndHWVersion(hostType, hwVersion);
-        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", modelID, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, Integer.valueOf(hostPort));
@@ -191,17 +295,94 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, formatPS4Version(systemVersion));
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
-        ThingUID uid = hostType.equals("PS5") ? new ThingUID(THING_TYPE_PS5, hostId)
+        ThingUID uid = hostType.equalsIgnoreCase("PS5") ? new ThingUID(THING_TYPE_PS5, hostId)
                 : new ThingUID(THING_TYPE_PS4, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
                 .build();
         thingDiscovered(result);
-        logger.debug("Thing discovered '{}'", result);
         return true;
     }
 
+    /**
+     * The response from the PS3 looks like this:
+     *
+     * HTTP/1.1 200 OK
+     * host-id:00000000-0000-0000-0000-123456789abc
+     * host-type:ps3
+     * host-name:MyPS3
+     * host-mtp-protocol-version:1800010
+     * host-request-port:9309
+     * host-wireless-protocol-version:1000000
+     * host-mac-address:123456789abc
+     * host-supported-device:PS Vita, PS Vita TV
+     *
+     * @param packet
+     * @return
+     */
     private boolean parsePS3Packet(DatagramPacket packet) {
+        byte[] data = packet.getData();
+        String message = new String(data, StandardCharsets.UTF_8);
+        logger.debug("PS3 data '{}', length:{}", message, packet.getLength());
+
+        String ipAddress = packet.getAddress().toString().split("/")[1];
+        String hostId = "";
+        String hostType = "";
+        String hostName = "";
+        String hostPort = "";
+        String protocolVersion = "";
+
+        String[] ss = message.trim().split("\\r?\\n");
+        for (String row : ss) {
+            int index = row.indexOf(':');
+            index = index != -1 ? index : 0;
+            String key = row.substring(0, index);
+            String value = row.substring(index + 1);
+            switch (key) {
+                case RESPONSE_HOST_ID:
+                    hostId = value;
+                    break;
+                case RESPONSE_HOST_TYPE:
+                    hostType = value;
+                    break;
+                case RESPONSE_HOST_NAME:
+                    hostName = value;
+                    break;
+                case RESPONSE_HOST_REQUEST_PORT:
+                    hostPort = value;
+                    if (!Integer.toString(DEFAULT_PS3_MEDIA_MANAGER_PORT).equals(hostPort)) {
+                        logger.debug("Different host request port: '{}'", hostPort);
+                    }
+                    break;
+                case RESPONSE_HOST_WIRELESS_PROTOCOL_VERSION:
+                    protocolVersion = value;
+                    if (!"1000000".equals(protocolVersion)) {
+                        logger.debug("Different protocol version: '{}'", protocolVersion);
+                    }
+                    break;
+                case RESPONSE_HOST_MAC_ADDRESS:
+                    hostId = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+        String hwVersion = hwVersionFromHostId(hostId);
+        String modelID = modelNameFromHostTypeAndHWVersion(hostType, hwVersion);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(IP_ADDRESS, ipAddress);
+        properties.put(Thing.PROPERTY_MODEL_ID, modelID);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
+        ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
+
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
+                .build();
+        thingDiscovered(result);
+        return true;
+    }
+
+    private boolean parsePS3PacketOld(DatagramPacket packet) {
         byte[] data = packet.getData();
         logger.debug("PS3 data '{}', length:{}", data, packet.getLength());
         String resp = new String(data, 0, 4);
@@ -219,10 +400,8 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
 
         String hwVersion = hwVersionFromHostId(hostId);
         String modelID = modelNameFromHostTypeAndHWVersion("PS3", hwVersion);
-        logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", modelID, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
-        properties.put(IP_PORT, Integer.valueOf(DEFAULT_PS3_BROADCAST_PORT));
         properties.put(Thing.PROPERTY_MODEL_ID, modelID);
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
@@ -342,7 +521,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
 
     private static String modelNameFromHostTypeAndHWVersion(String hostType, String hwVersion) {
         String modelName = "PlayStation 4";
-        switch (hostType) {
+        switch (hostType.toUpperCase()) {
             case "PS3":
                 modelName = "PlayStation 3";
                 if (hwVersion.startsWith("CECH-2") || hwVersion.startsWith("CECH-3")) {

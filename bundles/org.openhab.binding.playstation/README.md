@@ -6,20 +6,20 @@ By providing your user-credentials you can also change the power, which applicat
 ## Supported Things
 
 This binding should support all PS4 variants.
+It can also tell if your PS3 is ON or OFF/not present.
 
 ## Discovery
 
 Discovery should find all your PS4s within a few seconds as long as they are in standby mode and not completely turned off.
+To be able to discover your PS3 you need to turn on "Connect PS Vita System Using Network" in
+Settings -> System Settings -> Connect PS Vita System Using Network.
 
 ## Thing Configuration
 
 If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker. The result file is called ".ps4-wake.credentials.json" in your home directory.
 Then you need to pair your OpenHAB device with the PS4.
-Then, if you have a pass code when you log in to your PS4 you have specify that as well.
+Then, if you have a pass code when you log in to your PS4 you have to specify that as well.
  
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
 
 ## Channels
 
@@ -48,7 +48,9 @@ Example of how to configure a thing.
 demo.thing
 
 ```
-Thing playstation:PS4:myplaystation4 "PlayStation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+Thing playstation:PS4:123456789ABC "PlayStation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+
+Thing playstation:PS3:123456789ABC "PlayStation3" @ "Living Room" [ ipAdress="192.168.0.2" ]
 ```
 
 Here are some examples on how to map the channels to items.
@@ -56,21 +58,23 @@ Here are some examples on how to map the channels to items.
 demo.items:
 
 ```
-Switch PS4_Power "Power"                         { channel="playstation:PS4:a4_24_56_8f_2c_5b:power" }
-String PS4_Application "Application [%s]"        { channel="playstation:PS4:a4_24_56_8f_2c_5b:applicationName" }
-String PS4_ApplicationId "Application id [%s]"   { channel="playstation:PS4:a4_24_56_8f_2c_5b:applicationId" }
-Image PS4_ArtWork "Artwork"                      { channel="playstation:PS4:a4_24_56_8f_2c_5b:applicationImage" }
-String PS4_OSKText "OSK Text"                    { channel="playstation:PS4:a4_24_56_8f_2c_5b:oskText" }
-Switch PS4_Disconnect "Disconnect"               { channel="playstation:PS4:a4_24_56_8f_2c_5b:disconnect" }
-Switch PS4_Up "Up"                               { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyUp" }
-Switch PS4_Down "Down"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyDown" }
-Switch PS4_Right "Right"                         { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyRight" }
-Switch PS4_Left "Left"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyLeft" }
-Switch PS4_Enter "Enter"                         { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyEnter" }
-Switch PS4_Back "Back"                           { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyBack" }
-Switch PS4_Option "Option"                       { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyOption" }
-Switch PS4_PS "PS"                               { channel="playstation:PS4:a4_24_56_8f_2c_5b:keyPS" }
-String PS4_2ndScr "2ndScreen"                    { channel="playstation:PS4:a4_24_56_8f_2c_5b:secondScreen" }
+Switch PS4_Power "Power"                         { channel="playstation:PS4:123456789ABC:power" }
+String PS4_Application "Application [%s]"        { channel="playstation:PS4:123456789ABC:applicationName" }
+String PS4_ApplicationId "Application id [%s]"   { channel="playstation:PS4:123456789ABC:applicationId" }
+Image PS4_ArtWork "Artwork"                      { channel="playstation:PS4:123456789ABC:applicationImage" }
+String PS4_OSKText "OSK Text"                    { channel="playstation:PS4:123456789ABC:oskText" }
+Switch PS4_Disconnect "Disconnect"               { channel="playstation:PS4:123456789ABC:disconnect" }
+Switch PS4_Up "Up"                               { channel="playstation:PS4:123456789ABC:keyUp" }
+Switch PS4_Down "Down"                           { channel="playstation:PS4:123456789ABC:keyDown" }
+Switch PS4_Right "Right"                         { channel="playstation:PS4:123456789ABC:keyRight" }
+Switch PS4_Left "Left"                           { channel="playstation:PS4:123456789ABC:keyLeft" }
+Switch PS4_Enter "Enter"                         { channel="playstation:PS4:123456789ABC:keyEnter" }
+Switch PS4_Back "Back"                           { channel="playstation:PS4:123456789ABC:keyBack" }
+Switch PS4_Option "Option"                       { channel="playstation:PS4:123456789ABC:keyOption" }
+Switch PS4_PS "PS"                               { channel="playstation:PS4:123456789ABC:keyPS" }
+String PS4_2ndScr "2ndScreen"                    { channel="playstation:PS4:123456789ABC:secondScreen" }
+
+Switch PS3_Power "Power"                         { channel="playstation:PS3:123456789ABC:power" }
 ```
 
 demo.sitemap:
@@ -106,4 +110,4 @@ sitemap demo label="Main Menu"
 
 ## Any custom content here!
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+I tried my hardest to figure out how to turn on the PS3 through WakeOnLan but it looks likeSony never got it to work properly, the only way I've seen it turn on is via WiFi, but if you hook up your PS3 through WiFi to your router and enable WakeOnLan it turns itself on randomly.

@@ -104,14 +104,6 @@ public class PS4Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             refreshFromState(channelUID);
         } else {
-            if (CHANNEL_POWER.equals(channelUID.getId()) && command instanceof OnOffType) {
-                currentPower = (OnOffType) command;
-                if (currentPower.equals(OnOffType.ON)) {
-                    turnOnPS4();
-                } else if (currentPower.equals(OnOffType.OFF)) {
-                    sendStandby();
-                }
-            }
             if (CHANNEL_APPLICATION_ID.equals(channelUID.getId()) && command instanceof StringType) {
                 if (!currentApplicationId.equals(((StringType) command).toString())) {
                     updateApplicationTitleid(((StringType) command).toString());
@@ -122,38 +114,51 @@ public class PS4Handler extends BaseThingHandler {
                 setOSKText(((StringType) command).toString());
             }
             if (command instanceof OnOffType) {
-                if (CHANNEL_KEY_UP.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_UP);
-                }
-                if (CHANNEL_KEY_DOWN.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_DOWN);
-                }
-                if (CHANNEL_KEY_RIGHT.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_RIGHT);
-                }
-                if (CHANNEL_KEY_LEFT.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_LEFT);
-                }
-                if (CHANNEL_KEY_ENTER.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_ENTER);
-                }
-                if (CHANNEL_KEY_BACK.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_BACK);
-                }
-                if (CHANNEL_KEY_OPTION.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_OPTION);
-                }
-                if (CHANNEL_KEY_PS.equals(channelUID.getId())) {
-                    sendRemoteKey(PS4_KEY_PS);
-                }
-                if (CHANNEL_DISCONNECT.equals(channelUID.getId())) {
-                    sendByeBye();
-                }
-                if (CHANNEL_LOG_OUT.equals(channelUID.getId())) {
-                    logOut();
-                }
-                if (CHANNEL_SCREEN_SHOT.equals(channelUID.getId())) {
-                    takeScreenShot();
+                switch (channelUID.getId()) {
+                    case CHANNEL_POWER:
+                        currentPower = (OnOffType) command;
+                        if (currentPower.equals(OnOffType.ON)) {
+                            turnOnPS4();
+                        } else if (currentPower.equals(OnOffType.OFF)) {
+                            sendStandby();
+                        }
+                        break;
+                    case CHANNEL_KEY_UP:
+                        sendRemoteKey(PS4_KEY_UP);
+                        break;
+                    case CHANNEL_KEY_DOWN:
+                        sendRemoteKey(PS4_KEY_DOWN);
+                        break;
+                    case CHANNEL_KEY_RIGHT:
+                        sendRemoteKey(PS4_KEY_RIGHT);
+                        break;
+                    case CHANNEL_KEY_LEFT:
+                        sendRemoteKey(PS4_KEY_LEFT);
+                        break;
+                    case CHANNEL_KEY_ENTER:
+                        sendRemoteKey(PS4_KEY_ENTER);
+                        break;
+                    case CHANNEL_KEY_BACK:
+                        sendRemoteKey(PS4_KEY_BACK);
+                        break;
+                    case CHANNEL_KEY_OPTION:
+                        sendRemoteKey(PS4_KEY_OPTION);
+                        break;
+                    case CHANNEL_KEY_PS:
+                        sendRemoteKey(PS4_KEY_PS);
+                        break;
+                    case CHANNEL_DISCONNECT:
+                        sendByeBye();
+                        break;
+                    case CHANNEL_LOG_OUT:
+                        logOut();
+                        break;
+                    case CHANNEL_SCREEN_SHOT:
+                        takeScreenShot();
+                        break;
+
+                    default:
+                        break;
                 }
             }
         }
@@ -172,23 +177,26 @@ public class PS4Handler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(false);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(false);
             refreshTimer = null;
         }
-        if (timeoutTimer != null) {
-            timeoutTimer.cancel(false);
+        timer = timeoutTimer;
+        if (timer != null) {
+            timer.cancel(false);
             timeoutTimer = null;
         }
         stopConnection();
     }
 
     /**
-     * Sets up a timer for querying the PS4 (using the scheduler) with the given interval.
+     * Sets up a timer for querying the PS4 (using the scheduler) every 10 seconds.
      */
     private void setupRefreshTimer() {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(false);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(false);
         }
         refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 0, 10, TimeUnit.SECONDS);
     }
@@ -199,8 +207,9 @@ public class PS4Handler extends BaseThingHandler {
      * @param waitTime The time in seconds before the connection is stopped.
      */
     private void setupConnectionTimeout(int waitTime) {
-        if (timeoutTimer != null) {
-            timeoutTimer.cancel(false);
+        ScheduledFuture<?> timer = timeoutTimer;
+        if (timer != null) {
+            timer.cancel(false);
         }
         if (waitTime > 0) {
             timeoutTimer = scheduler.schedule(this::stopConnection, waitTime, TimeUnit.SECONDS);
@@ -399,6 +408,14 @@ public class PS4Handler extends BaseThingHandler {
             loggedIn = false;
         }
 
+        /**
+         * This is used as a heart beat to let the PS4 know that we are still listening.
+         */
+        private void sendStatus() {
+            ByteBuffer outPacket = PS4PacketHandler.makeStatusPacket(0);
+            sendPacketEncrypted(outPacket, false);
+        }
+
         void parseResponsePacket(ByteBuffer rBuffer) {
             rBuffer.rewind();
             final int buffSize = rBuffer.remaining();
@@ -583,14 +600,6 @@ public class PS4Handler extends BaseThingHandler {
         }
     }
 
-    /**
-     * This is used as a heart beat to let the PS4 know that we are still listening.
-     */
-    private void sendStatus() {
-        ByteBuffer outPacket = PS4PacketHandler.makeStatusPacket(0);
-        sendPacketEncrypted(outPacket, false);
-    }
-
     private boolean login(SocketChannel channel) {
         // Send login request
         ByteBuffer outPacket = PS4PacketHandler.makeLoginPacket(config.userCredential, config.passCode,
@@ -740,11 +749,13 @@ public class PS4Handler extends BaseThingHandler {
                 if (power != null) {
                     if (!currentPower.equals(power)) {
                         currentPower = power;
-                        updateState(CHANNEL_POWER, currentPower);
-                        if (power.equals(OnOffType.ON) && config.autoConnect
-                                && (socketChannelHandler == null || !socketChannelHandler.loggedIn)) {
-                            logger.debug("Trying to login after power on.");
-                            scheduler.schedule(() -> login(), 20, TimeUnit.SECONDS);
+                        updateState(CHANNEL_POWER, power);
+                        if (power.equals(OnOffType.ON) && config.autoConnect) {
+                            SocketChannelHandler scHandler = socketChannelHandler;
+                            if (scHandler == null || !scHandler.loggedIn) {
+                                logger.debug("Trying to login after power on.");
+                                scheduler.schedule(() -> login(), 20, TimeUnit.SECONDS);
+                            }
                         }
                     }
                     if (thing.getStatus() != ThingStatus.ONLINE) {
@@ -796,10 +807,9 @@ public class PS4Handler extends BaseThingHandler {
         if (!isLinked(CHANNEL_APPLICATION_IMAGE)) {
             return;
         }
-        Locale locale = Locale.US;
-        if (localeProvider != null) {
-            locale = localeProvider.getLocale();
-        }
+        LocaleProvider lProvider = localeProvider;
+        Locale locale = (lProvider != null) ? lProvider.getLocale() : Locale.US;
+
         RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleId, config.artworkSize, locale);
         if (artWork != null) {
             currentArtwork = artWork;
