@@ -293,5 +293,5 @@ If you want to extend the bundle yourself, you have to do the followings:
  - To include your block type in auto discovery you have to add its id to the `SUPPORTED_THING_TYPES_UIDS` map in `SunSpecConstants`. This is enough for our discovery process to include your thing type in the results.
 
 
-If you have questions or need help don't hesitate to contact us.
+If you have questions or need help don't hesitate to contact us over the OpenHAB community forums and github pages.
  
