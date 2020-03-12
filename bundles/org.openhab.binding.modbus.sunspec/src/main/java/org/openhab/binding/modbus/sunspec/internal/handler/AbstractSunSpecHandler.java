@@ -355,7 +355,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     protected abstract void handlePolledData(ModbusRegisterArray registers);
 
     @Override
-    public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
 
         logger.debug("Thing status changed to {}", this.getThing().getStatus().name());
@@ -425,7 +425,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
     /**
      * Returns the channel UID for the specified group and channel id
-     * 
+     *
      * @param string the channel group
      * @param string the channel id in that group
      * @return the globally unique channel uid
