@@ -147,15 +147,6 @@
 						"parameterType": "ONOFF"
 					}
 				]
-			},
-			{
-				"property": "fahrenheit",
-				"friendlyName": "Temperature",
-				"channel": "temperature_f",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
 			}
 		]
 	}
