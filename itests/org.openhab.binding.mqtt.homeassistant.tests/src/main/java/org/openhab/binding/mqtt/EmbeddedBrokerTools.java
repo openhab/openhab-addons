@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +42,7 @@ public class EmbeddedBrokerTools {
      *
      * @throws InterruptedException
      */
-    public @Nullable MqttBrokerConnection waitForConnection(MqttService mqttService) throws InterruptedException {
+    public MqttBrokerConnection waitForConnection(MqttService mqttService) throws InterruptedException {
         embeddedConnection = mqttService.getBrokerConnection(Constants.CLIENTID);
         if (embeddedConnection == null) {
             Semaphore semaphore = new Semaphore(1);
@@ -61,9 +63,7 @@ public class EmbeddedBrokerTools {
 
             };
             mqttService.addBrokersListener(observer);
-            if (!semaphore.tryAcquire(1000, TimeUnit.MILLISECONDS)) {
-                return null;
-            }
+            assertTrue("Wait for embedded connection client failed", semaphore.tryAcquire(1000, TimeUnit.MILLISECONDS));
         }
         MqttBrokerConnection embeddedConnection = this.embeddedConnection;
         if (embeddedConnection == null) {
@@ -81,13 +81,8 @@ public class EmbeddedBrokerTools {
         if (embeddedConnection.connectionState() == MqttConnectionState.CONNECTED) {
             semaphore.release();
         }
-        /*
-         * assertTrue("Connection " + embeddedConnection.getClientId() + " failed. State: "
-         * + embeddedConnection.connectionState(), semaphore.tryAcquire(500, TimeUnit.MILLISECONDS));
-         */
-        if (!semaphore.tryAcquire(500, TimeUnit.MILLISECONDS)) {
-            return null;
-        }
+        assertTrue("Connection " + embeddedConnection.getClientId() + " failed. State: "
+                + embeddedConnection.connectionState(), semaphore.tryAcquire(500, TimeUnit.MILLISECONDS));
         return embeddedConnection;
     }
 
