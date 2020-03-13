@@ -229,8 +229,6 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
             } finally {
                 serviceDiscoveryLock.unlock();
             }
-            // a failure here would just result in a timeout, which is fine
-            device.discoverServices();
         }
     }
 
