@@ -189,7 +189,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
                     }
                     if (!servicesDiscovered) {
                         device.discoverServices();
-                        if (!awaitServiceDiscovery(5, TimeUnit.SECONDS)) {
+                        if (!awaitServiceDiscovery(10, TimeUnit.SECONDS)) {
                             logger.debug("Service discovery for device {} timed out", device.getAddress());
                             // something failed, so we abandon connection discovery
                             return null;
