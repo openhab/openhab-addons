@@ -64,7 +64,6 @@ public class WakeOnLanUtility {
     public static @Nullable String getMACAddress(String hostName) {
         String cmd = String.format(COMMAND, hostName);
         LOGGER.debug("cmd: {}", cmd);
-
         try {
             Process proc = Runtime.getRuntime().exec(cmd);
             int returnCode = proc.waitFor();
@@ -87,6 +86,7 @@ public class WakeOnLanUtility {
 
                     if (group.length() == 17) {
                         macAddress = group;
+                        break;
                     }
                 }
 
