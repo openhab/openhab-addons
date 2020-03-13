@@ -25,11 +25,14 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MiIoCrypto} is responsible for creating Xiaomi messages.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoCrypto {
 
     public static byte[] md5(byte[] source) throws MiIoCryptoException {

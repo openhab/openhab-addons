@@ -308,6 +308,18 @@
 		<label>USB Power</label>
 		<state readOnly="false" />
 	</channel-type>
+	<channel-type id="humidifierMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="silent">Silent</option>
+				<option value="medium">Medium</option>
+				<option value="high">High</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="airFreshMode">
 		<item-type>String</item-type>
 		<label>Mode</label>

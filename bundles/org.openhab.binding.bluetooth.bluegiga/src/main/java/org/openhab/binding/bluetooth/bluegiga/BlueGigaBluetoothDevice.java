@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga;
 
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.joda.time.DateTime;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
@@ -81,7 +81,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     // The connection handle if the device is connected
     private int connection = -1;
 
-    private DateTime lastSeenTime = DateTime.now();
+    private ZonedDateTime lastSeenTime = ZonedDateTime.now();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
@@ -541,12 +541,12 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
      *
      * @return last seen Time
      */
-    public DateTime getLastSeenTime() {
+    public ZonedDateTime getLastSeenTime() {
         return lastSeenTime;
     }
 
     private void updateLastSeenTime() {
-        this.lastSeenTime = DateTime.now();
+        this.lastSeenTime = ZonedDateTime.now();
     }
 
     private void cancelTimer(@Nullable ScheduledFuture<?> task) {

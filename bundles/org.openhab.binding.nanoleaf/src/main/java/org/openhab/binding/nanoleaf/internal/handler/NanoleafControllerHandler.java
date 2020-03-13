@@ -405,7 +405,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     Configuration config = editConfiguration();
                     config.put(NanoleafControllerConfig.AUTH_TOKEN, authToken.getAuthToken());
                     updateConfiguration(config);
-                    logger.info("--------device type3 {}", config.getProperties().get(Thing.PROPERTY_MODEL_ID));
 
                     updateStatus(ThingStatus.ONLINE);
                     // Update local field
@@ -564,14 +563,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         if (controllerInfo == null)
             return;
         final State state = controllerInfo.getState();
-        @Nullable
-        final On on = state.getOn();
-        boolean isOn = false;
-        if (on != null) {
-            on.getValue();
-        }
 
-        updateState(CHANNEL_POWER, isOn ? OnOffType.ON : OnOffType.OFF);
+        OnOffType powerState = state.getOnOff();
+        updateState(CHANNEL_POWER, powerState);
+
         @Nullable
         Ct colorTemperature = state.getColorTemperature();
 
@@ -604,8 +599,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         Brightness stateBrightness = state.getBrightness();
         int brightness = (stateBrightness != null) ? stateBrightness.getValue() : 0;
 
-        updateState(CHANNEL_COLOR,
-                new HSBType(new DecimalType(hue), new PercentType(saturation), new PercentType(isOn ? brightness : 0)));
+        updateState(CHANNEL_COLOR, new HSBType(new DecimalType(hue), new PercentType(saturation),
+                new PercentType(powerState == OnOffType.ON ? brightness : 0)));
         updateState(CHANNEL_COLOR_MODE, new StringType(state.getColorMode()));
         updateState(CHANNEL_RHYTHM_ACTIVE, controllerInfo.getRhythm().getRhythmActive() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));

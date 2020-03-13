@@ -47,7 +47,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected Mode value of \"{}\"", value);
 
             // Default to auto
@@ -81,7 +80,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected FanSpeed value of \"{}\"", value);
 
             // Default to auto
@@ -113,7 +111,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
 
             // Default to stopped

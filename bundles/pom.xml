@@ -50,6 +50,7 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
+    <module>org.openhab.binding.bluetooth.airthings</module>
     <module>org.openhab.binding.bluetooth.am43</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
     <module>org.openhab.binding.bluetooth.bluez</module>
@@ -87,6 +88,7 @@
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
+    <module>org.openhab.binding.goecharger</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.groheondus</module>

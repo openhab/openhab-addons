@@ -179,11 +179,11 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
                         MIN_PANEL_BRIGHTNESS);
             }
-        } else if (command instanceof PercentType  && (currentPanelColor != null)) {
+        } else if (command instanceof PercentType && (currentPanelColor != null)) {
             PercentType brightness = new PercentType(
                     Math.max(MIN_PANEL_BRIGHTNESS.intValue(), ((PercentType) command).intValue()));
             newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(), brightness);
-        } else if (command instanceof IncreaseDecreaseType  && (currentPanelColor != null)) {
+        } else if (command instanceof IncreaseDecreaseType && (currentPanelColor != null)) {
             int brightness = currentPanelColor.getBrightness().intValue();
             if (command.equals(IncreaseDecreaseType.INCREASE)) {
                 brightness = Math.min(MAX_PANEL_BRIGHTNESS.intValue(), brightness + BRIGHTNESS_STEP_SIZE);
@@ -224,7 +224,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             if (handler != null) {
                 NanoleafControllerConfig config = ((NanoleafControllerHandler) handler).getControllerConfig();
                 // Light Panels and Canvas use different stream commands
-                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS) || config.deviceType.equals(CONFIG_DEVICE_TYPE_CANVAS)) {
+                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)
+                        || config.deviceType.equals(CONFIG_DEVICE_TYPE_CANVAS)) {
                     logger.trace("Anim Data rgb {} {} {} {}", panelID, red, green, blue);
                     write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
                 } else {
@@ -248,11 +249,10 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         }
     }
 
-
     public void updatePanelColorChannel() {
         @Nullable
         HSBType panelColor = getPanelColor();
-        logger.trace("updatePanelColorChannel: panelColor: {}",panelColor);
+        logger.trace("updatePanelColorChannel: panelColor: {}", panelColor);
         if (panelColor != null)
             updateState(CHANNEL_PANEL_COLOR, panelColor);
     }
@@ -321,7 +321,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}",
                     nfe.getMessage());
         } catch (NanoleafBadRequestException nfe) {
-            logger.debug("Panel data could not be retrieved as request not expected(static type missing / dynamic type on) : {}",
+            logger.debug(
+                    "Panel data could not be retrieved as request not expected(static type missing / dynamic type on) : {}",
                     nfe.getMessage());
         } catch (NanoleafException nue) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

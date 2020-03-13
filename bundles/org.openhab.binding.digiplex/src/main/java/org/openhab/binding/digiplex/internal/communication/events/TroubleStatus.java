@@ -10,16 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
+package org.openhab.binding.digiplex.internal.communication.events;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link NhcLocation2} represents a Niko Home Control II location. It is used when parsing the location response json.
+ * Trouble status.
  *
- * @author Mark Herwege - Initial Contribution
+ * @author Robert Michalak - Initial contribution
+ *
  */
-class NhcLocation2 {
-    String name;
-    String uuid;
-    String index;
-    String icon;
+@NonNullByDefault
+public enum TroubleStatus {
+    TROUBLE_STARTED,
+    TROUBLE_RESTORED;
 }
