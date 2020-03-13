@@ -82,7 +82,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
-     * to something else than CONNECTED.
+     * to something else then CONNECTED.
      */
     private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state,
             is(MqttConnectionState.CONNECTED));
@@ -93,29 +93,13 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         registerVolatileStorageService();
         initMocks(this);
         mqttService = getService(MqttService.class);
-        EmbeddedBrokerTools embeddedTools;
-        // Wait for the EmbeddedBrokerService internal connection to be connected
-        embeddedTools = new EmbeddedBrokerTools();
-        embeddedConnection = embeddedTools.waitForConnection(mqttService);
 
-        // Trying to make this test work. It is not clear where the binding to the embedded broker is supposed
-        // to have been created but in my tests the embedded broker starts, but there is no binding to begin with.
-        // so if there is no binding, try to add it then wait again.
-        /*
-         * if (embeddedConnection == null) {
-         * MqttBrokerConnection newConn = new MqttBrokerConnection("localhost", null, false, "embedded");
-         * System.out.println("***************** Starting new connection!! *****************");
-         * newConn.start().get(10000, TimeUnit.MILLISECONDS);
-         * mqttService.addBrokerConnection(Constants.CLIENTID, newConn);
-         * embeddedConnection = embeddedTools.waitForConnection(mqttService);
-         * assertNotNull("Wait for embedded connection client failed", embeddedConnection);
-         * }
-         */
-        assertNotNull("Wait for embedded connection client failed", embeddedConnection);
+        // Wait for the EmbeddedBrokerService internal connection to be connected
+        embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
+
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "ha_mqtt");
         connection.start().get(1000, TimeUnit.MILLISECONDS);
-
         assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
 
         // If the connection state changes in between -> fail
@@ -132,7 +116,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(testObjectTopic + "/state", "true".getBytes(), 0, true));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(4000, TimeUnit.MILLISECONDS);
 
         failure = null;
 
@@ -144,7 +128,6 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
             connection.stop().get(1000, TimeUnit.MILLISECONDS);
-            connection = null;
         }
     }
 
@@ -188,7 +171,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
             latch.countDown();
         };
 
-        // Start the discovery for 500ms. Forced timeout after 1500ms.
+        // Start the discovery for 500ms. Forced timeout after 2500ms.
         HaID haID = new HaID(testObjectTopic + "/config");
         CompletableFuture<Void> future = discover.startDiscovery(connection, 1000, Collections.singleton(haID), cd)
                 .thenRun(() -> {
@@ -197,7 +180,8 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
                     return null;
                 });
 
-        assertTrue(latch.await(2000, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(5000, TimeUnit.MILLISECONDS));
+        // The line below not working, not clear why
         // future.get(800, TimeUnit.MILLISECONDS);
 
         // No failure expected and one discovered result
@@ -231,6 +215,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
                 .getCache().getChannelState();
         // This value is also still UNDEF here, not sure what is supposed to be happening.
         // I don't see any other code that sets the value to OnOffType.ON.
+        // perhaps related to verify channelStateUpdateListner issue above
         // assertThat(value, is(OnOffType.ON));
     }
 }

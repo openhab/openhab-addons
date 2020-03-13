@@ -18,33 +18,6 @@
   </properties>
 
   <dependencies>
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-server</artifactId>
-    <version>9.4.11.v20180605</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-security</artifactId>
-    <version>9.4.11.v20180605</version>
-</dependency>
-<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
-<dependency>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-servlet</artifactId>
-    <version>9.4.11.v20180605</version>
-</dependency>
-
-<!-- https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3 -->
-<dependency>
-    <groupId>org.eclipse.paho</groupId>
-    <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-    <version>1.2.2</version>
-</dependency>
-
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt</artifactId>
@@ -64,11 +37,6 @@
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.core.bundles</groupId>
-      <artifactId>org.openhab.core.io.transport.mqtt</artifactId>
-      <version>2.5.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.j-n-k</groupId>
@@ -136,111 +104,6 @@
      <version>2.20</version>
      <scope>runtime</scope>
      </dependency>
-	<!-- https://mvnrepository.com/artifact/org.eclipse.smarthome.io/org.eclipse.smarthome.io.transport.mqtt -->
-	<dependency>
-	    <groupId>org.eclipse.smarthome.io</groupId>
-	    <artifactId>org.eclipse.smarthome.io.transport.mqtt</artifactId>
-	    <version>0.10.0.oh240</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
-	<dependency>
-	    <groupId>ch.qos.logback</groupId>
-	    <artifactId>logback-core</artifactId>
-	    <version>1.2.3</version>
-        <scope>runtime</scope>
-	</dependency>
-	<dependency>
-	      <groupId>org.apache.felix</groupId>
-	      <artifactId>org.apache.felix.configadmin</artifactId>
-	      <version>1.9.8</version>
-	      <scope>runtime</scope>
-    </dependency>
-	<dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.apache.felix.scr</artifactId>
-      <version>2.1.10</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-annotations</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    
-    <!-- https://mvnrepository.com/artifact/org.apache.felix/org.apache.felix.http.bundle -->
-	<dependency>
-	    <groupId>org.apache.felix</groupId>
-	    <artifactId>org.apache.felix.http.bundle</artifactId>
-	    <version>3.0.0</version>
-	</dependency>
-    
-	
-	<!-- https://mvnrepository.com/artifact/org.apache.felix/org.apache.felix.http.servlet-api -->
-	<dependency>
-	    <groupId>org.apache.felix</groupId>
-	    <artifactId>org.apache.felix.http.servlet-api</artifactId>
-	    <version>1.1.2</version>
-	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0 -->
-	<dependency>
-	    <groupId>org.apache.servicemix.specs</groupId>
-	    <artifactId>org.apache.servicemix.specs.stax-api-1.2</artifactId>
-	    <version>2.9.0</version>
-	</dependency>
-
-    <!-- Event Admin -->
-    <dependency>
-      <groupId>org.eclipse.platform</groupId>
-      <artifactId>org.eclipse.equinox.event</artifactId>
-      <version>1.4.300</version>
-      <scope>runtime</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.service.event</artifactId>
-      <version>1.4.0</version>
-      <scope>runtime</scope>
-    </dependency>
-    
-     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
-      <scope>runtime</scope>
-    </dependency>
-
-  
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.7.25</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-    
-      <groupId>org.eclipse.platform</groupId>
-      <artifactId>org.eclipse.osgi</artifactId>
-      <version>3.13.100</version>
-      <scope>runtime</scope>
-    </dependency>
-        
-    <!-- https://mvnrepository.com/artifact/org.eclipse.smarthome.config/org.eclipse.smarthome.config.core -->
-	<dependency>
-	    <groupId>org.eclipse.smarthome.config</groupId>
-	    <artifactId>org.eclipse.smarthome.config.core</artifactId>
-	    <version>0.9.0.b1</version>
-	    <scope>runtime</scope>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/biz.aQute.bnd/biz.aQute.junit -->
-	<dependency>
-	    <groupId>biz.aQute.bnd</groupId>
-	    <artifactId>biz.aQute.junit</artifactId>
-	    <version>3.1.0</version>
-	</dependency>
-	
-
   </dependencies>
+
 </project>

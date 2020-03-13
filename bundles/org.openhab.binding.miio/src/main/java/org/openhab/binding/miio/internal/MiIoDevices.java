@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum MiIoDevices {
     AIRCONDITION_A1("aux.aircondition.v1", "AUX Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_I1("idelan.aircondition.v1", "Idelan Air Conditioner", THING_TYPE_UNSUPPORTED),

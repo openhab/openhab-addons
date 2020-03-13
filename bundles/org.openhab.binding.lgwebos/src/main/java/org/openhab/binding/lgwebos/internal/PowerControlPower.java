@@ -15,6 +15,7 @@ package org.openhab.binding.lgwebos.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.slf4j.Logger;
@@ -32,6 +33,10 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        if (RefreshType.REFRESH == command) {
+            handler.postUpdate(channelId, handler.getSocket().isConnected() ? OnOffType.ON : OnOffType.OFF);
+            return;
+        }
         if (OnOffType.ON == command) {
             logger.debug(
                     "Received ON - Turning TV on via API is not supported by LG WebOS TVs. You may succeed using wake on lan binding, please consult lgwebos binding documentation.");
@@ -46,7 +51,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
         } else if (OnOffType.OFF == command) {
             handler.getSocket().powerOff(getDefaultResponseListener());
         } else {
-            logger.warn("Only accept OnOffType. Type was {}.", command.getClass());
+            logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
 
     }

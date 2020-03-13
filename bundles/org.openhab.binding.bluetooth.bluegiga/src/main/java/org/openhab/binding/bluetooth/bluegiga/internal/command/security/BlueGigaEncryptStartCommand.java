@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.security;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaEncryptStartCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x05;
     public static int COMMAND_METHOD = 0x00;
@@ -54,6 +56,7 @@ public class BlueGigaEncryptStartCommand extends BlueGigaCommand {
     public void setHandle(int handle) {
         this.handle = handle;
     }
+
     /**
      * Create bonding if devices are not already bonded. 0: Do not create bonding. 1: Creating
      * bonding

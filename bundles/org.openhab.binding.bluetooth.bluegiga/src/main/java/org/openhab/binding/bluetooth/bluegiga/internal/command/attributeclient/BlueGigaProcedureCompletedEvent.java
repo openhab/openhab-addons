@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
 /**
@@ -27,16 +28,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaProcedureCompletedEvent extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaProcedureCompletedEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x01;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * 0: The operation was successful. Otherwise: attribute protocol error code returned by
@@ -69,16 +64,6 @@ public class BlueGigaProcedureCompletedEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * 0: The operation was successful. Otherwise: attribute protocol error code returned by
      * remote device
      * <p>
@@ -89,6 +74,7 @@ public class BlueGigaProcedureCompletedEvent extends BlueGigaResponse {
     public BgApiResponse getResult() {
         return result;
     }
+
     /**
      * Characteristic handle at which the event ended
      * <p>

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
@@ -37,15 +38,23 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelInfo> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        if (RefreshType.REFRESH == command) {
+            handler.getSocket().getCurrentChannel(createResponseListener(channelId, handler));
+            return;
+        }
         // nothing to do, this is read only.
     }
 
     @Override
     protected Optional<ServiceSubscription<ChannelInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
-        return Optional.of(handler.getSocket().subscribeCurrentChannel(new ResponseListener<ChannelInfo>() {
+        return Optional.of(handler.getSocket().subscribeCurrentChannel(createResponseListener(channelId, handler)));
+    }
+
+    private ResponseListener<ChannelInfo> createResponseListener(String channelId, LGWebOSHandler handler) {
+        return new ResponseListener<ChannelInfo>() {
             @Override
             public void onError(@Nullable String error) {
-                logger.debug("Error in listening to channel name changes: {}.", error);
+                logger.debug("Error in retrieving channel name: {}.", error);
             }
 
             @Override
@@ -55,7 +64,6 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelInfo> {
                 }
                 handler.postUpdate(channelId, new StringType(channelInfo.getName()));
             }
-        }));
-
+        };
     }
 }

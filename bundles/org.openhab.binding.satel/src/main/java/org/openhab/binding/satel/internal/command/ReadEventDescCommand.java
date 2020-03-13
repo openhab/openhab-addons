@@ -92,10 +92,6 @@ public class ReadEventDescCommand extends SatelCommandBase {
     @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         int properLength = isLongDescription() ? 51 : 21;
         if (response.getPayload().length != properLength) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);

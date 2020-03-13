@@ -10,16 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
+package org.openhab.binding.yeelight.internal.lib.device;
 
 /**
- * {@link NhcLocation2} represents a Niko Home Control II location. It is used when parsing the location response json.
+ * Interface for devices with background light.
  *
- * @author Mark Herwege - Initial Contribution
+ * @author Viktor Koop - Initial contribution
  */
-class NhcLocation2 {
-    String name;
-    String uuid;
-    String index;
-    String icon;
+public interface DeviceWithAmbientLight {
+    void setBackgroundColor(int hue, int saturation, int duration);
+
+    void setBackgroundBrightness(int brightness, int duration);
+
+    void setBackgroundPower(boolean on, int intDuration);
 }

@@ -21,13 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConfigurationException extends Exception {
-  private static final long serialVersionUID = -3319800607314286998L;
+    private static final long serialVersionUID = -3319800607314286998L;
 
-  public ConfigurationException(String string) {
-    super(string);
-  }
+    public ConfigurationException(String string) {
+        super(string);
+    }
 
-  public ConfigurationException(Throwable cause) {
-    super(cause);
-  }
+    public ConfigurationException(Throwable cause) {
+        super(cause);
+    }
 }

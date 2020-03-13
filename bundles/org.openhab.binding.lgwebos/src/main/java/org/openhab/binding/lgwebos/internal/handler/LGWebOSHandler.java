@@ -17,9 +17,11 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,9 +35,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
 import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
+import org.openhab.binding.lgwebos.internal.LGWebOSStateDescriptionOptionProvider;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
 import org.openhab.binding.lgwebos.internal.MediaControlStop;
@@ -67,6 +71,8 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private static final int RECONNECT_INTERVAL_SECONDS = 10;
     private static final int RECONNECT_START_UP_DELAY_SECONDS = 0;
 
+    private static final String APP_ID_LIVETV = "com.webos.app.livetv";
+
     /*
      * error messages
      */
@@ -78,17 +84,22 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private final Map<String, ChannelHandler> channelHandlers;
 
     private final LauncherApplication appLauncher = new LauncherApplication();
+
     private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
+
+    private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;
 
     private @Nullable LGWebOSConfiguration config;
 
-    public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient) {
+    public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient,
+            LGWebOSStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
         this.webSocketClient = webSocketClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
 
         Map<String, ChannelHandler> handlers = new HashMap<>();
         handlers.put(CHANNEL_VOLUME, new VolumeControlVolume());
@@ -267,10 +278,16 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 break;
             case REGISTERED:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
+
                 channelHandlers.forEach((k, v) -> {
-                    v.refreshSubscription(k, this);
+                    // refresh subscriptions except on channel, which can only be subscribe in livetv app. see
+                    // postUpdate method
+                    if (!CHANNEL_CHANNEL.equals(k) && !CHANNEL_CHANNEL_NAME.equals(k)) {
+                        v.refreshSubscription(k, this);
+                    }
                     v.onDeviceReady(k, this);
                 });
+
                 break;
 
         }
@@ -291,37 +308,21 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         }
     }
 
+    public void setOptions(String channelId, List<StateOption> options) {
+        logger.debug("setOptions channelId={} options.size()={}", channelId, options.size());
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
+    }
+
     public void postUpdate(String channelId, State state) {
-        updateState(channelId, state);
-    }
-
-    public boolean isChannelInUse(String channelId) {
-        return isLinked(channelId);
-    }
-
-    // channel linking modifications
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
-    }
-
-    /**
-     * Refresh channel subscription for one specific channel.
-     *
-     * @param channelUID must not be <code>null</code>
-     */
-    private void refreshChannelSubscription(ChannelUID channelUID) {
-        String channelId = channelUID.getId();
-        if (getSocket().isConnected()) {
-            channelHandlers.get(channelId).refreshSubscription(channelId, this);
+        if (isLinked(channelId)) {
+            updateState(channelId, state);
         }
 
+        // channel subscription only works when on livetv app.
+        if (CHANNEL_APP_LAUNCHER.equals(channelId) && APP_ID_LIVETV.equals(state.toString())) {
+            Stream.of(CHANNEL_CHANNEL, CHANNEL_CHANNEL_NAME)
+                    .forEach(k -> channelHandlers.get(k).refreshSubscription(k, this));
+        }
     }
 
     @Override

@@ -38,7 +38,6 @@ import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceTy
 import org.openhab.binding.satel.internal.command.ReadEventCommand;
 import org.openhab.binding.satel.internal.command.ReadEventDescCommand;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.types.IntegraType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,14 +106,11 @@ public class SatelEventLogHandler extends SatelThingHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
+    public void incomingEvent(ConnectionStatusEvent event) {
         logger.trace("Handling incoming event: {}", event);
-        if (event instanceof ConnectionStatusEvent) {
-            ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
-            // we have just connected, change thing's status
-            if (statusEvent.isConnected()) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+        // we have just connected, change thing's status
+        if (event.isConnected()) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 

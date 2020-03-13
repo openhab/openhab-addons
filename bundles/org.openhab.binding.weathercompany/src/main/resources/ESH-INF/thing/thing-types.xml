@@ -20,7 +20,7 @@
 			<channel id="neighborhood" typeId="neighborhood" />
 			<channel id="observationTimeLocal" typeId="observationTimeLocal" />
 			<channel id="currentTemperature" typeId="temperature">
-				<label>Current Temperature</label>
+				<label>Temperature</label>
 			</channel>
 			<channel id="currentTemperatureDewPoint" typeId="temperature">
 				<label>Dew Point Temperature</label>
@@ -32,31 +32,31 @@
 				<label>Wind Chill Temperature</label>
 			</channel>
 			<channel id="currentHumidity" typeId="relativeHumidity">
-				<label>Current Humidity</label>
+				<label>Humidity</label>
 			</channel>
 			<channel id="currentPressure" typeId="pressure">
-				<label>Current Pressure</label>
+				<label>Pressure</label>
 			</channel>
 			<channel id="currentPrecipitationRate" typeId="precipitationRate">
-				<label>Current Precipitation Rate</label>
+				<label>Precipitation Rate</label>
 			</channel>
 			<channel id="currentPrecipitationTotal" typeId="precipitationTotal">
-				<label>Current Precipitation Total</label>
+				<label>Precipitation Total</label>
 			</channel>
 			<channel id="currentSolarRadiation" typeId="solarRadiation">
-				<label>Current Solar Radiation</label>
+				<label>Solar Radiation</label>
 			</channel>
 			<channel id="currentUv" typeId="uvIndex">
-				<label>Current UV Index</label>
+				<label>UV Index</label>
 			</channel>
 			<channel id="currentWindDirection" typeId="windDirection">
-				<label>Current Wind Direction</label>
+				<label>Wind Direction</label>
 			</channel>
 			<channel id="currentWindSpeed" typeId="windSpeed">
-				<label>Current Wind Speed</label>
+				<label>Wind Speed</label>
 			</channel>
 			<channel id="currentWindSpeedGust" typeId="windSpeed">
-				<label>Current Wind Gust Speed</label>
+				<label>Wind Gust Speed</label>
 			</channel>
 			<channel id="stationId" typeId="stationId" />
 			<channel id="country" typeId="country" />
@@ -428,7 +428,7 @@
 		<label>Temperature</label>
 		<description>Forecasted temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="thunderCategory" advanced="true">
@@ -491,7 +491,7 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="wxPhraseLong">

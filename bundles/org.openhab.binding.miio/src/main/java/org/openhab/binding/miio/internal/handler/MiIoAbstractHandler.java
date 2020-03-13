@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ThingType;
@@ -43,6 +44,7 @@ import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
 
     private final Logger logger = LoggerFactory.getLogger(MiIoAbstractHandler.class);
+    protected MiIoDatabaseWatchService miIoDatabaseWatchService;
 
     @NonNullByDefault
     public MiIoAbstractHandler(Thing thing) {
@@ -312,7 +315,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
     }
 
-    @SuppressWarnings("null")
     private void updateDeviceIdConfig(String deviceId) {
         if (deviceId != null) {
             updateProperty(Thing.PROPERTY_SERIAL_NUMBER, deviceId);
@@ -387,7 +389,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.info("Mi Device model {} has model config: {}. Unexpected unless manual override", model,
                     configuration.model);
         }
-        if (miDevice.getThingType().equals(getThing().getThingTypeUID())) {
+        if (miDevice.getThingType().equals(getThing().getThingTypeUID())
+                && !(miDevice.getThingType().equals(THING_TYPE_UNSUPPORTED)
+                        && miIoDatabaseWatchService.getDatabaseUrl(model) != null)) {
             logger.info("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
             return true;
@@ -397,7 +401,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 changeType(model);
             } else {
                 logger.warn(
-                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless unless manual override.",
+                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless manual override.",
                         miDevice.toString(), miDevice.getThingType(), getThing().getThingTypeUID().toString(),
                         miDevice.getThingType().toString());
                 return true;
@@ -423,7 +427,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());
-            changeThingType(MiIoDevices.getType(modelId).getThingType(), getConfig());
+            ThingTypeUID thingTypeUID = MiIoDevices.getType(modelId).getThingType();
+            if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED)
+                    && miIoDatabaseWatchService.getDatabaseUrl(modelId) != null) {
+                thingTypeUID = THING_TYPE_BASIC;
+            }
+            changeThingType(thingTypeUID, getConfig());
         }, 10, TimeUnit.SECONDS);
     }
 
@@ -462,4 +471,5 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.debug("Error while handing message {}", response.getResponse(), e);
         }
     }
+
 }

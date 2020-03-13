@@ -44,6 +44,11 @@
                   <classifier>openhabcloud</classifier>
                 </artifact>
                 <artifact>
+                  <file>src/main/resources/conf/exec.whitelist</file>
+                  <type>cfg</type>
+                  <classifier>exec.whitelist</classifier>
+                </artifact>
+                <artifact>
                   <file>src/main/resources/lib/libLeap.dylib</file>
                   <type>lib</type>
                   <classifier>libLeap</classifier>

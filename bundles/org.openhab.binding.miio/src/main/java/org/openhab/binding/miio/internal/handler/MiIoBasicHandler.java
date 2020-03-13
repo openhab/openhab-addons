@@ -18,13 +18,13 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
@@ -47,10 +46,9 @@ import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.Conversions;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,8 +82,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<String, MiIoDeviceAction> actions;
 
     @NonNullByDefault
-    public MiIoBasicHandler(Thing thing) {
+    public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
     @Override
@@ -277,39 +276,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    private URL findDatabaseEntry(String deviceName) {
-        URL fn;
-        try {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
-            if (fn != null) {
-                logger.trace("bundle: {}, {}", bundle, fn.getFile());
-                return fn;
-            }
-            for (URL db : Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false))) {
-                try {
-                    JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    for (String id : devdb.getDevice().getId()) {
-                        if (deviceName.equals(id)) {
-                            return db;
-                        }
-                    }
-                } catch (Exception e) {
-                    // not relevant
-                    logger.debug("Error while searching for {} in database '{}': {}", deviceName, db, e.getMessage());
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Error while searching for {} in database: {}", deviceName, e.getMessage());
-        }
-        return null;
-    }
-
     private boolean buildChannelStructure(String deviceName) {
         logger.debug("Building Channel Structure for {} - Model: {}", getThing().getUID().toString(), deviceName);
-        URL fn = findDatabaseEntry(deviceName);
+        URL fn = miIoDatabaseWatchService.getDatabaseUrl(deviceName);
         if (fn == null) {
             logger.warn("Database entry for model '{}' cannot be found.", deviceName);
             return false;
@@ -423,7 +392,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    private void updateChannel(MiIoBasicChannel basicChannel, String param, JsonElement val) {
+    private void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
+        JsonElement val = value;
         if (basicChannel != null) {
             if (basicChannel.getTransfortmation() != null) {
                 JsonElement transformed = Conversions.execute(basicChannel.getTransfortmation(), val);
@@ -439,10 +409,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
                 }
                 if (basicChannel.getType().equals("Switch")) {
-                    updateState(basicChannel.getChannel(),
-                            val.getAsString().toLowerCase().equals("on")
-                                    || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON
-                                    : OnOffType.OFF);
+                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
+                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
                 }
                 if (basicChannel.getType().equals("Color")) {
                     Color rgb = new Color(val.getAsInt());

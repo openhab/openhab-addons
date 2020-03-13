@@ -41,6 +41,6 @@ public class Tx22SensorDefinition extends SensorDefinition<Tx22Reading> {
 
     @Override
     public JeeLinkSensorHandler<Tx22Reading> createHandler(Thing thing) {
-        return new Tx22SensorHandler(thing);
+        return new Tx22SensorHandler(thing, type);
     }
 }
