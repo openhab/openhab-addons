@@ -125,7 +125,7 @@ public class PS4Crypto {
             try {
                 msg = hsCipher.doFinal(randomSeed);
             } catch (IllegalBlockSizeException | BadPaddingException e) {
-                logger.debug("Cipher exception: {}", e);
+                logger.debug("Cipher exception: {}", e.getMessage());
             }
         }
         if (msg == null || msg.length != 256) {
