@@ -64,6 +64,10 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
 | rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
 
+The list of available application IDs for your TV is logged when the binding is started.
+You have to use one of these IDs as command for the appLauncher channel.
+Here are examples of values that could be available for your TV: airplay, amazon, com.apple.appletv, com.webos.app.browser, com.webos.app.externalinput.av1, com.webos.app.externalinput.av2, com.webos.app.externalinput.component, com.webos.app.hdmi1, com.webos.app.hdmi2, com.webos.app.hdmi3, com.webos.app.hdmi4, com.webos.app.homeconnect, com.webos.app.igallery, com.webos.app.livetv, com.webos.app.music, com.webos.app.photovideo, com.webos.app.recordings, com.webos.app.screensaver, googleplaymovieswebos, netflix, youtube.leanback.v4.
+
 ### Remote Control Buttons
 
 The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
