@@ -12,12 +12,15 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Visitor for DynamoDBItem
  *
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DynamoDBItemVisitor {
 
     public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);

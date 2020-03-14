@@ -33,7 +33,7 @@ import org.openhab.core.library.items.SwitchItem;
  *
  * @author Sami Salonen - Initial contribution
  */
-public class AbstractDynamoDBItemGetDynamoItemClass {
+public class AbstractDynamoDBItemGetDynamoItemClassTest {
 
     @Test
     public void testCallItem() throws IOException {

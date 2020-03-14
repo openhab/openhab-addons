@@ -15,6 +15,8 @@ package org.openhab.persistence.dynamodb.internal;
 import java.util.Collections;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
@@ -29,6 +31,7 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class DynamoDBQueryUtils {
     /**
      * Construct dynamodb query from filter
@@ -87,8 +90,8 @@ public class DynamoDBQueryUtils {
         }
     }
 
-    private static Condition maybeAddTimeFilter(final DynamoDBQueryExpression<DynamoDBItem<?>> queryExpression,
-            final FilterCriteria filter) {
+    private static @Nullable Condition maybeAddTimeFilter(
+            final DynamoDBQueryExpression<DynamoDBItem<?>> queryExpression, final FilterCriteria filter) {
         final Condition timeCondition = constructTimeCondition(filter);
         if (timeCondition != null) {
             queryExpression.setRangeKeyConditions(
@@ -97,7 +100,7 @@ public class DynamoDBQueryUtils {
         return timeCondition;
     }
 
-    private static Condition constructTimeCondition(FilterCriteria filter) {
+    private static @Nullable Condition constructTimeCondition(FilterCriteria filter) {
         boolean hasBegin = filter.getBeginDate() != null;
         boolean hasEnd = filter.getEndDate() != null;
 

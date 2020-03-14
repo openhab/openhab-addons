@@ -26,14 +26,13 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -167,7 +166,8 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     private boolean isProperlyConfigured;
     private @NonNullByDefault({}) DynamoDBConfig dbConfig;
     private @NonNullByDefault({}) DynamoDBTableNameResolver tableNameResolver;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new NamedThreadFactory());
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
+            new NamedThreadFactory(DYNAMODB_THREADPOOL_NAME));
     private @Nullable ScheduledFuture<?> writeBufferedDataFuture;
 
     /**
@@ -382,7 +382,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
 
     @Override
     protected void flushBufferedData() {
-        if (buffer.isEmpty()) {
+        if (buffer != null && buffer.isEmpty()) {
             return;
         }
         logger.debug("Writing buffered data. Buffer size: {}", buffer.size());
@@ -397,7 +397,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
                     flushBatch(getDBMapper(tableName), batch);
                 }
             }
-            if (buffer.isEmpty()) {
+            if (buffer != null && buffer.isEmpty()) {
                 break;
             }
         }
@@ -557,38 +557,6 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
             logger.error("Unable to get item {} from registry", itemName);
         }
         return item;
-    }
-
-    /**
-     * This is a normal thread factory, which adds a named prefix to all created
-     * threads.
-     *
-     * Adapted from RRD4jService
-     */
-    private static class NamedThreadFactory implements ThreadFactory {
-
-        protected final ThreadGroup group;
-        protected final AtomicInteger threadNumber = new AtomicInteger(1);
-        protected final String namePrefix;
-
-        public NamedThreadFactory() {
-            this.namePrefix = DYNAMODB_THREADPOOL_NAME;
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-        }
-
-        @Override
-        public Thread newThread(@Nullable Runnable r) {
-            Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-            if (!t.isDaemon()) {
-                t.setDaemon(true);
-            }
-            if (t.getPriority() != Thread.NORM_PRIORITY) {
-                t.setPriority(Thread.NORM_PRIORITY);
-            }
-
-            return t;
-        }
     }
 
     @Override

@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDynamoDBItem.class);
     public static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat(DATE_FORMAT);
 
     static {
@@ -91,6 +90,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         }
         return dtoclass;
     }
+
+    private final Logger logger = LoggerFactory.getLogger(AbstractDynamoDBItem.class);
 
     protected String name;
     protected T state;
@@ -146,7 +147,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     try {
                         cal.setTime(DATEFORMATTER.parse(dynamoStringItem.getState()));
                     } catch (ParseException e) {
-                        LOGGER.error("Failed to parse {} as date. Outputting UNDEF instead",
+                        logger.warn("Failed to parse {} as date. Outputting UNDEF instead",
                                 dynamoStringItem.getState());
                         state[0] = UnDefType.UNDEF;
                     }
@@ -179,7 +180,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 } else if (item instanceof RollershutterItem) {
                     state[0] = new PercentType(dynamoBigDecimalItem.getState());
                 } else {
-                    LOGGER.warn("Not sure how to convert big decimal item {} to type {}. Using StringType as fallback",
+                    logger.warn("Not sure how to convert big decimal item {} to type {}. Using StringType as fallback",
                             dynamoBigDecimalItem.getName(), item.getClass());
                     state[0] = new StringType(dynamoBigDecimalItem.getState().toString());
                 }

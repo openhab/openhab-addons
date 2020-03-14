@@ -58,7 +58,7 @@ public class DynamoDBClient {
         try {
             dynamo.listTables(1).firstPage();
         } catch (Exception e) {
-            logger.error("Got internal server error when trying to list tables: {}", e.getMessage());
+            logger.warn("Got internal server error when trying to list tables: {}", e.getMessage());
             return false;
         }
         return true;

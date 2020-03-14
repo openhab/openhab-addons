@@ -57,9 +57,9 @@ This service can be configured in the file `services/dynamodb.cfg`.
 
 | Property  | Default | Required | Description                                                                                                                                                   |
 | --------- | ------- | :------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| accessKey |         |   Yes    | access key as shown in [Setting up Amazon account](#setting-up-amazon-account).                                                                               |
-| secretKey |         |   Yes    | secret key as shown in [Setting up Amazon account](#setting-up-amazon-account).                                                                               |
-| region    |         |   Yes    | AWS region ID as described in [Setting up Amazon account](#setting-up-amazon-account). The region needs to match the region that was used to create the user. |
+| accessKey |         |   Yes    | access key as shown in [Setting up Amazon account](#setting-up-an-amazon-account).                                                                               |
+| secretKey |         |   Yes    | secret key as shown in [Setting up Amazon account](#setting-up-an-amazon-account).                                                                               |
+| region    |         |   Yes    | AWS region ID as described in [Setting up Amazon account](#setting-up-an-amazon-account). The region needs to match the region that was used to create the user. |
 
 ### Configuration Using Credentials File
 
@@ -69,7 +69,7 @@ Alternatively, instead of specifying `accessKey` and `secretKey`, one can config
 | ------------------ | ------- | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | profilesConfigFile |         |   Yes    | path to the credentials file.  For example, `/etc/openhab2/aws_creds`. Please note that the user that runs openHAB must have approriate read rights to the credential file. For more details on the Amazon credential file format, see [Amazon documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). |
 | profile            |         |   Yes    | name of the profile to use                                                                                                                                                                                                                                                                                                                     |
-| region             |         |   Yes    | AWS region ID as described in Step 2 in [Setting up Amazon account](#setting-up-amazon-account). The region needs to match the region that was used to create the user.                                                                                                                                                                        |
+| region             |         |   Yes    | AWS region ID as described in Step 2 in [Setting up Amazon account](#setting-up-an-amazon-account). The region needs to match the region that was used to create the user.                                                                                                                                                                        |
 
 Example of service configuration file (`services/dynamodb.cfg`):
 
@@ -97,7 +97,7 @@ In addition to the configuration properties above, the following are also availa
 | writeCapacityUnits         | 1          |    No    | write capacity for the created tables                                                              |
 | tablePrefix                | `openhab-` |    No    | table prefix used in the name of created tables                                                    |
 | bufferCommitIntervalMillis | 1000       |    No    | Interval to commit (write) buffered data. In milliseconds.                                         |
-| bufferSize                 | 1000       |    No    | Internal buffer size which is used to batch writes to DynamoDB every `bufferCommitIntervalMillis`. |
+| bufferSize                 | 1000       |    No    | Internal buffer size in bytes which is used to batch writes to DynamoDB every `bufferCommitIntervalMillis`. |
 
 Typically you should not need to modify parameters related to buffering. 
 

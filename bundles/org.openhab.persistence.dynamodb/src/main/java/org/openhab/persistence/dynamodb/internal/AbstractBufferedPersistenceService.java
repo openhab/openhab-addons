@@ -118,7 +118,7 @@ public abstract class AbstractBufferedPersistenceService<T> implements Persisten
 
     protected boolean addToBuffer(T persistenceItem) {
         try {
-            return buffer.offer(persistenceItem, BUFFER_OFFER_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+            return buffer != null && buffer.offer(persistenceItem, BUFFER_OFFER_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.warn("Interrupted when trying to buffer data! Dropping data");
             return false;

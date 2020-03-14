@@ -15,6 +15,7 @@ package org.openhab.persistence.dynamodb.internal;
 import java.text.DateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 
@@ -23,10 +24,11 @@ import org.openhab.core.types.State;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class DynamoDBHistoricItem implements HistoricItem {
-    final private String name;
-    final private State state;
-    final private Date timestamp;
+    private final String name;
+    private final State state;
+    private final Date timestamp;
 
     public DynamoDBHistoricItem(String name, State state, Date timestamp) {
         this.name = name;
