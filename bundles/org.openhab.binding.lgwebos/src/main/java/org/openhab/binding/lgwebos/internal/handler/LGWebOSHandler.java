@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +45,6 @@ import org.openhab.binding.lgwebos.internal.MediaControlStop;
 import org.openhab.binding.lgwebos.internal.PowerControlPower;
 import org.openhab.binding.lgwebos.internal.RCButtonControl;
 import org.openhab.binding.lgwebos.internal.TVControlChannel;
-import org.openhab.binding.lgwebos.internal.TVControlChannelName;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
@@ -106,7 +104,6 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         handlers.put(CHANNEL_POWER, new PowerControlPower());
         handlers.put(CHANNEL_MUTE, new VolumeControlMute());
         handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
-        handlers.put(CHANNEL_CHANNEL_NAME, new TVControlChannelName());
         handlers.put(CHANNEL_APP_LAUNCHER, appLauncher);
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
@@ -282,7 +279,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 channelHandlers.forEach((k, v) -> {
                     // refresh subscriptions except on channel, which can only be subscribe in livetv app. see
                     // postUpdate method
-                    if (!CHANNEL_CHANNEL.equals(k) && !CHANNEL_CHANNEL_NAME.equals(k)) {
+                    if (!CHANNEL_CHANNEL.equals(k)) {
                         v.refreshSubscription(k, this);
                     }
                     v.onDeviceReady(k, this);
@@ -320,8 +317,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
         // channel subscription only works when on livetv app.
         if (CHANNEL_APP_LAUNCHER.equals(channelId) && APP_ID_LIVETV.equals(state.toString())) {
-            Stream.of(CHANNEL_CHANNEL, CHANNEL_CHANNEL_NAME)
-                    .forEach(k -> channelHandlers.get(k).refreshSubscription(k, this));
+            channelHandlers.get(CHANNEL_CHANNEL).refreshSubscription(CHANNEL_CHANNEL, this);
         }
     }
 
