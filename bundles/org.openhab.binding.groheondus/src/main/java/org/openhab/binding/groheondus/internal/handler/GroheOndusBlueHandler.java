@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Florian Schmidt - Initial contribution
  */
 @NonNullByDefault
-public class GroheOndusBlueHandler<T, M> extends GroheOndusBaseHandler<Appliance, ApplianceCommand> {
+public class GroheOndusBlueHandler extends GroheOndusBaseHandler<Appliance, ApplianceCommand> {
 
     private static final int DEFAULT_POLLING_INTERVAL = 900;
 
@@ -122,7 +122,7 @@ public class GroheOndusBlueHandler<T, M> extends GroheOndusBaseHandler<Appliance
             return;
         }
         OnOffType openClosedCommand = (OnOffType) command;
-        if (openClosedCommand == OnOffType.ON) {
+        if (openClosedCommand == OnOffType.OFF) {
             logger.debug("The GROHE Blue channel tap only supports turning on the tap.");
             return;
         }

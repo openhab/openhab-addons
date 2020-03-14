@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
  */
 @NonNullByDefault
-public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<Appliance, Data> {
+public class GroheOndusSenseGuardHandler extends GroheOndusBaseHandler<Appliance, Data> {
     private static final int MIN_API_TIMEFRAME_DAYS = 1;
     private static final int MAX_API_TIMEFRAME_DAYS = 90;
     private static final int DEFAULT_TIMEFRAME_DAYS = 1;

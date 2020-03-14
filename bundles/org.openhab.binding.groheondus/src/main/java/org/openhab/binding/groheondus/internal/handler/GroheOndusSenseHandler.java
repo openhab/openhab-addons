@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Florian Schmidt - Initial contribution
  */
 @NonNullByDefault
-public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Appliance, Measurement> {
+public class GroheOndusSenseHandler extends GroheOndusBaseHandler<Appliance, Measurement> {
 
     private static final int DEFAULT_POLLING_INTERVAL = 900;
 
