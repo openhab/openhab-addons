@@ -207,6 +207,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         ScheduledFuture<?> localTimer = refreshTimer;
         if (localTimer != null) {
             localTimer.cancel(false);
+            refreshTimer = null;
         }
         updateStatus(ThingStatus.REMOVED);
     }
