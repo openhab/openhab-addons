@@ -13,7 +13,7 @@
   <name>openHAB Add-ons :: Bundles :: Doorbird Binding</name>
 
   <properties>
-    <dep.noembedding>lazysodium-java,resource-loader,jna</dep.noembedding>
+    <dep.noembedding>jna</dep.noembedding>
   </properties>
 
   <dependencies>
