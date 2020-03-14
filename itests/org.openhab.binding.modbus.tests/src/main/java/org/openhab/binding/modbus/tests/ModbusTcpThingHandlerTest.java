@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Objects;
 
@@ -69,7 +69,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         ModbusSlaveEndpoint slaveEndpoint = thingHandler.asSlaveEndpoint();
         assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44))));
         assertThat(thingHandler.getSlaveId(), is(9));
@@ -95,7 +95,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         poolConfiguration.setInterTransactionDelayMillis(2);
         // Different endpoint (port 45), so should not affect this thing
@@ -117,7 +117,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         poolConfiguration.setInterTransactionDelayMillis(2);
         // Same endpoint and different parameters -> OFFLINE
@@ -140,7 +140,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         poolConfiguration.setInterTransactionDelayMillis(1);
         poolConfiguration.setConnectTimeoutMillis(10000); // default timeout

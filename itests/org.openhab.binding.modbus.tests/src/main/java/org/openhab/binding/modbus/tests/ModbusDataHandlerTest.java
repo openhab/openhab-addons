@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
@@ -148,8 +148,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
         doReturn(managerRef).when(mockHandler).getManagerRef();
         poller.setHandler(mockHandler);
-        assert poller.getHandler() == mockHandler;
-        assert ((ModbusPollerThingHandlerImpl) poller.getHandler()).getPollTask() == task;
+        assertSame(poller.getHandler(), mockHandler);
+        assertSame(((ModbusPollerThingHandlerImpl) poller.getHandler()).getPollTask(), task);
 
         addThing(poller);
         return poller;
@@ -203,7 +203,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 }
                 assertThat(String.format("Could not determine correct item type for %s", channelId), item,
                         is(notNullValue()));
-                assert item != null;
+                assertNotNull(item);
                 addItem(item);
                 toBeLinked.put(itemName, channelUID);
             }
@@ -233,7 +233,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             Item item = itemRegistry.get(itemName);
             assertThat(String.format("Item %s is not available from item registry", itemName), item,
                     is(notNullValue()));
-            assert item != null;
+            assertNotNull(item);
             List<State> updates = getStateUpdates(itemName);
             if (updates != null) {
                 assertThat(
@@ -423,17 +423,17 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         // call callbacks
         if (bits != null) {
-            assert registers == null;
-            assert error == null;
+            assertNull(registers);
+            assertNull(error);
             dataHandler.onBits(request, bits);
         } else if (registers != null) {
-            assert bits == null;
-            assert error == null;
+            assertNull(bits);
+            assertNull(error);
             dataHandler.onRegisters(request, registers);
         } else {
-            assert bits == null;
-            assert registers == null;
-            assert error != null;
+            assertNull(bits);
+            assertNull(registers);
+            assertNotNull(error);
             dataHandler.onError(request, error);
         }
         return dataHandler;

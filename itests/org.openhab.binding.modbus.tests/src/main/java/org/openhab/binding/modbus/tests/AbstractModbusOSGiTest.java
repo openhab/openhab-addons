@@ -185,8 +185,8 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         if (mockHandler != null) {
             // Re-attach mock handler
             ThingHandler realHandlerInitedByCore = thing.getHandler();
-            assert realHandlerInitedByCore != null;
-            assert realHandlerInitedByCore != mockHandler;
+            assertNotNull(realHandlerInitedByCore);
+            assertNotSame(realHandlerInitedByCore, mockHandler);
             realHandlerInitedByCore.dispose();
             thing.setHandler(mockHandler);
         }
@@ -221,25 +221,25 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     }
 
     private void swapModbusManagerToMocked() {
-        assert realModbusManager == null;
+        assertNull(realModbusManager);
         realModbusManager = getService(ModbusManager.class);
         assertThat("Could not get ModbusManager", realModbusManager, is(notNullValue()));
         assertThat("Could not get ModbusManagerImpl", realModbusManager.getClass().getSimpleName(),
                 is(equalTo("ModbusManagerImpl")));
-        assert realModbusManager != null;
+        assertNotNull(realModbusManager);
 
         ModbusHandlerFactory modbusHandlerFactory = getService(ThingHandlerFactory.class, ModbusHandlerFactory.class);
         assertThat("Could not get ModbusHandlerFactory", modbusHandlerFactory, is(notNullValue()));
-        assert modbusHandlerFactory != null;
+        assertNotNull(modbusHandlerFactory);
         modbusHandlerFactory.unsetModbusManager(realModbusManager);
         modbusHandlerFactory.setModbusManager(mockedModbusManager);
     }
 
     private void swapModbusManagerToReal() {
-        assert realModbusManager != null;
+        assertNotNull(realModbusManager);
         ModbusHandlerFactory modbusHandlerFactory = getService(ThingHandlerFactory.class, ModbusHandlerFactory.class);
         assertThat("Could not get ModbusHandlerFactory", modbusHandlerFactory, is(notNullValue()));
-        assert modbusHandlerFactory != null;
+        assertNotNull(modbusHandlerFactory);
         modbusHandlerFactory.unsetModbusManager(mockedModbusManager);
         modbusHandlerFactory.setModbusManager(realModbusManager);
     }

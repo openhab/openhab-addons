@@ -167,7 +167,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
     private boolean checkPollTask(PollTask item, ModbusReadFunctionCode functionCode) {
         ModbusTcpThingHandler endPointHandler = (ModbusTcpThingHandler) endpoint.getHandler();
-        assert endPointHandler != null;
+        assertNotNull(endPointHandler);
         return item.getEndpoint().equals(endPointHandler.asSlaveEndpoint()) && item.getRequest().getDataLength() == 13
                 && item.getRequest().getFunctionCode() == functionCode && item.getRequest().getProtocolID() == 0
                 && item.getRequest().getReference() == 5 && item.getRequest().getUnitID() == 9;
@@ -331,7 +331,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
 
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
 
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
@@ -389,7 +389,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         BitArray bits = Mockito.mock(BitArray.class);
 
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
 
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
@@ -447,7 +447,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         Exception error = Mockito.mock(Exception.class);
 
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
 
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
@@ -497,7 +497,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         verify(mockedModbusManager, never()).submitOneTimePoll(any());
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         thingHandler.refresh();
         verify(mockedModbusManager).submitOneTimePoll(any());
     }
@@ -526,7 +526,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
@@ -577,7 +577,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verifyEndpointBasicInitInteraction();
 
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
 
@@ -630,7 +630,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verifyEndpointBasicInitInteraction();
 
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
 
@@ -688,7 +688,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verifyEndpointBasicInitInteraction();
 
         ModbusPollerThingHandlerImpl thingHandler = (ModbusPollerThingHandlerImpl) poller.getHandler();
-        assert thingHandler != null;
+        assertNotNull(thingHandler);
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
 
