@@ -181,7 +181,7 @@
 	</channel-type>
 	<channel-type id="tap">
         <item-type>Switch</item-type>
-        <label>Open tap</label>
+        <label>Open Tap</label>
         <description>Open the tap for the configured time</description>
     </channel-type>
 </thing:thing-descriptions>
