@@ -83,9 +83,9 @@ public class LinkyHandler extends BaseThingHandler {
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
     private final WeekFields weekFields;
 
-    private ExpiringDayCache<LinkyConsumptionData> cachedDaylyData;
-    private ExpiringDayCache<LinkyConsumptionData> cachedMonthlyData;
-    private ExpiringDayCache<LinkyConsumptionData> cachedYearlyData;
+    private final ExpiringDayCache<LinkyConsumptionData> cachedDaylyData;
+    private final ExpiringDayCache<LinkyConsumptionData> cachedMonthlyData;
+    private final ExpiringDayCache<LinkyConsumptionData> cachedYearlyData;
 
     public LinkyHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
@@ -110,7 +110,7 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Linky handler.");
-
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
 
         final LocalDateTime now = LocalDateTime.now();

@@ -60,7 +60,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                 if ((thing != null) && (thing.getHandler() != null) && (thing.getHandler() instanceof LinkyHandler)) {
                     handler = (LinkyHandler) thing.getHandler();
                 }
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 handler = null;
             }
             if (handler == null) {
