@@ -428,14 +428,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getSwapTotal() {
+    public @Nullable DecimalType getSwapTotal() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         swapTotal = getSizeInMB(swapTotal);
         return new DecimalType(swapTotal);
     }
 
     @Override
-    public DecimalType getSwapAvailable() {
+    public @Nullable DecimalType getSwapAvailable() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         long swapAvailable = swapTotal - swapUsed;
@@ -444,7 +444,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getSwapUsed() {
+    public @Nullable DecimalType getSwapUsed() {
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         swapUsed = getSizeInMB(swapUsed);
         return new DecimalType(swapUsed);
