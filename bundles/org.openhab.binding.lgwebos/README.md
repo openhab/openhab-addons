@@ -56,8 +56,7 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 | power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | String    | Current channel number.                                                                                                                                                                                                 | RW         |
-| channelName     | String    | Current channel name.                                                                                                                                                                                                   | R          |
+| channel         | String    | Current channel. Use only the channel number as command to update the channel.                                                                                                                                          | RW         |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
@@ -112,7 +111,6 @@ Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea
 Number LG_TV0_VolDummy "VolumeUpDown"
 String LG_TV0_Channel "Channel [%s]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
-String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
 String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
@@ -134,7 +132,6 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
         Default item=LG_TV0_Channel
         Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
         Default item=LG_TV0_Application
     }
