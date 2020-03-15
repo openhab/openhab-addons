@@ -15,8 +15,12 @@ package org.openhab.binding.sensibo.internal.dto.setacstateproperty;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcState;
 
 /**
- * @author Arne Seime - Initial contribution
+ * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
+ * part of a request/response data structure.
+ *
+ * @author Arne Seime - Initial contribution.
  */
+
 public class SetAcStatePropertyReponse {
     public AcState acState;
 }

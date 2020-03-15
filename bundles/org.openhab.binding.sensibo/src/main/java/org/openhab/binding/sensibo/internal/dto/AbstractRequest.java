@@ -15,8 +15,12 @@ package org.openhab.binding.sensibo.internal.dto;
 import org.eclipse.jetty.http.HttpMethod;
 
 /**
- * @author Arne Seime - Initial contribution
+ * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
+ * part of a request/response data structure.
+ *
+ * @author Arne Seime - Initial contribution.
  */
+
 public abstract class AbstractRequest {
     public abstract String getRequestUrl();
 
