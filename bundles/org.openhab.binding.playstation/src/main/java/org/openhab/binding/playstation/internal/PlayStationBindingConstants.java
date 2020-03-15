@@ -72,6 +72,12 @@ public class PlayStationBindingConstants {
     public static final String RESPONSE_RUNNING_APP_NAME = "running-app-name";
     public static final String RESPONSE_RUNNING_APP_TITLEID = "running-app-titleid";
 
+    // Constant field used in PlayStationDiscovery to set the configuration properties during discovery.
+    public static final String USER_CREDENTIAL = "userCredential";
+    public static final String PAIRING_CODE = "pairingCode";
+    public static final String IP_ADDRESS = "ipAddress";
+    public static final String IP_PORT = "ipPort";
+
     // PlayStation Vita HW versions
     public static final String PSVHW_PCHXXXX = "PCHXXXX";
     public static final String PSVHW_PCH1000 = "PCH1000";

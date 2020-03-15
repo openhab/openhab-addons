@@ -315,7 +315,7 @@ public class PS4PacketHandler {
         return packet;
     }
 
-    static ByteBuffer makeCommentViewrSendPacket(int i, String text) {
+    static ByteBuffer makeCommentViewerSendPacket(int i, String text) {
         byte[] chars = (text.length() > 60 ? text.substring(0, 60) : text).getBytes(StandardCharsets.UTF_8);
         ByteBuffer packet = newPacketForEncryption(12 + chars.length, PS4Command.OSK_CHANGE_STRING_REQ);
         packet.putInt(i);

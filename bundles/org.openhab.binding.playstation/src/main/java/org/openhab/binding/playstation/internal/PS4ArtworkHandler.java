@@ -36,23 +36,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PS4ArtworkHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(PS4ArtworkHandler.class);
-    private final File artworkCacheFolder;
-
-    /** Service id */
-    static final String SERVICE_ID = "playstation";
-
-    /** Service category */
-    static final String SERVICE_CATEGORY = "binding";
+    private static final Logger logger = LoggerFactory.getLogger(PS4ArtworkHandler.class);
+    private static final File artworkCacheFolder;
 
     /** Service pid */
-    static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
+    private static final String SERVICE_PID = "org.openhab.binding.playstation";
 
     /** Cache folder under $userdata */
     private static final String CACHE_FOLDER_NAME = "cache";
 
-    PS4ArtworkHandler() {
-        // create home folder
+    private PS4ArtworkHandler() {
+        // No need to instantiate
+    }
+
+    static {
+        // create cache folder
         File userData = new File(ConfigConstants.getUserDataFolder());
         File homeFolder = new File(userData, CACHE_FOLDER_NAME);
 
@@ -61,13 +59,13 @@ public class PS4ArtworkHandler {
         }
         logger.debug("Using home folder: {}", homeFolder.getAbsolutePath());
 
-        // create cache folder
+        // create binding folder
         File cacheFolder = new File(homeFolder, SERVICE_PID);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
         }
         logger.debug("Using cache folder {}", cacheFolder.getAbsolutePath());
-        this.artworkCacheFolder = cacheFolder;
+        artworkCacheFolder = cacheFolder;
     }
 
     /**
@@ -75,12 +73,11 @@ public class PS4ArtworkHandler {
      * PlayStation store
      *
      * @param titleid Title ID of application.
-     * @param size Size in pixels of art work, max 1024.
+     * @param size Size (width & height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
-    @Nullable
-    RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
+    static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
         return fetchArtworkForTitleid(titleid, size, locale, false);
     }
 
@@ -89,14 +86,13 @@ public class PS4ArtworkHandler {
      * PlayStation store
      *
      * @param titleid Title ID of application.
-     * @param size Size in pixels of art work, max 1024.
+     * @param size Size (width & height) of art work in pixels , max 1024.
      * @param locale Locale used on PlayStation store to find art work.
      * @param forceRefetch The tries to re-fetch art work from PlayStation store, sometimes the art work is updated
      *            along with the game.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
-    @Nullable
-    RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale, boolean forceRefetch) {
+    static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale, boolean forceRefetch) {
         // Try to find the image in the cache first, then try to download it from PlayStation Store.
         RawType artwork = null;
         if (titleid.isEmpty()) {

@@ -23,12 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PS3Configuration {
 
     /**
-     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
-     * Value of this field needs to match {@link #ipAddress}.
-     */
-    public static final String IP_ADDRESS = "ipAddress";
-
-    /**
      * IP-address of PS3.
      */
     public String ipAddress = "";

@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,12 +50,9 @@ public class PS3Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PS3Handler.class);
     private static final int SOCKET_TIMEOUT_SECONDS = 2;
 
-    private PS3Configuration config = getConfigAs(PS3Configuration.class);
+    private PS3Configuration config = new PS3Configuration();
 
     private @Nullable ScheduledFuture<?> refreshTimer;
-
-    // State of PS3
-    private OnOffType currentPower = OnOffType.OFF;
 
     public PS3Handler(Thing thing) {
         super(thing);
@@ -63,11 +61,10 @@ public class PS3Handler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refreshFromState(channelUID);
+            // Don't do anything, just wait for the timer.
         } else {
             if (CHANNEL_POWER.equals(channelUID.getId()) && command instanceof OnOffType) {
-                currentPower = (OnOffType) command;
-                if (currentPower.equals(OnOffType.ON)) {
+                if (command.equals(OnOffType.ON)) {
                     turnOnPS3();
                 }
             }
@@ -76,18 +73,15 @@ public class PS3Handler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         config = getConfigAs(PS3Configuration.class);
 
         updateStatus(ThingStatus.ONLINE);
         setupRefreshTimer();
-
-        logger.debug("Finished initializing!");
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> timer = refreshTimer;
+        final ScheduledFuture<?> timer = refreshTimer;
         if (timer != null) {
             timer.cancel(false);
             refreshTimer = null;
@@ -98,19 +92,11 @@ public class PS3Handler extends BaseThingHandler {
      * Sets up a timer for querying the PS3 (using the scheduler) every 10 seconds.
      */
     private void setupRefreshTimer() {
-        ScheduledFuture<?> timer = refreshTimer;
+        final ScheduledFuture<?> timer = refreshTimer;
         if (timer != null) {
             timer.cancel(false);
         }
         refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 0, 10, TimeUnit.SECONDS);
-    }
-
-    private void refreshFromState(ChannelUID channelUID) {
-        if (channelUID.getId().equals(CHANNEL_POWER)) {
-            updateState(channelUID, currentPower);
-        } else {
-            logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
-        }
     }
 
     /**
@@ -138,10 +124,10 @@ public class PS3Handler extends BaseThingHandler {
 
     private void turnOnPS3() {
 
-        try (DatagramSocket srchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
+        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
             wakeSocket.setBroadcast(true);
-            srchSocket.setBroadcast(true);
-            srchSocket.setSoTimeout(1 * 1000);
+            searchSocket.setBroadcast(true);
+            searchSocket.setSoTimeout(1 * 1000);
 
             InetAddress bcAddress = InetAddress.getByName("255.255.255.255");
 
@@ -160,9 +146,9 @@ public class PS3Handler extends BaseThingHandler {
             byte[] rxbuf = new byte[256];
             DatagramPacket receivePacket = new DatagramPacket(rxbuf, rxbuf.length);
             for (int i = 0; i < 34; i++) {
-                srchSocket.send(srchPacket);
+                searchSocket.send(srchPacket);
                 try {
-                    srchSocket.receive(receivePacket);
+                    searchSocket.receive(receivePacket);
                     logger.debug("PS3 started?: '{}'", receivePacket);
                     // leave the loop
                     break;
@@ -180,19 +166,18 @@ public class PS3Handler extends BaseThingHandler {
     }
 
     private byte[] makeWOLMagicPacket(String macAddress) {
-        byte[] packet = new byte[6 * 17];
+        byte[] wolPacket = new byte[6 * 17];
         if (macAddress.length() < 17) {
-            return packet;
+            return wolPacket;
         }
         int pos = 0;
         for (int i = 0; i < 6; i++) {
-            packet[pos++] = -1; // 0xFF
+            wolPacket[pos++] = -1; // 0xFF
         }
+        byte[] macBytes = HexUtils.hexToBytes(macAddress, ":");
         for (int j = 0; j < 16; j++) {
-            for (int i = 0; i < 6; i++) {
-                packet[pos++] = (byte) Integer.parseInt(macAddress.substring(i * 3, i * 3 + 2), 16);
-            }
+            System.arraycopy(macBytes, 0, wolPacket, 6 + j * 6, 6);
         }
-        return packet;
+        return wolPacket;
     }
 }

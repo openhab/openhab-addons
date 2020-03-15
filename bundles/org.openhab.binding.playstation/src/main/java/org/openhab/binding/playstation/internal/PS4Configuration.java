@@ -23,30 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PS4Configuration {
 
     /**
-     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
-     * Value of this field needs to match {@link #userCredential}.
-     */
-    public static final String USER_CREDENTIAL = "userCredential";
-
-    /**
-     * Constant field used in configuration update to see if pairingCode is set.
-     * Value of this field needs to match {@link #pairingCode}.
-     */
-    public static final String PAIRING_CODE = "pairingCode";
-
-    /**
-     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
-     * Value of this field needs to match {@link #ipAddress}.
-     */
-    public static final String IP_ADDRESS = "ipAddress";
-
-    /**
-     * Constant field used in {@link PlayStationDiscovery} to set the configuration property during discovery.
-     * Value of this field needs to match {@link #ipPort}.
-     */
-    public static final String IP_PORT = "ipPort";
-
-    /**
      * User-credential for the PS4.
      */
     public String userCredential = "";

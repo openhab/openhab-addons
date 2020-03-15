@@ -16,7 +16,8 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 
 ## Thing Configuration
 
-If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker. The result file is called ".ps4-wake.credentials.json" in your home directory.
+If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker.
+The result file is called ".ps4-wake.credentials.json" in your home directory.
 Then you need to pair your OpenHAB device with the PS4.
 Then, if you have a pass code when you log in to your PS4 you have to specify that as well.
  

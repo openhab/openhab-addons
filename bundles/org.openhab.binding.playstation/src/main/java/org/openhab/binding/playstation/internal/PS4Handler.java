@@ -59,13 +59,12 @@ public class PS4Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PS4Handler.class);
     private final PS4Crypto ps4Crypto = new PS4Crypto();
-    private final PS4ArtworkHandler ps4ArtworkHandler = new PS4ArtworkHandler();
     private static final int SOCKET_TIMEOUT_SECONDS = 5;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
     private static final int MIN_SENDKEY_DELAY = 250; // min delay between sendKey sends
     private static final int MIN_HOLDKEY_DELAY = 300; // min delay after Key set
 
-    private PS4Configuration config = getConfigAs(PS4Configuration.class);
+    private PS4Configuration config = new PS4Configuration();
 
     private @Nullable LocaleProvider localeProvider;
     private @Nullable ScheduledFuture<?> refreshTimer;
@@ -88,13 +87,12 @@ public class PS4Handler extends BaseThingHandler {
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
         SocketChannelHandler scHandler = socketChannelHandler;
-        if (scHandler == null || !scHandler.loggedIn) {
-            if (login() && !config.pairingCode.isEmpty()) {
-                // If we are paired, remove pairing code as it's one use only.
-                Configuration editedConfig = editConfiguration();
-                editedConfig.put(PS4Configuration.PAIRING_CODE, "");
-                updateConfiguration(editedConfig);
-            }
+        if (!config.pairingCode.isEmpty() && (scHandler == null || !scHandler.loggedIn)) {
+            // Try to log in then remove pairing code as it's one use only.
+            login();
+            Configuration editedConfig = editConfiguration();
+            editedConfig.put(PAIRING_CODE, "");
+            updateConfiguration(editedConfig);
         }
         setupConnectionTimeout(config.connectionTimeout);
     }
@@ -166,13 +164,10 @@ public class PS4Handler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         config = getConfigAs(PS4Configuration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer();
-
-        logger.debug("Finished initializing!");
     }
 
     @Override
@@ -194,7 +189,7 @@ public class PS4Handler extends BaseThingHandler {
      * Sets up a timer for querying the PS4 (using the scheduler) every 10 seconds.
      */
     private void setupRefreshTimer() {
-        ScheduledFuture<?> timer = refreshTimer;
+        final ScheduledFuture<?> timer = refreshTimer;
         if (timer != null) {
             timer.cancel(false);
         }
@@ -207,7 +202,7 @@ public class PS4Handler extends BaseThingHandler {
      * @param waitTime The time in seconds before the connection is stopped.
      */
     private void setupConnectionTimeout(int waitTime) {
-        ScheduledFuture<?> timer = timeoutTimer;
+        final ScheduledFuture<?> timer = timeoutTimer;
         if (timer != null) {
             timer.cancel(false);
         }
@@ -450,6 +445,13 @@ public class PS4Handler extends BaseThingHandler {
                             case STATUS_OK:
                                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
                                 loggedIn = true;
+                                if (isLinked(CHANNEL_2ND_SCREEN)) {
+                                    scheduler.schedule(() -> {
+                                        ByteBuffer outPacket = PS4PacketHandler
+                                                .makeClientIDPacket("com.playstation.mobile2ndscreen", "18.9.3");
+                                        sendPacketEncrypted(outPacket, socketChannel);
+                                    }, 10, TimeUnit.MILLISECONDS);
+                                }
                                 break;
                             case STATUS_NOT_PAIRED:
                                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -600,40 +602,21 @@ public class PS4Handler extends BaseThingHandler {
         }
     }
 
-    private boolean login(SocketChannel channel) {
+    private void login(SocketChannel channel) {
         // Send login request
         ByteBuffer outPacket = PS4PacketHandler.makeLoginPacket(config.userCredential, config.passCode,
                 config.pairingCode);
         sendPacketEncrypted(outPacket, channel);
-
-        try {
-            SocketChannelHandler handler = socketChannelHandler;
-            if (handler != null && isLinked(CHANNEL_2ND_SCREEN)) {
-                for (int i = 0; i < 20; i++) {
-                    Thread.sleep(500);
-                    if (handler.loggedIn) {
-                        outPacket = PS4PacketHandler.makeClientIDPacket("com.playstation.mobile2ndscreen", "18.9.3");
-                        sendPacketEncrypted(outPacket, channel);
-                        break;
-                    }
-                }
-            }
-            Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
-        } catch (InterruptedException e) {
-            // Ignore, sleep just to make keyEvents behave better.
-        }
-        return true;
     }
 
-    private boolean login() {
+    private void login() {
         try {
             SocketChannel channel = getConnection(false);
-            return login(channel);
+            login(channel);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("Send packet exception: {}", e.getMessage());
         }
-        return false;
     }
 
     private void logOut() {
@@ -704,26 +687,34 @@ public class PS4Handler extends BaseThingHandler {
 
     private void sendRemoteKey(int pushedKey) {
         try {
+            SocketChannelHandler scHandler = socketChannelHandler;
+            int preWait = (scHandler == null || !scHandler.loggedIn) ? POST_CONNECT_SENDKEY_DELAY : 0;
             SocketChannel channel = getConnection();
 
-            ByteBuffer outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
-            sendPacketEncrypted(outPacket, channel);
-            Thread.sleep(MIN_SENDKEY_DELAY);
+            scheduler.schedule(() -> {
+                ByteBuffer outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
+                sendPacketEncrypted(outPacket, channel);
 
-            // Send remote key
-            outPacket = PS4PacketHandler.makeRemoteControlPacket(pushedKey);
-            sendPacketEncrypted(outPacket, channel);
-            Thread.sleep(MIN_HOLDKEY_DELAY);
+                scheduler.schedule(() -> {
+                    // Send remote key
+                    ByteBuffer keyPacket = PS4PacketHandler.makeRemoteControlPacket(pushedKey);
+                    sendPacketEncrypted(keyPacket, channel);
 
-            outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
-            sendPacketEncrypted(outPacket, channel);
-            Thread.sleep(MIN_SENDKEY_DELAY);
+                    scheduler.schedule(() -> {
+                        ByteBuffer offPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
+                        sendPacketEncrypted(offPacket, channel);
 
-            outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
-            sendPacketEncrypted(outPacket, channel);
+                        scheduler.schedule(() -> {
+                            ByteBuffer closePacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
+                            sendPacketEncrypted(closePacket, channel);
+                        }, MIN_SENDKEY_DELAY, TimeUnit.MILLISECONDS);
 
-        } catch (InterruptedException e) {
-            logger.debug("RemoteKey interrupted: {}", e.getMessage());
+                    }, MIN_HOLDKEY_DELAY, TimeUnit.MILLISECONDS);
+
+                }, MIN_SENDKEY_DELAY, TimeUnit.MILLISECONDS);
+
+            }, preWait, TimeUnit.MILLISECONDS);
+
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("RemoteKey exception: {}", e.getMessage());
@@ -736,8 +727,8 @@ public class PS4Handler extends BaseThingHandler {
         String applicationName = "";
         String applicationId = "";
 
-        String[] ss = message.trim().split("\n");
-        for (String row : ss) {
+        String[] rowStrings = message.trim().split("\\r?\\n");
+        for (String row : rowStrings) {
             int index = row.indexOf(':');
             if (index == -1) {
                 OnOffType power = null;
@@ -747,9 +738,9 @@ public class PS4Handler extends BaseThingHandler {
                     power = OnOffType.OFF;
                 }
                 if (power != null) {
+                    updateState(CHANNEL_POWER, power);
                     if (!currentPower.equals(power)) {
                         currentPower = power;
-                        updateState(CHANNEL_POWER, power);
                         if (power.equals(OnOffType.ON) && config.autoConnect) {
                             SocketChannelHandler scHandler = socketChannelHandler;
                             if (scHandler == null || !scHandler.loggedIn) {
@@ -758,9 +749,7 @@ public class PS4Handler extends BaseThingHandler {
                             }
                         }
                     }
-                    if (thing.getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not determine power status.");
@@ -810,7 +799,7 @@ public class PS4Handler extends BaseThingHandler {
         LocaleProvider lProvider = localeProvider;
         Locale locale = (lProvider != null) ? lProvider.getLocale() : Locale.US;
 
-        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleId, config.artworkSize, locale);
+        RawType artWork = PS4ArtworkHandler.fetchArtworkForTitleid(titleId, config.artworkSize, locale);
         if (artWork != null) {
             currentArtwork = artWork;
             updateState(CHANNEL_APPLICATION_IMAGE, artWork);

@@ -8,7 +8,7 @@
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP address</label>
-			<description>The local IP address or hostname of the PlayStation 3.</description>
+			<description>The local IP address of the PlayStation 3.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -47,7 +47,7 @@
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP address</label>
-			<description>The local IP address or hostname of the PlayStation 4.</description>
+			<description>The local IP address of the PlayStation 4.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="ipPort" type="integer">

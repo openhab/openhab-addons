@@ -254,8 +254,8 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         String protocolVersion = "";
         String systemVersion = "";
 
-        String[] ss = message.trim().split("\\r?\\n");
-        for (String row : ss) {
+        String[] rowStrings = message.trim().split("\\r?\\n");
+        for (String row : rowStrings) {
             int index = row.indexOf(':');
             index = index != -1 ? index : 0;
             String key = row.substring(0, index);
@@ -332,8 +332,8 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         String hostPort = "";
         String protocolVersion = "";
 
-        String[] ss = message.trim().split("\\r?\\n");
-        for (String row : ss) {
+        String[] rowStrings = message.trim().split("\\r?\\n");
+        for (String row : rowStrings) {
             int index = row.indexOf(':');
             index = index != -1 ? index : 0;
             String key = row.substring(0, index);
