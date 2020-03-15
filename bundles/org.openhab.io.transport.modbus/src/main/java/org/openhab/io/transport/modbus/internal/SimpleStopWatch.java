@@ -127,7 +127,7 @@ public class SimpleStopWatch {
      * First StopWatch is resumed, then action is applied. Finally the StopWatch is suspended.
      *
      * @param action action to time
-     * @throws T when original action throws the exception
+     * @throws ModbusException when original action throws the exception
      */
     public void timeRunnableWithModbusException(RunnableWithModbusException action) throws ModbusException {
         try {

@@ -211,7 +211,7 @@ public class ModbusManagerImpl implements ModbusManager {
             checkFunctionCode(response, libRequest, operationId);
             checkResponseSize(response, request, operationId);
             if (callback != null) {
-                timer.callback.timeRunnableWithModbusException(
+                timer.callback.timeRunnable(
                         () -> ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response));
             }
         }
