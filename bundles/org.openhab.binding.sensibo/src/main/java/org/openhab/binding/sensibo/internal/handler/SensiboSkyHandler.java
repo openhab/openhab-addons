@@ -231,7 +231,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,"Unreachable by Sensibo servers");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unreachable by Sensibo servers");
             }
         });
     }
@@ -251,7 +252,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             if (pod.isAlive()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,"Unreachable by Sensibo servers");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unreachable by Sensibo servers");
             }
         });
     }
