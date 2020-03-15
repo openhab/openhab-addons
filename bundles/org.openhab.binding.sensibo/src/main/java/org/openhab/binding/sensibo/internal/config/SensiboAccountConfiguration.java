@@ -26,6 +26,6 @@ public class SensiboAccountConfiguration {
 
     @Override
     public String toString() {
-        return "SensiboAccountConfiguration [apiKey=" + apiKey + ", refreshInterval=" + refreshInterval + "]";
+        return "SensiboAccountConfiguration [apiKey=<not showing>, refreshInterval=" + refreshInterval + "]";
     }
 }

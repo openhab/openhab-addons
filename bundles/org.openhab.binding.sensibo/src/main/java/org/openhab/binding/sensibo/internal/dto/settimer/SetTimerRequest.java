@@ -20,15 +20,15 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcState;
  * @author Arne Seime - Initial contribution
  */
 public class SetTimerRequest extends AbstractRequest {
+    public transient String podId; // Transient fields are ignored by gson
+    public AcState acState;
+    public int minutesFromNow;
+
     public SetTimerRequest(String podId, int minutesFromNow, AcState acState) {
         this.podId = podId;
         this.acState = acState;
         this.minutesFromNow = minutesFromNow;
     }
-
-    public transient String podId; // Transient fields are ignored by gson
-    public AcState acState;
-    public int minutesFromNow;
 
     @Override
     public String getRequestUrl() {

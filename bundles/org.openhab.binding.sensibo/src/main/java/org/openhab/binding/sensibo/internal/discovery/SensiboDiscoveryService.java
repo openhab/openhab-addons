@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.sensibo.internal.SensiboBindingConstants;
@@ -37,12 +38,12 @@ import org.slf4j.LoggerFactory;
  * @author Arne Seime - Initial contribution
  */
 public class SensiboDiscoveryService extends AbstractDiscoveryService {
-    private static final long REFRESH_INTERVAL_MINUTES = 60;
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(SensiboBindingConstants.THING_TYPE_SENSIBOSKY).collect(Collectors.toSet()));
+    private static final long REFRESH_INTERVAL_MINUTES = 60;
     private final Logger logger = LoggerFactory.getLogger(SensiboDiscoveryService.class);
-    private ScheduledFuture<?> discoveryJob;
     private final SensiboAccountHandler accountHandler;
+    private ScheduledFuture<?> discoveryJob;
 
     public SensiboDiscoveryService(final SensiboAccountHandler accountHandler) {
         super(DISCOVERABLE_THING_TYPES_UIDS, 10);
@@ -63,21 +64,22 @@ public class SensiboDiscoveryService extends AbstractDiscoveryService {
             accountHandler.updateModelFromServerAndUpdateThingStatus();
             final SensiboModel model = accountHandler.getModel();
             for (final SensiboSky pod : model.getPods()) {
-
                 final ThingUID podUID = new ThingUID(SensiboBindingConstants.THING_TYPE_SENSIBOSKY, accountUID,
                         String.valueOf(pod.getMacAddress()));
                 final Map<String, Object> properties = new HashMap<>();
                 properties.put("podId", pod.getId());
                 properties.put("firmwareType", pod.getFirmwareType());
-                properties.put("firmwareVersion", pod.getFirmwareVersion());
-                properties.put("productModel", pod.getProductModel());
-                properties.put("macAddress", pod.getMacAddress());
+                properties.put(Thing.PROPERTY_VENDOR, "Sensibo");
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, pod.getSerialNumber());
+                properties.put(Thing.PROPERTY_MODEL_ID, pod.getProductModel());
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, pod.getFirmwareVersion());
+                properties.put(Thing.PROPERTY_MODEL_ID, pod.getProductModel());
+                properties.put(Thing.PROPERTY_MAC_ADDRESS, pod.getMacAddress());
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(podUID).withBridge(accountUID)
-                        .withLabel(pod.getProductName()).withRepresentationProperty("macAddress")
+                        .withLabel(pod.getProductName()).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
                         .withProperties(properties).build();
                 thingDiscovered(discoveryResult);
-
             }
         }
     }

@@ -35,7 +35,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Gili Tzabari - Initial contribution https://stackoverflow.com/users/14731/gili
  *         https://stackoverflow.com/questions/50318736/how-to-log-httpclient-requests-response-including-body
- * @author Arne Seime - adapted for Openhab binding
+ * @author Arne Seime - adapted for openHAB binding
  */
 @NonNullByDefault
 public final class RequestLogger {
@@ -57,10 +57,10 @@ public final class RequestLogger {
             final String id = prefix + "-" + idV;
             final StringBuilder group = new StringBuilder();
             request.onRequestBegin(theRequest -> group.append(
-                    String.format("Request %s\n%s > %s %s\n", id, id, theRequest.getMethod(), theRequest.getURI())));
+                    String.format("Request %s%n%s > %s %s%n", id, id, theRequest.getMethod(), theRequest.getURI())));
             request.onRequestHeaders(theRequest -> {
                 for (final HttpField header : theRequest.getHeaders()) {
-                    group.append(String.format("%s > %s\n", id, header));
+                    group.append(String.format("%s > %s%n", id, header));
                 }
             });
             final StringBuilder contentBuffer = new StringBuilder();
@@ -77,7 +77,7 @@ public final class RequestLogger {
                 group.delete(0, group.length());
             });
             request.onResponseBegin(theResponse -> {
-                group.append(String.format("Response %s\n%s < %s %s", id, id, theResponse.getVersion(),
+                group.append(String.format("Response %s%n%s < %s %s", id, id, theResponse.getVersion(),
                         theResponse.getStatus()));
                 if (theResponse.getReason() != null) {
                     group.append(" ");
@@ -87,7 +87,7 @@ public final class RequestLogger {
             });
             request.onResponseHeaders(theResponse -> {
                 for (final HttpField header : theResponse.getHeaders()) {
-                    group.append(String.format("%s < %s\n", id, header));
+                    group.append(String.format("%s < %s%n", id, header));
                 }
             });
             request.onResponseContent((theResponse, content) -> contentBuffer

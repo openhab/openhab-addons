@@ -57,14 +57,14 @@ public class CallbackChannelsTypeProvider implements ChannelTypeProvider, ThingH
         return Collections.emptyList();
     }
 
+    @Override
+    public ThingHandler getThingHandler() {
+        return handler;
+    }
+
     @NonNullByDefault({})
     @Override
     public void setThingHandler(final ThingHandler handler) {
         this.handler = (SensiboSkyHandler) handler;
-    }
-
-    @Override
-    public ThingHandler getThingHandler() {
-        return handler;
     }
 }

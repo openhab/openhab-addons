@@ -18,15 +18,15 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
  * @author Arne Seime - Initial contribution
  */
 public class SetAcStatePropertyRequest extends AbstractRequest {
+    public transient String podId; // Transient fields are ignored by gson
+    public transient String property;
+    public Object newValue;
+
     public SetAcStatePropertyRequest(String podId, String property, Object value) {
         this.podId = podId;
         this.property = property;
         this.newValue = value;
     }
-
-    public transient String podId; // Transient fields are ignored by gson
-    public transient String property;
-    public Object newValue;
 
     @Override
     public String getRequestUrl() {

@@ -49,13 +49,11 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.sensibo", service = ThingHandlerFactory.class)
 public class SensiboHandlerFactory extends BaseThingHandlerFactory {
-    private final HttpClient httpClient;
-
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(SensiboBindingConstants.THING_TYPE_ACCOUNT, SensiboBindingConstants.THING_TYPE_SENSIBOSKY)
                     .collect(Collectors.toSet()));
+    private final HttpClient httpClient;
+    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
     public SensiboHandlerFactory(@Reference HttpClientFactory httpClientFactory) {

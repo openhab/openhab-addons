@@ -19,11 +19,11 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
  * @author Arne Seime - Initial contribution
  */
 public class DeleteTimerRequest extends AbstractRequest {
+    public transient String podId; // Transient fields are ignored by gson
+
     public DeleteTimerRequest(String podId) {
         this.podId = podId;
     }
-
-    public transient String podId; // Transient fields are ignored by gson
 
     @Override
     public String getRequestUrl() {

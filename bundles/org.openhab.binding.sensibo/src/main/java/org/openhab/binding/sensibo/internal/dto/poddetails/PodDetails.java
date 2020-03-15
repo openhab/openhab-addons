@@ -31,11 +31,11 @@ public class PodDetails {
     public AcState acState;
     @SerializedName("measurements")
     public Measurement lastMeasurement;
-    private ModeCapabilityWrapper remoteCapabilities;
     public ConnectionStatus connectionStatus;
     public Room room;
     public Schedule[] schedules;
     public Timer timer;
+    private ModeCapabilityWrapper remoteCapabilities;
 
     public Map<String, ModeCapability> getRemoteCapabilities() {
         return remoteCapabilities.modes;

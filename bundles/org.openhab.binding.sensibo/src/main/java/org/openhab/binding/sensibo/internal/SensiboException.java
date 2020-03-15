@@ -19,9 +19,6 @@ package org.openhab.binding.sensibo.internal;
  */
 public abstract class SensiboException extends Exception {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public SensiboException(String message) {

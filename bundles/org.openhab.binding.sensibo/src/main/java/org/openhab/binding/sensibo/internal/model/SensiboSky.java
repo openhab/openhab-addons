@@ -41,29 +41,17 @@ public class SensiboSky extends Pod {
     private final String firmwareVersion;
     private final String firmwareType;
     private final String serialNumber;
-    private Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;
-    private String originalTemperatureUnit = "C";
     private final String productModel;
-    private Optional<AcState> acState = Optional.empty();;
+    private final String roomName;
+    private final Map<String, ModeCapability> remoteCapabilities;
+    private Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;;
+    private String originalTemperatureUnit = "C";
+    private Optional<AcState> acState = Optional.empty();
     private Double temperature;
     private Double humidity;
     private boolean alive = false;
-    private final String roomName;
     private Schedule[] schedules = new Schedule[0];
-    private final Map<String, ModeCapability> remoteCapabilities;
     private Optional<Timer> timer = Optional.empty();
-
-    public String getOriginalTemperatureUnit() {
-        return originalTemperatureUnit;
-    }
-
-    public String getRoomName() {
-        return roomName;
-    }
-
-    public Schedule[] getSchedules() {
-        return schedules;
-    }
 
     public SensiboSky(final PodDetails dto) {
         this.id = dto.id;
@@ -110,6 +98,18 @@ public class SensiboSky extends Pod {
             schedules = Arrays.asList(dto.schedules).stream().map(e -> new Schedule(e)).collect(Collectors.toList())
                     .toArray(new Schedule[0]);
         }
+    }
+
+    public String getOriginalTemperatureUnit() {
+        return originalTemperatureUnit;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public Schedule[] getSchedules() {
+        return schedules;
     }
 
     public String getMacAddress() {

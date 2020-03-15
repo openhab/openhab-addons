@@ -46,6 +46,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
@@ -82,11 +83,26 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     public static final String MODE_PROPERTY = "mode";
     public static final String TARGET_TEMPERATURE_PROPERTY = "targetTemperature";
     private final Logger logger = LoggerFactory.getLogger(SensiboSkyHandler.class);
-    private Optional<SensiboSkyConfiguration> config = Optional.empty();
     private final Map<ChannelTypeUID, ChannelType> generatedChannelTypes = new HashMap<>();
+    private Optional<SensiboSkyConfiguration> config = Optional.empty();
 
     public SensiboSkyHandler(final Thing thing) {
         super(thing);
+    }
+
+    private static String beautify(final String camelCaseWording) {
+        final StringBuilder b = new StringBuilder();
+        for (final String s : StringUtils.splitByCharacterTypeCamelCase(camelCaseWording)) {
+            b.append(" ");
+            b.append(s);
+        }
+        final StringBuilder bs = new StringBuilder();
+        for (final String t : StringUtils.splitByWholeSeparator(b.toString(), " _")) {
+            bs.append(" ");
+            bs.append(t);
+        }
+
+        return WordUtils.capitalizeFully(bs.toString()).trim();
     }
 
     private String getMacAddress() {
@@ -215,7 +231,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,"Unreachable by Sensibo servers");
             }
         });
     }
@@ -235,14 +251,13 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             if (pod.isAlive()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,"Unreachable by Sensibo servers");
             }
         });
     }
 
     private boolean isDynamicChannel(final ChannelTypeUID uid) {
-        return SensiboBindingConstants.DYNAMIC_CHANNEL_TYPES.stream().filter(e -> uid.getId().startsWith(e)).findFirst()
-                .isPresent();
+        return SensiboBindingConstants.DYNAMIC_CHANNEL_TYPES.stream().anyMatch(e -> uid.getId().startsWith(e));
     }
 
     private void addDynamicChannelsAndProperties(final SensiboSky sensiboSky) {
@@ -327,21 +342,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         generatedChannelTypes.put(channelTypeUID, channelType);
 
         return channelTypeUID;
-    }
-
-    private static String beautify(final String camelCaseWording) {
-        final StringBuilder b = new StringBuilder();
-        for (final String s : StringUtils.splitByCharacterTypeCamelCase(camelCaseWording)) {
-            b.append(" ");
-            b.append(s);
-        }
-        final StringBuilder bs = new StringBuilder();
-        for (final String t : StringUtils.splitByWholeSeparator(b.toString(), " _")) {
-            bs.append(" ");
-            bs.append(t);
-        }
-
-        return WordUtils.capitalizeFully(bs.toString()).trim();
     }
 
     @Override
