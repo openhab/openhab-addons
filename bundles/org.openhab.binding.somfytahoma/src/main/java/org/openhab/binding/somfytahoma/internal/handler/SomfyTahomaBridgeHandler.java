@@ -39,6 +39,7 @@ import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
@@ -102,9 +103,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     // Gson & parser
     private final Gson gson = new Gson();
 
-    public SomfyTahomaBridgeHandler(Bridge thing, HttpClient httpClient) {
+    public SomfyTahomaBridgeHandler(Bridge thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.httpClient = httpClient;
+        this.httpClient = httpClientFactory.createHttpClient("somfy_" + thing.getUID().getId());
     }
 
     @Override
@@ -114,6 +115,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         thingConfig = getConfigAs(SomfyTahomaConfig.class);
+
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.debug("Cannot start http client for: {}", thing.getBridgeUID().getId(), e);
+            return;
+        }
 
         scheduler.execute(() -> {
             login();
@@ -307,6 +315,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
+        if (httpClient != null) {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.debug("Error during http client stopping", e);
+            }
+        }
     }
 
 
