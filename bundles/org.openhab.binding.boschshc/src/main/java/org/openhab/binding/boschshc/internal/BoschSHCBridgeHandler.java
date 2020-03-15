@@ -2,8 +2,16 @@ package org.openhab.binding.boschshc.internal;
 
 import static org.eclipse.jetty.http.HttpMethod.*;
 
+import java.io.File;
 import java.lang.reflect.Type;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.spec.RSAPrivateKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -33,9 +41,26 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
+    }
 
-        String keystore = "/local/bosch-keystore";
-        logger.warn("Starting with keystore at: {}", keystore);
+    // This doesn't have to be too save. After all, it just encrypts the Java keystore stored on the local disk. And
+    // that
+    // keystore only stores a key for accessing the SHC.
+    private static String KEYSTORE_PASSWORD = "not-very-save";
+
+    // Path to use for pairing requests.
+    private static String PATH_PAIRING = "/smarthome/clients";
+
+    private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
+
+    private @Nullable HttpClient httpClient;
+
+    private @Nullable ArrayList<Room> rooms;
+    private @Nullable ArrayList<Device> devices;
+
+    private @Nullable String subscriptionId;
+
+    private SslContextFactory getSslContext(String keystore) {
 
         // Instantiate and configure the SslContextFactory
         // SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
@@ -44,7 +69,150 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // Keystore for managing the keys that have been used to pair with the SHC
         // https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
         sslContextFactory.setKeyStorePath(keystore);
-        sslContextFactory.setKeyStorePassword("123456");
+        sslContextFactory.setKeyStorePassword(KEYSTORE_PASSWORD);
+
+        // Bosch is using a self signed certificate
+        sslContextFactory.setTrustAll(true);
+        sslContextFactory.setValidateCerts(false);
+        sslContextFactory.setValidatePeerCerts(false);
+        sslContextFactory.setEndpointIdentificationAlgorithm(null);
+
+        return sslContextFactory;
+    }
+
+    private void pair(String keystore) throws Exception {
+
+        // Instantiate HttpClient with the SslContextFactory
+        HttpClient httpClient = new HttpClient(getSslContext(keystore));
+        httpClient.start();
+
+        // Attempt connecting to the SHC
+
+        // There is probably going to be some sort of loop here. Because the user has to press the button on the
+        // Smart
+        // Home Controller during setup procedure.
+
+        boolean pairingSuccessful = false;
+        int maxTries = 100;
+        int currTries = 0;
+
+        while (!pairingSuccessful && currTries < maxTries) {
+            ContentResponse contentResponse;
+            try {
+
+                PairRequest r = new PairRequest("OpenHab Test", "openhabtest");
+
+                Gson gson = new Gson();
+                String str_content = gson.toJson(r);
+
+                String base64password = new String(Base64.getEncoder().encode(this.config.password.getBytes()));
+
+                logger.debug("pairing: Sending http request to Bosch to request clients: {}", config.ipAddress);
+                contentResponse = httpClient
+                        .newRequest("https://" + config.ipAddress + ":8444/" + BoschSHCBridgeHandler.PATH_PAIRING)
+                        .header("Content-Type", "application/json").header("Accept", "application/json")
+                        .header("Systempassword", base64password).method(POST)
+                        .content(new StringContentProvider(str_content)).send();
+
+                String content = contentResponse.getContentAsString();
+                logger.info("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+
+                // TODO Mark pairing as successful after a while.
+
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.warn("HTTP request failed: {}", e);
+            }
+
+            maxTries++;
+        }
+
+    }
+
+    @Override
+    public void initialize() {
+
+        config = getConfigAs(BoschSHCBridgeConfiguration.class);
+
+        String keystore = config.keystorePath;
+        logger.warn("Starting with keystore at: {}", keystore);
+
+        if (!new File(keystore).exists()) {
+
+            logger.warn("Keystore for connecting to Bosch SHC does not exists yet, parining .. ");
+
+            // 0. Download BSHC certificate
+            // --------------------------------------------------
+            // Might have to import the BSHC's self-signed certificate into the keystore too.
+            // Can download it from:
+            // - https://<ip-of-bshc>:8444/smarthome/rooms
+            // Alternatively, it should be possible to allow unvalidated access in the Jetty instance.
+
+            // Documentation from:
+            // --------------------------------------------------
+            // - https://docs.oracle.com/javase/7/docs/api/java/security/KeyStore.html
+            // - http://tutorials.jenkov.com/java-cryptography/keystore.html
+
+            // Load empty keystore
+            // --------------------------------------------------
+            try {
+
+                KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+                // Need "null" here to generate a new keystore instead of opening an existing one
+                ks.load(null, KEYSTORE_PASSWORD.toCharArray());
+
+                // Maybe the first step is to peek into the existing keystore and see what's there?
+
+                // Generate RSA key
+                // --------------------------------------------------
+                // Function pairClient in bosch-smart-home-bridge.ts and according to client-key.ts, should be RSA
+                // private
+                // key (see ~/projects/smart-home/bosch-smart-home-bridge)
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+                kpg.initialize(2048);
+
+                KeyPair kp = kpg.genKeyPair();
+                KeyFactory fact = KeyFactory.getInstance("RSA");
+
+                // TODO: Not sure if we really need both?
+                // RSAPublicKeySpec pub = fact.getKeySpec(kp.getPublic(), RSAPublicKeySpec.class);
+                RSAPrivateKeySpec priv = fact.getKeySpec(kp.getPrivate(), RSAPrivateKeySpec.class);
+                Key privateKey = (Key) priv;
+
+                // Store RSA key
+                ks.setKeyEntry("boschshc", privateKey, BoschSHCBridgeHandler.KEYSTORE_PASSWORD.toCharArray(), null);
+
+                // Store the keystore to a new file
+                // --------------------------------------------------
+                java.io.FileOutputStream fos = null;
+                try {
+                    fos = new java.io.FileOutputStream(keystore);
+                    ks.store(fos, KEYSTORE_PASSWORD.toCharArray());
+                } finally {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                }
+
+                // Register the key to the Bosch SHC.
+                // TODO
+
+                pair(keystore);
+            } catch (Exception e) {
+
+                logger.warn("Pairing failed! {}", e);
+            }
+
+            System.exit(1);
+        }
+
+        // Instantiate and configure the SslContextFactory
+        // SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
+
+        // Keystore for managing the keys that have been used to pair with the SHC
+        // https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
+        sslContextFactory.setKeyStorePath(keystore);
+        sslContextFactory.setKeyStorePassword(KEYSTORE_PASSWORD);
 
         // Bosch is using a self signed certificate
         sslContextFactory.setTrustAll(true);
@@ -60,21 +228,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.warn("Failed to start http client from: {}", keystore, e);
         }
-    }
 
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
-
-    private @Nullable HttpClient httpClient;
-
-    private @Nullable ArrayList<Room> rooms;
-    private @Nullable ArrayList<Device> devices;
-
-    private @Nullable String subscriptionId;
-
-    @Override
-    public void initialize() {
-
-        config = getConfigAs(BoschSHCBridgeConfiguration.class);
         logger.warn("Initializing bridge: {} - HTTP client is: {} - version: 2020-02-20", config.ipAddress,
                 this.httpClient);
 
@@ -226,7 +380,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
                     .header("Content-Type", "application/json").header("Accept", "application/json")
-                    .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
+                    .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST) // TODO What's this Gateway ID
                     .content(new StringContentProvider(str_content)).send(new SubscribeListener(this));
 
         }
@@ -341,9 +495,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                         }
                                     }
                                 }
-
-                                bridgeHandler.subscriptionId = null;
-                                logger.warn("Invalidating subscription ID - temp");
 
                             } else {
 
