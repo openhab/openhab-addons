@@ -57,47 +57,24 @@ public class AcState {
         return on;
     }
 
-    public void setOn(final boolean on) {
-        this.on = on;
-    }
-
     public String getFanLevel() {
         return fanLevel;
-    }
-
-    public void setFanLevel(final String fanLevel) {
-        this.fanLevel = fanLevel;
     }
 
     public Unit<Temperature> getTemperatureUnit() {
         return temperatureUnit;
     }
 
-    public void setTemperatureUnit(final Unit<Temperature> temperatureUnit) {
-        this.temperatureUnit = temperatureUnit;
-    }
-
     public Integer getTargetTemperature() {
         return targetTemperature;
-    }
-
-    public void setTargetTemperature(final Integer targetTemperature) {
-        this.targetTemperature = targetTemperature;
     }
 
     public String getMode() {
         return mode;
     }
 
-    public void setMode(final String mode) {
-        this.mode = mode;
-    }
-
     public String getSwing() {
         return swing;
     }
 
-    public void setSwing(final String swing) {
-        this.swing = swing;
-    }
 }
