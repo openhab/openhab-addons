@@ -66,7 +66,7 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <ohc.version>2.5.0</ohc.version>
-    <bnd.version>5.0.0</bnd.version>
+    <bnd.version>4.3.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
     <sat.version>0.9.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
@@ -227,7 +227,7 @@ Import-Package: \\
           <version>${bnd.version}</version>
           <configuration>
             <resolve>true</resolve>
-            <failOnChanges>false</failOnChanges>
+            <failOnChanges>true</failOnChanges>
           </configuration>
           <executions>
             <execution>
