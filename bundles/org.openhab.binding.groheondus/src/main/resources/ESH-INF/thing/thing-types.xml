@@ -97,40 +97,40 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<thing-type id="blue">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="account" />
-        </supported-bridge-type-refs>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
 
-        <label>GROHE BLUE Appliance</label>
-        <description>A Blue Home or Professional device</description>
+		<label>GROHE BLUE Appliance</label>
+		<description>A Blue Home or Professional device</description>
 
-        <channels>
-            <channel id="name" typeId="name" />
-            <channel id="tap" typeId="tap" />
-        </channels>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="tap" typeId="tap" />
+		</channels>
 
-        <representation-property>applianceId</representation-property>
+		<representation-property>applianceId</representation-property>
 
-        <config-description>
-            <parameter name="applianceId" type="text" required="true">
-                <label>Appliance ID</label>
-                <description>The UUID of the appliance as retrieved from the GROHE ONDUS API.</description>
-            </parameter>
-            <parameter name="roomId" type="integer" required="true">
-                <label>Room ID</label>
-                <description>The ID of the room the appliance is in as retrieved from the GROHE ONDUS API.</description>
-            </parameter>
-            <parameter name="locationId" type="integer" required="true">
-                <label>Location ID</label>
-                <description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
-            </parameter>
-            <parameter name="pollingInterval" type="integer" required="false">
-                <label>Polling Interval</label>
-                <description>The interval in seconds used to poll the API for new data.</description>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="applianceId" type="text" required="true">
+				<label>Appliance ID</label>
+				<description>The UUID of the appliance as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="roomId" type="integer" required="true">
+				<label>Room ID</label>
+				<description>The ID of the room the appliance is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="locationId" type="integer" required="true">
+				<label>Location ID</label>
+				<description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false">
+				<label>Polling Interval</label>
+				<description>The interval in seconds used to poll the API for new data.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="name">
