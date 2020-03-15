@@ -23,4 +23,15 @@ public class BoschSHCBridgeConfiguration {
      * IP address of the Bosch Smart Home Controller
      */
     public String ipAddress;
+
+    /**
+     * Password of the Bosch Smart Home Controller. Set during initialization via the Bosch app.
+     */
+    public String password;
+
+    /**
+     * Location at which to store the Java keystore holding keys and certificates required to connect to the Bosch Smart
+     * Home Controller.
+     */
+    public String keystorePath;
 }
