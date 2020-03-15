@@ -18,7 +18,8 @@ import javax.measure.quantity.Temperature;
 import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
 
 /**
- *
+ * Represents the state of the AC unit
+ * 
  * @author Arne Seime - Initial contribution
  */
 public class AcState {

@@ -117,7 +117,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         if (config.isPresent()) {
             return config.get().macAddress;
         }
-        return "";
+        throw new IllegalArgumentException("No configuration present");
     }
 
     @Override
