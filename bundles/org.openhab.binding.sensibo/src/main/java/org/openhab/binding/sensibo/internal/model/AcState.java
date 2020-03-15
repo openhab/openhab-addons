@@ -15,16 +15,16 @@ package org.openhab.binding.sensibo.internal.model;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.smarthome.core.library.unit.ImperialUnits;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
 
 /**
+ *
  * @author Arne Seime - Initial contribution
  */
 public class AcState {
     private boolean on;
     private String fanLevel;
-    private Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;
+    private Unit<Temperature> temperatureUnit;
     private Integer targetTemperature;
     private String mode;
     private String swing;
@@ -35,19 +35,7 @@ public class AcState {
         this.targetTemperature = dto.targetTemperature;
         this.mode = dto.mode;
         this.swing = dto.swing;
-
-        if (dto.temperatureUnit != null) {
-            switch (dto.temperatureUnit) {
-                case "C":
-                    this.temperatureUnit = SIUnits.CELSIUS;
-                    break;
-                case "F":
-                    this.temperatureUnit = ImperialUnits.FAHRENHEIT;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Do not understand temperature unit " + temperatureUnit);
-            }
-        }
+        this.temperatureUnit = SensiboTemperatureUnitParser.parse(dto.temperatureUnit);
     }
 
     public AcState(final AcState original) {

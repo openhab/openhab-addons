@@ -15,17 +15,21 @@ package org.openhab.binding.sensibo.internal.model;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SensiboSky} represents a Sensibo Sky schedule
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class Schedule {
-    public LocalTime targetTimeLocal;
-    public ZonedDateTime nextTime;
-    public String[] recurringDays;
-    public AcState acState;
-    public boolean enabled;
+    private LocalTime targetTimeLocal;
+    private @Nullable ZonedDateTime nextTime;
+    private String[] recurringDays;
+    private AcState acState;
+    private boolean enabled;
 
     public Schedule(org.openhab.binding.sensibo.internal.dto.poddetails.Schedule dto) {
         this.enabled = dto.enabled;
@@ -36,4 +40,25 @@ public class Schedule {
         this.recurringDays = dto.recurringDays;
         this.acState = new AcState(dto.acState);
     }
+
+    public LocalTime getTargetTimeLocal() {
+        return targetTimeLocal;
+    }
+
+    public @Nullable ZonedDateTime getNextTime() {
+        return nextTime;
+    }
+
+    public String[] getRecurringDays() {
+        return recurringDays;
+    }
+
+    public AcState getAcState() {
+        return acState;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
 }

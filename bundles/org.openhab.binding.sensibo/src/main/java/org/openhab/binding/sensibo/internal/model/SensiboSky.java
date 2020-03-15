@@ -25,8 +25,8 @@ import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.unit.ImperialUnits;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
 import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapability;
 import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetails;
 
@@ -43,14 +43,14 @@ public class SensiboSky extends Pod {
     private final String serialNumber;
     private final String productModel;
     private final String roomName;
+    private final Unit<Temperature> temperatureUnit;
+    private final String originalTemperatureUnit;
+    private final Double temperature;
+    private final Double humidity;
+    private final boolean alive;
     private final Map<String, ModeCapability> remoteCapabilities;
-    private Unit<Temperature> temperatureUnit = SIUnits.CELSIUS;;
-    private String originalTemperatureUnit = "C";
-    private Optional<AcState> acState = Optional.empty();
-    private Double temperature;
-    private Double humidity;
-    private boolean alive = false;
     private Schedule[] schedules = new Schedule[0];
+    private Optional<AcState> acState = Optional.empty();
     private Optional<Timer> timer = Optional.empty();
 
     public SensiboSky(final PodDetails dto) {
@@ -60,19 +60,7 @@ public class SensiboSky extends Pod {
         this.firmwareType = dto.firmwareType;
         this.serialNumber = dto.serialNumber;
         this.originalTemperatureUnit = dto.temperatureUnit;
-        if (dto.temperatureUnit != null) {
-            switch (originalTemperatureUnit) {
-                case "C":
-                    this.temperatureUnit = SIUnits.CELSIUS;
-                    break;
-                case "F":
-                    this.temperatureUnit = ImperialUnits.FAHRENHEIT;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Do not understand temperature unit " + temperatureUnit);
-
-            }
-        }
+        this.temperatureUnit = SensiboTemperatureUnitParser.parse(dto.temperatureUnit);
         this.productModel = dto.productModel;
 
         if (dto.acState != null) {
@@ -194,5 +182,18 @@ public class SensiboSky extends Pod {
 
     public Optional<Timer> getTimer() {
         return timer;
+    }
+
+    public Map<String, String> getThingProperties() {
+        final Map<String, String> properties = new HashMap<>();
+        properties.put(Thing.PROPERTY_VENDOR, "Sensibo");
+        properties.put("podId", id);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
+        properties.put(Thing.PROPERTY_MODEL_ID, productModel);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+        properties.put("firmwareType", firmwareType);
+
+        return properties;
     }
 }

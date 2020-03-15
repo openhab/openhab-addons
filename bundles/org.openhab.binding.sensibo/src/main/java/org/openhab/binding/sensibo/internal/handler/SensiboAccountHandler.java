@@ -87,6 +87,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private SensiboModel model = new SensiboModel(0);
     private @Nullable ScheduledFuture<?> statusFuture;
     private @NonNullByDefault({}) SensiboAccountConfiguration config;
+    private final JsonParser jsonParser = new JsonParser();
 
     public SensiboAccountHandler(final Bridge bridge, final HttpClient httpClient) {
         super(bridge);
@@ -122,12 +123,21 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         // Ignore commands as none are supported
     }
 
+    public SensiboAccountConfiguration loadConfigSafely() throws SensiboConfigurationException {
+        SensiboAccountConfiguration loadedConfig = getConfigAs(SensiboAccountConfiguration.class);
+        if (loadedConfig == null) {
+            throw new SensiboConfigurationException("Could not load Sensibo account configuration");
+        }
+
+        return loadedConfig;
+    }
+
     @Override
     public void initialize() {
-        config = getConfigAs(SensiboAccountConfiguration.class);
-        logger.debug("Initializing Sensibo Account bridge using config {}", config);
         scheduler.execute(() -> {
             try {
+                config = loadConfigSafely();
+                logger.debug("Initializing Sensibo Account bridge using config {}", config);
                 model = refreshModel();
                 updateStatus(ThingStatus.ONLINE);
                 initPolling();
@@ -167,7 +177,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         final SensiboModel updatedModel = new SensiboModel(System.currentTimeMillis());
 
         final GetPodsRequest getPodsRequest = new GetPodsRequest();
-        final List<Pod> pods = sendRequest(buildGetPodsRequest(getPodsRequest), getPodsRequest,
+        final List<Pod> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
                 new TypeToken<ArrayList<Pod>>() {
                 }.getType());
 
@@ -190,8 +200,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             final ContentResponse contentResponse = request.send();
             final String responseJson = contentResponse.getContentAsString();
             if (contentResponse.getStatus() == HttpStatus.OK_200) {
-                final JsonParser parser = new JsonParser();
-                final JsonObject o = parser.parse(responseJson).getAsJsonObject();
+                final JsonObject o = jsonParser.parse(responseJson).getAsJsonObject();
                 final String overallStatus = o.get("status").getAsString();
                 if ("success".equals(overallStatus)) {
                     return gson.fromJson(o.get("result"), responseType);
@@ -249,27 +258,11 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private Request buildGetPodsRequest(final GetPodsRequest req) {
-        return buildRequest(req);
-    }
-
     private Request buildGetPodDetailsRequest(final GetPodsDetailsRequest getPodsDetailsRequest) {
         final Request req = buildRequest(getPodsDetailsRequest);
         req.param("fields", "*");
 
         return req;
-    }
-
-    private Request buildSetAcStatePropertyRequest(SetAcStatePropertyRequest setAcStateRequest) {
-        return buildRequest(setAcStateRequest);
-    }
-
-    private Request buildSetTimerRequest(SetTimerRequest setTimerRequest) {
-        return buildRequest(setTimerRequest);
-    }
-
-    private Request buildDeleteTimerRequest(DeleteTimerRequest deleteTimerRequest) {
-        return buildRequest(deleteTimerRequest);
     }
 
     private Request buildRequest(final AbstractRequest req) {
@@ -293,7 +286,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             try {
                 SetAcStatePropertyRequest setAcStatePropertyRequest = new SetAcStatePropertyRequest(pod.getId(),
                         property, value);
-                Request request = buildSetAcStatePropertyRequest(setAcStatePropertyRequest);
+                Request request = buildRequest(setAcStatePropertyRequest);
                 SetAcStatePropertyReponse response = sendRequest(request, setAcStatePropertyRequest,
                         new TypeToken<SetAcStatePropertyReponse>() {
                         }.getType());
@@ -316,13 +309,13 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
                     SetTimerRequest setTimerRequest = new SetTimerRequest(pod.getId(),
                             secondsFromNow / SECONDS_IN_MINUTE, offState);
-                    Request request = buildSetTimerRequest(setTimerRequest);
+                    Request request = buildRequest(setTimerRequest);
                     // No data in response
                     sendRequest(request, setTimerRequest, new TypeToken<SetTimerReponse>() {
                     }.getType());
                 } else {
                     DeleteTimerRequest setTimerRequest = new DeleteTimerRequest(pod.getId());
-                    Request request = buildDeleteTimerRequest(setTimerRequest);
+                    Request request = buildRequest(setTimerRequest);
                     // No data in response
                     sendRequest(request, setTimerRequest, new TypeToken<SetTimerReponse>() {
                     }.getType());

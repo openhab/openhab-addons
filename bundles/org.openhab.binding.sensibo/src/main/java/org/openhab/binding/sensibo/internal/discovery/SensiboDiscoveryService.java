@@ -66,19 +66,16 @@ public class SensiboDiscoveryService extends AbstractDiscoveryService {
             for (final SensiboSky pod : model.getPods()) {
                 final ThingUID podUID = new ThingUID(SensiboBindingConstants.THING_TYPE_SENSIBOSKY, accountUID,
                         String.valueOf(pod.getMacAddress()));
-                final Map<String, Object> properties = new HashMap<>();
-                properties.put("podId", pod.getId());
-                properties.put("firmwareType", pod.getFirmwareType());
-                properties.put(Thing.PROPERTY_VENDOR, "Sensibo");
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, pod.getSerialNumber());
-                properties.put(Thing.PROPERTY_MODEL_ID, pod.getProductModel());
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, pod.getFirmwareVersion());
-                properties.put(Thing.PROPERTY_MODEL_ID, pod.getProductModel());
-                properties.put(Thing.PROPERTY_MAC_ADDRESS, pod.getMacAddress());
+                Map<String, String> properties = pod.getThingProperties();
+
+                // DiscoveryResult result uses Map<String,Object> as properties while ThingBuilder uses
+                // Map<String,String>
+                Map<String, Object> stringObjectProperties = new HashMap<>();
+                stringObjectProperties.putAll(properties);
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(podUID).withBridge(accountUID)
                         .withLabel(pod.getProductName()).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
-                        .withProperties(properties).build();
+                        .withProperties(stringObjectProperties).build();
                 thingDiscovered(discoveryResult);
             }
         }

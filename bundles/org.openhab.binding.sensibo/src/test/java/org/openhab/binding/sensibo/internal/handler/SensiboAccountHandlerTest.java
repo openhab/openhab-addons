@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -33,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.sensibo.internal.config.SensiboAccountConfiguration;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
-import org.osgi.framework.BundleContext;
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -51,9 +53,6 @@ public class SensiboAccountHandlerTest {
     private HttpClient httpClient;
     @Mock
     private Configuration configuration;
-
-    @Mock
-    private BundleContext bundleContext;
 
     @Before
     public void setUp() throws Exception {
@@ -98,7 +97,7 @@ public class SensiboAccountHandlerTest {
         when(sensiboAccountMock.getConfiguration()).thenReturn(configuration);
         when(sensiboAccountMock.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
 
-        final SensiboAccountHandler subject = new SensiboAccountHandler(sensiboAccountMock, httpClient, bundleContext);
+        final SensiboAccountHandler subject = new SensiboAccountHandler(sensiboAccountMock, httpClient);
         // Async, poll for status
         subject.initialize();
 

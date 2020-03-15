@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.*;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_HUMIDITY;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_TEMPERATURE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_FAN_LEVEL;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MASTER_SWITCH;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MODE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_SWING_MODE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TIMER;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -135,99 +143,104 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     @Override
     protected void handleCommand(final ChannelUID channelUID, final Command command, final SensiboModel model) {
-        model.findSensiboSkyByMacAddress(getMacAddress()).ifPresent(unit -> {
-            if (unit.isAlive()) {
+        model.findSensiboSkyByMacAddress(getMacAddress()).ifPresent(sensiboSky -> {
+            if (sensiboSky.isAlive()) {
 
                 updateStatus(ThingStatus.ONLINE); // In case it has been offline
                 if (CHANNEL_CURRENT_HUMIDITY.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        updateState(channelUID, new QuantityType<>(unit.getHumidity(), Units.PERCENT));
+                        updateState(channelUID, new QuantityType<>(sensiboSky.getHumidity(), Units.PERCENT));
                     }
                 } else if (CHANNEL_CURRENT_TEMPERATURE.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        updateState(channelUID, new QuantityType<>(unit.getTemperature(), unit.getTemperatureUnit()));
+                        updateState(channelUID,
+                                new QuantityType<>(sensiboSky.getTemperature(), sensiboSky.getTemperatureUnit()));
                     }
                 } else if (CHANNEL_MASTER_SWITCH.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        updateState(channelUID, OnOffType.from(unit.getAcState().get().isOn()));
+                        updateState(channelUID, OnOffType.from(sensiboSky.getAcState().get().isOn()));
                     } else if (command instanceof OnOffType) {
-                        updateAcState(unit, MASTER_SWITCH_PROPERTY, (OnOffType) command == OnOffType.ON);
+                        updateAcState(sensiboSky, MASTER_SWITCH_PROPERTY, (OnOffType) command == OnOffType.ON);
                     }
                 } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        if (unit.getAcState().isPresent() && unit.getAcState().get().getTargetTemperature() != null) {
-                            updateState(channelUID, new QuantityType<>(unit.getAcState().get().getTargetTemperature(),
-                                    unit.getTemperatureUnit()));
+                        if (sensiboSky.getAcState().isPresent()
+                                && sensiboSky.getAcState().get().getTargetTemperature() != null) {
+                            updateState(channelUID,
+                                    new QuantityType<>(sensiboSky.getAcState().get().getTargetTemperature(),
+                                            sensiboSky.getTemperatureUnit()));
                         } else {
                             updateState(channelUID, UnDefType.UNDEF);
                         }
                     } else if (command instanceof QuantityType<?>) {
                         QuantityType<?> newValue = (QuantityType<?>) command;
-                        if (!newValue.getUnit().equals(unit.getTemperatureUnit())) {
+                        if (!Objects.equals(sensiboSky.getTemperatureUnit(), newValue.getUnit())) {
                             // If quantity is given in celsius when fahrenheit is used or opposite
                             try {
                                 UnitConverter temperatureConverter = newValue.getUnit()
-                                        .getConverterToAny(unit.getTemperatureUnit());
+                                        .getConverterToAny(sensiboSky.getTemperatureUnit());
                                 // No decimals supported
                                 long convertedValue = (long) temperatureConverter.convert(newValue.longValue());
-                                updateAcState(unit, TARGET_TEMPERATURE_PROPERTY, new DecimalType(convertedValue));
+                                updateAcState(sensiboSky, TARGET_TEMPERATURE_PROPERTY, new DecimalType(convertedValue));
                             } catch (UnconvertibleException | IncommensurableException e) {
-                                logger.info("Could not convert {} to {}: {}", newValue, unit.getTemperatureUnit(),
+                                logger.info("Could not convert {} to {}: {}", newValue, sensiboSky.getTemperatureUnit(),
                                         e.getMessage());
                             }
                         } else {
-                            updateAcState(unit, TARGET_TEMPERATURE_PROPERTY, new DecimalType(newValue.intValue()));
+                            updateAcState(sensiboSky, TARGET_TEMPERATURE_PROPERTY,
+                                    new DecimalType(newValue.intValue()));
                         }
 
                     } else if (command instanceof DecimalType) {
-                        updateAcState(unit, TARGET_TEMPERATURE_PROPERTY, command);
+                        updateAcState(sensiboSky, TARGET_TEMPERATURE_PROPERTY, command);
                     }
                 } else if (CHANNEL_MODE.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        if (unit.getAcState().isPresent()) {
-                            updateState(channelUID, new StringType(unit.getAcState().get().getMode()));
+                        if (sensiboSky.getAcState().isPresent()) {
+                            updateState(channelUID, new StringType(sensiboSky.getAcState().get().getMode()));
                         } else {
                             updateState(channelUID, UnDefType.UNDEF);
                         }
                     } else if (command instanceof StringType) {
                         final StringType newValue = (StringType) command;
-                        updateAcState(unit, MODE_PROPERTY, newValue.toString());
-                        addDynamicChannelsAndProperties(unit);
+                        updateAcState(sensiboSky, MODE_PROPERTY, newValue.toString());
+                        addDynamicChannelsAndProperties(sensiboSky);
                     }
                 } else if (CHANNEL_SWING_MODE.equals(channelUID.getId())) {
-                    if (command instanceof RefreshType && unit.getAcState().isPresent()) {
-                        if (unit.getAcState().isPresent() && unit.getAcState().get().getSwing() != null) {
-                            updateState(channelUID, new StringType(unit.getAcState().get().getSwing()));
+                    if (command instanceof RefreshType && sensiboSky.getAcState().isPresent()) {
+                        if (sensiboSky.getAcState().isPresent() && sensiboSky.getAcState().get().getSwing() != null) {
+                            updateState(channelUID, new StringType(sensiboSky.getAcState().get().getSwing()));
                         } else {
                             updateState(channelUID, UnDefType.UNDEF);
                         }
                     } else if (command instanceof StringType) {
                         final StringType newValue = (StringType) command;
-                        updateAcState(unit, SWING_PROPERTY, newValue.toString());
+                        updateAcState(sensiboSky, SWING_PROPERTY, newValue.toString());
                     }
                 } else if (CHANNEL_FAN_LEVEL.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        if (unit.getAcState().isPresent() && unit.getAcState().get().getFanLevel() != null) {
-                            updateState(channelUID, new StringType(unit.getAcState().get().getFanLevel()));
+                        if (sensiboSky.getAcState().isPresent()
+                                && sensiboSky.getAcState().get().getFanLevel() != null) {
+                            updateState(channelUID, new StringType(sensiboSky.getAcState().get().getFanLevel()));
                         } else {
                             updateState(channelUID, UnDefType.UNDEF);
                         }
                     } else if (command instanceof StringType) {
                         final StringType newValue = (StringType) command;
-                        updateAcState(unit, FAN_LEVEL_PROPERTY, newValue.toString());
+                        updateAcState(sensiboSky, FAN_LEVEL_PROPERTY, newValue.toString());
                     }
                 } else if (CHANNEL_TIMER.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-                        if (unit.getTimer().isPresent() && unit.getTimer().get().secondsRemaining > 0) {
-                            updateState(channelUID, new DecimalType(unit.getTimer().get().secondsRemaining));
+                        if (sensiboSky.getTimer().isPresent() && sensiboSky.getTimer().get().secondsRemaining > 0) {
+                            updateState(channelUID, new DecimalType(sensiboSky.getTimer().get().secondsRemaining));
                         } else {
                             updateState(channelUID, UnDefType.UNDEF);
                         }
                     } else if (command instanceof DecimalType) {
                         final DecimalType newValue = (DecimalType) command;
-                        updateTimer(unit, newValue.intValue());
+                        updateTimer(sensiboSky, newValue.intValue());
                     } else {
-                        updateTimer(unit, null);
+                        updateTimer(sensiboSky, null);
                     }
                 }
             } else {
@@ -274,15 +287,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         generatedChannelTypes.clear();
 
         newChannels.addAll(createDynamicChannels(sensiboSky));
-
-        // Add properties
-        final Map<String, String> properties = new HashMap<>();
-        properties.put("podId", sensiboSky.getId());
-        properties.put("firmwareType", sensiboSky.getFirmwareType());
-        properties.put("firmwareVersion", sensiboSky.getFirmwareVersion());
-        properties.put("productModel", sensiboSky.getProductModel());
-        properties.put("macAddress", sensiboSky.getMacAddress());
-
+        Map<String, String> properties = sensiboSky.getThingProperties();
         updateThing(editThing().withChannels(newChannels).withProperties(properties).build());
     }
 

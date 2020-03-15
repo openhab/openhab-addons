@@ -66,7 +66,7 @@ public class SensiboHandlerFactory extends BaseThingHandlerFactory {
         if (SensiboBindingConstants.THING_TYPE_SENSIBOSKY.equals(thingTypeUID)) {
             return new SensiboSkyHandler(thing);
         } else if (SensiboBindingConstants.THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            final SensiboAccountHandler handler = new SensiboAccountHandler((Bridge) thing, httpClient, bundleContext);
+            final SensiboAccountHandler handler = new SensiboAccountHandler((Bridge) thing, httpClient);
             registerDeviceDiscoveryService(handler);
             return handler;
         }
