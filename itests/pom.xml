@@ -20,9 +20,8 @@
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
-
-    <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <!-- disable itests for mqtt temporarily 
+    <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
     -->
     <module>org.openhab.binding.nest.tests</module>
@@ -30,9 +29,7 @@
     <module>org.openhab.binding.systeminfo.tests</module>
     <module>org.openhab.binding.tradfri.tests</module>
     <module>org.openhab.binding.wemo.tests</module>
-    <!-- disable this test temporarily since it is failing for JDK11
-     <module>org.openhab.io.hueemulation.tests</module>
-    -->
+    <module>org.openhab.io.hueemulation.tests</module>
     <!-- disable itests for mqtt temporarily 
     <module>org.openhab.io.mqttembeddedbroker.tests</module>
     -->
@@ -119,11 +116,6 @@
           <type>pom</type>
           <scope>provided</scope>
         </dependency>
-        <dependency>
-		    <groupId>biz.aQute.bnd</groupId>
-		    <artifactId>biz.aQute.tester</artifactId>
-		    <version>${bnd.version}</version>
-		</dependency>
       </dependencies>
 
       <build>
@@ -139,15 +131,13 @@
             <groupId>biz.aQute.bnd</groupId>
             <artifactId>bnd-indexer-maven-plugin</artifactId>
             <configuration>
-                  <includeJar>true</includeJar>
-           </configuration>
+              <includeJar>true</includeJar>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>biz.aQute.bnd</groupId>
             <artifactId>bnd-testing-maven-plugin</artifactId>
             <configuration>
-              <failOnChanges>false</failOnChanges>
-              <resolve>true</resolve>
               <bndruns>
                 <bndrun>itest.bndrun</bndrun>
               </bndruns>
@@ -156,12 +146,11 @@
           <plugin>
             <groupId>biz.aQute.bnd</groupId>
             <artifactId>bnd-resolver-maven-plugin</artifactId>
-	           <configuration>
-	             <failOnChanges>false</failOnChanges>
-	             <bndruns>
-	               <bndrun>itest.bndrun</bndrun>
-	             </bndruns>
-	           </configuration>
+            <configuration>
+              <bndruns>
+                <bndrun>itest.bndrun</bndrun>
+              </bndruns>
+            </configuration>
           </plugin>
         </plugins>
       </build>
