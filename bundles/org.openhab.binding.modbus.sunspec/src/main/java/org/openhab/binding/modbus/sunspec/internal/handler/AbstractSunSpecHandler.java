@@ -245,7 +245,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return slaveEndpoint;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
-            throw new IllegalStateException();
+            return null;
         }
     }
 
@@ -260,9 +260,10 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format("Bridge '%s' is offline",
-                    Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>")));
-            logger.debug("No bridge handler available -- aborting init for {}", this);
+            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    String.format("Bridge '%s' is offline", label));
+            logger.debug("No bridge handler available -- aborting init for {}", label);
             return;
         }
 
@@ -292,7 +293,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Remove the endpoint if exists
      */
-    private synchronized void unregisterEndpoint() {
+    private void unregisterEndpoint() {
         if (endpoint.isPresent()) {
             endpoint = Optional.empty();
         }
