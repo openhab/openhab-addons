@@ -74,31 +74,31 @@
 		<label>Temperature</label>
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
-		<state pattern="%f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Actual measured room Humidity</description>
 		<category>Humidity</category>
-		<state pattern="%d %%" readOnly="true">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="rainrate">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
-		<state pattern="%d mm" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="raintotal">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Total Rain</label>
 		<description>Total rain</description>
-		<state pattern="%d mm" readOnly="true">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -106,14 +106,14 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
 		<description>Current wind gust</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="windaverage">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Average</label>
 		<description>Current average wind</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="winddirection">
@@ -121,7 +121,7 @@
 		<label>Wind Direction</label>
 		<description>Current wind direction</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="watt">
@@ -143,7 +143,7 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Ampere</label>
 		<description>Current ampere</description>
-		<state pattern="%.1f A" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="timestamp">
