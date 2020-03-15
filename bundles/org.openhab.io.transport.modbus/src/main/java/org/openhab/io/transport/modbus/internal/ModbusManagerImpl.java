@@ -123,14 +123,13 @@ public class ModbusManagerImpl implements ModbusManager {
     /**
      * Check that transaction id of the response and request match
      *
-     * @param response
-     * @param libRequest
-     * @param task
-     * @param operationId
-     * @throws ModbusUnexpectedTransactionIdException
+     * @param response response from the slave corresponding to request
+     * @param libRequest modbus request
+     * @param operationId operation id for logging
+     * @throws ModbusUnexpectedTransactionIdException when transaction IDs of the request and
+     *             response do not match
      */
-    private <R> void checkTransactionId(ModbusResponse response, ModbusRequest libRequest,
-            TaskWithEndpoint<R, ? extends ModbusCallback> task, String operationId)
+    private <R> void checkTransactionId(ModbusResponse response, ModbusRequest libRequest, String operationId)
             throws ModbusUnexpectedTransactionIdException {
         // Compare request and response transaction ID. NOTE: ModbusTransaction.getTransactionID() is static and
         // not safe to use
@@ -143,14 +142,13 @@ public class ModbusManagerImpl implements ModbusManager {
     /**
      * Check that function code of the response and request match
      *
-     * @param response
-     * @param libRequest
-     * @param task
-     * @param operationId
-     * @throws ModbusUnexpectedTransactionIdException
+     * @param response response from the slave corresponding to request
+     * @param libRequest modbus request
+     * @param operationId operation id for logging
+     * @throws ModbusUnexpectedResponseFunctionCodeException when response function code does not match the request
+     *             (ill-behaving slave)
      */
-    private <R> void checkFunctionCode(ModbusResponse response, ModbusRequest libRequest,
-            TaskWithEndpoint<R, ? extends ModbusCallback> task, String operationId)
+    private <R> void checkFunctionCode(ModbusResponse response, ModbusRequest libRequest, String operationId)
             throws ModbusUnexpectedResponseFunctionCodeException {
         if ((response.getFunctionCode() != libRequest.getFunctionCode())) {
             throw new ModbusUnexpectedResponseFunctionCodeException(libRequest.getTransactionID(),
@@ -168,14 +166,13 @@ public class ModbusManagerImpl implements ModbusManager {
      *
      * This is to identify clearly invalid responses which might cause problems downstream when using the data.
      *
-     * @param response
-     * @param request
-     * @param task
-     * @param operationId
-     * @throws ModbusUnexpectedResponseSizeException
+     * @param response response response from the slave corresponding to request
+     * @param request modbus request
+     * @param operationId operation id for logging
+     * @throws ModbusUnexpectedResponseSizeException when data length of the response and request do not match
      */
-    private <R> void checkResponseSize(ModbusResponse response, ModbusReadRequestBlueprint request, PollTask task,
-            String operationId) throws ModbusUnexpectedResponseSizeException {
+    private <R> void checkResponseSize(ModbusResponse response, ModbusReadRequestBlueprint request, String operationId)
+            throws ModbusUnexpectedResponseSizeException {
         final int responseCount = ModbusLibraryWrapper.getNumberOfItemsInResponse(response, request);
         if (responseCount < request.getDataLength()) {
             throw new ModbusUnexpectedResponseSizeException(request.getDataLength(), responseCount);
@@ -206,15 +203,15 @@ public class ModbusManagerImpl implements ModbusManager {
                     request.getFunctionCode(), libRequest.getHexMessage(), operationId);
             // Might throw ModbusIOException (I/O error) or ModbusSlaveException (explicit exception response from
             // slave)
-            timer.transaction.timeRunnableWithException(() -> transaction.execute());
+            timer.transaction.timeRunnableWithModbusException(() -> transaction.execute());
             ModbusResponse response = transaction.getResponse();
             logger.trace("Response for read request (FC={}, transaction ID={}): {} [operation ID {}]",
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
-            checkTransactionId(response, libRequest, task, operationId);
-            checkFunctionCode(response, libRequest, task, operationId);
-            checkResponseSize(response, request, task, operationId);
+            checkTransactionId(response, libRequest, operationId);
+            checkFunctionCode(response, libRequest, operationId);
+            checkResponseSize(response, request, operationId);
             if (callback != null) {
-                timer.callback.timeRunnableWithException(
+                timer.callback.timeRunnableWithModbusException(
                         () -> ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response));
             }
         }
@@ -245,12 +242,12 @@ public class ModbusManagerImpl implements ModbusManager {
 
             // Might throw ModbusIOException (I/O error) or ModbusSlaveException (explicit exception response from
             // slave)
-            timer.transaction.timeRunnableWithException(() -> transaction.execute());
+            timer.transaction.timeRunnableWithModbusException(() -> transaction.execute());
             ModbusResponse response = transaction.getResponse();
             logger.trace("Response for write request (FC={}, transaction ID={}): {} [operation ID {}]",
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
-            checkTransactionId(response, libRequest, task, operationId);
-            checkFunctionCode(response, libRequest, task, operationId);
+            checkTransactionId(response, libRequest, operationId);
+            checkFunctionCode(response, libRequest, operationId);
             if (callback != null) {
                 timer.callback.timeRunnable(
                         () -> invokeCallbackWithResponse(request, callback, new ModbusResponseImpl(response)));
@@ -277,14 +274,11 @@ public class ModbusManagerImpl implements ModbusManager {
      * here https://community.openhab.org/t/connection-pooling-in-modbus-binding/5246/111?u=ssalonen
      */
     public static final long DEFAULT_SERIAL_INTER_TRANSACTION_DELAY_MILLIS = 35;
+
     /**
      * Thread naming for modbus read & write requests. Also used by the monitor thread
      */
     private static final String MODBUS_POLLER_THREAD_POOL_NAME = "modbusManagerPollerThreadPool";
-    /**
-     * Thread naming for executing callbacks
-     */
-    private static final String MODBUS_POLLER_CALLBACK_THREAD_POOL_NAME = "modbusManagerCallbackThreadPool";
 
     /**
      * Log message with WARN level if the task queues exceed this limit.
@@ -780,7 +774,7 @@ public class ModbusManagerImpl implements ModbusManager {
                     // We want to catch all unexpected exceptions since all unhandled exceptions make
                     // ScheduledExecutorService halt the polling. It is better to print out the exception, and try again
                     // (on next poll cycle)
-                    logger.error(
+                    logger.warn(
                             "Execution of scheduled ({}ms) poll task {} failed unexpectedly. Ignoring exception, polling again according to poll interval.",
                             pollPeriodMillis, task, e);
                 }

@@ -18,6 +18,8 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.internal.ModbusManagerImpl.PollTaskUnregistered;
 
+import net.wimpi.modbus.ModbusException;
+
 /**
  * Implementation of simple stop watch.
  *
@@ -36,8 +38,8 @@ public class SimpleStopWatch {
     }
 
     @FunctionalInterface
-    public abstract interface RunnableWithException<T extends Throwable> {
-        public abstract void run() throws T;
+    public abstract interface RunnableWithModbusException {
+        public abstract void run() throws ModbusException;
     }
 
     /**
@@ -127,7 +129,7 @@ public class SimpleStopWatch {
      * @param action action to time
      * @throws T when original action throws the exception
      */
-    public <T extends Throwable> void timeRunnableWithException(RunnableWithException<T> action) throws T {
+    public void timeRunnableWithModbusException(RunnableWithModbusException action) throws ModbusException {
         try {
             this.resume();
             action.run();
