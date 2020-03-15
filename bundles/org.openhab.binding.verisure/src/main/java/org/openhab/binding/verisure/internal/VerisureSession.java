@@ -244,11 +244,9 @@ public class VerisureSession {
         logger.debug("Settings URL: {}", url);
 
         try {
-            ContentResponse response = httpClient.GET(url);
-            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-            String replacement = "";
-            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
-                    response.getContentAsString().replaceAll(pattern, replacement));
+            ContentResponse resp = httpClient.GET(url);
+            html = resp.getContentAsString();
+            logger.trace("{} html: {}", url, html);
         } catch (ExecutionException e) {
             logger.warn("Caught ExecutionException {}", e.getMessage(), e);
             return null;
@@ -289,11 +287,11 @@ public class VerisureSession {
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
             String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
             String replacement = "";
-            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
-                    response.getContentAsString().replaceAll(pattern, replacement));
+            String content = response.getContentAsString();
+            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(), content.replaceAll(pattern, replacement));
             switch (response.getStatus()) {
                 case HttpStatus.OK_200:
-                    if (response.getContentAsString().contains("<title>MyPages</title>")) {
+                    if (content.contains("<title>MyPages</title>")) {
                         logger.debug("Status code 200 and on MyPages!");
                         setPasswordFromCookie();
                         return 1;
@@ -314,7 +312,7 @@ public class VerisureSession {
                     logger.debug("Status code 503. Verisure service temporarily down");
                     return HttpStatus.SERVICE_UNAVAILABLE_503;
                 default:
-                    logger.info("Status code {} body {}", response.getStatus(), response.getContentAsString());
+                    logger.info("Status code {} body {}", response.getStatus(), content);
                     break;
             }
         } catch (ExecutionException e) {
@@ -331,11 +329,14 @@ public class VerisureSession {
         T result = null;
         logger.debug("HTTP GET: {}", BASEURL + url);
         try {
-            ContentResponse httpResult = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
-            logger.debug("HTTP Response ({}) Body:{}", httpResult.getStatus(),
-                    httpResult.getContentAsString().replaceAll("\n+", "\n"));
-            if (httpResult.getStatus() == HttpStatus.OK_200) {
-                result = gson.fromJson(httpResult.getContentAsString(), jsonClass);
+            ContentResponse response = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
+            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+            String replacement = "";
+            String content = response.getContentAsString();
+            logger.debug("HTTP Response ({}) Body:{}", response.getStatus(), content.replaceAll(pattern, replacement));
+
+            if (response.getStatus() == HttpStatus.OK_200) {
+                result = gson.fromJson(content, jsonClass);
             }
             return result;
         } catch (ExecutionException e) {
@@ -417,7 +418,8 @@ public class VerisureSession {
             ContentResponse response = postVerisureAPI(url, data, Boolean.FALSE);
             if (response != null) {
                 logger.debug("HTTP Response ({})", response.getStatus());
-                if (response.getStatus() == HttpStatus.OK_200) {
+                int httpStatus = response.getStatus();
+                if (httpStatus == HttpStatus.OK_200) {
                     String content = response.getContentAsString();
                     if (content.contains("\"message\":\"Request Failed. Code 503 from")) {
                         if (url.contains("https://mypages")) {
@@ -431,9 +433,9 @@ public class VerisureSession {
                     } else {
                         String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
                         String replacement = "";
-                        logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
+                        logger.trace("HTTP Response ({}) Body:{}", httpStatus,
                                 content.replaceAll(pattern, replacement));
-                        return response.getStatus();
+                        return httpStatus;
                     }
                 } else {
                     logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
