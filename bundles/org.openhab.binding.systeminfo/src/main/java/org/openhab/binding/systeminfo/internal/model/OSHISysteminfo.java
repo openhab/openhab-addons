@@ -136,24 +136,24 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getOsVersion() {
-        String osVersion = operatingSystem.getVersion().toString();
+        String osVersion = operatingSystem.getVersionInfo().toString();
         return new StringType(osVersion);
     }
 
     @Override
     public StringType getCpuName() {
-        String name = cpu.getName();
+        String name = cpu.getProcessorIdentifier().getName();
         return new StringType(name);
     }
 
     @Override
     public StringType getCpuDescription() {
-        String model = cpu.getModel();
-        String family = cpu.getFamily();
+        String model = cpu.getProcessorIdentifier().getModel();
+        String family = cpu.getProcessorIdentifier().getFamily();
         String serialNumber = computerSystem.getSerialNumber();
-        String identifier = cpu.getIdentifier();
-        String vendor = cpu.getVendor();
-        String architecture = cpu.isCpu64bit() ? "64 bit" : "32 bit";
+        String identifier = cpu.getProcessorIdentifier().getIdentifier();
+        String vendor = cpu.getProcessorIdentifier().getVendor();
+        String architecture = cpu.getProcessorIdentifier().isCpu64bit() ? "64 bit" : "32 bit";
         String descriptionFormatString = "Model: %s %s,family: %s, vendor: %s, sn: %s, identifier: %s ";
         String description = String.format(descriptionFormatString, model, architecture, family, vendor, serialNumber,
                 identifier);
@@ -355,7 +355,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         powerSources = hal.getPowerSources();
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
-        double remainingTimeInSeconds = powerSource.getTimeRemaining();
+        double remainingTimeInSeconds = powerSource.getTimeRemainingEstimated();
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
         BigDecimal remainingTime = getTimeInMinutes(remainingTimeInSeconds);
         return remainingTime.signum() == 1 ? new DecimalType(remainingTime) : null;
@@ -367,7 +367,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         powerSources = hal.getPowerSources();
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
-        double remainingCapacity = powerSource.getRemainingCapacity();
+        double remainingCapacity = powerSource.getRemainingCapacityPercent();
         BigDecimal remainingCapacityPercents = getPercentsValue(remainingCapacity);
         return new DecimalType(remainingCapacityPercents);
     }
