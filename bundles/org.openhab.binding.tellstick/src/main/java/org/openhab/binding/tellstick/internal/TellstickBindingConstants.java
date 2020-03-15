@@ -12,12 +12,22 @@
  */
 package org.openhab.binding.tellstick.internal;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -28,6 +38,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class TellstickBindingConstants {
+
+    public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
+    public static final Unit<Speed> WIND_SPEED_UNIT_MS = SmartHomeUnits.METRE_PER_SECOND;
+    public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
 
     public static final String BINDING_ID = "tellstick";
 

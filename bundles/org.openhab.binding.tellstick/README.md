@@ -123,11 +123,11 @@ Actuators (dimmer/switch) support the following channels:
 
 Sensors (sensor) support the following channels:
 
-| Channel Type ID | Item Type | Description                                                 |
-|-----------------|-----------|-------------------------------------------------------------|
-| humidity        | Number    | This channel reports the current humidity in percentage.    |
-| temperature     | Number    | This channel reports the current temperature in celsius.    |
-| timestamp       | DateTime  | This channel reports the last time this sensor was updates. |
+| Channel Type ID | Item Type           | Description                                                 |
+|-----------------|---------------------|-------------------------------------------------------------|
+| humidity        | Number              | This channel reports the current humidity in percentage.    |
+| temperature     | Number:Temperature  | This channel reports the current temperature in celsius.    |
+| timestamp       | DateTime            | This channel reports the last time this sensor was updates. |
 
 PowerSensors ([powersensor]) support the following channels:
 
@@ -139,11 +139,11 @@ PowerSensors ([powersensor]) support the following channels:
 
 WindSensors ([windsensor]) support the following channels:
 
-| Channel Type ID | Item Type | Description                  |
-|-----------------|-----------|------------------------------|
-| windgust        | Number    | This current peak wind gust. |
-| winddirection   | Number    | The current wind direction.  |
-| windaverage     | DateTime  | The current wind avarage.    |
+| Channel Type ID | Item Type    | Description                  |
+|-----------------|--------------|------------------------------|
+| windgust        | Number:Speed | The current peak wind gust.  |
+| winddirection   | Number       | The current wind direction.  |
+| windaverage     | Number:Speed | The current wind avarage.    |
 
 RainSensors ([rainsensor]) support the following channels:
 
@@ -155,7 +155,7 @@ RainSensors ([rainsensor]) support the following channels:
 ### Switchbased sensor workaround
 
 All switchbased sensors are binary and the goal is to represent them as a `contact` item in openHAB. Eg. a door is open or closed and can't be altered by sending a radio signal.
-To achive that we will create a proxy item which is updated by a rule.
+To achieve that we will create a proxy item which is updated by a rule.
 
 First create another proxy item for every sensor:
 
