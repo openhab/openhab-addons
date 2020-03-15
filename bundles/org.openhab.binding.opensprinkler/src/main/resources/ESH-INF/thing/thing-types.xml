@@ -73,7 +73,7 @@
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
-            <channel id="currentDraw" typeId="currentDraw"></channel>
+			<channel id="currentDraw" typeId="currentDraw"></channel>
 		</channels>
 	</thing-type>
 
@@ -86,11 +86,11 @@
 	</channel-type>
 	
 	<channel-type id="currentDraw">
-	   <item-type>Number:ElectricCurrent</item-type>
-	   <label>Current Draw</label>
-	   <description>Provides the current draw.</description>
-	   <category>Sensor</category>
-	   <state readOnly="true" pattern="%.1f %unit%" />
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Draw</label>
+		<description>Provides the current draw.</description>
+		<category>Sensor</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="stationState">
