@@ -14,6 +14,7 @@ package org.openhab.binding.eltako.internal.handler;
 
 import static org.openhab.binding.eltako.internal.misc.EltakoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -54,12 +55,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Wenske - Initial contribution
  */
+@NonNullByDefault
 public class EltakoFsb14Handler extends EltakoGenericHandler {
 
     /*
      * Logger instance to create log entries
      */
-    private final Logger logger = LoggerFactory.getLogger(EltakoGenericHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EltakoFsb14Handler.class);
 
     private DecimalType time = DecimalType.ZERO;
 

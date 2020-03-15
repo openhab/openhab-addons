@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
@@ -28,6 +29,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
  *
  * @author Martin Wenske - Initial contribution
  */
+@NonNullByDefault
 public class EltakoFgw14BridgeHandler extends EltakoGenericBridgeHandler {
 
     /*

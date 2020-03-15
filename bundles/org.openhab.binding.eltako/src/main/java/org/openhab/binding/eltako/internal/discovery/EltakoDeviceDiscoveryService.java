@@ -16,7 +16,7 @@ import static org.openhab.binding.eltako.internal.misc.EltakoBindingConstants.*;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Wenske - Initial contribution
  */
-
+@NonNullByDefault
 public class EltakoDeviceDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(EltakoDeviceDiscoveryService.class);
 
@@ -93,11 +93,6 @@ public class EltakoDeviceDiscoveryService extends AbstractDiscoveryService {
             if (!DeviceDiscoveryThreadIsNotCanceled) {
                 break;
             }
-            if (this.bridgeHandler == null) {
-                // Log event to console
-                logger.debug("Bridge instance not available => end scan");
-                break;
-            }
             if (i == 0) {
                 // Force FAM14 into config mode
                 this.bridgeHandler.constuctMessage(message, 5, 0xff, data, id, 0xFF);
@@ -121,7 +116,7 @@ public class EltakoDeviceDiscoveryService extends AbstractDiscoveryService {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                logger.error("Sleep does not work in DeviceDiscoveryThread: {}", e);
+                logger.error("Sleep does not work in DeviceDiscoveryThread");
             }
         }
         // Signal scan has been stopped
@@ -150,7 +145,7 @@ public class EltakoDeviceDiscoveryService extends AbstractDiscoveryService {
      * Called by framework in order to get supported thing types
      */
     @Override
-    public Set<@NonNull ThingTypeUID> getSupportedThingTypes() {
+    public Set<ThingTypeUID> getSupportedThingTypes() {
         logger.debug("Get supported thing types");
         return SUPPORTED_DEVICE_THING_TYPES_UIDS;
     }

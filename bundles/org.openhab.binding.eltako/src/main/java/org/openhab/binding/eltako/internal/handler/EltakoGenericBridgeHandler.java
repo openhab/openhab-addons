@@ -157,7 +157,7 @@ public class EltakoGenericBridgeHandler extends ConfigStatusBridgeHandler {
                     // Try to open comport
                     serialPort = id.open(EltakoBindingConstants.BINDING_ID, 1000);
                 } catch (PortInUseException e) {
-                    logger.error("{} already in use: {}", comportName, e);
+                    logger.error("{} already in use", comportName);
                     // Set bridge status to OFFLINE
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Comport in use by another application");
@@ -171,7 +171,7 @@ public class EltakoGenericBridgeHandler extends ConfigStatusBridgeHandler {
                     serialPort.enableReceiveTimeout(100);
                 } catch (UnsupportedCommOperationException e) {
                     // Log event to console
-                    logger.error("Something went wrong setting {} parameters: {}", comportName, e);
+                    logger.error("Something went wrong setting {} parameters", comportName);
                     // Set bridge status to OFFLINE
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Something went wrong setting Comport parameters");
@@ -182,7 +182,7 @@ public class EltakoGenericBridgeHandler extends ConfigStatusBridgeHandler {
                     outputStream = serialPort.getOutputStream();
                 } catch (IOException e) {
                     // Log event to console
-                    logger.error("Something went wrong acquireing input/output stream on {}: {}", comportName, e);
+                    logger.error("Something went wrong acquireing input/output stream on {}", comportName);
                     // Set bridge status to OFFLINE
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Something went wrong acquireing input/output stream");
@@ -312,7 +312,7 @@ public class EltakoGenericBridgeHandler extends ConfigStatusBridgeHandler {
             outputStream.flush();
         } catch (IOException e) {
             // Log event to console
-            logger.error("Write action on {} failed: {}", comportName, e);
+            logger.error("Write action on {} failed", comportName);
         }
     }
 
@@ -341,7 +341,7 @@ public class EltakoGenericBridgeHandler extends ConfigStatusBridgeHandler {
         try {
             rxcount = inputStream.read(buffer, 0, length);
         } catch (IOException e) {
-            logger.error("Read action on {} failed: {}", comportName, e);
+            logger.error("Read action on {} failed", comportName);
             return 0;
         }
 

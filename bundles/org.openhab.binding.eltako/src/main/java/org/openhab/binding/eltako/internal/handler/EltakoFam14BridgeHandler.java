@@ -152,7 +152,7 @@ public class EltakoFam14BridgeHandler extends EltakoGenericBridgeHandler {
                     // Try to open comport
                     serialPort = id.open(EltakoBindingConstants.BINDING_ID, 1000);
                 } catch (PortInUseException e) {
-                    logger.error("{} already in use: {}", comportName, e);
+                    logger.error("{} already in use", comportName);
                     // Set bridge status to OFFLINE
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Comport in use by another application");
@@ -166,7 +166,7 @@ public class EltakoFam14BridgeHandler extends EltakoGenericBridgeHandler {
                     serialPort.enableReceiveTimeout(100);
                 } catch (UnsupportedCommOperationException e) {
                     // Log event to console
-                    logger.error("Something went wrong setting {} parameters: {}", comportName, e);
+                    logger.error("Something went wrong setting {} parameters", comportName);
                     // Set bridge status to OFFLINE
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Something went wrong setting Comport parameters");
@@ -177,7 +177,7 @@ public class EltakoFam14BridgeHandler extends EltakoGenericBridgeHandler {
                     outputStream = serialPort.getOutputStream();
                 } catch (IOException e) {
                     // Log event to console
-                    logger.error("Something went wrong acquireing input/output stream on {}: {}", comportName, e);
+                    logger.error("Something went wrong acquireing input/output stream on {}", comportName);
                     // Set bridge status to OFFLINE
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Something went wrong acquireing input/output stream");
