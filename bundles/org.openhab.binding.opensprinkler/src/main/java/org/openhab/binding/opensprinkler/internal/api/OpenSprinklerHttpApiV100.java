@@ -181,6 +181,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
+    public int currentDraw() throws CommunicationApiException {
+        return statusInfo().curr;
+    }
+
+    @Override
     public int getNumberOfStations() throws CommunicationApiException {
         String returnContent;
 
@@ -259,6 +264,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         public List<List<Integer>> ps;
         @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
+        public int curr;
     }
 
     /**

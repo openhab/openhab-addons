@@ -26,7 +26,7 @@ import org.openhab.binding.opensprinkler.internal.model.StationProgram;
  */
 public interface OpenSprinklerApi {
     /**
-     * Whether the devie entered manual mode and accepts API requests to control the stations.
+     * Whether the device entered manual mode and accepts API requests to control the stations.
      *
      * @return True if this API interface is connected to the Open Sprinkler API. False otherwise.
      */
@@ -89,6 +89,15 @@ public interface OpenSprinklerApi {
      * @throws Exception
      */
     public abstract boolean isRainDetected() throws CommunicationApiException;
+
+    /**
+     * Returns the current voltage draw of all connected zones of the OpenSprinkler device in milliamperes. Given the
+     * device does not have the possibility to measure this, the returning value will be 0.
+     *
+     * @return current draw in milliamperes
+     * @throws CommunicationApiException
+     */
+    public abstract int currentDraw() throws CommunicationApiException;
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler
