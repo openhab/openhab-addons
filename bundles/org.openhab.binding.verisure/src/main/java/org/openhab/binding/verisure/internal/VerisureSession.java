@@ -244,9 +244,11 @@ public class VerisureSession {
         logger.debug("Settings URL: {}", url);
 
         try {
-            ContentResponse resp = httpClient.GET(url);
-            html = resp.getContentAsString();
-            logger.trace("{} html: {}", url, html);
+            ContentResponse response = httpClient.GET(url);
+            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+            String replacement = "";
+            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
+                    response.getContentAsString().replaceAll(pattern, replacement));
         } catch (ExecutionException e) {
             logger.warn("Caught ExecutionException {}", e.getMessage(), e);
             return null;
@@ -285,7 +287,10 @@ public class VerisureSession {
         try {
             logger.debug("Check for login status, url: {}", url);
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
-            logger.trace("HTTP status response: {}", response.getContentAsString());
+            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+            String replacement = "";
+            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
+                    response.getContentAsString().replaceAll(pattern, replacement));
             switch (response.getStatus()) {
                 case HttpStatus.OK_200:
                     if (response.getContentAsString().contains("<title>MyPages</title>")) {
@@ -424,7 +429,10 @@ public class VerisureSession {
                             url = apiServerInUse + urlString;
                         }
                     } else {
-                        logger.trace("Response body: {}", content);
+                        String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+                        String replacement = "";
+                        logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
+                                content.replaceAll(pattern, replacement));
                         return response.getStatus();
                     }
                 } else {
@@ -441,8 +449,10 @@ public class VerisureSession {
 
         try {
             ContentResponse response = httpClient.GET(url);
+            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+            String replacement = "";
             logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
-                    response.getContentAsString().replaceAll("\n+", "\n"));
+                    response.getContentAsString().replaceAll(pattern, replacement));
             setPasswordFromCookie();
         } catch (ExecutionException e) {
             logger.warn("ExecutionException: {}", e.getMessage(), e);
@@ -602,7 +612,7 @@ public class VerisureSession {
         thing.setDeviceId(deviceId);
         VerisureThing oldObj = verisureThings.get(deviceId);
         logger.trace("Old thing: {}", oldObj);
-        logger.trace("Udated thing: {}", thing);
+        logger.trace("Updated thing: {}", thing);
         if (oldObj == null || !oldObj.equals(thing)) {
             thing.setSiteId(installation.getInstallationId());
             thing.setSiteName(installation.getInstallationName());
