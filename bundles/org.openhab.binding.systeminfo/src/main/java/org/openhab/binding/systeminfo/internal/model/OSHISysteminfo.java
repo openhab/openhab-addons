@@ -431,34 +431,34 @@ public class OSHISysteminfo implements SysteminfoInterface {
     public @Nullable DecimalType getSwapTotal() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         swapTotal = getSizeInMB(swapTotal);
-        return swapTotal > 0 ? new DecimalType(swapTotal) : null;
+        return new DecimalType(swapTotal);
     }
 
     @Override
     public @Nullable DecimalType getSwapAvailable() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
-        long swapAvaialble = swapTotal - swapUsed;
-        swapAvaialble = getSizeInMB(swapAvaialble);
-        return swapAvaialble > 0 ? new DecimalType(swapAvaialble) : null;
+        long swapAvailable = swapTotal - swapUsed;
+        swapAvailable = getSizeInMB(swapAvailable);
+        return new DecimalType(swapAvailable);
     }
 
     @Override
     public @Nullable DecimalType getSwapUsed() {
-        long swapTotal = memory.getVirtualMemory().getSwapUsed();
-        swapTotal = getSizeInMB(swapTotal);
-        return swapTotal > 0 ? new DecimalType(swapTotal) : null;
+        long swapUsed = memory.getVirtualMemory().getSwapUsed();
+        swapUsed = getSizeInMB(swapUsed);
+        return new DecimalType(swapUsed);
     }
 
     @Override
     public @Nullable DecimalType getSwapAvailablePercent() {
-        long usedSwap = memory.getVirtualMemory().getSwapUsed();
-        long totalSwap = memory.getVirtualMemory().getSwapTotal();
-        long freeSwap = totalSwap - usedSwap;
-        if (totalSwap > 0) {
-            double freePercentDecimal = (double) freeSwap / (double) totalSwap;
-            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-            return new DecimalType(freePercent);
+        long swapTotal = memory.getVirtualMemory().getSwapTotal();
+        long swapUsed = memory.getVirtualMemory().getSwapUsed();
+        long swapAvailable = swapTotal - swapUsed;
+        if (swapTotal > 0) {
+            double swapAvailablePercentDecimal = (double) swapAvailable / (double) swapTotal;
+            BigDecimal swapAvailablePercent = getPercentsValue(swapAvailablePercentDecimal);
+            return new DecimalType(swapAvailablePercent);
         } else {
             return null;
         }
@@ -466,12 +466,12 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public @Nullable DecimalType getSwapUsedPercent() {
-        long usedSwap = memory.getVirtualMemory().getSwapUsed();
-        long totalSwap = memory.getVirtualMemory().getSwapTotal();
-        if (totalSwap > 0) {
-            double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
-            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
-            return new DecimalType(usedPercent);
+        long swapTotal = memory.getVirtualMemory().getSwapTotal();
+        long swapUsed = memory.getVirtualMemory().getSwapUsed();
+        if (swapTotal > 0) {
+            double swapUsedPercentDecimal = (double) swapUsed / (double) swapTotal;
+            BigDecimal swapUsedPercent = getPercentsValue(swapUsedPercentDecimal);
+            return new DecimalType(swapUsedPercent);
         } else {
             return null;
         }
