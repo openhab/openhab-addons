@@ -25,12 +25,12 @@ public class InverterModelBlock {
     /**
      * Type of inverter (single phase, split phase, three phase)
      */
-    public int phaseConfiguration;
+    public Integer phaseConfiguration;
 
     /**
      * Length of the block in 16bit words
      */
-    public int length;
+    public Integer length;
 
     /**
      * AC Total Current value
