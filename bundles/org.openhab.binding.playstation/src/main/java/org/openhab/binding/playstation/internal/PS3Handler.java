@@ -124,11 +124,7 @@ public class PS3Handler extends BaseThingHandler {
 
     private void turnOnPS3() {
 
-        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
-            wakeSocket.setBroadcast(true);
-            searchSocket.setBroadcast(true);
-            searchSocket.setSoTimeout(1 * 1000);
-
+        try {
             InetAddress bcAddress = InetAddress.getByName("255.255.255.255");
 
             // send WOL magic packet
@@ -145,24 +141,37 @@ public class PS3Handler extends BaseThingHandler {
             // wait for responses
             byte[] rxbuf = new byte[256];
             DatagramPacket receivePacket = new DatagramPacket(rxbuf, rxbuf.length);
-            for (int i = 0; i < 34; i++) {
-                searchSocket.send(srchPacket);
-                try {
-                    searchSocket.receive(receivePacket);
-                    logger.debug("PS3 started?: '{}'", receivePacket);
-                    // leave the loop
-                    break;
-                } catch (SocketTimeoutException e) {
-                    // try again
-                }
-                wakeSocket.send(wakePacket);
-                if (i >= 33) {
-                    logger.debug("PS3 not started!");
-                }
+            scheduler.execute(() -> wakeMethod(srchPacket, receivePacket, wakePacket, 34));
+        } catch (IOException e) {
+            logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());
+        }
+    }
+
+    private void wakeMethod(DatagramPacket srchPacket, DatagramPacket receivePacket, DatagramPacket wakePacket,
+            int triesLeft) {
+        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
+            wakeSocket.setBroadcast(true);
+            searchSocket.setBroadcast(true);
+            searchSocket.setSoTimeout(1000);
+
+            searchSocket.send(srchPacket);
+            try {
+                searchSocket.receive(receivePacket);
+                logger.debug("PS3 started?: '{}'", receivePacket);
+                return;
+            } catch (SocketTimeoutException e) {
+                // try again
+            }
+            wakeSocket.send(wakePacket);
+            if (triesLeft <= 0) {
+                logger.debug("PS3 not started!");
+            } else {
+                scheduler.execute(() -> wakeMethod(srchPacket, receivePacket, wakePacket, triesLeft - 1));
             }
         } catch (IOException e) {
             logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());
         }
+
     }
 
     private byte[] makeWOLMagicPacket(String macAddress) {

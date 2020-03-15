@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * The {@link PlayStationHandlerFactory} is responsible for creating things and thing
@@ -36,7 +36,12 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 @Component(configurationPid = "binding.playstation", service = ThingHandlerFactory.class)
 public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
 
-    private @Nullable LocaleProvider localeProvider;
+    private final LocaleProvider localeProvider;
+
+    @Activate
+    public PlayStationHandlerFactory(@Reference LocaleProvider provider) {
+        localeProvider = provider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -55,15 +60,6 @@ public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference(policy = ReferencePolicy.DYNAMIC)
-    protected void setLocaleProvider(LocaleProvider provider) {
-        localeProvider = provider;
-    }
-
-    protected void unsetLocaleProvider(LocaleProvider provider) {
-        localeProvider = null;
     }
 
 }

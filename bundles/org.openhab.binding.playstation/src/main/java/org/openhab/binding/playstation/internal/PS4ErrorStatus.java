@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.playstation.internal;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,13 +51,8 @@ enum PS4ErrorStatus {
     STATUS_CAN_NOT_PLAY_NOW(0x21, "You can not log in right now."),
     STATUS_ERROR_IN_COMMUNICATION(-1, "Error in comunication with PS4!");
 
-    private static final Map<Integer, PS4ErrorStatus> TAG_MAP = new HashMap<>();
-
-    static {
-        for (PS4ErrorStatus cmd : PS4ErrorStatus.values()) {
-            TAG_MAP.put(cmd.value, cmd);
-        }
-    }
+    private static final Map<Integer, PS4ErrorStatus> TAG_MAP = Arrays.stream(PS4ErrorStatus.values())
+            .collect(Collectors.toMap(status -> status.value, status -> status));
 
     public final int value;
     public final String message;

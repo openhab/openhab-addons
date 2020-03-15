@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.playstation.internal;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,13 +60,8 @@ enum PS4Command {
     COMMENT_VIEWER_SEND(0x32),
     HELLO_REQ(0x6f636370);
 
-    private static final Map<Integer, PS4Command> TAG_MAP = new HashMap<>();
-
-    static {
-        for (PS4Command cmd : PS4Command.values()) {
-            TAG_MAP.put(cmd.value, cmd);
-        }
-    }
+    private static final Map<Integer, PS4Command> TAG_MAP = Arrays.stream(PS4Command.values())
+            .collect(Collectors.toMap(command -> command.value, command -> command));
 
     public final int value;
 
