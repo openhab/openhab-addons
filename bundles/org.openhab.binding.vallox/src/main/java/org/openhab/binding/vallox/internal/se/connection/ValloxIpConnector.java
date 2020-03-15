@@ -19,8 +19,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.configuration.ValloxSEConfiguration;
-import org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,6 @@ public class ValloxIpConnector extends ValloxBaseConnector {
     /**
      * Connect to socket
      */
-    @SuppressWarnings("null")
     @Override
     public void connect(ValloxSEConfiguration config) throws IOException {
         if (isConnected()) {
@@ -68,7 +67,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
     /**
      * Close socket
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // readerThread .interrupt() and .join()
     @Override
     public void close() {
         super.close();
@@ -96,7 +95,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
      *
      * @author Miika Jukka
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // inputStream .available() and .read()
     @NonNullByDefault
     private class TelegramReader extends Thread {
         boolean interrupted = false;

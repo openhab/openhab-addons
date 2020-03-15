@@ -26,11 +26,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants;
+import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.telegram.SendQueueItem;
 import org.openhab.binding.vallox.internal.se.telegram.Telegram;
-import org.openhab.binding.vallox.internal.se.telegram.TelegramFactory;
 import org.openhab.binding.vallox.internal.se.telegram.Telegram.TelegramState;
+import org.openhab.binding.vallox.internal.se.telegram.TelegramFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     private final LinkedList<SendQueueItem> sendQueue = new LinkedList<>();
     protected final ArrayBlockingQueue<Byte> buffer = new ArrayBlockingQueue<>(1024);
 
-    protected @Nullable SerialPortManager portManager;
+    protected SerialPortManager portManager;
     protected ScheduledExecutorService scheduler;
     protected @Nullable OutputStream outputStream;
     protected @Nullable InputStream inputStream;
@@ -60,7 +60,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     protected boolean waitForAckByte = false;
     protected boolean suspendTraffic = false;
 
-    public ValloxBaseConnector(@Nullable SerialPortManager portManager, ScheduledExecutorService scheduler) {
+    public ValloxBaseConnector(SerialPortManager portManager, ScheduledExecutorService scheduler) {
         this.portManager = portManager;
         this.scheduler = scheduler;
     }
@@ -100,7 +100,6 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     /**
      * Stop queue handler
      */
-    @SuppressWarnings("null")
     @Override
     public void close() {
         if (sendQueueHandler != null) {
@@ -200,12 +199,12 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      *
      * @param telegram the telegram to put to queue
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // sendQueueHandler.isCancelled()
     @Override
     public void sendTelegram(Telegram telegram) {
         sendQueue.add(new SendQueueItem(telegram));
         if (sendQueueHandler == null || sendQueueHandler.isCancelled()) {
-            sendQueueHandler = scheduler.scheduleWithFixedDelay(handleSendQueue, 0, 500, TimeUnit.MILLISECONDS);
+            sendQueueHandler = scheduler.scheduleWithFixedDelay(this::handleSendQueue, 0, 500, TimeUnit.MILLISECONDS);
             logger.debug("Send queue handler started");
         }
     }
@@ -213,7 +212,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     /**
      * Send one command or poll telegram from send queue
      */
-    Runnable handleSendQueue = () -> {
+    private void handleSendQueue() {
         if (suspendTraffic || sendQueue.isEmpty()) {
             return;
         }
@@ -241,14 +240,14 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
                 logger.debug("Unknown telegram in send queue: {}", telegram.state);
                 break;
         }
-    };
+    }
 
     /**
      * Write telegram bytes to output stream
      *
      * @param telegram the telegram to write
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // outputStream.flush()
     public void writeToOutputStream(Telegram telegram) {
         if (outputStream != null) {
             try {

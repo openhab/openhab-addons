@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vallox.internal;
 
-import static org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants.*;
+import static org.openhab.binding.vallox.internal.se.ValloxSEConstants.*;
 
 import java.util.Collections;
 import java.util.Set;

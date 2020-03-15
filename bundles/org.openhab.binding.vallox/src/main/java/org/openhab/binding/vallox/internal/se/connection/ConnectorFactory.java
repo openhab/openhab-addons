@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vallox.internal.se.connection;
 
-import static org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants.*;
+import static org.openhab.binding.vallox.internal.se.ValloxSEConstants.*;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;

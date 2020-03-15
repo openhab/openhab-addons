@@ -34,7 +34,7 @@ public class StringChannel extends ValloxChannel {
     }
 
     @Override
-    public State convertToState(Byte value) {
+    public State convertToState(byte value) {
         String noneInstalled = "None";
         StringBuilder sb = new StringBuilder();
 

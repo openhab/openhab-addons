@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vallox.internal.se.connection;
 
-import static org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants.*;
+import static org.openhab.binding.vallox.internal.se.ValloxSEConstants.*;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
         logger.debug("Serial connector initialized");
     }
 
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // After setting serial port parameters
     @Override
     public void connect(ValloxSEConfiguration config) throws IOException {
         if (isConnected()) {
@@ -57,15 +57,11 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
         }
         try {
             logger.debug("Connecting to {}", config.serialPort);
-            if (portManager == null) {
-                throw new IOException("PortManager is null");
-            }
             SerialPortIdentifier portIdentifier = portManager.getIdentifier(config.serialPort);
-
             if (portIdentifier == null) {
                 throw new IOException("No such port " + config.serialPort);
             }
-            this.serialPort = portIdentifier.open("vallox", SERIAL_PORT_READ_TIMEOUT);
+            serialPort = portIdentifier.open("vallox", SERIAL_PORT_READ_TIMEOUT);
             serialPort.setSerialPortParams(SERIAL_BAUDRATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
 
@@ -98,7 +94,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     /**
      * Closes the serial port.
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // serialPort.close()
     @Override
     public void close() {
         super.close();
@@ -154,7 +150,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     /**
      * Read available data from input stream if its not null
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // inputStream
     private void handleDataAvailable() {
         try {
             if (inputStream != null) {

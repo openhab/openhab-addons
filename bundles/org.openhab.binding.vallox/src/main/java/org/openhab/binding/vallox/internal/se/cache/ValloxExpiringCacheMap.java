@@ -13,10 +13,16 @@
 package org.openhab.binding.vallox.internal.se.cache;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.vallox.internal.se.mapper.ChannelDescriptor;
 import org.openhab.binding.vallox.internal.se.telegram.Telegram;
 
 /**
@@ -27,12 +33,40 @@ import org.openhab.binding.vallox.internal.se.telegram.Telegram;
 @NonNullByDefault
 public class ValloxExpiringCacheMap {
 
-    private static final byte[] BYTES_TEMPERATURES = new byte[] { (byte) 0x34, (byte) 0x32, (byte) 0x33, (byte) 0x35 };
-    private static final byte[] BYTES_CO2 = new byte[] { (byte) 0x2C, (byte) 0x2B };
-    private static final byte[] BYTES_CO2_SETPOINT = new byte[] { (byte) 0xB3, (byte) 0xB4 };
+    // @formatter:off
+    /**
+     * Set of channels containing temperatures. Used for checking if all these are cached
+     */
+    private static final Set<ChannelDescriptor> TEMPERATURES = Collections.unmodifiableSet(Stream.of(
+                ChannelDescriptor.TEMPERATURE_INSIDE,
+                ChannelDescriptor.TEMPERATURE_OUTSIDE,
+                ChannelDescriptor.TEMPERATURE_EXHAUST,
+                ChannelDescriptor.TEMPERATURE_INCOMING).collect(Collectors.toSet()));
 
+    /**
+     * Set of channels containing CO2 values. Used for checking if all these are cached
+     */
+    private static final Set<ChannelDescriptor> CO2 = Collections.unmodifiableSet(Stream.of(
+                ChannelDescriptor.CO2_HIGH,
+                ChannelDescriptor.CO2_LOW).collect(Collectors.toSet()));
+
+    /**
+     * Set of channels containing CO2 set point values. Used for checking if all these are cached
+     */
+    private static final Set<ChannelDescriptor> CO2_SETPOINT = Collections.unmodifiableSet(Stream.of(
+                ChannelDescriptor.CO2_SETPOINT_HIGH,
+                ChannelDescriptor.CO2_SETPOINT_LOW).collect(Collectors.toSet()));
+    // @formatter:on
+
+    /**
+     * Expiring time for cached values
+     */
     private final long expiry;
-    private ConcurrentMap<Byte, ExpiringCacheObject> map;
+
+    /**
+     * The map used for caching
+     */
+    private ConcurrentMap<ChannelDescriptor, ExpiringCacheObject> cache;
 
     /**
      * Create a new instance.
@@ -41,7 +75,7 @@ public class ValloxExpiringCacheMap {
      */
     public ValloxExpiringCacheMap(Duration expiry) {
         this.expiry = expiry.toMillis();
-        map = new ConcurrentHashMap<>();
+        cache = new ConcurrentHashMap<>();
     }
 
     /**
@@ -50,7 +84,10 @@ public class ValloxExpiringCacheMap {
      * @param telegram
      */
     public void put(Telegram telegram) {
-        map.put(telegram.getVariable(), new ExpiringCacheObject(expiry, telegram));
+        ChannelDescriptor descriptor = ChannelDescriptor.get(telegram.getVariable());
+        if (descriptor != ChannelDescriptor.NULL) {
+            cache.put(descriptor, new ExpiringCacheObject(expiry, telegram));
+        }
     }
 
     /**
@@ -59,8 +96,8 @@ public class ValloxExpiringCacheMap {
      * @param key the key whose associated value is to be returned
      * @return the value associated with the given key, or null if there is no cached value for the given key
      */
-    public ExpiringCacheObject getCacheObject(Byte key) {
-        return map.get(key);
+    public @Nullable ExpiringCacheObject getCacheObject(ChannelDescriptor key) {
+        return cache.get(key);
     }
 
     /**
@@ -69,9 +106,8 @@ public class ValloxExpiringCacheMap {
      * @param key the key whose associated value is to be returned
      * @return telegram the telegram or null
      */
-    @SuppressWarnings({ "null", "unused" })
-    public Telegram getTelegram(Byte key) {
-        ExpiringCacheObject cacheObject = map.get(key);
+    public @Nullable Telegram getTelegram(ChannelDescriptor key) {
+        ExpiringCacheObject cacheObject = getCacheObject(key);
         if (cacheObject != null) {
             return cacheObject.get();
         }
@@ -84,13 +120,12 @@ public class ValloxExpiringCacheMap {
      * @param key the key whose associated value is to be returned
      * @return value the telegrams value or null
      */
-    @SuppressWarnings({ "null", "unused" })
-    public Byte getValue(Byte key) {
+    public byte getValue(ChannelDescriptor key) {
         Telegram telegram = getTelegram(key);
         if (telegram != null) {
             return telegram.getValue();
         }
-        return null;
+        return (byte) 0xFF;
     }
 
     /**
@@ -99,11 +134,10 @@ public class ValloxExpiringCacheMap {
      * @param key - find the value to be tested
      * @return false if value is not present or is expired
      */
-    @SuppressWarnings({ "unused", "null" })
-    public boolean isExpired(Byte key) {
-        ExpiringCacheObject value = map.get(key);
+    public boolean isExpired(ChannelDescriptor key) {
+        ExpiringCacheObject value = getCacheObject(key);
         if (value != null) {
-            return map.get(key).isExpired();
+            return cache.get(key).isExpired();
         }
         return true;
     }
@@ -114,7 +148,7 @@ public class ValloxExpiringCacheMap {
      * @param key
      * @return true if map contains the key and value is not expired
      */
-    public boolean isValid(Byte key) {
+    public boolean isValid(ChannelDescriptor key) {
         return (containsKey(key) & !isExpired(key));
     }
 
@@ -124,8 +158,11 @@ public class ValloxExpiringCacheMap {
      * @param key the key to check
      * @return true if cache contains a value for the key
      */
-    public boolean containsKey(Byte key) {
-        return map.containsKey(key);
+    public boolean containsKey(@Nullable ChannelDescriptor key) {
+        if (key == null) {
+            return false;
+        }
+        return cache.containsKey(key);
     }
 
     /**
@@ -134,9 +171,9 @@ public class ValloxExpiringCacheMap {
      * @param array byte array to iterate
      * @return true if all bytes are in the cache
      */
-    private boolean containsArrayMembers(byte[] array) {
-        for (byte member : array) {
-            if (!map.containsKey(member)) {
+    private boolean containsMembers(Set<ChannelDescriptor> set) {
+        for (ChannelDescriptor member : set) {
+            if (!cache.containsKey(member)) {
                 return false;
             }
         }
@@ -149,7 +186,7 @@ public class ValloxExpiringCacheMap {
      * @return true if all four are in cache
      */
     public boolean containsTemperatures() {
-        return containsArrayMembers(BYTES_TEMPERATURES);
+        return containsMembers(TEMPERATURES);
     }
 
     /**
@@ -158,7 +195,7 @@ public class ValloxExpiringCacheMap {
      * @return true if both are in cache
      */
     public boolean containsCO2() {
-        return containsArrayMembers(BYTES_CO2);
+        return containsMembers(CO2);
     }
 
     /**
@@ -167,13 +204,13 @@ public class ValloxExpiringCacheMap {
      * @return true if both are in cache
      */
     public boolean containsCO2SetPoint() {
-        return containsArrayMembers(BYTES_CO2_SETPOINT);
+        return containsMembers(CO2_SETPOINT);
     }
 
     /**
      * Clear cache
      */
     public void clear() {
-        map.clear();
+        cache.clear();
     }
 }

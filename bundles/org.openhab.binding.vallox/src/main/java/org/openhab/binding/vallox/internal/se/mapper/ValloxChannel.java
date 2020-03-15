@@ -72,7 +72,7 @@ public abstract class ValloxChannel {
      * @param value the value to convert
      * @return value converted to state
      */
-    public State convertToState(Byte value) {
+    public State convertToState(byte value) {
         return UnDefType.NULL;
     }
 
@@ -82,7 +82,7 @@ public abstract class ValloxChannel {
      * @param value the value to convert
      * @return the converted value
      */
-    public byte convertFromState(Byte value) {
+    public byte convertFromState(byte value) {
         return value;
     }
 

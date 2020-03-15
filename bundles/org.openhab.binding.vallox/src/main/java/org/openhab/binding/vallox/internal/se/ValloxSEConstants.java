@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vallox.internal.se.constants;
+package org.openhab.binding.vallox.internal.se;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -33,6 +33,17 @@ public class ValloxSEConstants {
     public static final ThingTypeUID THING_TYPE_VALLOX_SE_IP = new ThingTypeUID(BINDING_ID, "se-tcp");
     public static final ThingTypeUID THING_TYPE_VALLOX_SE_SERIAL = new ThingTypeUID(BINDING_ID, "se-serial");
     public static final ThingTypeUID THING_TYPE_VALLOX_MV_WEB = new ThingTypeUID(BINDING_ID, "mv-websocket");
+
+    /**
+     * Channel groups
+     */
+    public static final String CHANNEL_GROUP_FAN = "fanControl#";
+    public static final String CHANNEL_GROUP_TEMPERATURE = "temperature#";
+    public static final String CHANNEL_GROUP_EFFICIENCY = "efficiency#";
+    public static final String CHANNEL_GROUP_SETTINGS = "setting#";
+    public static final String CHANNEL_GROUP_STATUS = "status#";
+    public static final String CHANNEL_GROUP_MAINTENANCE = "maintenance#";
+    public static final String CHANNEL_GROUP_ALARM = "alarm#";
 
     /**
      * Special bytes
@@ -114,15 +125,4 @@ public class ValloxSEConstants {
             35, 35, 36, 36, 37, 37, 38, 38, 39, 40, 40, 41, 41, 42, 43, 43, 44, 45, 45, 46, 47, 48, 49, 49, 50, 51, 52,
             53, 53, 54, 55, 56, 57, 59, 60, 61, 62, 63, 65, 66, 68, 69, 71, 73, 75, 77, 79, 81, 82, 86, 90, 93, 97, 100,
             100, 100, 100, 100, 100, 100, 100, 100 };
-
-    /**
-     * Channel groups
-     */
-    public static final String CHANNEL_GROUP_FAN = "FanControl#";
-    public static final String CHANNEL_GROUP_TEMPERATURE = "Temperature#";
-    public static final String CHANNEL_GROUP_EFFICIENCY = "Efficiency#";
-    public static final String CHANNEL_GROUP_SETTINGS = "Setting#";
-    public static final String CHANNEL_GROUP_STATUS = "Status#";
-    public static final String CHANNEL_GROUP_MAINTENANCE = "Maintenance#";
-    public static final String CHANNEL_GROUP_ALARM = "Alarm#";
 }

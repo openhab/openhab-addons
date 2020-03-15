@@ -13,7 +13,7 @@
 package org.openhab.binding.vallox.internal.se.telegram;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants;
+import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.telegram.Telegram.TelegramState;
 
 /**

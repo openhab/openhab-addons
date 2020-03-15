@@ -34,7 +34,7 @@ public class IntegerChannel extends ValloxChannel {
     }
 
     @Override
-    public State convertToState(Byte value) {
+    public State convertToState(byte value) {
         return new DecimalType(Byte.toUnsignedInt(value));
     }
 
@@ -47,8 +47,6 @@ public class IntegerChannel extends ValloxChannel {
      *
      * @author Miika Jukka - Initial contributor
      */
-    @SuppressWarnings("null")
-    @NonNullByDefault
     public static class Humidity extends IntegerChannel {
 
         /**
@@ -61,13 +59,13 @@ public class IntegerChannel extends ValloxChannel {
         }
 
         @Override
-        public State convertToState(Byte value) {
+        public State convertToState(byte value) {
             int index = Byte.toUnsignedInt(value);
             return new DecimalType((index - 51) / 2.04);
         }
 
         @Override
-        public byte convertFromState(Byte value) {
+        public byte convertFromState(byte value) {
             double index = value * 2.04;
             index += 51;
             return (byte) Math.round(index);
@@ -79,8 +77,6 @@ public class IntegerChannel extends ValloxChannel {
      *
      * @author Miika Jukka - Initial contributor
      */
-    @SuppressWarnings("null")
-    @NonNullByDefault
     public static class Counter extends IntegerChannel {
 
         /**
@@ -93,16 +89,13 @@ public class IntegerChannel extends ValloxChannel {
         }
 
         @Override
-        public State convertToState(Byte value) {
-            int index = Byte.toUnsignedInt(value);
-            return new DecimalType(index / 2.5);
+        public State convertToState(byte value) {
+            return new DecimalType(Byte.toUnsignedInt(value));
         }
 
         @Override
-        public byte convertFromState(Byte value) {
-            double index = value * 2.5;
-            return (byte) Math.round(index);
+        public byte convertFromState(byte value) {
+            return 0x00; // Not used
         }
-
     }
 }

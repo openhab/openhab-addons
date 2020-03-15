@@ -52,7 +52,7 @@
 			<channel id="postHeatingOffCounter" typeId="sePostHeatingOffCounter" />			
 			<channel id="co2SetPoint" typeId="seCo2SetPoint" />
 			<channel id="cascadeAdjust" typeId="seCascadeAdjust" />
-			<channel id="adjustmentIntervalMinutes" typeId="seAdjustmentIntervalMinutes" />
+			<channel id="adjustmentInterval" typeId="seAdjustmentInterval" />
 			<channel id="maxSpeedLimitMode" typeId="seMaxSpeedLimitMode" />
 			<channel id="basicHumidityLevel" typeId="seBasicHumidityLevel" />
 			<channel id="boostSwitchMode" typeId="seBoostSwitchMode" />
@@ -335,7 +335,7 @@
 		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="seAdjustmentIntervalMinutes" advanced="true">
+	<channel-type id="seAdjustmentInterval" advanced="true">
 		<item-type>Number</item-type>
 		<label>Adjustment interval</label>
 		<description>Adjustment interval of Co2 and %RH in scale of 1-15 minutes</description>

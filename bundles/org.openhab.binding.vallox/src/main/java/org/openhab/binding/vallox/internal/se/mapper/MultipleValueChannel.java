@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MultipleValueChannel extends ValloxChannel {
 
-    private Collection<String> subChannels;
+    private final Collection<String> subChannels;
 
     /**
      * Create new instance.

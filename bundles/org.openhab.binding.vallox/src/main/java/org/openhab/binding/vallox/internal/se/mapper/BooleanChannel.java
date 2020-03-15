@@ -56,11 +56,11 @@ public class BooleanChannel extends ValloxChannel {
 
     @Override
     public byte getVariable() {
-        return ChannelMapper.getVariable(parentChannel);
+        return ChannelDescriptor.get(parentChannel).getVariable();
     }
 
     @Override
-    public State convertToState(Byte value) {
+    public State convertToState(byte value) {
         State result = (value & bitMask) != 0 ? OnOffType.ON : OnOffType.OFF;
         return result;
     }
@@ -70,8 +70,6 @@ public class BooleanChannel extends ValloxChannel {
      *
      * @author Miika Jukka - Initial contributor
      */
-    @SuppressWarnings("null")
-    @NonNullByDefault
     public static class AdjustmentInterval extends BooleanChannel {
 
         /**
@@ -86,7 +84,7 @@ public class BooleanChannel extends ValloxChannel {
 
         @Override
         public byte getVariable() {
-            return ChannelMapper.getVariable(parentChannel);
+            return ChannelDescriptor.get(parentChannel).getVariable();
         }
 
         @Override
@@ -95,8 +93,8 @@ public class BooleanChannel extends ValloxChannel {
         }
 
         @Override
-        public State convertToState(Byte value) {
-            int result = (int) value & bitMask;
+        public State convertToState(byte value) {
+            int result = value & bitMask;
             return new DecimalType(result);
         }
     }

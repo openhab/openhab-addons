@@ -15,7 +15,7 @@ package org.openhab.binding.vallox.internal.se.mapper;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.vallox.internal.se.constants.ValloxSEConstants;
+import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 
 /**
  * Class for fan channels.
@@ -35,7 +35,7 @@ public class FanChannel extends ValloxChannel {
     }
 
     @Override
-    public State convertToState(Byte value) {
+    public State convertToState(byte value) {
         int fanSpeed = 0;
         for (byte i = 0; i < 8; i++) {
             if (ValloxSEConstants.FAN_SPEED_MAPPING[i] == value) {
@@ -47,7 +47,7 @@ public class FanChannel extends ValloxChannel {
     }
 
     @Override
-    public byte convertFromState(Byte value) {
+    public byte convertFromState(byte value) {
         return ValloxSEConstants.FAN_SPEED_MAPPING[value - 1];
     }
 }
