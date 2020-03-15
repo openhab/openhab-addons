@@ -63,7 +63,7 @@ In other words power and brightness states are controlled independently.
 This matches how power and brightness are managed on the physical dimmer itself. 
 
 To avoid confusion for the user any UI must ensure that only values from 1 to 100 are passed to the brightness channel.
-A default slider allows a 0 value and should not be used.
+A default slider allows a 0 value and should not be used since there will be no response when the user selects 0. 
 Common UI choices are Sliders or Setpoints with a minimum value of 1 and a maximum value of 100 (min/max values in Sliders are only supported as of OpenHAB 2.5).
 
 ## Example

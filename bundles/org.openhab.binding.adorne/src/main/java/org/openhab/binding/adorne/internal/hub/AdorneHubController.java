@@ -15,19 +15,17 @@ package org.openhab.binding.adorne.internal.hub;
 import static org.openhab.binding.adorne.internal.AdorneBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,9 +35,12 @@ import org.openhab.binding.adorne.internal.configuration.AdorneHubConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonStreamParser;
 
 /**
  * The {@link AdorneHubController} manages the interaction with the Adorne hub. The controller maintains a connection
@@ -49,10 +50,10 @@ import com.google.gson.reflect.TypeToken;
  * @author Mark Theiding - Initial Contribution
  */
 @NonNullByDefault
-public class AdorneHubController implements Runnable {
+public class AdorneHubController {
     private Logger logger = LoggerFactory.getLogger(AdorneHubController.class);
 
-    private static final int HUB_CONNECT_TIMEOUT = 15000;
+    private static final int HUB_CONNECT_TIMEOUT = 10000;
     private static final int HUB_RECONNECT_SLEEP_MINIMUM = 1;
     private static final int HUB_RECONNECT_SLEEP_MAXIMUM = 15 * 60;
 
@@ -83,58 +84,54 @@ public class AdorneHubController implements Runnable {
     private int hubPort;
     private @Nullable Socket hubSocket;
     private @Nullable PrintStream hubOut;
-    private @Nullable Scanner hubIn;
+    private @Nullable InputStreamReader hubInReader;
+    private @Nullable JsonStreamParser hubIn;
     private CompletableFuture<@Nullable Void> hubControllerConnected;
     private int hubReconnectSleep; // Sleep time before we attempt re-connect
     private ScheduledExecutorService scheduler;
 
-    private AtomicBoolean stop; // Stop the controller as soon as possible
-    private AtomicBoolean stopWhenCommandsServed; // Stop the controller once all pending commands have been served
-    private long stopTimestamp = 0; // Stop the controller after this timestamp
+    private volatile boolean stop; // Stop the controller as soon as possible
+    private volatile boolean stopWhenCommandsServed; // Stop the controller once all pending commands have been served
+    private volatile long stopTimestamp = 0; // Stop the controller after this timestamp
 
     // When we submit commmands to the hub we don't correlate commands and responses. We simply use the first available
     // response that answers our question. For that we maintain lists of all pending commands.
-    private List<AdorneHubController.ZoneIDFutureRecord> stateCommands;
-    private List<CompletableFuture<List<Integer>>> zoneCommands;
-    private List<CompletableFuture<String>> macAddressCommands;
+    private Map<Integer, CompletableFuture<AdorneDeviceState>> stateCommands;
+    private @Nullable CompletableFuture<List<Integer>> zoneCommand;
+    private @Nullable CompletableFuture<String> macAddressCommand;
     private int commandId; // We assign increasing command ids to all rest commands to the hub for easier
                            // troubleshooting
 
-    private @Nullable AdorneHubChangeNotify changeListener;
-    private Gson gson;
+    private volatile @Nullable AdorneHubChangeNotify changeListener;
 
-    private static class ZoneIDFutureRecord {
-        public int zoneId;
-        public CompletableFuture<AdorneDeviceState> future;
-
-        ZoneIDFutureRecord(int zoneId, CompletableFuture<AdorneDeviceState> future) {
-            this.zoneId = zoneId;
-            this.future = future;
-        }
-    }
+    private final Object stopLock = new Object();
+    private final Object hubOutLock = new Object();
+    private final Object stateCommandsLock = new Object();
+    private final Object macAddressCommandLock = new Object();
+    private final Object zoneCommandLock = new Object();
 
     public AdorneHubController(AdorneHubConfiguration config, ScheduledExecutorService scheduler) {
         hubController = null;
-        this.hubHost = config.host;
-        this.hubPort = config.port;
+        hubHost = config.host;
+        hubPort = config.port;
         hubSocket = null;
         hubOut = null;
+        hubInReader = null;
         hubIn = null;
         hubControllerConnected = new CompletableFuture<>();
         this.scheduler = scheduler;
         hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM;
 
-        stop = new AtomicBoolean(false);
-        stopWhenCommandsServed = new AtomicBoolean(false);
+        stop = false;
+        stopWhenCommandsServed = false;
         stopTimestamp = 0;
 
-        stateCommands = new ArrayList<>();
-        zoneCommands = new ArrayList<>();
-        macAddressCommands = new ArrayList<>();
+        stateCommands = new HashMap<>();
+        zoneCommand = null;
+        macAddressCommand = null;
         commandId = 0;
 
         changeListener = null;
-        gson = new Gson();
     }
 
     /**
@@ -143,32 +140,40 @@ public class AdorneHubController implements Runnable {
      * @return Future to inform the caller that the hub controller is ready for receiving commands
      */
     public CompletableFuture<@Nullable Void> start() {
-        stop.set(false);
-        CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected = new CompletableFuture<>();
         logger.info("Starting hub controller");
-        hubController = scheduler.submit(this);
+        hubController = scheduler.submit(() -> {
+            msgLoop();
+        });
         return (hubControllerConnected);
     }
 
     /**
      * Stops the hub controller. Can't restart afterwards.
      */
-    public synchronized void stop() {
+    public void stop() {
         // Need to use 3 different mechanisms to cover all of our bases of stopping the controller quickly
-        stop.set(true); // 1) Stop the controller message loop
+        synchronized (stopLock) {
+            // 1) Stop the controller message loop
+            stop = true;
 
-        Socket hubSocket = this.hubSocket;
-        if (hubSocket != null) {
-            try {
-                hubSocket.shutdownInput(); // 2) Stop the input stream in case controller is waiting on input
-            } catch (IOException e) {
-                logger.warn("Couldn't shutdown hub socket");
+            // 2) Cancel the controller in case it has scheduled a re-connect
+            Future<?> hubController = this.hubController;
+            if (hubController != null) {
+                hubController.cancel(true);
             }
         }
 
-        Future<?> hubController = this.hubController;
-        if (hubController != null) {
-            hubController.cancel(true); // 3) Cancel the controller in case it has scheduled a re-connect
+        // 3) Stop the input stream in case controller is waiting on input
+        // Note this is best effort. If we are unlucky the hub can still enter waiting on input just after our stop
+        // here. Because waiting on input is long-running we can't just synchronize it with the stop check as case 2
+        // above. But that is ok as waiting on input has a timeout and will honor stop after that.
+        Socket hubSocket = this.hubSocket;
+        if (hubSocket != null) {
+            try {
+                hubSocket.shutdownInput();
+            } catch (IOException e) {
+                logger.debug("Couldn't shutdown hub socket");
+            }
         }
     }
 
@@ -176,7 +181,7 @@ public class AdorneHubController implements Runnable {
      * Stops the hub controller once all in-flight commands have been executed.
      */
     public void stopWhenCommandsServed() {
-        stopWhenCommandsServed.set(true);
+        stopWhenCommandsServed = true;
     }
 
     /**
@@ -185,48 +190,51 @@ public class AdorneHubController implements Runnable {
      * @param stopTimestamp timestamp to stop after
      */
     public void stopBy(long stopTimestamp) {
-        synchronized (this) {
-            this.stopTimestamp = stopTimestamp;
-        }
+        this.stopTimestamp = stopTimestamp;
     }
 
     /**
      * Turns device on or off.
      *
-     * @param zoneID the device's zone ID
+     * @param zoneId the device's zone ID
      * @param on true to turn on the device
      */
-    public void setOnOff(int zoneID, boolean on) {
-        sendRestCmd(String.format(HUB_REST_SET_ONOFF, getNextCommandId(), zoneID, on));
+    public void setOnOff(int zoneId, boolean on) {
+        sendRestCmd(String.format(HUB_REST_SET_ONOFF, getNextCommandId(), zoneId, on));
     }
 
     /**
      * Sets the brightness for a device. Applies only to dimmer devices.
      *
-     * @param zoneID the device's zone ID
+     * @param zoneId the device's zone ID
      * @param level A value from 1-100. Note that in particular value 0 is not supported, which means this method can't
      *            be used to turn off a dimmer.
      */
-    public void setBrightness(int zoneID, int level) {
+    public void setBrightness(int zoneId, int level) {
         if (level < 1 || level > 100) {
             throw new IllegalArgumentException();
         }
-        sendRestCmd(String.format(HUB_REST_SET_BRIGHTNESS, getNextCommandId(), zoneID, level));
+        sendRestCmd(String.format(HUB_REST_SET_BRIGHTNESS, getNextCommandId(), zoneId, level));
     }
 
     /**
      * Gets asynchronously the state for a device.
      *
-     * @param zoneID the device's zone ID
+     * @param zoneId the device's zone ID
      * @return a future for the {@link AdorneDeviceState}
      */
-    public CompletableFuture<AdorneDeviceState> getState(int zoneID) {
-        CompletableFuture<AdorneDeviceState> stateCommand = new CompletableFuture<>();
-        synchronized (this) {
-            stateCommands.add(new AdorneHubController.ZoneIDFutureRecord(zoneID, stateCommand));
+    public CompletableFuture<AdorneDeviceState> getState(int zoneId) {
+        sendRestCmd(String.format(HUB_REST_REQUEST_STATE, getNextCommandId(), zoneId));
+        synchronized (stateCommandsLock) {
+            CompletableFuture<AdorneDeviceState> stateCommand = stateCommands.get(zoneId);
+            if (stateCommand != null) {
+                return (stateCommand);
+            } else {
+                stateCommand = new CompletableFuture<>();
+                stateCommands.put(zoneId, stateCommand);
+                return (stateCommand);
+            }
         }
-        sendRestCmd(String.format(HUB_REST_REQUEST_STATE, getNextCommandId(), zoneID));
-        return stateCommand;
     }
 
     /**
@@ -235,12 +243,18 @@ public class AdorneHubController implements Runnable {
      * @return a future for the list of zone IDs
      */
     public CompletableFuture<List<Integer>> getZones() {
-        CompletableFuture<List<Integer>> zoneCommand = new CompletableFuture<>();
-        synchronized (this) {
-            zoneCommands.add(zoneCommand);
-        }
         sendRestCmd(String.format(HUB_REST_REQUEST_ZONES, getNextCommandId()));
-        return zoneCommand;
+
+        CompletableFuture<List<Integer>> zoneCommandRet;
+        synchronized (zoneCommandLock) {
+            CompletableFuture<List<Integer>> zoneCommand = this.zoneCommand;
+            if (zoneCommand != null) {
+                zoneCommandRet = zoneCommand;
+            } else {
+                this.zoneCommand = zoneCommandRet = new CompletableFuture<>();
+            }
+        }
+        return (zoneCommandRet);
     }
 
     /**
@@ -249,17 +263,23 @@ public class AdorneHubController implements Runnable {
      * @return a future for the MAC address
      */
     public CompletableFuture<String> getMACAddress() {
-        CompletableFuture<String> macAddressCommand = new CompletableFuture<>();
-        synchronized (this) {
-            macAddressCommands.add(macAddressCommand);
-        }
         sendRestCmd(String.format(HUB_REST_REQUEST_MACADDRESS, getNextCommandId()));
-        return macAddressCommand;
+
+        CompletableFuture<String> macAddressCommandRet;
+        synchronized (macAddressCommandLock) {
+            CompletableFuture<String> macAddressCommand = this.macAddressCommand;
+            if (macAddressCommand != null) {
+                macAddressCommandRet = macAddressCommand;
+            } else {
+                this.macAddressCommand = macAddressCommandRet = new CompletableFuture<>();
+            }
+        }
+        return (macAddressCommandRet);
     }
 
     private void sendRestCmd(String cmd) {
         logger.debug("Sending command {}", cmd);
-        synchronized (this) {
+        synchronized (hubOutLock) {
             PrintStream hubOut = this.hubOut;
             if (hubOut != null) {
                 hubOut.print(cmd);
@@ -274,17 +294,18 @@ public class AdorneHubController implements Runnable {
      *
      * @param changeListener instance to be notified
      */
-    public synchronized void setChangeListener(AdorneHubChangeNotify changeListener) {
+    public void setChangeListener(AdorneHubChangeNotify changeListener) {
         this.changeListener = changeListener;
     }
 
     /**
-     * Runs the controller that is interacting with the Adorne Hub by sending commands and listening for updates
+     * Runs the controller message loop that is interacting with the Adorne Hub by sending commands and listening for
+     * updates
      */
-    @Override
-    public void run() {
+    private void msgLoop() {
         try {
-            Map<String, @Nullable Object> hubMsg;
+            JsonObject hubMsg;
+            JsonPrimitive jsonService;
             String service;
 
             // Main message loop listening for updates from the hub
@@ -296,10 +317,7 @@ public class AdorneHubController implements Runnable {
                     if (hubReconnectSleep < HUB_RECONNECT_SLEEP_MAXIMUM) {
                         hubReconnectSleep = hubReconnectSleep * 2; // Increase sleep time exponentially
                     }
-                    // Re-start message loop after sleep time
-                    synchronized (this) {
-                        hubController = scheduler.schedule(this, sleep, TimeUnit.SECONDS);
-                    }
+                    restartMsgLoop(sleep);
                     return;
                 } else {
                     hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM; // Reset
@@ -310,7 +328,9 @@ public class AdorneHubController implements Runnable {
                 }
 
                 // Process message based on service type
-                if ((service = (String) hubMsg.get(HUB_TOKEN_SERVICE)) == null) {
+                if ((jsonService = hubMsg.getAsJsonPrimitive(HUB_TOKEN_SERVICE)) != null) {
+                    service = jsonService.getAsString();
+                } else {
                     continue; // Ignore messages that don't have a service specified
                 }
 
@@ -325,62 +345,76 @@ public class AdorneHubController implements Runnable {
                 }
             }
         } catch (RuntimeException e) {
-            logger.error("Hub controller failed ({})", e.getMessage());
+            logger.error("Hub controller failed", e);
         }
 
         // Shut down
-        synchronized (this) {
-            // If there are still pending requests we need to cancel them
-            for (AdorneHubController.ZoneIDFutureRecord stateCommand : stateCommands) {
-                stateCommand.future.cancel(false);
-            }
-            for (CompletableFuture<List<Integer>> zoneCommand : zoneCommands) {
-                zoneCommand.cancel(false);
-            }
-            for (CompletableFuture<String> macAddressCommand : macAddressCommands) {
-                macAddressCommand.cancel(false);
-            }
-            CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected;
-            hubControllerConnected.cancel(false);
+        disconnect();
 
-            disconnect();
-            logger.info("Exiting hub controller");
+        // If there are still pending commands we need to cancel them
+        synchronized (stateCommandsLock)
+
+        {
+            stateCommands.forEach((zoneId, stateCommand) -> stateCommand.cancel(false));
+            stateCommands.clear();
         }
+        synchronized (zoneCommandLock) {
+            CompletableFuture<List<Integer>> zoneCommand = this.zoneCommand;
+            if (zoneCommand != null) {
+                zoneCommand.cancel(false);
+                this.zoneCommand = null;
+            }
+        }
+        synchronized (macAddressCommandLock) {
+            CompletableFuture<String> macAddressCommand = this.macAddressCommand;
+            if (macAddressCommand != null) {
+                macAddressCommand.cancel(false);
+                this.macAddressCommand = null;
+            }
+        }
+        hubControllerConnected.cancel(false);
+
+        logger.info("Exiting hub controller");
     }
 
-    private synchronized boolean shouldStop() {
+    private boolean shouldStop() {
+        long stopTimestamp = this.stopTimestamp;
         boolean timeoutExceeded = stopTimestamp > 0 && System.currentTimeMillis() > stopTimestamp;
-        boolean commandsServed = stopWhenCommandsServed.get() && stateCommands.isEmpty() && zoneCommands.isEmpty()
-                && macAddressCommands.isEmpty();
+        boolean stateCommandsIsEmpty;
+        synchronized (stateCommandsLock) {
+            stateCommandsIsEmpty = stateCommands.isEmpty();
+        }
+        boolean commandsServed = stopWhenCommandsServed && stateCommandsIsEmpty && (zoneCommand == null)
+                && (macAddressCommand == null);
 
-        return (stop.get() || timeoutExceeded || commandsServed);
+        return (stop || timeoutExceeded || commandsServed);
     }
 
     private boolean connect() {
         try {
-            synchronized (this) {
-                if (hubSocket == null) {
-                    Socket hubSocket = new Socket(hubHost, hubPort);
-                    this.hubSocket = hubSocket;
-                    hubSocket.setSoTimeout(HUB_CONNECT_TIMEOUT);
+            if (hubSocket == null) {
+                Socket hubSocket;
+                hubSocket = new Socket(hubHost, hubPort);
+                this.hubSocket = hubSocket;
+                hubSocket.setSoTimeout(HUB_CONNECT_TIMEOUT);
+                synchronized (hubOutLock) {
                     hubOut = new PrintStream(hubSocket.getOutputStream());
-                    Scanner hubIn = new Scanner(hubSocket.getInputStream());
-                    this.hubIn = hubIn;
-                    hubIn.useDelimiter("\0");
-                    logger.debug("Hub connection established");
+                }
+                hubInReader = new InputStreamReader(hubSocket.getInputStream());
+                JsonStreamParser hubIn = new JsonStreamParser(hubInReader);
+                this.hubIn = hubIn;
+                logger.debug("Hub connection established");
 
-                    // Working around an Adorne Hub bug: the first command sent from a new connection intermittently
-                    // gets lost in the hub. We are requesting the MAC address here simply to get this fragile first
-                    // command out of the way. Requesting the MAC address and ignoring the result doesn't do any harm.
-                    getMACAddress();
+                // Working around an Adorne Hub bug: the first command sent from a new connection intermittently
+                // gets lost in the hub. We are requesting the MAC address here simply to get this fragile first
+                // command out of the way. Requesting the MAC address and ignoring the result doesn't do any harm.
+                getMACAddress();
 
-                    CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected;
-                    hubControllerConnected.complete(null);
+                hubControllerConnected.complete(null);
 
-                    AdorneHubChangeNotify changeListener = this.changeListener;
-                    if (changeListener != null) {
-                        changeListener.connectionChangeNotify(true);
-                    }
+                AdorneHubChangeNotify changeListener = this.changeListener;
+                if (changeListener != null) {
+                    changeListener.connectionChangeNotify(true);
                 }
             }
             return true;
@@ -392,152 +426,163 @@ public class AdorneHubController implements Runnable {
 
     private void disconnect() {
         hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM; // Reset our reconnect sleep time
-        synchronized (this) {
-            try {
-                Scanner hubIn = this.hubIn;
-                if (hubIn != null) {
-                    hubIn.close(); // closes underlying input stream as well
-                }
-            } catch (Exception e) {
-                logger.warn("Closing hub controller input stream failed ({})", e.getMessage());
-            }
-            ;
-            try {
-                PrintStream hubOut = this.hubOut;
-                if (hubOut != null) {
-                    hubOut.close();// closes underlying output stream as well
-                }
-            } catch (Exception e) {
-                logger.warn("Closing hub controller output stream failed ({})", e.getMessage());
-            }
-            ;
-            try {
-                Socket hubSocket = this.hubSocket;
-                if (hubSocket != null) {
-                    hubSocket.close();
-                }
-            } catch (Exception e) {
-                logger.warn("Closing hub controller socket failed ({})", e.getMessage());
-            }
-            hubSocket = null;
-            hubIn = null;
-            hubOut = null;
 
-            synchronized (this) {
-                AdorneHubChangeNotify changeListener = this.changeListener;
-                if (changeListener != null) {
-                    changeListener.connectionChangeNotify(false);
-                }
+        InputStreamReader hubInReader = this.hubInReader;
+        if (hubInReader != null) {
+            try {
+                hubInReader.close(); // Closes underlying input stream as well
+            } catch (IOException e) {
+                logger.warn("Closing hub input reader failed ({})", e.getMessage());
+            }
+            hubInReader = null;
+        }
+
+        synchronized (hubOutLock) {
+            PrintStream hubOut = this.hubOut;
+            if (hubOut != null) {
+                hubOut.close(); // Closes underlying output stream as well
+            }
+            hubOut = null;
+        }
+
+        try {
+            Socket hubSocket = this.hubSocket;
+            if (hubSocket != null) {
+                hubSocket.close();
+            }
+        } catch (IOException e) {
+            logger.warn("Closing hub controller socket failed ({})", e.getMessage());
+        }
+        hubSocket = null;
+
+        AdorneHubChangeNotify changeListener = this.changeListener;
+        if (changeListener != null) {
+            changeListener.connectionChangeNotify(false);
+        }
+    }
+
+    private void restartMsgLoop(int sleep) {
+        // Synchronizing this so stop() is guaranteed to cancel a pending schedule
+        synchronized (stopLock) {
+            if (!stop) {
+                hubController = scheduler.schedule(() -> {
+                    msgLoop();
+                }, sleep, TimeUnit.SECONDS);
             }
         }
     }
 
-    private @Nullable Map<String, @Nullable Object> getHubMsg() {
-        String hubMsgStr = null;
-        Map<String, @Nullable Object> hubMsg = null;
-        try {
-            Scanner hubIn = this.hubIn;
-            if (hubIn != null) {
-                hubMsgStr = hubIn.next();
+    private @Nullable JsonObject getHubMsg() {
+        JsonElement hubMsg = null;
+        JsonObject hubMsgJsonObject = null;
+        JsonStreamParser hubIn = this.hubIn;
+
+        if (hubIn != null && !stop) {
+            // Note that the stop check is only best effort. With worst case timing we can still enter next and will
+            // honor stop after HUB_CONNECT_TIMEOUT, which is fine.
+            try {
+                hubMsg = hubIn.next();
+            } catch (JsonParseException e) {
+                logger.debug("Failed to read valid message {}", e.getMessage());
+                disconnect(); // Disconnect so we can recover
             }
-        } catch (NoSuchElementException e) {
-            logger.debug("Failed to read hub message");
-            disconnect();
+            if (hubMsg instanceof JsonObject) {
+                hubMsgJsonObject = (JsonObject) hubMsg;
+            }
+        }
+
+        if (hubMsg == null || (hubMsg instanceof JsonPrimitive && hubMsg.getAsCharacter() == 0)) {
+            return null; // We have nothing further to log
+        }
+        logger.debug("Received message {}", hubMsg);
+        if (hubMsgJsonObject == null) {
+            logger.debug("Received message is not valid JSON object. Ignoring it.");
             return null;
         }
 
-        logger.debug("Received message {}", hubMsgStr);
-
-        Type type = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        try {
-            hubMsg = gson.fromJson(hubMsgStr, type);
-        } catch (JsonSyntaxException e) {
-            logger.debug("Message is not valid JSON format. Ignoring it.");
-        }
-
-        return hubMsg;
+        return hubMsgJsonObject;
     }
 
     /**
      * The hub sent zone properties in response to a command.
      */
-    private void processMsgReportZoneProperties(Map<String, Object> hubMsg) {
-        int zoneId = ((Double) hubMsg.get(HUB_TOKEN_ZID)).intValue();
+    private void processMsgReportZoneProperties(JsonObject hubMsg) {
+        int zoneId = hubMsg.getAsJsonPrimitive(HUB_TOKEN_ZID).getAsInt();
         logger.debug("Reporting zone properties for zone ID {} ", zoneId);
-        List<AdorneHubController.ZoneIDFutureRecord> removeStateCommands = new ArrayList<>();
-        synchronized (this) {
-            for (AdorneHubController.ZoneIDFutureRecord stateCommand : stateCommands) {
-                if (stateCommand.zoneId == zoneId) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> hubMsgPropertyList = (Map<String, Object>) hubMsg.get(HUB_TOKEN_PROPERTY_LIST);
-                    ThingTypeUID deviceType;
-                    String deviceTypeStr = (String) hubMsgPropertyList.get(HUB_TOKEN_DEVICE_TYPE);
-                    if (deviceTypeStr.equals(HUB_TOKEN_SWITCH)) {
-                        deviceType = THING_TYPE_SWITCH;
-                    } else if (deviceTypeStr.equals(HUB_TOKEN_DIMMER)) {
-                        deviceType = THING_TYPE_DIMMER;
-                    } else {
-                        logger.debug("Unsupported device type {}", deviceTypeStr);
-                        continue;
-                    }
-                    AdorneDeviceState state = new AdorneDeviceState(zoneId,
-                            (String) hubMsgPropertyList.get(HUB_TOKEN_NAME), deviceType,
-                            (Boolean) hubMsgPropertyList.get(HUB_TOKEN_POWER),
-                            ((Double) hubMsgPropertyList.get(HUB_TOKEN_POWER_LEVEL)).intValue());
-                    stateCommand.future.complete(state);
-                    removeStateCommands.add(stateCommand);
-                }
+
+        JsonObject jsonPropertyList = hubMsg.getAsJsonObject(HUB_TOKEN_PROPERTY_LIST);
+        String deviceTypeStr = jsonPropertyList.getAsJsonPrimitive(HUB_TOKEN_DEVICE_TYPE).getAsString();
+        ThingTypeUID deviceType;
+        if (deviceTypeStr.equals(HUB_TOKEN_SWITCH)) {
+            deviceType = THING_TYPE_SWITCH;
+        } else if (deviceTypeStr.equals(HUB_TOKEN_DIMMER)) {
+            deviceType = THING_TYPE_DIMMER;
+        } else {
+            logger.debug("Unsupported device type {}", deviceTypeStr);
+            return;
+        }
+        AdorneDeviceState state = new AdorneDeviceState(zoneId,
+                jsonPropertyList.getAsJsonPrimitive(HUB_TOKEN_NAME).getAsString(), deviceType,
+                jsonPropertyList.getAsJsonPrimitive(HUB_TOKEN_POWER).getAsBoolean(),
+                jsonPropertyList.getAsJsonPrimitive(HUB_TOKEN_POWER_LEVEL).getAsInt());
+
+        synchronized (stateCommandsLock) {
+            CompletableFuture<AdorneDeviceState> stateCommand = stateCommands.get(zoneId);
+            if (stateCommand != null) {
+                stateCommand.complete(state);
+                stateCommands.remove(zoneId);
             }
-            stateCommands.removeAll(removeStateCommands);
         }
     }
 
     /**
      * The hub informs us about a zone's change in properties.
      */
-    private void processMsgZonePropertiesChanged(Map<String, Object> hubMsg) {
-        int zoneId = ((Double) hubMsg.get(HUB_TOKEN_ZID)).intValue();
+    private void processMsgZonePropertiesChanged(JsonObject hubMsg) {
+        int zoneId = hubMsg.getAsJsonPrimitive(HUB_TOKEN_ZID).getAsInt();
         logger.debug("Zone properties changed for zone ID {} ", zoneId);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> hubMsgPropertyList = (Map<String, Object>) hubMsg.get(HUB_TOKEN_PROPERTY_LIST);
-        boolean onOff = (Boolean) hubMsgPropertyList.get(HUB_TOKEN_POWER);
-        int brightness = ((Double) hubMsgPropertyList.get(HUB_TOKEN_POWER_LEVEL)).intValue();
-        synchronized (this) {
-            AdorneHubChangeNotify changeListener = this.changeListener;
-            if (changeListener != null) {
-                changeListener.stateChangeNotify(zoneId, onOff, brightness);
-            }
+
+        JsonObject jsonPropertyList = hubMsg.getAsJsonObject(HUB_TOKEN_PROPERTY_LIST);
+        boolean onOff = jsonPropertyList.getAsJsonPrimitive(HUB_TOKEN_POWER).getAsBoolean();
+        int brightness = jsonPropertyList.getAsJsonPrimitive(HUB_TOKEN_POWER_LEVEL).getAsInt();
+        AdorneHubChangeNotify changeListener = this.changeListener;
+        if (changeListener != null) {
+            changeListener.stateChangeNotify(zoneId, onOff, brightness);
         }
     }
 
     /**
      * The hub sent a list of zones in response to a command.
      */
-    private void processMsgListZone(Map<String, Object> hubMsg) {
+    private void processMsgListZone(JsonObject hubMsg) {
         List<Integer> zones = new ArrayList<>();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Double>> hubMsgZoneIdMapList = (List<Map<String, Double>>) hubMsg.get(HUB_TOKEN_ZONE_LIST);
-        for (Map<String, Double> zoneIdMap : hubMsgZoneIdMapList) {
-            zones.add(zoneIdMap.get(HUB_TOKEN_ZID).intValue());
-        }
-        synchronized (this) {
-            for (CompletableFuture<List<Integer>> zoneCommand : zoneCommands) {
+        JsonArray jsonZoneList;
+
+        jsonZoneList = hubMsg.getAsJsonArray(HUB_TOKEN_ZONE_LIST);
+        jsonZoneList.forEach(jsonZoneId -> {
+            JsonPrimitive jsonZoneIdValue = ((JsonObject) jsonZoneId).getAsJsonPrimitive(HUB_TOKEN_ZID);
+            zones.add(jsonZoneIdValue.getAsInt());
+        });
+
+        synchronized (zoneCommandLock) {
+            CompletableFuture<List<Integer>> zoneCommand = this.zoneCommand;
+            if (zoneCommand != null) {
                 zoneCommand.complete(zones);
+                this.zoneCommand = null;
             }
-            zoneCommands.clear();
         }
     }
 
     /**
      * The hub sent system info in response to a command.
      */
-    private void processMsgSystemInfo(Map<String, Object> hubMsg) {
-        synchronized (this) {
-            for (CompletableFuture<String> macAddressCommand : macAddressCommands) {
-                macAddressCommand.complete((String) hubMsg.get(HUB_TOKEN_MAC_ADDRESS));
+    private void processMsgSystemInfo(JsonObject hubMsg) {
+        synchronized (macAddressCommandLock) {
+            CompletableFuture<String> macAddressCommand = this.macAddressCommand;
+            if (macAddressCommand != null) {
+                macAddressCommand.complete(hubMsg.getAsJsonPrimitive(HUB_TOKEN_MAC_ADDRESS).getAsString());
+                this.macAddressCommand = null;
             }
-            macAddressCommands.clear();
         }
     }
 

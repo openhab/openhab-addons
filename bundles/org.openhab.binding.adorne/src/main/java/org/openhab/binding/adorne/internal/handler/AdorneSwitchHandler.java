@@ -60,7 +60,7 @@ public class AdorneSwitchHandler extends BaseThingHandler {
         logger.trace("handleCommand (channelUID:{} command:{}", channelUID, command);
         try {
             if (channelUID.getId().equals(CHANNEL_POWER)) {
-                if (command.equals(OnOffType.ON) || command.equals(OnOffType.OFF)) {
+                if (command instanceof OnOffType) {
                     AdorneHubController adorneHubController = getAdorneHubController();
                     adorneHubController.setOnOff(zoneId, command.equals(OnOffType.ON));
                 } else if (command instanceof RefreshType) {

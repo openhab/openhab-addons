@@ -14,8 +14,7 @@ package org.openhab.binding.adorne.internal.discovery;
 
 import static org.openhab.binding.adorne.internal.AdorneBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -23,6 +22,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.util.UIDUtils;
 import org.openhab.binding.adorne.internal.configuration.AdorneHubConfiguration;
 import org.openhab.binding.adorne.internal.hub.AdorneHubController;
 import org.osgi.service.component.annotations.Component;
@@ -49,7 +49,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
      */
     public AdorneDiscoveryService() {
         // Passing false as last argument to super constructor turns off background discovery
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVERY_TIMEOUT_SECONDS, false);
+        super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVERY_TIMEOUT_SECONDS, false);
     }
 
     /**
@@ -69,7 +69,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
 
         // Hack - we wrap the ThingUID in an array to make it appear effectively final to the compiler throughout the
         // chain of futures. Passing it through the chain as context would bloat the code.
-        ThingUID bridgeUID[] = new ThingUID[1];
+        ThingUID[] bridgeUID = new ThingUID[1];
 
         // Future enhancement: Need a timeout for each future execution to recover from bugs in the hub controller, but
         // Java8 doesn't yet offer that
@@ -85,17 +85,10 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
         }).thenAccept(zoneIds -> {
             zoneIds.forEach(zoneId -> {
                 adorneHubController.getState(zoneId).thenAccept(state -> {
-                    // Strip zone ID's name to become a valid ThingUID
-                    StringBuilder id = new StringBuilder(state.name);
-                    for (int i = 0; i < id.length(); i++) {
-                        char c = id.charAt(i);
-                        if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9')) {
-                            id.deleteCharAt(i);
-                        }
-                    }
+                    String id = UIDUtils.encode(state.name); // Strip zone ID's name to become a valid ThingUID
                     // We have fully discovered a new zone ID
                     thingDiscovered(DiscoveryResultBuilder
-                            .create(new ThingUID(state.deviceType, bridgeUID[0], id.toString().toLowerCase()))
+                            .create(new ThingUID(state.deviceType, bridgeUID[0], id.toLowerCase()))
                             .withLabel(state.name).withBridge(bridgeUID[0])
                             .withProperty(DISCOVERY_ZONE_ID, state.zoneId).build());
                 }).exceptionally(e -> {
