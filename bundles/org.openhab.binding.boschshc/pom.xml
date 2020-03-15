@@ -11,5 +11,12 @@
   <artifactId>org.openhab.binding.boschshc</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: BoschSHC Binding</name>
-
+  
+  <dependencies>
+       <dependency>
+         <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+         <version>1.52</version>
+       </dependency>
+  </dependencies>
 </project>

@@ -16,6 +16,16 @@
                 <description>Network address of the Bosch Smart Home Controller.</description>
                 <required>true</required>
             </parameter>
+            <parameter name="password" type="text">
+                <label>Network Address</label>
+                <description>Network address of the Bosch Smart Home Controller.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="keystorePath" type="text">
+                <label>Java KeyStore path.</label>
+                <description>Path at which the keystore with SHC acceess keys is stored.</description>
+                <required>true</required>
+            </parameter>                        
         </config-description>
     </bridge-type>
 
