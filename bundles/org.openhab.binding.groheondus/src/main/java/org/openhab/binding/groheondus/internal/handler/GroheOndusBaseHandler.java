@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -141,14 +140,15 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected @Nullable T getAppliance(OndusService ondusService) {
         try {
-            BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
+            BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId)
+                    .orElseThrow(IllegalStateException::new);
             if (appliance.getType() != getType()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Thing is not a GROHE SENSE Guard device.");
                 return null;
             }
             return (T) appliance;
-        } catch (IOException e) {
+        } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Could not load appliance", e);
         }

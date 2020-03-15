@@ -180,8 +180,8 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="tap">
-        <item-type>Switch</item-type>
-        <label>Open Tap</label>
-        <description>Open the tap for the configured time</description>
-    </channel-type>
+		<item-type>Switch</item-type>
+		<label>Open Tap</label>
+		<description>Open the tap for the configured time</description>
+	</channel-type>
 </thing:thing-descriptions>
