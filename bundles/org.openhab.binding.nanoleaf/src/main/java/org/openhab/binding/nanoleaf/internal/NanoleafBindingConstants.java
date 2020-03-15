@@ -50,6 +50,7 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_RHYTHM_STATE = "rhythmState";
     public static final String CHANNEL_RHYTHM_ACTIVE = "rhythmActive";
     public static final String CHANNEL_RHYTHM_MODE = "rhythmMode";
+    public static final String CHANNEL_PANEL_LAYOUT = "panelLayout";
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "panelColor";
