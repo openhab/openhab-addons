@@ -58,7 +58,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     logger.debug("Not updating unknown channel {}", channel);
             }
         } catch (CommunicationApiException e) {
-            logger.debug("Could not update " + channel.getAsString(), e);
+            logger.debug("Could not update {}", channel, e);
         }
     }
 
