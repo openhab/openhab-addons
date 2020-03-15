@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 abstract class NikobusBaseThingHandler extends BaseThingHandler {
-    @Nullable
-    protected String address;
+    
+    protected @Nullable String address;
 
     private final Logger logger = LoggerFactory.getLogger(NikobusBaseThingHandler.class);
 
@@ -46,8 +46,8 @@ abstract class NikobusBaseThingHandler extends BaseThingHandler {
         if (address == null) {
             String addressPC = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_PC);
             if (addressPC != null) {
-                address = addressPC.substring(2, 4) + addressPC.substring(0, 2);
-                logger.debug("address PC, address= '{}'", address);
+                address = parseNikobusAddress(addressPC);
+                logger.trace("addressPC, address= '{}'", address);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Address must be set!");
@@ -57,6 +57,8 @@ abstract class NikobusBaseThingHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
     }
+    
+    protected abstract String parseNikobusAddress(String address);
 
     protected @Nullable NikobusPcLinkHandler getPcLink() {
         Bridge bridge = getBridge();

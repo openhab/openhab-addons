@@ -18,8 +18,11 @@ import static org.openhab.binding.nikobus.internal.protocol.SwitchModuleGroup.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +30,7 @@ import org.eclipse.smarthome.core.common.AbstractUID;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -42,13 +46,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikobusPushButtonHandler} is responsible for handling Nikobus push buttons.
+ * The {@link NikobusPushButtonHandler} is responsible for handling Nikobus push
+ * buttons.
  *
  * @author Boris Krivonog - Initial contribution
- * @author Wouter Denayer - support for module addresses as seen in the Niko PC tool
+ * @author Wouter Denayer - support for module addresses as seen in Niko PC app
+ * 
  */
 @NonNullByDefault
 public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
+    @NonNullByDefault
     private static class ImpactedModule {
         private final ThingUID thingUID;
         private final SwitchModuleGroup group;
@@ -72,6 +79,7 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
     }
 
+    @NonNullByDefault
     private static class ImpactedModuleUID extends AbstractUID {
         ImpactedModuleUID(String uid) {
             super(uid);
@@ -106,55 +114,34 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(NikobusPushButtonHandler.class);
     private final List<ImpactedModule> impactedModules = Collections.synchronizedList(new ArrayList<>());
     private @Nullable Future<?> requestUpdateFuture;
+    private Map<String, Integer> buttonIndexMap;
 
     public NikobusPushButtonHandler(Thing thing) {
         super(thing);
+
+        buttonIndexMap = Stream
+                .of(new Object[][] { { "A", 1 }, { "B", 3 }, { "C", 0 }, { "D", 2 }, { "1A", 5 }, { "1B", 7 },
+                        { "1C", 4 }, { "1D", 6 }, { "2A", 1 }, { "2B", 3 }, { "2C", 0 }, { "2D", 2 }, })
+                .collect(Collectors.toMap(p -> (String) p[0], p -> (Integer) p[1]));
+
     }
 
     @Override
     public void initialize() {
-        // super.initialize();
+        // not calling super.initialize() here
 
         address = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS);
         updateStatus(ThingStatus.UNKNOWN);
+        String modulesConfigParameter = CONFIG_IMPACTED_MODULES;
 
+        // the address as seen on the bus remains the default, only if it's missing we
+        // look at addressPC
         if (address == null) {
-            logger.debug("address == null");
+            modulesConfigParameter = CONFIG_IMPACTED_MODULES_PC;
 
-            String addressPC = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_PC);
-            String addressButtonPC = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_BUTTON_PC);
+            address = parseNikobusAddress((String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_PC));
 
-            // check if the addressNiko is set, as well as the specific button
-            if (addressPC != null && addressButtonPC != null) {
-                // the specific button comes in as e.g. 2_0 or 4_3 or 8_7 (<numberOfButtons>_<specificButton>
-                addressButtonPC = addressButtonPC.substring(2);
-
-                // calculate address
-                logger.debug("addressNiko '{}'", addressPC);
-
-                int addressNikoInt = Integer.parseInt(addressPC, 16);
-                String addressPCString = Integer.toBinaryString(addressNikoInt);
-
-                // pad left to 22 bit
-                addressPCString = String.format("%" + 22 + "s", addressPCString).replace(' ', '0');
-                // pad right to 24 bit
-                addressPCString = String.format("%-" + 24 + "s", addressPCString).replace(' ', '0');
-
-                // set the specific button
-                String addressButtonPCString = Integer.toBinaryString(Integer.parseInt(addressButtonPC));
-                addressPCString = addressPCString.substring(0,
-                        addressPCString.length() - addressButtonPCString.length()) + addressButtonPCString;
-
-                // reverse bits
-                StringBuilder sb = new StringBuilder(addressPCString);
-                addressPCString = sb.reverse().toString();
-                logger.trace("address Niko button '{}'", addressPCString);
-
-                address = String.format("%06X", Integer.parseInt(addressPCString, 2));
-                // logger.debug("addressNiko '{}'", address);
-
-            } else {
-                logger.debug("address != null");
+            if (address == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Address must be set!");
                 return;
@@ -174,10 +161,10 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
                 throw new IllegalArgumentException("Bridge does not exist!");
             }
 
-            String impactedModulesStringFull = (String) getConfig().get(CONFIG_IMPACTED_MODULES);
+            String impactedModulesStringFull = (String) getConfig().get(modulesConfigParameter);
             if (impactedModulesStringFull != null) {
 
-                String[] impactedModulesString = impactedModulesStringFull.toString().split(",");
+                String[] impactedModulesString = impactedModulesStringFull.split(",");
 
                 for (String impactedModuleString : impactedModulesString) {
                     ImpactedModuleUID impactedModuleUID = new ImpactedModuleUID(impactedModuleString.trim());
@@ -201,6 +188,49 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         if (pcLink != null) {
             pcLink.addListener(getAddress(), this::commandReceived);
         }
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    protected String parseNikobusAddress(String address) {
+        String addressPC = null;
+        String[] addressPCParts = address.split(":"); // e.g. 28092A:1A
+
+        // check if the addressPC is set, as well as the specific button in
+        // addressButtonPC
+        if (addressPCParts.length == 2) {
+
+            Integer addressButtonPCIndex = getButtonIndex(addressPCParts[1]);
+
+            if (addressButtonPCIndex == null) {
+                logger.debug("addressButtonPCIndex = null");
+                return null;
+            }
+
+            // calculate address
+            int addressPCInt = Integer.parseInt(addressPCParts[0], 16);
+            String addressPCString = Integer.toBinaryString(addressPCInt);
+
+            // pad left to 22 bit
+            addressPCString = String.format("%" + 22 + "s", addressPCString).replace(' ', '0');
+            // pad right to 24 bit
+            addressPCString = String.format("%-" + 24 + "s", addressPCString).replace(' ', '0');
+
+            // set the specific button
+            String addressButtonPCString = Integer.toBinaryString(addressButtonPCIndex);
+            addressPCString = addressPCString.substring(0, addressPCString.length() - addressButtonPCString.length())
+                    + addressButtonPCString;
+
+            // reverse bits
+            StringBuilder sb = new StringBuilder(addressPCString);
+            addressPCString = sb.reverse().toString();
+
+            // turn into HEX
+            addressPC = String.format("%06X", Integer.parseInt(addressPCString, 2));
+        } else {
+            logger.debug("the address should have two parts {}", address);
+        }
+        return addressPC;
     }
 
     @Override
@@ -234,12 +264,42 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
     }
 
+    // called when there is a message on the Nikobus
     private void commandReceived() {
+
+        //logger.debug("button press {}", this.address);
+
+        // a button itself does not have an on and off state
+        // so this command will be correct only half of the time...
+        updateState(CHANNEL_BUTTON, OnOffType.ON);
+
+        if (logger.isDebugEnabled()) {
+            ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_BUTTON);
+            logger.debug("button trigger {} {}", channelUID, CommonTriggerEvents.PRESSED);
+        }
+        if (logger.isTraceEnabled()) {
+            
+            // print out the address a seen in the PC application
+            int addressPCInt = Integer.parseInt(this.address, 16);
+            String addressPCString = Integer.toBinaryString(addressPCInt);
+            // reverse bits
+            StringBuilder sb = new StringBuilder(addressPCString);
+            addressPCString = sb.reverse().toString();
+            // last three bits hold the specific button values (0-7)
+            int lastThreeBits = Integer.parseInt(addressPCString.substring(addressPCString.length() - 3), 2);
+            // transform into the letter code (A, B, 1A, ...)
+            String buttonName = Utils.getKeyByValue(buttonIndexMap, lastThreeBits);
+            // drop the last two bits, then set the last bit to 0 to get the base address
+            String baseAddress = addressPCString.substring(0, addressPCString.length() - 3) + "0";
+            int baseAddressInt = Integer.parseInt(baseAddress, 2);
+            logger.trace(" button press bus {}, pc {}:{}", this.address, String.format("%06X", baseAddressInt), buttonName);
+
+        }
+        triggerChannel(CHANNEL_BUTTON, CommonTriggerEvents.PRESSED);
+        
         if (thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
-        }
-
-        updateState(CHANNEL_BUTTON, OnOffType.ON);
+        }        
 
         Utils.cancel(requestUpdateFuture);
         requestUpdateFuture = scheduler.schedule(this::update, 400, TimeUnit.MILLISECONDS);
@@ -275,5 +335,18 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
     @Override
     protected String getAddress() {
         return "#N" + super.getAddress();
+    }
+
+    private Integer getButtonIndex(String buttonName) {
+        Integer index = buttonIndexMap.get(buttonName.trim());
+
+        //logger.trace("getButtonIndex '{}' '{}'", buttonName, index);
+
+        if (index == null) {
+            logger.debug("button index not found for button '{}'", buttonName);
+            return null;
+        } else {
+            return index;
+        }
     }
 }

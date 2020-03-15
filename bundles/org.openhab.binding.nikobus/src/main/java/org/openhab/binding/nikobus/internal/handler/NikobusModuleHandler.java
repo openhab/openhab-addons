@@ -37,7 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikobusSwitchModuleHandler} is responsible for communication between Nikobus modules and binding.
+ * The {@link NikobusSwitchModuleHandler} is responsible for communication
+ * between Nikobus modules and binding.
  *
  * @author Boris Krivonog - Initial contribution
  */
@@ -63,6 +64,12 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
         synchronized (pendingRefresh) {
             pendingRefresh.clear();
         }
+    }
+
+    protected String parseNikobusAddress(String address) {
+        // to transform the address from the PC application to the address used on the
+        // bus we just need to swap the first and last two bytes
+        return address.substring(2, 4) + address.substring(0, 2);
     }
 
     @Override

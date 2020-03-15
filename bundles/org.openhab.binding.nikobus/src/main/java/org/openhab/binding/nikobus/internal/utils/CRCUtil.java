@@ -13,6 +13,7 @@
 package org.openhab.binding.nikobus.internal.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
  * @author Davy Vanherbergen - Initial contribution
  * @author Boris Krivonog - Removed dependency to javax.xml.bind.DatatypeConverter
  */
+@NonNullByDefault
 public class CRCUtil {
 
     private static final int CRC_INIT = 0xFFFF;

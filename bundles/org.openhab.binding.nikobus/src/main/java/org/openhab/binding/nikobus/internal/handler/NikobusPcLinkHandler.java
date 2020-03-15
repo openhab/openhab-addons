@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikobusPcLinkHandler} is responsible for handling commands, which are
- * sent or received from the PC-Link Nikobus component.
+ * The {@link NikobusPcLinkHandler} is responsible for handling commands, which
+ * are sent or received from the PC-Link Nikobus component.
  *
  * @author Boris Krivonog - Initial contribution
  */
@@ -111,6 +111,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Noop.
+        logger.debug("handleCommand noop - ChannelUID '{}', Command = '{}'", channelUID, command);
     }
 
     @SuppressWarnings("null")
@@ -159,8 +160,19 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
 
     @SuppressWarnings("null")
     public void addListener(String command, Runnable listener) {
+        logger.trace("adding listener for '{}'", command);
         if (commandListeners.put(command, listener) != null) {
             logger.warn("Multiple registrations for '{}'", command);
+        }
+        
+        // the connection must be open to be able to receive messages from the bus
+        try {
+            connectIfNeeded(connection);
+        } catch (IOException e) {
+            logger.debug("Sending command failed due {}", e.getMessage(), e);
+            connection.close();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+
         }
     }
 
@@ -326,7 +338,8 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         if (!connection.isConnected()) {
             connection.connect();
 
-            // Send connection sequence, mimicking the Nikobus software. If this is not send, PC-Link
+            // Send connection sequence, mimicking the Nikobus software. If this is not
+            // send, PC-Link
             // sometimes does not forward button presses via serial interface.
             Stream.of(new String[] { "++++", "ATH0", "ATZ", "$10110000B8CF9D", "#L0", "#E0", "#L0", "#E1" })
                     .map(NikobusCommand::new).forEach(this::sendCommand);

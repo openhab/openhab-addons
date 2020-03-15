@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NikobusCommand {
+    @NonNullByDefault
     public static class Result {
         private final Callable<String> callable;
 
@@ -46,6 +47,7 @@ public class NikobusCommand {
         }
     }
 
+    @NonNullByDefault
     public static class ResponseHandler {
         private final Logger logger = LoggerFactory.getLogger(ResponseHandler.class);
         private final Consumer<Result> resultConsumer;

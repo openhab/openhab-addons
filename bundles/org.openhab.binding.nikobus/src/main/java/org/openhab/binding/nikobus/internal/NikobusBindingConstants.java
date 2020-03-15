@@ -47,8 +47,6 @@ public class NikobusBindingConstants {
                                                                                  // software
     public static final String CONFIG_ADDRESS = "address"; // address as seen on the bus
     public static final String CONFIG_ADDRESS_PC = "addressPC"; // address as seen in the Nikobus PC software
-    public static final String CONFIG_ADDRESS_BUTTON_PC = "addressButtonPC"; // the specific button as seen in the
-                                                                             // Nikobus PC software (A, B, ...)
     public static final String CONFIG_PORT_NAME = "port";
 
 }

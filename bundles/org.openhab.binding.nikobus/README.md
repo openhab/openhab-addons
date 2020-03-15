@@ -20,7 +20,17 @@ This binding works with at least the following hardware:
 * Push buttons (05-060-01, 05-064-01, 05-078-01), RF Transmitter (05-314), PIR Sensor (430-00500),
 * 4 channel switch module (05-002-02),
 * 12 channel switch module (05-000-02),
-* 12 channel dimmer module.
+* 12 channel dimmer module (05-007-02),
+* 6 channel roller shutter module (05-001-02).
+
+Nikobus uses two ways to write the address of a module. The binding allows you to use either of those notations.
+
+* The first one is the one you see in the Nikobus Windows application. In Paper UI these are the definitions under "Application Parameters"
+* The second one is used on the bus itself. In Paper UI you can configure this in the 'show more' section where you find "Bus Parameters". This one takes precedence over the first one. These parameters can be discovered for example by watching the bus traffic using Karaf, e.g.
+
+`ssh openhab@localhost -p 8101 (default password = habopen)`
+`Log:set TRACE org.openhab.binding.nikobus`  
+`log:tail org.openhab.binding.nikobus`  
 
 ## Supported Things
 
@@ -30,7 +40,7 @@ The bridge enables communication with other Nikobus components:
 
 * `switch-module` - Nikobus switch module, i.e. `05-000-02`,
 * `dimmer-module` - Nikobus dim-controller module, i.e. `05-007-02`,
-* `rollershutter-module` - Nikobus roller shutter module,
+* `rollershutter-module` - Nikobus roller shutter module, i.e. `05-001-02`,
 * `push-button` - Nikobus physical push button.
 
 ## Discovery
@@ -74,8 +84,16 @@ In order to be able to read the status of a Nikobus module channel or to switch 
 
 #### switch-module
 
+* using the Nikobus PC application module address
+
 ```
-Thing switch-module s1 [ address = "BC00" ]
+Thing switch-module s1 [ addressPC = "BC00" ]
+```
+
+* using the module address as seen on the bus.
+
+```
+Thing switch-module s1 [ address = "00BC" ]
 ```
 
 Defines a `switch-module` with address `BC00`.
@@ -97,8 +115,17 @@ Defines a `switch-module` with address `BC00`.
 
 #### dimmer-module
 
+* using the Nikobus PC application module address
+
 ```
-Thing dimmer-module d1 [ address = "D969" ]
+Thing switch-module s1 [ addressPC = "D969" ]
+```
+
+* using the module address as seen on the bus.
+
+
+```
+Thing dimmer-module d1 [ address = "69D9" ]
 ```
 
 Defines a `dimmer-module` with address `D969`.
@@ -120,8 +147,17 @@ Defines a `dimmer-module` with address `D969`.
 
 #### rollershutter-module
 
+* using the Nikobus PC application module address
+
 ```
-Thing rollershutter-module r1 [ address = "4C6C" ]
+Thing switch-module s1 [ addressPC = "4C6C" ]
+```
+
+* using the module address as seen on the bus
+
+
+```
+Thing rollershutter-module r1 [ address = "6C4C" ]
 ```
 
 Defines a `rollershutter-module` with address `4C6C`.
@@ -143,6 +179,23 @@ This means one could also define virtual buttons in openHAB with non-existing ad
 
 To configure an item for a button in openHAB with address `28092A`, use the following format:
 
+* using the Nikobus PC application module address
+
+```
+Thing push-button pb1 [ addressPC = "<moduleAddress>:<specificButton>" ]
+Thing push-button pb1 [ addressPC = "28092A:1A" ]
+```
+
+The possible values for `<specificButton>` are:
+
+| button type   | possible values                 |
+|---------------|---------------------------------|
+| 2             | A, C                            |
+| 4             | A, B, C, D                      | 
+| 8             | 1A, 1B, 1C, 1D, 2A, 2B, 2C, 2D  |
+
+* using the module address as seen on the bus
+
 ```
 Thing push-button pb1 [ address = "28092A" ]
 ```
@@ -150,7 +203,7 @@ Thing push-button pb1 [ address = "28092A" ]
 Since all the channels in the entire channel group are switched to their new state, it is important that openHAB knows the current state of all the channels in that group.
 Otherwise a channel which was switched on by a button, may be switched off again by the command.
 
-In order to keep an up to date state of the channels in openHAB, button configurations can be extended to include detail on which channel groups the button press affects.
+In order to keep an up to date state of the channels in openHAB, button configurations can be extended to include details on which channel groups the button press affects.
 
 When configured, the status of the channel groups to which the button is linked, will be queried every time the button is pressed.
 Every status query takes between ~300 ms, so to get the best performance, only add the affected channel groups in the configuration, which has the following format:
@@ -173,6 +226,19 @@ Thing push-button pb1 [ address = "28092A", impactedModules = "switch-module:s1:
 ```
 
 In addition to the status requests triggered by button presses, there is also a scheduled status update interval defined by the `refreshInterval` parameter and explained above.
+
+### Rules
+
+When a Thing has been created for a button it is also possible to trigger a rule when the physical button is pressed. In the below example the rule is triggered when the Button Event Channel `nikobus:push-button:b6e47184:button` fires. An `ON` command is then sent to the kitchen light.
+
+```
+rule "LivingRoomActivateKitchenLight"
+when
+    Channel "nikobus:push-button:b6e47184:button" triggered PRESSED
+then
+    logInfo("LivingRoomActivateSecondLight", "Rule running!")
+    PushButtonKitchen_ButtonEvent.sendCommand(ON)  
+end```
 
 ## Full Example
 
