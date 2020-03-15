@@ -34,7 +34,7 @@ COMMITS=${1:-"master...HEAD"}
 CHANGED_BUNDLE_DIR=`git diff --dirstat=files,0 ${COMMITS} bundles/ | sed 's/^[ 0-9.]\+% bundles\///g' | grep -o -P "^([^/]*)" | uniq`
 # Determine if this is a single changed itest -> Perform build with tests + integration tests and all SAT checks
 # for this we have to remove '.tests' from the folder name.
-CHANGED_ITEST_DIR=`git diff --dirstat=files,0 ${COMMITS} itests/ | sed 's/^[ 0-9.]\+% itests\///g' | sed 's/\.tests\/.*//g' | uniq`
+CHANGED_ITEST_DIR=`git diff --dirstat=files,0 ${COMMITS} itests/ | sed 's/^[ 0-9.]\+% itests\///g' | sed 's/\.tests\///g' | uniq`
 CDIR=`pwd`
 
 # if a bundle and (optionally the linked itests) where changed build the module and its tests
@@ -62,8 +62,8 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
     # add the postfix to make sure we actually find the correct itest
     if [[ -e "itests/$CHANGED_DIR.tests" ]]; then
         echo "Single addon pull request: Building itest $CHANGED_DIR"
-        #build the index projects so the dependencies are downloaded before the OSGi resolve step occurs before running the test
-        mvn -pl ":org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index, itests/$CHANGED_DIR.tests" clean install -B 2>&1 |
+        cd "itests/$CHANGED_DIR.tests"
+        mvn clean install -B 2>&1 |
 	      stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	      stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
 	      tee -a ${CDIR}/.build.log
