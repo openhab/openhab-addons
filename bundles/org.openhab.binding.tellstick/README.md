@@ -125,32 +125,32 @@ Sensors (sensor) support the following channels:
 
 | Channel Type ID | Item Type           | Description                                                 |
 |-----------------|---------------------|-------------------------------------------------------------|
-| humidity        | Number              | This channel reports the current humidity in percentage.    |
-| temperature     | Number:Temperature  | This channel reports the current temperature in celsius.    |
+| humidity        | Number:Dimensionless| This channel reports the current humidity in percentage.    |
+| temperature     | Number:Temperature  | This channel reports the current temperature.               |
 | timestamp       | DateTime            | This channel reports the last time this sensor was updates. |
 
 PowerSensors ([powersensor]) support the following channels:
 
-| Channel Type ID | Item Type | Description                                                 |
-|-----------------|-----------|-------------------------------------------------------------|
-| watt            | Number    | This channel reports the current watt.                      |
-| ampere          | Number    | This channel reports the current ampere.                    |
-| timestamp       | DateTime  | This channel reports the last time this sensor was updates. |
+| Channel Type ID | Item Type              | Description                                                 |
+|-----------------|------------------------|-------------------------------------------------------------|
+| watt            | Number:Power           | This channel reports the current watt.                      |
+| ampere          | Number:ElectricCurrent | This channel reports the current ampere.                    |
+| timestamp       | DateTime               | This channel reports the last time this sensor was updates. |
 
 WindSensors ([windsensor]) support the following channels:
 
 | Channel Type ID | Item Type    | Description                  |
 |-----------------|--------------|------------------------------|
 | windgust        | Number:Speed | The current peak wind gust.  |
-| winddirection   | Number       | The current wind direction.  |
-| windaverage     | Number:Speed | The current wind avarage.    |
+| winddirection   | Number:Angle | The current wind direction.  |
+| windaverage     | Number:Speed | The current wind average.    |
 
 RainSensors ([rainsensor]) support the following channels:
 
-| Channel Type ID | Item Type | Description                |
-|-----------------|-----------|----------------------------|
-| rainrate        | Number    | This current rate of rain. |
-| raintotal       | Number    | The total rain.            |
+| Channel Type ID | Item Type     | Description                |
+|-----------------|---------------|----------------------------|
+| rainrate        | Number:Length | This current rate of rain. |
+| raintotal       | Number:Length | The total rain.            |
 
 ### Switchbased sensor workaround
 
