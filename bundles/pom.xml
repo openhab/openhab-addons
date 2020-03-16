@@ -238,8 +238,6 @@
     <!-- extensionservices -->
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
-    <!-- persistence -->
-    <module>org.openhab.persistence.mapdb</module>
     <!-- voice -->
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
