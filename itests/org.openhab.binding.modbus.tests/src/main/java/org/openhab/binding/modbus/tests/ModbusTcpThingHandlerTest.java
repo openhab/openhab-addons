@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.internal;
+package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Objects;
 
@@ -21,19 +21,15 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
@@ -42,17 +38,13 @@ import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
  * @author Sami Salonen - Initial contribution
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ModbusTcpThingHandlerTest {
-
-    @Mock
-    private ModbusManager modbusManager;
+public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
     private static BridgeBuilder createTcpThingBuilder(String id) {
         return BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
                 new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, id));
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testInitializeAndSlaveEndpoint() {
         Configuration thingConfig = new Configuration();
@@ -73,27 +65,20 @@ public class ModbusTcpThingHandlerTest {
         expectedPoolConfiguration.setReconnectAfterMillis(4);
 
         Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
-        Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
-            return null;
-        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
-
-        ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
-        thingHandler.setCallback(thingCallback);
-        thingHandler.initialize();
-
+        addThing(thing);
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
+        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+        assertNotNull(thingHandler);
         ModbusSlaveEndpoint slaveEndpoint = thingHandler.asSlaveEndpoint();
         assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44))));
         assertThat(thingHandler.getSlaveId(), is(9));
 
-        InOrder orderedVerify = Mockito.inOrder(modbusManager);
-        orderedVerify.verify(modbusManager).addListener(thingHandler);
+        InOrder orderedVerify = Mockito.inOrder(mockedModbusManager);
+        orderedVerify.verify(mockedModbusManager).addListener(thingHandler);
         ModbusSlaveEndpoint endpoint = thingHandler.asSlaveEndpoint();
         Objects.requireNonNull(endpoint);
-        orderedVerify.verify(modbusManager).setEndpointPoolConfiguration(endpoint, expectedPoolConfiguration);
+        orderedVerify.verify(mockedModbusManager).setEndpointPoolConfiguration(endpoint, expectedPoolConfiguration);
     }
 
     @Test
@@ -106,17 +91,11 @@ public class ModbusTcpThingHandlerTest {
         thingConfig.put("timeBetweenTransactionsMillis", 1);
 
         final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
-        Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
-            return null;
-        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
-
-        ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
-        thingHandler.setCallback(thingCallback);
-        thingHandler.initialize();
+        addThing(thing);
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
+        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+        assertNotNull(thingHandler);
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         poolConfiguration.setInterTransactionDelayMillis(2);
         // Different endpoint (port 45), so should not affect this thing
@@ -134,17 +113,11 @@ public class ModbusTcpThingHandlerTest {
         thingConfig.put("timeBetweenTransactionsMillis", 1);
 
         final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
-        Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
-            return null;
-        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
-
-        ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
-        thingHandler.setCallback(thingCallback);
-        thingHandler.initialize();
+        addThing(thing);
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
+        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+        assertNotNull(thingHandler);
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         poolConfiguration.setInterTransactionDelayMillis(2);
         // Same endpoint and different parameters -> OFFLINE
@@ -163,21 +136,16 @@ public class ModbusTcpThingHandlerTest {
         thingConfig.put("timeBetweenTransactionsMillis", 1);
 
         final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        ThingHandlerCallback thingCallback = Mockito.mock(ThingHandlerCallback.class);
-        Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
-            return null;
-        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
-
-        ModbusTcpThingHandler thingHandler = new ModbusTcpThingHandler(thing, () -> modbusManager);
-        thingHandler.setCallback(thingCallback);
-        thingHandler.initialize();
+        addThing(thing);
         assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
+        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+        assertNotNull(thingHandler);
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
         poolConfiguration.setInterTransactionDelayMillis(1);
+        poolConfiguration.setConnectTimeoutMillis(10000); // default timeout
         // Same endpoint and same parameters -> should not affect this thing
         thingHandler.onEndpointPoolConfigurationSet(new ModbusTCPSlaveEndpoint("thisishost", 44), poolConfiguration);
-        assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        assertThat(thing.getStatusInfo().getDescription(), thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
     }
 }
