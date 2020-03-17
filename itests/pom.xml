@@ -20,7 +20,8 @@
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
-    <!-- disable itests for mqtt temporarily 
+    <module>org.openhab.binding.modbus.tests</module>            
+    <!-- disable itests for mqtt temporarily    
     <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
     -->
