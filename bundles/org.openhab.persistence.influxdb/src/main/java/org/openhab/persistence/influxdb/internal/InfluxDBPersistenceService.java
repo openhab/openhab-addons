@@ -583,7 +583,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     private String point2String(PointType point) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(point.getLatitude().toString());
         buf.append(",");
         buf.append(point.getLongitude().toString());

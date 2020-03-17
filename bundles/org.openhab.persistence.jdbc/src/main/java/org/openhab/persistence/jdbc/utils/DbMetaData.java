@@ -52,14 +52,14 @@ public class DbMetaData {
                 dbMajorVersion = meta.getDatabaseMajorVersion();
                 logger.debug("dbMajorVersion = '{}'", dbMajorVersion);
             } catch (Exception e) {
-                logger.error("Asking for 'dbMajorVersion' is a unsupported: '{}'", e.getMessage());
+                logger.error("Asking for 'dbMajorVersion' is unsupported: '{}'", e.getMessage());
             }
 
             try {
                 dbMinorVersion = meta.getDatabaseMinorVersion();
                 logger.debug("dbMinorVersion = '{}'", dbMinorVersion);
             } catch (Exception e) {
-                logger.error("Asking for 'dbMajorVersion' is a unsupported: '{}'", e.getMessage());
+                logger.error("Asking for 'dbMinorVersion' is unsupported: '{}'", e.getMessage());
             }
 
             driverMajorVersion = meta.getDriverMajorVersion();

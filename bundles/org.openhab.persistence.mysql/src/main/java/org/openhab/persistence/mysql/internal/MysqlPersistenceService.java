@@ -129,8 +129,8 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
 
     private @NonNullByDefault({}) Connection connection = null;
 
-    private Map<String, String> sqlTables = new HashMap<String, String>();
-    private Map<String, String> sqlTypes = new HashMap<String, String>();
+    private Map<String, @Nullable String> sqlTables = new HashMap<>();
+    private Map<String, @Nullable String> sqlTypes = new HashMap<>();
 
     /**
      * Initialise the type array
@@ -237,7 +237,7 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
      * @param i
      * @return
      */
-    private String getItemType(Item i) {
+    private @Nullable String getItemType(Item i) {
         Item item = i;
         if (i instanceof GroupItem) {
             item = ((GroupItem) i).getBaseItem();
@@ -259,8 +259,7 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
         return sqlTypes.get(itemType);
     }
 
-    private String getTable(Item item) {
-        PreparedStatement statement = null;
+    private @Nullable String getTable(Item item) {
         String sqlCmd = null;
         int rowId = 0;
 
@@ -274,12 +273,11 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
 
         logger.debug("mySQL: no Table found for itemName={} get:{}", itemName, sqlTables.get(itemName));
 
+        sqlCmd = new String("INSERT INTO Items (ItemName) VALUES (?)");
+
         // Create a new entry in the Items table. This is the translation of
         // item name to table
-        try {
-            sqlCmd = new String("INSERT INTO Items (ItemName) VALUES (?)");
-
-            statement = connection.prepareStatement(sqlCmd, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement statement = connection.prepareStatement(sqlCmd, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, itemName);
             statement.executeUpdate();
 
@@ -299,13 +297,6 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
             errCnt++;
             logger.error("mySQL: Could not create entry for '{}' in table 'Items' with statement '{}': {}", itemName,
                     sqlCmd, e.getMessage());
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException logOrIgnore) {
-                }
-            }
         }
 
         // An error occurred adding the item name into the index list!
@@ -321,24 +312,15 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
                 "CREATE TABLE " + tableName + " (Time DATETIME, Value " + mysqlType + ", PRIMARY KEY(Time));");
         logger.debug("mySQL: query: {}", sqlCmd);
 
-        try {
-            statement = connection.prepareStatement(sqlCmd);
+        try (PreparedStatement statement = connection.prepareStatement(sqlCmd)) {
             statement.executeUpdate();
 
             logger.debug("mySQL: Table created for item '{}' with datatype {} in SQL database.", itemName, mysqlType);
             sqlTables.put(itemName, tableName);
         } catch (Exception e) {
             errCnt++;
-
             logger.error("mySQL: Could not create table for item '{}' with statement '{}': {}", itemName, sqlCmd,
                     e.getMessage());
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (Exception hidden) {
-                }
-            }
         }
 
         // Check if the new entry is in the table list
@@ -349,21 +331,13 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
             sqlCmd = new String("DELETE FROM Items WHERE ItemName=?");
             logger.debug("mySQL: query: {}", sqlCmd);
 
-            try {
-                statement = connection.prepareStatement(sqlCmd);
+            try (PreparedStatement statement = connection.prepareStatement(sqlCmd);) {
                 statement.setString(1, itemName);
                 statement.executeUpdate();
             } catch (Exception e) {
                 errCnt++;
 
                 logger.error("mySQL: Could not remove index for item '{}' with statement '{}': ", itemName, sqlCmd, e);
-            } finally {
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch (Exception hidden) {
-                    }
-                }
             }
         }
 

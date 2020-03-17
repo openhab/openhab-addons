@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JdbcPersistenceService extends JdbcMapper implements QueryablePersistenceService {
-    static final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
     @Reference
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;

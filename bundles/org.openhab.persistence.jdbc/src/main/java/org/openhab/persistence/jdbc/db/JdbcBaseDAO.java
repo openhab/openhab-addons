@@ -130,15 +130,6 @@ public class JdbcBaseDAO {
         SQL_GET_DB = "SELECT DATABASE()";
         SQL_IF_TABLE_EXISTS = "SHOW TABLES LIKE '#searchTable#'";
 
-        // Derby SQL_IF_TABLE_EXISTS = "SELECT * FROM SYS.SYSTABLES WHERE TABLENAME='#searchTable#'";
-        // h2 SQL_IF_TABLE_EXISTS = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='#searchTable#'";
-        // hsqldb SQL_IF_TABLE_EXISTS = "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_TABLES WHERE
-        // TABLE_NAME='#searchTable#'";
-        // hsqldb SQL_IF_TABLE_EXISTS = "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_TABLES WHERE
-        // TABLE_NAME='#searchTable#'";
-        // mysql SQL_IF_TABLE_EXISTS = "SHOW TABLES LIKE '#searchTable#'";
-        // postgresql SQL_IF_TABLE_EXISTS = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
-        // sqlite SQL_IF_TABLE_EXISTS = "SELECT name FROM sqlite_master WHERE type='table' AND name='#searchTable#'";
         SQL_CREATE_NEW_ENTRY_IN_ITEMS_TABLE = "INSERT INTO #itemsManageTable# (ItemName) VALUES ('#itemname#')";
         SQL_CREATE_ITEMS_TABLE_IF_NOT = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INT NOT NULL AUTO_INCREMENT,#colname# #coltype# NOT NULL,PRIMARY KEY (ItemId))";
         SQL_DELETE_ITEMS_ENTRY = "DELETE FROM items WHERE ItemName=#itemname#";

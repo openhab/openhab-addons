@@ -160,9 +160,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         job.cancel(true);
                         scheduledJobs.remove(name);
                     }
-                    job = scheduler.schedule(() -> {
-                        store(item, name);
-                    }, 1, TimeUnit.SECONDS);
+                    job = scheduler.schedule(() -> store(item, name), 1, TimeUnit.SECONDS);
                     scheduledJobs.put(name, job);
                 } else {
                     logger.warn("Could not persist '{}' to rrd4j database: {}", name, e.getMessage());

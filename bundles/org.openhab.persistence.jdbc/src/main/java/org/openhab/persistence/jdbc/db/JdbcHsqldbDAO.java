@@ -69,10 +69,6 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
 
         // Properties for HikariCP
         databaseProps.setProperty("driverClassName", "org.hsqldb.jdbcDriver");
-        // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.hsqldb.jdbc.JDBCDataSource");
-        // databaseProps.setProperty("maximumPoolSize", "1");
-        // databaseProps.setProperty("minimumIdle", "1");
     }
 
     /**************

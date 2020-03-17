@@ -10,25 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.model;
+package org.openhab.persistence.mongodb.internal;
 
+import java.text.DateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 
 /**
- * Represents the data on the part of openHAB.
+ * This is the implementation of the MongoDB historic item.
  *
- * @author Helmut Lehmeyer - Initial contribution
+ * @author Thorsten Hoeger - Initial contribution
  */
-public class JdbcItem implements HistoricItem {
+@NonNullByDefault
+public class MongoDBItem implements HistoricItem {
 
-    private final String name;
-    private final State state;
-    private final Date timestamp;
+    final private String name;
+    final private State state;
+    final private Date timestamp;
 
-    public JdbcItem(String name, State state, Date timestamp) {
+    public MongoDBItem(String name, State state, Date timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;
@@ -51,15 +54,7 @@ public class JdbcItem implements HistoricItem {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("JdbcItem [name=");
-        builder.append(name);
-        builder.append(", state=");
-        builder.append(state);
-        builder.append(", timestamp=");
-        builder.append(timestamp);
-        builder.append("]");
-        return builder.toString();
+        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
     }
 
 }

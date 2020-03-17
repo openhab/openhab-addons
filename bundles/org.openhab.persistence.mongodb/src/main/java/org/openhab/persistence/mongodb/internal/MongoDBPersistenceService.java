@@ -12,7 +12,6 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -347,40 +346,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             item = null;
         }
         return item;
-    }
-
-    public static class MongoDBItem implements HistoricItem {
-
-        final private String name;
-        final private State state;
-        final private Date timestamp;
-
-        public MongoDBItem(String name, State state, Date timestamp) {
-            this.name = name;
-            this.state = state;
-            this.timestamp = timestamp;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public State getState() {
-            return state;
-        }
-
-        @Override
-        public Date getTimestamp() {
-            return timestamp;
-        }
-
-        @Override
-        public String toString() {
-            return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
-        }
-
     }
 
     @Override

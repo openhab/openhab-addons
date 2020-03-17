@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class ItemVO implements Serializable {
-    static final Logger logger = LoggerFactory.getLogger(ItemVO.class);
+    private final Logger logger = LoggerFactory.getLogger(ItemVO.class);
 
     private static final long serialVersionUID = 1871441039821454890L;
 
@@ -50,7 +50,6 @@ public class ItemVO implements Serializable {
         logger.debug("JDBC:ItemVO setValueTypes dbType={}; javaType={};", dbType, javaType);
         this.dbType = dbType;
         this.javaType = javaType;
-        // this.jdbcType = jdbcType;
     }
 
     public String getTableName() {

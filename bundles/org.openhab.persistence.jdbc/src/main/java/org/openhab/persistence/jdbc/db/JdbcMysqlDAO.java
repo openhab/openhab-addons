@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcMysqlDAO extends JdbcBaseDAO {
-    private static final Logger logger = LoggerFactory.getLogger(JdbcMysqlDAO.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcMysqlDAO.class);
 
     /********
      * INIT *

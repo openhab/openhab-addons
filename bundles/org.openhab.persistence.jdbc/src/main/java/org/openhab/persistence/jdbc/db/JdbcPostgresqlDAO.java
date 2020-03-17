@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcPostgresqlDAO extends JdbcBaseDAO {
-    private static final Logger logger = LoggerFactory.getLogger(JdbcPostgresqlDAO.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcPostgresqlDAO.class);
 
     /********
      * INIT *

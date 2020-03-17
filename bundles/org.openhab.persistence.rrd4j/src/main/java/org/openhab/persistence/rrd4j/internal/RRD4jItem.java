@@ -26,9 +26,9 @@ import org.openhab.core.types.State;
  */
 public class RRD4jItem implements HistoricItem {
 
-    final private String name;
-    final private State state;
-    final private Date timestamp;
+    private final String name;
+    private final State state;
+    private final Date timestamp;
 
     public RRD4jItem(String name, State state, Date timestamp) {
         this.name = name;
@@ -55,5 +55,4 @@ public class RRD4jItem implements HistoricItem {
     public String toString() {
         return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
     }
-
 }

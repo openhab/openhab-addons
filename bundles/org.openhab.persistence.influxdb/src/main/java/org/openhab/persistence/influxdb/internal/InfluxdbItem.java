@@ -15,6 +15,7 @@ package org.openhab.persistence.influxdb.internal;
 import java.text.DateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 
@@ -24,11 +25,12 @@ import org.openhab.core.types.State;
  * @author Theo Weiss - Initial Contribution
  *
  */
+@NonNullByDefault
 public class InfluxdbItem implements HistoricItem {
 
-    final private String name;
-    final private State state;
-    final private Date timestamp;
+    private final String name;
+    private final State state;
+    private final Date timestamp;
 
     public InfluxdbItem(String name, State state, Date timestamp) {
         this.name = name;

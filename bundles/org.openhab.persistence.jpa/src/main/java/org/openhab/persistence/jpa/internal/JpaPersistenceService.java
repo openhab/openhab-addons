@@ -244,7 +244,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
      * @return initialized EntityManagerFactory
      */
     protected EntityManagerFactory newEntityManagerFactory() {
-        logger.debug("Creating EntityManagerFactory...");
+        logger.trace("Creating EntityManagerFactory...");
 
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("javax.persistence.jdbc.url", config.dbConnectionUrl);

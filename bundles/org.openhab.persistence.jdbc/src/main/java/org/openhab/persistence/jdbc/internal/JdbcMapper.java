@@ -309,30 +309,29 @@ public class JdbcMapper {
         String newName = "";
         List<ItemVO> oldNewTablenames = new ArrayList<ItemVO>();
         for (int i = 0; i < al.size(); i++) {
-
             int id = -1;
             oldName = al.get(i).getTable_name();
-            logger.warn("JDBC::formatTableNames: found Table Name= {}", oldName);
+            logger.info("JDBC::formatTableNames: found Table Name= {}", oldName);
 
             if (oldName.startsWith(conf.getTableNamePrefix()) && !oldName.contains("_")) {
                 id = Integer.parseInt(oldName.substring(conf.getTableNamePrefix().length()));
-                logger.warn("JDBC::formatTableNames: found Table with Prefix '{}' Name= {} id= {}",
+                logger.info("JDBC::formatTableNames: found Table with Prefix '{}' Name= {} id= {}",
                         conf.getTableNamePrefix(), oldName, (id));
             } else if (oldName.contains("_")) {
                 id = Integer.parseInt(oldName.substring(oldName.lastIndexOf("_") + 1));
-                logger.warn("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, (id));
+                logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, (id));
             }
-            logger.warn("JDBC::formatTableNames: found Table id= {}", id);
+            logger.info("JDBC::formatTableNames: found Table id= {}", id);
 
             newName = tableIds.get(id);
-            logger.warn("JDBC::formatTableNames: found Table newName= {}", newName);
+            logger.info("JDBC::formatTableNames: found Table newName= {}", newName);
 
             if (newName != null) {
                 if (!oldName.equalsIgnoreCase(newName)) {
                     oldNewTablenames.add(new ItemVO(oldName, newName));
-                    logger.warn("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", oldName, newName);
+                    logger.info("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", oldName, newName);
                 } else {
-                    logger.warn("JDBC::formatTableNames: Table oldName='{}' newName='{}' nothing to rename", oldName,
+                    logger.info("JDBC::formatTableNames: Table oldName='{}' newName='{}' nothing to rename", oldName,
                             newName);
                 }
             } else {
@@ -377,7 +376,7 @@ public class JdbcMapper {
      * H E L P E R S *
      *****************/
     private void logTime(String me, long timerStart, long timerStop) {
-        if (conf.enableLogTime) {
+        if (conf.enableLogTime && logger.isInfoEnabled()) {
             conf.timerCount++;
             int timerDiff = (int) (timerStop - timerStart);
             if (timerDiff < afterAccessMin) {
