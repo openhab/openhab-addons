@@ -166,7 +166,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
         private Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
 
-        private BluetoothDeviceSnapshot currentSnapshot = new BluetoothDeviceSnapshot();
+        private @Nullable BluetoothDeviceSnapshot latestSnapshot;
 
         /**
          * This is meant to be used as part of a Map.compute function
@@ -187,97 +187,100 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         }
 
         public synchronized void handleDiscovery(BluetoothDevice device) {
-            CompletableFuture<DiscoveryResult> future = createFutureForCurrentSnapshot(device);
-            if (future != null) {
-                /*
-                 * this appends a post-process to any ongoing or completed discoveries with this device's address.
-                 * If this discoveryFuture is ongoing then this post-process will run asynchronously upon the future's
-                 * completion.
-                 * If this discoveryFuture is already completed then this post-process will run in the current thread.
-                 */
-                future.thenAccept(BluetoothDiscoveryService.this::thingDiscovered);
+            if (!discoveryFutures.isEmpty()) {
+                CompletableFuture
+                        // we have an ongoing futures so lets create our discovery after they all finish
+                        .allOf(discoveryFutures.values().stream().map(sf -> sf.future)
+                                .toArray(CompletableFuture[]::new))
+                        .thenRun(() -> createDiscoveryFuture(device));
+            } else {
+                createDiscoveryFuture(device);
             }
         }
 
-        private synchronized @Nullable CompletableFuture<DiscoveryResult> createFutureForCurrentSnapshot(
-                BluetoothDevice device) {
+        private synchronized void createDiscoveryFuture(BluetoothDevice device) {
             BluetoothAdapter adapter = device.getAdapter();
             CompletableFuture<DiscoveryResult> future = null;
-            if (currentSnapshot.merge(device)) {
-                // we need to make a new future result
-                if (!discoveryFutures.isEmpty()) {
-                    future = CompletableFuture
-                            // we have an ongoing futures so lets create our discovery after they all finish
-                            .allOf(discoveryFutures.values().stream().map(sf -> sf.future)
-                                    .toArray(CompletableFuture[]::new))
-                            .thenCompose(v -> {
-                                /*
-                                 * Since device fields can be discovered as part of the discovery process
-                                 * we need to recheck at this point whether or not the snapshot for this adapter
-                                 * is the latest one, since the result of another process may have updated it.
-                                 * This means that it is entirely possible that the future from another adapter's
-                                 * discovery has produced the result for the latest snapshot. So in order to handle all
-                                 * those cases we simply call createFutureForCurrentSnapshot again in a recursive
-                                 * fashion. If the snapshot for this adapter is still the newest then we should get a
-                                 * return value of null, otherwise it will return a future for the actual latest
-                                 * snapshot.
-                                 */
-                                CompletableFuture<DiscoveryResult> recFuture = createFutureForCurrentSnapshot(device);
-                                if (recFuture != null) {
-                                    return recFuture;
-                                } else {
-                                    return createAsyncDiscoveryFuture(device);
-                                }
-                            });
-                }
-            } else {
-                if (discoveryFutures.containsKey(adapter)
-                        && discoveryFutures.get(adapter).snapshot.equals(currentSnapshot)) {
-                    // This adapter has already produced the most up-to-date result, so no further processing is
-                    // necessary
-                    return null;
-                }
-                /*
-                 * This isn't a new snapshot, but an up-to-date result from this adapter has not been produced yet.
-                 * Since a result must have been produced for this snapshot, we search the results of the other adapters
-                 * to find the future for the latest snapshot, then we modify it to make it look like it came from this
-                 * adapter. This way we don't need to recompute the DiscoveryResult.
-                 */
-                Optional<CompletableFuture<DiscoveryResult>> otherFuture = discoveryFutures.values().stream()
-                        // make sure that we only get futures for the current snapshot
-                        .filter(sf -> sf.snapshot.equals(currentSnapshot)).findAny().map(sf -> sf.future);
-                if (otherFuture.isPresent()) {
-                    future = otherFuture.get().thenApply(result -> adaptResult(result, adapter));
+
+            BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(device);
+            BluetoothDeviceSnapshot latestSnapshot = this.latestSnapshot;
+            if (latestSnapshot != null) {
+                snapshot.merge(latestSnapshot);
+
+                if (snapshot.equals(latestSnapshot)) {
+                    // this means that snapshot has no newer fields than the latest snapshot
+                    if (discoveryFutures.containsKey(adapter)
+                            && discoveryFutures.get(adapter).snapshot.equals(latestSnapshot)) {
+                        // This adapter has already produced the most up-to-date result, so no further processing is
+                        // necessary
+                        return;
+                    }
+
+                    /*
+                     * This isn't a new snapshot, but an up-to-date result from this adapter has not been produced yet.
+                     * Since a result must have been produced for this snapshot, we search the results of the other
+                     * adapters
+                     * to find the future for the latest snapshot, then we modify it to make it look like it came from
+                     * this
+                     * adapter. This way we don't need to recompute the DiscoveryResult.
+                     */
+                    Optional<CompletableFuture<DiscoveryResult>> otherFuture = discoveryFutures.values().stream()
+                            // make sure that we only get futures for the current snapshot
+                            .filter(sf -> sf.snapshot.equals(latestSnapshot)).findAny().map(sf -> sf.future);
+                    if (otherFuture.isPresent()) {
+                        future = otherFuture.get().thenApply(result -> adaptResult(result, adapter));
+                    }
                 }
             }
+            this.latestSnapshot = snapshot;
+
             if (future == null) {
-                future = createAsyncDiscoveryFuture(device);
+                // we pass in the snapshot since it acts as a delegate for the device. It will also retain any new
+                // fields added to the device as part of the discovery process.
+                future = startDiscoveryProcess(snapshot);
             }
+
+            if (discoveryFutures.containsKey(adapter)) {
+                // now we need to make sure that we remove the old discovered result if it is different from the new
+                // one.
+                SnapshotFuture oldSF = discoveryFutures.get(adapter);
+                future = oldSF.future.thenCombine(future, (oldResult, newResult) -> {
+                    logger.trace("\n old: {}\n new: {}", oldResult, newResult);
+                    if (!oldResult.getThingUID().equals(newResult.getThingUID())) {
+                        thingRemoved(oldResult.getThingUID());
+                    }
+                    return newResult;
+                });
+            }
+            /*
+             * this appends a post-process to any ongoing or completed discoveries with this device's address.
+             * If this discoveryFuture is ongoing then this post-process will run asynchronously upon the future's
+             * completion.
+             * If this discoveryFuture is already completed then this post-process will run in the current thread.
+             * We need to make sure that this is part of the future chain so that the call to 'thingRemoved'
+             * in the 'removeDiscoveries' method above can be sure that it is running after the 'thingDiscovered'
+             */
+            future = future.thenApply(result -> {
+                thingDiscovered(result);
+                return result;
+            });
+
             // copy the current snapshot
-            BluetoothDeviceSnapshot snapshot = new BluetoothDeviceSnapshot(currentSnapshot);
+            // BluetoothDiscoveryDevice snapshot = new BluetoothDiscoveryDevice(currentSnapshot);
             // now save it for later
             discoveryFutures.put(adapter, new SnapshotFuture(snapshot, future));
-            return future;
         }
 
-        private synchronized DiscoveryResult postProcessResult(BluetoothDevice device, DiscoveryResult result) {
-            if (currentSnapshot.merge(device)) {
-                discoveryFutures.get(device.getAdapter()).snapshot = new BluetoothDeviceSnapshot(currentSnapshot);
-            }
-            return result;
-        }
-
-        private CompletableFuture<DiscoveryResult> createAsyncDiscoveryFuture(BluetoothDevice device) {
-            return CompletableFuture
-                    .supplyAsync(new BluetoothDiscoveryProcess(device, participants, adapters), scheduler)
-                    .thenApply(result -> postProcessResult(device, result));
+        private CompletableFuture<DiscoveryResult> startDiscoveryProcess(BluetoothDevice device) {
+            return CompletableFuture.supplyAsync(new BluetoothDiscoveryProcess(device, participants, adapters),
+                    scheduler);
         }
 
     }
 
     private static class SnapshotFuture {
-        public BluetoothDeviceSnapshot snapshot;
-        public final CompletableFuture<DiscoveryResult> future;
+        public final BluetoothDeviceSnapshot snapshot;
+        public CompletableFuture<DiscoveryResult> future;
 
         public SnapshotFuture(BluetoothDeviceSnapshot snapshot, CompletableFuture<DiscoveryResult> future) {
             this.snapshot = snapshot;
