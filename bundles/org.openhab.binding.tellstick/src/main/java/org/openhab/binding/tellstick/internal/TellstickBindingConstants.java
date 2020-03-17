@@ -12,12 +12,27 @@
  */
 package org.openhab.binding.tellstick.internal;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Length;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -30,6 +45,16 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class TellstickBindingConstants {
 
     public static final String BINDING_ID = "tellstick";
+
+    public static final Unit<Dimensionless> HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
+    public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
+    public static final Unit<Speed> WIND_SPEED_UNIT_MS = SmartHomeUnits.METRE_PER_SECOND;
+    public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final Unit<Length> RAIN_UNIT = MILLI(SIUnits.METRE);
+    public static final Unit<Illuminance> LUX_UNIT = SmartHomeUnits.LUX;
+    public static final Unit<ElectricCurrent> ELECTRIC_UNIT = SmartHomeUnits.AMPERE;
+    public static final Unit<Power> POWER_UNIT = KILO(SmartHomeUnits.WATT);
 
     public static final String CONFIGPATH_ID = "location";
     public static final String DEVICE_ID = "deviceId";
