@@ -10,85 +10,55 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.internal;
+package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.common.registry.AbstractRegistry;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemBuilder;
-import org.eclipse.smarthome.core.items.ItemNotFoundException;
-import org.eclipse.smarthome.core.items.ItemNotUniqueException;
-import org.eclipse.smarthome.core.items.ItemProvider;
-import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.items.ManagedItemProvider;
-import org.eclipse.smarthome.core.items.RegistryHook;
-import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.items.StringItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
-import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
-import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider;
 import org.eclipse.smarthome.core.transform.TransformationException;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.test.java.JavaTest;
-import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
@@ -121,146 +91,14 @@ import org.osgi.framework.InvalidSyntaxException;
  * @author Sami Salonen - Initial contribution
  */
 @RunWith(MockitoJUnitRunner.class)
-@Ignore("Tests fail because the thingRegistry field has been removed from BaseThingHandler, "
-        + "see: https://github.com/openhab/openhab-addons/issues/6171")
-public class ModbusDataHandlerTest extends JavaTest {
+public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
-    private class ItemChannelLinkRegistryTestImpl extends ItemChannelLinkRegistry {
-        private final class ManagedItemChannelLinkProviderExtension extends ManagedItemChannelLinkProvider {
-            ManagedItemChannelLinkProviderExtension() {
-                super(new VolatileStorageService());
-            }
-        }
-
-        public ItemChannelLinkRegistryTestImpl() {
-            super(thingRegistry, itemRegistry);
-            ManagedItemChannelLinkProviderExtension provider = new ManagedItemChannelLinkProviderExtension();
-            addProvider(provider);
-            setManagedProvider(provider);
+    private final class MultiplyTransformation implements TransformationService {
+        @Override
+        public String transform(String function, String source) throws TransformationException {
+            return String.valueOf(Integer.parseInt(function) * Integer.parseInt(source));
         }
     }
-
-    @NonNullByDefault
-    private class ItemRegisteryTestImpl extends AbstractRegistry<Item, String, ItemProvider> implements ItemRegistry {
-
-        private Map<String, Item> items = new ConcurrentHashMap<>();
-
-        private final class ManagedProviderTestImpl extends ManagedItemProvider {
-            public ManagedProviderTestImpl() {
-                super(new VolatileStorageService());
-            }
-        }
-
-        public ItemRegisteryTestImpl() {
-            super(ItemProvider.class);
-            setManagedProvider(new ManagedProviderTestImpl());
-        }
-
-        @Override
-        public Item getItem(String name) throws ItemNotFoundException {
-            Item item = super.get(name);
-            if (item == null) {
-                throw new ItemNotFoundException(name);
-            }
-            return item;
-        }
-
-        @Override
-        public Item getItemByPattern(String name) throws ItemNotFoundException, ItemNotUniqueException {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public Collection<Item> getItems() {
-            return items.values();
-        }
-
-        @Override
-        public Collection<Item> getItemsOfType(String type) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public Collection<Item> getItems(String pattern) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public Collection<Item> getItemsByTag(String... tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public Collection<Item> getItemsByTagAndType(String type, String... tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public @Nullable Item remove(String itemName, boolean recursive) {
-            if (recursive) {
-                throw new IllegalStateException();
-            }
-            return items.remove(itemName);
-        }
-
-        @Override
-        public void addRegistryHook(RegistryHook<Item> hook) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public void removeRegistryHook(RegistryHook<Item> hook) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public <T extends Item> Collection<T> getItemsByTag(Class<T> typeFilter, String... tags) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public ItemBuilder newItemBuilder(Item item) {
-            throw new IllegalStateException();
-        }
-
-        @Override
-        public ItemBuilder newItemBuilder(String itemType, String itemName) {
-            throw new IllegalStateException();
-        }
-
-    }
-
-    private static final Map<String, Class<? extends Item>> CHANNEL_TO_ITEM_CLASS = new HashMap<>();
-    static {
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_SWITCH, SwitchItem.class);
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_CONTACT, ContactItem.class);
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_DATETIME, DateTimeItem.class);
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_DIMMER, DimmerItem.class);
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_NUMBER, NumberItem.class);
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_STRING, StringItem.class);
-        CHANNEL_TO_ITEM_CLASS.put(CHANNEL_ROLLERSHUTTER, RollershutterItem.class);
-    }
-
-    private List<Thing> things = new ArrayList<>();
-    private List<WriteTask> writeTasks = new ArrayList<>();
-
-    @Mock
-    private BundleContext bundleContext;
-
-    @Mock
-    private ThingHandlerCallback thingCallback;
-
-    @Mock
-    private ThingRegistry thingRegistry;
-
-    private ItemRegistry itemRegistry = new ItemRegisteryTestImpl();
-
-    @Mock
-    private ModbusManager manager;
-
-    private ItemChannelLinkRegistryTestImpl linkRegistry = new ItemChannelLinkRegistryTestImpl();
-
-    Map<ChannelUID, List<State>> stateUpdates = new HashMap<>();
 
     private static final Map<String, String> CHANNEL_TO_ACCEPTED_TYPE = new HashMap<>();
     static {
@@ -276,70 +114,22 @@ public class ModbusDataHandlerTest extends JavaTest {
         CHANNEL_TO_ACCEPTED_TYPE.put(CHANNEL_LAST_WRITE_ERROR, "DateTime");
         CHANNEL_TO_ACCEPTED_TYPE.put(CHANNEL_LAST_READ_ERROR, "DateTime");
     }
+    private List<WriteTask> writeTasks = new ArrayList<>();
 
-    private void registerThingToMockRegistry(Thing thing) {
-        things.add(thing);
-        // update bridge with the new child thing
-        if (thing.getBridgeUID() != null) {
-            ThingUID bridgeUID = thing.getBridgeUID();
-            things.stream().filter(t -> t.getUID().equals(bridgeUID)).findFirst().ifPresent(t -> {
-                try {
-                    t.getClass().getMethod("addThing", Thing.class).invoke(t, thing);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                        | NoSuchMethodException | SecurityException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
+    @After
+    public void tearDown() {
+        writeTasks.clear();
     }
 
-    private void hookThingRegistry(ThingHandler thingHandler) {
-        Field thingRegisteryField;
-        try {
-            thingRegisteryField = BaseThingHandler.class.getDeclaredField("thingRegistry");
-            thingRegisteryField.setAccessible(true);
-            thingRegisteryField.set(thingHandler, thingRegistry);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    private void captureModbusWrites() {
+        Mockito.when(mockedModbusManager.submitOneTimeWrite(any())).then(invocation -> {
+            WriteTask task = (WriteTask) invocation.getArgument(0);
+            writeTasks.add(task);
+            return Mockito.mock(ScheduledFuture.class);
+        });
     }
 
-    private void hookLinkRegistry(ThingHandler thingHandler) {
-        Mockito.doAnswer(invocation -> {
-            ChannelUID channelUID = (ChannelUID) invocation.getArgument(0);
-            return !linkRegistry.getLinks(channelUID).isEmpty();
-        }).when(thingCallback).isChannelLinked(any());
-    }
-
-    @SuppressWarnings("null")
-    private void hookStatusUpdates(Thing thing) {
-        Mockito.doAnswer(invocation -> {
-            thing.setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
-            return null;
-        }).when(thingCallback).statusUpdated(ArgumentMatchers.same(thing), ArgumentMatchers.any());
-
-    }
-
-    @SuppressWarnings("null")
-    private void hookStateUpdates(Thing thing) {
-        Mockito.doAnswer(invocation -> {
-            ChannelUID channelUID = (ChannelUID) invocation.getArgument(0);
-            State state = (State) invocation.getArgument(1);
-            stateUpdates.putIfAbsent(channelUID, new ArrayList<>());
-            stateUpdates.get(channelUID).add(state);
-            return null;
-        }).when(thingCallback).stateUpdated(any(), any());
-    }
-
-    @SuppressWarnings("null")
     private Bridge createPollerMock(String pollerId, PollTask task) {
-
         final Bridge poller;
         ThingUID thingUID = new ThingUID(THING_TYPE_MODBUS_POLLER, pollerId);
         BridgeBuilder builder = BridgeBuilder.create(THING_TYPE_MODBUS_POLLER, thingUID)
@@ -347,16 +137,21 @@ public class ModbusDataHandlerTest extends JavaTest {
         for (Entry<String, String> entry : CHANNEL_TO_ACCEPTED_TYPE.entrySet()) {
             String channelId = entry.getKey();
             String channelAcceptedType = entry.getValue();
-            builder = builder.withChannel(new Channel(new ChannelUID(thingUID, channelId), channelAcceptedType));
+            builder = builder.withChannel(
+                    ChannelBuilder.create(new ChannelUID(thingUID, channelId), channelAcceptedType).build());
         }
         poller = builder.build();
         poller.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
-        ModbusPollerThingHandlerImpl handler = Mockito.mock(ModbusPollerThingHandlerImpl.class);
-        doReturn(task).when(handler).getPollTask();
-        Supplier<ModbusManager> managerRef = () -> manager;
-        doReturn(managerRef).when(handler).getManagerRef();
-        poller.setHandler(handler);
-        registerThingToMockRegistry(poller);
+
+        ModbusPollerThingHandlerImpl mockHandler = Mockito.mock(ModbusPollerThingHandlerImpl.class);
+        doReturn(task).when(mockHandler).getPollTask();
+        Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
+        doReturn(managerRef).when(mockHandler).getManagerRef();
+        poller.setHandler(mockHandler);
+        assertSame(poller.getHandler(), mockHandler);
+        assertSame(((ModbusPollerThingHandlerImpl) poller.getHandler()).getPollTask(), task);
+
+        addThing(poller);
         return poller;
     }
 
@@ -366,13 +161,11 @@ public class ModbusDataHandlerTest extends JavaTest {
         ModbusTcpThingHandler tcpThingHandler = Mockito.mock(ModbusTcpThingHandler.class);
         tcpBridge.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
         tcpBridge.setHandler(tcpThingHandler);
-        registerThingToMockRegistry(tcpBridge);
-        Supplier<ModbusManager> managerRef = () -> manager;
+        Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
         doReturn(managerRef).when(tcpThingHandler).getManagerRef();
         doReturn(0).when(tcpThingHandler).getSlaveId();
         doReturn(endpoint).when(tcpThingHandler).asSlaveEndpoint();
         tcpThingHandler.initialize();
-
         assertThat(tcpBridge.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         return tcpBridge;
     }
@@ -392,18 +185,27 @@ public class ModbusDataHandlerTest extends JavaTest {
             boolean autoCreateItemsAndLinkToChannels) {
         ThingUID thingUID = new ThingUID(THING_TYPE_MODBUS_DATA, id);
         ThingBuilder builder = ThingBuilder.create(THING_TYPE_MODBUS_DATA, thingUID).withLabel("label for " + id);
+        Map<String, ChannelUID> toBeLinked = new HashMap<>();
         for (Entry<String, String> entry : CHANNEL_TO_ACCEPTED_TYPE.entrySet()) {
             String channelId = entry.getKey();
             String channelAcceptedType = entry.getValue();
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-            builder = builder.withChannel(new Channel(channelUID, channelAcceptedType));
+            builder = builder.withChannel(ChannelBuilder.create(channelUID, channelAcceptedType).build());
 
             if (autoCreateItemsAndLinkToChannels) {
-                // Create item and link it to channel
-                String itemName = channelUID.toString().replace(':', '_') + "_item";
-                GenericItem item = new StringItem(itemName);
-                itemRegistry.add(item);
-                linkRegistry.add(new ItemChannelLink(itemName, channelUID));
+                // Create item of correct type and link it to channel
+                String itemName = getItemName(channelUID);
+                final GenericItem item;
+                if (channelId.startsWith("last") || channelId.equals("datetime")) {
+                    item = new DateTimeItem(itemName);
+                } else {
+                    item = coreItemFactory.createItem(StringUtils.capitalize(channelId), itemName);
+                }
+                assertThat(String.format("Could not determine correct item type for %s", channelId), item,
+                        is(notNullValue()));
+                assertNotNull(item);
+                addItem(item);
+                toBeLinked.put(itemName, channelUID);
             }
         }
         if (builderConfigurator != null) {
@@ -411,58 +213,41 @@ public class ModbusDataHandlerTest extends JavaTest {
         }
 
         Thing dataThing = builder.withBridge(bridge.getUID()).build();
-        registerThingToMockRegistry(dataThing);
-        hookStatusUpdates(dataThing);
-        hookStateUpdates(dataThing);
+        addThing(dataThing);
 
-        ModbusDataThingHandler dataThingHandler = new ModbusDataThingHandler(dataThing);
-        hookThingRegistry(dataThingHandler);
-        hookLinkRegistry(dataThingHandler);
-        dataThing.setHandler(dataThingHandler);
-        dataThingHandler.setCallback(thingCallback);
-        dataThingHandler.initialize();
-        return dataThingHandler;
+        // Link after the things and items have been created
+        for (Entry<String, ChannelUID> entry : toBeLinked.entrySet()) {
+            linkItem(entry.getKey(), entry.getValue());
+        }
+        return (ModbusDataThingHandler) dataThing.getHandler();
+    }
+
+    private String getItemName(ChannelUID channelUID) {
+        return channelUID.toString().replace(':', '_') + "_item";
     }
 
     private void assertSingleStateUpdate(ModbusDataThingHandler handler, String channel, Matcher<State> matcher) {
-        List<State> updates = stateUpdates.get(new ChannelUID(handler.getThing().getUID(), channel));
-        if (updates != null) {
-            assertThat(updates.size(), is(equalTo(1)));
-        }
-        assertThat(updates == null ? null : updates.get(0), is(matcher));
+        waitForAssert(() -> {
+            ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), channel);
+            String itemName = getItemName(channelUID);
+            Item item = itemRegistry.get(itemName);
+            assertThat(String.format("Item %s is not available from item registry", itemName), item,
+                    is(notNullValue()));
+            assertNotNull(item);
+            List<State> updates = getStateUpdates(itemName);
+            if (updates != null) {
+                assertThat(
+                        String.format("Many updates found, expected one: %s", Arrays.deepToString(updates.toArray())),
+                        updates.size(), is(equalTo(1)));
+            }
+            State state = updates == null ? null : updates.get(0);
+            assertThat(String.format("%s %s, state %s of type %s", item.getClass().getSimpleName(), itemName, state,
+                    state == null ? null : state.getClass().getSimpleName()), state, is(matcher));
+        });
     }
 
     private void assertSingleStateUpdate(ModbusDataThingHandler handler, String channel, State state) {
         assertSingleStateUpdate(handler, channel, is(equalTo(state)));
-    }
-
-    //
-    // /**
-    // * Updates item and link registries such that added items and links are reflected in handlers
-    // */
-    // private void updateItemsAndLinks() {
-    // itemRegistry.update();
-    // linkRegistry.update();
-    // }
-
-    @Before
-    public void setUp() {
-        Mockito.when(thingRegistry.get(ArgumentMatchers.any())).then(invocation -> {
-            ThingUID uid = (ThingUID) invocation.getArgument(0);
-            for (Thing thing : things) {
-                if (thing.getUID().equals(uid)) {
-                    return thing;
-                }
-            }
-            throw new IllegalArgumentException("UID is unknown: " + uid.getAsString());
-        });
-
-        Mockito.when(manager.submitOneTimeWrite(any())).then(invocation -> {
-            WriteTask task = (WriteTask) invocation.getArgument(0);
-
-            writeTasks.add(task);
-            return Mockito.mock(ScheduledFuture.class);
-        });
     }
 
     private void testOutOfBoundsGeneric(int pollStart, int pollLength, String start,
@@ -470,7 +255,6 @@ public class ModbusDataHandlerTest extends JavaTest {
         testOutOfBoundsGeneric(pollStart, pollLength, start, functionCode, valueType, expectedStatus, null);
     }
 
-    @SuppressWarnings({ "null" })
     private void testOutOfBoundsGeneric(int pollStart, int pollLength, String start,
             ModbusReadFunctionCode functionCode, ValueType valueType, ThingStatus expectedStatus,
             BundleContext context) {
@@ -494,7 +278,8 @@ public class ModbusDataHandlerTest extends JavaTest {
         dataConfig.put("readValueType", valueType.getConfigValue());
         ModbusDataThingHandler dataHandler = createDataHandler("data1", pollerThing,
                 builder -> builder.withConfiguration(dataConfig), context);
-        assertThat(dataHandler.getThing().getStatus(), is(equalTo(expectedStatus)));
+        assertThat(dataHandler.getThing().getStatusInfo().getDescription(), dataHandler.getThing().getStatus(),
+                is(equalTo(expectedStatus)));
 
     }
 
@@ -638,17 +423,17 @@ public class ModbusDataHandlerTest extends JavaTest {
 
         // call callbacks
         if (bits != null) {
-            assert registers == null;
-            assert error == null;
+            assertNull(registers);
+            assertNull(error);
             dataHandler.onBits(request, bits);
         } else if (registers != null) {
-            assert bits == null;
-            assert error == null;
+            assertNull(bits);
+            assertNull(error);
             dataHandler.onRegisters(request, registers);
         } else {
-            assert bits == null;
-            assert registers == null;
-            assert error != null;
+            assertNull(bits);
+            assertNull(registers);
+            assertNotNull(error);
             dataHandler.onError(request, error);
         }
         return dataHandler;
@@ -700,15 +485,12 @@ public class ModbusDataHandlerTest extends JavaTest {
         return dataHandler;
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testOnError() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0.0", "default", ModbusConstants.ValueType.BIT, null, null, new Exception("fooerror"));
 
-        assertThat(stateUpdates.size(), is(equalTo(1)));
-        assertThat(stateUpdates.get(dataHandler.getThing().getChannel(CHANNEL_LAST_READ_ERROR).getUID()),
-                is(notNullValue()));
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(notNullValue(State.class)));
     }
 
     @Test
@@ -732,21 +514,9 @@ public class ModbusDataHandlerTest extends JavaTest {
         // no datetime, conversion not possible without transformation
     }
 
-    private void mockTransformation(String name, TransformationService service) throws InvalidSyntaxException {
-        doReturn(Arrays.asList(new Object[] { null })).when(bundleContext)
-                .getServiceReferences(TransformationService.class, "(smarthome.transform=" + name + ")");
-        doReturn(service).when(bundleContext).getService(any());
-    }
-
     @Test
-    public void testOnRegistersRealTransformation() throws InvalidSyntaxException {
-        mockTransformation("MULTIPLY", new TransformationService() {
-
-            @Override
-            public String transform(String function, String source) throws TransformationException {
-                return String.valueOf(Integer.parseInt(function) * Integer.parseInt(source));
-            }
-        });
+    public void testOnRegistersRealTransformation() {
+        mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
                 new BasicModbusRegisterArray(
@@ -790,35 +560,6 @@ public class ModbusDataHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testOnRegistersRealTransformationNoLinks() throws InvalidSyntaxException {
-        mockTransformation("MULTIPLY", new TransformationService() {
-
-            @Override
-            public String transform(String function, String source) throws TransformationException {
-                return String.valueOf(Integer.parseInt(function) * Integer.parseInt(source));
-            }
-        });
-        ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
-                "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
-                null, bundleContext,
-                // Not linking items and channels
-                false);
-
-        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
-
-        // Since channles are not linked, they are not updated (are null)
-        assertSingleStateUpdate(dataHandler, CHANNEL_CONTACT, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, CHANNEL_SWITCH, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, CHANNEL_DIMMER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, CHANNEL_NUMBER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, CHANNEL_STRING, is(nullValue(State.class)));
-    }
-
-    @Test
     public void testOnRegistersRealTransformation2() throws InvalidSyntaxException {
         mockTransformation("ONOFF", new TransformationService() {
 
@@ -846,13 +587,8 @@ public class ModbusDataHandlerTest extends JavaTest {
 
     @Test
     public void testWriteRealTransformation() throws InvalidSyntaxException {
-        mockTransformation("MULTIPLY", new TransformationService() {
-
-            @Override
-            public String transform(String function, String source) throws TransformationException {
-                return String.valueOf(Integer.parseInt(function) * Integer.parseInt(source));
-            }
-        });
+        captureModbusWrites();
+        mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testWriteHandlingGeneric("50", "MULTIPLY(10)",
                 ModbusConstants.ValueType.BIT, "coil", ModbusWriteFunctionCode.WRITE_COIL, "number",
                 new DecimalType("2"), null, bundleContext);
@@ -870,6 +606,7 @@ public class ModbusDataHandlerTest extends JavaTest {
 
     @Test
     public void testWriteRealTransformation2() throws InvalidSyntaxException {
+        captureModbusWrites();
         mockTransformation("ZERO", new TransformationService() {
 
             @Override
@@ -894,6 +631,7 @@ public class ModbusDataHandlerTest extends JavaTest {
 
     @Test
     public void testWriteRealTransformation3() throws InvalidSyntaxException {
+        captureModbusWrites();
         mockTransformation("RANDOM", new TransformationService() {
 
             @Override
@@ -921,13 +659,7 @@ public class ModbusDataHandlerTest extends JavaTest {
 
     @Test
     public void testWriteRealTransformation4() throws InvalidSyntaxException {
-        // assertThat(WriteRequestJsonUtilities.fromJson(55, "[{"//
-        // + "\"functionCode\": 15,"//
-        // + "\"address\": 5412,"//
-        // + "\"value\": [1, 0, 5]"//
-        // + "}]").toArray(),
-        // arrayContaining((Matcher) new CoilMatcher(55, 5412, ModbusWriteFunctionCode.WRITE_MULTIPLE_COILS, true,
-        // false, true)));
+        captureModbusWrites();
         mockTransformation("JSON", new TransformationService() {
 
             @Override
@@ -1053,7 +785,9 @@ public class ModbusDataHandlerTest extends JavaTest {
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(manager, never()).submitOneTimePoll(task);
+        verify(mockedModbusManager, never()).submitOneTimePoll(task);
+        // Reset initial REFRESH commands to data thing channels from the Core
+        reset(poller.getHandler());
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);
 
         // data handler asynchronously calls the poller.refresh() -- it might take some time
@@ -1076,6 +810,8 @@ public class ModbusDataHandlerTest extends JavaTest {
         Bridge parent;
         if (pollerFunctionCode == null) {
             parent = createTcpMock();
+            ThingHandler foo = parent.getHandler();
+            addThing(parent);
         } else {
             ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502);
 
@@ -1240,15 +976,6 @@ public class ModbusDataHandlerTest extends JavaTest {
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeType", "foobar");
-        testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
-        });
-    }
-
-    @Test
-    public void testNoReadNorWrite() {
-        Configuration dataConfig = new Configuration();
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
             assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
