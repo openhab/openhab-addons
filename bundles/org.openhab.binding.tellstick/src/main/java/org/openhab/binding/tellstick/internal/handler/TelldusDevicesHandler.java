@@ -17,11 +17,21 @@ import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*
 import java.math.BigDecimal;
 import java.util.Calendar;
 
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Length;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -205,11 +215,13 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
 
     private Device getDevice(TelldusBridgeHandler tellHandler, String deviceId) {
         Device dev = null;
-        if (deviceId != null && isSensor()) {
-            dev = tellHandler.getSensor(deviceId);
-        } else if (deviceId != null) {
-            dev = tellHandler.getDevice(deviceId);
-            updateDeviceState(dev);
+        if (deviceId != null) {
+            if (isSensor()) {
+                dev = tellHandler.getSensor(deviceId);
+            } else {
+                dev = tellHandler.getDevice(deviceId);
+                updateDeviceState(dev);
+            }
         }
         return dev;
     }
@@ -271,25 +283,25 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     private void updateSensorDataState(DataType dataType, String data) {
         switch (dataType) {
             case HUMIDITY:
-                updateState(humidityChannel, new DecimalType(data));
+                updateState(humidityChannel, new QuantityType<Dimensionless>(new BigDecimal(data), HUMIDITY_UNIT));
                 break;
             case TEMPERATURE:
-                updateState(tempChannel, new DecimalType(data));
+                updateState(tempChannel, new QuantityType<Temperature>(new BigDecimal(data), SIUnits.CELSIUS));
                 break;
             case RAINRATE:
-                updateState(rainRateChannel, new DecimalType(data));
+                updateState(rainRateChannel, new QuantityType<Length>(new BigDecimal(data), RAIN_UNIT));
                 break;
             case RAINTOTAL:
-                updateState(raintTotChannel, new DecimalType(data));
+                updateState(raintTotChannel, new QuantityType<Length>(new BigDecimal(data), RAIN_UNIT));
                 break;
             case WINDAVERAGE:
-                updateState(windAverageChannel, new DecimalType(data));
+                updateState(windAverageChannel, new QuantityType<Speed>(new BigDecimal(data), WIND_SPEED_UNIT_MS));
                 break;
             case WINDDIRECTION:
-                updateState(windDirectionChannel, new StringType(data));
+                updateState(windDirectionChannel, new QuantityType<Angle>(new BigDecimal(data), WIND_DIRECTION_UNIT));
                 break;
             case WINDGUST:
-                updateState(windGuestChannel, new DecimalType(data));
+                updateState(windGuestChannel, new QuantityType<Speed>(new BigDecimal(data), WIND_SPEED_UNIT_MS));
                 break;
             default:
         }
@@ -298,35 +310,41 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     private void updateSensorDataState(DataTypeValue dataType) {
         switch (dataType.getName()) {
             case HUMIDITY:
-                updateState(humidityChannel, new DecimalType(dataType.getValue()));
+                updateState(humidityChannel,
+                        new QuantityType<Dimensionless>(new BigDecimal(dataType.getValue()), HUMIDITY_UNIT));
                 break;
             case TEMPERATURE:
-                updateState(tempChannel, new DecimalType(dataType.getValue()));
+                updateState(tempChannel,
+                        new QuantityType<Temperature>(new BigDecimal(dataType.getValue()), SIUnits.CELSIUS));
                 break;
             case RAINRATE:
-                updateState(rainRateChannel, new DecimalType(dataType.getValue()));
+                updateState(rainRateChannel, new QuantityType<Length>(new BigDecimal(dataType.getValue()), RAIN_UNIT));
                 break;
             case RAINTOTAL:
-                updateState(raintTotChannel, new DecimalType(dataType.getValue()));
+                updateState(raintTotChannel, new QuantityType<Length>(new BigDecimal(dataType.getValue()), RAIN_UNIT));
                 break;
             case WINDAVERAGE:
-                updateState(windAverageChannel, new DecimalType(dataType.getValue()));
+                updateState(windAverageChannel,
+                        new QuantityType<Speed>(new BigDecimal(dataType.getValue()), WIND_SPEED_UNIT_MS));
                 break;
             case WINDDIRECTION:
-                updateState(windDirectionChannel, new StringType(dataType.getValue()));
+                updateState(windDirectionChannel,
+                        new QuantityType<Angle>(new BigDecimal(dataType.getValue()), WIND_DIRECTION_UNIT));
                 break;
             case WINDGUST:
-                updateState(windGuestChannel, new DecimalType(dataType.getValue()));
+                updateState(windGuestChannel,
+                        new QuantityType<Speed>(new BigDecimal(dataType.getValue()), WIND_SPEED_UNIT_MS));
                 break;
             case WATT:
                 if (dataType.getUnit() != null && dataType.getUnit().equals("A")) {
-                    updateState(ampereChannel, new DecimalType(dataType.getValue()));
+                    updateState(ampereChannel,
+                            new QuantityType<ElectricCurrent>(new BigDecimal(dataType.getValue()), ELECTRIC_UNIT));
                 } else {
-                    updateState(wattChannel, new DecimalType(dataType.getValue()));
+                    updateState(wattChannel, new QuantityType<Power>(new BigDecimal(dataType.getValue()), POWER_UNIT));
                 }
                 break;
             case LUMINATION:
-                updateState(luxChannel, new DecimalType(dataType.getValue()));
+                updateState(luxChannel, new QuantityType<Illuminance>(new DecimalType(dataType.getValue()), LUX_UNIT));
                 break;
             default:
         }
