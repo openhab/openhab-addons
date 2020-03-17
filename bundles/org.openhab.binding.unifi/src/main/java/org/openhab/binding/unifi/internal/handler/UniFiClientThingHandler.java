@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_BLOCKED;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_EXPERIENCE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_IP_ADDRESS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_LAST_SEEN;
@@ -124,6 +125,10 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 // mgb: uptime should default to 0 seconds
                 state = DecimalType.ZERO;
                 break;
+            case CHANNEL_EXPERIENCE:
+                // mgb: uptime + experience should default to 0
+                state = DecimalType.ZERO;
+                break;
             case CHANNEL_LAST_SEEN:
                 // mgb: lastSeen should keep the last state no matter what
                 state = UnDefType.NULL;
@@ -212,6 +217,13 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :guest
             case CHANNEL_GUEST:
                 state = OnOffType.from(client.isGuest());
+                break;
+
+            // :experience
+            case CHANNEL_EXPERIENCE:
+                if (client.getExperience() != null) {
+                    state = new DecimalType(client.getExperience());
+                }
                 break;
 
             default:

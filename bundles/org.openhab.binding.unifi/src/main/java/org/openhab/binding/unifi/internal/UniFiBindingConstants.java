@@ -66,6 +66,7 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_GUEST = "guest";
     public static final String CHANNEL_BLOCKED = "blocked";
     public static final String CHANNEL_RECONNECT = "reconnect";
+    public static final String CHANNEL_EXPERIENCE = "experience";
 
     // List of additional wireless client channels
     public static final String CHANNEL_AP = "ap";

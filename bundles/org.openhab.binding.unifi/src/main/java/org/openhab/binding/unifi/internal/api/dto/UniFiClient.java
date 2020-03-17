@@ -61,6 +61,9 @@ public abstract class UniFiClient implements HasId {
     @SerializedName("fixed_ip")
     protected String fixedIp;
 
+    @SerializedName("satisfaction")
+    protected Integer experience;
+
     protected UniFiClient(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -118,10 +121,14 @@ public abstract class UniFiClient implements HasId {
         return guest;
     }
 
+    public Integer getExperience() {
+        return experience;
+    }
+
     @Override
     public String toString() {
         return String.format(
-                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, device: %s}",
-                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, getDevice());
+                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, device: %s, experience: %d}",
+                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, getDevice(), experience);
     }
 }

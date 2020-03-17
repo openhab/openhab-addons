@@ -75,6 +75,7 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="lastSeen" typeId="lastSeen"/>
 			<channel id="blocked" typeId="blocked"/>
+			<channel id="experience" typeId="experience"/>
 		</channels>
 
 		<representation-property>cid</representation-property>
@@ -99,6 +100,7 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="lastSeen" typeId="lastSeen"/>
 			<channel id="blocked" typeId="blocked"/>
+			<channel id="experience" typeId="experience"/>
 			<!-- additional wireless client channels -->
 			<channel id="guest" typeId="guest"/>
 			<channel id="ap" typeId="ap"/>
@@ -290,6 +292,13 @@
 		<item-type>Switch</item-type>
 		<label>Guest</label>
 		<description>Is the client connected a guest</description>
+	</channel-type>
+
+	<channel-type id="experience">
+		<item-type>Number</item-type>
+		<label>Experience</label>
+		<description>The wired/wireless experience of the client</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="reconnect">
