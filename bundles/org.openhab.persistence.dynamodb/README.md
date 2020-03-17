@@ -97,7 +97,7 @@ In addition to the configuration properties above, the following are also availa
 | writeCapacityUnits         | 1          |    No    | write capacity for the created tables                                                              |
 | tablePrefix                | `openhab-` |    No    | table prefix used in the name of created tables                                                    |
 | bufferCommitIntervalMillis | 1000       |    No    | Interval to commit (write) buffered data. In milliseconds.                                         |
-| bufferSize                 | 1000       |    No    | Internal buffer size in bytes which is used to batch writes to DynamoDB every `bufferCommitIntervalMillis`. |
+| bufferSize                 | 1000       |    No    | Internal buffer size in datapoints which is used to batch writes to DynamoDB every `bufferCommitIntervalMillis`. |
 
 Typically you should not need to modify parameters related to buffering. 
 
