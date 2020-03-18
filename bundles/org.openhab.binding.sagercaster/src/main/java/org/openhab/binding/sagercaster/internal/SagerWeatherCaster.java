@@ -332,8 +332,8 @@ public class SagerWeatherCaster {
 
     public String getForecast() {
         if (prevision != null) {
-            Prevision nnPresivion = prevision;
-            return Character.toString(nnPresivion.zForecast);
+            char forecast = prevision.zForecast;
+            return Character.toString(forecast);
         } else {
             return "-";
         }
@@ -341,8 +341,8 @@ public class SagerWeatherCaster {
 
     public String getWindVelocity() {
         if (prevision != null) {
-            Prevision nnPresivion = prevision;
-            return Character.toString(nnPresivion.zWindVelocity);
+            char windVelocity = prevision.zWindVelocity;
+            return Character.toString(windVelocity);
         } else {
             return "-";
         }
@@ -350,8 +350,8 @@ public class SagerWeatherCaster {
 
     public String getWindDirection() {
         if (prevision != null) {
-            Prevision nnPresivion = prevision;
-            return String.valueOf(nnPresivion.zWindDirection);
+            int direction = prevision.zWindDirection;
+            return String.valueOf(direction);
         } else {
             return "-";
         }
@@ -359,8 +359,8 @@ public class SagerWeatherCaster {
 
     public String getWindDirection2() {
         if (prevision != null) {
-            Prevision nnPresivion = prevision;
-            return String.valueOf(nnPresivion.zWindDirection2);
+            int direction = prevision.zWindDirection2;
+            return String.valueOf(direction);
         } else {
             return "-";
         }
