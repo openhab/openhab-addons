@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="sagercaster"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="sagercaster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="sagercaster">
 		<label>SagerCaster Thing</label>
 		<description>This thing represents a forecast for a given location</description>
@@ -55,7 +51,6 @@
 		</config-description>
 	</thing-type>
 	
-	<!-- Channel Type -->
 	<channel-type id="forecast">
 		<item-type>String</item-type>
 		<label>Weather Forecast</label>
