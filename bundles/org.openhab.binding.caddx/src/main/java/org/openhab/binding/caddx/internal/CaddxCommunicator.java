@@ -223,7 +223,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                         logger.trace("CaddxCommunicator.run(): Nothing expected, Nothing received we continue");
                         continue;
                     }
-                    logger.warn("CaddxCommunicator.run() TimeoutException caught.");
+                    logger.debug("CaddxCommunicator.run() TimeoutException caught.");
                 }
 
                 // Log
