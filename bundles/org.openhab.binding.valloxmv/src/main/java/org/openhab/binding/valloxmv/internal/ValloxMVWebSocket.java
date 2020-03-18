@@ -118,7 +118,7 @@ public class ValloxMVWebSocket {
         @OnWebSocketConnect
         public void onConnect(Session session) {
             try {
-                logger.debug("Connect: {}", session.getRemoteAddress().getAddress());
+                logger.debug("Connected to: {}", session.getRemoteAddress().getAddress());
                 ByteBuffer buf = generateRequest();
                 session.getRemote().sendBytes(buf);
             } catch (IOException e) {
@@ -243,6 +243,7 @@ public class ValloxMVWebSocket {
                         default:
                             // This should never happen. Let's get back to basic profile.
                             // Clearing boost and fireplace timers.
+                            logger.debug("Incorrect profile requested, changing back to basic profile");
                             request.put(4612, 0);
                             request.put(4613, 0);
                     }
@@ -410,7 +411,6 @@ public class ValloxMVWebSocket {
                 // COMMAND_READ_TABLES (246)
                 // Read values from received tables
                 int iFanspeed = getNumberBE(bytes, 128);
-                logger.debug("Fan Speed: {}", iFanspeed);
                 int iFanspeedExtract = getNumberBE(bytes, 144);
                 int iFanspeedSupply = getNumberBE(bytes, 146);
                 BigDecimal bdTempInside = getTemperature(bytes, 130);
@@ -574,6 +574,7 @@ public class ValloxMVWebSocket {
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
             logger.debug("WebSocket Closed. Code: {}; Reason: {}", statusCode, reason);
+            this.closeLatch.countDown();
         }
 
         public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {

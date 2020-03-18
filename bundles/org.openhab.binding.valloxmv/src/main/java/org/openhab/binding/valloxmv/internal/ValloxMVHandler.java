@@ -47,7 +47,7 @@ public class ValloxMVHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVHandler.class);
     private @Nullable ScheduledFuture<?> updateTasks;
-    private @Nullable ValloxMVWebSocket valloxSendSocket;
+    private @Nullable ValloxMVWebSocket valloxSocket;
     private @Nullable WebSocketClient webSocketClient;
 
     /**
@@ -67,12 +67,12 @@ public class ValloxMVHandler extends BaseThingHandler {
     @SuppressWarnings({ "null", "unchecked" })
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (valloxSendSocket == null) {
+        if (valloxSocket == null) {
             return;
         }
         if (command instanceof RefreshType) {
             if (lastUpdate > System.currentTimeMillis() + updateInterval * 1000) {
-                valloxSendSocket.request(null, null);
+                valloxSocket.request(null, null);
             }
         } else {
             String strUpdateValue = "";
@@ -119,16 +119,13 @@ public class ValloxMVHandler extends BaseThingHandler {
                 return;
             }
             if (strUpdateValue != "") {
-                // Open WebSocket
-                valloxSendSocket.request(channelUID, strUpdateValue);
-                // We should wait some time to let device process the data
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // sleep interrupted, we will get updated values during next data update cycle
-                    return;
-                }
-                valloxSendSocket.request(null, null);
+                // Stop scheduler while sending command to device
+                dispose();
+                logger.debug("Scheduled data table requests stopped");
+                // Send command and process response
+                valloxSocket.request(channelUID, strUpdateValue);
+                // Start scheduler with 5 seconds delay; first data request in 5 seconds
+                scheduleUpdatesWithDelay(5);
             }
         }
     }
@@ -139,28 +136,25 @@ public class ValloxMVHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
-        valloxSendSocket = new ValloxMVWebSocket(webSocketClient, ValloxMVHandler.this, ip);
+        valloxSocket = new ValloxMVWebSocket(webSocketClient, ValloxMVHandler.this, ip);
 
-        updateInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
-        if (updateInterval < 15) {
-            updateInterval = 60;
-        }
+        logger.debug("Vallox MV IP address : {}", ip);
 
-        scheduleUpdates();
+        scheduleUpdatesWithDelay(2);
     }
 
-    private void scheduleUpdates() {
-        logger.debug("Schedule vallox update every {} sec", updateInterval);
+    private void scheduleUpdatesWithDelay(int delay) {
+        if (delay < 0) delay = 0;
 
-        String ip = getConfigAs(ValloxMVConfig.class).getIp();
-        logger.debug("Connecting to ip: {}", ip);
-        // Open WebSocket
-        ValloxMVWebSocket valloxSocket = new ValloxMVWebSocket(webSocketClient, ValloxMVHandler.this, ip);
+        updateInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
+        if (updateInterval < 15) updateInterval = 60;
+
+        logger.debug("Data table request interval {} seconds, Request in {} seconds", updateInterval, delay);
 
         updateTasks = scheduler.scheduleWithFixedDelay(() -> {
-            // Do a pure read request to websocket interface
+            // Read all device values
             valloxSocket.request(null, null);
-        }, 0, updateInterval, TimeUnit.SECONDS);
+        }, delay, updateInterval, TimeUnit.SECONDS);
     }
 
     public void dataUpdated() {
