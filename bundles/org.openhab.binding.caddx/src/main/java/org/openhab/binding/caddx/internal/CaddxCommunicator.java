@@ -54,11 +54,8 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private int baudRate;
     private final SerialPortManager portManager;
     private SerialPort serialPort;
-    @Nullable
-    private InputStream in;
-    @Nullable
-    private OutputStream out;
-
+    private @Nullable InputStream in;
+    private @Nullable OutputStream out;
     Exchanger<CaddxMessage> exchanger = new Exchanger<>();
 
     @NonNullByDefault
@@ -125,9 +122,10 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         } catch (IOException e) {
         }
 
-        // Communication thread should now exit. Wait for 5 sec or not wait at all??
-        while (thread.isAlive()) {
-            ;
+        // Wait until communication thread exits
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
         }
 
         // Also close the serial port
@@ -208,7 +206,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                     // Log message
                     if (outgoingMessage != null) {
-                        logger.info("->: {}", outgoingMessage.getName());
+                        logger.debug("->: {}", outgoingMessage.getName());
                         logger.debug("{}", Util.buildCaddxMessageInBinaryString("->: ", outgoingMessage));
                         // logger.debug("{}", Util.buildCaddxMessageInAsciiString("->: ", outgoingMessage));
                     }
@@ -237,7 +235,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 if (incomingMessage == null) {
                     logger.debug("CaddxCommunicator.run() NoMessage received.");
                 } else {
-                    logger.info("<-: {}", incomingMessage.getName());
+                    logger.debug("<-: {}", incomingMessage.getName());
                     logger.debug("{}", Util.buildCaddxMessageInBinaryString("<-: ", incomingMessage));
                     // logger.debug("{}", Util.buildCaddxMessageInAsciiString("<-: ", incomingMessage));
                 }
@@ -299,10 +297,10 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 }
             }
         } catch (IOException e) {
-            logger.warn("CaddxCommunicator.run() IOException. Stopping sender thread. {}", getSerialPortName());
+            logger.debug("CaddxCommunicator.run() IOException. Stopping sender thread. {}", getSerialPortName());
             Thread.currentThread().interrupt();
         } catch (InterruptedException e) {
-            logger.warn("CaddxCommunicator.run() InterruptedException. Stopping sender thread. {}",
+            logger.debug("CaddxCommunicator.run() InterruptedException. Stopping sender thread. {}",
                     getSerialPortName());
             Thread.currentThread().interrupt();
         }
