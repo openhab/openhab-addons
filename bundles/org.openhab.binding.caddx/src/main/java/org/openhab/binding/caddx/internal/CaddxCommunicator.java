@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxCommunicator.class);
 
-    private final ArrayList<SecurityPanelListener> listenerQueue = new ArrayList<>();
+    private final ArrayList<CaddxPanelListener> listenerQueue = new ArrayList<>();
 
     private Thread thread;
     private final LinkedBlockingDeque<CaddxMessage> messages = new LinkedBlockingDeque<>();
@@ -58,12 +58,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private @Nullable OutputStream out;
     Exchanger<CaddxMessage> exchanger = new Exchanger<>();
 
-    @NonNullByDefault
-    public interface SecurityPanelListener {
-        public void caddxMessage(CaddxCommunicator communicator, CaddxMessage message);
-    }
-
-    public void addListener(SecurityPanelListener listener) {
+    public void addListener(CaddxPanelListener listener) {
         logger.trace("CaddxCommunicator.addListener() Started");
 
         if (!listenerQueue.contains(listener)) {
@@ -286,7 +281,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                 // Inform the listeners
                 if (incomingMessage != null && incomingMessage.isChecksumCorrect()) {
-                    for (SecurityPanelListener listener : listenerQueue) {
+                    for (CaddxPanelListener listener : listenerQueue) {
                         listener.caddxMessage(this, incomingMessage);
                     }
                 } else {

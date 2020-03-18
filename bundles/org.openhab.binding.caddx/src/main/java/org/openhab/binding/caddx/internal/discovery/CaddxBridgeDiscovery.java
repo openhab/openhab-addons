@@ -24,9 +24,9 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
-import org.openhab.binding.caddx.internal.CaddxCommunicator.SecurityPanelListener;
 import org.openhab.binding.caddx.internal.CaddxMessage;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
+import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @NonNullByDefault
-public class CaddxBridgeDiscovery implements SecurityPanelListener {
+public class CaddxBridgeDiscovery implements CaddxPanelListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeDiscovery.class);
 
     static final int[] BAUDRATES = { 9600, 19200, 38400, 57600, 115200 };

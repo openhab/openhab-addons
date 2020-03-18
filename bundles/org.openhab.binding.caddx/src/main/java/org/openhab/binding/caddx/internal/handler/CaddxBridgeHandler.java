@@ -36,11 +36,11 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
-import org.openhab.binding.caddx.internal.CaddxCommunicator.SecurityPanelListener;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
-import org.openhab.binding.caddx.internal.CaddxMessage.Source;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
+import org.openhab.binding.caddx.internal.CaddxSource;
+import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.config.CaddxBridgeConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxKeypadConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxPartitionConfiguration;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @NonNullByDefault
-public class CaddxBridgeHandler extends BaseBridgeHandler implements SecurityPanelListener {
+public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeHandler.class);
 
     static final byte[] DISCOVERY_PARTITION_STATUS_REQUEST_0 = { 0x26, 0x00 };
@@ -312,9 +312,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements SecurityPan
 
     @Override
     public void caddxMessage(CaddxCommunicator communicator, CaddxMessage caddxMessage) {
-        Source source = caddxMessage.getSource();
+        CaddxSource source = caddxMessage.getSource();
 
-        if (source != Source.None) {
+        if (source != CaddxSource.None) {
             CaddxThingType caddxThingType = null;
             @Nullable
             Integer partition = null;

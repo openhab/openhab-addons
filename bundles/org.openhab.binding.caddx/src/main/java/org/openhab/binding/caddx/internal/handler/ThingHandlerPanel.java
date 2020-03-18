@@ -26,7 +26,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
-import org.openhab.binding.caddx.internal.CaddxMessage.CaddxMessageType;
+import org.openhab.binding.caddx.internal.CaddxMessageType;
+import org.openhab.binding.caddx.internal.CaddxProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             } else if (CaddxMessageType.Log_Event_Message.equals(mt)) {
                 handleLogEventMessage(message);
             } else {
-                for (CaddxMessage.Property p : mt.properties) {
+                for (CaddxProperty p : mt.properties) {
                     if (!("".equals(p.getId()))) {
                         String value = message.getPropertyById(p.getId());
                         channelUID = new ChannelUID(getThing().getUID(), p.getId());
