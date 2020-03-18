@@ -17,7 +17,7 @@
 		</config-description>
 
 	</bridge-type>
-	
+
 	<bridge-type id="network">
 		<label>C-Bus Network</label>
 		<description>C-Bus Network bridge</description>
@@ -28,7 +28,7 @@
 				<description>Network number of C-Bus Network</description>
 			</parameter>
 
-			<parameter name="project" type="text" required="true">	
+			<parameter name="project" type="text" required="true">
 				<label>C-Bus Project Name</label>
 				<description>Project name that contains the network</description>
 			</parameter>

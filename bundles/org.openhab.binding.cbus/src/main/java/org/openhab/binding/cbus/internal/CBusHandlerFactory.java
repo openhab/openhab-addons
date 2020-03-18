@@ -14,6 +14,8 @@ package org.openhab.binding.cbus.internal;
 
 import java.util.Hashtable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,8 +33,6 @@ import org.openhab.binding.cbus.handler.CBusTriggerHandler;
 import org.openhab.binding.cbus.internal.discovery.CBusGroupDiscovery;
 import org.openhab.binding.cbus.internal.discovery.CBusNetworkDiscovery;
 import org.osgi.service.component.annotations.Component;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusHandlerFactory} is responsible for creating things and thing

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,12 +23,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import com.daveoxley.cbus.CGateException;
-import com.daveoxley.cbus.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Group;
 
 /**
  * The {@link CBusGroupHandler} is responsible for handling commands, which are
@@ -58,10 +59,10 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         try {
             this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
             if (this.group == null)
-                logger.debug("cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+                logger.debug("cannot create group {} ",
+                        getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
         } catch (Exception e) {
-            logger.error("Cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(),
-                    e);
+            logger.warn("Cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
@@ -73,11 +74,11 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            } else
-            {
+            } else {
                 Group group = this.group;
                 if (group == null) {
-                    this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
+                    this.group = getGroup(
+                            Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
                     group = this.group;
                 }
                 if (group == null) {
@@ -87,11 +88,11 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                 "Network is not reporting online");
+                            "Network is not reporting online");
                 }
             }
         } catch (CGateException e) {
-            logger.error("Problem checking network state for network {}", e.getMessage());
+            logger.warn("Problem checking network state for network {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }

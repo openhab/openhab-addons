@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -23,11 +24,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.handler.CBusCGateHandler;
-import com.daveoxley.cbus.CGateException;
-import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Network;
 
 /**
  * The {@link CBusNetworkDiscovery} class is used to discover CBus
@@ -62,14 +63,14 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
                             network.getProjectName().toLowerCase().replace(" ", "_")
                                     + Integer.toString(network.getNetworkID()),
                             cBusCGateHandler.getThing().getUID().getId());
-                    DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                            .withProperties(properties).withLabel(network.getProjectName() + "/"
-                                    + network.getNetworkID() + " - " + network.getName())
+                    DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                            .withLabel(
+                                    network.getProjectName() + "/" + network.getNetworkID() + " - " + network.getName())
                             .withBridge(cBusCGateHandler.getThing().getUID()).build();
                     thingDiscovered(result);
                 }
             } catch (CGateException e) {
-                logger.error("Failed to discover networks", e);
+                logger.warn("Failed to discover networks", e);
             }
         }
     }

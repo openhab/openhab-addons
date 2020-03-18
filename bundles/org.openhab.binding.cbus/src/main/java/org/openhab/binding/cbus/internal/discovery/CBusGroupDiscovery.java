@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -24,13 +25,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.handler.CBusNetworkHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusGroupDiscovery} class is used to discover CBus
@@ -66,8 +67,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                 if (network == null)
                     return;
                 for (Map.Entry<String, ThingTypeUID> applicationItem : applications.entrySet()) {
-                    Application application = network
-                            .getApplication(Integer.parseInt(applicationItem.getKey()));
+                    Application application = network.getApplication(Integer.parseInt(applicationItem.getKey()));
                     if (application == null) {
                         continue;
                     }
@@ -80,18 +80,18 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                         properties.put(CBusBindingConstants.PROPERTY_NAME, group.getName());
                         ThingUID bridgeUid = cbusNetworkHandler.getThing().getBridgeUID();
                         if (bridgeUid != null) {
-                                ThingUID uid = new ThingUID(applicationItem.getValue(), Integer.toString(group.getGroupID()),
-                                                            bridgeUid.getId(),
-                                                            cbusNetworkHandler.getThing().getUID().getId());
-                                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                        .withLabel(group.getGroupID() + " - " + group.getName())
-                                        .withBridge(cbusNetworkHandler.getThing().getUID()).build();
-                                thingDiscovered(result);
+                            ThingUID uid = new ThingUID(applicationItem.getValue(),
+                                    Integer.toString(group.getGroupID()), bridgeUid.getId(),
+                                    cbusNetworkHandler.getThing().getUID().getId());
+                            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                    .withLabel(group.getGroupID() + " - " + group.getName())
+                                    .withBridge(cbusNetworkHandler.getThing().getUID()).build();
+                            thingDiscovered(result);
                         }
                     }
                 }
             } catch (CGateException e) {
-                logger.error("Failed to discover groups", e);
+                logger.warn("Failed to discover groups", e);
             }
         }
     }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -19,15 +21,13 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusLightHandler} is responsible for handling commands, which are
@@ -64,7 +64,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                         group.off();
                     }
                 } catch (CGateException e) {
-                    logger.error("Failed to send command {} to {}", command.toString(), group.toString(), e);
+                    logger.warn("Failed to send command {} to {}", command.toString(), group.toString(), e);
                 }
             }
         } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
@@ -83,7 +83,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                     logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
                 }
             } catch (CGateException e) {
-                logger.error("Failed to send command {} to {}", command.toString(), group.toString(), e);
+                logger.warn("Failed to send command {} to {}", command.toString(), group.toString(), e);
             }
         }
     }
@@ -94,10 +94,9 @@ public class CBusLightHandler extends CBusGroupHandler {
         if (networkHandler == null)
             return null;
         Network network = networkHandler.getNetwork();
-        if (network != null)
-        {
+        if (network != null) {
             Application lighting = network
-                .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_LIGHTING));
+                    .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_LIGHTING));
             return lighting.getGroup(groupID);
         }
         return null;
