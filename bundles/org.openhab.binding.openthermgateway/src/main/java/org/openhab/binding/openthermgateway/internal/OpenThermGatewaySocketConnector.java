@@ -66,7 +66,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         stopping = false;
         connected = false;
         
-        logger.info("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
+        logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
 
         callback.connecting();
         
@@ -78,7 +78,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     
             callback.connected();
     
-            logger.info("OpenThermGatewaySocketConnector connected");
+            logger.debug("OpenThermGatewaySocketConnector connected");
     
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
@@ -95,17 +95,17 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                         if (message != null) {
                             handleMessage(message);
                         } else {
-                            logger.info("Connection closed by OpenTherm Gateway");
+                            logger.debug("Connection closed by OpenTherm Gateway");
                             break;
                         }
                     }
         
-                    logger.info("Stopping OpenThermGatewaySocketConnector");
+                    logger.debug("Stopping OpenThermGatewaySocketConnector");
             }
             finally {
                 connected = false;
     
-                logger.info("OpenThermGatewaySocketConnector disconnected");
+                logger.debug("OpenThermGatewaySocketConnector disconnected");
                 callback.disconnected();
             }
         } catch (IOException ex) {
@@ -114,8 +114,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     }
 
     @Override
-    public synchronized void stop() {
-        logger.info("Stopping OpenThermGatewaySocketConnector");
+    public void stop() {
+        logger.debug("Stopping OpenThermGatewaySocketConnector");
         stopping = true;
     }
 
@@ -203,7 +203,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     }
 
     private void receiveMessage(Message message) {
-        if (message != null && callback != null) {
+        if (message != null) {
             callback.receiveMessage(message);
         }
     }

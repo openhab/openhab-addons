@@ -192,10 +192,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         return connect();
     }
 
-    private synchronized boolean connect() {
+    private boolean connect() {
         disconnect();
 
-        logger.info("Starting OpenTherm Gateway connector");
+        logger.debug("Starting OpenTherm Gateway connector");
 
         explicitDisconnect = false;
 
@@ -205,15 +205,15 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         thread.setDaemon(true);
         thread.start();
 
-        logger.info("OpenTherm Gateway connector started");
+        logger.debug("OpenTherm Gateway connector started");
 
         return true;
     }
 
-    private synchronized void disconnect() {
+    private void disconnect() {
         if (connector != null) {
             if (connector.isConnected()) {
-                logger.info("Stopping OpenTherm Gateway connector");
+                logger.debug("Stopping OpenTherm Gateway connector");
 
                 explicitDisconnect = true;
                 connector.stop();
