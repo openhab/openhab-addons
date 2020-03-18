@@ -61,32 +61,6 @@ public class SagerCasterHandler extends BaseThingHandler {
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
     private int currentTemp = 0;
 
-    private class ExpiringMap<T> {
-        private SortedMap<Long, T> values = new TreeMap<Long, T>();
-        private @Nullable T agedValue;
-        private long eldestAge = 0;
-
-        public void setObservationPeriod(long eldestAge) {
-            if (eldestAge > this.eldestAge) {
-            }
-            this.eldestAge = eldestAge;
-        }
-
-        public void put(T newValue) {
-            long now = System.currentTimeMillis();
-            values.put(now, newValue);
-            Optional<Long> eldestKey = values.keySet().stream().filter(key -> key < now - eldestAge).findFirst();
-            if (eldestKey.isPresent()) {
-                agedValue = values.get(eldestKey.get());
-                values.entrySet().removeIf(map -> map.getKey() <= eldestKey.get());
-            }
-        }
-
-        public @Nullable T getAgedValue() {
-            return agedValue;
-        }
-    }
-
     private final ExpiringMap<QuantityType<Pressure>> pressureCache = new ExpiringMap<>();
     private final ExpiringMap<QuantityType<Temperature>> temperatureCache = new ExpiringMap<>();
     private final ExpiringMap<QuantityType<Angle>> bearingCache = new ExpiringMap<>();
@@ -136,27 +110,27 @@ public class SagerCasterHandler extends BaseThingHandler {
                     if (command instanceof QuantityType) {
                         @SuppressWarnings("unchecked")
                         QuantityType<Dimensionless> cloudiness = (QuantityType<Dimensionless>) command;
-                        new Thread(() -> {
+                        scheduler.submit(() -> {
                             sagerWeatherCaster.setCloudLevel(cloudiness.intValue());
                             postNewForecast();
-                        }).start();
+                        });
                         break;
                     }
                 case CHANNEL_IS_RAINING:
                     logger.debug("Rain status updated, updating forecast");
                     OnOffType isRaining = (OnOffType) command;
-                    new Thread(() -> {
+                    scheduler.submit(() -> {
                         sagerWeatherCaster.setRaining(isRaining == OnOffType.ON);
                         postNewForecast();
-                    }).start();
+                    });
                     break;
                 case CHANNEL_WIND_SPEED:
                     logger.debug("Updated wind speed, updating forecast");
                     DecimalType newValue = (DecimalType) command;
-                    new Thread(() -> {
+                    scheduler.submit(() -> {
                         sagerWeatherCaster.setBeaufort(newValue.intValue());
                         postNewForecast();
-                    }).start();
+                    });
                     break;
                 case CHANNEL_PRESSURE:
                     logger.debug("Sea-level pressure updated, updating forecast");
@@ -168,13 +142,13 @@ public class SagerCasterHandler extends BaseThingHandler {
                             pressureCache.put(newPressure);
                             QuantityType<Pressure> agedPressure = pressureCache.getAgedValue();
                             if (agedPressure != null) {
-                                new Thread(() -> {
+                                scheduler.submit(() -> {
                                     sagerWeatherCaster.setPressure(newPressure.doubleValue(),
                                             agedPressure.doubleValue());
                                     updateState(CHANNEL_PRESSURETREND,
                                             new StringType(String.valueOf(sagerWeatherCaster.getPressureEvolution())));
                                     postNewForecast();
-                                }).start();
+                                });
                             } else {
                                 updateState(CHANNEL_FORECAST, FORECAST_PENDING);
                             }
@@ -206,12 +180,12 @@ public class SagerCasterHandler extends BaseThingHandler {
                         bearingCache.put(newAngle);
                         QuantityType<Angle> agedAngle = bearingCache.getAgedValue();
                         if (agedAngle != null) {
-                            new Thread(() -> {
+                            scheduler.submit(() -> {
                                 sagerWeatherCaster.setBearing(newAngle.intValue(), agedAngle.intValue());
                                 updateState(CHANNEL_WINDEVOLUTION,
                                         new StringType(String.valueOf(sagerWeatherCaster.getWindEvolution())));
                                 postNewForecast();
-                            }).start();
+                            });
                         }
                         ;
                     }
@@ -264,6 +238,32 @@ public class SagerCasterHandler extends BaseThingHandler {
                 break;
         }
         updateState(CHANNEL_VELOCITY_BEAUFORT, new DecimalType(predictedBeaufort));
+    }
+
+    private class ExpiringMap<T> {
+        private SortedMap<Long, T> values = new TreeMap<Long, T>();
+        private @Nullable T agedValue;
+        private long eldestAge = 0;
+
+        public void setObservationPeriod(long eldestAge) {
+            if (eldestAge > this.eldestAge) {
+            }
+            this.eldestAge = eldestAge;
+        }
+
+        public void put(T newValue) {
+            long now = System.currentTimeMillis();
+            values.put(now, newValue);
+            Optional<Long> eldestKey = values.keySet().stream().filter(key -> key < now - eldestAge).findFirst();
+            if (eldestKey.isPresent()) {
+                agedValue = values.get(eldestKey.get());
+                values.entrySet().removeIf(map -> map.getKey() <= eldestKey.get());
+            }
+        }
+
+        public @Nullable T getAgedValue() {
+            return agedValue;
+        }
     }
 
 }

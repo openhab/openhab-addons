@@ -32,20 +32,20 @@ public class SagerCasterBindingConstants {
 
     // Configuration elements
     public static final String CONFIG_LOCATION = "location";
-    public static final String CONFIG_PERIOD = "observationPeriod";
+    public static final String CONFIG_PERIOD = "observation-period";
 
     // Output channel ids
     public static final String CHANNEL_FORECAST = "forecast";
     public static final String CHANNEL_VELOCITY = "velocity";
     public static final String CHANNEL_VELOCITY_BEAUFORT = "velocity-beaufort";
-    public static final String CHANNEL_WINDFROM = "windfrom";
-    public static final String CHANNEL_WINDTO = "windto";
-    public static final String CHANNEL_WINDEVOLUTION = "windevolution";
-    public static final String CHANNEL_PRESSURETREND = "pressuretrend";
-    public static final String CHANNEL_TEMPERATURETREND = "temperaturetrend";
+    public static final String CHANNEL_WINDFROM = "wind-from";
+    public static final String CHANNEL_WINDTO = "wind-to";
+    public static final String CHANNEL_WINDEVOLUTION = "wind-evolution";
+    public static final String CHANNEL_PRESSURETREND = "pressure-trend";
+    public static final String CHANNEL_TEMPERATURETREND = "temperature-trend";
     // Input channel ids
     public static final String CHANNEL_CLOUDINESS = "cloudiness";
-    public static final String CHANNEL_IS_RAINING = "isRaining";
+    public static final String CHANNEL_IS_RAINING = "is-raining";
     public static final String CHANNEL_WIND_SPEED = "wind-speed-beaufort";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_PRESSURE = "pressure";

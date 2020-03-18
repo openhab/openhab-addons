@@ -15,27 +15,27 @@
             <channel id="velocity-beaufort" typeId="wind-speed-beaufort">
                 <label>Wind Velocity</label>
             </channel>            
-            <channel id="windfrom" typeId="winddirection">
+            <channel id="wind-from" typeId="wind-direction">
                 <label>Wind from</label>
             </channel>  
-            <channel id="windto" typeId="winddirection">
+            <channel id="wind-to" typeId="wind-direction">
             	<label>Wind to</label>
             </channel>           
-            <channel id="windevolution" typeId="windevolution" />
-            <channel id="pressuretrend" typeId="trend">
+            <channel id="wind-evolution" typeId="wind-evolution" />
+            <channel id="pressure-trend" typeId="trend">
                     <label>Pressure Trend</label>
                     <description>Pressure Evolution trend over observation delay</description>            
             </channel>
-            <channel id="temperaturetrend" typeId="trend" >
+            <channel id="temperature-trend" typeId="trend" >
                     <label>Temperature Trend</label>
                     <description>Temperature Evolution trend over observation delay</description>            
             </channel>
             <channel id="cloudiness" typeId="cloudiness" />
-            <channel id="isRaining" typeId="isRaining" />
+            <channel id="is-raining" typeId="is-raining" />
             <channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
             <channel id="pressure" typeId="pressure" />
             <channel id="temperature" typeId="temperature" />
-            <channel id="wind-angle" typeId="wind-direction-rw"/>
+            <channel id="wind-angle" typeId="wind-angle-rw"/>
         </channels>
 		
 		<config-description>
@@ -46,7 +46,7 @@
                 <description>Your geo coordinates separated with comma (e.g. "37.8,-122.4").</description>
             </parameter>
             
-            <parameter name="observationPeriod" type="integer" min="0" max="6" required="true">
+            <parameter name="observation-period" type="integer" min="0" max="6" required="true">
                 <label>Observation Period</label>
                 <description>SagerWeatherCaster needs a minimum representative period of time to produce meaningfull results. Defaults to 6 hours</description>
                 <default>6</default>
@@ -120,7 +120,7 @@
         </state>
     </channel-type>
     
-    <channel-type id="winddirection">
+    <channel-type id="wind-direction">
         <item-type>String</item-type>
         <label>Wind Direction</label>
         <description>Wind direction</description>
@@ -128,16 +128,15 @@
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
-    <channel-type id="wind-direction-rw">
+    <channel-type id="wind-angle-rw">
         <item-type>Number:Angle</item-type>
-        <label>Wind Direction</label>
-        <description>Wind direction</description>
+        <label>Wind Angle</label>
+        <description>Wind Angle</description>
         <category>Wind</category>
-        <state readOnly="false" pattern="%.0f %unit%">
-        </state>
+        <state readOnly="false" pattern="%.0f %unit%"/>
     </channel-type>
   
-    <channel-type id="windevolution" advanced="true">
+    <channel-type id="wind-evolution" advanced="true">
         <item-type>String</item-type>
         <label>Wind Evolution</label>
         <description>Wind bearing Evolution Trend over observation delay</description>
@@ -180,7 +179,7 @@
         <state min="0" max="100" pattern="%d %%" />
     </channel-type>
     
-    <channel-type id="isRaining">
+    <channel-type id="is-raining">
         <item-type>Switch</item-type>
         <label>Raining</label>
         <description>Is it currently raining ?</description>

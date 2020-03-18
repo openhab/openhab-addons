@@ -23,10 +23,10 @@ The binding itself does not require any configuration.
 
 ### SagerCaster
 
-| Name              | Type     | Description                                                              |
-|-------------------|----------|--------------------------------------------------------------------------|
-| location          | Location | Latitude and longitude of the desired weather forecast                   |
-| observationPeriod | int      | Minimum delay (in hours) before producing forecasts. Defaulted to 6      |
+| Name               | Type     | Description                                                              |
+|--------------------|----------|--------------------------------------------------------------------------|
+| location           | Location | Latitude and longitude of the desired weather forecast                   |
+| observation-period | int      | Minimum delay (in hours) before producing forecasts. Defaulted to 6      |
 
 ## Channels
 
@@ -42,7 +42,7 @@ sagercaster:sagercaster:triel "Sager Triel" @ "Outside" [location="48.9994937060
 
 ### Items
 
-Input channel will be updated via profiles on earlier versions of OH.
+Input channel can be updated via profiles in versions of OH > 2.4.
 
 ```
 Number:Pressure NWS_Abs_Pressure "Pression absolue" <pressure> {channel="netatmo:NAMain:home:insidews:AbsolutePressure", channel="sagercaster:sagercaster:triel:pressure" [profile="follow"]}
@@ -55,16 +55,16 @@ Number Synop_beaufort "Beaufort [SCALE(synop_beaufort.scale):%s]" <beaufort> {ch
 Here is the definition of output channels
 
 ```
-Switch  SWC_IsRaining           "Raining ? [%s]"                <rain>  (gSager, gSensorRain)   {channel="sagercaster:sagercaster:triel:isRaining"}
+Switch  SWC_IsRaining           "Raining ? [%s]"                <rain>  (gSager, gSensorRain)   {channel="sagercaster:sagercaster:triel:is-raining"}
     
 // Items directly derived from inputs
-String  SWC_windevolution       "Wind Evolution"                        (gSager)                {channel="sagercaster:sagercaster:triel:windevolution"}
-String  SWC_presstrend          "Pressure Trend"                        (gSager)                {channel="sagercaster:sagercaster:triel:pressuretrend"}
+String  SWC_windevolution       "Wind Evolution"                        (gSager)                {channel="sagercaster:sagercaster:triel:wind-evolution"}
+String  SWC_presstrend          "Pressure Trend"                        (gSager)                {channel="sagercaster:sagercaster:triel:pressure-trend"}
 
 // SagerWeatherCaster Forecast Items
 String  SWC_forecast            "Weather Forecast"                      (gSager)                {channel="sagercaster:sagercaster:triel:forecast"}
 String  SWC_velocity            "Wind Velocity"                         (gSager)                {channel="sagercaster:sagercaster:triel:velocity"}
-String  SWC_windfrom            "Wind from"                             (gSager)                {channel="sagercaster:sagercaster:triel:windfrom"}
+String  SWC_windfrom            "Wind from"                             (gSager)                {channel="sagercaster:sagercaster:triel:wind-from"}
  
 DateTime SWC_ObservationTime    "Timestamp [%1$tH:%1$tM]"       <time>  (gSager, gTrackAge)     {channel="sagercaster:sagercaster:triel:timestamp" }
 Number   SWC_Age                "Depuis [%d min]"                       (gSager, gSensorAge)
