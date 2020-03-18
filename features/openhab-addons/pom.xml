@@ -17,7 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
+      <artifactId>openhab-addons-external</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
