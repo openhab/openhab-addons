@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -38,14 +40,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial Contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.sagercaster")
 public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SagerCasterDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
-    private LocationProvider locationProvider;
-    private ScheduledFuture<?> sagerCasterDiscoveryJob;
-    private PointType previousLocation;
+    private @NonNullByDefault({}) LocationProvider locationProvider;
+    private @NonNullByDefault({}) ScheduledFuture<?> sagerCasterDiscoveryJob;
+    private @Nullable PointType previousLocation;
 
     private static final ThingUID sagerCasterThing = new ThingUID(THING_TYPE_SAGERCASTER, LOCAL);
 
@@ -57,12 +60,12 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
 
     @Override
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -82,7 +85,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
         if (sagerCasterDiscoveryJob == null) {
             sagerCasterDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 PointType currentLocation = locationProvider.getLocation();
-                if (!Objects.equals(currentLocation, previousLocation)) {
+                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
                     logger.debug("Location has been changed from {} to {}: Creating new discovery results",
                             previousLocation, currentLocation);
                     createResults(currentLocation);

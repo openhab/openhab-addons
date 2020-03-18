@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -386,7 +386,7 @@ public class SagerWeatherCaster {
         public char zForecast;
         public char zWindVelocity;
         public int zWindDirection;
-        public int zWindDirection2;
+        public int zWindDirection2 = -1;
 
         public Prevision(String forecast) {
             zForecast = forecast.charAt(0);
@@ -394,8 +394,6 @@ public class SagerWeatherCaster {
             zWindDirection = Character.getNumericValue(forecast.charAt(2));
             if (forecast.length() > 3) {
                 zWindDirection2 = Character.getNumericValue(forecast.charAt(3));
-            } else {
-                zWindDirection2 = -1;
             }
         }
     }

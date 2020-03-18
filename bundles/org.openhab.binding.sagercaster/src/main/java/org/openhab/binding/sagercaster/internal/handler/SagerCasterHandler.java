@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,6 @@ import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstan
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Angle;
@@ -29,7 +26,6 @@ import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -238,32 +234,6 @@ public class SagerCasterHandler extends BaseThingHandler {
                 break;
         }
         updateState(CHANNEL_VELOCITY_BEAUFORT, new DecimalType(predictedBeaufort));
-    }
-
-    private class ExpiringMap<T> {
-        private SortedMap<Long, T> values = new TreeMap<Long, T>();
-        private @Nullable T agedValue;
-        private long eldestAge = 0;
-
-        public void setObservationPeriod(long eldestAge) {
-            if (eldestAge > this.eldestAge) {
-            }
-            this.eldestAge = eldestAge;
-        }
-
-        public void put(T newValue) {
-            long now = System.currentTimeMillis();
-            values.put(now, newValue);
-            Optional<Long> eldestKey = values.keySet().stream().filter(key -> key < now - eldestAge).findFirst();
-            if (eldestKey.isPresent()) {
-                agedValue = values.get(eldestKey.get());
-                values.entrySet().removeIf(map -> map.getKey() <= eldestKey.get());
-            }
-        }
-
-        public @Nullable T getAgedValue() {
-            return agedValue;
-        }
     }
 
 }
