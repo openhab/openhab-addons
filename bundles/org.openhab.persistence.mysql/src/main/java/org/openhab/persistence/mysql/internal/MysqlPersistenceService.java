@@ -499,35 +499,34 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
             connection = DriverManager.getConnection(url, user, password);
             logger.debug("mySQL: Connected to database {}", url);
 
-            Statement st = connection.createStatement();
-            int result = st.executeUpdate("SHOW TABLES LIKE 'Items'");
-            st.close();
-
+            int result;
+            try (Statement st = connection.createStatement()) {
+                result = st.executeUpdate("SHOW TABLES LIKE 'Items'");
+            }
             if (waitTimeout != -1) {
                 logger.debug("mySQL: Setting wait_timeout to {} seconds.", waitTimeout);
-                st = connection.createStatement();
-                st.executeUpdate("SET SESSION wait_timeout=" + waitTimeout);
-                st.close();
+                try (Statement st = connection.createStatement()) {
+                    st.executeUpdate("SET SESSION wait_timeout=" + waitTimeout);
+                }
             }
             if (result == 0) {
-                st = connection.createStatement();
-                st.executeUpdate(
-                        "CREATE TABLE Items (ItemId INT NOT NULL AUTO_INCREMENT,ItemName VARCHAR(200) NOT NULL,PRIMARY KEY (ItemId));",
-                        Statement.RETURN_GENERATED_KEYS);
-                st.close();
+                try (Statement st = connection.createStatement()) {
+                    st.executeUpdate(
+                            "CREATE TABLE Items (ItemId INT NOT NULL AUTO_INCREMENT,ItemName VARCHAR(200) NOT NULL,PRIMARY KEY (ItemId));",
+                            Statement.RETURN_GENERATED_KEYS);
+                }
             }
 
             // Retrieve the table array
-            st = connection.createStatement();
-
-            // Turn use of the cursor on.
-            st.setFetchSize(50);
-            ResultSet rs = st.executeQuery("SELECT ItemId, ItemName FROM Items");
-            while (rs.next()) {
-                sqlTables.put(rs.getString(2), "Item" + rs.getInt(1));
+            try (Statement st = connection.createStatement()) {
+                // Turn use of the cursor on.
+                st.setFetchSize(50);
+                try (ResultSet rs = st.executeQuery("SELECT ItemId, ItemName FROM Items")) {
+                    while (rs.next()) {
+                        sqlTables.put(rs.getString(2), "Item" + rs.getInt(1));
+                    }
+                }
             }
-            rs.close();
-            st.close();
         } catch (Exception e) {
             logger.error("mySQL: Failed connecting to the SQL database using: driverClass={}, url={}, user={}",
                     driverClass, url, user, e);

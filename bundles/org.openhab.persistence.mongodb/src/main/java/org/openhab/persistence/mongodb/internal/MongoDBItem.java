@@ -27,9 +27,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class MongoDBItem implements HistoricItem {
 
-    final private String name;
-    final private State state;
-    final private Date timestamp;
+    private final String name;
+    private final State state;
+    private final Date timestamp;
 
     public MongoDBItem(String name, State state, Date timestamp) {
         this.name = name;
