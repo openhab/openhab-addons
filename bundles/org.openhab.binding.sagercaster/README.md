@@ -13,7 +13,6 @@ For these reasons, this binding is not a binding in the usual sense.
 ## Discovery
 
 A default `sagercaster` thing will be automatically discovered, based on system location.
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
 
 ## Binding Configuration
 
@@ -37,7 +36,7 @@ The binding will use some input channels, that can be configured directly with p
 ### Things
 
 ```
-sagercaster:sagercaster:triel "Sager Triel" @ "Outside" [location="48.999493706051396,2.009205437318970"]
+sagercaster:sagercaster:triel "Sager Triel" @ "Outside" [location="48,2"]
 ```
 
 ### Items
