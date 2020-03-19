@@ -60,6 +60,7 @@ import com.daveoxley.cbus.status.StatusChangeCallback;
 
 @NonNullByDefault
 final class CBusThreadPool extends CGateThreadPool {
+
     @NonNullByDefault
     public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor {
         private final ThreadPoolExecutor threadPool;
@@ -149,12 +150,12 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     }
 
     @NonNullByDefault
-    private class KeepAlive extends Thread {
+    private class KeepAlive implements Runnable {
 
         @Override
         public void run() {
             try {
-                while (!isInterrupted()) {
+                while (!Thread.currentThread().isInterrupted()) {
                     try {
                         CGateSession session = cGateSession;
                         if (session == null || !session.isConnected()) {
@@ -167,7 +168,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     } catch (Exception e) {
                     }
 
-                    sleep(10000l);
+                    Thread.sleep(10000l);
                 }
             } catch (InterruptedException e) {
             }
@@ -226,27 +227,24 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     }
 
     private void initializeChildThings() {
-        threadPool.execute(()-> {
-                // now also re-initialize all network handlers
-                for (Thing thing : getThing().getThings()) {
-                    ThingHandler handler = thing.getHandler();
-                    if (handler instanceof CBusNetworkHandler) {
-                        ((CBusNetworkHandler) handler).cgateStateChanged(true);
-                    }
+        threadPool.execute(() -> {
+            // now also re-initialize all network handlers
+            for (Thing thing : getThing().getThings()) {
+                ThingHandler handler = thing.getHandler();
+                if (handler instanceof CBusNetworkHandler) {
+                    ((CBusNetworkHandler) handler).cgateStateChanged(true);
                 }
+            }
         });
     }
 
     private void updateChildThings(boolean isOnline) {
-        threadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                // now also re-initialize all network handlers
-                for (Thing thing : getThing().getThings()) {
-                    ThingHandler handler = thing.getHandler();
-                    if (handler instanceof CBusNetworkHandler) {
-                        ((CBusNetworkHandler) handler).cgateStateChanged(isOnline);
-                    }
+        threadPool.execute(() -> {
+            // now also re-initialize all network handlers
+            for (Thing thing : getThing().getThings()) {
+                ThingHandler handler = thing.getHandler();
+                if (handler instanceof CBusNetworkHandler) {
+                    ((CBusNetworkHandler) handler).cgateStateChanged(isOnline);
                 }
             }
         });
