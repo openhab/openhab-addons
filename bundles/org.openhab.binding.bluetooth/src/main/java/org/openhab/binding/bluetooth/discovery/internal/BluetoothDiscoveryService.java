@@ -219,10 +219,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                     /*
                      * This isn't a new snapshot, but an up-to-date result from this adapter has not been produced yet.
                      * Since a result must have been produced for this snapshot, we search the results of the other
-                     * adapters
-                     * to find the future for the latest snapshot, then we modify it to make it look like it came from
-                     * this
-                     * adapter. This way we don't need to recompute the DiscoveryResult.
+                     * adapters to find the future for the latest snapshot, then we modify it to make it look like it
+                     * came from this adapter. This way we don't need to recompute the DiscoveryResult.
                      */
                     Optional<CompletableFuture<DiscoveryResult>> otherFuture = discoveryFutures.values().stream()
                             // make sure that we only get futures for the current snapshot
@@ -280,7 +278,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private static class SnapshotFuture {
         public final BluetoothDeviceSnapshot snapshot;
-        public CompletableFuture<DiscoveryResult> future;
+        public final CompletableFuture<DiscoveryResult> future;
 
         public SnapshotFuture(BluetoothDeviceSnapshot snapshot, CompletableFuture<DiscoveryResult> future) {
             this.snapshot = snapshot;
