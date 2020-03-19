@@ -226,9 +226,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     }
 
     private void initializeChildThings() {
-        threadPool.execute(new Runnable() {
-            @Override
-            public void run() {
+        threadPool.execute(()-> {
                 // now also re-initialize all network handlers
                 for (Thing thing : getThing().getThings()) {
                     ThingHandler handler = thing.getHandler();
@@ -236,7 +234,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         ((CBusNetworkHandler) handler).cgateStateChanged(true);
                     }
                 }
-            }
         });
     }
 

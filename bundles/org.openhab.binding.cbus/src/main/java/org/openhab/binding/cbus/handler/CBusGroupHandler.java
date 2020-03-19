@@ -41,8 +41,6 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
-    // protected CBusCGateHandler cBusCGateHandler = null;
-    // protected CGateCommandSet commandSet = null;
     protected @Nullable Group group = null;
 
     public CBusGroupHandler(Thing thing) {
