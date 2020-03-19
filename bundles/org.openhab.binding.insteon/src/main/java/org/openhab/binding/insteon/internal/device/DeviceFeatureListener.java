@@ -42,12 +42,12 @@ public class DeviceFeatureListener {
         CHANGED
     };
 
-    private String itemName;
-    private ChannelUID channelUID;
+    private final String itemName;
+    private final ChannelUID channelUID;
+    private final HashMap<Class<?>, @Nullable State> state = new HashMap<>();
+    private final ArrayList<InsteonAddress> relatedDevices = new ArrayList<>();
+    private final InsteonBinding binding;
     private HashMap<String, @Nullable String> parameters = new HashMap<>();
-    private HashMap<Class<?>, @Nullable State> state = new HashMap<>();
-    private ArrayList<InsteonAddress> relatedDevices = new ArrayList<>();
-    private InsteonBinding binding;
     private static final int TIME_DELAY_POLL_RELATED_MSEC = 5000;
 
     /**

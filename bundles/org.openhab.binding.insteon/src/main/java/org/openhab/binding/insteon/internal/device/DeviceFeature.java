@@ -73,7 +73,7 @@ public class DeviceFeature {
     private static HashMap<String, FeatureTemplate> features = new HashMap<String, FeatureTemplate>();
 
     private final InsteonDevice device;
-    private String name = "INVALID_FEATURE_NAME";
+    private final String name;
     private boolean isStatus = false;
     private int directAckTimeout = 6000;
     private QueryStatus queryStatus = QueryStatus.NEVER_QUERIED;
@@ -99,21 +99,12 @@ public class DeviceFeature {
         this.name = name;
     }
 
-    /**
-     * Constructor
-     *
-     * @param name descriptive name of the feature
-     */
-    // public DeviceFeature(String name) {
-    // this.name = name;
-    // }
-
     // various simple getters
     public String getName() {
         return name;
     }
 
-    public synchronized QueryStatus getQueryStatus() {
+    public QueryStatus getQueryStatus() {
         return queryStatus;
     }
 
@@ -166,7 +157,7 @@ public class DeviceFeature {
         defaultMsgHandler = mh;
     }
 
-    public synchronized void setQueryStatus(QueryStatus status) {
+    public void setQueryStatus(QueryStatus status) {
         logger.trace("{} set query status to: {}", name, status);
         queryStatus = status;
     }

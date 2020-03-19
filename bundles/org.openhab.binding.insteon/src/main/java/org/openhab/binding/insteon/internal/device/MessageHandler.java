@@ -680,7 +680,6 @@ public abstract class MessageHandler {
         public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
             logger.debug("{}: dev {} manual state change: {}", nm(), f.getDevice().getAddress(), 0);
             feature.publish(new DecimalType(1), StateChangeType.ALWAYS);
-
         }
     }
 
@@ -1017,7 +1016,8 @@ public abstract class MessageHandler {
                 // last, multiply with factor and add an offset
                 double dvalue = getDoubleParameter("offset", 0) + value * getDoubleParameter("factor", 1.0);
 
-                @Nullable State state;
+                @Nullable
+                State state;
                 String scale = getStringParameter("scale", null);
                 if (scale != null && scale.equals("celsius")) {
                     state = new QuantityType<>(dvalue, SIUnits.CELSIUS);

@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,16 +59,17 @@ public class InsteonDevice {
     /** how far to space out poll messages */
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
     private final RequestQueueManager requestQueueManager;
+    private final Set<String> ports = new LinkedHashSet<>();
+    private final HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
+    private final PriorityQueue<@Nullable QEntry> mrequestQueue = new PriorityQueue<>();
+
     private InsteonAddress address = new InsteonAddress();
-    private ArrayList<String> ports = new ArrayList<>();
     private long pollInterval = -1L; // in milliseconds
     private @Nullable Driver driver = null;
-    private HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
     private @Nullable String productKey = null;
-    private Long lastTimePolled = 0L;
-    private Long lastMsgReceived = 0L;
+    private long lastTimePolled = 0L;
+    private long lastMsgReceived = 0L;
     private boolean isModem = false;
-    private PriorityQueue<@Nullable QEntry> mrequestQueue = new PriorityQueue<>();
     private @Nullable DeviceFeature featureQueried = null;
     private long lastQueryTime = 0L;
     private boolean hasModemDBEntry = false;
@@ -217,9 +220,7 @@ public class InsteonDevice {
         if (p == null) {
             return;
         }
-        if (!ports.contains(p)) {
-            ports.add(p);
-        }
+        ports.add(p);
     }
 
     /**
@@ -292,9 +293,7 @@ public class InsteonDevice {
         requestQueueManager.addQueue(this, now + delay);
 
         if (!l.isEmpty()) {
-            synchronized (lastTimePolled) {
-                lastTimePolled = now;
-            }
+            lastTimePolled = now;
         }
     }
 
@@ -306,9 +305,8 @@ public class InsteonDevice {
      * @param msg the incoming message
      */
     public void handleMessage(String fromPort, Msg msg) {
-        synchronized (lastMsgReceived) {
-            lastMsgReceived = System.currentTimeMillis();
-        }
+        lastMsgReceived = System.currentTimeMillis();
+
         synchronized (features) {
             // first update all features that are
             // not status features
