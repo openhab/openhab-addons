@@ -34,16 +34,6 @@ import org.openhab.binding.bluetooth.BluetoothService;
 @NonNullByDefault
 public class BluetoothDeviceSnapshot extends BluetoothDevice {
 
-    // private @Nullable Integer txPower;
-    // private @Nullable Integer manufacturer;
-    // private @Nullable String name;
-
-    // private @Nullable String model;
-    // private @Nullable String serialNumber;
-    // private @Nullable String hardwareRevision;
-    // private @Nullable String firmwareRevision;
-    // private @Nullable String softwareRevision;
-
     private BluetoothDevice delegate;
 
     public BluetoothDeviceSnapshot(BluetoothDevice device) {
@@ -144,18 +134,6 @@ public class BluetoothDeviceSnapshot extends BluetoothDevice {
         return delegate.writeCharacteristic(characteristic);
     }
 
-    // public BluetoothDeviceSnapshot(BluetoothDeviceSnapshot device) {
-    // this.address = device.address;
-    // this.txPower = device.txPower;
-    // this.manufacturer = device.manufacturer;
-    // this.name = device.name;
-    // this.model = device.model;
-    // this.serialNumber = device.serialNumber;
-    // this.hardwareRevision = device.hardwareRevision;
-    // this.firmwareRevision = device.firmwareRevision;
-    // this.softwareRevision = device.softwareRevision;
-    // }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -172,7 +150,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDevice {
         String firmwareRevision = this.firmwareRevision;
         String softwareRevision = this.softwareRevision;
 
-        result = prime * result + ((address == null) ? 0 : address.hashCode());
+        result = prime * result + address.hashCode();
         result = prime * result + ((firmwareRevision == null) ? 0 : firmwareRevision.hashCode());
         result = prime * result + ((hardwareRevision == null) ? 0 : hardwareRevision.hashCode());
         result = prime * result + ((manufacturer == null) ? 0 : manufacturer.hashCode());
@@ -232,22 +210,17 @@ public class BluetoothDeviceSnapshot extends BluetoothDevice {
      * @return true if this snapshot changed as a result of this operation
      */
     public void merge(BluetoothDevice device) {
-        BluetoothDeviceSnapshot deviceSnapshot = new BluetoothDeviceSnapshot(device);
 
-        BluetoothAddress address = deviceSnapshot.address;
-        Integer txPower = deviceSnapshot.txPower;
-        Integer manufacturer = deviceSnapshot.manufacturer;
-        String name = deviceSnapshot.name;
+        Integer txPower = device.getTxPower();
+        Integer manufacturer = device.getManufacturerId();
+        String name = device.getName();
 
-        String model = deviceSnapshot.model;
-        String serialNumber = deviceSnapshot.serialNumber;
-        String hardwareRevision = deviceSnapshot.hardwareRevision;
-        String firmwareRevision = deviceSnapshot.firmwareRevision;
-        String softwareRevision = deviceSnapshot.softwareRevision;
+        String model = device.getModel();
+        String serialNumber = device.getSerialNumber();
+        String hardwareRevision = device.getHardwareRevision();
+        String firmwareRevision = device.getFirmwareRevision();
+        String softwareRevision = device.getSoftwareRevision();
 
-        // if (this.address == null && address != null) {
-        // this.address = address;
-        // }
         if (this.txPower == null && txPower != null) {
             this.txPower = txPower;
         }
