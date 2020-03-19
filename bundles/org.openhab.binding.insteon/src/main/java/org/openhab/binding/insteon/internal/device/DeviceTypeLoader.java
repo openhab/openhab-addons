@@ -26,6 +26,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureGroup;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -43,13 +45,29 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 @SuppressWarnings("null")
+@Component(service = DeviceTypeLoader.class)
 public class DeviceTypeLoader {
-    private static final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
     private HashMap<String, DeviceType> deviceTypes = new HashMap<>();
-    private @Nullable static DeviceTypeLoader deviceTypeLoader = null;
 
     private DeviceTypeLoader() {
     } // private so nobody can call it
+
+    @Activate
+    public void activate() {
+        InputStream input = DeviceTypeLoader.class.getResourceAsStream("/device_types.xml");
+        try {
+            loadDeviceTypesXML(input);
+        } catch (ParserConfigurationException e) {
+            logger.warn("parser config error when reading device types xml file: ", e);
+        } catch (SAXException e) {
+            logger.warn("SAX exception when reading device types xml file: ", e);
+        } catch (IOException e) {
+            logger.warn("I/O exception when reading device types xml file: ", e);
+        }
+        logger.debug("loaded {} devices: ", getDeviceTypes().size());
+        logDeviceTypes();
+    }
 
     /**
      * Finds the device type for a given product key
@@ -195,28 +213,4 @@ public class DeviceTypeLoader {
         }
     }
 
-    /**
-     * Singleton instance function, creates DeviceTypeLoader
-     *
-     * @return DeviceTypeLoader singleton reference
-     */
-    @Nullable
-    public static synchronized DeviceTypeLoader instance() {
-        if (deviceTypeLoader == null) {
-            deviceTypeLoader = new DeviceTypeLoader();
-            InputStream input = DeviceTypeLoader.class.getResourceAsStream("/device_types.xml");
-            try {
-                deviceTypeLoader.loadDeviceTypesXML(input);
-            } catch (ParserConfigurationException e) {
-                logger.warn("parser config error when reading device types xml file: ", e);
-            } catch (SAXException e) {
-                logger.warn("SAX exception when reading device types xml file: ", e);
-            } catch (IOException e) {
-                logger.warn("I/O exception when reading device types xml file: ", e);
-            }
-            logger.debug("loaded {} devices: ", deviceTypeLoader.getDeviceTypes().size());
-            deviceTypeLoader.logDeviceTypes();
-        }
-        return deviceTypeLoader;
-    }
 }

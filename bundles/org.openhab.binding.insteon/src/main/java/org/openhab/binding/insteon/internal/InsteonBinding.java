@@ -107,6 +107,7 @@ public class InsteonBinding {
     private final Logger logger = LoggerFactory.getLogger(InsteonBinding.class);
 
     private final RequestQueueManager requestQueueManager;
+    private final DeviceTypeLoader deviceTypeLoader;
     private Driver driver = new Driver();
     private ConcurrentHashMap<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
@@ -119,8 +120,10 @@ public class InsteonBinding {
     private InsteonNetworkHandler handler;
 
     public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
-            SerialPortManager serialPortManager, RequestQueueManager requestQueueManager) {
+            SerialPortManager serialPortManager, RequestQueueManager requestQueueManager,
+            DeviceTypeLoader deviceTypeLoader) {
         this.requestQueueManager = requestQueueManager;
+        this.deviceTypeLoader = deviceTypeLoader;
         this.handler = handler;
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
@@ -138,7 +141,7 @@ public class InsteonBinding {
         String additionalDevices = config.getAdditionalDevices();
         if (additionalDevices != null) {
             try {
-                DeviceTypeLoader.instance().loadDeviceTypesXML(additionalDevices);
+                deviceTypeLoader.loadDeviceTypesXML(additionalDevices);
                 logger.debug("read additional device definitions from {}", additionalDevices);
             } catch (ParserConfigurationException | SAXException | IOException e) {
                 logger.warn("error reading additional devices from {}", additionalDevices, e);
@@ -156,7 +159,7 @@ public class InsteonBinding {
 
         String port = config.getPort();
         logger.debug("port = '{}'", Utils.redactPassword(port));
-        driver.addPort("port", port, serialPortManager, requestQueueManager);
+        driver.addPort("port", port, serialPortManager, requestQueueManager, deviceTypeLoader);
         driver.addMsgListener(portListener, port);
 
         logger.debug("setting driver listener");
@@ -264,7 +267,7 @@ public class InsteonBinding {
     }
 
     public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey) {
-        DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
+        DeviceType dt = deviceTypeLoader.getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt, requestQueueManager);
         dev.setAddress(addr);
         dev.setDriver(driver);

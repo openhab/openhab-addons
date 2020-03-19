@@ -69,6 +69,7 @@ public class Port {
     }
 
     private final RequestQueueManager requestQueueManager;
+    private final DeviceTypeLoader deviceTypeLoader;
 
     private IOStream ioStream;
     private String devName;
@@ -93,8 +94,9 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(String devName, Driver d, SerialPortManager serialPortManager,
-            RequestQueueManager requestQueueManager) {
+    public Port(String devName, Driver d, SerialPortManager serialPortManager, RequestQueueManager requestQueueManager,
+            DeviceTypeLoader deviceTypeLoader) {
+        this.deviceTypeLoader = deviceTypeLoader;
         this.requestQueueManager = requestQueueManager;
         this.devName = devName;
         this.driver = d;
@@ -485,7 +487,7 @@ public class Port {
                     // add the modem to the device list
                     InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
                     String prodKey = "0x000045";
-                    DeviceType dt = DeviceTypeLoader.instance().getDeviceType(prodKey);
+                    DeviceType dt = deviceTypeLoader.getDeviceType(prodKey);
                     if (dt == null) {
                         logger.warn("unknown modem product key: {} for modem: {}.", prodKey, a);
                     } else {

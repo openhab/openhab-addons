@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
@@ -59,6 +60,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
     private Optional<SerialPortManager> serialPortManager = Optional.empty();
     private Optional<RequestQueueManager> requestQueueManager = Optional.empty();
+    private Optional<DeviceTypeLoader> deviceTypeLoader = Optional.empty();
 
     @Reference
     protected void setSerialPortManager(final SerialPortManager serialPortManager) {
@@ -78,6 +80,15 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
         this.requestQueueManager = Optional.empty();
     }
 
+    @Reference
+    protected void setDeviceTypeLoader(final DeviceTypeLoader deviceTypeLoader) {
+        this.deviceTypeLoader = Optional.of(deviceTypeLoader);
+    }
+
+    protected void unsetDeviceTypeLoader(final DeviceTypeLoader deviceTypeLoader) {
+        this.deviceTypeLoader = Optional.empty();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -89,12 +100,12 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
         if (NETWORK_THING_TYPE.equals(thingTypeUID)) {
             InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing,
-                    serialPortManager.get(), requestQueueManager.get());
+                    serialPortManager.get(), requestQueueManager.get(), deviceTypeLoader.get());
             registerDeviceDiscoveryService(insteonNetworkHandler);
 
             return insteonNetworkHandler;
         } else if (DEVICE_THING_TYPE.equals(thingTypeUID)) {
-            return new InsteonDeviceHandler(thing);
+            return new InsteonDeviceHandler(thing, deviceTypeLoader.get());
         }
 
         return null;

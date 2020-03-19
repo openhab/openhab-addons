@@ -106,9 +106,11 @@ public class InsteonDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(InsteonDeviceHandler.class);
 
     private @Nullable InsteonDeviceConfiguration config;
+    private final DeviceTypeLoader deviceTypeLoader;
 
-    public InsteonDeviceHandler(Thing thing) {
+    public InsteonDeviceHandler(Thing thing, DeviceTypeLoader deviceTypeLoader) {
         super(thing);
+        this.deviceTypeLoader = deviceTypeLoader;
     }
 
     @Override
@@ -133,7 +135,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             }
 
             String productKey = config.getProductKey();
-            if (DeviceTypeLoader.instance().getDeviceType(productKey) == null) {
+            if (deviceTypeLoader.getDeviceType(productKey) == null) {
                 String msg = "Unable to start Insteon device, invalid product key '" + productKey + "'.";
                 logger.warn("{}", msg);
 

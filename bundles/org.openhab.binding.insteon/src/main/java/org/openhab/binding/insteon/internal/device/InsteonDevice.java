@@ -567,7 +567,6 @@ public class InsteonDevice {
     }
 
     private void addFeature(String name, DeviceFeature f) {
-        f.setDevice(this);
         synchronized (features) {
             features.put(name, f);
         }

@@ -72,7 +72,7 @@ public class DeviceFeature {
 
     private static HashMap<String, FeatureTemplate> features = new HashMap<String, FeatureTemplate>();
 
-    private InsteonDevice device;
+    private final InsteonDevice device;
     private String name = "INVALID_FEATURE_NAME";
     private boolean isStatus = false;
     private int directAckTimeout = 6000;
@@ -152,10 +152,6 @@ public class DeviceFeature {
 
     public void setPollHandler(@Nullable PollHandler h) {
         pollHandler = h;
-    }
-
-    public void setDevice(InsteonDevice d) {
-        device = d;
     }
 
     public void setMessageDispatcher(@Nullable MessageDispatcher md) {
