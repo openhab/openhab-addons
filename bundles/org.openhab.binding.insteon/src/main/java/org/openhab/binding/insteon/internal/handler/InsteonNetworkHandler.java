@@ -31,6 +31,7 @@ import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
+import org.openhab.binding.insteon.internal.driver.Poller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,15 +59,17 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     private final SerialPortManager serialPortManager;
     private final RequestQueueManager requestQueueManager;
     private final DeviceTypeLoader deviceTypeLoader;
+    private final Poller poller;
 
     public static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
     public InsteonNetworkHandler(Bridge bridge, SerialPortManager serialPortManager,
-            RequestQueueManager requestQueueManager, DeviceTypeLoader deviceTypeLoader) {
+            RequestQueueManager requestQueueManager, DeviceTypeLoader deviceTypeLoader, Poller poller) {
         super(bridge);
         this.serialPortManager = serialPortManager;
         this.requestQueueManager = requestQueueManager;
         this.deviceTypeLoader = deviceTypeLoader;
+        this.poller = poller;
     }
 
     @Override
@@ -80,7 +83,8 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
-            insteonBinding = new InsteonBinding(this, config, serialPortManager, requestQueueManager, deviceTypeLoader);
+            insteonBinding = new InsteonBinding(this, config, serialPortManager, requestQueueManager, deviceTypeLoader,
+                    poller);
 
             // hold off on starting to poll until devices that already are defined as things are added.
             // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at

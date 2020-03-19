@@ -20,6 +20,9 @@ import java.util.TreeSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +45,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @SuppressWarnings("null")
+@Component(service = Poller.class)
 public class Poller {
     private static final long MIN_MSEC_BETWEEN_POLLS = 2000L;
 
     private final Logger logger = LoggerFactory.getLogger(Poller.class);
-    private static Poller poller = new Poller(); // for singleton
 
     private @Nullable Thread pollThread = null;
     private TreeSet<PQEntry> pollQueue = new TreeSet<>();
@@ -104,6 +107,7 @@ public class Poller {
     /**
      * Starts the poller thread
      */
+    @Activate
     public void start() {
         if (pollThread == null) {
             pollThread = new Thread(new PollQueueReader());
@@ -116,6 +120,7 @@ public class Poller {
     /**
      * Stops the poller thread
      */
+    @Deactivate
     public void stop() {
         logger.debug("stopping poller!");
         synchronized (pollQueue) {
@@ -286,16 +291,6 @@ public class Poller {
         public String toString() {
             return dev.getAddress().toString() + "/" + String.format("%tc", new Date(expirationTime));
         }
-    }
-
-    /**
-     * Singleton pattern instance() method
-     *
-     * @return the poller instance
-     */
-    public static synchronized Poller instance() {
-        poller.start();
-        return (poller);
     }
 
 }

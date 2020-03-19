@@ -108,6 +108,8 @@ public class InsteonBinding {
 
     private final RequestQueueManager requestQueueManager;
     private final DeviceTypeLoader deviceTypeLoader;
+    private final Poller poller;
+
     private Driver driver = new Driver();
     private ConcurrentHashMap<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
@@ -121,9 +123,10 @@ public class InsteonBinding {
 
     public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
             SerialPortManager serialPortManager, RequestQueueManager requestQueueManager,
-            DeviceTypeLoader deviceTypeLoader) {
+            DeviceTypeLoader deviceTypeLoader, Poller poller) {
         this.requestQueueManager = requestQueueManager;
         this.deviceTypeLoader = deviceTypeLoader;
+        this.poller = poller;
         this.handler = handler;
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
@@ -279,7 +282,7 @@ public class InsteonBinding {
             int ndev = checkIfInModemDatabase(dev);
             if (dev.hasModemDBEntry()) {
                 dev.setStatus(DeviceStatus.POLLING);
-                Poller.instance().startPolling(dev, ndev);
+                poller.startPolling(dev, ndev);
             }
         }
         devices.put(addr, dev);
@@ -296,7 +299,7 @@ public class InsteonBinding {
         }
 
         if (dev.getStatus() == DeviceStatus.POLLING) {
-            Poller.instance().stopPolling(dev);
+            poller.stopPolling(dev);
         }
     }
 
@@ -338,7 +341,6 @@ public class InsteonBinding {
         logger.debug("shutting down Insteon bridge");
         driver.stopAllPorts();
         devices.clear();
-        Poller.instance().stop();
         isActive = false;
     }
 
@@ -396,7 +398,7 @@ public class InsteonBinding {
 
     public void logDeviceStatistics() {
         String msg = String.format("devices: %3d configured, %3d polling, msgs received: %5d", devices.size(),
-                Poller.instance().getSizeOfQueue(), messagesReceived);
+                poller.getSizeOfQueue(), messagesReceived);
         logger.debug("{}", msg);
         messagesReceived = 0;
         for (InsteonDevice dev : devices.values()) {
@@ -457,7 +459,7 @@ public class InsteonBinding {
                             dev.setHasModemDBEntry(true);
                         }
                         if (dev.getStatus() != DeviceStatus.POLLING) {
-                            Poller.instance().startPolling(dev, dbes.size());
+                            poller.startPolling(dev, dbes.size());
                         }
                     }
                 }

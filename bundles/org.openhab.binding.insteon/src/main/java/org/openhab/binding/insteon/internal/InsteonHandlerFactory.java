@@ -37,6 +37,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
+import org.openhab.binding.insteon.internal.driver.Poller;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -61,6 +62,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
     private Optional<SerialPortManager> serialPortManager = Optional.empty();
     private Optional<RequestQueueManager> requestQueueManager = Optional.empty();
     private Optional<DeviceTypeLoader> deviceTypeLoader = Optional.empty();
+    private Optional<Poller> poller = Optional.empty();
 
     @Reference
     protected void setSerialPortManager(final SerialPortManager serialPortManager) {
@@ -89,6 +91,15 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
         this.deviceTypeLoader = Optional.empty();
     }
 
+    @Reference
+    protected void setPoller(final Poller poller) {
+        this.poller = Optional.of(poller);
+    }
+
+    protected void unsetPoller(final Poller poller) {
+        this.poller = Optional.empty();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -100,7 +111,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
         if (NETWORK_THING_TYPE.equals(thingTypeUID)) {
             InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing,
-                    serialPortManager.get(), requestQueueManager.get(), deviceTypeLoader.get());
+                    serialPortManager.get(), requestQueueManager.get(), deviceTypeLoader.get(), poller.get());
             registerDeviceDiscoveryService(insteonNetworkHandler);
 
             return insteonNetworkHandler;
