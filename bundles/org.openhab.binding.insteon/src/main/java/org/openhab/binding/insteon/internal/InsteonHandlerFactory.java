@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
@@ -55,15 +57,25 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private @Nullable SerialPortManager serialPortManager;
+    private Optional<SerialPortManager> serialPortManager = Optional.empty();
+    private Optional<RequestQueueManager> requestQueueManager = Optional.empty();
 
     @Reference
     protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
+        this.serialPortManager = Optional.of(serialPortManager);
     }
 
     protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
+        this.serialPortManager = Optional.empty();
+    }
+
+    @Reference
+    protected void setRequestQueueManager(final RequestQueueManager requestQueueManager) {
+        this.requestQueueManager = Optional.of(requestQueueManager);
+    }
+
+    protected void unsetRequestQueueManager(final RequestQueueManager requestQueueManager) {
+        this.requestQueueManager = Optional.empty();
     }
 
     @Override
@@ -76,7 +88,8 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NETWORK_THING_TYPE.equals(thingTypeUID)) {
-            InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing, serialPortManager);
+            InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing,
+                    serialPortManager.get(), requestQueueManager.get());
             registerDeviceDiscoveryService(insteonNetworkHandler);
 
             return insteonNetworkHandler;

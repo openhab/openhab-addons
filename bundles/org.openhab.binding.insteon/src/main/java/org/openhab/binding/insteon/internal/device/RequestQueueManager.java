@@ -17,6 +17,9 @@ import java.util.PriorityQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,19 +39,28 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @SuppressWarnings("null")
+@Component(service = RequestQueueManager.class)
 public class RequestQueueManager {
-    private static @Nullable RequestQueueManager instance = null;
     private final Logger logger = LoggerFactory.getLogger(RequestQueueManager.class);
-    private @Nullable Thread queueThread = null;
+    private Thread queueThread;
     private PriorityQueue<RequestQueue> requestQueues = new PriorityQueue<>();
     private HashMap<InsteonDevice, @Nullable RequestQueue> requestQueueHash = new HashMap<>();
     private boolean keepRunning = true;
 
-    private RequestQueueManager() {
+    public RequestQueueManager() {
         queueThread = new Thread(new RequestQueueReader());
         queueThread.setName("Insteon Request Queue Reader");
         queueThread.setDaemon(true);
+    }
+
+    @Activate
+    public void activate() {
         queueThread.start();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        stopThread();
     }
 
     /**
@@ -101,7 +113,6 @@ public class RequestQueueManager {
             } catch (InterruptedException e) {
                 logger.warn("got interrupted waiting for thread exit ", e);
             }
-            queueThread = null;
         }
     }
 
@@ -185,21 +196,6 @@ public class RequestQueueManager {
         @Override
         public int compareTo(RequestQueue a) {
             return (int) (expirationTime - a.expirationTime);
-        }
-    }
-
-    @NonNullByDefault
-    public static synchronized @Nullable RequestQueueManager instance() {
-        if (instance == null) {
-            instance = new RequestQueueManager();
-        }
-        return (instance);
-    }
-
-    public static synchronized void destroyInstance() {
-        if (instance != null) {
-            instance.stopThread();
-            instance = null;
         }
     }
 }

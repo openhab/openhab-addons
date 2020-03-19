@@ -137,8 +137,8 @@ public class FeatureTemplate {
      *
      * @return the feature which this template describes
      */
-    public DeviceFeature build() {
-        DeviceFeature f = new DeviceFeature(name);
+    public DeviceFeature build(InsteonDevice device) {
+        DeviceFeature f = new DeviceFeature(device, name);
         f.setStatusFeature(isStatus);
         f.setTimeout(timeout);
         if (dispatcher != null) {

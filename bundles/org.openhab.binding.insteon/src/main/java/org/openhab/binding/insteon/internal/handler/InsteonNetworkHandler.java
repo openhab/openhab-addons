@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
+import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,13 +54,16 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
-    private @Nullable SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
+    private final RequestQueueManager requestQueueManager;
 
     public static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-    public InsteonNetworkHandler(Bridge bridge, @Nullable SerialPortManager serialPortManager) {
+    public InsteonNetworkHandler(Bridge bridge, SerialPortManager serialPortManager,
+            RequestQueueManager requestQueueManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
+        this.requestQueueManager = requestQueueManager;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
-            insteonBinding = new InsteonBinding(this, config, serialPortManager);
+            insteonBinding = new InsteonBinding(this, config, serialPortManager, requestQueueManager);
 
             // hold off on starting to poll until devices that already are defined as things are added.
             // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at

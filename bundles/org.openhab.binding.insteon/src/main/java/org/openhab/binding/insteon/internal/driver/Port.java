@@ -26,6 +26,7 @@ import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.openhab.binding.insteon.internal.device.ModemDBBuilder;
+import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -67,6 +68,8 @@ public class Port {
         GOT_NACK
     }
 
+    private final RequestQueueManager requestQueueManager;
+
     private IOStream ioStream;
     private String devName;
     private String logName;
@@ -90,7 +93,9 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(String devName, Driver d, @Nullable SerialPortManager serialPortManager) {
+    public Port(String devName, Driver d, SerialPortManager serialPortManager,
+            RequestQueueManager requestQueueManager) {
+        this.requestQueueManager = requestQueueManager;
         this.devName = devName;
         this.driver = d;
         this.logName = Utils.redactPassword(devName);
@@ -484,7 +489,7 @@ public class Port {
                     if (dt == null) {
                         logger.warn("unknown modem product key: {} for modem: {}.", prodKey, a);
                     } else {
-                        device = InsteonDevice.makeDevice(dt);
+                        device = InsteonDevice.makeDevice(dt, requestQueueManager);
                         device.setAddress(a);
                         device.setProductKey(prodKey);
                         device.setDriver(driver);

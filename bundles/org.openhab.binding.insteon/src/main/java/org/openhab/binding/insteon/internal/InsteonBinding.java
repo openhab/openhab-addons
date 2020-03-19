@@ -44,7 +44,6 @@ import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.driver.DriverListener;
 import org.openhab.binding.insteon.internal.driver.ModemDBEntry;
 import org.openhab.binding.insteon.internal.driver.Poller;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -107,6 +106,7 @@ public class InsteonBinding {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonBinding.class);
 
+    private final RequestQueueManager requestQueueManager;
     private Driver driver = new Driver();
     private ConcurrentHashMap<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
@@ -119,7 +119,8 @@ public class InsteonBinding {
     private InsteonNetworkHandler handler;
 
     public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
-            @Nullable SerialPortManager serialPortManager) {
+            SerialPortManager serialPortManager, RequestQueueManager requestQueueManager) {
+        this.requestQueueManager = requestQueueManager;
         this.handler = handler;
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
@@ -155,7 +156,7 @@ public class InsteonBinding {
 
         String port = config.getPort();
         logger.debug("port = '{}'", Utils.redactPassword(port));
-        driver.addPort("port", port, serialPortManager);
+        driver.addPort("port", port, serialPortManager, requestQueueManager);
         driver.addMsgListener(portListener, port);
 
         logger.debug("setting driver listener");
@@ -264,7 +265,7 @@ public class InsteonBinding {
 
     public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey) {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
-        InsteonDevice dev = InsteonDevice.makeDevice(dt);
+        InsteonDevice dev = InsteonDevice.makeDevice(dt, requestQueueManager);
         dev.setAddress(addr);
         dev.setDriver(driver);
         dev.addPort(driver.getDefaultPort());
@@ -334,7 +335,6 @@ public class InsteonBinding {
         logger.debug("shutting down Insteon bridge");
         driver.stopAllPorts();
         devices.clear();
-        RequestQueueManager.destroyInstance();
         Poller.instance().stop();
         isActive = false;
     }

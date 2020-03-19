@@ -26,8 +26,8 @@ import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureGroup;
 import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.message.FieldException;
-import org.openhab.binding.insteon.internal.message.Msg;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
+import org.openhab.binding.insteon.internal.message.Msg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class InsteonDevice {
     private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
     /** how far to space out poll messages */
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
-
+    private final RequestQueueManager requestQueueManager;
     private InsteonAddress address = new InsteonAddress();
     private ArrayList<String> ports = new ArrayList<>();
     private long pollInterval = -1L; // in milliseconds
@@ -75,8 +75,9 @@ public class InsteonDevice {
     /**
      * Constructor
      */
-    public InsteonDevice() {
-        lastMsgReceived = System.currentTimeMillis();
+    public InsteonDevice(RequestQueueManager requestQueueManager) {
+        this.requestQueueManager = requestQueueManager;
+        this.lastMsgReceived = System.currentTimeMillis();
     }
 
     // --------------------- simple getters -----------------------------
@@ -288,7 +289,7 @@ public class InsteonDevice {
                 mrequestQueue.add(e);
             }
         }
-        RequestQueueManager.instance().addQueue(this, now + delay);
+        requestQueueManager.addQueue(this, now + delay);
 
         if (!l.isEmpty()) {
             synchronized (lastTimePolled) {
@@ -343,7 +344,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, InvalidMessageTypeException {
+    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2)
+            throws FieldException, InvalidMessageTypeException {
         return (makeStandardMessage(flags, cmd1, cmd2, -1));
     }
 
@@ -358,7 +360,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group) throws FieldException, InvalidMessageTypeException {
+    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group)
+            throws FieldException, InvalidMessageTypeException {
         Msg m = Msg.makeMessage("SendStandardMessage");
         InsteonAddress addr = null;
         byte f = flags;
@@ -394,7 +397,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, InvalidMessageTypeException {
+    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2)
+            throws FieldException, InvalidMessageTypeException {
         return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {});
     }
 
@@ -409,7 +413,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data) throws FieldException, InvalidMessageTypeException {
+    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data)
+            throws FieldException, InvalidMessageTypeException {
         Msg m = Msg.makeMessage("SendExtendedMessage");
         m.setAddress("toAddress", getAddress());
         m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
@@ -519,7 +524,7 @@ public class InsteonDevice {
             m.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
-        RequestQueueManager.instance().addQueue(this, now + delay);
+        requestQueueManager.addQueue(this, now + delay);
     }
 
     private void writeMessage(Msg m) throws IOException {
@@ -528,7 +533,7 @@ public class InsteonDevice {
 
     private void instantiateFeatures(@Nullable DeviceType dt) {
         for (Entry<String, String> fe : dt.getFeatures().entrySet()) {
-            DeviceFeature f = DeviceFeature.makeDeviceFeature(fe.getValue());
+            DeviceFeature f = DeviceFeature.makeDeviceFeature(this, fe.getValue());
             if (f == null) {
                 logger.warn("device type {} references unknown feature: {}", dt, fe.getValue());
             } else {
@@ -538,7 +543,7 @@ public class InsteonDevice {
         for (Entry<String, FeatureGroup> fe : dt.getFeatureGroups().entrySet()) {
             FeatureGroup fg = fe.getValue();
             @Nullable
-            DeviceFeature f = DeviceFeature.makeDeviceFeature(fg.getType());
+            DeviceFeature f = DeviceFeature.makeDeviceFeature(this, fg.getType());
             if (f == null) {
                 logger.warn("device type {} references unknown feature group: {}", dt, fg.getType());
             } else {
@@ -583,8 +588,8 @@ public class InsteonDevice {
      * @param dt device type after which to model the device
      * @return newly created device
      */
-    public static InsteonDevice makeDevice(@Nullable DeviceType dt) {
-        InsteonDevice dev = new InsteonDevice();
+    public static InsteonDevice makeDevice(@Nullable DeviceType dt, RequestQueueManager requestQueueManager) {
+        InsteonDevice dev = new InsteonDevice(requestQueueManager);
         dev.instantiateFeatures(dt);
         return dev;
     }
