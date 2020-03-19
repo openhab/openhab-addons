@@ -34,7 +34,6 @@
     <!-- disable itests for mqtt temporarily 
     <module>org.openhab.io.mqttembeddedbroker.tests</module>
     -->
-    <module>org.openhab.persistence.mapdb.tests</module>
   </modules>
 
   <dependencies>
