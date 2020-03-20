@@ -14,6 +14,7 @@ package org.openhab.binding.insteon.internal.driver;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.message.Msg;
 import org.openhab.binding.insteon.internal.message.MsgListener;
 import org.openhab.binding.insteon.internal.utils.Utils;
@@ -85,7 +85,7 @@ public class Driver {
      * @param port the device name, e.g. /dev/insteon, /dev/ttyUSB0 etc
      */
     public void addPort(String name, String port, SerialPortManager serialPortManager,
-            RequestQueueManager requestQueueManager, DeviceTypeLoader deviceTypeLoader) {
+            ScheduledExecutorService requestQueueManager, DeviceTypeLoader deviceTypeLoader) {
         if (ports.keySet().contains(port)) {
             logger.warn("ignored attempt to add duplicate port: {} {}", name, port);
         } else {

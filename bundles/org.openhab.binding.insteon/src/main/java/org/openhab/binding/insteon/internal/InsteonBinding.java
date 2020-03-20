@@ -21,11 +21,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.NamedThreadFactory;
+import org.eclipse.smarthome.core.internal.common.WrappedScheduledExecutorService;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -39,7 +42,6 @@ import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.openhab.binding.insteon.internal.device.InsteonDevice.DeviceStatus;
-import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.driver.DriverListener;
 import org.openhab.binding.insteon.internal.driver.ModemDBEntry;
@@ -106,7 +108,7 @@ public class InsteonBinding {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonBinding.class);
 
-    private final RequestQueueManager requestQueueManager;
+    private final ScheduledThreadPoolExecutor requestQueueManager;
     private final DeviceTypeLoader deviceTypeLoader;
     private final Poller poller;
 
@@ -122,9 +124,11 @@ public class InsteonBinding {
     private InsteonNetworkHandler handler;
 
     public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
-            SerialPortManager serialPortManager, RequestQueueManager requestQueueManager,
-            DeviceTypeLoader deviceTypeLoader, Poller poller) {
-        this.requestQueueManager = requestQueueManager;
+            SerialPortManager serialPortManager, DeviceTypeLoader deviceTypeLoader, Poller poller) {
+        this.requestQueueManager = new WrappedScheduledExecutorService(1,
+                new NamedThreadFactory("Insteon Request Queue Reader", true));
+        requestQueueManager.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+
         this.deviceTypeLoader = deviceTypeLoader;
         this.poller = poller;
         this.handler = handler;
@@ -167,6 +171,7 @@ public class InsteonBinding {
 
         logger.debug("setting driver listener");
         driver.setDriverListener(portListener);
+
     }
 
     public boolean startPolling() {
@@ -341,6 +346,8 @@ public class InsteonBinding {
         logger.debug("shutting down Insteon bridge");
         driver.stopAllPorts();
         devices.clear();
+        // simply shutting down should be sufficient since this is only used for delayed tasks
+        requestQueueManager.shutdown();
         isActive = false;
     }
 

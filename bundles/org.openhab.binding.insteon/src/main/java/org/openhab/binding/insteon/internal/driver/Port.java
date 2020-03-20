@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +27,6 @@ import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.openhab.binding.insteon.internal.device.ModemDBBuilder;
-import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -68,7 +68,7 @@ public class Port {
         GOT_NACK
     }
 
-    private final RequestQueueManager requestQueueManager;
+    private final ScheduledExecutorService requestQueueManager;
     private final DeviceTypeLoader deviceTypeLoader;
 
     private IOStream ioStream;
@@ -94,8 +94,8 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(String devName, Driver d, SerialPortManager serialPortManager, RequestQueueManager requestQueueManager,
-            DeviceTypeLoader deviceTypeLoader) {
+    public Port(String devName, Driver d, SerialPortManager serialPortManager,
+            ScheduledExecutorService requestQueueManager, DeviceTypeLoader deviceTypeLoader) {
         this.deviceTypeLoader = deviceTypeLoader;
         this.requestQueueManager = requestQueueManager;
         this.devName = devName;

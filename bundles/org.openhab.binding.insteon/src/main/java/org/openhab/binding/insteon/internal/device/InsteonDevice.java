@@ -20,6 +20,9 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,7 +61,7 @@ public class InsteonDevice {
     private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
     /** how far to space out poll messages */
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
-    private final RequestQueueManager requestQueueManager;
+    private final ScheduledExecutorService requestQueueManager;
     private final Set<String> ports = new LinkedHashSet<>();
     private final HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
     private final PriorityQueue<@Nullable QEntry> mrequestQueue = new PriorityQueue<>();
@@ -75,10 +78,12 @@ public class InsteonDevice {
     private boolean hasModemDBEntry = false;
     private DeviceStatus status = DeviceStatus.INITIALIZED;
 
+    private @Nullable ScheduledFuture<?> queuedFuture;
+
     /**
      * Constructor
      */
-    public InsteonDevice(RequestQueueManager requestQueueManager) {
+    public InsteonDevice(ScheduledExecutorService requestQueueManager) {
         this.requestQueueManager = requestQueueManager;
         this.lastMsgReceived = System.currentTimeMillis();
     }
@@ -290,7 +295,7 @@ public class InsteonDevice {
                 mrequestQueue.add(e);
             }
         }
-        requestQueueManager.addQueue(this, now + delay);
+        addQueue(delay);
 
         if (!l.isEmpty()) {
             lastTimePolled = now;
@@ -522,7 +527,30 @@ public class InsteonDevice {
             m.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
-        requestQueueManager.addQueue(this, now + delay);
+
+        addQueue(delay);
+    }
+
+    private void cancel(boolean interrupt, @Nullable ScheduledFuture<?> future) {
+        if (future != null) {
+            future.cancel(interrupt);
+        }
+    }
+
+    private void addQueue(long delay) {
+        ScheduledFuture<?> queuedFuture = this.queuedFuture;
+        if (queuedFuture == null || queuedFuture.isDone() || queuedFuture.getDelay(TimeUnit.MILLISECONDS) > delay) {
+            this.queuedFuture = requestQueueManager.schedule(() -> {
+                long now = System.currentTimeMillis();
+                long nextExp = processRequestQueue(now);
+
+                cancel(false, this.queuedFuture);
+                if (nextExp > 0) {
+                    addQueue(nextExp - now);
+                }
+            }, delay, TimeUnit.MILLISECONDS);
+        }
+        cancel(false, queuedFuture);
     }
 
     private void writeMessage(Msg m) throws IOException {
@@ -585,7 +613,7 @@ public class InsteonDevice {
      * @param dt device type after which to model the device
      * @return newly created device
      */
-    public static InsteonDevice makeDevice(@Nullable DeviceType dt, RequestQueueManager requestQueueManager) {
+    public static InsteonDevice makeDevice(@Nullable DeviceType dt, ScheduledExecutorService requestQueueManager) {
         InsteonDevice dev = new InsteonDevice(requestQueueManager);
         dev.instantiateFeatures(dt);
         return dev;

@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
-import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
 import org.openhab.binding.insteon.internal.driver.Poller;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
@@ -60,7 +59,6 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private Optional<SerialPortManager> serialPortManager = Optional.empty();
-    private Optional<RequestQueueManager> requestQueueManager = Optional.empty();
     private Optional<DeviceTypeLoader> deviceTypeLoader = Optional.empty();
     private Optional<Poller> poller = Optional.empty();
 
@@ -71,15 +69,6 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
         this.serialPortManager = Optional.empty();
-    }
-
-    @Reference
-    protected void setRequestQueueManager(final RequestQueueManager requestQueueManager) {
-        this.requestQueueManager = Optional.of(requestQueueManager);
-    }
-
-    protected void unsetRequestQueueManager(final RequestQueueManager requestQueueManager) {
-        this.requestQueueManager = Optional.empty();
     }
 
     @Reference
@@ -111,7 +100,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
         if (NETWORK_THING_TYPE.equals(thingTypeUID)) {
             InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing,
-                    serialPortManager.get(), requestQueueManager.get(), deviceTypeLoader.get(), poller.get());
+                    serialPortManager.get(), deviceTypeLoader.get(), poller.get());
             registerDeviceDiscoveryService(insteonNetworkHandler);
 
             return insteonNetworkHandler;
