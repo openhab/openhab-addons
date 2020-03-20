@@ -111,7 +111,7 @@ public class LinkyHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Linky handler.");
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.schedule(this::login, 0, TimeUnit.SECONDS);
+        scheduler.submit(this::login);
 
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
@@ -219,8 +219,8 @@ public class LinkyHandler extends BaseThingHandler {
         LinkyConsumptionData result = cachedMonthlyData.getValue();
         if (result != null && result.success()) {
             int jump = result.getDecalage();
-            lastMonth = result.getData().get(jump++).valeur;
-            thisMonth = result.getData().get(jump).valeur;
+            lastMonth = result.getData().get(jump).valeur;
+            thisMonth = result.getData().get(jump + 1).valeur;
             if (thisMonth < 0) {
                 thisMonth = 0;
             }
@@ -269,7 +269,7 @@ public class LinkyHandler extends BaseThingHandler {
      * @return the report as a string
      */
     public String reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
-        String dump = "";
+        StringBuilder dump = new StringBuilder();
         if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
             // All values in the same month
             LinkyConsumptionData result = getConsumptionData(DAILY, startDay, endDay, true);
@@ -278,18 +278,18 @@ public class LinkyHandler extends BaseThingHandler {
                 int jump = result.getDecalage();
                 while (jump < result.getData().size() && !currentDay.isAfter(endDay)) {
                     double consumption = result.getData().get(jump).valeur;
-                    dump += currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
+                    dump.append(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator);
                     if (consumption >= 0) {
-                        dump += String.valueOf(consumption);
+                        dump.append(String.valueOf(consumption));
                     }
-                    dump += "\n";
+                    dump.append("\n");
                     jump++;
                     currentDay = currentDay.plusDays(1);
                 }
             } else {
                 LocalDate currentDay = startDay;
                 while (!currentDay.isAfter(endDay)) {
-                    dump += currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator + "\n";
+                    dump.append(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator + "\n");
                     currentDay = currentDay.plusDays(1);
                 }
             }
@@ -301,11 +301,11 @@ public class LinkyHandler extends BaseThingHandler {
                 if (last.isAfter(endDay)) {
                     last = endDay;
                 }
-                dump += reportValues(first, last, separator);
+                dump.append(reportValues(first, last, separator));
                 first = last.plusDays(1);
             } while (!first.isAfter(endDay));
         }
-        return dump;
+        return dump.toString();
     }
 
     private @Nullable LinkyConsumptionData getConsumptionData(LinkyTimeScale timeScale, LocalDate from, LocalDate to,

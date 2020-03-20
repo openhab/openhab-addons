@@ -66,57 +66,43 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
             if (handler == null) {
                 console.println("Bad thing id '" + args[0] + "'");
                 printUsage(console);
-            } else {
-                switch (args[1]) {
-                    case REPORT:
-                        LocalDate now = LocalDate.now();
-                        LocalDate start = now.minusDays(7);
-                        LocalDate end = now.minusDays(1);
-                        String separator = " ";
-                        if (args.length >= 3) {
-                            try {
-                                start = LocalDate.parse(args[2], DateTimeFormatter.ISO_LOCAL_DATE);
-                            } catch (DateTimeParseException e) {
-                                console.println("Invalid format for start day '" + args[2]
-                                        + "'; expected format is YYYY-MM-DD");
-                                printUsage(console);
-                                break;
-                            }
-                        }
-                        if (args.length >= 4) {
-                            try {
-                                end = LocalDate.parse(args[3], DateTimeFormatter.ISO_LOCAL_DATE);
-                            } catch (DateTimeParseException e) {
-                                console.println(
-                                        "Invalid format for end day '" + args[3] + "'; expected format is YYYY-MM-DD");
-                                printUsage(console);
-                                break;
-                            }
-                        }
-                        if (!start.isBefore(now)) {
-                            console.println("Start day must be in the past");
-                            printUsage(console);
-                            break;
-                        }
-                        if (start.isAfter(end)) {
-                            console.println("Start day must be earlier than end day");
-                            printUsage(console);
-                            break;
-                        }
-                        if (end.isAfter(now.minusDays(1))) {
-                            end = now.minusDays(1);
-                        }
-                        if (args.length >= 5) {
-                            separator = args[4];
-                        }
-                        for (String line : handler.reportValues(start, end, separator).split("\n")) {
-                            console.println(line);
-                        }
-                        break;
-                    default:
-                        console.println("Unknown Linky sub command '" + args[1] + "'");
+            } else if (args[1] == REPORT) {
+                LocalDate now = LocalDate.now();
+                LocalDate start = now.minusDays(7);
+                LocalDate end = now.minusDays(1);
+                String separator = " ";
+                if (args.length >= 3) {
+                    try {
+                        start = LocalDate.parse(args[2], DateTimeFormatter.ISO_LOCAL_DATE);
+                    } catch (DateTimeParseException e) {
+                        console.println(
+                                "Invalid format for start day '" + args[2] + "'; expected format is YYYY-MM-DD");
                         printUsage(console);
-                        break;
+                        return;
+                    }
+                }
+                if (args.length >= 4) {
+                    try {
+                        end = LocalDate.parse(args[3], DateTimeFormatter.ISO_LOCAL_DATE);
+                    } catch (DateTimeParseException e) {
+                        console.println("Invalid format for end day '" + args[3] + "'; expected format is YYYY-MM-DD");
+                        printUsage(console);
+                        return;
+                    }
+                }
+                if (!start.isBefore(now) || start.isAfter(end)) {
+                    console.println("Start day must be in the past and before the end day");
+                    printUsage(console);
+                    return;
+                }
+                if (end.isAfter(now.minusDays(1))) {
+                    end = now.minusDays(1);
+                }
+                if (args.length >= 5) {
+                    separator = args[4];
+                }
+                for (String line : handler.reportValues(start, end, separator).split("\n")) {
+                    console.println(line);
                 }
             }
         } else {
