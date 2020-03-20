@@ -31,7 +31,7 @@
 				<description>The password required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" min="5">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
