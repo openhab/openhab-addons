@@ -58,7 +58,7 @@ public class Poller {
     /**
      * Constructor
      */
-    private Poller() {
+    public Poller() {
     }
 
     /**

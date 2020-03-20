@@ -50,8 +50,8 @@ public class DeviceTypeLoader {
     private final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
     private HashMap<String, DeviceType> deviceTypes = new HashMap<>();
 
-    private DeviceTypeLoader() {
-    } // private so nobody can call it
+    public DeviceTypeLoader() {
+    }
 
     @Activate
     public void activate() {
