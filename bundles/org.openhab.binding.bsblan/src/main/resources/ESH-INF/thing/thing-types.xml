@@ -82,7 +82,7 @@
 	</channel-type>
 	<channel-type id="parameter_datatype">
 		<item-type>Number</item-type>
-		<label>Data type</label>
+		<label>Data Type</label>
 		<description>Data type of the parameter</description>
 		<state readOnly="true"></state>
 	</channel-type>
