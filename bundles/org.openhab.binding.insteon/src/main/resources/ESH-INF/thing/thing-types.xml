@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="network">
+		<label>Insteon Network</label>
+		<description>An Insteon PLM or hub that is used to communicate with the Insteon devices.</description>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Port</label>
+				<description>Configuration information that is used to connect to PLM or hub.</description>
+			</parameter>
+
+			<parameter name="devicePollIntervalSeconds" type="integer" min="5" max="3600">
+				<label>Device Poll Interval</label>
+				<description>Device poll interval in seconds.</description>
+			</parameter>
+
+			<parameter name="modemDbRetryTimeoutSeconds" type="integer" min="30" max="600">
+				<label>Modem DB Retry Timeout</label>
+				<description>Modem DB retry timeout in seconds.</description>
+			</parameter>
+
+
+			<parameter name="additionalDevices" type="text">
+				<label>Additional Devices</label>
+				<description>Optional file with additional device types.</description>
+			</parameter>
+
+			<parameter name="additionalFeatures" type="text">
+				<label>Additional Features</label>
+				<description>Optional file with additional feature templates.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network" />
+		</supported-bridge-type-refs>
+
+		<label>Insteon Device</label>
+		<description>Insteon devices such as switches, dimmers, keypads, sensors, etc.</description>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Insteon address of the device.</description>
+			</parameter>
+			<parameter name="productKey" type="text" required="true">
+				<label>Product Key</label>
+				<description>Insteon binding product key that is used to identify the model of the device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="acDelay">
+		<item-type>Number</item-type>
+		<label>AC Delay</label>
+	</channel-type>
+
+	<channel-type id="backlightDuration">
+		<item-type>Number</item-type>
+		<label>Back Light Duration</label>
+	</channel-type>
+
+	<channel-type id="batteryLevel">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+	</channel-type>
+
+	<channel-type id="batteryWatermarkLevel">
+		<item-type>Number</item-type>
+		<label>Battery Watermark Level</label>
+	</channel-type>
+
+	<channel-type id="bottomOutlet">
+		<item-type>Switch</item-type>
+		<label>Bottom Outlet</label>
+	</channel-type>
+
+	<channel-type id="buttonA">
+		<item-type>Switch</item-type>
+		<label>Button A</label>
+	</channel-type>
+
+	<channel-type id="buttonB">
+		<item-type>Switch</item-type>
+		<label>Button B</label>
+	</channel-type>
+
+	<channel-type id="buttonC">
+		<item-type>Switch</item-type>
+		<label>Button C</label>
+	</channel-type>
+
+	<channel-type id="buttonD">
+		<item-type>Switch</item-type>
+		<label>Button D</label>
+	</channel-type>
+
+	<channel-type id="buttonE">
+		<item-type>Switch</item-type>
+		<label>Button E</label>
+	</channel-type>
+
+	<channel-type id="buttonF">
+		<item-type>Switch</item-type>
+		<label>Button F</label>
+	</channel-type>
+
+	<channel-type id="buttonG">
+		<item-type>Switch</item-type>
+		<label>Button G</label>
+	</channel-type>
+
+	<channel-type id="buttonH">
+		<item-type>Switch</item-type>
+		<label>Button H</label>
+	</channel-type>
+
+	<channel-type id="broadcastOnOff">
+		<item-type>Switch</item-type>
+		<label>Broadcast On/Off</label>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+	</channel-type>
+
+	<channel-type id="coolSetPoint">
+		<item-type>Number</item-type>
+		<label>Cool Set Point</label>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+	</channel-type>
+
+	<channel-type id="fan">
+		<item-type>Number</item-type>
+		<label>Fan</label>
+	</channel-type>
+
+	<channel-type id="fanMode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+	</channel-type>
+
+	<channel-type id="fastOnOff">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonA">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button A</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonB">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button B</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonC">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button C</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonD">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button D</label>
+	</channel-type>
+
+	<channel-type id="heatSetPoint">
+		<item-type>Number</item-type>
+		<label>Heat Set Point</label>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+	</channel-type>
+
+	<channel-type id="humidityHigh">
+		<item-type>Number</item-type>
+		<label>Humidity High</label>
+	</channel-type>
+
+	<channel-type id="humidityLow">
+		<item-type>Number</item-type>
+		<label>Humidity Low</label>
+	</channel-type>
+
+	<channel-type id="isCooling">
+		<item-type>Number</item-type>
+		<label>Is Cooling</label>
+	</channel-type>
+
+	<channel-type id="isHeating">
+		<item-type>Number</item-type>
+		<label>Is Heating</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonA">
+		<item-type>Switch</item-type>
+		<label>Keypad Button A</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonB">
+		<item-type>Switch</item-type>
+		<label>Keypad Button B</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonC">
+		<item-type>Switch</item-type>
+		<label>Keypad Button C</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonD">
+		<item-type>Switch</item-type>
+		<label>Keypad Button D</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonE">
+		<item-type>Switch</item-type>
+		<label>Keypad Button E</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonF">
+		<item-type>Switch</item-type>
+		<label>Keypad Button F</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonG">
+		<item-type>Switch</item-type>
+		<label>Keypad Button G</label>
+	</channel-type>
+
+	<channel-type id="keypadButtonH">
+		<item-type>Switch</item-type>
+		<label>Keypad Button H</label>
+	</channel-type>
+
+	<channel-type id="kWh">
+		<item-type>Number</item-type>
+		<label>Kilowatt Hour</label>
+	</channel-type>
+
+	<channel-type id="lastHeardFrom">
+		<item-type>DateTime</item-type>
+		<label>Last Heard From</label>
+	</channel-type>
+
+	<channel-type id="ledBrightness">
+		<item-type>Number</item-type>
+		<label>LED Brightness</label>
+	</channel-type>
+
+	<channel-type id="lightDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Light Dimmer</label>
+	</channel-type>
+
+	<channel-type id="lightLevel">
+		<item-type>Number</item-type>
+		<label>Light Level</label>
+	</channel-type>
+
+	<channel-type id="loadDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Load Dimmer</label>
+	</channel-type>
+
+	<channel-type id="loadSwitch">
+		<item-type>Switch</item-type>
+		<label>Load Switch</label>
+	</channel-type>
+
+	<channel-type id="loadSwitchFastOnOff">
+		<item-type>Switch</item-type>
+		<label>Load Switch Fast On/Off</label>
+	</channel-type>
+
+	<channel-type id="loadSwitchManualChange">
+		<item-type>Number</item-type>
+		<label>Load Switch Manual Change</label>
+	</channel-type>
+
+	<channel-type id="manualChange">
+		<item-type>Number</item-type>
+		<label>Manual Change</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonA">
+		<item-type>Number</item-type>
+		<label>Manual Change Button A</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonB">
+		<item-type>Number</item-type>
+		<label>Manual Change Button B</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonC">
+		<item-type>Number</item-type>
+		<label>Manual Change Button C</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonD">
+		<item-type>Number</item-type>
+		<label>Manual Change Button D</label>
+	</channel-type>
+
+	<channel-type id="notification">
+		<item-type>Number</item-type>
+		<label>Notification</label>
+	</channel-type>
+
+	<channel-type id="onLevel">
+		<item-type>Number</item-type>
+		<label>On Level</label>
+	</channel-type>
+
+	<channel-type id="rampDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Ramp Dimmer</label>
+	</channel-type>
+
+	<channel-type id="rampRate">
+		<item-type>Number</item-type>
+		<label>Ramp Rate</label>
+	</channel-type>
+
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+	</channel-type>
+
+	<channel-type id="stage1Duration">
+		<item-type>Number</item-type>
+		<label>Stage 1 Duration</label>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+	</channel-type>
+
+	<channel-type id="systemMode">
+		<item-type>Number</item-type>
+		<label>System Mode</label>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+	</channel-type>
+
+	<channel-type id="topOutlet">
+		<item-type>Switch</item-type>
+		<label>Top Outlet</label>
+	</channel-type>
+
+	<channel-type id="update">
+		<item-type>Switch</item-type>
+		<label>Update</label>
+	</channel-type>
+
+	<channel-type id="watts">
+		<item-type>Number</item-type>
+		<label>Watts</label>
+	</channel-type>
+
+</thing:thing-descriptions>

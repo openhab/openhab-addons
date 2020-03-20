@@ -80,9 +80,10 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void onDeviceAdded(Bridge bridge, Device device) {
-        logger.debug("Adding new TellstickDevice! {} with id '{}' to smarthome inbox", device.getDeviceType(),
-                device.getId());
+        logger.debug("Adding new TellstickDevice! '{}' with id '{}' and type '{}' to smarthome inbox", device,
+                device.getId(), device.getDeviceType());
         ThingUID thingUID = getThingUID(bridge, device);
+        logger.debug("Detected thingUID: {}", thingUID);
         if (thingUID != null) {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withTTL(DEFAULT_TTL)
                     .withProperty(TellstickBindingConstants.DEVICE_ID, device.getUUId())
@@ -149,21 +150,25 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private ThingTypeUID findSensorType(Device device) {
+        logger.debug("Device: {}", device);
         ThingTypeUID sensorThingId;
         if (device instanceof TellstickSensor) {
             TellstickSensor sensor = (TellstickSensor) device;
-            if (sensor.getData(DataType.WINDAVERAGE) != null) {
+            logger.debug("Sensor: {}", device);
+            if (sensor.getData(DataType.WINDAVERAGE) != null || sensor.getData(DataType.WINDGUST) != null
+                    || sensor.getData(DataType.WINDDIRECTION) != null) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
-            } else if (sensor.getData(DataType.RAINTOTAL) != null) {
+            } else if (sensor.getData(DataType.RAINTOTAL) != null || sensor.getData(DataType.RAINRATE) != null) {
                 sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }
         } else {
             TellstickNetSensor sensor = (TellstickNetSensor) device;
-            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE)) {
+            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE) || sensor.isSensorOfType(LiveDataType.WINDDIRECTION)
+                    || sensor.isSensorOfType(LiveDataType.WINDGUST)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
-            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE)) {
+            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE) || sensor.isSensorOfType(LiveDataType.RAINTOTAL)) {
                 sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
             } else if (sensor.isSensorOfType(LiveDataType.WATT)) {
                 sensorThingId = TellstickBindingConstants.POWERSENSOR_THING_TYPE;
