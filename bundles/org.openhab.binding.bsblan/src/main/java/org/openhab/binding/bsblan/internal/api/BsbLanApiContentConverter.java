@@ -26,17 +26,16 @@ import com.google.gson.JsonSyntaxException;
  */
 public class BsbLanApiContentConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(BsbLanApiContentConverter.class);
+    private static final Gson GSON = new Gson();
 
     public static String toJson(BsbLanApiContent request) {
-        Gson gson = new Gson();
-        return gson.toJson(request);
+        return GSON.toJson(request);
     }
 
     @Nullable
     public static <T> T fromJson(String content, Class<T> resultType) {
         try {
-            Gson gson = new Gson();
-            T result = gson.fromJson(content, resultType);
+            T result = GSON.fromJson(content, resultType);
             if (result == null) {
                 LOGGER.debug("result null after json parsing (response = {})", content);
             }
