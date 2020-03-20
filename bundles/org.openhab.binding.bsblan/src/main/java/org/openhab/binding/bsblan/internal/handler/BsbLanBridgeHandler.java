@@ -63,10 +63,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // Alternatively the thing itself could make an additional REST call
         // on initialization but this would flood the device when lots of parameters are setup.
         if (debouncedInit == null || debouncedInit.isCancelled() || debouncedInit.isDone()) {
-            Runnable runnable = () -> {
-                doRefresh();
-            };
-            debouncedInit = scheduler.schedule(runnable, 2, TimeUnit.SECONDS);
+            debouncedInit = scheduler.schedule(this::doRefresh, 2, TimeUnit.SECONDS);
         }
     }
 
