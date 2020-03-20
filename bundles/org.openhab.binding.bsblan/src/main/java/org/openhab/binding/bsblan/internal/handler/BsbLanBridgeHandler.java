@@ -147,12 +147,8 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
      */
     private void startAutomaticRefresh(BsbLanBridgeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                doRefresh();
-            };
-
             int interval = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_INTERVAL;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, interval, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::doRefresh, 0, interval, TimeUnit.SECONDS);
         }
     }
 }
