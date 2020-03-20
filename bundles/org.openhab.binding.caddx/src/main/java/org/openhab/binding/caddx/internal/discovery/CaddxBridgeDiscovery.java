@@ -53,7 +53,7 @@ public class CaddxBridgeDiscovery implements CaddxPanelListener {
         this.portManager = portManager;
     }
 
-    public synchronized void discoverBridge3() {
+    public synchronized void discoverBridge() {
         logger.trace("Starting Caddx Bridge Discovery.");
 
         Stream<SerialPortIdentifier> ports = portManager.getIdentifiers();

@@ -32,23 +32,9 @@ public class CaddxMessage {
     private byte checksum2In;
     private byte checksum1Calc;
     private byte checksum2Calc;
-    private CaddxMessageType caddxMessageType;
-
-    public byte getChecksum1In() {
-        return checksum1In;
-    }
-
-    public byte getChecksum2In() {
-        return checksum2In;
-    }
-
-    public byte getChecksum1Calc() {
-        return checksum1Calc;
-    }
-
-    public byte getChecksum2Calc() {
-        return checksum2Calc;
-    }
+    private final CaddxMessageType caddxMessageType;
+    private final Map<String, String> propertyMap = new HashMap<>();
+    private final Map<String, String> idMap = new HashMap<>();
 
     /**
      * Constructor.
@@ -89,6 +75,22 @@ public class CaddxMessage {
 
         // Fill-in the properties
         processCaddxMessage();
+    }
+
+    public byte getChecksum1In() {
+        return checksum1In;
+    }
+
+    public byte getChecksum2In() {
+        return checksum2In;
+    }
+
+    public byte getChecksum1Calc() {
+        return checksum1Calc;
+    }
+
+    public byte getChecksum2Calc() {
+        return checksum2Calc;
     }
 
     /**
@@ -449,9 +451,6 @@ public class CaddxMessage {
         return sb.toString();
     }
 
-    private final Map<String, String> propertyMap = new HashMap<>();
-    private final Map<String, String> idMap = new HashMap<>();
-
     /**
      * Processes the incoming Caddx message and extracts the information.
      */
@@ -463,11 +462,11 @@ public class CaddxMessage {
 
         // fill the property lookup hashmaps
         for (CaddxProperty p : caddxMessageType.properties) {
-            propertyMap.put(p.name, p.getValue(message));
+            propertyMap.put(p.getName(), p.getValue(message));
         }
         for (CaddxProperty p : caddxMessageType.properties) {
-            if (!"".equals(p.id)) {
-                idMap.put(p.id, p.getValue(message));
+            if (!"".equals(p.getId())) {
+                idMap.put(p.getId(), p.getValue(message));
             }
         }
     }

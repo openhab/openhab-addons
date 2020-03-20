@@ -38,9 +38,9 @@ import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
 import org.openhab.binding.caddx.internal.CaddxSource;
-import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.config.CaddxBridgeConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxKeypadConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxPartitionConfiguration;
@@ -67,6 +67,10 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
     private final SerialPortManager portManager;
     private @Nullable CaddxDiscoveryService discoveryService = null;
+    private CaddxProtocol protocol = CaddxProtocol.Binary;
+    private String serialPortName = "";
+    private int baudRate;
+    private @Nullable CaddxCommunicator communicator = null;
 
     public @Nullable CaddxDiscoveryService getDiscoveryService() {
         return discoveryService;
@@ -86,11 +90,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
         this.portManager = portManager;
     }
-
-    private CaddxProtocol protocol = CaddxProtocol.Binary;
-    private String serialPortName = "";
-    private int baudRate;
-    private @Nullable CaddxCommunicator communicator = null;
 
     private void init() {
         CaddxBridgeConfiguration configuration = getConfigAs(CaddxBridgeConfiguration.class);

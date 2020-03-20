@@ -54,13 +54,6 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Constructor.
-     */
-    public CaddxDiscoveryService() {
-        super(CaddxBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
-    }
-
-    /**
-     * Constructor.
      *
      * @param caddxBridgeHandler The Bridge handler
      */
@@ -75,7 +68,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
 
         if (portManager != null) {
             caddxBridgeDiscovery = new CaddxBridgeDiscovery(portManager, this);
-            caddxBridgeDiscovery.discoverBridge3();
+            caddxBridgeDiscovery.discoverBridge();
         }
     }
 

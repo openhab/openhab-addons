@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.caddx.internal;
 
 import java.util.HashMap;
@@ -6,6 +18,11 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * All the panel message types
+ *
+ * @author Georgios Moutsos - Initial contribution
+ */
 @NonNullByDefault
 public enum CaddxMessageType {
 
@@ -89,7 +106,8 @@ public enum CaddxMessageType {
             new CaddxProperty("zone_name", 3, 16, 0, 0, "String", "Zone name", false)),
 
     Zone_Status_Message(0x04, null, 8, "Zone Status Message",
-            "This message will contain all information relevant to a zone in the system.", CaddxDirection.In, CaddxSource.Zone,
+            "This message will contain all information relevant to a zone in the system.", CaddxDirection.In,
+            CaddxSource.Zone,
 
             // Properties
             new CaddxProperty("", 1, 1, 0, 0, "Int", "Message number", false),
@@ -255,8 +273,8 @@ public enum CaddxMessageType {
             new CaddxProperty("", 10, 1, 7, 1, "Bit", "Zone 16 alarm memory", false)),
 
     Partition_Status_Message(0x06, null, 9, "Partition Status Message",
-            "This message will contain all information relevant to a single partition in the system.", CaddxDirection.In,
-            CaddxSource.Partition,
+            "This message will contain all information relevant to a single partition in the system.",
+            CaddxDirection.In, CaddxSource.Partition,
 
             // Properties
             // Byte 1
@@ -420,7 +438,8 @@ public enum CaddxMessageType {
             new CaddxProperty("", 9, 1, 8, 1, "Bit", "Partition 8 previous alarm", false)),
 
     System_Status_Message(0x08, null, 12, "System Status Message",
-            "This message will contain all information relevant to the entire system.", CaddxDirection.In, CaddxSource.Panel,
+            "This message will contain all information relevant to the entire system.", CaddxDirection.In,
+            CaddxSource.Panel,
 
             // Properties
             // Byte 1
@@ -565,7 +584,8 @@ public enum CaddxMessageType {
             new CaddxProperty("panel_log_event_minute", 10, 1, 0, 0, "Int", "Minute (0-59)", false)),
 
     Keypad_Message_Received(0x0b, null, 3, "Keypad Message Received",
-            "This message contains a keystroke from a keypad that is in a Terminal Mode.", CaddxDirection.In, CaddxSource.Keypad,
+            "This message contains a keystroke from a keypad that is in a Terminal Mode.", CaddxDirection.In,
+            CaddxSource.Keypad,
 
             // Properties
             // Byte 1
@@ -764,7 +784,8 @@ public enum CaddxMessageType {
             new CaddxProperty("", 1, 1, 0, 0, "Int", "Message number", false)),
 
     System_Status_Request(0x28, new int[] { 0x08, 0x1c, 0x1f }, 1, "System Status Request",
-            "This request will cause the return of the System Status Message (08h).", CaddxDirection.Out, CaddxSource.None,
+            "This request will cause the return of the System Status Message (08h).", CaddxDirection.Out,
+            CaddxSource.None,
 
             // Properties
             // Byte 1
@@ -1218,7 +1239,8 @@ public enum CaddxMessageType {
             new CaddxProperty("", 3, 1, 7, 1, "Bit", "Perform on partition 8", false)),
 
     Zone_Bypass_Toggle(0x3f, new int[] { 0x1d, 0x1c, 0x1f }, 2, "Zone Bypass Toggle",
-            "This message will contain a number of a zone that should be (un)bypassed.", CaddxDirection.Out, CaddxSource.None,
+            "This message will contain a number of a zone that should be (un)bypassed.", CaddxDirection.Out,
+            CaddxSource.None,
 
             // Properties
             // Byte 1 Message number

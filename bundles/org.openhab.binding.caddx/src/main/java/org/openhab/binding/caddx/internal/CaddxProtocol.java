@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.caddx.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Panel Protocol enumeration.
  *
  * @author Georgios Moutsos - Initial contribution
  */
+@NonNullByDefault
 public enum CaddxProtocol {
     Binary,
     Ascii

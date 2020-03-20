@@ -25,10 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class CaddxEvent extends EventObject {
     private static final long serialVersionUID = 1L;
-    private CaddxMessage caddxMessage;
-    private @Nullable Integer partition;
-    private @Nullable Integer zone;
-    private @Nullable Integer keypad;
+    private final CaddxMessage caddxMessage;
+    private final @Nullable Integer partition;
+    private final @Nullable Integer zone;
+    private final @Nullable Integer keypad;
 
     /**
      * Constructor.

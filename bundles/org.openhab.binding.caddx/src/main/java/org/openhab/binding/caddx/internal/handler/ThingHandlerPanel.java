@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ThingHandlerPanel.class);
+    private @Nullable HashMap<String, String> panelLogMessagesMap = null;
+    private @Nullable String communicatorStackPointer = null;
 
     /**
      * Constructor.
@@ -85,11 +87,11 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             } else {
                 return;
             }
-        } else {
-            throw new IllegalArgumentException("Unknown command");
-        }
 
-        bridgeHandler.sendCommand(cmd, data);
+            bridgeHandler.sendCommand(cmd, data);
+        } else {
+            logger.debug("Unknown command");
+        }
     }
 
     @Override
@@ -119,12 +121,6 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         }
     }
-
-    @Nullable
-    HashMap<String, String> panelLogMessagesMap = null;
-
-    @Nullable
-    String communicatorStackPointer = null;
 
     /*
      * Gets the pointer into the panel's log messages ring buffer
@@ -182,8 +178,10 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             int eventNumber = Integer.parseInt(eventNumberString);
             int eventSize = Integer.parseInt(eventSizeString);
 
-            for (int i = 1; i < 10; i++) {
-                eventNumber = eventNumber - 1;
+            // Retrieve at maximum the 10 last log messages from the panel
+            int messagesToRetrieve = (eventSize < 10) ? eventSize : 10;
+            for (int i = 1; i < messagesToRetrieve; i++) {
+                eventNumber--;
                 if (eventNumber < 0) {
                     eventNumber = eventSize;
                 }

@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,53 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum CaddxThingType {
-    PANEL("panel"),
-    PARTITION("partition"),
-    ZONE("zone"),
-    KEYPAD("keypad");
-
-    private String label;
-
-    /**
-     * Lookup map to get a CaddxThingType from its label.
-     */
-    private static Map<String, CaddxThingType> labelToThingType;
-
-    /**
-     * Constructor.
-     *
-     * @param label
-     */
-    private CaddxThingType(String label) {
-        this.label = label;
-    }
-
-    /**
-     * Creates a HashMap that maps the string label to a CaddxThingType enum value.
-     */
-    static {
-        labelToThingType = new HashMap<>();
-        for (CaddxThingType s : values()) {
-            labelToThingType.put(s.label, s);
-        }
-    }
-
-    /**
-     * Returns the label of the Caddx AlarmItemType Values enumeration.
-     *
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * Lookup function based on the binding type label. Returns null if the binding type is not found.
-     *
-     * @param label
-     * @return enum value
-     */
-    public static CaddxThingType getCaddxThingType(String label) {
-        return labelToThingType.get(label);
-    }
+    PANEL,
+    PARTITION,
+    ZONE,
+    KEYPAD;
 }

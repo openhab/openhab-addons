@@ -203,7 +203,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                     if (outgoingMessage != null) {
                         logger.debug("->: {}", outgoingMessage.getName());
                         logger.debug("{}", Util.buildCaddxMessageInBinaryString("->: ", outgoingMessage));
-                        // logger.debug("{}", Util.buildCaddxMessageInAsciiString("->: ", outgoingMessage));
                     }
                     if (outgoingMessage != null) {
                         expectedMessageNumbers = outgoingMessage.getReplyMessageNumbers();
@@ -232,7 +231,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 } else {
                     logger.debug("<-: {}", incomingMessage.getName());
                     logger.debug("{}", Util.buildCaddxMessageInBinaryString("<-: ", incomingMessage));
-                    // logger.debug("{}", Util.buildCaddxMessageInAsciiString("<-: ", incomingMessage));
                 }
 
                 // Check if we wait for a reply

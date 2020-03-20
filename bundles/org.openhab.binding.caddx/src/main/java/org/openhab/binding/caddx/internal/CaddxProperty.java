@@ -1,20 +1,37 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.caddx.internal;
 
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * Panel message property class
+ *
+ * @author Georgios Moutsos - Initial contribution
+ */
 @NonNullByDefault
 public class CaddxProperty {
     // private
-    String name;
-    String type; // 'Int', 'String', 'Bit'
-    int byteFrom;
-    int byteLength;
-    int bitFrom;
-    int bitLength;
-    boolean external;
-    String id;
+    private final String name;
+    private final String type; // 'Int', 'String', 'Bit'
+    private final int byteFrom;
+    private final int byteLength;
+    private final int bitFrom;
+    private final int bitLength;
+    private final boolean external;
+    private final String id;
 
     public String getName() {
         return name;
@@ -22,6 +39,10 @@ public class CaddxProperty {
 
     public String getType() {
         return type;
+    }
+
+    public boolean getExternal() {
+        return external;
     }
 
     public String getId() {
@@ -45,7 +66,7 @@ public class CaddxProperty {
         int mask;
         int val;
 
-        if (type == "Int") {
+        if ("Int".equals(type)) {
             if (bitFrom == 0 && bitLength == 0) {
                 mask = 255;
                 val = message[byteFrom - 1] & mask;
@@ -57,12 +78,12 @@ public class CaddxProperty {
             return Integer.toString(val);
         }
 
-        if (type == "String") {
+        if ("String".equals(type)) {
             byte[] str = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength);
             return new String(str);
         }
 
-        if (type == "Bit") {
+        if ("Bit".equals(type)) {
             return (((message[byteFrom - 1] & (1 << bitFrom)) > 0) ? "true" : "false");
         }
 
@@ -73,7 +94,7 @@ public class CaddxProperty {
         int mask;
         int val;
 
-        if (type == "Int") {
+        if ("Int".equals(type)) {
             if (bitFrom == 0 && bitLength == 0) {
                 mask = 255;
                 val = message[byteFrom - 1];
@@ -86,7 +107,7 @@ public class CaddxProperty {
                     + ((val >= 32 && val <= 'z') ? ((char) val) : "-");
         }
 
-        if (type == "String") {
+        if ("String".contentEquals(type)) {
             StringBuilder sb = new StringBuilder();
 
             byte[] a = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength);
@@ -104,7 +125,7 @@ public class CaddxProperty {
             return sb.toString();
         }
 
-        if (type == "Bit") {
+        if ("Bit".contentEquals(type)) {
             return name + ": " + (((message[byteFrom - 1] & (1 << bitFrom)) > 0) ? "true" : "false");
         }
 
