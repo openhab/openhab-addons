@@ -98,4 +98,13 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
             discoveryServiceRegs.remove(thingUID);
         }
     }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(VehicleStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(VehicleStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
+    }
 }

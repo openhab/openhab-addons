@@ -16,11 +16,13 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The base identifer of all Verisure response objects.
  *
  * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Further development
  *
  */
 @NonNullByDefault
@@ -38,8 +40,9 @@ public interface VerisureThing {
     @Nullable
     String getSiteName();
 
-    void setSiteId(@Nullable BigDecimal siteId);
+    void setSiteId(BigDecimal siteId);
 
-    @Nullable
     BigDecimal getSiteId();
+
+    ThingTypeUID getThingTypeUID();
 }

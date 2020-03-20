@@ -12,14 +12,19 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_MICE_DETECTION;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The Mice detection status of the Verisure System.
@@ -31,15 +36,15 @@ import org.eclipse.jdt.annotation.Nullable;
 public class VerisureMiceDetection extends VerisureBaseThing {
 
     public static final int UNDEFINED = -1;
-    private @Nullable Data data;
+    private Data data = new Data();
     private double temperatureValue = UNDEFINED;
     private @Nullable String temperatureTimestamp;
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
@@ -57,6 +62,11 @@ public class VerisureMiceDetection extends VerisureBaseThing {
 
     public void setTemperatureTime(@Nullable String temperatureTimestamp) {
         this.temperatureTimestamp = temperatureTimestamp;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_MICE_DETECTION;
     }
 
     @Override
@@ -86,14 +96,13 @@ public class VerisureMiceDetection extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        private @Nullable Installation installation;
-        private @Nullable Map<String, Object> additionalProperties;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -123,14 +132,14 @@ public class VerisureMiceDetection extends VerisureBaseThing {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable List<Mouse> mice = null;
+        private List<Mouse> mice = new ArrayList<>();
         private @Nullable String typename;
 
-        public @Nullable List<Mouse> getMice() {
+        public List<Mouse> getMice() {
             return mice;
         }
 
-        public void setMice(@Nullable List<Mouse> mice) {
+        public void setMice(List<Mouse> mice) {
             this.mice = mice;
         }
 
@@ -168,16 +177,16 @@ public class VerisureMiceDetection extends VerisureBaseThing {
     @NonNullByDefault
     public static class Mouse {
 
-        private @Nullable Device device;
+        private Device device = new Device();
         private @Nullable Object type;
-        private @Nullable List<Detection> detections = null;
+        private List<Detection> detections = new ArrayList<>();
         private @Nullable String typename;
 
-        public @Nullable Device getDevice() {
+        public Device getDevice() {
             return device;
         }
 
-        public void setDevice(@Nullable Device device) {
+        public void setDevice(Device device) {
             this.device = device;
         }
 
@@ -189,11 +198,11 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             this.type = type;
         }
 
-        public @Nullable List<Detection> getDetections() {
+        public List<Detection> getDetections() {
             return detections;
         }
 
-        public void setDetections(@Nullable List<Detection> detections) {
+        public void setDetections(List<Detection> detections) {
             this.detections = detections;
         }
 
@@ -313,6 +322,7 @@ public class VerisureMiceDetection extends VerisureBaseThing {
         private @Nullable String deviceLabel;
         private @Nullable String area;
         private @Nullable Gui gui;
+        @SerializedName("__typename")
         private @Nullable String typename;
 
         public @Nullable String getDeviceLabel() {

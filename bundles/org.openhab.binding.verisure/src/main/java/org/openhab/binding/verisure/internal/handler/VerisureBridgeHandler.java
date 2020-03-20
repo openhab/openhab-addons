@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author l3rum - Initial contribution
+ * @author Jan Gustafsson - Furher development
  */
 @NonNullByDefault
 public class VerisureBridgeHandler extends BaseBridgeHandler {

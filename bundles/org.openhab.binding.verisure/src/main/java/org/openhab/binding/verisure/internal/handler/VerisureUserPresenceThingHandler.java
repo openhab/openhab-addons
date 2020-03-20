@@ -61,16 +61,14 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
 
     private void updateUserPresenceState(VerisureUserPresences userPresenceJSON) {
         UserTracking userTracking = userPresenceJSON.getData().getInstallation().getUserTrackings().get(0);
-        if (userTracking != null) {
-            getThing().getChannels().stream().map(Channel::getUID)
-                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
-                    .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), userTracking);
-                        updateState(channelUID, state);
-                    });
-            updateTimeStamp(userTracking.getCurrentLocationTimestamp());
-            super.update(userPresenceJSON);
-        }
+        getThing().getChannels().stream().map(Channel::getUID)
+                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                .forEach(channelUID -> {
+                    State state = getValue(channelUID.getId(), userTracking);
+                    updateState(channelUID, state);
+                });
+        updateTimeStamp(userTracking.getCurrentLocationTimestamp());
+        super.update(userPresenceJSON);
     }
 
     public State getValue(String channelId, UserTracking userTracking) {

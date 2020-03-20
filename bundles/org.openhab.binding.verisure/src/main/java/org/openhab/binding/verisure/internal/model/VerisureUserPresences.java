@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_USERPRESENCE;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -19,6 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,14 +35,19 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureUserPresences extends VerisureBaseThing {
 
-    private @Nullable Data data;
+    private Data data = new Data();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_USERPRESENCE;
     }
 
     @Override
@@ -67,13 +76,13 @@ public class VerisureUserPresences extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        private @Nullable Installation installation;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -104,15 +113,15 @@ public class VerisureUserPresences extends VerisureBaseThing {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable List<UserTracking> userTrackings = null;
+        private List<UserTracking> userTrackings = new ArrayList<>();
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public @Nullable List<UserTracking> getUserTrackings() {
+        public List<UserTracking> getUserTrackings() {
             return userTrackings;
         }
 
-        public void setUserTrackings(@Nullable List<UserTracking> userTrackings) {
+        public void setUserTrackings(List<UserTracking> userTrackings) {
             this.userTrackings = userTrackings;
         }
 
@@ -152,7 +161,7 @@ public class VerisureUserPresences extends VerisureBaseThing {
 
     @NonNullByDefault
     public static class UserTracking {
-        private @Nullable Boolean isCallingUser;
+        private boolean isCallingUser;
         private @Nullable String webAccount;
         private @Nullable String status;
         private @Nullable String xbnContactId;
@@ -165,11 +174,11 @@ public class VerisureUserPresences extends VerisureBaseThing {
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public @Nullable Boolean getIsCallingUser() {
+        public boolean getIsCallingUser() {
             return isCallingUser;
         }
 
-        public void setIsCallingUser(@Nullable Boolean isCallingUser) {
+        public void setIsCallingUser(boolean isCallingUser) {
             this.isCallingUser = isCallingUser;
         }
 

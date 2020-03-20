@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,17 +25,17 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class VerisureSmartLock extends VerisureAlarm {
+public class VerisureSmartLock {
 
-    private @Nullable Boolean autoRelockEnabled;
+    private boolean autoRelockEnabled;
     private @Nullable String deviceLabel;
-    private @Nullable DoorLockVolumeSettings doorLockVolumeSettings;
+    private DoorLockVolumeSettings doorLockVolumeSettings = new DoorLockVolumeSettings();
 
-    public @Nullable Boolean getAutoRelockEnabled() {
+    public boolean getAutoRelockEnabled() {
         return autoRelockEnabled;
     }
 
-    public void setAutoRelockEnabled(Boolean autoRelockEnabled) {
+    public void setAutoRelockEnabled(boolean autoRelockEnabled) {
         this.autoRelockEnabled = autoRelockEnabled;
     }
 
@@ -55,7 +56,7 @@ public class VerisureSmartLock extends VerisureAlarm {
     /**
      * @return the doorLockVolumeSettings
      */
-    public @Nullable DoorLockVolumeSettings getDoorLockVolumeSettings() {
+    public DoorLockVolumeSettings getDoorLockVolumeSettings() {
         return doorLockVolumeSettings;
     }
 
@@ -71,8 +72,8 @@ public class VerisureSmartLock extends VerisureAlarm {
         private @Nullable String volume;
         private @Nullable String voiceLevel;
         private @Nullable String active;
-        private @Nullable List<String> availableVolumes;
-        private @Nullable List<String> availableVoiceLevels;
+        private List<String> availableVolumes = new ArrayList<>();
+        private List<String> availableVoiceLevels = new ArrayList<>();
 
         public @Nullable String getVolume() {
             return volume;
@@ -98,7 +99,7 @@ public class VerisureSmartLock extends VerisureAlarm {
             this.active = active;
         }
 
-        public @Nullable List<String> getAvailableVolumes() {
+        public List<String> getAvailableVolumes() {
             return availableVolumes;
         }
 
@@ -106,7 +107,7 @@ public class VerisureSmartLock extends VerisureAlarm {
             this.availableVolumes = availableVolumes;
         }
 
-        public @Nullable List<String> getAvailableVoiceLevels() {
+        public List<String> getAvailableVoiceLevels() {
             return availableVoiceLevels;
         }
 
@@ -119,8 +120,8 @@ public class VerisureSmartLock extends VerisureAlarm {
             final int prime = 31;
             int result = 1;
             result = prime * result + ((active == null) ? 0 : active.hashCode());
-            result = prime * result + ((availableVoiceLevels == null) ? 0 : availableVoiceLevels.hashCode());
-            result = prime * result + ((availableVolumes == null) ? 0 : availableVolumes.hashCode());
+            result = prime * result + availableVoiceLevels.hashCode();
+            result = prime * result + availableVolumes.hashCode();
             result = prime * result + ((voiceLevel == null) ? 0 : voiceLevel.hashCode());
             result = prime * result + ((volume == null) ? 0 : volume.hashCode());
             return result;
@@ -145,18 +146,10 @@ public class VerisureSmartLock extends VerisureAlarm {
             } else if (active != null && !active.equals(other.active)) {
                 return false;
             }
-            if (availableVoiceLevels == null) {
-                if (other.availableVoiceLevels != null) {
-                    return false;
-                }
-            } else if (availableVoiceLevels != null && !availableVoiceLevels.equals(other.availableVoiceLevels)) {
+            if (!availableVoiceLevels.equals(other.availableVoiceLevels)) {
                 return false;
             }
-            if (availableVolumes == null) {
-                if (other.availableVolumes != null) {
-                    return false;
-                }
-            } else if (availableVolumes != null && !availableVolumes.equals(other.availableVolumes)) {
+            if (!availableVolumes.equals(other.availableVolumes)) {
                 return false;
             }
             if (voiceLevel == null) {
@@ -187,9 +180,8 @@ public class VerisureSmartLock extends VerisureAlarm {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((autoRelockEnabled == null) ? 0 : autoRelockEnabled.hashCode());
         result = prime * result + ((deviceLabel == null) ? 0 : deviceLabel.hashCode());
-        result = prime * result + ((doorLockVolumeSettings == null) ? 0 : doorLockVolumeSettings.hashCode());
+        result = prime * result + doorLockVolumeSettings.hashCode();
         return result;
     }
 
@@ -205,13 +197,6 @@ public class VerisureSmartLock extends VerisureAlarm {
             return false;
         }
         VerisureSmartLock other = (VerisureSmartLock) obj;
-        if (autoRelockEnabled == null) {
-            if (other.autoRelockEnabled != null) {
-                return false;
-            }
-        } else if (autoRelockEnabled != null && !autoRelockEnabled.equals(other.autoRelockEnabled)) {
-            return false;
-        }
         if (deviceLabel == null) {
             if (other.deviceLabel != null) {
                 return false;
@@ -219,11 +204,7 @@ public class VerisureSmartLock extends VerisureAlarm {
         } else if (deviceLabel != null && !deviceLabel.equals(other.deviceLabel)) {
             return false;
         }
-        if (doorLockVolumeSettings == null) {
-            if (other.doorLockVolumeSettings != null) {
-                return false;
-            }
-        } else if (doorLockVolumeSettings != null && !doorLockVolumeSettings.equals(other.doorLockVolumeSettings)) {
+        if (!doorLockVolumeSettings.equals(other.doorLockVolumeSettings)) {
             return false;
         }
         return true;
@@ -233,11 +214,9 @@ public class VerisureSmartLock extends VerisureAlarm {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("VerisureSmartLockJSON [");
-        if (autoRelockEnabled != null) {
-            builder.append("autoRelockEnabled=");
-            builder.append(autoRelockEnabled);
-            builder.append(", ");
-        }
+        builder.append("autoRelockEnabled=");
+        builder.append(autoRelockEnabled);
+        builder.append(", ");
         if (deviceLabel != null) {
             builder.append("deviceLabel=");
             builder.append(deviceLabel);

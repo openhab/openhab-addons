@@ -15,6 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,8 @@ import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLocks.Doorlock;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
 
+import com.google.gson.Gson;
+
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
  *
@@ -51,6 +54,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTLOCK);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
+    private final Gson gson = new Gson();
 
     public VerisureSmartLockThingHandler(Thing thing) {
         super(thing);
@@ -79,12 +83,12 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockState(Command command) {
         String deviceId = config.getDeviceId();
-        if (session != null && deviceId != null) {
+        if (session != null) {
             VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 String pinCode = session.getPinCode(installationId);
-                if (deviceId != null && pinCode != null && installationId != null) {
+                if (pinCode != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");
                     String url = START_GRAPHQL;
@@ -97,20 +101,35 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                         logger.debug("Unknown command! {}", command);
                         return;
                     }
-                    String queryQLSmartLockSetState = "[{\"operationName\":\"" + operation
-                            + "\",\"variables\":{\"giid\":\"" + installationId + "\",\"deviceLabel\":\"" + deviceId
-                            + "\",\"input\":{\"code\":\"" + pinCode + "\"}},\"query\":\"mutation " + operation
-                            + "($giid: String!, $deviceLabel: String!, $input: LockDoorInput!) {\\n  " + operation
-                            + "(giid: $giid, deviceLabel: $deviceLabel, input: $input)\\n}\\n\"}]";
+
+                    ArrayList<SmartLock> list = new ArrayList<>();
+                    SmartLock smartLockJSON = new SmartLock();
+                    Variables variables = new Variables();
+                    Input input = new Input();
+
+                    variables.setDeviceLabel(deviceId);
+                    variables.setGiid(installationId.toString());
+                    input.setCode(pinCode);
+                    variables.setInput(input);
+                    smartLockJSON.setOperationName(operation);
+                    smartLockJSON.setVariables(variables);
+                    String query = "mutation " + operation
+                            + "($giid: String!, $deviceLabel: String!, $input: LockDoorInput!) {\n  " + operation
+                            + "(giid: $giid, deviceLabel: $deviceLabel, input: $input)\n}\n";
+                    smartLockJSON.setQuery(query);
+                    list.add(smartLockJSON);
+
+                    String queryQLSmartLockSetState = gson.toJson(list);
                     logger.debug("Trying to set SmartLock state to {} with URL {} and data {}", operation, url,
                             queryQLSmartLockSetState);
+
                     int httpResultCode = session.sendCommand(url, queryQLSmartLockSetState, installationId);
                     if (httpResultCode == HttpStatus.OK_200) {
                         logger.debug("SmartLock status successfully changed!");
                     } else {
                         logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                     }
-                } else if (pinCode == null) {
+                } else {
                     logger.warn("PIN code is not configured! It is mandatory to control SmartLock!");
                 }
             }
@@ -119,38 +138,38 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handeAutoRelockResult(String url, String data, BigDecimal installationId, Command command) {
         logger.debug("Trying to set Auto Relock {} with URL {} and data {}", command.toString(), url, data);
-        int httpResultCode = session.sendCommand(url, data, installationId);
-        if (httpResultCode == HttpStatus.OK_200) {
-            logger.debug("AutoRelock sucessfully changed to {}", command.toString());
-        } else {
-            logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
+        if (session != null) {
+            int httpResultCode = session.sendCommand(url, data, installationId);
+            if (httpResultCode == HttpStatus.OK_200) {
+                logger.debug("AutoRelock sucessfully changed to {}", command.toString());
+            } else {
+                logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
+            }
         }
     }
 
     private void handleAutoRelock(Command command) {
         String deviceId = config.getDeviceId();
-        if (session != null && deviceId != null) {
+        if (session != null) {
             VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
-                if (installationId != null && deviceId != null) {
-                    String csrf = session.getCsrfToken(installationId);
-                    StringBuilder sb = new StringBuilder(deviceId);
-                    sb.insert(4, "+");
-                    String data;
-                    String url = SMARTLOCK_AUTORELOCK_COMMAND;
-                    if (command == OnOffType.ON) {
-                        data = "enabledDoorLocks=" + sb.toString()
-                                + "&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
-                                + csrf;
-                        handeAutoRelockResult(url, data, installationId, command);
-                    } else if (command == OnOffType.OFF) {
-                        data = "enabledDoorLocks=&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
-                                + csrf;
-                        handeAutoRelockResult(url, data, installationId, command);
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                    }
+                String csrf = session.getCsrfToken(installationId);
+                StringBuilder sb = new StringBuilder(deviceId);
+                sb.insert(4, "+");
+                String data;
+                String url = SMARTLOCK_AUTORELOCK_COMMAND;
+                if (command == OnOffType.ON) {
+                    data = "enabledDoorLocks=" + sb.toString()
+                            + "&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
+                            + csrf;
+                    handeAutoRelockResult(url, data, installationId, command);
+                } else if (command == OnOffType.OFF) {
+                    data = "enabledDoorLocks=&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
+                            + csrf;
+                    handeAutoRelockResult(url, data, installationId, command);
+                } else {
+                    logger.debug("Unknown command! {}", command);
                 }
             }
         }
@@ -162,7 +181,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockVolumeAndVoiceLevel(Command command, boolean setVolume) {
         String deviceId = config.getDeviceId();
-        if (session != null && deviceId != null) {
+        if (session != null) {
             VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 DoorLockVolumeSettings volumeSettings = smartLock.getSmartLockJSON().getDoorLockVolumeSettings();
@@ -171,7 +190,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                     String voiceLevel;
                     if (setVolume) {
                         List<String> availableVolumes = volumeSettings.getAvailableVolumes();
-                        if (availableVolumes != null && isSettingAllowed(availableVolumes, command.toString())) {
+                        if (isSettingAllowed(availableVolumes, command.toString())) {
                             volume = command.toString();
                             voiceLevel = volumeSettings.getVoiceLevel();
                         } else {
@@ -180,8 +199,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                         }
                     } else {
                         List<String> availableVoiceLevels = volumeSettings.getAvailableVoiceLevels();
-                        if (availableVoiceLevels != null
-                                && isSettingAllowed(availableVoiceLevels, command.toString())) {
+                        if (isSettingAllowed(availableVoiceLevels, command.toString())) {
                             volume = volumeSettings.getVolume();
                             voiceLevel = command.toString();
                         } else {
@@ -190,7 +208,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                         }
                         BigDecimal installationId = smartLock.getSiteId();
                         String csrf = session.getCsrfToken(installationId);
-                        if (installationId != null && csrf != null) {
+                        if (csrf != null) {
                             String url = SMARTLOCK_VOLUME_COMMAND;
                             String data = "keypad.volume=MEDIUM&keypad.beepOnKeypress=true&_keypad.beepOnKeypress=on&siren.volume=MEDIUM&voiceDevice.volume=MEDIUM&doorLock.volume="
                                     + volume + "&doorLock.voiceLevel=" + voiceLevel
@@ -230,7 +248,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         Doorlock doorlock = smartLocksJSON.getData().getInstallation().getDoorlocks().get(0);
         String smartLockStatus = doorlock.getCurrentLockState();
         VerisureSmartLock smartLockJSON = smartLocksJSON.getSmartLockJSON();
-        if (smartLockStatus != null && smartLockJSON != null) {
+        if (smartLockStatus != null) {
             getThing().getChannels().stream().map(Channel::getUID)
                     .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
                     .forEach(channelUID -> {
@@ -245,7 +263,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     public State getValue(String channelId, Doorlock doorlock, String smartLockStatus,
-            VerisureSmartLock smartLockJSON) {
+            @Nullable VerisureSmartLock smartLockJSON) {
         switch (channelId) {
             case CHANNEL_SMARTLOCK_STATUS:
                 if ("LOCKED".equals(smartLockStatus)) {
@@ -265,23 +283,79 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                 String method = doorlock.getMethod();
                 return method != null ? new StringType(method) : UnDefType.NULL;
             case CHANNEL_MOTOR_JAM:
-                String motorJam = doorlock.isMotorJam().toString();
-                return motorJam != null ? new StringType(motorJam) : UnDefType.NULL;
+                return doorlock.isMotorJam() ? OnOffType.ON : OnOffType.OFF;
             case CHANNEL_LOCATION:
                 String location = doorlock.getDevice().getArea();
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_AUTO_RELOCK:
-                Boolean autoRelock = smartLockJSON.getAutoRelockEnabled();
-                return autoRelock ? OnOffType.ON : OnOffType.OFF;
+                if (smartLockJSON != null) {
+                    return smartLockJSON.getAutoRelockEnabled() ? OnOffType.ON : OnOffType.OFF;
+                } else {
+                    return UnDefType.NULL;
+                }
             case CHANNEL_SMARTLOCK_VOLUME:
-                return smartLockJSON.getDoorLockVolumeSettings() != null
-                        ? new StringType(smartLockJSON.getDoorLockVolumeSettings().getVolume())
-                        : UnDefType.NULL;
+                if (smartLockJSON != null) {
+                    return new StringType(smartLockJSON.getDoorLockVolumeSettings().getVolume());
+                } else {
+                    return UnDefType.NULL;
+                }
             case CHANNEL_SMARTLOCK_VOICE_LEVEL:
-                return smartLockJSON.getDoorLockVolumeSettings() != null
-                        ? new StringType(smartLockJSON.getDoorLockVolumeSettings().getVoiceLevel())
-                        : UnDefType.NULL;
+                if (smartLockJSON != null) {
+                    return new StringType(smartLockJSON.getDoorLockVolumeSettings().getVoiceLevel());
+                } else {
+                    return UnDefType.NULL;
+                }
         }
         return UnDefType.UNDEF;
+    }
+
+    @NonNullByDefault
+    private static class SmartLock {
+
+        private @Nullable String operationName;
+        private @Nullable Variables variables;
+        private @Nullable String query;
+
+        public void setOperationName(String operationName) {
+            this.operationName = operationName;
+        }
+
+        public void setVariables(Variables variables) {
+            this.variables = variables;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+    }
+
+    @NonNullByDefault
+    private static class Variables {
+
+        private @Nullable String giid;
+        private @Nullable String deviceLabel;
+        private @Nullable Input input;
+
+        public void setGiid(String giid) {
+            this.giid = giid;
+        }
+
+        public void setDeviceLabel(String deviceLabel) {
+            this.deviceLabel = deviceLabel;
+        }
+
+        public void setInput(Input input) {
+            this.input = input;
+        }
+    }
+
+    @NonNullByDefault
+    private static class Input {
+
+        private @Nullable String code;
+
+        public void setCode(String code) {
+            this.code = code;
+        }
     }
 }

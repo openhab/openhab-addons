@@ -12,10 +12,18 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_ALARM;
+
 import java.math.BigDecimal;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A base JSON thing for other Verisure things to inherit.
@@ -31,7 +39,7 @@ public class VerisureBaseThing implements VerisureThing {
     protected @Nullable String location;
     protected @Nullable String status;
     protected @Nullable String siteName;
-    protected @Nullable BigDecimal siteId;
+    protected BigDecimal siteId = new BigDecimal(0);
 
     /**
      *
@@ -108,13 +116,18 @@ public class VerisureBaseThing implements VerisureThing {
     }
 
     @Override
-    public @Nullable BigDecimal getSiteId() {
+    public BigDecimal getSiteId() {
         return siteId;
     }
 
     @Override
-    public void setSiteId(@Nullable BigDecimal siteId) {
+    public void setSiteId(BigDecimal siteId) {
         this.siteId = siteId;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_ALARM;
     }
 
     @Override
@@ -216,5 +229,62 @@ public class VerisureBaseThing implements VerisureThing {
         builder.append(siteId);
         builder.append("]");
         return builder.toString();
+    }
+
+    @NonNullByDefault
+    public static class Device {
+
+        private @Nullable String deviceLabel;
+        private @Nullable String area;
+        @SerializedName("__typename")
+        private @Nullable String typename;
+
+        public @Nullable String getDeviceLabel() {
+            return deviceLabel;
+        }
+
+        public void setDeviceLabel(@Nullable String deviceLabel) {
+            this.deviceLabel = deviceLabel;
+        }
+
+        public @Nullable String getArea() {
+            return area;
+        }
+
+        public void setArea(@Nullable String area) {
+            this.area = area;
+        }
+
+        public @Nullable String getTypename() {
+            return typename;
+        }
+
+        public void setTypename(@Nullable String typename) {
+            this.typename = typename;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("deviceLabel", deviceLabel).append("area", area)
+                    .append("typename", typename).toString();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder().append(area).append(typename).append(deviceLabel).toHashCode();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            if (other == this) {
+                return true;
+            }
+            if (!(other instanceof Device)) {
+                return false;
+            }
+            Device rhs = ((Device) other);
+            return new EqualsBuilder().append(area, rhs.area).append(typename, rhs.typename)
+                    .append(deviceLabel, rhs.deviceLabel).isEquals();
+        }
     }
 }

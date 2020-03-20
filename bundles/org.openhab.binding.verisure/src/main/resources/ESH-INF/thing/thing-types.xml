@@ -418,7 +418,7 @@
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Time Stamp</label>
+		<label>TimeStamp</label>
 		<description>Date and time of last event change.</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM" />
 	</channel-type>
@@ -438,7 +438,7 @@
 	</channel-type>
 
 	<channel-type id="motorJam">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>SmartLock Motor Jam</label>
 		<description>Tells if the SmartLock motor has jammed.</description>
 		<state readOnly="true" pattern="%s" />

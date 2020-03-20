@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_ALARM;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -19,6 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,14 +35,19 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureAlarms extends VerisureBaseThing {
 
-    private @Nullable Data data;
+    private Data data = new Data();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_ALARM;
     }
 
     @Override
@@ -65,13 +74,13 @@ public class VerisureAlarms extends VerisureBaseThing {
 
     @NonNullByDefault
     public static class Data {
-        private @Nullable Installation installation;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -102,15 +111,15 @@ public class VerisureAlarms extends VerisureBaseThing {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable ArmState armState;
+        private ArmState armState = new ArmState();
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public @Nullable ArmState getArmState() {
+        public ArmState getArmState() {
             return armState;
         }
 
-        public void setArmState(@Nullable ArmState armState) {
+        public void setArmState(ArmState armState) {
             this.armState = armState;
         }
 
@@ -154,9 +163,9 @@ public class VerisureAlarms extends VerisureBaseThing {
         private @Nullable String date;
         private @Nullable String name;
         private @Nullable String changedVia;
-        private @Nullable Boolean allowedForFirstLine;
-        private @Nullable Boolean allowed;
-        private @Nullable List<Object> errorCodes = null;
+        private boolean allowedForFirstLine;
+        private boolean allowed;
+        private List<Object> errorCodes = new ArrayList<>();
         private @Nullable String typename;
 
         public @Nullable String getType() {
@@ -199,27 +208,27 @@ public class VerisureAlarms extends VerisureBaseThing {
             this.changedVia = changedVia;
         }
 
-        public @Nullable Boolean getAllowedForFirstLine() {
+        public boolean getAllowedForFirstLine() {
             return allowedForFirstLine;
         }
 
-        public void setAllowedForFirstLine(@Nullable Boolean allowedForFirstLine) {
+        public void setAllowedForFirstLine(boolean allowedForFirstLine) {
             this.allowedForFirstLine = allowedForFirstLine;
         }
 
-        public @Nullable Boolean getAllowed() {
+        public boolean getAllowed() {
             return allowed;
         }
 
-        public void setAllowed(@Nullable Boolean allowed) {
+        public void setAllowed(boolean allowed) {
             this.allowed = allowed;
         }
 
-        public @Nullable List<Object> getErrorCodes() {
+        public List<Object> getErrorCodes() {
             return errorCodes;
         }
 
-        public void setErrorCodes(@Nullable List<Object> errorCodes) {
+        public void setErrorCodes(List<Object> errorCodes) {
             this.errorCodes = errorCodes;
         }
 
@@ -260,7 +269,5 @@ public class VerisureAlarms extends VerisureBaseThing {
                     .append(allowedForFirstLine, rhs.allowedForFirstLine).append(errorCodes, rhs.errorCodes)
                     .append(date, rhs.date).append(type, rhs.type).append(changedVia, rhs.changedVia).isEquals();
         }
-
     }
-
 }

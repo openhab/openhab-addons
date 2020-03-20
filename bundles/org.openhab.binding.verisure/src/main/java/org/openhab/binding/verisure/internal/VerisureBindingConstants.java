@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author l3rum - Initial contribution
+ * @author Jan Gustafsson - Furher development
  */
 @NonNullByDefault
 public class VerisureBindingConstants {

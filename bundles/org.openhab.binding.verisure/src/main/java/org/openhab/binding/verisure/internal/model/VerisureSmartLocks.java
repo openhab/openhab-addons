@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_SMARTLOCK;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -19,6 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,14 +35,14 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureSmartLocks extends VerisureBaseThing {
 
-    private @Nullable Data data;
-    private @Nullable VerisureSmartLock smartLockJSON;
+    private Data data = new Data();
+    private @Nullable VerisureSmartLock smartLockJSON = new VerisureSmartLock();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
@@ -53,6 +57,11 @@ public class VerisureSmartLocks extends VerisureBaseThing {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("data", data).toString();
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_SMARTLOCK;
     }
 
     @Override
@@ -75,13 +84,13 @@ public class VerisureSmartLocks extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        private @Nullable Installation installation;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -106,7 +115,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             Data rhs = ((Data) other);
             return new EqualsBuilder().append(installation, rhs.installation).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -114,7 +122,7 @@ public class VerisureSmartLocks extends VerisureBaseThing {
 
         @SerializedName("__typename")
         private @Nullable String typename;
-        private @Nullable List<Doorlock> doorlocks = null;
+        private List<Doorlock> doorlocks = new ArrayList<>();
 
         public @Nullable String getTypename() {
             return typename;
@@ -124,11 +132,11 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             this.typename = typename;
         }
 
-        public @Nullable List<Doorlock> getDoorlocks() {
+        public List<Doorlock> getDoorlocks() {
             return doorlocks;
         }
 
-        public void setDoorlocks(@Nullable List<Doorlock> doorlocks) {
+        public void setDoorlocks(List<Doorlock> doorlocks) {
             this.doorlocks = doorlocks;
         }
 
@@ -157,75 +165,17 @@ public class VerisureSmartLocks extends VerisureBaseThing {
     }
 
     @NonNullByDefault
-    public static class Device {
-
-        @SerializedName("__typename")
-        private @Nullable String typename;
-        private @Nullable String area;
-        private @Nullable String deviceLabel;
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
-        public @Nullable String getArea() {
-            return area;
-        }
-
-        public void setArea(@Nullable String area) {
-            this.area = area;
-        }
-
-        public @Nullable String getDeviceLabel() {
-            return deviceLabel;
-        }
-
-        public void setDeviceLabel(@Nullable String deviceLabel) {
-            this.deviceLabel = deviceLabel;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("typename", typename).append("area", area)
-                    .append("deviceLabel", deviceLabel).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(area).append(typename).append(deviceLabel).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Device)) {
-                return false;
-            }
-            Device rhs = ((Device) other);
-            return new EqualsBuilder().append(area, rhs.area).append(typename, rhs.typename)
-                    .append(deviceLabel, rhs.deviceLabel).isEquals();
-        }
-
-    }
-
-    @NonNullByDefault
     public static class Doorlock {
 
         @SerializedName("__typename")
         private @Nullable String typename;
         private @Nullable String currentLockState;
-        private @Nullable Device device;
         private @Nullable String eventTime;
         private @Nullable String method;
-        private @Nullable Boolean motorJam;
-        private @Nullable Boolean secureModeActive;
         private @Nullable String userString;
+        private Device device = new Device();
+        private boolean motorJam;
+        private boolean secureModeActive;
 
         public @Nullable String getTypename() {
             return typename;
@@ -243,11 +193,11 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             this.currentLockState = currentLockState;
         }
 
-        public @Nullable Device getDevice() {
+        public Device getDevice() {
             return device;
         }
 
-        public void setDevice(@Nullable Device device) {
+        public void setDevice(Device device) {
             this.device = device;
         }
 
@@ -267,19 +217,19 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             this.method = method;
         }
 
-        public @Nullable Boolean isMotorJam() {
+        public boolean isMotorJam() {
             return motorJam;
         }
 
-        public void setMotorJam(@Nullable Boolean motorJam) {
+        public void setMotorJam(boolean motorJam) {
             this.motorJam = motorJam;
         }
 
-        public @Nullable Boolean getSecureModeActive() {
+        public boolean getSecureModeActive() {
             return secureModeActive;
         }
 
-        public void setSecureModeActive(@Nullable Boolean secureModeActive) {
+        public void setSecureModeActive(boolean secureModeActive) {
             this.secureModeActive = secureModeActive;
         }
 
@@ -319,7 +269,5 @@ public class VerisureSmartLocks extends VerisureBaseThing {
                     .append(method, rhs.method).append(eventTime, rhs.eventTime)
                     .append(currentLockState, rhs.currentLockState).append(userString, rhs.userString).isEquals();
         }
-
     }
-
 }

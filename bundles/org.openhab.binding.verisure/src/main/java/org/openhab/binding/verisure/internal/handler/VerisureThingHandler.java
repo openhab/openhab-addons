@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Base class and handler for some of the different thing types that Verisure provides.
  *
  * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Furher development
  *
  */
 @NonNullByDefault
@@ -53,7 +53,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
 
     protected @Nullable VerisureSession session;
 
-    protected @Nullable VerisureThingConfiguration config;
+    protected VerisureThingConfiguration config = new VerisureThingConfiguration();
 
     public VerisureThingHandler(Thing thing) {
         super(thing);
@@ -71,7 +71,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 }
             }
             String deviceId = config.getDeviceId();
-            if (session != null && deviceId != null) {
+            if (session != null) {
                 VerisureThing thing = session.getVerisureThing(deviceId);
                 update(thing);
             }
@@ -118,10 +118,6 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         logger.debug("initialize on thing: {}", thing);
         // Do not go online
         config = getConfigAs(VerisureThingConfiguration.class);
-        if (config.getDeviceId() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Verisure device is missing deviceId");
-        }
         // Set status to UNKNOWN and let background task set correct status
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
@@ -157,7 +153,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 if (vbh != null) {
                     session = vbh.getSession();
                     String deviceId = config.getDeviceId();
-                    if (session != null && deviceId != null) {
+                    if (session != null) {
                         update(session.getVerisureThing(deviceId));
                         session.registerDeviceStatusListener(this);
                     }
@@ -173,8 +169,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         if (thing != null) {
             String deviceId = thing.getDeviceId();
             // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-            deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-            if (config.getDeviceId().equalsIgnoreCase((deviceId))) {
+            if (config.getDeviceId().equalsIgnoreCase((deviceId.replaceAll("[^a-zA-Z0-9]+", "")))) {
                 update(thing);
             }
         }
@@ -182,12 +177,12 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
 
     public synchronized void update(@Nullable VerisureThing thing) {
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-        BigDecimal siteId = thing.getSiteId();
-        if (siteId != null) {
+        if (thing != null) {
+            BigDecimal siteId = thing.getSiteId();
             updateState(cuid, new DecimalType(siteId.longValue()));
+            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
+            updateState(cuid, new StringType(thing.getSiteName()));
         }
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-        updateState(cuid, new StringType(thing.getSiteName()));
     }
 
     @Override

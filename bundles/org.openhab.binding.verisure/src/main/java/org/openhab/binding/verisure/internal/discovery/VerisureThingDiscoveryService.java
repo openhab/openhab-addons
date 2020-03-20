@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.verisure.internal.discovery;
 
-import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,15 +28,7 @@ import org.openhab.binding.verisure.internal.VerisureHandlerFactory;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
-import org.openhab.binding.verisure.internal.model.VerisureAlarms;
-import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
-import org.openhab.binding.verisure.internal.model.VerisureClimates;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindows;
-import org.openhab.binding.verisure.internal.model.VerisureMiceDetection;
-import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
-import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
-import org.openhab.binding.verisure.internal.model.VerisureUserPresences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * The discovery service, notified by a listener on the VerisureSession.
  *
  * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Further development
  *
  */
 @NonNullByDefault
@@ -64,19 +55,16 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void startScan() {
-        removeOlderResults(getTimestampOfLastScan());
         logger.debug("VerisureThingDiscoveryService:startScan");
+        removeOlderResults(getTimestampOfLastScan());
         if (verisureBridgeHandler != null) {
             VerisureSession session = verisureBridgeHandler.getSession();
             if (session != null) {
                 HashMap<String, VerisureThing> verisureThings = session.getVerisureThings();
-                for (Map.Entry<String, VerisureThing> entry : verisureThings.entrySet()) {
-                    VerisureThing thing = entry.getValue();
-                    if (thing != null) {
-                        logger.debug("Thing: {}", thing);
-                        onThingAddedInternal(thing);
-                    }
-                }
+                verisureThings.forEach((deviceId, thing) -> {
+                    logger.debug("Discovered thing: {}", thing);
+                    onThingAddedInternal(thing);
+                });
             }
         }
     }
@@ -85,7 +73,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         logger.debug("VerisureThingDiscoveryService:OnThingAddedInternal");
         ThingUID thingUID = getThingUID(thing);
         String deviceId = thing.getDeviceId();
-        if (thingUID != null && deviceId != null) {
+        if (thingUID != null) {
             if (verisureBridgeHandler != null) {
                 String label = "Device Id: " + deviceId;
                 if (thing.getLocation() != null) {
@@ -110,41 +98,9 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         ThingUID thingUID = null;
         if (verisureBridgeHandler != null) {
             String deviceId = thing.getDeviceId();
-            if (deviceId != null) {
-                // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-                deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                if (thing instanceof VerisureAlarms) {
-                    thingUID = new ThingUID(THING_TYPE_ALARM, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureSmartLocks) {
-                    thingUID = new ThingUID(THING_TYPE_SMARTLOCK, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureUserPresences) {
-                    thingUID = new ThingUID(THING_TYPE_USERPRESENCE, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureDoorWindows) {
-                    thingUID = new ThingUID(THING_TYPE_DOORWINDOW, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureSmartPlugs) {
-                    thingUID = new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureClimates) {
-                    String type = ((VerisureClimates) thing).getData().getInstallation().getClimates().get(0)
-                            .getDevice().getGui().getLabel();
-                    if ("SMOKE".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_SMOKEDETECTOR, bridgeUID, deviceId);
-                    } else if ("WATER".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_WATERDETECTOR, bridgeUID, deviceId);
-                    } else if ("HOMEPAD".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_NIGHT_CONTROL, bridgeUID, deviceId);
-                    } else if ("SIREN".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_SIREN, bridgeUID, deviceId);
-                    } else {
-                        logger.warn("Unknown climate device {}.", type);
-                    }
-                } else if (thing instanceof VerisureBroadbandConnections) {
-                    thingUID = new ThingUID(THING_TYPE_BROADBAND_CONNECTION, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureMiceDetection) {
-                    thingUID = new ThingUID(THING_TYPE_MICE_DETECTION, bridgeUID, deviceId);
-                } else {
-                    logger.debug("Unsupported JSON! thing {}", thing);
-                }
-            }
+            // Make sure device id is normalized, i.e. replace all non character/digits with empty string
+            deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+            thingUID = new ThingUID(thing.getThingTypeUID(), bridgeUID, deviceId);
         }
         return thingUID;
     }

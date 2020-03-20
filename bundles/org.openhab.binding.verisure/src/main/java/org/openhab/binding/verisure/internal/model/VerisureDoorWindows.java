@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_DOORWINDOW;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -19,6 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,14 +35,19 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureDoorWindows extends VerisureBaseThing {
 
-    private @Nullable Data data;
+    private Data data = new Data();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_DOORWINDOW;
     }
 
     @Override
@@ -66,13 +75,13 @@ public class VerisureDoorWindows extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        private @Nullable Installation installation;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -103,15 +112,15 @@ public class VerisureDoorWindows extends VerisureBaseThing {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable List<DoorWindow> doorWindows = null;
+        private List<DoorWindow> doorWindows = new ArrayList<>();
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public @Nullable List<DoorWindow> getDoorWindows() {
+        public List<DoorWindow> getDoorWindows() {
             return doorWindows;
         }
 
-        public void setDoorWindows(@Nullable List<DoorWindow> doorWindows) {
+        public void setDoorWindows(List<DoorWindow> doorWindows) {
             this.doorWindows = doorWindows;
         }
 
@@ -150,19 +159,19 @@ public class VerisureDoorWindows extends VerisureBaseThing {
     @NonNullByDefault
     public static class DoorWindow {
 
-        private @Nullable Device device;
+        private Device device = new Device();
         private @Nullable String type;
         private @Nullable String state;
-        private @Nullable Boolean wired;
+        private boolean wired;
         private @Nullable String reportTime;
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public @Nullable Device getDevice() {
+        public Device getDevice() {
             return device;
         }
 
-        public void setDevice(@Nullable Device device) {
+        public void setDevice(Device device) {
             this.device = device;
         }
 
@@ -182,11 +191,11 @@ public class VerisureDoorWindows extends VerisureBaseThing {
             this.state = state;
         }
 
-        public @Nullable Boolean getWired() {
+        public boolean getWired() {
             return wired;
         }
 
-        public void setWired(@Nullable Boolean wired) {
+        public void setWired(boolean wired) {
             this.wired = wired;
         }
 
@@ -231,65 +240,5 @@ public class VerisureDoorWindows extends VerisureBaseThing {
                     .append(state, rhs.state).append(device, rhs.device).append(wired, rhs.wired).append(type, rhs.type)
                     .isEquals();
         }
-
     }
-
-    @NonNullByDefault
-    public static class Device {
-
-        private @Nullable String deviceLabel;
-        private @Nullable String area;
-        @SerializedName("__typename")
-        private @Nullable String typename;
-
-        public @Nullable String getDeviceLabel() {
-            return deviceLabel;
-        }
-
-        public void setDeviceLabel(@Nullable String deviceLabel) {
-            this.deviceLabel = deviceLabel;
-        }
-
-        public @Nullable String getArea() {
-            return area;
-        }
-
-        public void setArea(@Nullable String area) {
-            this.area = area;
-        }
-
-        public @Nullable String getTypename() {
-            return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("deviceLabel", deviceLabel).append("area", area)
-                    .append("typename", typename).toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(area).append(typename).append(deviceLabel).toHashCode();
-        }
-
-        @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (!(other instanceof Device)) {
-                return false;
-            }
-            Device rhs = ((Device) other);
-            return new EqualsBuilder().append(area, rhs.area).append(typename, rhs.typename)
-                    .append(deviceLabel, rhs.deviceLabel).isEquals();
-        }
-
-    }
-
 }

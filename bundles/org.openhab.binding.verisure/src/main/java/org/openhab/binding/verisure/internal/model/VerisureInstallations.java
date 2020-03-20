@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -31,9 +32,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureInstallations extends VerisureBaseThing {
 
-    private @Nullable Data data;
+    private Data data = new Data();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
@@ -66,10 +67,9 @@ public class VerisureInstallations extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        @SerializedName("account")
-        private @Nullable Account account;
+        private Account account = new Account();
 
-        public @Nullable Account getAccount() {
+        public Account getAccount() {
             return account;
         }
 
@@ -106,7 +106,7 @@ public class VerisureInstallations extends VerisureBaseThing {
 
         @SerializedName("__typename")
         private @Nullable String typename;
-        private @Nullable List<Owainstallation> owainstallations = null;
+        private List<Owainstallation> owainstallations = new ArrayList<>();
 
         public @Nullable String getTypename() {
             return typename;
@@ -116,7 +116,7 @@ public class VerisureInstallations extends VerisureBaseThing {
             this.typename = typename;
         }
 
-        public @Nullable List<Owainstallation> getOwainstallations() {
+        public List<Owainstallation> getOwainstallations() {
             return owainstallations;
         }
 

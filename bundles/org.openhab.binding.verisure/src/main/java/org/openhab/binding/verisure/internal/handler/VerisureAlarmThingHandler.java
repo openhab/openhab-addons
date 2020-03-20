@@ -15,6 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
@@ -35,6 +36,8 @@ import org.openhab.binding.verisure.internal.model.VerisureAlarms;
 import org.openhab.binding.verisure.internal.model.VerisureAlarms.ArmState;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
 
+import com.google.gson.Gson;
+
 /**
  * Handler for the Alarm Device thing type that Verisure provides.
  *
@@ -47,6 +50,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ALARM);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
+    private final Gson gson = new Gson();
 
     public VerisureAlarmThingHandler(Thing thing) {
         super(thing);
@@ -67,13 +71,13 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
 
     private void handleAlarmState(Command command) {
         String deviceId = config.getDeviceId();
-        if (session != null && deviceId != null) {
+        if (session != null) {
             VerisureAlarms alarm = (VerisureAlarms) session.getVerisureThing(deviceId);
             if (alarm != null) {
                 BigDecimal installationId = alarm.getSiteId();
                 String pinCode = session.getPinCode(installationId);
 
-                if (pinCode != null && installationId != null) {
+                if (pinCode != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");
                     String url = START_GRAPHQL;
@@ -97,11 +101,20 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                             return;
                     }
 
-                    String queryQLAlarmSetState = "[{\"operationName\":\"" + operation + "\",\"variables\":{\"giid\":\""
-                            + installationId + "\",\"code\":\"" + pinCode + "\"},\"query\":\"mutation " + operation
-                            + "($giid: String!, $code: String!) {\\n  " + state
-                            + "(giid: $giid, code: $code)\\n}\\n\"}]\n" + "";
+                    ArrayList<Alarm> list = new ArrayList<>();
+                    Alarm alarmJSON = new Alarm();
+                    Variables variables = new Variables();
 
+                    variables.setCode(pinCode);
+                    variables.setGiid(installationId.toString());
+                    alarmJSON.setVariables(variables);
+                    alarmJSON.setOperationName(operation);
+                    String query = "mutation " + operation + "($giid: String!, $code: String!) {\n  " + state
+                            + "(giid: $giid, code: $code)\n}\n";
+                    alarmJSON.setQuery(query);
+                    list.add(alarmJSON);
+
+                    String queryQLAlarmSetState = gson.toJson(list);
                     logger.debug("Trying to set alarm state to {} with URL {} and data {}", operation, url,
                             queryQLAlarmSetState);
 
@@ -111,7 +124,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                     } else {
                         logger.warn("Could not send command, HTTP result code: {}", httpResultCode);
                     }
-                } else if (pinCode == null) {
+                } else {
                     logger.warn("PIN code is not configured! Mandatory to control Alarm!");
                 }
             }
@@ -159,6 +172,42 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                 return new StringType(armState.getChangedVia());
         }
         return UnDefType.UNDEF;
+    }
+
+    @NonNullByDefault
+    private static class Alarm {
+
+        private @Nullable String operationName;
+        private @Nullable Variables variables;
+        private @Nullable String query;
+
+        public void setOperationName(String operationName) {
+            this.operationName = operationName;
+        }
+
+        public void setVariables(Variables variables) {
+            this.variables = variables;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+    }
+
+    @NonNullByDefault
+    private static class Variables {
+
+        private @Nullable String giid;
+        private @Nullable String code;
+
+        public void setGiid(String giid) {
+            this.giid = giid;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
     }
 
 }

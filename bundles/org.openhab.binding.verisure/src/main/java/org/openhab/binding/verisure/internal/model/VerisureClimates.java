@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -19,8 +22,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -32,14 +35,30 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureClimates extends VerisureBaseThing {
 
-    private @Nullable Data data;
+    private Data data = new Data();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        String type = getData().getInstallation().getClimates().get(0).getDevice().getGui().getLabel();
+        if ("SMOKE".equals(type)) {
+            return THING_TYPE_SMOKEDETECTOR;
+        } else if ("WATER".equals(type)) {
+            return THING_TYPE_WATERDETECTOR;
+        } else if ("HOMEPAD".equals(type)) {
+            return THING_TYPE_NIGHT_CONTROL;
+        } else if ("SIREN".equals(type)) {
+            return THING_TYPE_SIREN;
+        } else {
+            return THING_TYPE_SMOKEDETECTOR;
+        }
     }
 
     @Override
@@ -67,28 +86,28 @@ public class VerisureClimates extends VerisureBaseThing {
     @NonNullByDefault
     public static class Climate {
 
-        private @Nullable Device device;
-        private @Nullable Boolean humidityEnabled;
+        private Device device = new Device();
+        private boolean humidityEnabled;
         private @Nullable String humidityTimestamp;
-        private @Nullable Double humidityValue;
+        private double humidityValue;
         private @Nullable String temperatureTimestamp;
-        private @Nullable Double temperatureValue;
+        private double temperatureValue;
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        public @Nullable Device getDevice() {
+        public Device getDevice() {
             return device;
         }
 
-        public void setDevice(@Nullable Device device) {
+        public void setDevice(Device device) {
             this.device = device;
         }
 
-        public @Nullable Boolean isHumidityEnabled() {
+        public boolean isHumidityEnabled() {
             return humidityEnabled;
         }
 
-        public void setHumidityEnabled(@Nullable Boolean humidityEnabled) {
+        public void setHumidityEnabled(boolean humidityEnabled) {
             this.humidityEnabled = humidityEnabled;
         }
 
@@ -100,11 +119,11 @@ public class VerisureClimates extends VerisureBaseThing {
             this.humidityTimestamp = humidityTimestamp;
         }
 
-        public @Nullable Double getHumidityValue() {
+        public double getHumidityValue() {
             return humidityValue;
         }
 
-        public void setHumidityValue(@Nullable Double humidityValue) {
+        public void setHumidityValue(double humidityValue) {
             this.humidityValue = humidityValue;
         }
 
@@ -116,11 +135,11 @@ public class VerisureClimates extends VerisureBaseThing {
             this.temperatureTimestamp = temperatureTimestamp;
         }
 
-        public @Nullable Double getTemperatureValue() {
+        public double getTemperatureValue() {
             return temperatureValue;
         }
 
-        public void setTemperatureValue(@Nullable Double temperatureValue) {
+        public void setTemperatureValue(double temperatureValue) {
             this.temperatureValue = temperatureValue;
         }
 
@@ -167,13 +186,13 @@ public class VerisureClimates extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        private @Nullable Installation installation;
+        private Installation installation = new Installation();
 
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -204,22 +223,15 @@ public class VerisureClimates extends VerisureBaseThing {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable List<Climate> climates = null;
+        private List<Climate> climates = new ArrayList<>();
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
-
-        public @Nullable List<Climate> getClimates() {
+        public List<Climate> getClimates() {
             return climates;
         }
 
-        public void setClimates(@Nullable List<Climate> climates) {
+        public void setClimates(List<Climate> climates) {
             this.climates = climates;
         }
 
@@ -260,7 +272,7 @@ public class VerisureClimates extends VerisureBaseThing {
 
         private @Nullable String deviceLabel;
         private @Nullable String area;
-        private @Nullable Gui gui;
+        private Gui gui = new Gui();
         @SerializedName("__typename")
         private @Nullable String typename;
 
@@ -280,11 +292,11 @@ public class VerisureClimates extends VerisureBaseThing {
             this.area = area;
         }
 
-        public @Nullable Gui getGui() {
+        public Gui getGui() {
             return gui;
         }
 
-        public void setGui(@Nullable Gui gui) {
+        public void setGui(Gui gui) {
             this.gui = gui;
         }
 
@@ -327,7 +339,6 @@ public class VerisureClimates extends VerisureBaseThing {
 
         private @Nullable String label;
         @SerializedName("__typename")
-        @Expose
         private @Nullable String typename;
 
         public @Nullable String getLabel() {
@@ -367,6 +378,5 @@ public class VerisureClimates extends VerisureBaseThing {
             Gui rhs = ((Gui) other);
             return new EqualsBuilder().append(typename, rhs.typename).append(label, rhs.label).isEquals();
         }
-
     }
 }

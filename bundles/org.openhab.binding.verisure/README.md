@@ -111,7 +111,7 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 | changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                             |
 | timestamp              | DateTime  | This channel reports the last time the alarm status was changed.                                         |
 | changedVia             | String    | This channel reports the method used to change the status.                                                 |
-| motorJam               | String    | This channel reports if the SmartLock motor has jammed.                                                 |
+| motorJam               | Switch    | This channel reports if the SmartLock motor has jammed.                                                 |
 | location               | String    | This channel reports the location of the device.                                                                       |
 | installationName       | String    | This channel reports the installation name.                                                              |
 | installationId         | Number    | This channel reports the installation ID.                                                                |

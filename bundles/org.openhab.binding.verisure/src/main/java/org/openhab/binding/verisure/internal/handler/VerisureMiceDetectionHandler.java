@@ -71,21 +71,17 @@ public class VerisureMiceDetectionHandler extends VerisureThingHandler {
 
     private void updateMiceDetectionState(VerisureMiceDetection miceDetectionJSON) {
         Mouse mouse = miceDetectionJSON.getData().getInstallation().getMice().get(0);
-        if (mouse != null) {
-            getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID)
-                    && !channelUID.getId().equals("timestamp") && !channelUID.getId().equals("temperatureTimestamp"))
-                    .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), miceDetectionJSON, mouse);
-                        updateState(channelUID, state);
-                    });
-            if (mouse.getDetections().size() != 0) {
-                updateTimeStamp(mouse.getDetections().get(0).getNodeTime());
-            }
-            updateTimeStamp(miceDetectionJSON.getTemperatureTime(), CHANNEL_TEMPERATURE_TIMESTAMP);
-            super.update(miceDetectionJSON);
-        } else {
-            logger.debug("Mouse is null for thing {}", thing.getUID());
+        getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID)
+                && !channelUID.getId().equals("timestamp") && !channelUID.getId().equals("temperatureTimestamp"))
+                .forEach(channelUID -> {
+                    State state = getValue(channelUID.getId(), miceDetectionJSON, mouse);
+                    updateState(channelUID, state);
+                });
+        if (mouse.getDetections().size() != 0) {
+            updateTimeStamp(mouse.getDetections().get(0).getNodeTime());
         }
+        updateTimeStamp(miceDetectionJSON.getTemperatureTime(), CHANNEL_TEMPERATURE_TIMESTAMP);
+        super.update(miceDetectionJSON);
     }
 
     public State getValue(String channelId, VerisureMiceDetection miceDetectionJSON, Mouse mouse) {

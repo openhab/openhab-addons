@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_BROADBAND_CONNECTION;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -29,14 +32,19 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureBroadbandConnections extends VerisureBaseThing {
 
-    private @Nullable Data data;
+    private Data data = new Data();
 
-    public @Nullable Data getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(@Nullable Data data) {
+    public void setData(Data data) {
         this.data = data;
+    }
+
+    @Override
+    public ThingTypeUID getThingTypeUID() {
+        return THING_TYPE_BROADBAND_CONNECTION;
     }
 
     @Override
@@ -65,29 +73,9 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
     public static class Broadband {
 
         private @Nullable String testDate;
-        private @Nullable Boolean isBroadbandConnected;
+        private boolean isBroadbandConnected;
         @SerializedName("__typename")
         private @Nullable String typename;
-
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Broadband() {
-        }
-
-        /**
-         *
-         * @param testDate
-         * @param typename
-         * @param isBroadbandConnected
-         */
-        public Broadband(@Nullable String testDate, @Nullable Boolean isBroadbandConnected, @Nullable String typename) {
-            super();
-            this.testDate = testDate;
-            this.isBroadbandConnected = isBroadbandConnected;
-            this.typename = typename;
-        }
 
         public @Nullable String getTestDate() {
             return testDate;
@@ -97,11 +85,11 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
             this.testDate = testDate;
         }
 
-        public @Nullable Boolean isBroadbandConnected() {
+        public boolean isBroadbandConnected() {
             return isBroadbandConnected;
         }
 
-        public void setBroadbandConnected(@Nullable Boolean isBroadbandConnected) {
+        public void setBroadbandConnected(boolean isBroadbandConnected) {
             this.isBroadbandConnected = isBroadbandConnected;
         }
 
@@ -142,29 +130,13 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
     @NonNullByDefault
     public static class Data {
 
-        private @Nullable Installation installation;
+        private Installation installation = new Installation();
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Data() {
-        }
-
-        /**
-         *
-         * @param installation
-         */
-        public Data(@Nullable Installation installation) {
-            super();
-            this.installation = installation;
-        }
-
-        public @Nullable Installation getInstallation() {
+        public Installation getInstallation() {
             return installation;
         }
 
-        public void setInstallation(@Nullable Installation installation) {
+        public void setInstallation(Installation installation) {
             this.installation = installation;
         }
 
@@ -195,33 +167,15 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
     @NonNullByDefault
     public static class Installation {
 
-        private @Nullable Broadband broadband;
+        private Broadband broadband = new Broadband();
         @SerializedName("__typename")
         private @Nullable String typename;
 
-        /**
-         * No args constructor for use in serialization
-         *
-         */
-        public Installation() {
-        }
-
-        /**
-         *
-         * @param typename
-         * @param broadband
-         */
-        public Installation(@Nullable Broadband broadband, @Nullable String typename) {
-            super();
-            this.broadband = broadband;
-            this.typename = typename;
-        }
-
-        public @Nullable Broadband getBroadband() {
+        public Broadband getBroadband() {
             return broadband;
         }
 
-        public void setBroadband(@Nullable Broadband broadband) {
+        public void setBroadband(Broadband broadband) {
             this.broadband = broadband;
         }
 
@@ -254,7 +208,5 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
             Installation rhs = ((Installation) other);
             return new EqualsBuilder().append(typename, rhs.typename).append(broadband, rhs.broadband).isEquals();
         }
-
     }
-
 }
