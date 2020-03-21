@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -106,6 +107,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             communicator = new CaddxCommunicator(portManager, protocol, serialPortName, baudRate);
         } catch (IOException | TooManyListenersException | UnsupportedCommOperationException | PortInUseException e) {
             logger.warn("Cannot initialize Communication.", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication cannot be initialized");
+
             throw new IllegalArgumentException();
         }
 
