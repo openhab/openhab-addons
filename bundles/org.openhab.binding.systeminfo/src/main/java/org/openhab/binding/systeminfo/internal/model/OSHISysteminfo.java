@@ -195,10 +195,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageTotal(int index) throws DeviceNotFoundException {
-        // OSFileStore.updateAtrributes() is currently broken on windows, stick to recreating object
-        // until it's solved. See https://github.com/oshi/oshi/issues/1138
-        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        fileStore.updateAtrributes();
         long totalSpace = fileStore.getTotalSpace();
         totalSpace = getSizeInMB(totalSpace);
         return new DecimalType(totalSpace);
@@ -206,10 +204,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageAvailable(int index) throws DeviceNotFoundException {
-        // OSFileStore.updateAtrributes() is currently broken on windows, stick to recreating object
-        // until it's solved. See https://github.com/oshi/oshi/issues/1138
-        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        fileStore.updateAtrributes();
         long freeSpace = fileStore.getUsableSpace();
         freeSpace = getSizeInMB(freeSpace);
         return new DecimalType(freeSpace);
@@ -217,10 +213,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageUsed(int index) throws DeviceNotFoundException {
-        // OSFileStore.updateAtrributes() is currently broken on windows, stick to recreating object
-        // until it's solved. See https://github.com/oshi/oshi/issues/1138
-        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        fileStore.updateAtrributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         long usedSpace = totalSpace - freeSpace;
@@ -230,10 +224,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
-        // OSFileStore.updateAtrributes() is currently broken on windows, stick to recreating object
-        // until it's solved. See https://github.com/oshi/oshi/issues/1138
-        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        fileStore.updateAtrributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         if (totalSpace > 0) {
@@ -247,10 +239,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
-        // OSFileStore.updateAtrributes() is currently broken on windows, stick to recreating object
-        // until it's solved. See https://github.com/oshi/oshi/issues/1138
-        fileStores = operatingSystem.getFileSystem().getFileStores();
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        fileStore.updateAtrributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         long usedSpace = totalSpace - freeSpace;
