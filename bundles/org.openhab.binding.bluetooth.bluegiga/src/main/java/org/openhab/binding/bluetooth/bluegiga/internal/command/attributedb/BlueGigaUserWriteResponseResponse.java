@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 
 /**
@@ -31,6 +32,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaUserWriteResponseResponse extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x04;
@@ -46,7 +48,6 @@ public class BlueGigaUserWriteResponseResponse extends BlueGigaResponse {
 
         // Deserialize the fields
     }
-
 
     @Override
     public String toString() {

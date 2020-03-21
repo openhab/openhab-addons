@@ -89,13 +89,14 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | centralCommand                  | A5-38       | 0x08          | dimmer, generalSwitch        | Eltako FUD14, FSR14            | Teach-in |
 | rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08 | rollershutter             | Eltako FSB14, NodOn SIN-2-RS-01| Teach-in/Discovery |
 | measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
+| multiFunctionSmokeDetector      | D2-14/F6-05 | 0x30/02       | smokeDetection, batteryLow   | Insafe+, Afriso ASD | Discovery |
 | classicDevice                   | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
 
 ¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
 
 ² These are just examples of supported devices
 
-Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status) and 0x04 (extended light status).
+Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
 A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
@@ -162,18 +163,25 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | | |
 | mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09 |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | Adds a batteryLevel channel to thing and let thing interpret SIG messages | true, false |
 | temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30 |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03 |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | lightSensor                     | receivingEEPId    |                             | A5_06_01, A5_06_01_ELTAKO |
 |                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | roomOperatingPanel              | receivingEEPId    |                             | A5_10_01-0D, A5_10_10-1F, A5_10_20-23 |
 |                                 | enoceanId         | | |
 | automatedMeterSensor            | receivingEEPId    |                             | A5_12_00-03 |
@@ -200,6 +208,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | broadcastMessages |                             | true, false |
 |                                 | pollingInterval   |                             | Integer |
 |                                 | suppressRepeating |                             | true, false |
+| multiFunctionSmokeDetector      | receivingEEPId    |                             | F6_05_02, D2_14_30 |
+|                                 | enoceanId         | | |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
 |                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
@@ -250,6 +260,13 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | batteryVoltage       | Number:ElectricPotential | Battery voltage for things with battery |
 | energyStorage        | Number:ElectricPotential | Energy storage, don't know what this means... |
 | batterLevel          | Number             | Battery level in percent |
+| batterLow            | Switch             | Battery low indicator |
+| smokeDetection       | Switch             | Smoke detected |
+| sensorFault          | Switch             | Smoke sensor fault |
+| timeSinceLastMaintenance | Number:Time    | Time since last maintenance |
+| remainingPLT         | Number:Time        | Remaining product life time |
+| hygroComfortIndex    | String             | Hygrothermal Comfort Index |
+| indoorAirAnalysis    | String             | Indoor Air Analysis |
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |

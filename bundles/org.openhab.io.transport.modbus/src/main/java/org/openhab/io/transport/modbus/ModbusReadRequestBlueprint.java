@@ -35,11 +35,8 @@ public interface ModbusReadRequestBlueprint extends ModbusRequestBlueprint {
     public int getReference();
 
     /**
-     * Returns the length of the data appended
-     * after the protocol header.
-     * <p>
+     * Returns the number of registers/coils/discrete inputs
      *
-     * @return the data length as <tt>int</tt>.
      */
     public int getDataLength();
 

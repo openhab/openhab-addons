@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.miio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MiIoCommand} contains all known commands for the Xiaomi vacuum and various Mi IO commands for basic
  * devices
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum MiIoCommand {
 
     MIIO_INFO("miIO.info"),
@@ -26,6 +29,7 @@ public enum MiIoCommand {
 
     // Basic device commands
     GET_PROPERTY("get_prop"),
+    GET_VALUE("get_value"),
     SET_MODE_BASIC("set_mode"),
     SET_POWER("set_power"),
     SET_BRIGHT("set_bright"),

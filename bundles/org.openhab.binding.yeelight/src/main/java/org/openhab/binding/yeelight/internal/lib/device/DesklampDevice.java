@@ -41,9 +41,8 @@ public class DesklampDevice extends DeviceBase {
     public void onNotify(String msg) {
         JsonObject result = new JsonParser().parse(msg).getAsJsonObject();
         try {
-            String id = "-1";
             if (result.has("id")) {
-                id = result.get("id").getAsString();
+                String id = result.get("id").getAsString();
                 // for cmd transaction.
 
                 if (mQueryList.contains(id)) {

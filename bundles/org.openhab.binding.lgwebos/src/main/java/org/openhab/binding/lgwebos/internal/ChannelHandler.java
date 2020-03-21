@@ -38,9 +38,8 @@ public interface ChannelHandler {
      * Handle underlying subscription status if device changes online state, capabilities or channel gets linked or
      * unlinked.
      *
-     * Implementation first removes any subscription via refreshSubscription and subsequently establishes any required
-     * subscription on this device channel
-     * and handler.
+     * Implementation first removes any subscription via removeAnySubscription and subsequently establishes any required
+     * subscription on this device channel handler.
      *
      * @param channelId must not be <code>null</code>
      * @param handler must not be <code>null</code>

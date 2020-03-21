@@ -102,6 +102,12 @@ public abstract class BluetoothDevice {
      */
     protected String name;
 
+    protected String model;
+    protected String serialNumber;
+    protected String hardwareRevision;
+    protected String firmwareRevision;
+    protected String softwareRevision;
+
     /**
      * List of supported services
      */
@@ -140,6 +146,51 @@ public abstract class BluetoothDevice {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the model of the Bluetooth device.
+     *
+     * @return The devices model, null if not known
+     */
+    public String getModel() {
+        return model;
+    }
+
+    /**
+     * Returns the serial number of the Bluetooth device.
+     *
+     * @return The serial model, null if not known
+     */
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    /**
+     * Returns the hardware revision of the Bluetooth device.
+     *
+     * @return The hardware revision, null if not known
+     */
+    public String getHardwareRevision() {
+        return hardwareRevision;
+    }
+
+    /**
+     * Returns the firmware revision of the Bluetooth device.
+     *
+     * @return The firmware revision, null if not known
+     */
+    public String getFirmwareRevision() {
+        return firmwareRevision;
+    }
+
+    /**
+     * Returns the software revision of the Bluetooth device.
+     *
+     * @return The software revision, null if not known
+     */
+    public String getSoftwareRevision() {
+        return softwareRevision;
     }
 
     /**
@@ -243,6 +294,51 @@ public abstract class BluetoothDevice {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Set the model of the device
+     *
+     * @param model a {@link String} defining the device model
+     */
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    /**
+     * Set the serial number of the device
+     *
+     * @param model a {@link String} defining the serial number
+     */
+    public void setSerialNumberl(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    /**
+     * Set the hardware revision of the device
+     *
+     * @param model a {@link String} defining the hardware revision
+     */
+    public void setHardwareRevision(String hardwareRevision) {
+        this.hardwareRevision = hardwareRevision;
+    }
+
+    /**
+     * Set the firmware revision of the device
+     *
+     * @param model a {@link String} defining the firmware revision
+     */
+    public void setFirmwareRevision(String firmwareRevision) {
+        this.firmwareRevision = firmwareRevision;
+    }
+
+    /**
+     * Set the software revision of the device
+     *
+     * @param model a {@link String} defining the software revision
+     */
+    public void setSoftwareRevision(String softwareRevision) {
+        this.softwareRevision = softwareRevision;
     }
 
     /**
@@ -491,7 +587,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Checks if this device has any listeners
-     * 
+     *
      * @return true if this device has listeners
      */
     public boolean hasListeners() {
@@ -543,10 +639,6 @@ public abstract class BluetoothDevice {
         StringBuilder builder = new StringBuilder();
         builder.append("BluetoothDevice [address=");
         builder.append(address);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", rssi=");
-        builder.append(rssi);
         builder.append(", manufacturer=");
         builder.append(manufacturer);
         if (BluetoothCompanyIdentifiers.get(manufacturer) != null) {
@@ -554,6 +646,20 @@ public abstract class BluetoothDevice {
             builder.append(BluetoothCompanyIdentifiers.get(manufacturer));
             builder.append(')');
         }
+        builder.append(", name=");
+        builder.append(name);
+        builder.append(", model=");
+        builder.append(model);
+        builder.append(", serialNumber=");
+        builder.append(serialNumber);
+        builder.append(", hardwareRevision=");
+        builder.append(hardwareRevision);
+        builder.append(", firmwareRevision=");
+        builder.append(firmwareRevision);
+        builder.append(", softwareRevision=");
+        builder.append(softwareRevision);
+        builder.append(", rssi=");
+        builder.append(rssi);
         builder.append(']');
         return builder.toString();
     }

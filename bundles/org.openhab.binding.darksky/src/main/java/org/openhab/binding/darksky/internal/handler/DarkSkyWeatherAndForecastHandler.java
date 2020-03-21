@@ -394,6 +394,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     updateAlertsChannel(channelUID, i);
                     break;
                 }
+                logger.warn("Unknown channel group '{}'. Cannot update channel '{}'.", channelGroupId, channelUID);
                 break;
         }
     }

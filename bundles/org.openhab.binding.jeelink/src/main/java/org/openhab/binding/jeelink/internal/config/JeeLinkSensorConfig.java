@@ -19,7 +19,5 @@ package org.openhab.binding.jeelink.internal.config;
  */
 public class JeeLinkSensorConfig {
     public String sensorId;
-    public int updateInterval;
     public int sensorTimeout;
-    public int bufferSize;
 }

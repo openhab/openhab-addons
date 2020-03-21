@@ -247,7 +247,7 @@ public class LightsAndGroupsTests {
     public void changeOnAndBriValues() {
 
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(0));
+        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 
         String body = "{'on':true,'bri':200}";
         Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
@@ -303,7 +303,7 @@ public class LightsAndGroupsTests {
     @Test
     public void switchOnWithXY() {
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(0));
+        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 
         String body = "{'on':true,'bri':200,'xy':[0.5119,0.4147]}";
         Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()

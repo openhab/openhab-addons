@@ -39,6 +39,7 @@ import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
@@ -102,9 +103,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     // Gson & parser
     private final Gson gson = new Gson();
 
-    public SomfyTahomaBridgeHandler(Bridge thing, HttpClient httpClient) {
+    public SomfyTahomaBridgeHandler(Bridge thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.httpClient = httpClient;
+        this.httpClient = httpClientFactory.createHttpClient("somfy_" + thing.getUID().getId());
     }
 
     @Override
@@ -114,6 +115,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         thingConfig = getConfigAs(SomfyTahomaConfig.class);
+
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.debug("Cannot start http client for: {}", thing.getBridgeUID().getId(), e);
+            return;
+        }
 
         scheduler.execute(() -> {
             login();
@@ -307,6 +315,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
+        if (httpClient != null) {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.debug("Error during http client stopping", e);
+            }
+        }
     }
 
 
@@ -530,7 +545,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
                 SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
-                if (gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
+                if (gatewayHandler != null && gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
                     gatewayHandler.refresh(STATUS);
                 }
             }
@@ -724,9 +739,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private String getThingLabelByURL(String io) {
         Thing th = getThingByDeviceUrl(io);
         if (th != null) {
-            if (th.getProperties().containsKey("label")) {
+            if (th.getProperties().containsKey(NAME_STATE)) {
                 //Return label from Tahoma
-                return th.getProperties().get("label").replace("\"", "");
+                return th.getProperties().get(NAME_STATE).replace("\"", "");
             }
             //Return label from OH2
             return th.getLabel() != null ? th.getLabel().replace("\"", "") : "";

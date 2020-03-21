@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
@@ -22,6 +23,7 @@ import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public interface MiIoMessageListener {
     /**
      * Callback method for the {@link MiIoMessageListener}
