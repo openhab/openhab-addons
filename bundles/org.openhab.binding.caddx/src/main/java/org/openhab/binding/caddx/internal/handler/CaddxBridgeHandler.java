@@ -39,6 +39,7 @@ import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
 import org.openhab.binding.caddx.internal.CaddxSource;
@@ -261,30 +262,30 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         CaddxMessage msg = null;
 
         if (CaddxBindingConstants.ZONE_BYPASS_TOGGLE.equals(command)) {
-            msg = CaddxMessage.buildZoneBypassToggle(data);
+            msg = new CaddxMessage(CaddxMessageType.Zone_Bypass_Toggle, data);
         } else if (CaddxBindingConstants.ZONE_STATUS_REQUEST.equals(command)) {
-            msg = CaddxMessage.buildZoneStatusRequest(data);
+            msg = new CaddxMessage(CaddxMessageType.Zone_Status_Request, data);
         } else if (CaddxBindingConstants.ZONE_NAME_REQUEST.equals(command)) {
-            msg = CaddxMessage.buildZoneNameRequest(data);
+            msg = new CaddxMessage(CaddxMessageType.Zone_Name_Request, data);
         } else if (CaddxBindingConstants.PARTITION_STATUS_REQUEST.equals(command)) {
-            msg = CaddxMessage.buildPartitionStatusRequest(data);
+            msg = new CaddxMessage(CaddxMessageType.Partition_Status_Request, data);
         } else if (CaddxBindingConstants.PARTITION_PRIMARY_COMMAND.equals(command)) {
-            msg = CaddxMessage.buildPartitionPrimaryCommand(data);
+            msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_without_PIN, data);
         } else if (CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(command)) {
-            msg = CaddxMessage.buildPartitionSecondaryCommand(data);
+            msg = new CaddxMessage(CaddxMessageType.Secondary_Keypad_Function, data);
         } else if (CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST.equals(command)) {
-            msg = CaddxMessage.buildSystemStatusRequest(data);
+            msg = new CaddxMessage(CaddxMessageType.System_Status_Request, data);
         } else if (CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST.equals(command)) {
-            msg = CaddxMessage.buildInterfaceConfigurationRequest(data);
+            msg = new CaddxMessage(CaddxMessageType.Interface_Configuration_Request, data);
         } else if (CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST.equals(command)) {
-            msg = CaddxMessage.buildLogEventRequest(data);
+            msg = new CaddxMessage(CaddxMessageType.Log_Event_Request, data);
         } else {
             return false;
         }
 
-        CaddxCommunicator n = communicator;
-        if (n != null) {
-            n.transmit(msg);
+        CaddxCommunicator comm = communicator;
+        if (comm != null) {
+            comm.transmit(msg);
         }
 
         return true;

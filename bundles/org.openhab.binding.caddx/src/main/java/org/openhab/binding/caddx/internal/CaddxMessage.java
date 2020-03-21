@@ -78,153 +78,40 @@ public class CaddxMessage {
         processCaddxMessage();
     }
 
-    /**
-     * Builds a Caddx message for a zone bypass toggle command
-     *
-     * @param data The zone number
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildZoneBypassToggle(String data) {
-        byte[] arr = new byte[2];
-        arr[0] = 0x3f;
-        arr[1] = (byte) Integer.parseInt(data);
+    public CaddxMessage(CaddxMessageType type, String data) {
+        int length = type.length;
+        byte[] msg = new byte[length];
+        msg[0] = (byte) type.number;
+        switch (length) {
+            case 1:
+                break;
+            case 2:
+                msg[1] = (byte) Integer.parseInt(data);
+                break;
+            case 3:
+                String[] tokens = data.split(",");
+                if (tokens.length != 2) {
+                    throw new IllegalArgumentException("CaddxMessage: data has not the correct format.");
+                }
 
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a zone status request command
-     *
-     * @param data The zone number
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildZoneStatusRequest(String data) {
-        byte[] arr = new byte[2];
-        arr[0] = 0x24;
-        arr[1] = (byte) Integer.parseInt(data);
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a zone name request command
-     *
-     * @param data The zone number
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildZoneNameRequest(String data) {
-        byte[] arr = new byte[2];
-        arr[0] = 0x23;
-        arr[1] = (byte) Integer.parseInt(data);
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a partition status request command
-     *
-     * @param data The partition number
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildPartitionStatusRequest(String data) {
-        byte[] arr = new byte[2];
-        arr[0] = 0x26;
-        arr[1] = (byte) Integer.parseInt(data);
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a partition snapshot request command
-     *
-     * @param data The partition number
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildPartitionSnapshotRequest(String data) {
-        byte[] arr = new byte[1];
-        arr[0] = 0x27;
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a partition primary command
-     *
-     * @param data Two values comma separated. The command, The partition number. e.g. "1,0"
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildPartitionPrimaryCommand(String data) {
-        String[] tokens = data.split(",");
-        if (tokens.length != 2) {
-            throw new IllegalArgumentException("buildPartitionPrimaryCommand(): data has not the correct format.");
+                msg[1] = (byte) Integer.parseInt(tokens[0]);
+                msg[2] = (byte) (1 << Integer.parseInt(tokens[1]));
+                break;
+            default:
+                throw new IllegalArgumentException("CaddxMessage: message type not supported.");
         }
 
-        byte[] arr = new byte[3];
-        arr[0] = 0x3e;
-        arr[1] = (byte) Integer.parseInt(tokens[0]);
-        arr[2] = (byte) (1 << Integer.parseInt(tokens[1]));
+        byte[] fletcherSum = fletcher(msg);
+        checksum1Calc = fletcherSum[0];
+        checksum2Calc = fletcherSum[1];
+        checksum1In = checksum1Calc;
+        checksum2In = checksum2Calc;
 
-        return new CaddxMessage(arr, false);
-    }
+        this.message = msg;
+        this.caddxMessageType = type;
 
-    /**
-     * Builds a Caddx message for a partition secondary command
-     *
-     * @param data Two values comma separated. The command, The partition number. e.g. "1,0"
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildPartitionSecondaryCommand(String data) {
-        String[] tokens = data.split(",");
-        if (tokens.length != 2) {
-            throw new IllegalArgumentException("buildPartitionSecondaryCommand(): data has not the correct format.");
-        }
-
-        byte[] arr = new byte[3];
-        arr[0] = 0x3e;
-        arr[1] = (byte) Integer.parseInt(tokens[0]);
-        arr[2] = (byte) (1 << Integer.parseInt(tokens[1]));
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a system status request command
-     *
-     * @param data Should be passed empty
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildSystemStatusRequest(String data) {
-        byte[] arr = new byte[1];
-        arr[0] = 0x28;
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a interface configuration request command
-     *
-     * @param data Should be passed empty
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildInterfaceConfigurationRequest(String data) {
-        byte[] arr = new byte[1];
-        arr[0] = 0x21;
-
-        return new CaddxMessage(arr, false);
-    }
-
-    /**
-     * Builds a Caddx message for a log event request command
-     *
-     * @param data Should be the number of the event
-     * @return The Caddx message object
-     */
-    public static CaddxMessage buildLogEventRequest(String data) {
-        byte[] arr = new byte[2];
-        arr[0] = 0x2a;
-        arr[1] = (byte) Integer.parseInt(data);
-
-        return new CaddxMessage(arr, false);
+        // Fill-in the properties
+        processCaddxMessage();
     }
 
     public byte getChecksum1In() {
@@ -243,11 +130,6 @@ public class CaddxMessage {
         return checksum2Calc;
     }
 
-    /**
-     * Returns the Caddx Message Type.
-     *
-     * @return messageType
-     */
     public CaddxMessageType getCaddxMessageType() {
         return caddxMessageType;
     }
