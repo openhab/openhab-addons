@@ -97,7 +97,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
             bridgeID = id.replaceAll("\\W", "_");
         }
 
-        Map<String, Object> properties = new HashMap<>(0);
+        Map<String, Object> properties = new HashMap<>(3);
         properties.put(CaddxBridgeConfiguration.PROTOCOL, protocol);
         properties.put(CaddxBridgeConfiguration.SERIAL_PORT, port);
         properties.put(CaddxBridgeConfiguration.BAUD, baudrate);
@@ -142,7 +142,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
                 thingLabel = "Partition " + String.valueOf(partition);
                 thingUID = new ThingUID(CaddxBindingConstants.PARTITION_THING_TYPE, bridge.getUID(), thingID);
 
-                properties = new HashMap<>(0);
+                properties = new HashMap<>(1);
                 if (partition != null) {
                     properties.put(CaddxPartitionConfiguration.PARTITION_NUMBER, partition);
                 }
@@ -152,7 +152,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
                 thingLabel = "Zone " + String.valueOf(zone);
                 thingUID = new ThingUID(CaddxBindingConstants.ZONE_THING_TYPE, bridge.getUID(), thingID);
 
-                properties = new HashMap<>(0);
+                properties = new HashMap<>(1);
                 if (zone != null) {
                     properties.put(CaddxZoneConfiguration.ZONE_NUMBER, zone);
                 }
@@ -162,7 +162,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
                 thingLabel = "Keypad";
                 thingUID = new ThingUID(CaddxBindingConstants.KEYPAD_THING_TYPE, bridge.getUID(), thingID);
 
-                properties = new HashMap<>(0);
+                properties = new HashMap<>(1);
                 if (keypad != null) {
                     properties.put(CaddxKeypadConfiguration.KEYPAD_ADDRESS, keypad);
                 }
