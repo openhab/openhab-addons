@@ -10,56 +10,56 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.doorbird.internal;
+package org.openhab.binding.doorbird.internal.config;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DoorbirdConfig} class contains fields mapping thing configuration parameters.
+ * The {@link DoorbellConfig} class contains fields mapping thing configuration parameters
+ * for doorbell thing types.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class DoorbirdConfiguration {
-    /**
-     * Doorbird ID must match the ID returned in UDP events
-     */
-    public String doorbirdId;
-
+@NonNullByDefault
+public class DoorbellConfiguration {
     /**
      * Hostname or IP address of doorbell
      */
-    public String doorbirdHost;
+    public @Nullable String doorbirdHost;
 
     /**
      * User ID used for API requests
      */
-    public String userId;
+    public @Nullable String userId;
 
     /**
      * Password used in API requests, and to decrypt doorbird events
      */
-    public String userPassword;
+    public @Nullable String userPassword;
 
     /**
      * Rate at which image channel will be updated
      */
-    public Integer imageRefreshRate;
+    public @Nullable Integer imageRefreshRate;
 
     /**
      * Delay to set doorbell channel OFF after doorbell event
      */
-    public Integer doorbellOffDelay;
+    public @Nullable Integer doorbellOffDelay;
 
     /**
      * Delay to set motion channel OFF after motion event
      */
-    public Integer motionOffDelay;
+    public @Nullable Integer motionOffDelay;
 
     /**
      * Number of images in doorbell and motion montages
      */
-    public Integer montageNumImages;
+    public @Nullable Integer montageNumImages;
 
     /**
      * Scale factor for montages
      */
-    public Integer montageScaleFactor;
+    public @Nullable Integer montageScaleFactor;
 }
