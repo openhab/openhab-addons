@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.bluetooth.discovery.internal;
 
+import java.util.Collection;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
+import org.openhab.binding.bluetooth.BluetoothCharacteristic;
+import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.BluetoothDeviceListener;
+import org.openhab.binding.bluetooth.BluetoothService;
 
 /**
  * The {@link BluetoothDeviceSnapshot} acts as a dummy {@link BluetoothDevice} implementation that simply acts as a
@@ -26,41 +32,133 @@ import org.openhab.binding.bluetooth.BluetoothDevice;
  * @author Connor Petty - Initial Contribution
  */
 @NonNullByDefault
-public class BluetoothDeviceSnapshot {
+public class BluetoothDeviceSnapshot extends BluetoothDevice {
 
-    private @Nullable BluetoothAddress address;
-    private @Nullable Integer txPower;
-    private @Nullable Integer manufacturer;
-    private @Nullable String name;
-
-    public BluetoothDeviceSnapshot() {
-    }
+    private BluetoothDevice delegate;
 
     public BluetoothDeviceSnapshot(BluetoothDevice device) {
-        this.address = device.getAddress();
+        super(device.getAdapter(), device.getAddress());
+        this.delegate = device;
         this.txPower = device.getTxPower();
         this.manufacturer = device.getManufacturerId();
         this.name = device.getName();
+        this.model = device.getModel();
+        this.serialNumber = device.getSerialNumber();
+        this.hardwareRevision = device.getHardwareRevision();
+        this.firmwareRevision = device.getFirmwareRevision();
+        this.softwareRevision = device.getSoftwareRevision();
     }
 
-    public BluetoothDeviceSnapshot(BluetoothDeviceSnapshot device) {
-        this.address = device.address;
-        this.txPower = device.txPower;
-        this.manufacturer = device.manufacturer;
-        this.name = device.name;
+    @Override
+    public boolean connect() {
+        return delegate.connect();
+    }
+
+    @Override
+    public boolean disconnect() {
+        return delegate.disconnect();
+    }
+
+    @Override
+    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
+        return delegate.enableNotifications(characteristic);
+    }
+
+    @Override
+    public boolean enableNotifications(BluetoothDescriptor descriptor) {
+        return delegate.enableNotifications(descriptor);
+    }
+
+    @Override
+    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
+        return delegate.disableNotifications(characteristic);
+    }
+
+    @Override
+    public boolean disableNotifications(BluetoothDescriptor descriptor) {
+        return delegate.disableNotifications(descriptor);
+    }
+
+    @Override
+    public boolean discoverServices() {
+        return delegate.discoverServices();
+    }
+
+    @Override
+    public void addListener(BluetoothDeviceListener listener) {
+        delegate.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(BluetoothDeviceListener listener) {
+        delegate.removeListener(listener);
+    }
+
+    @Override
+    public ConnectionState getConnectionState() {
+        return delegate.getConnectionState();
+    }
+
+    @Override
+    public Collection<BluetoothService> getServices() {
+        return delegate.getServices();
+    }
+
+    @Override
+    public @Nullable BluetoothService getServices(UUID uuid) {
+        return delegate.getServices(uuid);
+    }
+
+    @Override
+    public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
+        return delegate.getCharacteristic(uuid);
+    }
+
+    @Override
+    public boolean hasListeners() {
+        return delegate.hasListeners();
+    }
+
+    @Override
+    public boolean supportsService(UUID uuid) {
+        return delegate.supportsService(uuid);
+    }
+
+    @Override
+    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+        return delegate.readCharacteristic(characteristic);
+    }
+
+    @Override
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+        return delegate.writeCharacteristic(characteristic);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((address == null) ? 0 : address.hashCode());
-        Integer manufacturerLocal = manufacturer;
-        result = prime * result + ((manufacturerLocal == null) ? 0 : manufacturerLocal.hashCode());
-        String nameLocal = name;
-        result = prime * result + ((nameLocal == null) ? 0 : nameLocal.hashCode());
-        Integer txPowerLocal = txPower;
-        result = prime * result + ((txPowerLocal == null) ? 0 : txPowerLocal.hashCode());
+
+        BluetoothAddress address = this.address;
+        Integer manufacturer = this.manufacturer;
+        Integer txPower = this.txPower;
+        String name = this.name;
+
+        String model = this.model;
+        String serialNumber = this.serialNumber;
+        String hardwareRevision = this.hardwareRevision;
+        String firmwareRevision = this.firmwareRevision;
+        String softwareRevision = this.softwareRevision;
+
+        result = prime * result + address.hashCode();
+        result = prime * result + ((firmwareRevision == null) ? 0 : firmwareRevision.hashCode());
+        result = prime * result + ((hardwareRevision == null) ? 0 : hardwareRevision.hashCode());
+        result = prime * result + ((manufacturer == null) ? 0 : manufacturer.hashCode());
+        result = prime * result + ((model == null) ? 0 : model.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
+        result = prime * result + ((softwareRevision == null) ? 0 : softwareRevision.hashCode());
+        result = prime * result + ((txPower == null) ? 0 : txPower.hashCode());
         return result;
     }
 
@@ -82,10 +180,25 @@ public class BluetoothDeviceSnapshot {
         if (!Objects.equals(manufacturer, other.manufacturer)) {
             return false;
         }
+        if (!Objects.equals(txPower, other.txPower)) {
+            return false;
+        }
         if (!Objects.equals(name, other.name)) {
             return false;
         }
-        if (!Objects.equals(txPower, other.txPower)) {
+        if (!Objects.equals(model, other.model)) {
+            return false;
+        }
+        if (!Objects.equals(serialNumber, other.serialNumber)) {
+            return false;
+        }
+        if (!Objects.equals(hardwareRevision, other.hardwareRevision)) {
+            return false;
+        }
+        if (!Objects.equals(firmwareRevision, other.firmwareRevision)) {
+            return false;
+        }
+        if (!Objects.equals(softwareRevision, other.softwareRevision)) {
             return false;
         }
         return true;
@@ -96,25 +209,42 @@ public class BluetoothDeviceSnapshot {
      *
      * @return true if this snapshot changed as a result of this operation
      */
-    public boolean merge(BluetoothDevice device) {
-        BluetoothDeviceSnapshot original = new BluetoothDeviceSnapshot(this);
-        BluetoothAddress deviceAddr = device.getAddress();
-        if (this.address == null && deviceAddr != null) {
-            this.address = deviceAddr;
+    public void merge(BluetoothDevice device) {
+
+        Integer txPower = device.getTxPower();
+        Integer manufacturer = device.getManufacturerId();
+        String name = device.getName();
+
+        String model = device.getModel();
+        String serialNumber = device.getSerialNumber();
+        String hardwareRevision = device.getHardwareRevision();
+        String firmwareRevision = device.getFirmwareRevision();
+        String softwareRevision = device.getSoftwareRevision();
+
+        if (this.txPower == null && txPower != null) {
+            this.txPower = txPower;
         }
-        String deviceName = device.getName();
-        if (this.name == null && deviceName != null) {
-            this.name = deviceName;
+        if (this.manufacturer == null && manufacturer != null) {
+            this.manufacturer = manufacturer;
         }
-        Integer deviceTxPower = device.getTxPower();
-        if (this.txPower == null && deviceTxPower != null) {
-            this.txPower = deviceTxPower;
+        if (this.name == null && name != null) {
+            this.name = name;
         }
-        Integer deviceManufacturer = device.getManufacturerId();
-        if (this.manufacturer == null && deviceManufacturer != null) {
-            this.manufacturer = deviceManufacturer;
+        if (this.model == null && model != null) {
+            this.model = model;
         }
-        return !this.equals(original);
+        if (this.serialNumber == null && serialNumber != null) {
+            this.serialNumber = serialNumber;
+        }
+        if (this.hardwareRevision == null && hardwareRevision != null) {
+            this.hardwareRevision = hardwareRevision;
+        }
+        if (this.firmwareRevision == null && firmwareRevision != null) {
+            this.firmwareRevision = firmwareRevision;
+        }
+        if (this.softwareRevision == null && softwareRevision != null) {
+            this.softwareRevision = softwareRevision;
+        }
     }
 
 }

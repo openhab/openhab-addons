@@ -93,24 +93,27 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "Airthings AS");
-        if (device.getSerialNumber() != null) {
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
+        String serialNumber = device.getSerialNumber();
+        String firmwareRevision = device.getFirmwareRevision();
+        String model = device.getModel();
+        String hardwareRevision = device.getHardwareRevision();
+        Integer txPower = device.getTxPower();
+        if (serialNumber != null) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
         }
-        if (device.getFirmwareRevision() != null) {
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareRevision());
+        if (firmwareRevision != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareRevision);
         }
-        if (device.getModel() != null) {
-            properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
+        if (model != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
         }
-        if (device.getHardwareRevision() != null) {
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.getHardwareRevision());
+        if (hardwareRevision != null) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareRevision);
         }
-        if (device.getAddress() != null) {
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getAddress().toString());
+        if (txPower != null) {
+            properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(txPower));
         }
-        if (device.getTxPower() != null) {
-            properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(device.getTxPower()));
-        }
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getAddress().toString());
 
         // Create the discovery result and add to the inbox
         return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
