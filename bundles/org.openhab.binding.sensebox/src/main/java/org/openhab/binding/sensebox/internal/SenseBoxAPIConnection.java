@@ -96,12 +96,6 @@ public class SenseBoxAPIConnection {
             }
 
             for (SenseBoxSensor sensor : parsedData.getSensors()) {
-                // the uom library uses the 'MICRO SIGN', so if we encounter the GREEK SMALL LETTER MU,
-                // replace it with the proper representation.
-                if (sensor.getUnit() != null) {
-                    sensor.getUnit().replaceAll("\u03bc", "\00b5");
-                }
-
                 if ("VEML6070".equals(sensor.getSensorType())) {
                     // "unit" is not nicely comparable, so use sensor type for now
                     parsedData.setUvIntensity(sensor);
