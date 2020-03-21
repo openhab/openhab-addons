@@ -98,7 +98,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Reference to the modbus manager
      */
-    protected ModbusManager managerRef;
+    protected final ModbusManager managerRef;
 
     /**
      * Instances of this handler should get a reference to the modbus manager
@@ -252,7 +252,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Get a reference to the modbus endpoint
      */
-    @SuppressWarnings("null")
     private void connectEndpoint() {
         if (endpoint.isPresent()) {
             return;
@@ -260,6 +259,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
+            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
@@ -283,8 +283,10 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         }
 
         if (!endpoint.isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format(
-                    "Bridge '%s' not completely initialized", Optional.ofNullable(getBridge()).map(b -> b.getLabel())));
+            @SuppressWarnings("null")
+            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    String.format("Bridge '%s' not completely initialized", label));
             logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
             return;
         }

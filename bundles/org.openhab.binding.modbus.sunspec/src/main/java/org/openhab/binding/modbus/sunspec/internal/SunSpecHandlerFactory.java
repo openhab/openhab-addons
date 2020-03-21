@@ -64,7 +64,6 @@ public class SunSpecHandlerFactory extends BaseThingHandlerFactory {
      */
     @Activate
     public SunSpecHandlerFactory(@Reference ModbusManager manager) {
-
         this.manager = manager;
     }
 
