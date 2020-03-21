@@ -37,17 +37,20 @@ The Météo Alerte information that are retrieved is available as these channels
 
 meteoalert.things:
 
-```java
+```
+dsd
 ```
 
 meteoalert.items:
 
-```java
+```
+ddd
 ```
 
 meteoalert.sitemap:
 
-```perl
-
 ```
+ddd
+```
+
 

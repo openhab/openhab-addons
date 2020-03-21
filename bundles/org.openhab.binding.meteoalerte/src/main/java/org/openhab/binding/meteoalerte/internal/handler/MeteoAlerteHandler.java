@@ -144,7 +144,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return gson.fromJson(response, ApiResponse.class);
             } catch (IOException e) {
-                logger.warn("Error opening connection to Meteo Alerte webservice : {}", e);
+                logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
             }
         } catch (MalformedURLException e) {
             logger.error("Malformed URL in Météo Alerte request : {}", queryUrl);
