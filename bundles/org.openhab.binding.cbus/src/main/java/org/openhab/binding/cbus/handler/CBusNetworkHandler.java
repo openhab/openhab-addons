@@ -49,6 +49,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     private @Nullable Project projectObject = null;
     private @Nullable ScheduledFuture<?> initNetwork = null;
     private @Nullable ScheduledFuture<?> networkSync = null;
+    private @Nullable ScheduledFuture<?> initTask = null;
 
     public CBusNetworkHandler(Bridge thing) {
         super(thing);
@@ -68,7 +69,16 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             return;
         }
         logger.debug("Bridge online so init properly");
-        cgateOnline();
+        initTask = scheduler.schedule(this::cgateOnline, 0, TimeUnit.SECONDS);
+        /* cgateOnline(); */
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        ScheduledFuture<?> initTask = this.initTask;
+        if (initTask != null)
+            initTask.cancel(true);
     }
 
     public void cgateStateChanged(boolean isOnline) {

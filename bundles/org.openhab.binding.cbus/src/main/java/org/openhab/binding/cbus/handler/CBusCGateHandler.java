@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -483,11 +486,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
                         if (channel != null) {
                             ChannelUID channelUID = channel.getUID();
-                            DecimalType temp = new DecimalType(value);
-                            updateState(channelUID, temp);
+                            updateState(channelUID, new QuantityType<>(Double.parseDouble(value), CELSIUS));
                             logger.trace("Updating CBus Temperature Group {} with value {}", thing.getUID(), value);
                         } else {
-                            logger.trace("Failed to Updat CBus Temperature Group {} with value {}: No Channel",
+                            logger.trace("Failed to Update CBus Temperature Group {} with value {}: No Channel",
                                     thing.getUID(), value);
                         }
                         handled = true;
