@@ -65,4 +65,17 @@ class QueueObject {
     public short getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("moduleType: ");
+        sb.append(moduleType);
+        sb.append(", moduleAddress: ");
+        sb.append(moduleAddress);
+        sb.append(", channel: ");
+        sb.append(channel);
+
+        return sb.toString();
+    }
 }

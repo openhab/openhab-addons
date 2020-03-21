@@ -49,17 +49,14 @@ public class PHCHelper {
      * @param b
      * @return
      */
-    public static Object byteToBinaryString(byte b) {
-        return StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0') + " ";
+    public static Object bytesToBinaryString(byte[] bytes) {
+        StringBuilder bin = new StringBuilder();
+        for (byte b : bytes) {
+            bin.append(StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0'));
+            bin.append(' ');
+        }
+
+        return bin.toString();
     }
 
-    /**
-     * Convert the byte b into an hex String
-     *
-     * @param b
-     * @return
-     */
-    public static Object byteToHexString(byte b) {
-        return Integer.toHexString(b & 0xFF) + " ";
-    }
 }

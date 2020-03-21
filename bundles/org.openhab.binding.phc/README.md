@@ -39,7 +39,7 @@ There are two alternatives, the first of which is much simpler.
 
 #### Connection via power supply (simpler, preferred)
 
-The simplest way would be to connect the RS485 adaptor to the PHC power supply like in the table below and  Out at the power supply to the first module like the STM before.
+The simplest way would be to connect the RS485 adaptor to the PHC power supply like in the table below and Out at the power supply to the first module like the STM before.
 
 |  adaptor | PHC power supply |
 |----------|------------------|
@@ -61,7 +61,8 @@ Connect a RJ12 plug with the RS485 adaptor and the power supply as follows.
 
 ## Bridge
 
-The Bridge manages the communication between the things and the modules via a serial port (RS485). It represents the STM.
+The Bridge manages the communication between the things and the modules via a serial port (RS485).
+It represents the STM.
 At the Moment you can only use one Bridge (like one STM).
 
 #### Configurations
@@ -113,7 +114,10 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 - **em:** Incoming channels.
 - **emLed:** Outgoing switch channels e.g. for LEDs in light shutters.
 - **jrm:** Outgoing shutter channels.
-- **jrmT:** Time for shutter channels in seconds with an accuracy of 1/10 seconds. These channels are used instead of the configuration parameters. If you send the time via this channel, the Binding uses this time till you send another. After reboot the config parameter is used by default.
+- **jrmT:** Time for shutter channels in seconds with an accuracy of 1/10 seconds.
+These channels are used instead of the configuration parameters.
+If you send the time via this channel, the Binding uses this time till you send another.
+After reboot the config parameter is used by default.
 - **dim:** Outgoing dimmer channels.
 
 ## Full Example
@@ -152,11 +156,11 @@ Dimmer Dimmer_1 {channel="phc:DIM:00000:dim#00}
 Dimmer Dimmer_2 {channel="phc:DIM:00000:dim#01}
 
 // EM Module
-Switch InputLed_1 {channel="phc:EM:00110:emLed#03"}
+Switch InputLed_3 {channel="phc:EM:00110:emLed#03"}
 
 Switch Input_1 {channel="phc:EM:00110:em#00"}
 Switch Input_2 {channel="phc:EM:00110:em#01"}
-Switch Input_3 {channel="phc:EM:00110:em#01"}
+Switch Input_3 {channel="phc:EM:00110:em#02"}
 ...
 Switch Input_16 {channel="phc:EM:00110:em#15"}
 ```

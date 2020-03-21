@@ -119,9 +119,7 @@ public class PHCHandler extends BaseThingHandler {
                 getPHCBridgeHandler().send(groupId, module & 0x1F, channelUID.getIdWithoutGroup(), command, (short) 0);
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("send command: {}, {}", channelUID, command);
-            }
+            logger.debug("send command: {}, {}", channelUID, command);
         } else {
             logger.info("The Thing {} is offline.", getThing().getUID());
         }
@@ -171,9 +169,7 @@ public class PHCHandler extends BaseThingHandler {
             if (handler instanceof PHCBridgeHandler) {
                 bridgeHandler = (PHCBridgeHandler) handler;
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("No available bridge handler for {}.", bridge.getUID());
-                }
+                logger.debug("No available bridge handler for {}.", bridge.getUID());
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
                         "No available bridge handler.");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 class InternalBuffer {
     private static final int MAX_SIZE = 512;
 
-    private Queue<byte[]> byteQueue = new ConcurrentLinkedQueue<byte[]>();
-    byte[] buffer;
-    int bufferIndex = 0;
-    int size;
+    private final Queue<byte[]> byteQueue = new ConcurrentLinkedQueue<byte[]>();
+    private byte[] buffer;
+    private int bufferIndex = 0;
+    private int size;
 
     public void offer(byte[] buffer) {
         // If the buffer becomes too large, already processed commands accumulate and
