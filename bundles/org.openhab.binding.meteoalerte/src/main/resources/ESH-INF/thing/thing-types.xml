@@ -34,6 +34,30 @@
 			<channel id="avalanches" typeId="alert-level">
 				<label>Etat Avalanches</label>
 			</channel>
+			<channel id="vent-icon" typeId="condition-icon">
+				<label>Etat Vent</label>
+			</channel>
+			<channel id="pluie-inondation-icon" typeId="condition-icon">
+				<label>Etat Pluie Inondation</label>
+			</channel>
+			<channel id="orage-icon" typeId="condition-icon">
+				<label>Etat Orage</label>
+			</channel>
+			<channel id="inondation-icon" typeId="condition-icon">
+				<label>Etat Inondation</label>
+			</channel>
+			<channel id="neige-icon" typeId="condition-icon">
+				<label>Etat Neige</label>
+			</channel>
+			<channel id="canicule-icon" typeId="condition-icon">
+				<label>Etat Canicule</label>
+			</channel>
+			<channel id="grand-froid-icon" typeId="condition-icon">
+				<label>Etat Grand Froid</label>
+			</channel>
+			<channel id="avalanches-icon" typeId="condition-icon">
+				<label>Etat Avalanches</label>
+			</channel>
 			<channel id="comment" typeId="comment" />
 			<channel id="observation-time" typeId="observation-time" />
 		</channels>
@@ -176,5 +200,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="condition-icon">
+		<item-type>Image</item-type>
+		<label>Icon</label>
+		<description>Icon representing the alert level.</description>
+		<state readOnly="true" />
+	</channel-type>
 </thing:thing-descriptions>
+
 
