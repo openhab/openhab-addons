@@ -52,7 +52,7 @@ public class SwitchService {
         }
 
         List<UdpResponse> responses;
-        if (ipAddress == null || ipAddress.trim().isEmpty()) {
+        if (ipAddress.trim().isEmpty()) {
             responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
         } else {
             responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state), ipAddress);

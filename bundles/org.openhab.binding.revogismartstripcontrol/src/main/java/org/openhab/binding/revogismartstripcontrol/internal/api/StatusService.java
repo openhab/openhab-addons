@@ -43,7 +43,7 @@ public class StatusService {
 
     public Status queryStatus(String serialNumber, String ipAddress) {
         List<UdpResponse> responses;
-        if (ipAddress == null || ipAddress.trim().isEmpty()) {
+        if (ipAddress.trim().isEmpty()) {
             responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
         } else {
             responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber), ipAddress);
