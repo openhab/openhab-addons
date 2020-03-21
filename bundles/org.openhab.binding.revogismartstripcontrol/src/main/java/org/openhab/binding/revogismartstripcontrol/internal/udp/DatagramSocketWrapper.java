@@ -15,7 +15,6 @@ package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ import java.net.SocketException;
 @NonNullByDefault
 public class DatagramSocketWrapper {
 
-    private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DatagramSocketWrapper.class);
     @Nullable DatagramSocket datagramSocket;
 
     public void initSocket() throws SocketException {
