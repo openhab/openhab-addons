@@ -15,6 +15,9 @@ package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,26 +33,35 @@ import java.net.SocketException;
 @NonNullByDefault
 public class DatagramSocketWrapper {
 
+    private final Logger logger = LoggerFactory.getLogger(RevogiSmartStripControlHandler.class);
     @Nullable DatagramSocket datagramSocket;
 
     public void initSocket() throws SocketException {
-        if (datagramSocket != null && !datagramSocket.isClosed()) {
-            datagramSocket.close();
-        }
+        closeSocket();
         datagramSocket = new DatagramSocket();
         datagramSocket.setBroadcast(true);
         datagramSocket.setSoTimeout(3);
     }
 
     public void closeSocket() {
-        datagramSocket.close();
+        if (datagramSocket != null && !datagramSocket.isClosed()) {
+            datagramSocket.close();
+        }
     }
 
     public void sendPacket(DatagramPacket datagramPacket) throws IOException {
-        datagramSocket.send(datagramPacket);
+        if (datagramSocket != null && !datagramSocket.isClosed()) {
+            datagramSocket.send(datagramPacket);
+        } else {
+            logger.error("Datagram Socket closed or not initialized");
+        }
     }
 
     public void receiveAnswer(DatagramPacket datagramPacket) throws IOException {
-        datagramSocket.receive(datagramPacket);
+        if (datagramSocket != null && !datagramSocket.isClosed()) {
+            datagramSocket.receive(datagramPacket);
+        } else {
+            logger.error("Datagram Socket closed or not initialized");
+        }
     }
 }
