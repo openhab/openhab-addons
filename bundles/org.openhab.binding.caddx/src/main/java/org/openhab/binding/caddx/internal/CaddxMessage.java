@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * A class that represents the Caddx Alarm Messages.
@@ -394,27 +395,27 @@ public class CaddxMessage {
         frame[fi++] = 0x0a;
 
         // message length
-        String tempString = Util.byteToHex((byte) message.length);
-        frame[fi++] = (byte) tempString.charAt(0);
-        frame[fi++] = (byte) tempString.charAt(1);
+        byte[] tempArray = HexUtils.byteToHex((byte) message.length);
+        frame[fi++] = tempArray[0];
+        frame[fi++] = tempArray[1];
 
         // message
         for (int i = 0; i < message.length; i++) {
             byte b = message[i];
-            tempString = Util.byteToHex(b);
-            frame[fi++] = (byte) tempString.charAt(0);
-            frame[fi++] = (byte) tempString.charAt(1);
+            tempArray = HexUtils.byteToHex(b);
+            frame[fi++] = tempArray[0];
+            frame[fi++] = tempArray[1];
         }
 
         // Checksum 1st byte
-        tempString = Util.byteToHex(checksum1Calc);
-        frame[fi++] = (byte) tempString.charAt(0);
-        frame[fi++] = (byte) tempString.charAt(1);
+        tempArray = HexUtils.byteToHex(checksum1Calc);
+        frame[fi++] = tempArray[0];
+        frame[fi++] = tempArray[1];
 
         // Checksum 2nd byte
-        tempString = Util.byteToHex(checksum2Calc);
-        frame[fi++] = (byte) tempString.charAt(0);
-        frame[fi++] = (byte) tempString.charAt(1);
+        tempArray = HexUtils.byteToHex(checksum2Calc);
+        frame[fi++] = tempArray[0];
+        frame[fi++] = tempArray[1];
 
         // Stop character
         frame[fi++] = (byte) 0x0d;

@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -201,8 +202,11 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                     // Log message
                     if (outgoingMessage != null) {
-                        logger.debug("->: {}", outgoingMessage.getName());
-                        logger.debug("{}", Util.buildCaddxMessageInBinaryString("->: ", outgoingMessage));
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("->: {}", outgoingMessage.getName());
+                            logger.debug("->: {}", HexUtils
+                                    .bytesToHex(outgoingMessage.getMessageFrameBytes(CaddxProtocol.Binary), " "));
+                        }
                     }
                     if (outgoingMessage != null) {
                         expectedMessageNumbers = outgoingMessage.getReplyMessageNumbers();
@@ -229,8 +233,11 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 if (incomingMessage == null) {
                     logger.debug("CaddxCommunicator.run() NoMessage received.");
                 } else {
-                    logger.debug("<-: {}", incomingMessage.getName());
-                    logger.debug("{}", Util.buildCaddxMessageInBinaryString("<-: ", incomingMessage));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("<-: {}", incomingMessage.getName());
+                        logger.debug("<-: {}",
+                                HexUtils.bytesToHex(incomingMessage.getMessageFrameBytes(CaddxProtocol.Binary), " "));
+                    }
                 }
 
                 // Check if we wait for a reply
