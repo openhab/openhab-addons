@@ -62,6 +62,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.eclipse.jetty.websocket.common;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.xml;version='[9.4.20,9.4.21)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.2.11,7.2.12)',\
-	slf4j.simple;version='[1.7.21,1.7.22)',\
-	org.openhab.binding.hue;version='[2.5.3,2.5.4)',\
-	org.openhab.binding.hue.tests;version='[2.5.3,2.5.4)'
+	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
+	org.openhab.binding.hue;version='[2.5.4,2.5.5)',\
+	org.openhab.binding.hue.tests;version='[2.5.4,2.5.5)'
