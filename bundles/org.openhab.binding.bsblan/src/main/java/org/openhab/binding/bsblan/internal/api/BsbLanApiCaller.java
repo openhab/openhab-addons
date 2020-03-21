@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.nio.charset.Charset;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
@@ -37,6 +38,7 @@ import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public class BsbLanApiCaller {
 
     private final Logger logger = LoggerFactory.getLogger(BsbLanApiCaller.class);
@@ -46,13 +48,13 @@ public class BsbLanApiCaller {
         bridgeConfig = config;
     }
 
-    public BsbLanApiParameterQueryResponse queryParameter(Integer parameterId) {
+    public @Nullable BsbLanApiParameterQueryResponse queryParameter(Integer parameterId) {
         Set<Integer> parameters = new HashSet<Integer>();
         parameters.add(parameterId);
         return queryParameters(parameters);
     }
 
-    public BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
+    public @Nullable BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
         // make the request even if parameterIds is empty, thing OFFLINE/ONLINE detection relies on a response
         // if (parameterIds.size() == 0) {
         //     return null;
@@ -115,8 +117,7 @@ public class BsbLanApiCaller {
      * @param content to add to request
      * @return the object representation of the json response
      */
-    @Nullable
-    private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, BsbLanApiContent request) {
+    private <T> @Nullable T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, @Nullable BsbLanApiContent request) {
         try {
             String url = createApiBaseUrl() + apiPath;
             logger.debug("api request url = '{}'", url);
