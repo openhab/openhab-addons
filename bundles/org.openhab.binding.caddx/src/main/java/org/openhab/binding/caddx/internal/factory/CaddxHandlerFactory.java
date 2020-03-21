@@ -82,8 +82,9 @@ public class CaddxHandlerFactory extends BaseThingHandlerFactory {
             return super.createThing(thingTypeUID, configuration, keypadThingUID, bridgeUID);
         }
 
-        throw new IllegalArgumentException(
-                "createThing(): The thing type " + thingTypeUID + " is not supported by the Caddx binding.");
+        logger.debug("createThing(): The thing type {} is not supported by the Caddx binding.", thingTypeUID);
+
+        return null;
     }
 
     @Override

@@ -78,7 +78,8 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
             cmd = channelUID.getId();
             data = command.toString() + "," + String.format("%d", getPartitionNumber() - 1);
         } else {
-            throw new IllegalArgumentException("Unknown command");
+            logger.debug("Unknown command");
+            return;
         }
 
         if (!data.startsWith("-")) {

@@ -339,7 +339,8 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                     keypad = Integer.parseInt(caddxMessage.getPropertyById("keypad_address"));
                     break;
                 default:
-                    throw new IllegalArgumentException("Source has illegal value");
+                    logger.debug("Source has illegal value");
+                    return;
             }
 
             CaddxEvent event = new CaddxEvent(caddxMessage, partition, zone, keypad);

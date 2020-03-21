@@ -137,7 +137,8 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
             cmd = channelUID.getId();
             data = String.format("%d", getZoneNumber() - 1);
         } else {
-            throw new IllegalArgumentException("Unknown command");
+            logger.debug("Unknown command");
+            return;
         }
 
         bridgeHandler.sendCommand(cmd, data);
