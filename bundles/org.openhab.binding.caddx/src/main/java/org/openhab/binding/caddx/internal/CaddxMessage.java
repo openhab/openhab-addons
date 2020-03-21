@@ -27,15 +27,15 @@ import org.eclipse.smarthome.core.util.HexUtils;
  */
 @NonNullByDefault
 public class CaddxMessage {
+    private final CaddxMessageType caddxMessageType;
+    private final Map<String, String> propertyMap = new HashMap<>();
+    private final Map<String, String> idMap = new HashMap<>();
     private byte[] message;
     private boolean hasAcknowledgementFlag = false;
     private byte checksum1In;
     private byte checksum2In;
     private byte checksum1Calc;
     private byte checksum2Calc;
-    private final CaddxMessageType caddxMessageType;
-    private final Map<String, String> propertyMap = new HashMap<>();
-    private final Map<String, String> idMap = new HashMap<>();
 
     /**
      * Constructor.
@@ -76,22 +76,6 @@ public class CaddxMessage {
 
         // Fill-in the properties
         processCaddxMessage();
-    }
-
-    public byte getChecksum1In() {
-        return checksum1In;
-    }
-
-    public byte getChecksum2In() {
-        return checksum2In;
-    }
-
-    public byte getChecksum1Calc() {
-        return checksum1Calc;
-    }
-
-    public byte getChecksum2Calc() {
-        return checksum2Calc;
     }
 
     /**
@@ -243,6 +227,22 @@ public class CaddxMessage {
         return new CaddxMessage(arr, false);
     }
 
+    public byte getChecksum1In() {
+        return checksum1In;
+    }
+
+    public byte getChecksum2In() {
+        return checksum2In;
+    }
+
+    public byte getChecksum1Calc() {
+        return checksum1Calc;
+    }
+
+    public byte getChecksum2Calc() {
+        return checksum2Calc;
+    }
+
     /**
      * Returns the Caddx Message Type.
      *
@@ -318,6 +318,35 @@ public class CaddxMessage {
         } else {
             return getMessageFrameBytesInAscii();
         }
+    }
+
+    public byte[] getMessageBytes() {
+        return message;
+    }
+
+    /**
+     * Returns a string representation of a CaddxMessage.
+     *
+     * @return CaddxMessage string
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        CaddxMessageType mt = CaddxMessageType.valueOfMessageType(message[0]);
+
+        sb.append("Message: ");
+        sb.append(String.format("%2s", Integer.toHexString(message[0])));
+        sb.append(" ");
+        sb.append(mt.name);
+        sb.append("\r\n");
+
+        for (CaddxProperty p : mt.properties) {
+            sb.append("\t" + p.toString(message));
+            sb.append("\r\n");
+        }
+
+        return sb.toString();
     }
 
     private byte[] getMessageFrameBytesInBinary() {
@@ -421,35 +450,6 @@ public class CaddxMessage {
         frame[fi++] = (byte) 0x0d;
 
         return frame;
-    }
-
-    public byte[] getMessageBytes() {
-        return message;
-    }
-
-    /**
-     * Returns a string representation of a CaddxMessage.
-     *
-     * @return CaddxMessage string
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        CaddxMessageType mt = CaddxMessageType.valueOfMessageType(message[0]);
-
-        sb.append("Message: ");
-        sb.append(String.format("%2s", Integer.toHexString(message[0])));
-        sb.append(" ");
-        sb.append(mt.name);
-        sb.append("\r\n");
-
-        for (CaddxProperty p : mt.properties) {
-            sb.append("\t" + p.toString(message));
-            sb.append("\r\n");
-        }
-
-        return sb.toString();
     }
 
     /**

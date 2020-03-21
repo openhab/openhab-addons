@@ -33,6 +33,19 @@ public class CaddxProperty {
     private final boolean external;
     private final String id;
 
+    // Constructor
+    public CaddxProperty(String id, int byteFrom, int byteLength, int bitFrom, int bitLength, String type, String name,
+            boolean external) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.byteFrom = byteFrom;
+        this.byteLength = byteLength;
+        this.bitFrom = bitFrom;
+        this.bitLength = bitLength;
+        this.external = external;
+    }
+
     public String getName() {
         return name;
     }
@@ -47,19 +60,6 @@ public class CaddxProperty {
 
     public String getId() {
         return id;
-    }
-
-    // Constructor
-    public CaddxProperty(String id, int byteFrom, int byteLength, int bitFrom, int bitLength, String type, String name,
-            boolean external) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.byteFrom = byteFrom;
-        this.byteLength = byteLength;
-        this.bitFrom = bitFrom;
-        this.bitLength = bitLength;
-        this.external = external;
     }
 
     public String getValue(byte[] message) {

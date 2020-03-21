@@ -25,8 +25,8 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
 import org.openhab.binding.caddx.internal.CaddxMessage;
-import org.openhab.binding.caddx.internal.CaddxProtocol;
 import org.openhab.binding.caddx.internal.CaddxPanelListener;
+import org.openhab.binding.caddx.internal.CaddxProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +44,7 @@ public class CaddxBridgeDiscovery implements CaddxPanelListener {
 
     private SerialPortManager portManager;
     private CaddxDiscoveryService caddxDiscoveryService;
+    private volatile boolean bridgeFound = false;
 
     /**
      * Constructor.
@@ -82,8 +83,6 @@ public class CaddxBridgeDiscovery implements CaddxPanelListener {
             }
         }
     }
-
-    volatile boolean bridgeFound = false;
 
     private boolean checkforBridge(CaddxProtocol protocol, String serialPort, int baudrate)
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {

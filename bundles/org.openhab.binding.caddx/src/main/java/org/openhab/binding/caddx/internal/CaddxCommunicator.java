@@ -45,27 +45,27 @@ import org.slf4j.LoggerFactory;
 public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxCommunicator.class);
 
+    private final SerialPortManager portManager;
     private final ArrayList<CaddxPanelListener> listenerQueue = new ArrayList<>();
-
-    private Thread thread;
     private final LinkedBlockingDeque<CaddxMessage> messages = new LinkedBlockingDeque<>();
 
+    private Thread thread;
     private CaddxProtocol protocol;
     private String serialPortName;
     private int baudRate;
-    private final SerialPortManager portManager;
     private SerialPort serialPort;
     private @Nullable InputStream in;
     private @Nullable OutputStream out;
     Exchanger<CaddxMessage> exchanger = new Exchanger<>();
 
-    public void addListener(CaddxPanelListener listener) {
-        logger.trace("CaddxCommunicator.addListener() Started");
-
-        if (!listenerQueue.contains(listener)) {
-            listenerQueue.add(listener);
-        }
-    }
+    // Receiver state variables
+    private boolean inMessage = false;
+    private boolean haveMessageLength = false;
+    private boolean haveFirstByte = false;
+    private int messageBufferLength = 0;
+    private byte[] message;
+    private int messageBufferIndex = 0;
+    private boolean unStuff = false;
 
     public CaddxCommunicator(SerialPortManager portManager, CaddxProtocol protocol, String serialPortName, int baudRate)
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
@@ -99,6 +99,53 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         logger.trace("CaddxCommunicator communication thread started successfully for {}", serialPortName);
     }
 
+    public CaddxProtocol getProtocol() {
+        return protocol;
+    }
+
+    public String getSerialPortName() {
+        return serialPortName;
+    }
+
+    public int getBaudRate() {
+        return baudRate;
+    }
+
+    public void addListener(CaddxPanelListener listener) {
+        logger.trace("CaddxCommunicator.addListener() Started");
+
+        if (!listenerQueue.contains(listener)) {
+            listenerQueue.add(listener);
+        }
+    }
+
+    /**
+     * Send message to panel. Asynchronous, i.e. returns immediately.
+     * Messages are sent only when panel is ready (i.e. sent an
+     * acknowledgment to last message), but no checks are implemented that
+     * the message was correctly received and executed.
+     *
+     * @param msg Data to be sent to panel. First byte is message type.
+     *            Fletcher sum is computed and appended by transmit.
+     */
+    public void transmit(CaddxMessage msg) { // byte... msg) {
+        logger.trace("CaddxCommunicator.transmit() Started");
+
+        messages.add(msg);
+    }
+
+    /**
+     * Adds this message before any others in the queue.
+     * Used by receiver to send ACKs.
+     *
+     * @param msg The message
+     */
+    public void transmitFirst(CaddxMessage msg) {
+        logger.trace("CaddxCommunicator.transmitFirst() Started");
+
+        messages.addFirst(msg);
+    }
+
     public void stop() {
         logger.trace("CaddxCommunicator.stop() Started");
 
@@ -127,45 +174,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         // Also close the serial port
         serialPort.removeEventListener();
         serialPort.close();
-    }
-
-    public CaddxProtocol getProtocol() {
-        return protocol;
-    }
-
-    public String getSerialPortName() {
-        return serialPortName;
-    }
-
-    public int getBaudRate() {
-        return baudRate;
-    }
-
-    /**
-     * Send message to panel. Asynchronous, i.e. returns immediately.
-     * Messages are sent only when panel is ready (i.e. sent an
-     * acknowledgment to last message), but no checks are implemented that
-     * the message was correctly received and executed.
-     *
-     * @param msg Data to be sent to panel. First byte is message type.
-     *            Fletcher sum is computed and appended by transmit.
-     */
-    public void transmit(CaddxMessage msg) { // byte... msg) {
-        logger.trace("CaddxCommunicator.transmit() Started");
-
-        messages.add(msg);
-    }
-
-    /**
-     * Adds this message before any others in the queue.
-     * Used by receiver to send ACKs.
-     *
-     * @param msg The message
-     */
-    public void transmitFirst(CaddxMessage msg) {
-        logger.trace("CaddxCommunicator.transmitFirst() Started");
-
-        messages.addFirst(msg);
     }
 
     @SuppressWarnings("null")
@@ -307,15 +315,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         logger.warn("CaddxCommunicator.run() Sender thread stopped. {}", getSerialPortName());
     }
-
-    // Receiver state variables
-    private volatile boolean inMessage = false;
-    private volatile boolean haveMessageLength = false;
-    private volatile boolean haveFirstByte = false;
-    private int messageBufferLength = 0;
-    private byte[] message;
-    private int messageBufferIndex = 0;
-    private boolean unStuff = false;
 
     /**
      * Event handler to receive the data from the serial port
