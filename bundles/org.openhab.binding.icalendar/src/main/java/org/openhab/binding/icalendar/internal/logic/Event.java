@@ -13,7 +13,7 @@
 package org.openhab.binding.icalendar.internal.logic;
 
 import java.time.Instant;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +31,7 @@ public class Event {
     public final Instant start;
     public final Instant end;
 
-    public final List<CommandTag> commandTags = new LinkedList<CommandTag>();
+    public final List<CommandTag> commandTags = new ArrayList<CommandTag>();
 
     public Event(String title, Instant start, Instant end, String description) {
         this.title = title;

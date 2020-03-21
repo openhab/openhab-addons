@@ -128,6 +128,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn(
                     "The URI '{}' for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
                     currentConfiguration.url, e);
+            updateStatus(ThingStatus.OFFLINE);
             return;
         }
 

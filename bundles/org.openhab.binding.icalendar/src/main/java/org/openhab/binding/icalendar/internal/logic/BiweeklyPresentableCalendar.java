@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,9 +81,9 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getNextEvent(Instant instant) {
-        List<VEventWPeriod> candidates = new LinkedList<VEventWPeriod>();
-        List<VEvent> negativeEvents = new LinkedList<VEvent>();
-        List<VEvent> positiveEvents = new LinkedList<VEvent>();
+        Collection<VEventWPeriod> candidates = new ArrayList<VEventWPeriod>();
+        Collection<VEvent> negativeEvents = new ArrayList<VEvent>();
+        Collection<VEvent> positiveEvents = new ArrayList<VEvent>();
         classifyEvents(positiveEvents, negativeEvents);
         for (VEvent currentEvent : positiveEvents) {
             DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
@@ -123,7 +125,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @param counterEvents Events that may counter.
      * @return True if a counter event exists that matches uid and start, else false.
      */
-    private boolean isCounteredBy(Instant startInstant, Uid eventUid, List<VEvent> counterEvents) {
+    private boolean isCounteredBy(Instant startInstant, Uid eventUid, Collection<VEvent> counterEvents) {
         boolean ignoreThis = false;
         for (VEvent counterEvent : counterEvents) {
             @Nullable
@@ -150,8 +152,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return A VEventWPeriod describing the event or null if there is none.
      */
     private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant) {
-        List<VEvent> negativeEvents = new LinkedList<VEvent>();
-        List<VEvent> positiveEvents = new LinkedList<VEvent>();
+        List<VEvent> negativeEvents = new ArrayList<VEvent>();
+        List<VEvent> positiveEvents = new ArrayList<VEvent>();
         classifyEvents(positiveEvents, negativeEvents);
 
         for (VEvent currentEvent : positiveEvents) {
@@ -186,12 +188,12 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @param positiveEvents A List where to add positive ones.
      * @param negativeEvents A List where to add negative ones.
      */
-    private void classifyEvents(List<VEvent> positiveEvents, List<VEvent> negativeEvents) {
+    private void classifyEvents(Collection<VEvent> positiveEvents, Collection<VEvent> negativeEvents) {
         for (VEvent currentEvent : usedCalendar.getEvents()) {
             @Nullable
             Status eventStatus = currentEvent.getStatus();
             boolean positive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
-            List<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
+            Collection<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
             positiveOrNegativeEvents.add(currentEvent);
         }
     }
