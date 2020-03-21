@@ -166,9 +166,9 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        double lastWeek = -1;
-        double thisWeek = -1;
-        double yesterday = -1;
+        Double lastWeek = Double.NaN;
+        Double thisWeek = Double.NaN;
+        Double yesterday = Double.NaN;
         LinkyConsumptionData result = cachedDaylyData.getValue();
         if (result != null && result.success()) {
             LocalDate rangeStart = LocalDate.now().minusDays(13);
@@ -180,9 +180,9 @@ public class LinkyHandler extends BaseThingHandler {
 
             int lastWeekNumber = rangeStart.get(weekFields.weekOfWeekBasedYear());
 
-            lastWeek = 0;
-            thisWeek = 0;
-            yesterday = -1;
+            lastWeek = 0.0;
+            thisWeek = 0.0;
+            yesterday = Double.NaN;
             while (jump < result.getData().size()) {
                 double consumption = result.getData().get(jump).valeur;
                 if (consumption > 0) {
@@ -214,15 +214,15 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        double lastMonth = -1;
-        double thisMonth = -1;
+        Double lastMonth = Double.NaN;
+        Double thisMonth = Double.NaN;
         LinkyConsumptionData result = cachedMonthlyData.getValue();
         if (result != null && result.success()) {
             int jump = result.getDecalage();
             lastMonth = result.getData().get(jump).valeur;
             thisMonth = result.getData().get(jump + 1).valeur;
             if (thisMonth < 0) {
-                thisMonth = 0;
+                thisMonth = 0.0;
             }
         } else {
             cachedMonthlyData.invalidateValue();
@@ -239,13 +239,13 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        double thisYear = -1;
-        double lastYear = -1;
+        Double thisYear = Double.NaN;
+        Double lastYear = Double.NaN;
         LinkyConsumptionData result = cachedYearlyData.getValue();
         if (result != null && result.success()) {
             int elementQuantity = result.getData().size();
-            thisYear = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : -1;
-            lastYear = elementQuantity > 1 ? result.getData().get(elementQuantity - 2).valeur : -1;
+            thisYear = elementQuantity > 0 ? result.getData().get(elementQuantity - 1).valeur : Double.NaN;
+            lastYear = elementQuantity > 1 ? result.getData().get(elementQuantity - 2).valeur : Double.NaN;
         } else {
             cachedYearlyData.invalidateValue();
         }
@@ -253,10 +253,10 @@ public class LinkyHandler extends BaseThingHandler {
         updateKwhChannel(THIS_YEAR, thisYear);
     }
 
-    private void updateKwhChannel(String channelId, double consumption) {
+    private void updateKwhChannel(String channelId, Double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
-        updateState(channelId,
-                consumption != -1 ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR) : UnDefType.UNDEF);
+        updateState(channelId, consumption != Double.NaN ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR)
+                : UnDefType.UNDEF);
     }
 
     /**
