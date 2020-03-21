@@ -1,32 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="fox"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>Fox Binding Thing</label>
-		<description>Sample thing for Fox Binding</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel" />
-		</channels>
-
-		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample Parameter</label>
-				<description>This is a sample text configuration parameter</description>
-			</parameter>
-		</config-description>
-
-	</thing-type>
-
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>foxItem</item-type>
-		<label>Fox Binding Channel</label>
-		<description>Sample channel for Fox Binding</description>
-	</channel-type>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="system">
+        <label>Fox</label>
+        <description>Nexwell Fox System</description>
+        <channels>
+            <channel id="taskCommand" typeId="taskRequest" />
+            <channel id="taskState" typeId="taskExecuted" />
+            <channel id="resultTrigger" typeId="resultNotice" />
+            <channel id="resultState" typeId="resultAcquired" />
+        </channels>
+        <config-description>
+            <parameter name="gateHost" type="text" required="true">
+                <label>Connection address</label>
+                <description>Fox System net address - IP or domain, with an optional port (default: 23).</description>
+            </parameter>
+            <parameter name="gatePassword" type="text" required="false">
+                <label>Connection password</label>
+                <description>Access password as set by FoxMaker application.</description>
+            </parameter>
+            <parameter name="functions" type="text" required="false">
+                <label>Tasks and Results list</label>
+                <description>List of system Tasks and Results. Use Generate API option in FoxMaker application to obtain proper API configuration in JSON format.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <channel-type id="taskRequest">
+        <item-type>String</item-type>
+        <label>Task request</label>
+        <description>Sending Task requests to the Fox System.</description>
+        <command>
+        </command>
+    </channel-type>
+    <channel-type id="taskExecuted">
+        <item-type>String</item-type>
+        <label>Task executed</label>
+        <description>Last Task executed in the Fox System.</description>
+        <state readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="resultNotice">
+        <kind>trigger</kind>
+        <label>Result notice</label>
+        <description>Receiving Results returned from the Fox System.</description>
+        <event>
+        </event>
+    </channel-type>
+    <channel-type id="resultAcquired">
+        <item-type>String</item-type>
+        <label>Result acquired</label>
+        <description>Last Result returned by the Fox System.</description>
+        <state readOnly="true">
+        </state>
+    </channel-type>
 
 </thing:thing-descriptions>

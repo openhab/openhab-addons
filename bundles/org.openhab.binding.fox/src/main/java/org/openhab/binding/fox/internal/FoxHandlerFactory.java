@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.fox.internal;
 
-import static org.openhab.binding.fox.internal.FoxBindingConstants.*;
+import static org.openhab.binding.fox.internal.FoxBindingConstants.THING_TYPE_SYSTEM;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -25,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link FoxHandlerFactory} is responsible for creating things and thing
@@ -32,11 +32,17 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Kamil Subzda - Initial contribution
  */
-@NonNullByDefault
+
 @Component(configurationPid = "binding.fox", service = ThingHandlerFactory.class)
 public class FoxHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYSTEM);
+
+    @Reference
+    private FoxDynamicStateDescriptionProvider stateDescriptionProvider;
+
+    @Reference
+    private FoxDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,8 +53,8 @@ public class FoxHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new FoxHandler(thing);
+        if (THING_TYPE_SYSTEM.equals(thingTypeUID)) {
+            return new FoxHandler(thing, stateDescriptionProvider, commandDescriptionProvider);
         }
 
         return null;
