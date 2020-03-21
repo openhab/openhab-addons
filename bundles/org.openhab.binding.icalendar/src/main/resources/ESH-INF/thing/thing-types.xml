@@ -54,44 +54,44 @@
 
 	<channel-type id="event_current_title">
 		<item-type>String</item-type>
-		<label>current event title</label>
-		<description>title of a currently present event</description>
+		<label>Current event title</label>
+		<description>Title of a currently present event</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="event_current_start">
 		<item-type>DateTime</item-type>
-		<label>current event start</label>
-		<description>start of a currently present event</description>
+		<label>Current event start</label>
+		<description>Start of a currently present event</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="event_current_end">
 		<item-type>DateTime</item-type>
-		<label>current event end</label>
-		<description>end of a currently present event</description>
+		<label>Current event end</label>
+		<description>End of a currently present event</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="event_current_presence">
 		<item-type>Switch</item-type>
-		<label>current event presence</label>
-		<description>current presence of a event</description>
+		<label>Current event presence</label>
+		<description>Current presence of an event</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="event_next_title">
 		<item-type>String</item-type>
-		<label>next event title</label>
-		<description>title of the next event</description>
+		<label>Next event title</label>
+		<description>Title of the next event</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="event_next_start">
 		<item-type>DateTime</item-type>
-		<label>next event start</label>
-		<description>start of the next event</description>
+		<label>Next event start</label>
+		<description>Start of the next event</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="event_next_end">
 		<item-type>DateTime</item-type>
-		<label>next event end</label>
-		<description>end of the next event</description>
+		<label>Next event end</label>
+		<description>End of the next event</description>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

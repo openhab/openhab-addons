@@ -15,6 +15,8 @@ package org.openhab.binding.icalendar.internal.logic;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -26,28 +28,28 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This is a class that implements a Command Tag that may be embedded in an
  * Event Description. Valid Tags must follow one of the following forms..
- * 
- *   BEGIN:<itemName>:<targetState>
- *   BEGIN:<itemName>:<targetState>:<authorizationCode>
- *   END:<itemName>:<targetState> END:<itemName>:<targetState>:<authorizationCode>
- * 
+ *
+ * BEGIN:<itemName>:<targetState>
+ * BEGIN:<itemName>:<targetState>:<authorizationCode>
+ * END:<itemName>:<targetState> END:<itemName>:<targetState>:<authorizationCode>
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
+@NonNullByDefault
 public class CommandTag {
-    private String itemName;
-    private String targetState;
+    private @Nullable String itemName;
+    private @Nullable String targetState;
     private String fullTag;
-    private CommandTagType tagType;
+    private @Nullable CommandTagType tagType;
     private boolean isValid = false;
-    private String authorizationCode;
+    private @Nullable String authorizationCode;
 
     private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
 
@@ -66,10 +68,10 @@ public class CommandTag {
     }
 
     public String getFullTag() {
-        return fullTag != null ? fullTag : "";
+        return fullTag;
     }
 
-    public CommandTagType getTagType() {
+    public @Nullable CommandTagType getTagType() {
         return tagType;
     }
 
@@ -94,15 +96,19 @@ public class CommandTag {
             logger.trace("Input line \"{}\" => Bad tag prefix!", fullTag);
             return;
         }
-        itemName = fields[1].trim();
-        if (itemName == null || itemName.isEmpty()) {
+        String newItemName = fields[1].trim();
+        if (newItemName.isEmpty()) {
             logger.trace("Input line \"{}\" => Item name empty!", fullTag);
             return;
+        } else {
+            itemName = newItemName;
         }
-        targetState = fields[2].trim();
-        if (targetState == null || targetState.isEmpty()) {
+        String newTargetState = fields[2].trim();
+        if (newTargetState.isEmpty()) {
             logger.trace("Input line \"{}\" => Target State empty!", fullTag);
             return;
+        } else {
+            targetState = newTargetState;
         }
         isValid = true;
         if (fields.length > 3) {
@@ -110,6 +116,7 @@ public class CommandTag {
         }
     }
 
+    @Nullable
     public static CommandTag createCommandTag(String line) {
         if (CommandTagType.prefixValid(line)) {
             CommandTag tag = new CommandTag(line.trim());
@@ -119,38 +126,39 @@ public class CommandTag {
         }
     }
 
-    public boolean isAuthorized(String userAuthorizationCode) {
+    public boolean isAuthorized(@Nullable String userAuthorizationCode) {
         return isValid && (userAuthorizationCode == null || userAuthorizationCode.isEmpty()
                 || userAuthorizationCode.equals(authorizationCode));
     }
 
-    public Command getCommand() {
-        if (targetState == null || targetState.isEmpty()) {
+    public @Nullable Command getCommand() {
+        String currentTargetState = targetState;
+        if (currentTargetState == null || currentTargetState.isEmpty()) {
             return null;
         }
 
         // string is in double quotes => force StringType
-        if (targetState.startsWith("\"") && targetState.endsWith("\"")) {
-            return new StringType(targetState.replaceAll("\"", ""));
+        if (currentTargetState.startsWith("\"") && currentTargetState.endsWith("\"")) {
+            return new StringType(currentTargetState.replaceAll("\"", ""));
         }
 
         // string is in single quotes => ditto
-        if (targetState.startsWith("'") && targetState.endsWith("'")) {
-            return new StringType(targetState.replaceAll("'", ""));
+        if (currentTargetState.startsWith("'") && currentTargetState.endsWith("'")) {
+            return new StringType(currentTargetState.replaceAll("'", ""));
         }
 
         Command cmd;
 
         // string ends with % => try PercentType
-        if (targetState.endsWith("%")) {
+        if (currentTargetState.endsWith("%")) {
             if ((cmd = TypeParser.parseCommand(percentCommandType,
-                    targetState.substring(0, targetState.length() - 1))) != null) {
+                    currentTargetState.substring(0, currentTargetState.length() - 1))) != null) {
                 return cmd;
             }
         }
 
         // try all other possible CommandTypes
-        if ((cmd = TypeParser.parseCommand(otherCommandTypes, targetState)) != null) {
+        if ((cmd = TypeParser.parseCommand(otherCommandTypes, currentTargetState)) != null) {
             return cmd;
         }
 

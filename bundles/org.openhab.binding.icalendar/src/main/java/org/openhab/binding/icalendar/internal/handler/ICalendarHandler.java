@@ -292,7 +292,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.getFullTag());
                     continue;
                 }
-                if (!cmdTag.getItemName().matches("^\\w+$")) {
+                String itemName = cmdTag.getItemName();
+                if (itemName == null || !itemName.matches("^\\w+$")) {
                     logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title,
                             cmdTag.getFullTag());
                     continue;
@@ -306,8 +307,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
                 // (try to) execute the command
                 try {
-                    syncEventPublisherCallback
-                            .post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
+                    syncEventPublisherCallback.post(ItemEventFactory.createCommandEvent(itemName, cmdState));
                     if (logger.isDebugEnabled()) {
                         String cmdType = cmdState.getClass().toString();
                         int index = cmdType.lastIndexOf(".") + 1;
@@ -317,14 +317,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                         logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
                                 cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
                     }
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Illegal Argument exception!", event.title,
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    logger.warn("Event: {}, Command Tag: {} => Could not be pushed to target item.", event.title,
                             cmdTag.getFullTag());
-                } catch (IllegalStateException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Illegal State exception!", event.title,
-                            cmdTag.getFullTag());
+                    logger.debug("Exception occured while pushing to item.", e);
                 }
-
             }
         }
     }

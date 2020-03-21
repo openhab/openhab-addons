@@ -53,15 +53,12 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     private final ICalendar usedCalendar;
 
     BiweeklyPresentableCalendar(InputStream streamed) throws IOException, CalendarException {
-        ICalReader reader = new ICalReader(streamed);
-        try {
+        try (ICalReader reader = new ICalReader(streamed)) {
             ICalendar currentCalendar = reader.readNext();
             if (currentCalendar == null) {
                 throw new CalendarException("No calendar was parsed.");
             }
             this.usedCalendar = currentCalendar;
-        } finally {
-            reader.close();
         }
     }
 
@@ -245,9 +242,9 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @author Michael Wodniok - Initial contribution.
      */
     private static class VEventWPeriod {
-        VEvent vEvent;
-        Instant start;
-        Instant end;
+        final VEvent vEvent;
+        final Instant start;
+        final Instant end;
 
         VEventWPeriod(VEvent vEvent, Instant start, Instant end) {
             this.vEvent = vEvent;

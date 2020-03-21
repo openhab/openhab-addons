@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.icalendar.internal.logic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * An type enumerator to indicate whether a Command Tag is of type BEGIN or END; as in the following examples:
  *
- *     BEGIN:<item_name>:<new_state>
- *     END:<item_name>:<new_state>
+ * BEGIN:<item_name>:<new_state>
+ * END:<item_name>:<new_state>
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
+@NonNullByDefault
 public enum CommandTagType {
     BEGIN,
     END;
 
-    public static boolean prefixValid(String line) {
+    public static boolean prefixValid(@Nullable String line) {
         return (line != null) && (line.startsWith(BEGIN.toString()) || line.startsWith(END.toString()));
     }
 

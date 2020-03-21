@@ -27,11 +27,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Event {
-    public String title;
-    public Instant start;
-    public Instant end;
+    public final String title;
+    public final Instant start;
+    public final Instant end;
 
-    public List<CommandTag> commandTags = new LinkedList<CommandTag>();
+    public final List<CommandTag> commandTags = new LinkedList<CommandTag>();
 
     public Event(String title, Instant start, Instant end, String description) {
         this.title = title;
