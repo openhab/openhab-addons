@@ -89,6 +89,10 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void switchPlug(Command command, int port) {
+        if (config == null) {
+            logger.error("No config available, config object was null");
+            return;
+        }
         if (command instanceof OnOffType) {
             int state = convertOnOffTypeToState(command);
             switchService.switchPort(config.getSerialNumber(), config.ipAddress, port, state);
@@ -129,6 +133,10 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void updateStripInformation() {
+        if (config == null) {
+            logger.error("No config available, config object was null");
+            return;
+        }
         Status status = statusService.queryStatus(config.getSerialNumber(), config.getIpAddress());
         if (status.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
