@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -43,8 +45,6 @@ public class NeoBaseHandler extends BaseThingHandler {
     /*
      * error messages
      */
-    private static final String MSG_HUB_CONFIG = "hub needs to be initialized!";
-    private static final String MSG_HUB_COMM = "error communicating with the hub!";
     private static final String MSG_FMT_DEVICE_CONFIG = "device {} needs to configured in hub!";
     private static final String MSG_FMT_DEVICE_COMM = "device {} not communicating with hub!";
     private static final String MSG_FMT_COMMAND_OK = "command for {} succeeded.";
@@ -97,14 +97,14 @@ public class NeoBaseHandler extends BaseThingHandler {
      */
     private boolean refreshStateOnline(NeoHubHandler hub) {
         if (hub == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
-            logger.warn("Unexpected situation - please report a bug: " + MSG_HUB_CONFIG);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            logger.warn(MSG_HUB_CONFIG);
             return false;
         }
 
         if (!hub.isConfigured(config.deviceNameInHub)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
-            logger.warn("Unexpected situation - please report a bug: " + MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
             return false;
         }
 
@@ -173,7 +173,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                     break;
 
                 case ERR_INITIALIZATION:
-                    logger.warn("Unexpected situation - please report a bug: " + MSG_HUB_CONFIG);
+                    logger.warn(MSG_HUB_CONFIG);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                     break;
                 }

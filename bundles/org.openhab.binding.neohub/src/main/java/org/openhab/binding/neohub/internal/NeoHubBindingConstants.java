@@ -116,5 +116,13 @@ public class NeoHubBindingConstants {
      */
     public static final String VAL_OFF = "Off";
     public static final String VAL_HEATING = "Heating";
+    
+    /*
+     * logger message strings
+     */
+    private static final String PLEASE_REPORT_BUG = "Unexpected situation - please report a bug: ";
+    public static final String MSG_HUB_CONFIG = PLEASE_REPORT_BUG + "hub needs to be initialized!";
+    public static final String MSG_HUB_COMM = PLEASE_REPORT_BUG + "error communicating with the hub!";
+    public static final String MSG_FMT_POLL_ERR = "Polling error: {}";
 
 }

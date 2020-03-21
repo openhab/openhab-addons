@@ -48,7 +48,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
     private NeoHubConfiguration config;
     private NeoHubSocket socket;
 
-    private NeoHubInfoResponse lastInfoResponse = null;
+    private NeoHubInfoResponse cachedInfoResponse = null;
 
     private ScheduledFuture<?> lazyPollingScheduler;
     private ScheduledFuture<?> fastPollingScheduler;
@@ -179,25 +179,51 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * 
      */
     protected NeoHubInfoResponse fromNeoHubFetchPollingResponse() {
-        if (socket == null || config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+        if (socket == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.warn(MSG_HUB_COMM);
+            cachedInfoResponse = null;
+            return null;
+        }
+
+        if (config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            logger.warn(MSG_HUB_CONFIG);
+            cachedInfoResponse = null;
             return null;
         }
 
         try {
             @Nullable
             String response = socket.sendMessage(CMD_CODE_INFO);
+            
+            NeoHubInfoResponse tempInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
+            if (tempInfoResponse == null) {
+                logger.warn(MSG_FMT_POLL_ERR, "failed to create InfoResponse");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                cachedInfoResponse = null;
+                return null;
+            }
 
-            lastInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
+            if (tempInfoResponse.getDevices() == null) {
+                logger.warn(MSG_FMT_POLL_ERR, "no devices found");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                cachedInfoResponse = null;
+                return null;
+            }
+
+            cachedInfoResponse = tempInfoResponse; 
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
 
-            return lastInfoResponse;
+            return cachedInfoResponse;
+
         } catch (Exception e) {
-            logger.warn("set value error \"{}\"", e.getMessage());
+            logger.warn(MSG_FMT_POLL_ERR, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            cachedInfoResponse = null;
             return null;
         }
     }
@@ -210,14 +236,14 @@ public class NeoHubHandler extends BaseBridgeHandler {
     private synchronized void lazyPollingSchedulerExecute() {
         fromNeoHubFetchPollingResponse();
 
-        if (lastInfoResponse != null) {
+        if (cachedInfoResponse != null) {
             List<Thing> children = getThing().getThings();
 
-            // dispatch the infoResponse to each of the hub's owned devices ..
+            // dispatch the cachedInfoResponse to each of the hub's owned devices ..
             for (Thing child : children) {
                 ThingHandler device = child.getHandler();
                 if (device instanceof NeoBaseHandler) {
-                    ((NeoBaseHandler) device).toBaseSendPollResponse(this, lastInfoResponse);
+                    ((NeoBaseHandler) device).toBaseSendPollResponse(this, cachedInfoResponse);
                 }
             }
         }
@@ -244,10 +270,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * 
      */
     public boolean isConfigured(String deviceName) {
-        if (lastInfoResponse == null) {
+        if (cachedInfoResponse == null) {
             fromNeoHubFetchPollingResponse();
         }
-        return lastInfoResponse != null && lastInfoResponse.getDeviceInfo(deviceName) != null;
+        return cachedInfoResponse != null && cachedInfoResponse.getDeviceInfo(deviceName) != null;
     }
 
     /**
@@ -258,7 +284,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      */
     public boolean isOnline(String deviceName) {
         DeviceInfo deviceInfo;
-        return isConfigured(deviceName) && (deviceInfo = lastInfoResponse.getDeviceInfo(deviceName)) != null
+        return isConfigured(deviceName) && (deviceInfo = cachedInfoResponse.getDeviceInfo(deviceName)) != null
                 && !deviceInfo.isOffline();
     }
 }
