@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sensebox.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
 import java.math.BigDecimal;
@@ -27,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -287,7 +287,7 @@ public class SenseBoxHandler extends BaseThingHandler {
                         // Some stations report measurements in Pascal, but send 'hPa' as units...
                         bd = bd.divide(ONEHUNDRED);
                     }
-                    result = new QuantityType<>(bd, HECTO(SIUnits.PASCAL));
+                    result = new QuantityType<>(bd, MetricPrefix.HECTO(SIUnits.PASCAL));
                     break;
                 case "lx":
                     result = new QuantityType<>(bd, SmartHomeUnits.LUX);
