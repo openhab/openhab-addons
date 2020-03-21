@@ -72,7 +72,6 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
      *
      * @param address the {@link BluetoothAddress} to retrieve
      * @return the {@link BluetoothDevice}
-     * @throws IllegalArgumentException if the address is no valid hardware address
      */
     BluetoothDevice getDevice(BluetoothAddress address);
 
@@ -83,5 +82,13 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
      */
     @Nullable
     String getLocation();
+
+    /**
+     * Checks if this adapter has a device with the given {@link BluetoothAddress}.
+     *
+     * @param address the {@link BluetoothAddress} to check for
+     * @return true if this adapter has a {@link BluetoothDevice} with that address
+     */
+    boolean hasDevice(BluetoothAddress address);
 
 }

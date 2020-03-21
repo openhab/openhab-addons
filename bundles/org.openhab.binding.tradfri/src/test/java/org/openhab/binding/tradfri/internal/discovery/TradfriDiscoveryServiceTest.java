@@ -32,7 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryService;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 import com.google.gson.JsonObject;
@@ -51,7 +50,23 @@ public class TradfriDiscoveryServiceTest {
     @Mock
     private TradfriGatewayHandler handler;
 
-    private DiscoveryListener listener;
+    private final DiscoveryListener listener = new DiscoveryListener() {
+        @Override
+        public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+        }
+
+        @Override
+        public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+            discoveryResult = result;
+        }
+
+        @Override
+        public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+                Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+            return null;
+        }
+    };
+
     private DiscoveryResult discoveryResult;
 
     private TradfriDiscoveryService discovery;
@@ -59,25 +74,11 @@ public class TradfriDiscoveryServiceTest {
     @Before
     public void setUp() {
         initMocks(this);
+
         when(handler.getThing()).thenReturn(BridgeBuilder.create(GATEWAY_TYPE_UID, "1").build());
-        discovery = new TradfriDiscoveryService(handler);
 
-        listener = new DiscoveryListener() {
-            @Override
-            public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-            }
-
-            @Override
-            public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-                discoveryResult = result;
-            }
-
-            @Override
-            public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                    Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
-                return null;
-            }
-        };
+        discovery = new TradfriDiscoveryService();
+        discovery.setThingHandler(handler);
         discovery.addDiscoveryListener(listener);
     }
 
@@ -88,13 +89,16 @@ public class TradfriDiscoveryServiceTest {
 
     @Test
     public void correctSupportedTypes() {
-        assertThat(discovery.getSupportedThingTypes().size(), is(6));
+        assertThat(discovery.getSupportedThingTypes().size(), is(9));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_DIMMABLE_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_COLOR_TEMP_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_COLOR_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_DIMMER));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_MOTION_SENSOR));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_REMOTE_CONTROL));
+        assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL));
+        assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_ONOFF_PLUG));
+        assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_BLINDS));
     }
 
     @Test

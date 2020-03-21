@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
  * Class to implement the BlueGiga command <b>indicatedEvent</b>.
@@ -27,16 +28,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaIndicatedEvent extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaIndicatedEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x00;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Attribute handle
@@ -59,16 +54,6 @@ public class BlueGigaIndicatedEvent extends BlueGigaResponse {
         attrhandle = deserializeUInt16();
     }
 
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
     /**
      * Attribute handle
      * <p>

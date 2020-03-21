@@ -14,5 +14,5 @@ The mapping is structured like this:
 
 * The HomeAssistant Fan Components only support ON/OFF.
 * The HomeAssistant Cover Components only support OPEN/CLOSE/STOP.
-* The HomeAssistant Light Component does not support XY color changes.
+* The HomeAssistant Light Component only supports RGB color changes.
 * The HomeAssistant Climate Components is not yet supported.

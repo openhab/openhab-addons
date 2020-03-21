@@ -42,7 +42,8 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (channelId.equals(CHANNEL_CONTACT)) {
             EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
@@ -58,8 +59,8 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
 
     @Override
     protected boolean validateData(byte[] bytes) {
-        // FPE just sends 0b00010000 or 0b00000000 value, so we apply mask 0b11101111 
-        return super.validateData(bytes)  && ((bytes[0] & (byte) 0xEF) == (byte) 0x00);
+        // FPE just sends 0b00010000 or 0b00000000 value, so we apply mask 0b11101111
+        return super.validateData(bytes) && ((bytes[0] & (byte) 0xEF) == (byte) 0x00);
     }
 
 }

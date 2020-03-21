@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeValueType;
 
 /**
@@ -28,16 +29,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeValu
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaAttributeValueEvent extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaAttributeValueEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x05;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Attribute handle
@@ -77,16 +72,6 @@ public class BlueGigaAttributeValueEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * Attribute handle
      * <p>
      * BlueGiga API type is <i>uint16</i> - Java type is {@link int}
@@ -96,6 +81,7 @@ public class BlueGigaAttributeValueEvent extends BlueGigaResponse {
     public int getAttHandle() {
         return attHandle;
     }
+
     /**
      * Attribute type
      * <p>
@@ -106,6 +92,7 @@ public class BlueGigaAttributeValueEvent extends BlueGigaResponse {
     public AttributeValueType getType() {
         return type;
     }
+
     /**
      * Attribute value (data)
      * <p>
