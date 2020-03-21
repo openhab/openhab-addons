@@ -154,8 +154,7 @@ public class EnergenieHandler extends BaseThingHandler {
                 }
                 return Boolean.TRUE;
             } catch (final UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Can't find host");
-                logger.debug("Can't find host: {}:{}.", host, TCP_PORT, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Can't find host: " + e.getMessage());
             } catch (final IOException e) {
                 logger.debug("Couldn't get I/O for the connection to: {}:{}.", host, TCP_PORT, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

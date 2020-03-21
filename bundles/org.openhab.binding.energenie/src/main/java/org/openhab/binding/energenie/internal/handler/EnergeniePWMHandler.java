@@ -120,8 +120,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
     private String password = "";
     private int refreshInterval;
 
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     public EnergeniePWMHandler(Thing thing) {
         super(thing);
@@ -180,8 +179,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
                     HttpUtil.executeUrl("POST", url, HTTP_TIMEOUT_MILLISECONDS);
                     logger.trace("logout from ip {}", host);
                 } catch (IOException e) {
-                    logger.debug("failed to logout from {} with ip {}", thing.getUID(), host, e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "failed to logout: "+ e.getMessage());
                 }
             }
 

@@ -14,6 +14,7 @@ package org.openhab.binding.energenie.internal.handler;
 
 import static org.openhab.binding.energenie.internal.EnergenieBindingConstants.*;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,7 +23,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +40,6 @@ class EnergenieSocket {
     private static final byte[] MESSAGE = { 0x11 };
 
     private final Logger logger = LoggerFactory.getLogger(EnergenieSocket.class);
-
-    private @Nullable Socket socket = null;
-    private @Nullable OutputStream output = null;
-    private @Nullable InputStream input = null;
-
     private final String host;
     private final byte[] key;
 
@@ -63,10 +58,9 @@ class EnergenieSocket {
     }
 
     public synchronized byte[] sendCommand(final byte[] ctrl) throws IOException {
-        try {
-            final TaskStat taskStat = authorize();
-            final OutputStream output = this.output;
-            final InputStream input = this.input;
+        try (final TaskSocket taskSocket = authorize()) {
+            final OutputStream output = taskSocket.socket.getOutputStream();
+            final InputStream input = taskSocket.socket.getInputStream();
 
             if (output == null || input == null) {
                 throw new IOException("No connection");
@@ -74,94 +68,63 @@ class EnergenieSocket {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Control message send to EG (int) '{}' (hex)'{}'", ctrl, HexUtils.bytesToHex(ctrl));
                 }
-                output.write(encryptControls(ctrl, taskStat.task));
-                readStatus(input, taskStat);
-                return updateStatus(taskStat);
+                output.write(encryptControls(ctrl, taskSocket.task));
+                readStatus(input, taskSocket);
+                return updateStatus(taskSocket);
             }
-        } finally {
-            close();
         }
     }
 
     public synchronized byte[] retrieveStatus() throws IOException {
-        try {
-            return updateStatus(authorize());
-        } finally {
-            close();
+        try (final TaskSocket taskSocket = authorize()) {
+            return updateStatus(taskSocket);
         }
     }
 
-    private TaskStat authorize() throws IOException {
-        connect();
-        final OutputStream output = this.output;
-        final InputStream input = this.input;
+    private TaskSocket authorize() throws IOException {
+        final TaskSocket taskSocket = new TaskSocket();
+        final OutputStream output = taskSocket.socket.getOutputStream();
+        final InputStream input = taskSocket.socket.getInputStream();
 
         if (output == null || input == null) {
             throw new IOException("No connection");
         }
         output.write(MESSAGE);
         logger.trace("Start Condition '{}' send to EG", MESSAGE);
-        final TaskStat taskStat = new TaskStat();
-        input.read(taskStat.task);
+        input.read(taskSocket.task);
 
         if (logger.isTraceEnabled()) {
-            logger.trace("EG responded with task (int) '{}' (hex) '{}'", taskStat.task,
-                    HexUtils.bytesToHex(taskStat.task));
+            logger.trace("EG responded with task (int) '{}' (hex) '{}'", taskSocket.task,
+                    HexUtils.bytesToHex(taskSocket.task));
         }
-        final byte[] solutionMessage = calculateSolution(taskStat.task);
+        final byte[] solutionMessage = calculateSolution(taskSocket.task);
 
         output.write(solutionMessage);
         logger.trace("Solution '{}' send to EG", solutionMessage);
-        readStatus(input, taskStat);
-        return taskStat;
+        readStatus(input, taskSocket);
+        return taskSocket;
     }
 
-    private void readStatus(final InputStream input, final TaskStat taskStat) throws IOException {
-        input.read(taskStat.statcryp);
+    private void readStatus(final InputStream input, final TaskSocket taskSocket) throws IOException {
+        input.read(taskSocket.statcryp);
         if (logger.isTraceEnabled()) {
-            logger.trace("EG responded with statcryp (int) '{}' (hex) '{}'", taskStat.statcryp,
-                    HexUtils.bytesToHex(taskStat.statcryp));
+            logger.trace("EG responded with statcryp (int) '{}' (hex) '{}'", taskSocket.statcryp,
+                    HexUtils.bytesToHex(taskSocket.statcryp));
         }
     }
 
-    private byte[] updateStatus(final TaskStat taskStat) throws IOException {
-        final InputStream input = this.input;
+    private byte[] updateStatus(final TaskSocket taskSocket) throws IOException {
+        final InputStream input = taskSocket.socket.getInputStream();
 
         if (input == null) {
             throw new IOException("No connection");
         } else {
-            final byte[] status = decryptStatus(taskStat);
+            final byte[] status = decryptStatus(taskSocket);
 
             if (logger.isTraceEnabled()) {
                 logger.trace("EG responded with status (int) '{}' (hex) '{}'", status, HexUtils.bytesToHex(status));
             }
             return status;
-        }
-    }
-
-    public void connect() throws UnknownHostException, IOException {
-        final Socket socket = this.socket;
-
-        if (socket == null || socket.isClosed()) {
-            final Socket newSocket = new Socket(host, TCP_PORT);
-            this.socket = newSocket;
-
-            newSocket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
-            output = newSocket.getOutputStream();
-            input = newSocket.getInputStream();
-        }
-    }
-
-    private void close() {
-        final Socket socket = this.socket;
-
-        if (socket != null) {
-            try {
-                socket.close();
-            } catch (final IOException e) {
-                logger.trace("Error closing socket", e);
-            }
-            this.socket = null;
         }
     }
 
@@ -186,11 +149,12 @@ class EnergenieSocket {
         return solution;
     }
 
-    private byte[] decryptStatus(final TaskStat taskStat) {
+    private byte[] decryptStatus(final TaskSocket taskSocket) {
         final byte[] status = new byte[4];
 
         for (int i = 0; i < 4; i++) {
-            status[i] = (byte) ((((taskStat.statcryp[3 - i] - key[1]) ^ key[0]) - taskStat.task[3]) ^ taskStat.task[2]);
+            status[i] = (byte) ((((taskSocket.statcryp[3 - i] - key[1]) ^ key[0]) - taskSocket.task[3])
+                    ^ taskSocket.task[2]);
         }
         return status;
     }
@@ -204,8 +168,19 @@ class EnergenieSocket {
         return ctrlcryp;
     }
 
-    private class TaskStat {
+    private class TaskSocket implements Closeable {
+        final Socket socket;
         final byte[] task = new byte[TASK_LEN];
         final byte[] statcryp = new byte[STATCRYP_LEN];
+
+        public TaskSocket() throws UnknownHostException, IOException {
+            socket = new Socket(host, TCP_PORT);
+            socket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
+        }
+
+        @Override
+        public void close() throws IOException {
+            socket.close();
+        }
     }
 }
