@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Volker Bier - Initial contribution
  */
+@NonNullByDefault
 public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
     private final Logger logger = LoggerFactory.getLogger(LgwSensorHandler.class);
     private boolean hasHumidityChannel;
