@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
@@ -26,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 
 /**
  * The {@link MeteoAlerteHandler} is responsible for updating channels
@@ -56,13 +61,20 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private static final ArrayList<String> ALERT_LEVELS = new ArrayList<>(
             Arrays.asList("Vert", "Jaune", "Orange", "Rouge"));
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
+                    jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+            .create();
+
+    // Time zone provider representing time zone configured in openHAB config
+    private final TimeZoneProvider timeZoneProvider;
 
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) String queryUrl;
 
-    public MeteoAlerteHandler(Thing thing) {
+    public MeteoAlerteHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -142,23 +154,31 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private void updateChannels(ApiResponse apiResponse) {
         Record record = apiResponse.getRecords()[0];
         if (record != null) {
-            updateState(WIND, new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatVent()))));
-            updateState(RAIN, new StringType(
-                    Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatPluieInondation()))));
-            updateState(STORM,
-                    new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatOrage()))));
-            updateState(FLOOD,
-                    new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatInondation()))));
-            updateState(SNOW,
-                    new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatNeige()))));
-            updateState(HEAT,
-                    new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatCanicule()))));
-            updateState(FREEZE,
-                    new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatGrandFroid()))));
-            updateState(AVALANCHE,
-                    new StringType(Integer.toString(ALERT_LEVELS.indexOf(record.getFields().getEtatAvalanches()))));
-            updateState(OBSERVATIONTIME, new StringType(record.getFields().getDateInsert()));
+            updateAlertString(WIND, record.getFields().getEtatVent());
+            updateAlertString(RAIN, record.getFields().getEtatPluieInondation());
+            updateAlertString(STORM, record.getFields().getEtatOrage());
+            updateAlertString(FLOOD, record.getFields().getEtatInondation());
+            updateAlertString(SNOW, record.getFields().getEtatNeige());
+            updateAlertString(HEAT, record.getFields().getEtatCanicule());
+            updateAlertString(FREEZE, record.getFields().getEtatGrandFroid());
+            updateAlertString(AVALANCHE, record.getFields().getEtatAvalanches());
+            updateDate(OBSERVATIONTIME, record.getFields().getDateInsert());
             updateState(COMMENT, new StringType(record.getFields().getVigilanceCommentaireTexte()));
         }
     }
+
+    public void updateAlertString(String channelId, @Nullable String value) {
+        if (value != null && isLinked(channelId)) {
+            int level = ALERT_LEVELS.indexOf(value);
+            updateState(channelId, new StringType(Integer.toString(level)));
+        }
+    }
+
+    public void updateDate(String channelId, @Nullable ZonedDateTime zonedDateTime) {
+        if (zonedDateTime != null && isLinked(channelId)) {
+            ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(timeZoneProvider.getTimeZone());
+            updateState(channelId, new DateTimeType(localDateTime));
+        }
+    }
+
 }

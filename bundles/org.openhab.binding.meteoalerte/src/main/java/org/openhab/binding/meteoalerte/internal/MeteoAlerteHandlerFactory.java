@@ -14,13 +14,16 @@ package org.openhab.binding.meteoalerte.internal;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing
@@ -30,6 +33,14 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
+
+    // Needed for converting UTC time to local time
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -41,7 +52,7 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_METEO_ALERT)) {
-            return new MeteoAlerteHandler(thing);
+            return new MeteoAlerteHandler(thing, timeZoneProvider);
         }
 
         return null;

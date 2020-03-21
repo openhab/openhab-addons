@@ -170,7 +170,7 @@
 	</channel-type>
 
 	<channel-type id="observation-time" advanced="true">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<description>Observation date and time</description>
 		<state readOnly="true"/>

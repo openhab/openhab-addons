@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.meteoalerte.internal.json;
 
+import java.time.ZonedDateTime;
+
 /**
  * The {@link Fields} is the Java class used to map the JSON
  * response to the webservice request.
@@ -20,7 +22,7 @@ package org.openhab.binding.meteoalerte.internal.json;
  */
 public class Fields {
     private String nom_reg;
-    private String dateprevue;
+    private ZonedDateTime dateprevue;
     private String typeprev;
     private String etat_canicule;
     private String nom_dept;
@@ -29,14 +31,14 @@ public class Fields {
     private String etat_pluie_inondation;
     private String etat_neige;
     private String etat_vent;
-    private String dateinsert;
+    private ZonedDateTime dateinsert;
     private String etat_inondation;
     private String etat_avalanches;
     private String etat_orage;
     private int echeance;
     private String etat_vague_submersion;
     private String dep;
-    private String daterun;
+    private ZonedDateTime daterun;
     private String vigilancecommentaire_texte;
 
     public String getVigilanceCommentaireTexte() {
@@ -47,7 +49,7 @@ public class Fields {
         return nom_reg;
     }
 
-    public String getDatePrevue() {
+    public ZonedDateTime getDatePrevue() {
         return dateprevue;
     }
 
@@ -83,7 +85,7 @@ public class Fields {
         return etat_vent;
     }
 
-    public String getDateInsert() {
+    public ZonedDateTime getDateInsert() {
         return dateinsert;
     }
 
@@ -111,7 +113,7 @@ public class Fields {
         return dep;
     }
 
-    public String getDateRun() {
+    public ZonedDateTime getDateRun() {
         return daterun;
     }
 
