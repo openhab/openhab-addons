@@ -30,9 +30,6 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * The {@link RoamingBluetoothBridgeHandler} handles roaming device instances
@@ -41,7 +38,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  */
 @NonNullByDefault
 public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
-        implements BluetoothAdapter, BluetoothDiscoveryListener {
+        implements BluetoothAdapter, BluetoothDiscoveryListener, RoamingBluetoothAdapter {
 
     private static final BluetoothAddress ROAMING_ADAPTER_ADDRESS = new BluetoothAddress("FF:FF:FF:FF:FF:FF");
 
@@ -85,8 +82,8 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
         return true;
     }
 
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    protected void addBluetoothAdapter(BluetoothAdapter adapter) {
+    @Override
+    public void addBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;
         }
@@ -100,7 +97,8 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    protected void removeBluetoothAdapter(BluetoothAdapter adapter) {
+    @Override
+    public void removeBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;
         }

@@ -65,20 +65,20 @@ public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
             return new ConnectedBluetoothHandler(thing);
         } else if (thingTypeUID.equals(BluetoothBindingConstants.THING_TYPE_ROAMING)) {
             RoamingBluetoothBridgeHandler handler = new RoamingBluetoothBridgeHandler((Bridge) thing);
-            registerBluetoothAdapter(handler);
+            registerRoamingBluetoothAdapter(handler);
             return handler;
         }
         return null;
     }
 
-    private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
-        this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(BluetoothAdapter.class.getName(), adapter,
-                new Hashtable<String, Object>()));
+    private synchronized void registerRoamingBluetoothAdapter(RoamingBluetoothAdapter adapter) {
+        this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(RoamingBluetoothAdapter.class.getName(),
+                adapter, new Hashtable<String, Object>()));
     }
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof BluetoothAdapter) {
+        if (thingHandler instanceof RoamingBluetoothAdapter) {
             UID uid = ((BluetoothAdapter) thingHandler).getUID();
             ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
             if (serviceReg != null) {

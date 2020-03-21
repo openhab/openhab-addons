@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.discovery.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -32,7 +33,7 @@ import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
-import org.openhab.binding.bluetooth.internal.RoamingBluetoothBridgeHandler;
+import org.openhab.binding.bluetooth.internal.RoamingBluetoothAdapter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -63,6 +64,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     private final Map<UID, BluetoothDiscoveryListener> registeredListeners = new ConcurrentHashMap<>();
 
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
+
+    private Optional<RoamingBluetoothAdapter> roamingAdapter = Optional.empty();
 
     public BluetoothDiscoveryService() {
         super(SEARCH_TIME);
@@ -95,26 +98,40 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Deactivating Bluetooth discovery service");
     }
 
+    @Reference
+    protected void setRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
+        this.roamingAdapter = Optional.of(roamingAdapter);
+        for (BluetoothAdapter adapter : adapters) {
+            roamingAdapter.addBluetoothAdapter(adapter);
+        }
+    }
+
+    protected void unsetRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
+        this.roamingAdapter = Optional.empty();
+        for (BluetoothAdapter adapter : adapters) {
+            roamingAdapter.removeBluetoothAdapter(adapter);
+        }
+    }
+
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void addBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.add(adapter);
         BluetoothDiscoveryListener listener = device -> deviceDiscovered(adapter, device);
         adapter.addDiscoveryListener(listener);
         registeredListeners.put(adapter.getUID(), listener);
+
+        roamingAdapter.ifPresent(ra -> {
+            ra.addBluetoothAdapter(adapter);
+        });
     }
 
     protected void removeBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.remove(adapter);
         adapter.removeDiscoveryListener(registeredListeners.remove(adapter.getUID()));
-    }
 
-    private RoamingBluetoothBridgeHandler getRoamingBluetoothAdapter() {
-        for (BluetoothAdapter adapter : adapters) {
-            if (adapter instanceof RoamingBluetoothBridgeHandler) {
-                return (RoamingBluetoothBridgeHandler) adapter;
-            }
-        }
-        return null;
+        roamingAdapter.ifPresent(ra -> {
+            ra.removeBluetoothAdapter(adapter);
+        });
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
@@ -196,11 +213,12 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     protected void thingDiscovered(DiscoveryResult discoveryResult) {
         super.thingDiscovered(discoveryResult);
 
-        RoamingBluetoothBridgeHandler roamingAdapter = getRoamingBluetoothAdapter();
-        if (roamingAdapter != null && roamingAdapter.isDiscoveryEnabled()) {
-            // we create a roaming version of every discoveryResult.
-            super.thingDiscovered(copyWithNewBridge(discoveryResult, getRoamingBluetoothAdapter()));
-        }
+        roamingAdapter.ifPresent(adapter -> {
+            if (adapter.isDiscoveryEnabled()) {
+                // we create a roaming version of every discoveryResult.
+                super.thingDiscovered(copyWithNewBridge(discoveryResult, adapter));
+            }
+        });
     }
 
     private static ThingUID createThingUIDWithBridge(DiscoveryResult result, BluetoothAdapter adapter) {
