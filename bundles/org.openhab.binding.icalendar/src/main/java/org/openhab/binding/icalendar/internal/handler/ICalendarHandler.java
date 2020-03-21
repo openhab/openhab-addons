@@ -293,7 +293,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     continue;
                 }
                 String itemName = cmdTag.getItemName();
-                if (itemName == null || !itemName.matches("^\\w+$")) {
+                if (!itemName.matches("^\\w+$")) {
                     logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title,
                             cmdTag.getFullTag());
                     continue;

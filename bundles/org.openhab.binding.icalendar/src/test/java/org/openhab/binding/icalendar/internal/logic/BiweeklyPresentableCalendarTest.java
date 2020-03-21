@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.types.Command;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -261,37 +262,59 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Color:ON:abc
         assertEquals("Calendar_Test_Color", cmdTags.get(0).getItemName());
         assertTrue(cmdTags.get(0).isAuthorized("abc"));
-        assertEquals(OnOffType.class, cmdTags.get(0).getCommand().getClass());
+        Command cmd0 = cmdTags.get(0).getCommand();
+        assertNotNull(cmd0);
+        assertEquals(OnOffType.class, cmd0.getClass());
 
         // BEGIN:Calendar_Test_Contact:OPEN:abc
-        assertEquals(OpenClosedType.class, cmdTags.get(1).getCommand().getClass());
+        Command cmd1 = cmdTags.get(1).getCommand();
+        assertNotNull(cmd1);
+        assertEquals(OpenClosedType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:ON:abc
-        assertEquals(OnOffType.class, cmdTags.get(2).getCommand().getClass());
+        Command cmd2 = cmdTags.get(2).getCommand();
+        assertNotNull(cmd2);
+        assertEquals(OnOffType.class, cmd2.getClass());
 
         // BEGIN:Calendar_Test_Number:12.3:abc
-        assertEquals(QuantityType.class, cmdTags.get(3).getCommand().getClass());
+        Command cmd3 = cmdTags.get(3).getCommand();
+        assertNotNull(cmd3);
+        assertEquals(QuantityType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:12.3°C:abc
-        assertEquals(QuantityType.class, cmdTags.get(4).getCommand().getClass());
+        Command cmd4 = cmdTags.get(4).getCommand();
+        assertNotNull(cmd4);
+        assertEquals(QuantityType.class, cmd4.getClass());
 
         // BEGIN:Calendar_Test_Pressure:12.3hPa:abc
-        assertEquals(QuantityType.class, cmdTags.get(5).getCommand().getClass());
+        Command cmd5 = cmdTags.get(5).getCommand();
+        assertNotNull(cmd5);
+        assertEquals(QuantityType.class, cmd5.getClass());
 
         // BEGIN:Calendar_Test_Speed:12.3m/s:abc
-        assertEquals(QuantityType.class, cmdTags.get(6).getCommand().getClass());
+        Command cmd6 = cmdTags.get(6).getCommand();
+        assertNotNull(cmd6);
+        assertEquals(QuantityType.class, cmd6.getClass());
 
         // BEGIN:Calendar_Test_Player:PLAY:abc
-        assertEquals(PlayPauseType.class, cmdTags.get(7).getCommand().getClass());
+        Command cmd7 = cmdTags.get(7).getCommand();
+        assertNotNull(cmd7);
+        assertEquals(PlayPauseType.class, cmd7.getClass());
 
         // BEGIN:Calendar_Test_RollerShutter:UP:abc
-        assertEquals(UpDownType.class, cmdTags.get(8).getCommand().getClass());
+        Command cmd8 = cmdTags.get(8).getCommand();
+        assertNotNull(cmd8);
+        assertEquals(UpDownType.class, cmd8.getClass());
 
         // BEGIN:Calendar_Test_String:Test Series #1:abc
-        assertEquals(StringType.class, cmdTags.get(9).getCommand().getClass());
+        Command cmd9 = cmdTags.get(9).getCommand();
+        assertNotNull(cmd9);
+        assertEquals(StringType.class, cmd9.getClass());
 
         // BEGIN:Calendar_Test_Switch:ON:abc
-        assertEquals(OnOffType.class, cmdTags.get(10).getCommand().getClass());
+        Command cmd10 = cmdTags.get(10).getCommand();
+        assertNotNull(cmd10);
+        assertEquals(OnOffType.class, cmd10.getClass());
 
         // test tag syntax: Test Series #4
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:10:00Z"),
@@ -302,37 +325,59 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:0%:abc
-        assertEquals(PercentType.class, cmdTags.get(0).getCommand().getClass());
+        cmd0 = cmdTags.get(0).getCommand();
+        assertNotNull(cmd0);
+        assertEquals(PercentType.class, cmd0.getClass());
 
         // BEGIN:Calendar_Test_Contact:CLOSED:abc
-        assertEquals(OpenClosedType.class, cmdTags.get(1).getCommand().getClass());
+        cmd1 = cmdTags.get(1).getCommand();
+        assertNotNull(cmd1);
+        assertEquals(OpenClosedType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:0%:abc
-        assertEquals(PercentType.class, cmdTags.get(2).getCommand().getClass());
+        cmd2 = cmdTags.get(2).getCommand();
+        assertNotNull(cmd2);
+        assertEquals(PercentType.class, cmd2.getClass());
 
         // BEGIN:Calendar_Test_Number:-12.3:abc
-        assertEquals(QuantityType.class, cmdTags.get(3).getCommand().getClass());
+        cmd3 = cmdTags.get(3).getCommand();
+        assertNotNull(cmd3);
+        assertEquals(QuantityType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:-12.3°C:abc
-        assertEquals(QuantityType.class, cmdTags.get(4).getCommand().getClass());
+        cmd4 = cmdTags.get(4).getCommand();
+        assertNotNull(cmd4);
+        assertEquals(QuantityType.class, cmd4.getClass());
 
         // BEGIN:Calendar_Test_Pressure:500mmHg:abc
-        assertEquals(QuantityType.class, cmdTags.get(5).getCommand().getClass());
+        cmd5 = cmdTags.get(5).getCommand();
+        assertNotNull(cmd5);
+        assertEquals(QuantityType.class, cmd5.getClass());
 
         // BEGIN:Calendar_Test_Speed:12300000mm/h:abc
-        assertEquals(QuantityType.class, cmdTags.get(6).getCommand().getClass());
+        cmd6 = cmdTags.get(6).getCommand();
+        assertNotNull(cmd6);
+        assertEquals(QuantityType.class, cmd6.getClass());
 
         // BEGIN:Calendar_Test_Player:REWIND:abc
-        assertEquals(RewindFastforwardType.class, cmdTags.get(7).getCommand().getClass());
+        cmd7 = cmdTags.get(7).getCommand();
+        assertNotNull(cmd7);
+        assertEquals(RewindFastforwardType.class, cmd7.getClass());
 
         // BEGIN:Calendar_Test_RollerShutter:100%:abc
-        assertEquals(PercentType.class, cmdTags.get(8).getCommand().getClass());
+        cmd8 = cmdTags.get(8).getCommand();
+        assertNotNull(cmd8);
+        assertEquals(PercentType.class, cmd8.getClass());
 
         // BEGIN:Calendar_Test_String:Test Series #4:abc
-        assertEquals(StringType.class, cmdTags.get(9).getCommand().getClass());
+        cmd9 = cmdTags.get(9).getCommand();
+        assertNotNull(cmd9);
+        assertEquals(StringType.class, cmd9.getClass());
 
         // BEGIN:Calendar_Test_Switch:OFF:abc
-        assertEquals(OnOffType.class, cmdTags.get(10).getCommand().getClass());
+        cmd10 = cmdTags.get(10).getCommand();
+        assertNotNull(cmd10);
+        assertEquals(OnOffType.class, cmd10.getClass());
 
         // test tag syntax: Test Series #5
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:25:00Z"),
@@ -343,37 +388,59 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:240,100,100:abc
-        assertEquals(HSBType.class, cmdTags.get(0).getCommand().getClass());
+        cmd0 = cmdTags.get(0).getCommand();
+        assertNotNull(cmd0);
+        assertEquals(HSBType.class, cmd0.getClass());
 
         // BEGIN:Calendar_Test_Contact:OPEN:abc
-        assertEquals(OpenClosedType.class, cmdTags.get(1).getCommand().getClass());
+        cmd1 = cmdTags.get(1).getCommand();
+        assertNotNull(cmd1);
+        assertEquals(OpenClosedType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:50%:abc
-        assertEquals(PercentType.class, cmdTags.get(2).getCommand().getClass());
+        cmd2 = cmdTags.get(2).getCommand();
+        assertNotNull(cmd2);
+        assertEquals(PercentType.class, cmd2.getClass());
 
         // BEGIN:Calendar_Test_Number:-0:abc
-        assertEquals(QuantityType.class, cmdTags.get(3).getCommand().getClass());
+        cmd3 = cmdTags.get(3).getCommand();
+        assertNotNull(cmd3);
+        assertEquals(QuantityType.class, cmd3.getClass());
 
         // BEGIN:Calendar_Test_Temperature:0K:abc
-        assertEquals(QuantityType.class, cmdTags.get(4).getCommand().getClass());
+        cmd4 = cmdTags.get(4).getCommand();
+        assertNotNull(cmd4);
+        assertEquals(QuantityType.class, cmd4.getClass());
 
         // BEGIN:Calendar_Test_Pressure:12.3hPa:abc
-        assertEquals(QuantityType.class, cmdTags.get(5).getCommand().getClass());
+        cmd5 = cmdTags.get(5).getCommand();
+        assertNotNull(cmd5);
+        assertEquals(QuantityType.class, cmd5.getClass());
 
         // BEGIN:Calendar_Test_Speed:12.3km/h:abc
-        assertEquals(QuantityType.class, cmdTags.get(6).getCommand().getClass());
+        cmd6 = cmdTags.get(6).getCommand();
+        assertNotNull(cmd6);
+        assertEquals(QuantityType.class, cmd6.getClass());
 
         // BEGIN:Calendar_Test_Player:PLAY:abc
-        assertEquals(PlayPauseType.class, cmdTags.get(7).getCommand().getClass());
+        cmd7 = cmdTags.get(7).getCommand();
+        assertNotNull(cmd7);
+        assertEquals(PlayPauseType.class, cmd7.getClass());
 
         // BEGIN:Calendar_Test_RollerShutter:50%:abc
-        assertEquals(PercentType.class, cmdTags.get(8).getCommand().getClass());
+        cmd8 = cmdTags.get(8).getCommand();
+        assertNotNull(cmd8);
+        assertEquals(PercentType.class, cmd8.getClass());
 
         // BEGIN:Calendar_Test_String:Test Series #5:abc
-        assertEquals(StringType.class, cmdTags.get(9).getCommand().getClass());
+        cmd9 = cmdTags.get(9).getCommand();
+        assertNotNull(cmd9);
+        assertEquals(StringType.class, cmd9.getClass());
 
         // BEGIN:Calendar_Test_Switch:ON:abc
-        assertEquals(OnOffType.class, cmdTags.get(10).getCommand().getClass());
+        cmd10 = cmdTags.get(10).getCommand();
+        assertNotNull(cmd10);
+        assertEquals(OnOffType.class, cmd10.getClass());
 
     }
 

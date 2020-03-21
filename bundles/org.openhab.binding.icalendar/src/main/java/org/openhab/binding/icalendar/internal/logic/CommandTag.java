@@ -60,11 +60,11 @@ public class CommandTag {
             RewindFastforwardType.class, StringType.class);
 
     public String getItemName() {
-        return itemName != null ? itemName : "";
+        return itemName != null ? ((String) itemName) : "";
     }
 
     public String getTargetState() {
-        return targetState != null ? targetState : "";
+        return targetState != null ? ((String) targetState) : "";
     }
 
     public String getFullTag() {
