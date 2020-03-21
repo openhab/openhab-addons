@@ -97,12 +97,18 @@ public class EnergeniePWMHandler extends BaseThingHandler {
                 logger.trace("transformed state response = {} - {}", slicedResponse[0], slicedResponse[1]);
                 final double value;
 
-                if (Double.parseDouble(slicedResponse[0]) / 1 == Double.parseDouble(slicedResponse[0])) {
-                    value = Double.parseDouble(slicedResponse[0]) / divisor;
-                } else {
-                    value = -1.0;
+                try {
+                    if (Double.parseDouble(slicedResponse[0]) / 1 == Double.parseDouble(slicedResponse[0])) {
+                        value = Double.parseDouble(slicedResponse[0]) / divisor;
+                    } else {
+                        value = -1.0;
+                    }
+                    return QuantityType.valueOf(value, unit);
+
+                } catch (NumberFormatException e) {
+                    logger.debug("Could not Parse State", e);
+                    return UnDefType.UNDEF;
                 }
-                return QuantityType.valueOf(value, unit);
             } else {
                 logger.trace("searchstring '{} not found", stateResponseSearch);
                 return UnDefType.UNDEF;
@@ -137,7 +143,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
         this.config = config;
 
-        if (config.host != null && config.password != null) {
+        if (!config.host.isEmpty() && !config.password.isEmpty()) {
             host = config.host;
             password = config.password;
             refreshInterval = EnergenieConfiguration.DEFAULT_REFRESH_INTERVAL;
@@ -153,9 +159,11 @@ public class EnergeniePWMHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("EnergeniePWMHandler disposed.");
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
+
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
     }
 
@@ -166,7 +174,6 @@ public class EnergeniePWMHandler extends BaseThingHandler {
         String loginResponseString = null;
 
         try {
-            logger.trace("sendlogin to {} with password {}", host, password);
             logger.trace("sending 'POST' request to URL : {}", url);
             loginResponseString = HttpUtil.executeUrl("POST", url, urlContent, "TEXT/PLAIN", HTTP_TIMEOUT_MILLISECONDS);
 
@@ -179,7 +186,8 @@ public class EnergeniePWMHandler extends BaseThingHandler {
                     HttpUtil.executeUrl("POST", url, HTTP_TIMEOUT_MILLISECONDS);
                     logger.trace("logout from ip {}", host);
                 } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "failed to logout: "+ e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "failed to logout: " + e.getMessage());
                 }
             }
 

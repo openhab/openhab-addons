@@ -50,9 +50,9 @@ public class EnergenieHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EnergenieHandler.class);
 
     /**
-     * Use cache for refresh command to not update again when call is made within 2 seconds of previous call.
+     * Use cache for refresh command to not update again when call is made within 4 seconds of previous call.
      */
-    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(2), this::refreshState);
+    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(4), this::refreshState);
     private final String statusOn;
     private final String statusOff;
 
@@ -118,7 +118,7 @@ public class EnergenieHandler extends BaseThingHandler {
     public void initialize() {
         final EnergenieConfiguration config = getConfigAs(EnergenieConfiguration.class);
 
-        if (config.host != null && config.password != null) {
+        if (!config.host.isEmpty() && !config.password.isEmpty()) {
             refreshInterval = EnergenieConfiguration.DEFAULT_REFRESH_INTERVAL;
             host = config.host;
             logger.debug("Initializing EnergenieHandler for Host '{}'", config.host);
@@ -154,7 +154,8 @@ public class EnergenieHandler extends BaseThingHandler {
                 }
                 return Boolean.TRUE;
             } catch (final UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Can't find host: " + e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Can't find host: " + e.getMessage());
             } catch (final IOException e) {
                 logger.debug("Couldn't get I/O for the connection to: {}:{}.", host, TCP_PORT, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -171,12 +172,13 @@ public class EnergenieHandler extends BaseThingHandler {
         for (int i = 0; i < 4; i++) {
             final String socket = CHANNEL_SOCKET_PREFIX + (i + 1);
             final String stringStatus = String.format("0x%02x", status[i]);
+            updateState(socket, OnOffType.from(stringStatus.equals(statusOn)));
 
-            if (stringStatus.equals(statusOn)) {
-                updateState(socket, OnOffType.ON);
-            } else if (stringStatus.equals(statusOff)) {
-                updateState(socket, OnOffType.OFF);
-            }
+            // if (stringStatus.equals(statusOn)) {
+            // updateState(socket, OnOffType.ON);
+            // } else if (stringStatus.equals(statusOff)) {
+            // updateState(socket, OnOffType.OFF);
+            // }
         }
     }
 }
