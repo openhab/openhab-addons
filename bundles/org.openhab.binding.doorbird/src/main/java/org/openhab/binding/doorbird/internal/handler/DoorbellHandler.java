@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.doorbird.internal;
+package org.openhab.binding.doorbird.internal.handler;
 
 import static org.openhab.binding.doorbird.internal.DoorbirdBindingConstants.*;
 
@@ -19,31 +19,20 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -61,27 +50,29 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
 import org.openhab.binding.doorbird.action.DoorbirdActions;
+import org.openhab.binding.doorbird.internal.api.DoorbirdAPI;
+import org.openhab.binding.doorbird.internal.api.DoorbirdImage;
+import org.openhab.binding.doorbird.internal.api.SipStatus;
+import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DoorbirdHandler} is responsible for handling commands, which are
+ * The {@link DoorbellHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class DoorbirdHandler extends BaseThingHandler {
-    private static final long API_REQUEST_TIMEOUT_SECONDS = 3L;
+public class DoorbellHandler extends BaseThingHandler {
     private static final long MONTAGE_UPDATE_DELAY_SECONDS = 5L;
 
     // Maximum number of doorbell and motion history images stored on Doorbird backend
     private static final int MAX_HISTORY_IMAGES = 50;
 
-    private final Logger logger = LoggerFactory.getLogger(DoorbirdHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DoorbellHandler.class);
 
     // Get a dedicated threadpool for the long-running listener thread
     private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager.getScheduledPool("doorbirdHandler");
@@ -92,14 +83,14 @@ public class DoorbirdHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> doorbellOffJob;
     private @Nullable ScheduledFuture<?> motionOffJob;
 
-    private @NonNullByDefault({}) DoorbirdConfiguration config;
+    private @NonNullByDefault({}) DoorbellConfiguration config;
 
-    private @Nullable String authorization;
+    private DoorbirdAPI api = new DoorbirdAPI();
 
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
-    public DoorbirdHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
+    public DoorbellHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
@@ -108,31 +99,27 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
-        config = getConfigAs(DoorbirdConfiguration.class);
-        if (StringUtils.isEmpty(config.doorbirdId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird id not provided");
-            return;
-        }
-        if (StringUtils.isEmpty(config.doorbirdHost)) {
+        config = getConfigAs(DoorbellConfiguration.class);
+        String host = config.doorbirdHost;
+        if (host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird host not provided");
             return;
         }
-        if (StringUtils.isEmpty(config.userId)) {
+        String user = config.userId;
+        if (user == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User ID not provided");
             return;
         }
-        if (StringUtils.isEmpty(config.userPassword)) {
+        String password = config.userPassword;
+        if (password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User password not provided");
             return;
         }
-        // Create the basic authorization string for the HTTP requests
-        authorization = new String(Base64.getEncoder().encode((config.userId + ":" + config.userPassword).getBytes()),
-                StandardCharsets.UTF_8);
-
+        api.setAuthorization(host, user, password);
+        api.setHttpClient(httpClient);
         startImageRefreshJob();
         startUDPListenerJob();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -141,6 +128,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         stopImageRefreshJob();
         stopDoorbellOffJob();
         stopMotionOffJob();
+        super.dispose();
     }
 
     // Callback used by listener to get Doorbird host name
@@ -161,7 +149,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     // Callback used by listener to update doorbell channel
     public void updateDoorbellChannel(long timestamp) {
         logger.debug("Handler: Update DOORBELL channels for thing {}", getThing().getUID());
-        DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
+        DoorbirdImage dbImage = api.downloadCurrentImage();
         if (dbImage != null) {
             RawType image = dbImage.getImage();
             updateState(CHANNEL_DOORBELL_IMAGE, image != null ? image : UnDefType.UNDEF);
@@ -175,7 +163,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     // Callback used by listener to update motion channel
     public void updateMotionChannel(long timestamp) {
         logger.debug("Handler: Update MOTION channels for thing {}", getThing().getUID());
-        DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
+        DoorbirdImage dbImage = api.downloadCurrentImage();
         if (dbImage != null) {
             RawType image = dbImage.getImage();
             updateState(CHANNEL_MOTION_IMAGE, image != null ? image : UnDefType.UNDEF);
@@ -212,12 +200,16 @@ public class DoorbirdHandler extends BaseThingHandler {
                 break;
             case CHANNEL_IMAGE:
                 if (command instanceof RefreshType) {
-                    handleGetImage(command);
+                    handleGetImage();
                 }
                 break;
             case CHANNEL_DOORBELL_HISTORY_INDEX:
             case CHANNEL_MOTION_HISTORY_INDEX:
-                if (!(command instanceof RefreshType)) {
+                if (command instanceof RefreshType) {
+                    // On REFRESH, get the first history image
+                    handleHistoryImage(channelUID, new DecimalType(1));
+                } else {
+                    // Get the history image specified in the command
                     handleHistoryImage(channelUID, command);
                 }
                 break;
@@ -234,11 +226,48 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(DoorbirdActions.class);
+    }
+
+    public void actionRestart() {
+        api.restart();
+    }
+
+    public void actionSIPHangup() {
+        api.sipHangup();
+    }
+
+    public String actionGetRingTimeLimit() {
+        return getSipStatusValue(SipStatus::getRingTimeLimit);
+    }
+
+    public String actionGetCallTimeLimit() {
+        return getSipStatusValue(SipStatus::getCallTimeLimit);
+    }
+
+    public String actionGetLastErrorCode() {
+        return getSipStatusValue(SipStatus::getLastErrorCode);
+    }
+
+    public String actionGetLastErrorText() {
+        return getSipStatusValue(SipStatus::getLastErrorText);
+    }
+
+    private String getSipStatusValue(Function<SipStatus, String> function) {
+        String value = "";
+        SipStatus sipStatus = api.getSipStatus();
+        if (sipStatus != null) {
+            value = function.apply(sipStatus);
+        }
+        return value;
+    }
+
     private void refreshDoorbellImageFromHistory() {
         logger.debug("Handler: REFRESH doorbell image channel using most recent doorbell history image");
         scheduler.execute(() -> {
-            String url = buildUrl("/bha-api/history.cgi", "?event=doorbell&index=1");
-            DoorbirdImage dbImage = downloadImage(url);
+            DoorbirdImage dbImage = api.downloadDoorbellHistoryImage("1");
             if (dbImage != null) {
                 RawType image = dbImage.getImage();
                 updateState(CHANNEL_DOORBELL_IMAGE, image != null ? image : UnDefType.UNDEF);
@@ -251,8 +280,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     private void refreshMotionImageFromHistory() {
         logger.debug("Handler: REFRESH motion image channel using most recent motion history image");
         scheduler.execute(() -> {
-            String url = buildUrl("/bha-api/history.cgi", "?event=motionsensor&index=1");
-            DoorbirdImage dbImage = downloadImage(url);
+            DoorbirdImage dbImage = api.downloadMotionHistoryImage("1");
             if (dbImage != null) {
                 RawType image = dbImage.getImage();
                 updateState(CHANNEL_MOTION_IMAGE, image != null ? image : UnDefType.UNDEF);
@@ -263,48 +291,21 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void handleLight(Command command) {
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
-            String url = buildUrl("/bha-api/light-on.cgi");
-            logger.debug("Turn light on using url={}", url);
-            try {
-                String response = executeGetRequest(url);
-                logger.debug("Response={}", response);
-            } catch (IOException e) {
-                logger.debug("IOException turning on light: {}", e.getMessage());
-            }
+        // It's only possible to energize the light relay
+        if (command.equals(OnOffType.ON)) {
+            api.lightOn();
         }
     }
 
     private void handleOpenDoor(Command command, String doorNumber) {
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
-            String url = buildUrl("/bha-api/open-door.cgi", "?r=" + doorNumber);
-            logger.debug("Open door using url={}", url);
-            try {
-                String response = executeGetRequest(url);
-                logger.debug("Response={}", response);
-            } catch (IOException e) {
-                logger.debug("IOException opening door: {}", e.getMessage());
-            }
+        // It's only possible to energize the open door relay
+        if (command.equals(OnOffType.ON)) {
+            api.openDoorDoorbell(doorNumber);
         }
     }
 
-    public void actionRestart() {
-        String url = buildUrl("/bha-api/restart.cgi");
-        logger.debug("Restart device using url={}", url);
-        try {
-            String response = executeGetRequest(url);
-            logger.debug("Response={}", response);
-        } catch (IOException e) {
-            logger.debug("IOException restarting device: {}", e.getMessage());
-        }
-    }
-
-    private void handleGetImage(Command command) {
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
-            scheduler.execute(() -> {
-                updateImageAndTimestamp();
-            });
-        }
+    private void handleGetImage() {
+        scheduler.execute(this::updateImageAndTimestamp);
     }
 
     private void handleHistoryImage(ChannelUID channelUID, Command command) {
@@ -314,31 +315,19 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         int value = ((DecimalType) command).intValue();
         if (value < 0 || value > MAX_HISTORY_IMAGES) {
-            logger.debug("History index must be in range 1 to 50");
+            logger.debug("History index must be in range 1 to {}", MAX_HISTORY_IMAGES);
             return;
         }
         boolean isDoorbell = CHANNEL_DOORBELL_HISTORY_INDEX.equals(channelUID.getId());
-        String event = isDoorbell ? "doorbell" : "motionsensor";
         String imageChannelId = isDoorbell ? CHANNEL_DOORBELL_HISTORY_IMAGE : CHANNEL_MOTION_HISTORY_IMAGE;
         String timestampChannelId = isDoorbell ? CHANNEL_DOORBELL_HISTORY_TIMESTAMP : CHANNEL_MOTION_HISTORY_TIMESTAMP;
-        String url = buildUrl("/bha-api/history.cgi", "?event=" + event + "&index=" + command.toString());
 
-        DoorbirdImage dbImage = downloadImage(url);
+        DoorbirdImage dbImage = isDoorbell ? api.downloadDoorbellHistoryImage(command.toString())
+                : api.downloadMotionHistoryImage(command.toString());
         if (dbImage != null) {
             RawType image = dbImage.getImage();
             updateState(imageChannelId, image != null ? image : UnDefType.UNDEF);
             updateState(timestampChannelId, getLocalDateTimeType(dbImage.getTimestamp()));
-        }
-    }
-
-    public void actionSIPHangup() {
-        String url = buildUrl("/bha-api/sip.cgi", "?action=hangup");
-        logger.debug("Hang up SIP call using url={}", url);
-        try {
-            String response = executeGetRequest(url);
-            logger.debug("Response={}", response);
-        } catch (IOException e) {
-            logger.debug("IOException hanging up SIP call: {}", e.getMessage());
         }
     }
 
@@ -365,9 +354,8 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void startUDPListenerJob() {
-        logger.debug("Scheduled listener job to start in 5 seconds");
+        logger.debug("Listener job is scheduled to start in 5 seconds");
         listenerJob = doorbirdScheduler.schedule(udpListener, 5, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void stopUDPListenerJob() {
@@ -428,7 +416,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         logger.debug("Scheduling DOORBELL montage update to run in {} seconds", MONTAGE_UPDATE_DELAY_SECONDS);
         scheduler.schedule(() -> {
-            updateMontage("doorbell", CHANNEL_DOORBELL_IMAGE_MONTAGE);
+            updateMontage(CHANNEL_DOORBELL_IMAGE_MONTAGE);
         }, MONTAGE_UPDATE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
@@ -438,17 +426,17 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         logger.debug("Scheduling MOTION montage update to run in {} seconds", MONTAGE_UPDATE_DELAY_SECONDS);
         scheduler.schedule(() -> {
-            updateMontage("motionsensor", CHANNEL_MOTION_IMAGE_MONTAGE);
+            updateMontage(CHANNEL_MOTION_IMAGE_MONTAGE);
         }, MONTAGE_UPDATE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
-    private void updateMontage(String event, String channelId) {
-        logger.debug("Update '{}' montage for channel '{}'", event, channelId);
-        ArrayList<BufferedImage> images = getImages(event);
+    private void updateMontage(String channelId) {
+        logger.debug("Update montage for channel '{}'", channelId);
+        ArrayList<BufferedImage> images = getImages(channelId);
         if (images.size() > 0) {
             State state = createMontage(images);
             if (state != null) {
-                logger.debug("Got a '{}' montage. Updating channel '{}' with image montage", event, channelId);
+                logger.debug("Got a montage. Updating channel '{}' with image montage", channelId);
                 updateState(channelId, state);
                 return;
             }
@@ -458,56 +446,65 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     // Get an array list of history images
-    private ArrayList<BufferedImage> getImages(String event) {
+    private ArrayList<BufferedImage> getImages(String channelId) {
         ArrayList<BufferedImage> images = new ArrayList<>();
-        int numberOfImages = config.montageNumImages;
-        String url = buildUrl("/bha-api/history.cgi", "?event=" + event + "&index=");
-        for (int imageNumber = 1; imageNumber <= numberOfImages; imageNumber++) {
-            String imageUrl = url + String.valueOf(imageNumber);
-            logger.debug("Downloading '{}' montage image {}", event, imageNumber);
-            DoorbirdImage historyImage = downloadImage(imageUrl);
-            if (historyImage != null) {
-                RawType image = historyImage.getImage();
-                if (image != null) {
-                    try {
-                        BufferedImage i = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
-                        images.add(i);
-                    } catch (IOException e) {
-                        logger.debug("IOException creating BufferedImage from downloaded image: {}", e.getMessage());
+        Integer numberOfImages = config.montageNumImages;
+        if (numberOfImages != null) {
+            for (int imageNumber = 1; imageNumber <= numberOfImages; imageNumber++) {
+                logger.trace("Downloading montage image {} for channel '{}'", imageNumber, channelId);
+                DoorbirdImage historyImage = CHANNEL_DOORBELL_IMAGE_MONTAGE.equals(channelId)
+                        ? api.downloadDoorbellHistoryImage(String.valueOf(imageNumber))
+                        : api.downloadMotionHistoryImage(String.valueOf(imageNumber));
+                if (historyImage != null) {
+                    RawType image = historyImage.getImage();
+                    if (image != null) {
+                        try {
+                            BufferedImage i = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
+                            images.add(i);
+                        } catch (IOException e) {
+                            logger.debug("IOException creating BufferedImage from downloaded image: {}",
+                                    e.getMessage());
+                        }
                     }
                 }
             }
-        }
-        if (images.size() < numberOfImages) {
-            logger.debug("Some images could not be downloaded: wanted={}, actual={}", numberOfImages, images.size());
+            if (images.size() < numberOfImages) {
+                logger.debug("Some images could not be downloaded: wanted={}, actual={}", numberOfImages,
+                        images.size());
+            }
         }
         return images;
     }
 
     // Assemble the array of images into a single scaled image
     private @Nullable State createMontage(ArrayList<BufferedImage> images) {
-        int height = (int) (images.get(0).getHeight() * (config.montageScaleFactor / 100.0));
-        int width = (int) (images.get(0).getWidth() * (config.montageScaleFactor / 100.0));
-        int widthTotal = width * images.size();
-        logger.debug("Dimensions of final montage image: w={}, h={}", widthTotal, height);
-
-        // Create concatenated image
-        int currentWidth = 0;
-        BufferedImage concatImage = new BufferedImage(widthTotal, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = concatImage.createGraphics();
-        logger.debug("Concatenating images array into single image");
-        for (int j = 0; j < images.size(); j++) {
-            g2d.drawImage(images.get(j), currentWidth, 0, width, height, null);
-            currentWidth += width;
-        }
-        g2d.dispose();
-
-        // Convert image to a state
-        logger.debug("Rendering image to byte array and converting to RawType state");
-        byte[] imageBytes = convertImageToByteArray(concatImage);
         State state = null;
-        if (imageBytes != null) {
-            state = new RawType(imageBytes, "image/png");
+        Integer montageScaleFactor = config.montageScaleFactor;
+        if (montageScaleFactor != null) {
+            // Assume all images are the same size, as the Doorbird image resolution cannot
+            // be changed by the user
+            int height = (int) (images.get(0).getHeight() * (montageScaleFactor / 100.0));
+            int width = (int) (images.get(0).getWidth() * (montageScaleFactor / 100.0));
+            int widthTotal = width * images.size();
+            logger.debug("Dimensions of final montage image: w={}, h={}", widthTotal, height);
+
+            // Create concatenated image
+            int currentWidth = 0;
+            BufferedImage concatImage = new BufferedImage(widthTotal, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = concatImage.createGraphics();
+            logger.debug("Concatenating images array into single image");
+            for (int j = 0; j < images.size(); j++) {
+                g2d.drawImage(images.get(j), currentWidth, 0, width, height, null);
+                currentWidth += width;
+            }
+            g2d.dispose();
+
+            // Convert image to a state
+            logger.debug("Rendering image to byte array and converting to RawType state");
+            byte[] imageBytes = convertImageToByteArray(concatImage);
+            if (imageBytes != null) {
+                state = new RawType(imageBytes, "image/png");
+            }
         }
         return state;
     }
@@ -524,7 +521,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void updateImageAndTimestamp() {
-        DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
+        DoorbirdImage dbImage = api.downloadCurrentImage();
         if (dbImage != null) {
             RawType image = dbImage.getImage();
             updateState(CHANNEL_IMAGE, image != null ? image : UnDefType.UNDEF);
@@ -532,84 +529,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
     }
 
-    private String buildUrl(String path) {
-        return buildUrl(path, null);
-    }
-
-    private String buildUrl(String path, @Nullable String parameters) {
-        String url = "http://" + getDoorbirdHost() + path;
-        if (parameters != null) {
-            url = url + parameters;
-        }
-        return url;
-    }
-
-    private String executeGetRequest(String url) throws IOException {
-        // @formatter:off
-        return HttpRequestBuilder.getFrom(url)
-            .withTimeout(Duration.ofSeconds(API_REQUEST_TIMEOUT_SECONDS))
-            .withHeader("Authorization", "Basic " + authorization)
-            .withHeader("charset", "utf-8")
-            .withHeader("Accept-language", "en-us")
-            .getContentAsString();
-        // @formatter:on
-    }
-
-    private @Nullable synchronized DoorbirdImage downloadImage(String url) {
-        logger.debug("Downloading image using url={}", url);
-        Request request = httpClient.newRequest(url);
-        request.method(HttpMethod.GET);
-        request.header("Authorization", "Basic " + authorization);
-        request.timeout(6, TimeUnit.SECONDS);
-
-        String errorMsg;
-        try {
-            ContentResponse contentResponse = request.send();
-            switch (contentResponse.getStatus()) {
-                case HttpStatus.OK_200:
-                    DoorbirdImage doorbirdImage = new DoorbirdImage();
-                    doorbirdImage.setImage(new RawType(contentResponse.getContent(),
-                            contentResponse.getHeaders().get(HttpHeader.CONTENT_TYPE)));
-                    doorbirdImage.setTimestamp(convertXTimestamp(contentResponse.getHeaders().get("X-Timestamp")));
-                    return doorbirdImage;
-
-                default:
-                    errorMsg = String.format("HTTP GET failed: %d, %s", contentResponse.getStatus(),
-                            contentResponse.getReason());
-                    break;
-            }
-        } catch (TimeoutException e) {
-            errorMsg = "TimeoutException: Call to Doorbird API timed out";
-        } catch (ExecutionException e) {
-            errorMsg = String.format("ExecutionException: %s", e.getMessage());
-        } catch (InterruptedException e) {
-            errorMsg = String.format("InterruptedException: %s", e.getMessage());
-            Thread.currentThread().interrupt();
-        }
-        logger.debug(errorMsg);
-        return null;
-    }
-
-    private long convertXTimestamp(@Nullable String timestamp) {
-        // Convert Unix Epoch string timestamp to long value
-        // Use current time if passed null string
-        long value = ZonedDateTime.now().toEpochSecond();
-        if (timestamp != null) {
-            try {
-                value = Integer.parseInt(timestamp);
-            } catch (NumberFormatException e) {
-                logger.debug("X-Timestamp header is not a number: {}", timestamp);
-            }
-        }
-        return value;
-    }
-
     private DateTimeType getLocalDateTimeType(long dateTimeSeconds) {
         return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds).atZone(timeZoneProvider.getTimeZone()));
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DoorbirdActions.class);
     }
 }
