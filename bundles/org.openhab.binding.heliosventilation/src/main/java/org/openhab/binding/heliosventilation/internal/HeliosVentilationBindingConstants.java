@@ -53,7 +53,6 @@ public class HeliosVentilationBindingConstants {
     /**
      * parse datapoints from properties
      *
-     * @return
      */
     private static HashMap<Byte, HeliosVentilationDataPoint> readChannelProperties() {
         HashMap<Byte, HeliosVentilationDataPoint> result = new HashMap<Byte, HeliosVentilationDataPoint>();
