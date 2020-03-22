@@ -20,21 +20,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
-import org.openhab.binding.caddx.internal.CaddxProtocol;
-import org.openhab.binding.caddx.internal.config.CaddxBridgeConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxKeypadConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxPartitionConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxZoneConfiguration;
 import org.openhab.binding.caddx.internal.handler.CaddxBridgeHandler;
 import org.openhab.binding.caddx.internal.handler.CaddxThingType;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,73 +37,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Georgios Moutsos - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.caddx")
 @NonNullByDefault
 public class CaddxDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CaddxDiscoveryService.class);
 
-    private @NonNullByDefault({}) SerialPortManager portManager;
-    private CaddxBridgeDiscovery caddxBridgeDiscovery = new CaddxBridgeDiscovery(portManager, this);
     private @Nullable CaddxBridgeHandler caddxBridgeHandler;
 
     /**
      * Constructor.
-     *
-     * @param caddxBridgeHandler The Bridge handler
      */
     public CaddxDiscoveryService(CaddxBridgeHandler caddxBridgeHandler) {
-        super(CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, true);
+        super(CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, false);
         this.caddxBridgeHandler = caddxBridgeHandler;
     }
 
     @Override
     protected void startScan() {
-        logger.trace("Start Caddx Bridge discovery.");
-
-        if (portManager != null) {
-            caddxBridgeDiscovery = new CaddxBridgeDiscovery(portManager, this);
-            caddxBridgeDiscovery.discoverBridge();
-        }
-    }
-
-    @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-    }
-
-    /**
-     * Method to add a Caddx Bridge to the Smarthome Inbox.
-     *
-     * @param port
-     */
-    public void addCaddxBridge(CaddxProtocol protocol, String port, int baudrate) {
-        logger.trace("addCaddxBridge(): Adding new Caddx Bridge on {} {} to Smarthome inbox", port, baudrate);
-
-        String bridgeID = "";
-        boolean containsChar = port.contains("/");
-
-        if (containsChar) {
-            String[] parts = port.split("/");
-            String id = parts[parts.length - 1].toUpperCase();
-            bridgeID = id.replaceAll("\\W", "_");
-        } else {
-            String id = port.toUpperCase();
-            bridgeID = id.replaceAll("\\W", "_");
-        }
-
-        Map<String, Object> properties = new HashMap<>(3);
-        properties.put(CaddxBridgeConfiguration.PROTOCOL, protocol);
-        properties.put(CaddxBridgeConfiguration.SERIAL_PORT, port);
-        properties.put(CaddxBridgeConfiguration.BAUD, baudrate);
-
-        try {
-            ThingUID thingUID = new ThingUID(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE, bridgeID);
-
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withLabel("Caddx Bridge - " + port).build());
-        } catch (Exception e) {
-            logger.warn("addBridge(): ", e);
-        }
+        // Discovery is started only for the bridge
     }
 
     /**
@@ -188,9 +132,9 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
      * Activates the Discovery Service.
      */
     public void activate() {
-        CaddxBridgeHandler h = caddxBridgeHandler;
-        if (h != null) {
-            h.registerDiscoveryService(this);
+        CaddxBridgeHandler handler = caddxBridgeHandler;
+        if (handler != null) {
+            handler.registerDiscoveryService(this);
         }
     }
 
@@ -199,18 +143,9 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     public void deactivate() {
-        CaddxBridgeHandler h = caddxBridgeHandler;
-        if (h != null) {
-            h.unregisterDiscoveryService();
+        CaddxBridgeHandler handler = caddxBridgeHandler;
+        if (handler != null) {
+            handler.unregisterDiscoveryService();
         }
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.portManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.portManager = null;
     }
 }

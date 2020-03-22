@@ -114,16 +114,16 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             throw new IllegalArgumentException();
         }
 
-        CaddxCommunicator myCommunicator = communicator;
-        if (myCommunicator != null) {
-            myCommunicator.addListener(this);
+        CaddxCommunicator comm = communicator;
+        if (comm != null) {
+            comm.addListener(this);
 
             // Send discovery commands for the things
-            myCommunicator.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_00, false));
-            myCommunicator.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_10, false));
-            myCommunicator.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_20, false));
-            myCommunicator.transmit(new CaddxMessage(DISCOVERY_PARTITION_STATUS_REQUEST_0, false));
-            myCommunicator.transmit(new CaddxMessage(DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_00, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_10, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_20, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_PARTITION_STATUS_REQUEST_0, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
         }
         // list all channels
         if (logger.isTraceEnabled()) {
@@ -143,10 +143,10 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
     @Override
     public void dispose() {
-        CaddxCommunicator n = communicator;
-        if (n != null) {
-            n.stop();
-            n = null;
+        CaddxCommunicator comm = communicator;
+        if (comm != null) {
+            comm.stop();
+            comm = null;
         }
 
         if (discoveryService != null) {
@@ -352,19 +352,19 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
             // Find the thing
             Thing thing = findThing(caddxThingType, partition, zone, keypad);
+            CaddxDiscoveryService disc = getDiscoveryService();
             if (thing != null) {
                 CaddxBaseThingHandler thingHandler = (CaddxBaseThingHandler) thing.getHandler();
                 if (thingHandler != null) {
                     thingHandler.caddxEventReceived(event, thing);
                 }
             } else {
-                CaddxDiscoveryService d = getDiscoveryService();
-                if (d != null) {
-                    d.addThing(getThing(), caddxThingType, event);
+                if (disc != null) {
+                    disc.addThing(getThing(), caddxThingType, event);
                 }
             }
 
-            if (getDiscoveryService() != null) {
+            if (disc != null) {
                 switch (caddxMessage.getCaddxMessageType()) {
                     case Partitions_Snapshot_Message:
                         for (int i = 1; i <= 8; i++) {
@@ -373,12 +373,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                                 if (thing != null) {
                                     continue;
                                 }
-
-                                event = new CaddxEvent(caddxMessage, i, null, null);
-                                CaddxDiscoveryService d = getDiscoveryService();
-                                if (d != null) {
-                                    d.addThing(getThing(), CaddxThingType.PARTITION, event);
-                                }
+                                disc.addThing(getThing(), CaddxThingType.PARTITION, event);
                             }
                         }
                         break;
@@ -391,12 +386,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                                 if (thing != null) {
                                     continue;
                                 }
-
-                                event = new CaddxEvent(caddxMessage, null, zoneOffset + i, null);
-                                CaddxDiscoveryService d = getDiscoveryService();
-                                if (d != null) {
-                                    d.addThing(getThing(), CaddxThingType.ZONE, event);
-                                }
+                                disc.addThing(getThing(), CaddxThingType.ZONE, event);
                             }
                         }
                         break;

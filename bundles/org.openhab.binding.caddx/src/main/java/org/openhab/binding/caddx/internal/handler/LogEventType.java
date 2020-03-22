@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * All the log event types
@@ -105,7 +106,7 @@ public enum LogEventType {
         }
     }
 
-    public static LogEventType valueOfLogEventType(int eventType) {
+    public static @Nullable LogEventType valueOfLogEventType(int eventType) {
         return BY_LOG_EVENT_TYPE.get(eventType);
     }
 }

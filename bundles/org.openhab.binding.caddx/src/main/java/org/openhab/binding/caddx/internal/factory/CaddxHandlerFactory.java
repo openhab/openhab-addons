@@ -55,7 +55,6 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.caddx", service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class CaddxHandlerFactory extends BaseThingHandlerFactory {
-
     private final Logger logger = LoggerFactory.getLogger(CaddxHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private @NonNullByDefault({}) SerialPortManager portManager;

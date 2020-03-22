@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ThingHandlerPanel extends CaddxBaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(ThingHandlerPanel.class);
     private @Nullable HashMap<String, String> panelLogMessagesMap = null;
     private @Nullable String communicatorStackPointer = null;

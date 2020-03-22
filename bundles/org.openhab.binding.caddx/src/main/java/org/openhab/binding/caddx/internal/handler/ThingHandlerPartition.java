@@ -57,7 +57,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand(): Command Received - {} {}.", channelUID, command);
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
 
         String cmd = null;
         String data = null;
@@ -73,8 +73,10 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
             } else {
                 return;
             }
-        } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_PRIMARY_COMMAND)
-                || channelUID.getId().equals(CaddxBindingConstants.PARTITION_SECONDARY_COMMAND)) {
+        } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_PRIMARY_COMMAND)) {
+            cmd = channelUID.getId();
+            data = command.toString() + "," + String.format("%d", getPartitionNumber() - 1) + ",0";
+        } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_SECONDARY_COMMAND)) {
             cmd = channelUID.getId();
             data = command.toString() + "," + String.format("%d", getPartitionNumber() - 1);
         } else {

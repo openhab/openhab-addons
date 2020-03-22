@@ -19,6 +19,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class that represents the Caddx Alarm Messages.
@@ -27,6 +29,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
  */
 @NonNullByDefault
 public class CaddxMessage {
+    private final Logger logger = LoggerFactory.getLogger(CaddxMessage.class);
     private final CaddxMessageType caddxMessageType;
     private final Map<String, String> propertyMap = new HashMap<>();
     private final Map<String, String> idMap = new HashMap<>();
@@ -72,7 +75,11 @@ public class CaddxMessage {
         this.message = msg;
 
         // fill the message type
-        caddxMessageType = CaddxMessageType.valueOfMessageType((message[0] & 0x7f));
+        CaddxMessageType mt = CaddxMessageType.valueOfMessageType((message[0] & 0x7f));
+        if (mt == null) {
+            throw new IllegalArgumentException("Unknown message");
+        }
+        caddxMessageType = mt;
 
         // Fill-in the properties
         processCaddxMessage();
@@ -167,10 +174,18 @@ public class CaddxMessage {
     }
 
     public String getPropertyValue(String property) {
+        if (!propertyMap.containsKey(property)) {
+            logger.debug("Message does not contain property [{}]", property);
+            return "";
+        }
         return propertyMap.get(property);
     }
 
     public String getPropertyById(String id) {
+        if (!idMap.containsKey(id)) {
+            logger.debug("Message does not contain id [{}]", id);
+            return "";
+        }
         return idMap.get(id);
     }
 
@@ -216,6 +231,9 @@ public class CaddxMessage {
         StringBuilder sb = new StringBuilder();
 
         CaddxMessageType mt = CaddxMessageType.valueOfMessageType(message[0]);
+        if (mt == null) {
+            return "Unknown message type";
+        }
 
         sb.append("Message: ");
         sb.append(String.format("%2s", Integer.toHexString(message[0])));

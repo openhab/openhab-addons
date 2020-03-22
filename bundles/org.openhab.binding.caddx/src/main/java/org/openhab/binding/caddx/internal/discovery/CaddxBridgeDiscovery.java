@@ -13,20 +13,31 @@
 package org.openhab.binding.caddx.internal.discovery;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
+import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
+import org.openhab.binding.caddx.internal.config.CaddxBridgeConfiguration;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,23 +46,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Georgios Moutsos - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.caddx")
 @NonNullByDefault
-public class CaddxBridgeDiscovery implements CaddxPanelListener {
+public class CaddxBridgeDiscovery extends AbstractDiscoveryService implements CaddxPanelListener {
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeDiscovery.class);
 
+    private @NonNullByDefault({}) SerialPortManager portManager;
     static final int[] BAUDRATES = { 9600, 19200, 38400, 57600, 115200 };
-    static final byte[] CADDX_DISCOVERY_INTERFACE_CONFIGURATION_MESSAGE = { 0x21 };
-
-    private SerialPortManager portManager;
-    private CaddxDiscoveryService caddxDiscoveryService;
     private volatile boolean bridgeFound = false;
 
     /**
      * Constructor.
      */
-    public CaddxBridgeDiscovery(SerialPortManager portManager, CaddxDiscoveryService caddxDiscoveryService) {
-        this.caddxDiscoveryService = caddxDiscoveryService;
-        this.portManager = portManager;
+    public CaddxBridgeDiscovery() {
+        super(CaddxBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
+    }
+
+    @Override
+    protected void startScan() {
+        logger.trace("Start Caddx Bridge discovery.");
+
+        if (portManager != null) {
+            discoverBridge();
+        }
     }
 
     public synchronized void discoverBridge() {
@@ -91,7 +108,7 @@ public class CaddxBridgeDiscovery implements CaddxPanelListener {
         bridgeFound = false;
         CaddxCommunicator caddxCommunicator = new CaddxCommunicator(portManager, protocol, serialPort, baudrate);
         caddxCommunicator.addListener(this);
-        caddxCommunicator.transmit(new CaddxMessage(CADDX_DISCOVERY_INTERFACE_CONFIGURATION_MESSAGE, false));
+        caddxCommunicator.transmit(new CaddxMessage(CaddxMessageType.Interface_Configuration_Request, ""));
 
         // Wait for 4 seconds for a response
         try {
@@ -110,8 +127,53 @@ public class CaddxBridgeDiscovery implements CaddxPanelListener {
         logger.trace("Received message. [0x{}] on {} {}", String.format("%02x", caddxMessage.getMessageType()),
                 communicator.getSerialPortName(), communicator.getBaudRate());
 
-        caddxDiscoveryService.addCaddxBridge(communicator.getProtocol(), communicator.getSerialPortName(),
-                communicator.getBaudRate());
+        addCaddxBridge(communicator.getProtocol(), communicator.getSerialPortName(), communicator.getBaudRate());
         bridgeFound = true;
+    }
+
+    /**
+     * Method to add a Caddx Bridge to the Smarthome Inbox.
+     *
+     * @param port
+     */
+    private void addCaddxBridge(CaddxProtocol protocol, String port, int baudrate) {
+        logger.trace("addCaddxBridge(): Adding new Caddx Bridge on {} {} to Smarthome inbox", port, baudrate);
+
+        String bridgeID = "";
+        boolean containsChar = port.contains("/");
+
+        if (containsChar) {
+            String[] parts = port.split("/");
+            String id = parts[parts.length - 1].toUpperCase();
+            bridgeID = id.replaceAll("\\W", "_");
+        } else {
+            String id = port.toUpperCase();
+            bridgeID = id.replaceAll("\\W", "_");
+        }
+
+        Map<String, Object> properties = new HashMap<>(3);
+        properties.put(CaddxBridgeConfiguration.PROTOCOL, protocol);
+        properties.put(CaddxBridgeConfiguration.SERIAL_PORT, port);
+        properties.put(CaddxBridgeConfiguration.BAUD, baudrate);
+
+        try {
+            ThingUID thingUID = new ThingUID(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE, bridgeID);
+
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withLabel("Caddx Bridge - " + port).build());
+        } catch (Exception e) {
+            logger.warn("addBridge(): ", e);
+        }
+    }
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        logger.trace("setSerialPortManager called.");
+        this.portManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        logger.trace("unsetSerialPortManager called.");
+        this.portManager = null;
     }
 }

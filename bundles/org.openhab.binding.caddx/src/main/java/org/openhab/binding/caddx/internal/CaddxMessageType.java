@@ -1343,7 +1343,7 @@ public enum CaddxMessageType {
         }
     }
 
-    public static CaddxMessageType valueOfMessageType(int number) {
+    public static @Nullable CaddxMessageType valueOfMessageType(int number) {
         return BY_MESSAGE_TYPE.get(number);
     }
 }
