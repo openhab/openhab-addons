@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.IncommensurableException;
 import javax.measure.UnconvertibleException;
@@ -70,6 +69,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.sensibo.internal.CallbackChannelsTypeProvider;
 import org.openhab.binding.sensibo.internal.SensiboBindingConstants;
 import org.openhab.binding.sensibo.internal.config.SensiboSkyConfiguration;
+import org.openhab.binding.sensibo.internal.dto.poddetails.TemperatureDTO;
 import org.openhab.binding.sensibo.internal.model.SensiboModel;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
 import org.slf4j.Logger;
@@ -160,7 +160,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     if (command instanceof RefreshType) {
                         updateState(channelUID, OnOffType.from(sensiboSky.getAcState().get().isOn()));
                     } else if (command instanceof OnOffType) {
-                        updateAcState(sensiboSky, MASTER_SWITCH_PROPERTY, (OnOffType) command == OnOffType.ON);
+                        updateAcState(sensiboSky, MASTER_SWITCH_PROPERTY, command == OnOffType.ON);
                     }
                 } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
@@ -190,7 +190,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                             updateAcState(sensiboSky, TARGET_TEMPERATURE_PROPERTY,
                                     new DecimalType(newValue.intValue()));
                         }
-
                     } else if (command instanceof DecimalType) {
                         updateAcState(sensiboSky, TARGET_TEMPERATURE_PROPERTY, command);
                     }
@@ -252,7 +251,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.unmodifiableList(Stream.of(CallbackChannelsTypeProvider.class).collect(Collectors.toList()));
+        return Collections.singleton(CallbackChannelsTypeProvider.class);
     }
 
     @Override
@@ -369,7 +368,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             switch (property) {
                 case TARGET_TEMPERATURE_PROPERTY:
                     Unit<Temperature> temperatureUnit = sensiboSky.getTemperatureUnit();
-                    org.openhab.binding.sensibo.internal.dto.poddetails.Temperature validTemperatures = currentModeCapabilities.temperatures
+                    TemperatureDTO validTemperatures = currentModeCapabilities.temperatures
                             .get(temperatureUnit == SIUnits.CELSIUS ? "C" : "F");
                     DecimalType rawValue = (DecimalType) value;
                     stateChange.updateValue(rawValue.intValue());
@@ -382,7 +381,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
                     break;
                 case MODE_PROPERTY:
-                    if (!sensiboSky.getRemoteCapabilities().keySet().contains(value)) {
+                    if (!sensiboSky.getRemoteCapabilities().containsKey(value)) {
                         stateChange.addError(String.format("Cannot change mode to %s, valid modes are %s", value,
                                 ToStringBuilder.reflectionToString(
                                         sensiboSky.getRemoteCapabilities().keySet().toArray(),

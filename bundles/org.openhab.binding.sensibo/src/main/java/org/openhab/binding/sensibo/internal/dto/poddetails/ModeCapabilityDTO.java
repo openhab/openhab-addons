@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
-import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
@@ -20,6 +25,9 @@ import java.time.ZonedDateTime;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class TimeWrapper {
-    public ZonedDateTime time;
+public class ModeCapabilityDTO {
+    @SerializedName("swing")
+    public List<String> swingModes = new ArrayList<>();
+    public Map<String, TemperatureDTO> temperatures = new HashMap<>();
+    public List<String> fanLevels = new ArrayList<>();
 }

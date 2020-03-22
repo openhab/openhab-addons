@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
-import java.time.ZonedDateTime;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,19 +20,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class Measurement {
-    public Double batteryVoltage;
-    public Double temperature;
-    public Double humidity;
-    @SerializedName("rssi")
-    public Integer wifiSignalStrength;
-    @SerializedName("time")
-    public TimeWrapper measurementTimestamp;
-
-    public ZonedDateTime getMeasurementTimestamp() {
-        if (measurementTimestamp != null) {
-            return measurementTimestamp.time;
-        }
-        return null;
-    }
+public class ConnectionStatusDTO {
+    @SerializedName("isAlive")
+    public boolean alive;
 }

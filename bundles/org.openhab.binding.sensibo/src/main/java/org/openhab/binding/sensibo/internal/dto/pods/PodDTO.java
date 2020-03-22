@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sensibo.internal.dto.poddetails;
-
-import java.util.Map;
+package org.openhab.binding.sensibo.internal.dto.pods;
 
 /**
  * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
@@ -20,6 +18,6 @@ import java.util.Map;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class ModeCapabilityWrapper {
-    public Map<String, ModeCapability> modes;
+public class PodDTO {
+    public String id;
 }

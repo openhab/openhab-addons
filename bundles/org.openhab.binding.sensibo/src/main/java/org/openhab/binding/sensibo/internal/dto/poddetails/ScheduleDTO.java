@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sensibo.internal.dto.pods;
+package org.openhab.binding.sensibo.internal.dto.poddetails;
 
 /**
  * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
@@ -18,6 +18,10 @@ package org.openhab.binding.sensibo.internal.dto.pods;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class Pod {
-    public String id;
+public class ScheduleDTO {
+    public String targetTimeLocal;
+    public String nextTime;
+    public String[] recurringDays;
+    public AcStateDTO acState;
+    public boolean enabled;
 }

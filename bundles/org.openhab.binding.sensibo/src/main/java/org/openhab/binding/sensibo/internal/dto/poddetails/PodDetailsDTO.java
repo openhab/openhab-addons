@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class PodDetails {
+public class PodDetailsDTO {
     public String id;
     public String macAddress;
     public String firmwareVersion;
@@ -31,16 +31,16 @@ public class PodDetails {
     public String serialNumber;
     public String temperatureUnit;
     public String productModel;
-    public AcState acState;
+    public AcStateDTO acState;
     @SerializedName("measurements")
-    public Measurement lastMeasurement;
-    public ConnectionStatus connectionStatus;
-    public Room room;
-    public Schedule[] schedules;
-    public Timer timer;
-    private ModeCapabilityWrapper remoteCapabilities;
+    public MeasurementDTO lastMeasurement;
+    public ConnectionStatusDTO connectionStatus;
+    public RoomDTO room;
+    public ScheduleDTO[] schedules;
+    public TimerDTO timer;
+    private ModeCapabilityWrapperDTO remoteCapabilities;
 
-    public Map<String, ModeCapability> getRemoteCapabilities() {
+    public Map<String, ModeCapabilityDTO> getRemoteCapabilities() {
         return remoteCapabilities.modes;
     }
 

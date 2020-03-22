@@ -17,6 +17,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.openhab.binding.sensibo.internal.model.AcState;
 
 /**
  * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
@@ -24,7 +25,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class AcState {
+public class AcStateDTO {
     public boolean on;
     public String fanLevel;
     public String temperatureUnit;
@@ -32,7 +33,7 @@ public class AcState {
     public String mode;
     public String swing;
 
-    public AcState(boolean on, String fanLevel, String temperatureUnit, Integer targetTemperature, String mode,
+    public AcStateDTO(boolean on, String fanLevel, String temperatureUnit, Integer targetTemperature, String mode,
             String swing) {
         this.on = on;
         this.fanLevel = fanLevel;
@@ -42,10 +43,10 @@ public class AcState {
         this.swing = swing;
     }
 
-    public AcState() {
+    public AcStateDTO() {
     }
 
-    public AcState(org.openhab.binding.sensibo.internal.model.AcState acState) {
+    public AcStateDTO(AcState acState) {
         this.on = acState.isOn();
         this.fanLevel = acState.getFanLevel();
         this.targetTemperature = acState.getTargetTemperature();

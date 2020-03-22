@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
+import java.time.ZonedDateTime;
 
 /**
  * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
@@ -23,8 +20,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class Temperature {
-    public boolean isNative;
-    @SerializedName("values")
-    public List<Integer> validValues = new ArrayList<>();
+public class TimeWrapperDTO {
+    public ZonedDateTime time;
 }

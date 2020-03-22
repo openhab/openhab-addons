@@ -27,8 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
-import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapability;
-import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetails;
+import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapabilityDTO;
+import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
+import org.openhab.binding.sensibo.internal.dto.poddetails.TemperatureDTO;
 
 /**
  * The {@link SensiboSky} represents a Sensibo Sky unit
@@ -48,12 +49,12 @@ public class SensiboSky extends Pod {
     private final Double temperature;
     private final Double humidity;
     private final boolean alive;
-    private final Map<String, ModeCapability> remoteCapabilities;
+    private final Map<String, ModeCapabilityDTO> remoteCapabilities;
     private Schedule[] schedules = new Schedule[0];
     private Optional<AcState> acState = Optional.empty();
     private Optional<Timer> timer = Optional.empty();
 
-    public SensiboSky(final PodDetails dto) {
+    public SensiboSky(final PodDetailsDTO dto) {
         this.id = dto.id;
         this.macAddress = StringUtils.remove(dto.macAddress, ':');
         this.firmwareVersion = dto.firmwareVersion;
@@ -149,11 +150,11 @@ public class SensiboSky extends Pod {
         return alive;
     }
 
-    public Map<String, ModeCapability> getRemoteCapabilities() {
+    public Map<String, ModeCapabilityDTO> getRemoteCapabilities() {
         return remoteCapabilities;
     }
 
-    public Optional<ModeCapability> getCurrentModeCapabilities() {
+    public Optional<ModeCapabilityDTO> getCurrentModeCapabilities() {
         if (acState.isPresent() && acState.get().getMode() != null) {
             return Optional.ofNullable(remoteCapabilities.get(acState.get().getMode()));
         } else {
@@ -162,10 +163,10 @@ public class SensiboSky extends Pod {
     }
 
     public List<Integer> getTargetTemperatures() {
-        Optional<ModeCapability> currentModeCapabilities = getCurrentModeCapabilities();
+        Optional<ModeCapabilityDTO> currentModeCapabilities = getCurrentModeCapabilities();
         if (currentModeCapabilities.isPresent()) {
-            org.openhab.binding.sensibo.internal.dto.poddetails.Temperature selectedTemperatureRange = currentModeCapabilities
-                    .get().temperatures.get(originalTemperatureUnit);
+            TemperatureDTO selectedTemperatureRange = currentModeCapabilities.get().temperatures
+                    .get(originalTemperatureUnit);
             if (selectedTemperatureRange != null) {
                 return selectedTemperatureRange.validValues;
             }

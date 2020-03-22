@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.sensibo.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.sensibo.internal.dto.poddetails.TimerDTO;
+
 /**
  * The {@link Timer} represents a Sensibo Sky unit timer definition
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class Timer {
+    public final int secondsRemaining;
+    public final AcState acState;
+    public final boolean enabled;
 
-    public int secondsRemaining;
-    public AcState acState;
-    public boolean enabled;
-
-    public Timer(org.openhab.binding.sensibo.internal.dto.poddetails.Timer dto) {
+    public Timer(TimerDTO dto) {
         this.secondsRemaining = dto.targetTimeSecondsFromNow;
         this.acState = new AcState(dto.acState);
         this.enabled = dto.enabled;

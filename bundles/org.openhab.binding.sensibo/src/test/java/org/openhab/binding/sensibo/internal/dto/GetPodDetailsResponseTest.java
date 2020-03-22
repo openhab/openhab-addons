@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
 import org.junit.Test;
-import org.openhab.binding.sensibo.internal.dto.poddetails.AcState;
-import org.openhab.binding.sensibo.internal.dto.poddetails.Measurement;
-import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapability;
-import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetails;
-import org.openhab.binding.sensibo.internal.dto.poddetails.Temperature;
+import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
+import org.openhab.binding.sensibo.internal.dto.poddetails.MeasurementDTO;
+import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapabilityDTO;
+import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
+import org.openhab.binding.sensibo.internal.dto.poddetails.TemperatureDTO;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
 
 /**
@@ -33,16 +36,16 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
 
     @Test
     public void testDeserializeWithSmartModeSetup() throws IOException {
-        final PodDetails rsp = wireHelper.deSerializeResponse("/get_pod_details_response_smartmode_settings.json",
-                PodDetails.class);
+        final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response_smartmode_settings.json",
+                PodDetailsDTO.class);
 
         assertEquals("34:15:13:AA:AA:AA", rsp.macAddress);
     }
 
     @Test
     public void testDeserializeNullpointerExample() throws IOException {
-        final PodDetails rsp = wireHelper.deSerializeResponse("/get_pod_details_response_nullpointer.json",
-                PodDetails.class);
+        final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response_nullpointer.json",
+                PodDetailsDTO.class);
         SensiboSky internal = new SensiboSky(rsp);
 
         assertEquals("50175457", internal.getSerialNumber());
@@ -50,7 +53,7 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
 
     @Test
     public void testDeserialize() throws IOException {
-        final PodDetails rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetails.class);
+        final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetailsDTO.class);
 
         assertEquals("MA:C:AD:DR:ES:S0", rsp.macAddress);
         assertEquals("IN010056", rsp.firmwareVersion);
@@ -63,22 +66,22 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
         assertRemoteCapabilities(rsp.getRemoteCapabilities());
     }
 
-    private void assertRemoteCapabilities(final Map<String, ModeCapability> remoteCapabilities) {
+    private void assertRemoteCapabilities(final Map<String, ModeCapabilityDTO> remoteCapabilities) {
         assertNotNull(remoteCapabilities);
 
         assertEquals(5, remoteCapabilities.size());
-        final ModeCapability mode = remoteCapabilities.get("heat");
+        final ModeCapabilityDTO mode = remoteCapabilities.get("heat");
 
         assertNotNull(mode.swingModes);
         assertNotNull(mode.fanLevels);
         assertNotNull(mode.temperatures);
-        final Map<String, Temperature> temperatures = mode.temperatures;
-        final Temperature temperature = temperatures.get("C");
+        final Map<String, TemperatureDTO> temperatures = mode.temperatures;
+        final TemperatureDTO temperature = temperatures.get("C");
         assertNotNull(temperature);
         assertNotNull(temperature.validValues);
     }
 
-    private void assertMeasurement(final Measurement lastMeasurement) {
+    private void assertMeasurement(final MeasurementDTO lastMeasurement) {
         assertNotNull(lastMeasurement);
         assertNull(lastMeasurement.batteryVoltage);
         assertEquals(Double.valueOf("22.5"), lastMeasurement.temperature);
@@ -87,7 +90,7 @@ public class GetPodDetailsResponseTest extends AbstractSerializationDeserializat
         assertEquals(ZonedDateTime.parse("2019-05-05T07:52:11Z"), lastMeasurement.measurementTimestamp.time);
     }
 
-    private void assertAcState(final AcState acState) {
+    private void assertAcState(final AcStateDTO acState) {
         assertNotNull(acState);
 
         assertTrue(acState.on);

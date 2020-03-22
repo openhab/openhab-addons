@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sensibo.internal.dto.poddetails.ScheduleDTO;
 
 /**
  * The {@link SensiboSky} represents a Sensibo Sky schedule
@@ -25,13 +26,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Schedule {
-    private LocalTime targetTimeLocal;
+    private final LocalTime targetTimeLocal;
+    private final String[] recurringDays;
+    private final AcState acState;
+    private final boolean enabled;
     private @Nullable ZonedDateTime nextTime;
-    private String[] recurringDays;
-    private AcState acState;
-    private boolean enabled;
 
-    public Schedule(org.openhab.binding.sensibo.internal.dto.poddetails.Schedule dto) {
+    public Schedule(ScheduleDTO dto) {
         this.enabled = dto.enabled;
         if (enabled) {
             this.nextTime = ZonedDateTime.parse(nextTime + "Z"); // API field seems to be in Zulu

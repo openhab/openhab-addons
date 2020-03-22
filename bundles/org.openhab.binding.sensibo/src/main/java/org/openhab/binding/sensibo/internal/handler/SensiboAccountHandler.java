@@ -45,11 +45,13 @@ import org.openhab.binding.sensibo.internal.SensiboException;
 import org.openhab.binding.sensibo.internal.client.RequestLogger;
 import org.openhab.binding.sensibo.internal.config.SensiboAccountConfiguration;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
+import org.openhab.binding.sensibo.internal.dto.deletetimer.DeleteTimerReponse;
 import org.openhab.binding.sensibo.internal.dto.deletetimer.DeleteTimerRequest;
+import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.GetPodsDetailsRequest;
-import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetails;
+import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
 import org.openhab.binding.sensibo.internal.dto.pods.GetPodsRequest;
-import org.openhab.binding.sensibo.internal.dto.pods.Pod;
+import org.openhab.binding.sensibo.internal.dto.pods.PodDTO;
 import org.openhab.binding.sensibo.internal.dto.setacstateproperty.SetAcStatePropertyReponse;
 import org.openhab.binding.sensibo.internal.dto.setacstateproperty.SetAcStatePropertyRequest;
 import org.openhab.binding.sensibo.internal.dto.settimer.SetTimerReponse;
@@ -82,12 +84,12 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     public static String API_ENDPOINT = "https://home.sensibo.com/api";
     private final Logger logger = LoggerFactory.getLogger(SensiboAccountHandler.class);
     private final HttpClient httpClient;
-    private RequestLogger requestLogger;
-    private Gson gson;
+    private final JsonParser jsonParser = new JsonParser();
+    private final RequestLogger requestLogger;
+    private final Gson gson;
     private SensiboModel model = new SensiboModel(0);
     private @Nullable ScheduledFuture<?> statusFuture;
     private @NonNullByDefault({}) SensiboAccountConfiguration config;
-    private final JsonParser jsonParser = new JsonParser();
 
     public SensiboAccountHandler(final Bridge bridge, final HttpClient httpClient) {
         super(bridge);
@@ -134,28 +136,33 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
-            try {
-                config = loadConfigSafely();
-                logger.debug("Initializing Sensibo Account bridge using config {}", config);
-                model = refreshModel();
-                updateStatus(ThingStatus.ONLINE);
-                initPolling();
-                logger.debug("Initialization of Sensibo account completed successfully for {}", config);
-            } catch (final SensiboConfigurationException e) {
-                logger.info("Error initializing Sensibo data: {}", e.getMessage());
-                model = new SensiboModel(0); // Empty model
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Error fetching initial data: " + e.getMessage());
-            } catch (final SensiboException e) {
-                logger.info("Error initializing Sensibo data: {}", e.getMessage());
-                model = new SensiboModel(0); // Empty model
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error fetching initial data: " + e.getMessage());
-                // Reschedule init
-                scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
-            }
+            initializeInternal();
         });
+    }
+
+    private void initializeInternal() {
+        try {
+            config = loadConfigSafely();
+            logger.debug("Initializing Sensibo Account bridge using config {}", config);
+            model = refreshModel();
+            updateStatus(ThingStatus.ONLINE);
+            initPolling();
+            logger.debug("Initialization of Sensibo account completed successfully for {}", config);
+        } catch (final SensiboConfigurationException e) {
+            logger.info("Error initializing Sensibo data: {}", e.getMessage());
+            model = new SensiboModel(0); // Empty model
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Error fetching initial data: " + e.getMessage());
+        } catch (final SensiboException e) {
+            logger.info("Error initializing Sensibo data: {}", e.getMessage());
+            model = new SensiboModel(0); // Empty model
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error fetching initial data: " + e.getMessage());
+            // Reschedule init
+            scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -177,15 +184,15 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         final SensiboModel updatedModel = new SensiboModel(System.currentTimeMillis());
 
         final GetPodsRequest getPodsRequest = new GetPodsRequest();
-        final List<Pod> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
-                new TypeToken<ArrayList<Pod>>() {
+        final List<PodDTO> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
+                new TypeToken<ArrayList<PodDTO>>() {
                 }.getType());
 
-        for (final Pod pod : pods) {
+        for (final PodDTO pod : pods) {
             final GetPodsDetailsRequest getPodsDetailsRequest = new GetPodsDetailsRequest(pod.id);
 
-            final PodDetails podDetails = sendRequest(buildGetPodDetailsRequest(getPodsDetailsRequest),
-                    getPodsDetailsRequest, new TypeToken<PodDetails>() {
+            final PodDetailsDTO podDetails = sendRequest(buildGetPodDetailsRequest(getPodsDetailsRequest),
+                    getPodsDetailsRequest, new TypeToken<PodDetailsDTO>() {
                     }.getType());
 
             updatedModel.addPod(new SensiboSky(podDetails));
@@ -223,7 +230,6 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     /**
      * Stops this thing's polling future
      */
-    @SuppressWarnings("null")
     private void stopPolling() {
         if (statusFuture != null && !statusFuture.isCancelled()) {
             statusFuture.cancel(true);
@@ -303,8 +309,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         model.findSensiboSkyByMacAddress(macAddress).ifPresent(pod -> {
             try {
                 if (secondsFromNow != null && secondsFromNow >= SECONDS_IN_MINUTE) {
-                    org.openhab.binding.sensibo.internal.dto.poddetails.AcState offState = new org.openhab.binding.sensibo.internal.dto.poddetails.AcState(
-                            pod.getAcState().get());
+                    AcStateDTO offState = new AcStateDTO(pod.getAcState().get());
                     offState.on = false;
 
                     SetTimerRequest setTimerRequest = new SetTimerRequest(pod.getId(),
@@ -317,7 +322,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                     DeleteTimerRequest setTimerRequest = new DeleteTimerRequest(pod.getId());
                     Request request = buildRequest(setTimerRequest);
                     // No data in response
-                    sendRequest(request, setTimerRequest, new TypeToken<SetTimerReponse>() {
+                    sendRequest(request, setTimerRequest, new TypeToken<DeleteTimerReponse>() {
                     }.getType());
                 }
             } catch (SensiboException e) {

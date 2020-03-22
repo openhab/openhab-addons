@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
+import java.util.Map;
+
 /**
  * All classes in the ..binding.sensibo.dto are data transfer classes used by the GSON mapper. This class reflects a
  * part of a request/response data structure.
  *
  * @author Arne Seime - Initial contribution.
  */
-public class Schedule {
-    public String targetTimeLocal;
-    public String nextTime;
-    public String[] recurringDays;
-    public AcState acState;
-    public boolean enabled;
+public class ModeCapabilityWrapperDTO {
+    public Map<String, ModeCapabilityDTO> modes;
 }

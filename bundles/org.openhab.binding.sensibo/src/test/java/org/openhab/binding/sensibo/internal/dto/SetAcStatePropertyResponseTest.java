@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 

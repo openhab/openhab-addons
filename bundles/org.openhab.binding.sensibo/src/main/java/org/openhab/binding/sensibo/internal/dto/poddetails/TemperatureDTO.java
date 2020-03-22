@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,7 +23,8 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class ConnectionStatus {
-    @SerializedName("isAlive")
-    public boolean alive;
+public class TemperatureDTO {
+    public boolean isNative;
+    @SerializedName("values")
+    public List<Integer> validValues = new ArrayList<>();
 }

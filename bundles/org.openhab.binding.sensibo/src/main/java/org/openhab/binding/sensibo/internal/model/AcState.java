@@ -15,22 +15,25 @@ package org.openhab.binding.sensibo.internal.model;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
+import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 
 /**
  * Represents the state of the AC unit
  * 
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class AcState {
-    private boolean on;
-    private String fanLevel;
-    private Unit<Temperature> temperatureUnit;
-    private Integer targetTemperature;
-    private String mode;
-    private String swing;
+    private final boolean on;
+    private final String fanLevel;
+    private final Unit<Temperature> temperatureUnit;
+    private final Integer targetTemperature;
+    private final String mode;
+    private final String swing;
 
-    public AcState(final org.openhab.binding.sensibo.internal.dto.poddetails.AcState dto) {
+    public AcState(final AcStateDTO dto) {
         this.on = dto.on;
         this.fanLevel = dto.fanLevel;
         this.targetTemperature = dto.targetTemperature;

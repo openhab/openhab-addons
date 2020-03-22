@@ -18,6 +18,8 @@ package org.openhab.binding.sensibo.internal.dto.poddetails;
  *
  * @author Arne Seime - Initial contribution.
  */
-public class Room {
-    public String name;
+public class TimerDTO {
+    public int targetTimeSecondsFromNow;
+    public AcStateDTO acState;
+    public boolean enabled;
 }

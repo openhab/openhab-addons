@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.openhab.binding.sensibo.internal.dto.pods.Pod;
+import org.openhab.binding.sensibo.internal.dto.pods.PodDTO;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -32,10 +32,10 @@ public class GetPodsResponseTest extends AbstractSerializationDeserializationTes
     @Test
     public void testDeserialize() throws IOException {
 
-        final Type type = new TypeToken<ArrayList<Pod>>() {
+        final Type type = new TypeToken<ArrayList<PodDTO>>() {
         }.getType();
 
-        final List<Pod> rsp = wireHelper.deSerializeResponse("/get_pods_response.json", type);
+        final List<PodDTO> rsp = wireHelper.deSerializeResponse("/get_pods_response.json", type);
 
         assertEquals(1, rsp.size());
         assertEquals("PODID", rsp.get(0).id);

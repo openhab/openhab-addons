@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +39,7 @@ import org.mockito.Mockito;
 import org.openhab.binding.sensibo.internal.SensiboBindingConstants;
 import org.openhab.binding.sensibo.internal.SensiboCommunicationException;
 import org.openhab.binding.sensibo.internal.WireHelper;
-import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetails;
+import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
 import org.openhab.binding.sensibo.internal.handler.SensiboSkyHandler.StateChange;
 import org.openhab.binding.sensibo.internal.model.SensiboModel;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
@@ -50,7 +53,7 @@ public class SensiboSkyHandlerTest {
 
     @Test
     public void testStateChangeValidation() throws IOException, SensiboCommunicationException {
-        final PodDetails rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetails.class);
+        final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetailsDTO.class);
         SensiboSky sky = new SensiboSky(rsp);
         Thing thing = Mockito.mock(Thing.class);
         SensiboSkyHandler handler = new SensiboSkyHandler(thing);
@@ -84,7 +87,7 @@ public class SensiboSkyHandlerTest {
 
     @Test
     public void testTemperatureConversion() throws IOException {
-        final PodDetails rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetails.class);
+        final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetailsDTO.class);
         SensiboSky sky = new SensiboSky(rsp);
         Thing thing = Mockito.mock(Thing.class);
         Mockito.when(thing.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
@@ -128,7 +131,7 @@ public class SensiboSkyHandlerTest {
     }
 
     private void testAddDynamicChannels(String podDetailsResponse) throws IOException, SensiboCommunicationException {
-        final PodDetails rsp = wireHelper.deSerializeResponse(podDetailsResponse, PodDetails.class);
+        final PodDetailsDTO rsp = wireHelper.deSerializeResponse(podDetailsResponse, PodDetailsDTO.class);
         SensiboSky sky = new SensiboSky(rsp);
         Thing thing = Mockito.mock(Thing.class);
         Mockito.when(thing.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));

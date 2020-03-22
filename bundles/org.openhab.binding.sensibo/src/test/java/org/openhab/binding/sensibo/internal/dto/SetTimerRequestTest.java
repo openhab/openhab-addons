@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
 import org.junit.Test;
-import org.openhab.binding.sensibo.internal.dto.poddetails.AcState;
+import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 import org.openhab.binding.sensibo.internal.dto.settimer.SetTimerRequest;
 
 /**
@@ -27,7 +29,7 @@ public class SetTimerRequestTest extends AbstractSerializationDeserializationTes
 
     @Test
     public void testSerializeDeserialize() throws IOException {
-        AcState acState = new AcState(false, "fanLevel", "C", 21, "mode", "swing");
+        AcStateDTO acState = new AcStateDTO(false, "fanLevel", "C", 21, "mode", "swing");
         SetTimerRequest req = new SetTimerRequest("PODID", 60, acState);
         String serializedJson = wireHelper.serialize(req);
 
