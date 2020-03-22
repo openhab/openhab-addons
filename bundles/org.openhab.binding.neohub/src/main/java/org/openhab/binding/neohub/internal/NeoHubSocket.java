@@ -64,10 +64,10 @@ public class NeoHubSocket {
     public String sendMessage(final String request) throws IOException, NeoHubException {
         try (Socket socket = new Socket()) {
             // timeout for socket connect
-            socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_IMEOUT * 1000);
+            socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_TIMEOUT * 1000);
 
             // timeout for socket read
-            socket.setSoTimeout(TCP_SOCKET_IMEOUT * 1000);
+            socket.setSoTimeout(TCP_SOCKET_TIMEOUT * 1000);
 
             try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
                  OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
