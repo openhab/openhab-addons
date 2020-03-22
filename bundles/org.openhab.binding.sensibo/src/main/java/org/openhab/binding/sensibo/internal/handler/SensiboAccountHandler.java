@@ -161,7 +161,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error fetching initial data: " + e.getMessage());
             // Reschedule init
-            scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
+            scheduler.schedule(this::initializeInternal, 30, TimeUnit.SECONDS);
         }
     }
 

@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -84,8 +83,7 @@ public class SensiboSky extends Pod {
         this.roomName = dto.getRoomName();
 
         if (dto.schedules != null) {
-            schedules = Arrays.asList(dto.schedules).stream().map(e -> new Schedule(e)).collect(Collectors.toList())
-                    .toArray(new Schedule[0]);
+            schedules = Arrays.stream(dto.schedules).map(Schedule::new).toArray(Schedule[]::new);
         }
     }
 
