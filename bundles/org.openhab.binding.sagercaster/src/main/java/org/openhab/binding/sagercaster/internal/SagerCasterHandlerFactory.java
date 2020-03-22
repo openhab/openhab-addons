@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sagercaster.internal;
 
+import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstants.THING_TYPE_SAGERCASTER;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -35,9 +37,15 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.sagercaster")
 public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SagerCasterBindingConstants.THING_TYPE_SAGERCASTER);
-    private @NonNullByDefault({}) WindDirectionStateDescriptionProvider stateDescriptionProvider;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAGERCASTER);
+    private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
+    private final SagerWeatherCaster sagerWeatherCaster;
+
+    public SagerCasterHandlerFactory(@Reference SagerWeatherCaster sagerWeatherCaster,
+            @Reference WindDirectionStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+        this.sagerWeatherCaster = sagerWeatherCaster;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,19 +56,9 @@ public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(SagerCasterBindingConstants.THING_TYPE_SAGERCASTER)
-                && stateDescriptionProvider != null) {
-            return new SagerCasterHandler(thing, stateDescriptionProvider);
+        if (thingTypeUID.equals(THING_TYPE_SAGERCASTER)) {
+            return new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster);
         }
         return null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(WindDirectionStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(WindDirectionStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = null;
     }
 }

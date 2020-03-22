@@ -17,7 +17,11 @@ import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstan
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Angle;
@@ -52,8 +56,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SagerCasterHandler extends BaseThingHandler {
     private final static StringType FORECAST_PENDING = new StringType("0");
+    private final static Set<String> SHOWERS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList("G", "K", "L", "R", "S", "T", "U", "W")));
+
     private final Logger logger = LoggerFactory.getLogger(SagerCasterHandler.class);
-    private final static SagerWeatherCaster sagerWeatherCaster = new SagerWeatherCaster();
+    private final SagerWeatherCaster sagerWeatherCaster;
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
     private int currentTemp = 0;
 
@@ -61,9 +68,11 @@ public class SagerCasterHandler extends BaseThingHandler {
     private final ExpiringMap<QuantityType<Temperature>> temperatureCache = new ExpiringMap<>();
     private final ExpiringMap<QuantityType<Angle>> bearingCache = new ExpiringMap<>();
 
-    public SagerCasterHandler(Thing thing, WindDirectionStateDescriptionProvider stateDescriptionProvider) {
+    public SagerCasterHandler(Thing thing, WindDirectionStateDescriptionProvider stateDescriptionProvider,
+            SagerWeatherCaster sagerWeatherCaster) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.sagerWeatherCaster = sagerWeatherCaster;
     }
 
     @Override
@@ -114,19 +123,27 @@ public class SagerCasterHandler extends BaseThingHandler {
                     }
                 case CHANNEL_IS_RAINING:
                     logger.debug("Rain status updated, updating forecast");
-                    OnOffType isRaining = (OnOffType) command;
-                    scheduler.submit(() -> {
-                        sagerWeatherCaster.setRaining(isRaining == OnOffType.ON);
-                        postNewForecast();
-                    });
+                    if (command instanceof OnOffType) {
+                        OnOffType isRaining = (OnOffType) command;
+                        scheduler.submit(() -> {
+                            sagerWeatherCaster.setRaining(isRaining == OnOffType.ON);
+                            postNewForecast();
+                        });
+                    } else {
+                        logger.debug("Channel '{}' only accepts OnOffType commands.", channelUID);
+                    }
                     break;
                 case CHANNEL_WIND_SPEED:
                     logger.debug("Updated wind speed, updating forecast");
-                    DecimalType newValue = (DecimalType) command;
-                    scheduler.submit(() -> {
-                        sagerWeatherCaster.setBeaufort(newValue.intValue());
-                        postNewForecast();
-                    });
+                    if (command instanceof DecimalType) {
+                        DecimalType newValue = (DecimalType) command;
+                        scheduler.submit(() -> {
+                            sagerWeatherCaster.setBeaufort(newValue.intValue());
+                            postNewForecast();
+                        });
+                    } else {
+                        logger.debug("Channel '{}' only accepts DecimalType commands.", channelUID);
+                    }
                     break;
                 case CHANNEL_PRESSURE:
                     logger.debug("Sea-level pressure updated, updating forecast");
@@ -162,7 +179,7 @@ public class SagerCasterHandler extends BaseThingHandler {
                             currentTemp = newTemperature.intValue();
                             QuantityType<Temperature> agedTemperature = temperatureCache.getAgedValue();
                             if (agedTemperature != null) {
-                                // TODO
+                                // TODO : add temperature evolution trend
                                 // https://www.sciencedirect.com/topics/engineering/outdoor-air-temperature
                             }
                         }
@@ -183,7 +200,6 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 postNewForecast();
                             });
                         }
-                        ;
                     }
                     break;
                 default:
@@ -195,14 +211,8 @@ public class SagerCasterHandler extends BaseThingHandler {
     private void postNewForecast() {
         String forecast = sagerWeatherCaster.getForecast();
         // Sharpens forecast if current temp is below 2 degrees, likely to be flurries rather than shower
-        if ("G".equals(forecast) || "K".equals(forecast) || "L".equals(forecast) || "R".equals(forecast)
-                || "S".equals(forecast) || "T".equals(forecast) || "U".equals(forecast) || "W".equals(forecast)) {
-            if (currentTemp > 2) {
-                forecast = forecast + "1";
-            } else {
-                forecast = forecast + "2";
-            }
-        }
+        forecast += SHOWERS.contains(forecast) ? (currentTemp > 2) ? "1" : "2" : "";
+
         updateState(CHANNEL_FORECAST, new StringType(forecast));
         updateState(CHANNEL_WINDFROM, new StringType(sagerWeatherCaster.getWindDirection()));
         updateState(CHANNEL_WINDTO, new StringType(sagerWeatherCaster.getWindDirection2()));

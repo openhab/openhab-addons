@@ -12,19 +12,19 @@
 				<label>Wind Velocity</label>
 			</channel>			
 			<channel id="wind-from" typeId="wind-direction">
-				<label>Wind from</label>
+				<label>Wind From</label>
 			</channel>  
 			<channel id="wind-to" typeId="wind-direction">
-				<label>Wind to</label>
+				<label>Wind To</label>
 			</channel>		   
 			<channel id="wind-evolution" typeId="wind-evolution" />
 			<channel id="pressure-trend" typeId="trend">
-					<label>Pressure Trend</label>
-					<description>Pressure Evolution trend over observation delay</description>			
+				<label>Pressure Trend</label>
+				<description>Pressure Evolution trend over observation delay</description>			
 			</channel>
 			<channel id="temperature-trend" typeId="trend" >
-					<label>Temperature Trend</label>
-					<description>Temperature Evolution trend over observation delay</description>			
+				<label>Temperature Trend</label>
+				<description>Temperature Evolution trend over observation delay</description>			
 			</channel>
 			<channel id="cloudiness" typeId="cloudiness" />
 			<channel id="is-raining" typeId="is-raining" />

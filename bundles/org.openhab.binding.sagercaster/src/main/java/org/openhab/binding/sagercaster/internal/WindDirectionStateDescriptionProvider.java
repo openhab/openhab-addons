@@ -34,8 +34,8 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Gaël L'hopital - Ported as-is in this binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class, WindDirectionStateDescriptionProvider.class })
 @NonNullByDefault
+@Component(service = { DynamicStateDescriptionProvider.class, WindDirectionStateDescriptionProvider.class })
 public class WindDirectionStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
