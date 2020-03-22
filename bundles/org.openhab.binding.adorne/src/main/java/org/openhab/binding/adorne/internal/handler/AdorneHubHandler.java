@@ -66,10 +66,8 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
         AdorneHubConfiguration config = getConfigAs(AdorneHubConfiguration.class);
         logger.debug("Configuration host:{} port:{}", config.host, config.port);
 
-        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler);
+        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler, this);
         this.adorneHubController = adorneHubController;
-        // We want to know about changes from the hub so we can update devices as needed
-        adorneHubController.setChangeListener(this);
         // Kick off the hub controller that handles all interactions with the hub for us
         adorneHubController.start();
     }

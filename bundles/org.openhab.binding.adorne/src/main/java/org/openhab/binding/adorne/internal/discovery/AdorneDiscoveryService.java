@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.UIDUtils;
 import org.openhab.binding.adorne.internal.configuration.AdorneHubConfiguration;
+import org.openhab.binding.adorne.internal.hub.AdorneHubChangeNotify;
 import org.openhab.binding.adorne.internal.hub.AdorneHubController;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.adorne")
-public class AdorneDiscoveryService extends AbstractDiscoveryService {
+public class AdorneDiscoveryService extends AbstractDiscoveryService implements AdorneHubChangeNotify {
 
     private final Logger logger = LoggerFactory.getLogger(AdorneDiscoveryService.class);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
@@ -62,7 +63,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
         // We create the hub controller with default host and port. In the future we could let users create hubs
         // manually with custom host and port settings and then perform discovery here for those hubs.
         AdorneHubConfiguration config = new AdorneHubConfiguration(); // Use default configuration
-        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler);
+        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler, this);
 
         // Limit life of hub controller to the duration of discovery
         adorneHubController.stopBy(System.currentTimeMillis() + DISCOVERY_TIMEOUT_SECONDS * 1000);
@@ -101,5 +102,14 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
             logger.warn("Discovery failed ({})", e.getMessage());
             return null;
         });
+    }
+
+    // Nothing to do on change notifications
+    @Override
+    public void stateChangeNotify(int zoneId, boolean onOff, int brightness) {
+    }
+
+    @Override
+    public void connectionChangeNotify(boolean connected) {
     }
 }
