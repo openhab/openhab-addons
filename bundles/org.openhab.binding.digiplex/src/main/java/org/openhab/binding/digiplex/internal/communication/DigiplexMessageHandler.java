@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.events.AreaEvent;
 import org.openhab.binding.digiplex.internal.communication.events.GenericEvent;
 import org.openhab.binding.digiplex.internal.communication.events.SpecialAlarmEvent;
+import org.openhab.binding.digiplex.internal.communication.events.TroubleEvent;
 import org.openhab.binding.digiplex.internal.communication.events.ZoneEvent;
 import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEvent;
 
@@ -65,6 +66,9 @@ public interface DigiplexMessageHandler {
     }
 
     default void handleGenericEvent(GenericEvent event) {
+    }
+
+    default void handleTroubleEvent(TroubleEvent troubleEvent) {
     }
 
 }

@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -271,7 +272,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
         } else if (type.equals("Number:Pressure")) {
             state = new QuantityType<Pressure>(value, HECTO(SIUnits.PASCAL));
         } else if (type.equals("Number:Speed")) {
-            state = new QuantityType<Speed>(value, SIUnits.KILOMETRE_PER_HOUR);
+            state = new QuantityType<Speed>(value, SmartHomeUnits.METRE_PER_SECOND);
         }
 
         return state;
@@ -369,7 +370,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
 
     // Convert a json string response into a json data object
     private JsonData translateJson(String stringData, String serviceType) {
-        JsonData weatherData = null;
+        //JsonData weatherData = null;
 
         // For now, no distinction is made between commercial and non-commercial data;
         // This may need to be changed later based on user feedback.
@@ -417,8 +418,8 @@ public class MeteoBlueHandler extends BaseThingHandler {
             out.close();
         } catch (IOException ioe) {
             logger.debug("I/O exception occurred converting image data", ioe);
-        } finally {
-            return data;
         }
+
+        return data;
     }
 }

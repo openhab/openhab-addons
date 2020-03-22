@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
  * Class to implement the BlueGiga command <b>getRssi</b>.
@@ -26,25 +27,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaGetRssiCommand extends BlueGigaCommand {
+@NonNullByDefault
+public class BlueGigaGetRssiCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x01;
-
-    /**
-     * Connection handle to close.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
-
-    /**
-     * Connection handle to close.
-     *
-     * @param connection the connection to set as {@link int}
-     */
-    public void setConnection(int connection) {
-        this.connection = connection;
-    }
 
     @Override
     public int[] serialize() {

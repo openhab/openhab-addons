@@ -38,7 +38,7 @@ import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceTy
 import org.openhab.binding.satel.internal.command.ReadEventCommand;
 import org.openhab.binding.satel.internal.command.ReadEventDescCommand;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
+import org.openhab.binding.satel.internal.types.IntegraType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,14 +106,11 @@ public class SatelEventLogHandler extends SatelThingHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
+    public void incomingEvent(ConnectionStatusEvent event) {
         logger.trace("Handling incoming event: {}", event);
-        if (event instanceof ConnectionStatusEvent) {
-            ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
-            // we have just connected, change thing's status
-            if (statusEvent.isConnected()) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+        // we have just connected, change thing's status
+        if (event.isConnected()) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -122,6 +119,8 @@ public class SatelEventLogHandler extends SatelThingHandler {
             ReadEventCommand readEventCmd = eventDesc.readEventCmd;
             int currentIndex = readEventCmd.getCurrentIndex();
             String eventText = eventDesc.getText();
+            boolean upperZone = getBridgeHandler().getIntegraType() == IntegraType.I256_PLUS
+                    && readEventCmd.getUserControlNumber() > 0;
             String eventDetails;
 
             switch (eventDesc.getKind()) {
@@ -130,32 +129,58 @@ public class SatelEventLogHandler extends SatelThingHandler {
                     break;
                 case 1:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
-                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.ZONE, readEventCmd.getSource());
+                            + DETAILS_SEPARATOR + getZoneExpanderKeypadDescription(readEventCmd.getSource(), upperZone);
                     break;
                 case 2:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
-                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.USER, readEventCmd.getSource());
+                            + DETAILS_SEPARATOR + getUserDescription(readEventCmd.getSource());
+                    break;
+                case 3:
+                    eventDetails = getDeviceDescription(DeviceType.EXPANDER, readEventCmd.getPartitionKeypad())
+                            + DETAILS_SEPARATOR + getUserDescription(readEventCmd.getSource());
                     break;
                 case 4:
-                    if (readEventCmd.getSource() == 0) {
-                        eventDetails = "mainboard";
-                    } else if (readEventCmd.getSource() <= 128) {
-                        eventDetails = getDeviceDescription(DeviceType.ZONE, readEventCmd.getSource());
-                    } else if (readEventCmd.getSource() <= 192) {
-                        eventDetails = getDeviceDescription(DeviceType.EXPANDER, readEventCmd.getSource());
-                    } else {
-                        eventDetails = getDeviceDescription(DeviceType.KEYPAD, readEventCmd.getSource());
-                    }
+                    eventDetails = getZoneExpanderKeypadDescription(readEventCmd.getSource(), upperZone);
                     break;
                 case 5:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition());
                     break;
                 case 6:
                     eventDetails = getDeviceDescription(DeviceType.KEYPAD, readEventCmd.getPartition())
-                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.USER, readEventCmd.getSource());
+                            + DETAILS_SEPARATOR + getUserDescription(readEventCmd.getSource());
                     break;
                 case 7:
-                    eventDetails = getDeviceDescription(DeviceType.USER, readEventCmd.getSource());
+                    eventDetails = getUserDescription(readEventCmd.getSource());
+                    break;
+                case 8:
+                    eventDetails = getDeviceDescription(DeviceType.EXPANDER, readEventCmd.getSource());
+                    break;
+                case 9:
+                    eventDetails = getTelephoneDescription(readEventCmd.getSource());
+                    break;
+                case 11:
+                    eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                            + DETAILS_SEPARATOR + getDataBusDescription(readEventCmd.getSource());
+                    break;
+                case 12:
+                    if (readEventCmd.getSource() <= getBridgeHandler().getIntegraType().getOnMainboard()) {
+                        eventDetails = getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    } else {
+                        eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                                + DETAILS_SEPARATOR + getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    }
+                    break;
+                case 13:
+                    if (readEventCmd.getSource() <= 128) {
+                        eventDetails = getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    } else {
+                        eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                                + DETAILS_SEPARATOR + getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    }
+                    break;
+                case 14:
+                    eventDetails = getTelephoneDescription(readEventCmd.getPartition()) + DETAILS_SEPARATOR
+                            + getUserDescription(readEventCmd.getSource());
                     break;
                 case 15:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
@@ -248,7 +273,7 @@ public class SatelEventLogHandler extends SatelThingHandler {
         EventDescriptionCacheEntry mapValue = eventDescriptions.computeIfAbsent(mapKey, k -> {
             ReadEventDescCommand cmd = new ReadEventDescCommand(eventCode, restore, true);
             if (!getBridgeHandler().sendCommand(cmd, false)) {
-                logger.debug("Unable to read event description: {}, {}", eventCode, restore);
+                logger.info("Unable to read event description: {}, {}", eventCode, restore);
                 return null;
             }
             return new EventDescriptionCacheEntry(cmd.getText(encoding), cmd.getKind());
@@ -260,6 +285,42 @@ public class SatelEventLogHandler extends SatelThingHandler {
         }
     }
 
+    private String getOutputExpanderDescription(int deviceNumber, boolean upperOutput) {
+        if (deviceNumber == 0) {
+            return "mainboard";
+        } else if (deviceNumber <= 128) {
+            return getDeviceDescription(DeviceType.OUTPUT, upperOutput ? 128 + deviceNumber : deviceNumber);
+        } else if (deviceNumber <= 192) {
+            return getDeviceDescription(DeviceType.EXPANDER, deviceNumber);
+        } else {
+            return "invalid output|expander device: " + deviceNumber;
+        }
+    }
+
+    private String getZoneExpanderKeypadDescription(int deviceNumber, boolean upperZone) {
+        if (deviceNumber == 0) {
+            return "mainboard";
+        } else if (deviceNumber <= 128) {
+            return getDeviceDescription(DeviceType.ZONE, upperZone ? 128 + deviceNumber : deviceNumber);
+        } else if (deviceNumber <= 192) {
+            return getDeviceDescription(DeviceType.EXPANDER, deviceNumber);
+        } else {
+            return getDeviceDescription(DeviceType.KEYPAD, deviceNumber);
+        }
+    }
+
+    private String getUserDescription(int deviceNumber) {
+        return deviceNumber == 0 ? "user: unknown" : getDeviceDescription(DeviceType.USER, deviceNumber);
+    }
+
+    private String getDataBusDescription(int deviceNumber) {
+        return "data bus: " + deviceNumber;
+    }
+
+    private String getTelephoneDescription(int deviceNumber) {
+        return deviceNumber == 0 ? "telephone: unknown" : getDeviceDescription(DeviceType.TELEPHONE, deviceNumber);
+    }
+
     private String getDeviceDescription(DeviceType deviceType, int deviceNumber) {
         return String.format("%s: %s", deviceType.name().toLowerCase(), readDeviceName(deviceType, deviceNumber));
     }
@@ -269,7 +330,7 @@ public class SatelEventLogHandler extends SatelThingHandler {
         String result = deviceNameCache.computeIfAbsent(cacheKey, k -> {
             ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, deviceNumber);
             if (!getBridgeHandler().sendCommand(cmd, false)) {
-                logger.debug("Unable to read device info: {}, {}", deviceType, deviceNumber);
+                logger.info("Unable to read device info: {}, {}", deviceType, deviceNumber);
                 return null;
             }
             return cmd.getName(encoding);

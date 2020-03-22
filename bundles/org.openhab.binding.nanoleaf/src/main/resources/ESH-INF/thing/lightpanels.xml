@@ -18,6 +18,7 @@
 			<channel id="rhythmState" typeId="rhythmState" />
 			<channel id="rhythmActive" typeId="rhythmActive" />
 			<channel id="rhythmMode" typeId="rhythmMode" />
+			<channel id="panelLayout" typeId="panelLayout" />
 		</channels>
 
 		<properties>
@@ -26,6 +27,8 @@
 			<property name="firmwareVersion" />
 			<property name="modelId" />
 		</properties>
+
+		<representation-property>address</representation-property>
 
 		<config-description-ref uri="thing-type:nanoleaf:controller" />
 	</bridge-type>
@@ -41,6 +44,8 @@
 			<channel id="singleTap" typeId="singleTap" />
 			<channel id="doubleTap" typeId="doubleTap" />
 		</channels>
+
+		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:nanoleaf:lightpanel" />
 	</thing-type>
@@ -135,6 +140,13 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.nanoleaf.doubleTap.label</label>
 		<description>@text/channel-type.nanoleaf.doubleTap.description</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="panelLayout">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.nanoleaf.panelLayout.label</label>
+		<description>@text/channel-type.nanoleaf.panelLayout.description</description>
 		<state readOnly="false" />
 	</channel-type>
 </thing:thing-descriptions>

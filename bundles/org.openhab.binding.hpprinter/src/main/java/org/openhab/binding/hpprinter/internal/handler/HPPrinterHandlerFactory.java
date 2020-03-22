@@ -14,18 +14,17 @@ package org.openhab.binding.hpprinter.internal.handler;
 
 import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 
-import org.osgi.service.component.annotations.Reference;
-
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HPPrinterHandlerFactory} is responsible for creating things and
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.hpprinter", service = ThingHandlerFactory.class)
 public class HPPrinterHandlerFactory extends BaseThingHandlerFactory {
-    private @Nullable HttpClient httpClient;
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +47,7 @@ public class HPPrinterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new HPPrinterHandler(thing, this.httpClient);
+            return new HPPrinterHandler(thing, httpClient);
         }
 
         return null;

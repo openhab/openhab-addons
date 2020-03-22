@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
 import org.openhab.binding.miio.internal.robot.StatusType;
@@ -60,8 +61,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private String lastHistoryId;
 
     @NonNullByDefault
-    public MiIoVacuumHandler(Thing thing) {
+    public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
     @Override
@@ -128,9 +130,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean updateVacuumStatus(JsonObject statusData) {
         updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
         updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusData.get("clean_area").getAsDouble() / 1000000.0));
-        updateState(CHANNEL_CLEAN_TIME, new DecimalType(TimeUnit.SECONDS.toMinutes(statusData.get("clean_time").getAsLong())));
+        updateState(CHANNEL_CLEAN_TIME,
+                new DecimalType(TimeUnit.SECONDS.toMinutes(statusData.get("clean_time").getAsLong())));
         updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
-        updateState(CHANNEL_ERROR_CODE, new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
+        updateState(CHANNEL_ERROR_CODE,
+                new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
         updateState(CHANNEL_ERROR_ID, new DecimalType(statusData.get("error_code").getAsInt()));
         int fanLevel = statusData.get("fan_power").getAsInt();
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));

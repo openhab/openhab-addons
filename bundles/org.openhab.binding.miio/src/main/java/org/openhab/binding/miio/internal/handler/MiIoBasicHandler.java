@@ -18,13 +18,13 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
@@ -47,10 +46,9 @@ import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.Conversions;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +67,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Marcel Verpaalen - Initial contribution
  */
 public class MiIoBasicHandler extends MiIoAbstractHandler {
-    private static final int MAX_PROPERTIES = 5;
+
     private final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
     private boolean hasChannelStructure;
 
@@ -84,8 +82,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<String, MiIoDeviceAction> actions;
 
     @NonNullByDefault
-    public MiIoBasicHandler(Thing thing) {
+    public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
     @Override
@@ -217,21 +216,25 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private boolean refreshProperties(MiIoBasicDevice device) {
+        MiIoCommand command = MiIoCommand.getCommand(device.getDevice().getPropertyMethod());
+        int maxProperties = device.getDevice().getMaxProperties();
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
             getPropString.add(miChannel.getProperty());
-            if (getPropString.size() >= MAX_PROPERTIES) {
-                sendRefreshProperties(getPropString);
+            if (getPropString.size() >= maxProperties) {
+                sendRefreshProperties(command, getPropString);
                 getPropString = new JsonArray();
             }
         }
-        sendRefreshProperties(getPropString);
+        if (getPropString.size() > 0) {
+            sendRefreshProperties(command, getPropString);
+        }
         return true;
     }
 
-    private void sendRefreshProperties(JsonArray getPropString) {
+    private void sendRefreshProperties(MiIoCommand command, JsonArray getPropString) {
         try {
-            miioCom.queueCommand(MiIoCommand.GET_PROPERTY, getPropString.toString());
+            miioCom.queueCommand(command, getPropString.toString());
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send refresh failed {}", e.getMessage(), e);
         }
@@ -273,39 +276,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    private URL findDatabaseEntry(String deviceName) {
-        URL fn;
-        try {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
-            if (fn != null) {
-                logger.trace("bundle: {}, {}", bundle, fn.getFile());
-                return fn;
-            }
-            for (URL db : Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false))) {
-                try {
-                    JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    for (String id : devdb.getDevice().getId()) {
-                        if (deviceName.equals(id)) {
-                            return db;
-                        }
-                    }
-                } catch (Exception e) {
-                    // not relevant
-                    logger.debug("Error while searching for {} in database '{}': {}", deviceName, db, e.getMessage());
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Error while searching for {} in database: {}", deviceName, e.getMessage());
-        }
-        return null;
-    }
-
     private boolean buildChannelStructure(String deviceName) {
         logger.debug("Building Channel Structure for {} - Model: {}", getThing().getUID().toString(), deviceName);
-        URL fn = findDatabaseEntry(deviceName);
+        URL fn = miIoDatabaseWatchService.getDatabaseUrl(deviceName);
         if (fn == null) {
             logger.warn("Database entry for model '{}' cannot be found.", deviceName);
             return false;
@@ -386,53 +359,71 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return null;
     }
 
-    void updateProperties(MiIoSendCommand response) {
+    private void updatePropsFromJsonArray(MiIoSendCommand response) {
         JsonArray res = response.getResult().getAsJsonArray();
         JsonArray para = parser.parse(response.getCommandString()).getAsJsonObject().get("params").getAsJsonArray();
         if (res.size() != para.size()) {
             logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
-                    para.size(), res.size(), para.toString(), res.toString());
+                    para.size(), res.size(), para, res);
         }
         for (int i = 0; i < para.size(); i++) {
+            String param = para.get(i).getAsString();
             JsonElement val = res.get(i);
             if (val.isJsonNull()) {
-                logger.debug("Property '{}' returned null (is it supported?).", para.get(i).getAsString());
+                logger.debug("Property '{}' returned null (is it supported?).", param);
                 continue;
             }
-            MiIoBasicChannel basicChannel = getChannel(para.get(i).getAsString());
-            if (basicChannel != null) {
-                if (basicChannel.getTransfortmation() != null) {
-                    JsonElement transformed = Conversions.execute(basicChannel.getTransfortmation(), val);
-                    logger.debug("Transformed with '{}': {} {} -> {} ", basicChannel.getTransfortmation(),
-                            basicChannel.getFriendlyName(), val, transformed);
-                    val = transformed;
-                }
-                try {
-                    if (basicChannel.getType().equals("Number")) {
-                        updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
-                    }
-                    if (basicChannel.getType().equals("String")) {
-                        updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
-                    }
-                    if (basicChannel.getType().equals("Switch")) {
-                        updateState(basicChannel.getChannel(),
-                                val.getAsString().toLowerCase().equals("on")
-                                        || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON
-                                                : OnOffType.OFF);
-                    }
-                    if (basicChannel.getType().equals("Color")) {
-                        Color rgb = new Color(val.getAsInt());
-                        HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
-                        updateState(basicChannel.getChannel(), hsb);
-                    }
-                } catch (Exception e) {
-                    logger.debug("Error updating {} property {} with '{}' : {}", getThing().getUID().getAsString(),
-                            basicChannel.getChannel(), val.getAsString(), e.getMessage());
-                    logger.trace("Property update error detail:", e);
-                }
-            } else {
-                logger.debug("Channel not found for {}", para.get(i).getAsString());
+            MiIoBasicChannel basicChannel = getChannel(param);
+            updateChannel(basicChannel, param, val);
+        }
+    }
+
+    private void updatePropsFromJsonObject(MiIoSendCommand response) {
+        JsonObject res = response.getResult().getAsJsonObject();
+        for (Object k : res.keySet()) {
+            String param = (String) k;
+            JsonElement val = res.get(param);
+            if (val.isJsonNull()) {
+                logger.debug("Property '{}' returned null (is it supported?).", param);
+                continue;
             }
+            MiIoBasicChannel basicChannel = getChannel(param);
+            updateChannel(basicChannel, param, val);
+        }
+    }
+
+    private void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
+        JsonElement val = value;
+        if (basicChannel != null) {
+            if (basicChannel.getTransfortmation() != null) {
+                JsonElement transformed = Conversions.execute(basicChannel.getTransfortmation(), val);
+                logger.debug("Transformed with '{}': {} {} -> {} ", basicChannel.getTransfortmation(),
+                        basicChannel.getFriendlyName(), val, transformed);
+                val = transformed;
+            }
+            try {
+                if (basicChannel.getType().equals("Number")) {
+                    updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
+                }
+                if (basicChannel.getType().equals("String")) {
+                    updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
+                }
+                if (basicChannel.getType().equals("Switch")) {
+                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
+                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
+                }
+                if (basicChannel.getType().equals("Color")) {
+                    Color rgb = new Color(val.getAsInt());
+                    HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+                    updateState(basicChannel.getChannel(), hsb);
+                }
+            } catch (Exception e) {
+                logger.debug("Error updating {} property {} with '{}' : {}: {}", getThing().getUID(),
+                        basicChannel.getChannel(), val, e.getClass().getCanonicalName(), e.getMessage());
+                logger.trace("Property update error detail:", e);
+            }
+        } else {
+            logger.debug("Channel not found for {}", param);
         }
     }
 
@@ -446,9 +437,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (response.getCommand()) {
                 case MIIO_INFO:
                     break;
+                case GET_VALUE:
                 case GET_PROPERTY:
                     if (response.getResult().isJsonArray()) {
-                        updateProperties(response);
+                        updatePropsFromJsonArray(response);
+                    } else if (response.getResult().isJsonObject()) {
+                        updatePropsFromJsonObject(response);
                     }
                     break;
                 default:

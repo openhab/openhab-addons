@@ -35,11 +35,6 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
     protected boolean isAlwaysOnline() {
         return true;
     }

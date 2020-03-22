@@ -14,6 +14,8 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -146,8 +148,29 @@ public class TelegramHandler extends BaseThingHandler {
             }
         }
 
-        botLibClient = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS)
-                .build();
+        OkHttpClient.Builder prepareConnection = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
+                .readTimeout(75, TimeUnit.SECONDS);
+
+        String proxyHost = config.getProxyHost();
+        Integer proxyPort = config.getProxyPort();
+        String proxyType = config.getProxyType();
+
+        if (proxyHost != null && proxyPort !=null) {
+            InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
+
+            Proxy.Type proxyTypeParam = Proxy.Type.SOCKS;
+
+            if ("HTTP".equals(proxyType)) {
+                proxyTypeParam = Proxy.Type.HTTP;
+            }
+
+            Proxy proxy = new Proxy(proxyTypeParam, proxyAddr);
+
+            logger.debug("{} Proxy {}:{} is used for telegram ", proxyTypeParam, proxyHost, proxyPort);
+            prepareConnection.proxy(proxy);
+        }
+
+        botLibClient = prepareConnection.build();
         updateStatus(ThingStatus.UNKNOWN);
         delayThingOnlineStatus();
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();

@@ -43,8 +43,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.weathercompany.internal.config.WeatherCompanyForecastConfig;
-import org.openhab.binding.weathercompany.internal.model.DayPart;
-import org.openhab.binding.weathercompany.internal.model.Forecast;
+import org.openhab.binding.weathercompany.internal.model.DayPartDTO;
+import org.openhab.binding.weathercompany.internal.model.ForecastDTO;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,7 +207,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
         }
         try {
             logger.trace("Handler: Parsing forecast response: {}", response);
-            Forecast forecast = gson.fromJson(response, Forecast.class);
+            ForecastDTO forecast = gson.fromJson(response, ForecastDTO.class);
             logger.debug("Handler: Successfully parsed daily forecast response object");
             updateStatus(ThingStatus.ONLINE);
             updateDailyForecast(forecast);
@@ -219,7 +219,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
         }
     }
 
-    private void updateDailyForecast(Forecast forecast) {
+    private void updateDailyForecast(ForecastDTO forecast) {
         for (int day = 0; day < forecast.dayOfWeek.length; day++) {
             logger.debug("Processing daily forecast for '{}'", forecast.dayOfWeek[day]);
             updateDaily(day, CH_DAY_OF_WEEK, undefOrString(forecast.dayOfWeek[day]));
@@ -234,11 +234,11 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
     }
 
     private void updateDaypartForecast(Object daypartObject) {
-        DayPart[] dayparts;
+        DayPartDTO[] dayparts;
         try {
             String innerJson = gson.toJson(daypartObject);
             logger.debug("Parsing daypartsObject: {}", innerJson);
-            dayparts = gson.fromJson(innerJson.toString(), DayPart[].class);
+            dayparts = gson.fromJson(innerJson.toString(), DayPartDTO[].class);
             logger.debug("Handler: Successfully parsed daypart forecast object");
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daypart forecast object: {}", e.getMessage(), e);
@@ -253,7 +253,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
         logger.debug("There are {} daypartName entries in this forecast", dayparts[0].daypartName.length);
         for (int i = 0; i < dayparts[0].daypartName.length; i++) {
             // Note: All dayparts[0] (i.e. today day) values are null after 3 pm local time
-            DayPart dp = dayparts[0];
+            DayPartDTO dp = dayparts[0];
             // Even daypart indexes are Day (D); odd daypart indexes are Night (N)
             String dOrN = dp.dayOrNight[i] == null ? (i % 2 == 0 ? "D" : "N") : dp.dayOrNight[i];
             logger.debug("Processing daypart forecast for '{}'", dp.daypartName[i]);

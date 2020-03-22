@@ -289,6 +289,40 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Revolt Energy Meter Thing Type -->
+	<thing-type id="revolt">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.revolt.label</label>
+		<description>@text/thing-type.revolt.description</description>
+
+		<channels>
+			<channel id="currentPower" typeId="current-power" />
+			<channel id="consumptionTotal" typeId="consumption-total" />
+			<channel id="powerFactor" typeId="power-factor" />
+			<channel id="electricCurrent" typeId="electric-current" />
+			<channel id="electricPotential" typeId="electric-potential" />
+			<channel id="powerFrequency" typeId="power-frequency" />
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- TX22 Temperature/Humidity SensorThing Type -->
 	<thing-type id="tx22">
 		<supported-bridge-type-refs>
@@ -440,5 +474,33 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.switching-state.label</label>
 		<description>@text/channel-type.switching-state.description</description>
+	</channel-type>
+	
+	<!-- Revolt Current Type -->
+	<channel-type id="electric-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.electric-current.label</label>
+		<description>@text/channel-type.electric-current.description</description>
+	</channel-type>
+
+	<!-- Revolt Apparent Power Type -->
+	<channel-type id="power-factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>@text/channel-type.power-factor.label</label>
+		<description>@text/channel-type.power-factor.description</description>
+	</channel-type>
+	
+	<!-- Revolt Electric Potential Type -->
+	<channel-type id="electric-potential">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>@text/channel-type.electric-potential.label</label>
+		<description>@text/channel-type.electric-potential.description</description>
+	</channel-type>
+	
+	<!-- Revolt Frequency Type -->
+	<channel-type id="power-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>@text/channel-type.power-frequency.label</label>
+		<description>@text/channel-type.power-frequency.description</description>
 	</channel-type>
 </thing:thing-descriptions>

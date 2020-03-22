@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
@@ -62,6 +65,11 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                     }
                 }
                 applicationListCache.put(handler.getThing().getUID(), appInfos);
+                List<StateOption> options = new ArrayList<>();
+                for (AppInfo appInfo : appInfos) {
+                    options.add(new StateOption(appInfo.getId(), appInfo.getName()));
+                }
+                handler.setOptions(channelId, options);
             }
         });
 
@@ -75,6 +83,11 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        if (RefreshType.REFRESH == command) {
+            handler.getSocket().getRunningApp(createResponseListener(channelId, handler));
+            return;
+        }
+
         final String value = command.toString();
 
         List<AppInfo> appInfos = applicationListCache.get(handler.getThing().getUID());
@@ -94,11 +107,15 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
     @Override
     protected Optional<ServiceSubscription<AppInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
-        return Optional.of(handler.getSocket().subscribeRunningApp(new ResponseListener<AppInfo>() {
+        return Optional.of(handler.getSocket().subscribeRunningApp(createResponseListener(channelId, handler)));
+    }
+
+    private ResponseListener<AppInfo> createResponseListener(String channelId, LGWebOSHandler handler) {
+        return new ResponseListener<AppInfo>() {
 
             @Override
             public void onError(@Nullable String error) {
-                logger.debug("Error in listening to application changes: {}.", error);
+                logger.debug("Error in retrieving application: {}.", error);
             }
 
             @Override
@@ -109,8 +126,7 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
                     handler.postUpdate(channelId, new StringType(appInfo.getId()));
                 }
             }
-        }));
-
+        };
     }
 
     public @Nullable List<AppInfo> getAppInfos(ThingUID key) {

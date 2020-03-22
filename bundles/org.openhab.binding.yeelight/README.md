@@ -39,6 +39,9 @@ All devices support some of the following channels:
 |`color` | `Color` | This channel supports color control, it is available on `wonder` and `stripe`.|
 |`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling`.|
 |`command` | `String` | This channel sends a command directly to the device, it is available on all Yeelight Things.|
+|`backgroundColor` | `Color` or `Dimmer`  | This channel supports color control for the ambient light, it is available on `ceiling4`.|
+|`nightlight` | `Switch` | This supports switching to nightlight mode, it is available on `ceiling4`.|
+
 
 ## Full Example
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaWriteCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x00;
@@ -48,7 +50,7 @@ public class BlueGigaWriteCommand extends BlueGigaCommand {
      * <p>
      * BlueGiga API type is <i>uint8array</i> - Java type is {@link int[]}
      */
-    private int[] value;
+    private int[] value = new int[0];
 
     /**
      * Handle of the attribute to write.
@@ -58,6 +60,7 @@ public class BlueGigaWriteCommand extends BlueGigaCommand {
     public void setHandle(int handle) {
         this.handle = handle;
     }
+
     /**
      * Attribute offset to write data
      *
@@ -66,6 +69,7 @@ public class BlueGigaWriteCommand extends BlueGigaCommand {
     public void setOffset(int offset) {
         this.offset = offset;
     }
+
     /**
      * Value of the attribute to write
      *

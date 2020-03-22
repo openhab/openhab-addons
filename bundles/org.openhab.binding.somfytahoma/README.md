@@ -74,6 +74,9 @@ Please see the example below.
 | action group                                                                  |      execute_action     | switch which reacts to ON command and triggers the predefined Tahoma action                                      |
 | onoff, light                                                                  |          switch         | reacts to standard ON/OFF commands                                                                               |
 | smoke sensor, occupancy sensor, contact sensor & water sensor                 |         contact         | normal value is CLOSE, changes to OPEN when detection triggered                                                  |
+| smoke sensor, occupancy sensor, contact sensor & water sensor                 |      sensor_defect      | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                              |
+| smoke sensor                                                                  |      radio_battery      | maintenance radio part battery state (low, normal)                                                               |
+| smoke sensor                                                                  |      sensor_battery     | maintenance sensor part battery state (absence, low, normal)                                                     |
 | smoke sensor                                                                  |       short_check       | triggering the smoke sensor's short check                                                                        |
 | smoke sensor                                                                  |        long_check       | triggering the smoke sensor's long check                                                                         |
 | light sensor                                                                  |        luminance        | light luminance value in luxes                                                                                   |
@@ -110,6 +113,8 @@ Please see the example below.
 | myfox camera, myfox alarm                                                     |       cloud_status      | cloud connection status                                                                                          |
 | myfox camera                                                                  |          shutter        | controlling of the camera shutter                                                                                |
 | myfox alarm                                                                   |   myfox_alarm_command   | used for sending commands to Somfy Myfox alarm device                                                            |
+
+All things which have a RSSI (relative received signal) state, expose a channel "rssi".
 
 When a roller shutter-like thing receives STOP command, there are two possible behaviours
 

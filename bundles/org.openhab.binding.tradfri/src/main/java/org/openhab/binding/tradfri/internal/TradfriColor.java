@@ -32,8 +32,8 @@ public class TradfriColor {
     // Tradfri uses the CIE color space (see https://en.wikipedia.org/wiki/CIE_1931_color_space),
     // which uses x,y-coordinates.
     // Its own app comes with 3 predefined color temperature settings (0,1,2), which have those values:
-    private final static double[] PRESET_X = new double[] { 24933.0, 30138.0, 33137.0 };
-    private final static double[] PRESET_Y = new double[] { 24691.0, 26909.0, 27211.0 };
+    private static final double[] PRESET_X = new double[] { 24933.0, 30138.0, 33137.0 };
+    private static final double[] PRESET_Y = new double[] { 24691.0, 26909.0, 27211.0 };
 
     /**
      * CIE XY color values in the tradfri range 0 to 65535.
@@ -178,7 +178,6 @@ public class TradfriColor {
      * @return {@link PercentType} with brightness level (0 = light is off, 1 = lowest, 100 = highest)
      */
     public static PercentType xyBrightnessToPercentType(int xyBrightness) {
-
         if (xyBrightness > 254) {
             return PercentType.HUNDRED;
         } else if (xyBrightness < 0) {

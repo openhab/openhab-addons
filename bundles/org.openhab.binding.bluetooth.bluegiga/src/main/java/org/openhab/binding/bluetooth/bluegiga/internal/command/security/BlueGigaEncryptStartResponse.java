@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.security;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaEncryptStartResponse extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x05;
     public static int COMMAND_METHOD = 0x00;
@@ -68,6 +70,7 @@ public class BlueGigaEncryptStartResponse extends BlueGigaResponse {
     public int getHandle() {
         return handle;
     }
+
     /**
      * 0 : the encryption was started successfully
      * <p>

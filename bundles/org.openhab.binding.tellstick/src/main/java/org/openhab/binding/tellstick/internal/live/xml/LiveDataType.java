@@ -22,7 +22,7 @@ public enum LiveDataType {
     TEMPERATURE("temp"),
     WINDAVERAGE("windaverage"),
     WINDDIRECTION("winddirection"),
-    WINDGUST("temp"),
+    WINDGUST("windgust"),
     RAINRATE("rainrate"),
     RAINTOTAL("rainttotal"),
     WATT("watt"),

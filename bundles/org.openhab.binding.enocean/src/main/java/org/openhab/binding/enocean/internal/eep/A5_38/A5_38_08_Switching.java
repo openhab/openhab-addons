@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
-import java.util.function.Function;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
+
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;

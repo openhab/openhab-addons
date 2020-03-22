@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
 /**
@@ -27,16 +28,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaDisconnectResponse extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaDisconnectResponse extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x00;
-
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * 0 : the update was successful. Non-zero: An error occurred.
@@ -59,16 +54,6 @@ public class BlueGigaDisconnectResponse extends BlueGigaResponse {
         result = deserializeBgApiResponse();
     }
 
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
     /**
      * 0 : the update was successful. Non-zero: An error occurred.
      * <p>

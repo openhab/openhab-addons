@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
     private final Logger logger = LoggerFactory.getLogger(Tx22SensorHandler.class);
 
-    public Tx22SensorHandler(Thing thing) {
-        super(thing);
+    public Tx22SensorHandler(Thing thing, String sensorType) {
+        super(thing, sensorType);
     }
 
     @Override

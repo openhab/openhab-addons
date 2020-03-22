@@ -36,7 +36,7 @@ public class HueStateBulb extends HueStatePlug {
 
     public HueStateBulb(boolean on) {
         super(on);
-        this.bri = on ? MAX_BRI : 0;
+        this.bri = on ? MAX_BRI : 1;
     }
 
     /**
@@ -47,7 +47,7 @@ public class HueStateBulb extends HueStatePlug {
      */
     public HueStateBulb(PercentType brightness, boolean on) {
         super(on);
-        this.bri = (int) (brightness.intValue() * MAX_BRI / 100.0 + 0.5);
+        this.bri = Math.max(1, (int) (brightness.intValue() * MAX_BRI / 100.0 + 0.5));
     }
 
     public PercentType toBrightnessType() {

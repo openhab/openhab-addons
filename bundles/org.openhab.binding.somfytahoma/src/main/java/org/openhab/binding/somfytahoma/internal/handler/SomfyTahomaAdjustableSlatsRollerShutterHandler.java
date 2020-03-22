@@ -14,10 +14,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -27,8 +23,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaAdjustableSlatsRollerShutterHandler} is responsible for handling commands,
@@ -72,7 +66,9 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
             Channel ch = thing.getChannel(ORIENTATION);
             if (ch != null) {
                 State newState = parseTahomaState(state);
-                updateState(ch.getUID(), newState);
+                if (newState != null) {
+                    updateState(ch.getUID(), newState);
+                }
             }
         }
     }
