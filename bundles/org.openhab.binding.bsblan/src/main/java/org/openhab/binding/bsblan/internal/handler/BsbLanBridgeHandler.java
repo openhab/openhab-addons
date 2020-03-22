@@ -41,7 +41,7 @@ import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
  *
  * @author Peter Schraffl - Initial contribution
  */
- @NonNullByDefault
+@NonNullByDefault
 public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BsbLanBridgeHandler.class);
