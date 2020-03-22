@@ -295,16 +295,19 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                             } while (in.available() > 0 && (c != -1) && cnt < 6);
                             int sum = checksum(frame);
                             if (sum == (frame[5] & 0xff)) {
-                                logger.trace("HeliosVentilation: Read from serial port: {}",
-                                        String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
+                                if(logger.isTraceEnabled()){
+                                    logger.trace("HeliosVentilation: Read from serial port: {}",
+                                            String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
+                                }
                                 interpretFrame(frame);
 
                             } else {
-                                logger.trace(
-                                        "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
-                                        String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0],
-                                                frame[1], frame[2], frame[3], frame[4], frame[5], sum));
-
+                                if(logger.isTraceEnabled()){
+                                    logger.trace(
+                                            "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
+                                            String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0],
+                                                    frame[1], frame[2], frame[3], frame[4], frame[5], sum));
+                                }
                             }
 
                         } while (in.available() > 0);
