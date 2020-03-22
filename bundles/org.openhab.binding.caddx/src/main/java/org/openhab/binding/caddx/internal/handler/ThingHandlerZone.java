@@ -52,7 +52,6 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
     @Override
     public void updateChannel(ChannelUID channelUID, String data) {
-
         if (channelUID.getId().equals(CaddxBindingConstants.ZONE_NAME)) {
             StringBuilder s = new StringBuilder(data.length());
 

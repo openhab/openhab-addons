@@ -37,12 +37,10 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     @Override
     public void updateChannel(ChannelUID channelUID, String data) {
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override

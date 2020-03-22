@@ -63,7 +63,6 @@ public class CaddxHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-
         if (CaddxBindingConstants.CADDXBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID caddxBridgeUID = getCaddxBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, caddxBridgeUID, null);
