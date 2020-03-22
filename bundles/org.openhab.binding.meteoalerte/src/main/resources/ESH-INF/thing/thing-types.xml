@@ -6,7 +6,7 @@
 	<thing-type id="department">
 		<label>Alertes Département</label>
 		<description>
-		Provides various natural risks on a given department
+			Provides various natural risks on a given department
 		</description>
 
 		<channels>
