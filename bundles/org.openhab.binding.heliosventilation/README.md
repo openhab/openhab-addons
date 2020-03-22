@@ -13,13 +13,10 @@ The binding will use the remote control address 15 for communication, so make su
 There is only one thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios.
 The binding was developed and test on a KWL EC 200 Pro device.
 
-## Discovery
-
-No discovery implemented.
-
 ## Binding Configuration
 
-The binding requires access to the serial device connecting to the RS485 bus as described in https://www.openhab.org/docs/administration/serial.html. Otherwise only thing configuration is needed.
+The binding requires access to the serial device connecting to the RS485 bus as described in https://www.openhab.org/docs/administration/serial.html.
+Otherwise only thing configuration is needed.
 
 ## Thing Configuration
 
