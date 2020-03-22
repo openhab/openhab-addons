@@ -57,7 +57,9 @@ public class SenseBoxSensor {
     }
 
     public String getUnit() {
-        return unit;
+        // the uom library uses the 'MICRO SIGN', so if we encounter the GREEK SMALL LETTER MU,
+        // replace it with the proper representation.
+        return unit != null ? unit.replaceAll("\u03bc", "\u00b5") : "";
     }
 
     public void setUnit(String unit) {

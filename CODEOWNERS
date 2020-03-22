@@ -17,6 +17,7 @@
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @kaikreuzer
+/bundles/org.openhab.binding.bluetooth.airthings/ @paulianttila 
 /bundles/org.openhab.binding.bluetooth.am43/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.bluez/ @cdjackson @kaikreuzer
@@ -71,6 +72,7 @@
 /bundles/org.openhab.binding.icloud/ @pgfeller
 /bundles/org.openhab.binding.ihc/ @paulianttila
 /bundles/org.openhab.binding.innogysmarthome/ @ollie-dev
+/bundles/org.openhab.binding.insteon/ @robnielsen
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.jeelink/ @vbier

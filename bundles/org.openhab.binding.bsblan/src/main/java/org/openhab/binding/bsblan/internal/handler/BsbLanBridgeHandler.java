@@ -18,7 +18,10 @@ import java.util.stream.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -38,14 +41,15 @@ import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
  *
  * @author Peter Schraffl - Initial contribution
  */
+ @NonNullByDefault
 public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BsbLanBridgeHandler.class);
     private final Set<BsbLanBaseThingHandler> things = new HashSet<>();
-    private BsbLanBridgeConfiguration bridgeConfig;
-    private ScheduledFuture<?> refreshJob;
-    private ScheduledFuture<?> debouncedInit;
-    private BsbLanApiParameterQueryResponse cachedParameterQueryResponse;
+    private BsbLanBridgeConfiguration bridgeConfig = new BsbLanBridgeConfiguration();
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> debouncedInit;
+    private @Nullable BsbLanApiParameterQueryResponse cachedParameterQueryResponse;
 
     public BsbLanBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -62,7 +66,10 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // for the added thing, we trigger a debounced refresh to shorten the delay.
         // Alternatively the thing itself could make an additional REST call
         // on initialization but this would flood the device when lots of parameters are setup.
-        if (debouncedInit == null || debouncedInit.isCancelled() || debouncedInit.isDone()) {
+
+        // use a local variable to avoid the build warning "Potential null pointer access"
+        ScheduledFuture<?> localDebouncedInit = debouncedInit;
+        if (localDebouncedInit == null || localDebouncedInit.isCancelled() || localDebouncedInit.isDone()) {
             debouncedInit = scheduler.schedule(this::doRefresh, 2, TimeUnit.SECONDS);
         }
     }
@@ -95,16 +102,20 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        // use a local variable to avoid the build warning "Potential null pointer access"
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) {
+            localRefreshJob.cancel(true);
         }
-        if (debouncedInit != null) {
-            debouncedInit.cancel(true);
+        // use a local variable to avoid the build warning "Potential null pointer access"
+        ScheduledFuture<?> localDebouncedInit = debouncedInit;
+        if (localDebouncedInit != null) {
+            localDebouncedInit.cancel(true);
         }
         things.clear();
     }
 
-    public BsbLanApiParameterQueryResponse getCachedParameterQueryResponse() {
+    public @Nullable BsbLanApiParameterQueryResponse getCachedParameterQueryResponse() {
         return cachedParameterQueryResponse;
     }
 
@@ -146,7 +157,9 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
      * Start the job refreshing the data
      */
     private void startAutomaticRefresh(BsbLanBridgeConfiguration config) {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        // use a local variable to avoid the build warning "Potential null pointer access"
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             int interval = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_INTERVAL;
             refreshJob = scheduler.scheduleWithFixedDelay(this::doRefresh, 0, interval, TimeUnit.SECONDS);
         }

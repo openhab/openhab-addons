@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapDiscoverMode;
 
@@ -29,9 +30,14 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapDiscoverMo
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaDiscoverCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x02;
+
+    private BlueGigaDiscoverCommand(CommandBuilder builder) {
+        this.mode = builder.mode;
+    }
 
     /**
      * see:GAP Discover Mode.
@@ -39,15 +45,6 @@ public class BlueGigaDiscoverCommand extends BlueGigaCommand {
      * BlueGiga API type is <i>GapDiscoverMode</i> - Java type is {@link GapDiscoverMode}
      */
     private GapDiscoverMode mode;
-
-    /**
-     * see:GAP Discover Mode.
-     *
-     * @param mode the mode to set as {@link GapDiscoverMode}
-     */
-    public void setMode(GapDiscoverMode mode) {
-        this.mode = mode;
-    }
 
     @Override
     public int[] serialize() {
@@ -67,5 +64,23 @@ public class BlueGigaDiscoverCommand extends BlueGigaCommand {
         builder.append(mode);
         builder.append(']');
         return builder.toString();
+    }
+
+    public static class CommandBuilder {
+        private GapDiscoverMode mode = GapDiscoverMode.UNKNOWN;
+
+        /**
+         * see:GAP Discover Mode.
+         *
+         * @param mode the mode to set as {@link GapDiscoverMode}
+         */
+        public CommandBuilder withMode(GapDiscoverMode mode) {
+            this.mode = mode;
+            return this;
+        }
+
+        public BlueGigaDiscoverCommand build() {
+            return new BlueGigaDiscoverCommand(this);
+        }
     }
 }

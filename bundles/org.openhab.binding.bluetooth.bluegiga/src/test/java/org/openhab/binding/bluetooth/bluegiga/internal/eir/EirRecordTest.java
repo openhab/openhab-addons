@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
@@ -25,14 +26,15 @@ import org.junit.Test;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public class EirRecordTest {
 
     @SuppressWarnings("unchecked")
     @Test
     public void testProcess16BitUUIDs() {
         int[] data = { 0x03, 0x0F, 0x18, 0x00, 0x18 };
-        String batteryService = "0000180f-0000-0000-0000-000000000000";
-        String genericAccess = "00001800-0000-0000-0000-000000000000";
+        String batteryService = "0000180F-0000-1000-8000-00805F9B34FB";
+        String genericAccess = "00001800-0000-1000-8000-00805F9B34FB";
 
         EirRecord eirRecord = new EirRecord(data);
         assertEquals(EirDataType.EIR_SVC_UUID16_COMPLETE, eirRecord.getType());
@@ -46,8 +48,8 @@ public class EirRecordTest {
     @Test
     public void testProcess32BitUUIDs() {
         int[] data = { 0x05, /* service1 */ 0x10, 0x8e, 0xe7, 0x74, /* service2 */ 0x11, 0x8e, 0xe7, 0x64 };
-        String service1 = "74E78E10-0000-0000-0000-000000000000";
-        String service2 = "64E78E11-0000-0000-0000-000000000000";
+        String service1 = "74E78E10-0000-1000-8000-00805F9B34FB";
+        String service2 = "64E78E11-0000-1000-8000-00805F9B34FB";
 
         EirRecord eirRecord = new EirRecord(data);
         assertEquals(EirDataType.EIR_SVC_UUID32_COMPLETE, eirRecord.getType());
@@ -91,7 +93,7 @@ public class EirRecordTest {
     @Test
     public void testUUID16ServiceData() {
         int[] data = { /* length 0x05, */ /* service data 16 bit UUID */ 0x16, 0x0F, 0x18, 0x45 };
-        UUID batteryServiceUUID = UUID.fromString("0000180f-0000-0000-0000-000000000000");
+        UUID batteryServiceUUID = UUID.fromString("0000180F-0000-1000-8000-00805F9B34FB");
 
         EirRecord eirRecord = new EirRecord(data);
         assertEquals(EirDataType.EIR_SVC_DATA_UUID16, eirRecord.getType());
@@ -105,7 +107,7 @@ public class EirRecordTest {
     public void testUUID32ServiceData() {
         int[] data = { /* service data 32 bit UUID */ 0x20, /* UUID */ 0x10, 0x8e, 0xe7, 0x74, /* data */ 0x74, 0x01,
                 0x0d, 0x01, (byte) 0xec };
-        UUID dataServiceUUID = UUID.fromString("74E78E10-0000-0000-0000-000000000000");
+        UUID dataServiceUUID = UUID.fromString("74E78E10-0000-1000-8000-00805F9B34FB");
 
         EirRecord eirRecord = new EirRecord(data);
         assertEquals(EirDataType.EIR_SVC_DATA_UUID32, eirRecord.getType());

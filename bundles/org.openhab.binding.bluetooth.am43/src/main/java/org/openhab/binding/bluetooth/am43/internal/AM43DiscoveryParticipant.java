@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.osgi.service.component.annotations.Component;
 
@@ -68,11 +69,16 @@ public class AM43DiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(BluetoothDevice device) {
-        if (device.getManufacturerId() == null && "A-OK".equals(device.getName())) {
+        if (device.getConnectionState() == ConnectionState.CONNECTED
+                && device.supportsService(AM43BindingConstants.SERVICE_UUID)) {
             return new ThingUID(AM43BindingConstants.THING_TYPE_AM43, device.getAdapter().getUID(),
                     device.getAddress().toString().toLowerCase().replace(":", ""));
         }
         return null;
     }
 
+    @Override
+    public boolean requiresConnection(BluetoothDevice device) {
+        return device.getManufacturerId() == null && device.getName() != null;
+    }
 }

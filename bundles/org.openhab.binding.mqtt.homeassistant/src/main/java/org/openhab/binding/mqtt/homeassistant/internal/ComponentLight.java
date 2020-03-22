@@ -104,7 +104,9 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
 
         // Create three MQTT subscriptions and use this class object as update listener
         switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name, this)//
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.state_value_template)//
+                // Some lights use the value_template field for the template, most use state_value_template
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.state_value_template,
+                        channelConfiguration.value_template)//
                 .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
                 .build(false);
 

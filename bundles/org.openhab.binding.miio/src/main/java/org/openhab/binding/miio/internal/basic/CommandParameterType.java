@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Various types of parameters to be send
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum CommandParameterType {
     NONE("none"),
     EMPTY("empty"),

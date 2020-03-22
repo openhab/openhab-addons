@@ -19,11 +19,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link MiIoHandlerFactory} is responsible for creating things and thing
@@ -34,6 +37,13 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.miio")
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
+    private MiIoDatabaseWatchService miIoDatabaseWatchService;
+
+    @Activate
+    public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService) {
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -43,14 +53,14 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
-            return new MiIoGenericHandler(thing);
+            return new MiIoGenericHandler(thing, miIoDatabaseWatchService);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
-            return new MiIoBasicHandler(thing);
+            return new MiIoBasicHandler(thing, miIoDatabaseWatchService);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
-            return new MiIoVacuumHandler(thing);
+            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService);
         }
-        return new MiIoUnsupportedHandler(thing);
+        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService);
     }
 }

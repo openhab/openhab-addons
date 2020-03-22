@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.sensebox.internal;
 
-import com.google.gson.Gson;
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -26,14 +31,7 @@ import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.INVALID_BRIGHTNESS;
-import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.SENSEMAP_API_URL_BASE;
-import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.SENSEMAP_IMAGE_URL_BASE;
-import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.SENSEMAP_MAP_URL_BASE;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+import com.google.gson.Gson;
 
 /**
  * The {@link SenseBoxAPIConnection} is responsible for fetching data from the senseBox API server.
@@ -75,7 +73,7 @@ public class SenseBoxAPIConnection {
             // Could perhaps be simplified via triply-nested arrays
             // http://stackoverflow.com/questions/36946875/how-can-i-parse-geojson-with-gson
             for (SenseBoxLoc loc : parsedData.getLocs()) {
-               if (loc.getGeometry() != null) {
+                if (loc.getGeometry() != null) {
                     List<Double> locationData = loc.getGeometry().getData();
                     if (locationData != null) {
                         SenseBoxLocation location = new SenseBoxLocation();
@@ -98,12 +96,6 @@ public class SenseBoxAPIConnection {
             }
 
             for (SenseBoxSensor sensor : parsedData.getSensors()) {
-                // the uom library uses the 'MICRO SIGN', so if we encounter the GREEK SMALL LETTER MU,
-                // replace it with the proper representation.
-                if (sensor.getUnit() != null) {
-                    sensor.getUnit().replaceAll("\u03bc", "\00b5");
-                }
-
                 if ("VEML6070".equals(sensor.getSensorType())) {
                     // "unit" is not nicely comparable, so use sensor type for now
                     parsedData.setUvIntensity(sensor);
@@ -122,7 +114,7 @@ public class SenseBoxAPIConnection {
                             parsedData.setLuminance(sensor);
                         }
                     }
-                } else if ("hPa".equals(sensor.getUnit())) {
+                } else if ("Pa".equals(sensor.getUnit()) || "hPa".equals(sensor.getUnit())) {
                     parsedData.setPressure(sensor);
                 } else if ("%".equals(sensor.getUnit())) {
                     parsedData.setHumidity(sensor);
