@@ -46,15 +46,15 @@ import org.slf4j.LoggerFactory;
 public class ValloxMVHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVHandler.class);
-    private @Nullable ScheduledFuture<?> updateTasks;
+    private @Nullable ScheduledFuture<?> readDataJob;
     private @Nullable ValloxMVWebSocket valloxSocket;
     private @Nullable WebSocketClient webSocketClient;
 
     /**
      * Refresh interval in seconds.
      */
-    private int updateInterval;
-    private long lastUpdate;
+    private int readDataInterval;
+    private long nextReadDataTime;
 
     /**
      * IP of vallox ventilation unit web interface.
@@ -71,8 +71,12 @@ public class ValloxMVHandler extends BaseThingHandler {
             return;
         }
         if (command instanceof RefreshType) {
-            if (lastUpdate > System.currentTimeMillis() + updateInterval * 1000) {
-                valloxSocket.request(null, null);
+            if (nextReadDataTime > System.currentTimeMillis() + 5000) {
+                // Next read is more than 5 seconds away, re-schedule
+                // Cancel read data job
+                cancelReadDataJob();
+                // Schedule read data job with 2 seconds initial delay
+                scheduleReadDataJob(2);
             }
         } else {
             String strUpdateValue = "";
@@ -119,20 +123,26 @@ public class ValloxMVHandler extends BaseThingHandler {
                 return;
             }
             if (strUpdateValue != "") {
-                // Stop scheduler while sending command to device
-                dispose();
-                logger.debug("Scheduled data table requests stopped");
+                long timeToRead = nextReadDataTime - System.currentTimeMillis();
+                // Avoid canceling job several times in case of subsequent data writes
+                if ((timeToRead > 0) && ((timeToRead < 2000) || (timeToRead > 5000))) {
+                    // Next read is not within the next 2 to 5 seconds, cancel read data job
+                    cancelReadDataJob();
+                }
                 // Send command and process response
                 valloxSocket.request(channelUID, strUpdateValue);
-                // Start scheduler with 5 seconds delay; first data request in 5 seconds
-                scheduleUpdatesWithDelay(5);
+                if (nextReadDataTime == 0) {
+                    // Schedule read data job with 5 seconds initial delay
+                    scheduleReadDataJob(5);
+                }
             }
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Initializing thing {}", getThing().getUID());
+    
         updateStatus(ThingStatus.UNKNOWN);
 
         String ip = getConfigAs(ValloxMVConfig.class).getIp();
@@ -140,33 +150,42 @@ public class ValloxMVHandler extends BaseThingHandler {
 
         logger.debug("Vallox MV IP address : {}", ip);
 
-        scheduleUpdatesWithDelay(2);
+        scheduleReadDataJob(2);
+
+        logger.debug("Thing {} initialized", getThing().getUID());
     }
 
-    private void scheduleUpdatesWithDelay(int delay) {
-        if (delay < 0) delay = 0;
+    private void scheduleReadDataJob(int initialDelay) {
+        if (initialDelay < 0) initialDelay = 0;
 
-        updateInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
-        if (updateInterval < 15) updateInterval = 60;
+        readDataInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
+        if (readDataInterval < 15) readDataInterval = 60;
 
-        logger.debug("Data table request interval {} seconds, Request in {} seconds", updateInterval, delay);
+        logger.debug("Data table request interval {} seconds, Request in {} seconds", readDataInterval, initialDelay);
+        nextReadDataTime = System.currentTimeMillis() + (1000 * initialDelay);
 
-        updateTasks = scheduler.scheduleWithFixedDelay(() -> {
+        readDataJob = scheduler.scheduleWithFixedDelay(() -> {
             // Read all device values
             valloxSocket.request(null, null);
-        }, delay, updateInterval, TimeUnit.SECONDS);
+            nextReadDataTime = System.currentTimeMillis() + (1000 * readDataInterval);
+        }, initialDelay, readDataInterval, TimeUnit.SECONDS);
     }
 
-    public void dataUpdated() {
-        lastUpdate = System.currentTimeMillis();
+    private void cancelReadDataJob() {
+        if (readDataJob != null) {
+            if (!readDataJob.isDone()) {
+                readDataJob.cancel(true);
+                nextReadDataTime = 0;
+                logger.debug("Scheduled data table requests cancelled");
+            }    
+        }
     }
 
     @Override
     public void dispose() {
-        if (updateTasks != null) {
-            updateTasks.cancel(true);
-        }
-        updateTasks = null;
+        logger.debug("Disposing thing {}", getThing().getUID());
+        cancelReadDataJob();
+        logger.debug("Thing {} disposed", getThing().getUID());
     }
 
     @Override

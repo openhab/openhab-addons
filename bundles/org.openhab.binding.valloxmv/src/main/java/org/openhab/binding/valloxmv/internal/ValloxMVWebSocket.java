@@ -59,11 +59,11 @@ public class ValloxMVWebSocket {
     private final WebSocketClient client;
     private final URI destUri;
     private ValloxMVWebSocketListener socket;
-    // Class variables
-    private static int iBoostTime;
-    private static OnOffType ooBoostTimerEnabled;
-    private static int iFireplaceTime;
-    private static OnOffType ooFireplaceTimerEnabled;
+
+    private int iBoostTime;
+    private OnOffType ooBoostTimerEnabled;
+    private int iFireplaceTime;
+    private OnOffType ooFireplaceTimerEnabled;
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
 
@@ -193,18 +193,17 @@ public class ValloxMVWebSocket {
                             // Fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
                             // CYC_FIREPLACE_TIMER (4613) = value from CYC_FIREPLACE_TIME, checksum)
                             // CYC_FIREPLACE_TIME is read during READ_TABLES and stored into outer class variable
-                            if (ValloxMVWebSocket.iFireplaceTime < 1) {
+                            if (iFireplaceTime < 1) {
                                 // use 15 minutes in case not initialized (should never happen)
-                                ValloxMVWebSocket.iFireplaceTime = 15;
+                                iFireplaceTime = 15;
                             }
-                            if (OnOffType.ON.equals(ValloxMVWebSocket.ooFireplaceTimerEnabled)) {
-                                logger.debug("Changing to Fireplace profile, timer {} minutes",
-                                    ValloxMVWebSocket.iFireplaceTime);
+                            if (OnOffType.ON.equals(ooFireplaceTimerEnabled)) {
+                                logger.debug("Changing to Fireplace profile, timer {} minutes", iFireplaceTime);
                             } else {
                                 logger.debug("Changing to Fireplace profile, timer not enabled");
                             }
                             request.put(4612, 0);
-                            request.put(4613, ValloxMVWebSocket.iFireplaceTime);
+                            request.put(4613, iFireplaceTime);
                             break;
                         case ValloxMVBindingConstants.STATE_ATHOME:
                             // At Home (Length 8, Command to set data 249, CYC_STATE (4609) = 0,
@@ -227,17 +226,17 @@ public class ValloxMVWebSocket {
                             // CYC_BOOST_TIMER (4612) = value from CYC_BOOST_TIME,
                             // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
                             // CYC_BOOST_TIME is read during READ_TABLES and stored into outer class variable
-                            if (ValloxMVWebSocket.iBoostTime < 1) {
+                            if (iBoostTime < 1) {
                                 // use 30 minutes in case not initialized (should never happen)
-                                ValloxMVWebSocket.iBoostTime = 30;
+                                iBoostTime = 30;
                             }
-                            if (OnOffType.ON.equals(ValloxMVWebSocket.ooBoostTimerEnabled)) {
+                            if (OnOffType.ON.equals(ooBoostTimerEnabled)) {
                                 logger.debug("Changing to Boost profile, timer {} minutes",
-                                    ValloxMVWebSocket.iBoostTime);
+                                    iBoostTime);
                             } else {
                                 logger.debug("Changing to Boost profile, timer not enabled");
                             }
-                            request.put(4612, ValloxMVWebSocket.iBoostTime);
+                            request.put(4612, iBoostTime);
                             request.put(4613, 0);
                             break;
                         default:
@@ -276,9 +275,11 @@ public class ValloxMVWebSocket {
                     request.put(20514, iUpdateState);
                     break;
                 case ValloxMVBindingConstants.CHANNEL_BOOST_TIME:
+                    iBoostTime = iUpdateState;
                     request.put(20544, iUpdateState);
                     break;
                 case ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED:
+                    ooBoostTimerEnabled = OnOffType.from(Integer.toString(iUpdateState));
                     request.put(21766, iUpdateState);
                     break;
                 case ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN:
@@ -288,9 +289,11 @@ public class ValloxMVWebSocket {
                     request.put(20488, iUpdateState);
                     break;
                 case ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME:
+                    iFireplaceTime = iUpdateState;
                     request.put(20545, iUpdateState);
                     break;
                 case ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED:
+                    ooFireplaceTimerEnabled = OnOffType.from(Integer.toString(iUpdateState));
                     request.put(21767, iUpdateState);
                     break;
                 case ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET:
@@ -449,13 +452,13 @@ public class ValloxMVWebSocket {
                 BigDecimal bdBoostAirTempTarget = getTemperature(bytes, 432);
 
                 // Using outer class variable for boost time and timer enabled
-                ValloxMVWebSocket.iBoostTime = getNumberBE(bytes, 492);
-                ValloxMVWebSocket.ooBoostTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 528)));
+                iBoostTime = getNumberBE(bytes, 492);
+                ooBoostTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 528)));
                 int iFireplaceExtrFan = getNumberBE(bytes, 378);
                 int iFireplaceSuppFan = getNumberBE(bytes, 380);
                 // Using outer class variable for fireplace time and timer enabled
-                ValloxMVWebSocket.iFireplaceTime = getNumberBE(bytes, 494);
-                ValloxMVWebSocket.ooFireplaceTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 530)));
+                iFireplaceTime = getNumberBE(bytes, 494);
+                ooFireplaceTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 530)));
                 BigDecimal bdExtraAirTempTarget = getTemperature(bytes, 390);
                 int iExtraExtrFan = getNumberBE(bytes, 392);
                 int iExtraSuppFan = getNumberBE(bytes, 394);
@@ -520,18 +523,14 @@ public class ValloxMVWebSocket {
                         new QuantityType<>(bdAwayAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET,
                         new QuantityType<>(bdBoostAirTempTarget, SIUnits.CELSIUS));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIME,
-                        new DecimalType(ValloxMVWebSocket.iBoostTime));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED,
-                        ValloxMVWebSocket.ooBoostTimerEnabled);
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIME, new DecimalType(iBoostTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED, ooBoostTimerEnabled);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN,
                         new QuantityType<>(iFireplaceExtrFan, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN,
                         new QuantityType<>(iFireplaceSuppFan, SmartHomeUnits.PERCENT));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME,
-                        new DecimalType(ValloxMVWebSocket.iFireplaceTime));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED,
-                        ValloxMVWebSocket.ooFireplaceTimerEnabled);
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME, new DecimalType(iFireplaceTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED, ooFireplaceTimerEnabled);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET,
                         new QuantityType<>(bdExtraAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN,
@@ -543,11 +542,11 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED, ooWeeklyTimerEnabled);
 
                 voHandler.updateStatus(ThingStatus.ONLINE);
-                voHandler.dataUpdated();
+                logger.debug("Data updated successfully");
+
             } catch (IOException e) {
                 connectionError(e);
             }
-            logger.debug("Data updated successfully");
         }
 
         private void updateChannel(String strChannelName, State state) {
