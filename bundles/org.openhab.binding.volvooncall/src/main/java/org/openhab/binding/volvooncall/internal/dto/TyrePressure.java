@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.volvooncall.internal.dto;
-
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,5 +26,8 @@ public class TyrePressure {
     public @NonNullByDefault({}) String frontRightTyrePressure;
     public @NonNullByDefault({}) String rearLeftTyrePressure;
     public @NonNullByDefault({}) String rearRightTyrePressure;
-    public @NonNullByDefault({}) ZonedDateTime timestamp;
+    /*
+     * Currently unused in the binding, maybe interesting in the future
+     * private ZonedDateTime timestamp;
+     */
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,7 +134,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     connector.sendVolumeCommand(command, 2);
                     break;
                 case CHANNEL_ZONE2_VOLUME_DB:
-                    connector.sendVolumeCommand(command, 2);
+                    connector.sendVolumeDbCommand(command, 2);
                     break;
                 case CHANNEL_ZONE2_INPUT:
                     connector.sendInputCommand(command, 2);
@@ -150,7 +150,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     connector.sendVolumeCommand(command, 3);
                     break;
                 case CHANNEL_ZONE3_VOLUME_DB:
-                    connector.sendVolumeCommand(command, 3);
+                    connector.sendVolumeDbCommand(command, 3);
                     break;
                 case CHANNEL_ZONE3_INPUT:
                     connector.sendInputCommand(command, 3);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.testHomieThing;
+import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.TEST_HOMIE_THING;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -101,7 +102,7 @@ public class HomieThingHandlerTests {
 
     private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry);
 
-    private final String deviceID = ThingChannelConstants.testHomieThing.getId();
+    private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
 
     // A completed future is returned for a subscribe call to the attributes
@@ -117,7 +118,7 @@ public class HomieThingHandlerTests {
         config.put("basetopic", "homie");
         config.put("deviceid", deviceID);
 
-        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, testHomieThing.getId())
+        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, TEST_HOMIE_THING.getId())
                 .withConfiguration(config).build();
         thing.setStatusInfo(thingStatus);
 
@@ -213,7 +214,6 @@ public class HomieThingHandlerTests {
 
     @SuppressWarnings("null")
     @Test
-    @Ignore("https://github.com/openhab/openhab2-addons/issues/6408")
     public void handleCommandRefresh() {
         // Create mocked homie device tree with one node and one read-only property
         Node node = thingHandler.device.createNode("node", spy(new NodeAttributes()));
@@ -232,8 +232,10 @@ public class HomieThingHandlerTests {
         thingHandler.device.nodes.put(node.nodeID, node);
 
         ThingHandlerHelper.setConnection(thingHandler, connection);
-        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
+        // we need to set a channel value first, undefined values ignored on REFRESH
+        property.getChannelState().getCache().update(new StringType("testString"));
 
+        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
         verify(callback).stateUpdated(argThat(arg -> property.channelUID.equals(arg)),
                 argThat(arg -> property.getChannelState().getCache().getChannelState().equals(arg)));
     }

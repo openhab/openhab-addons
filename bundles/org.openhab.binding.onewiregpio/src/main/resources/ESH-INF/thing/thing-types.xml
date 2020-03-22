@@ -22,6 +22,13 @@
 				<default>600</default>
 			</parameter>
 
+			<parameter name="precision" type="integer" min="0" max="3">
+				<label>Sensor Precision</label>
+				<description>Sensor precision after floating point.</description>
+				<required>false</required>
+				<default>3</default>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 

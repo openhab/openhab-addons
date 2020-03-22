@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BAE091xPIOConfiguration} is a helper class for the BAE091x PIO Pin configuration
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class BAE091xPIOConfiguration {
     public String mode = "input";
     public String pulldevice = "disabled";

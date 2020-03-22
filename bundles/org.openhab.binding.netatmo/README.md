@@ -577,32 +577,32 @@ The following icons are used by original Netatmo web app:
 
 ## Modules
 
-- http://my.netatmo.com/img/my/app/module_int.png
-- http://my.netatmo.com/img/my/app/module_ext.png
-- http://my.netatmo.com/img/my/app/module_rain.png
+- https://my.netatmo.com/images/my/app/module_int.png
+- https://my.netatmo.com/images/my/app/module_ext.png
+- https://my.netatmo.com/images/my/app/module_rain.png
 
 
 ## Battery status
 
-- http://my.netatmo.com/img/my/app/battery_verylow.png
-- http://my.netatmo.com/img/my/app/battery_low.png
-- http://my.netatmo.com/img/my/app/battery_medium.png
-- http://my.netatmo.com/img/my/app/battery_high.png
-- http://my.netatmo.com/img/my/app/battery_full.png
+- https://my.netatmo.com/images/my/app/battery_verylow.png
+- https://my.netatmo.com/images/my/app/battery_low.png
+- https://my.netatmo.com/images/my/app/battery_medium.png
+- https://my.netatmo.com/images/my/app/battery_high.png
+- https://my.netatmo.com/images/my/app/battery_full.png
 
 
 ## Signal status
 
-- http://my.netatmo.com/img/my/app/signal_verylow.png
-- http://my.netatmo.com/img/my/app/signal_low.png
-- http://my.netatmo.com/img/my/app/signal_medium.png
-- http://my.netatmo.com/img/my/app/signal_high.png
-- http://my.netatmo.com/img/my/app/signal_full.png
+- https://my.netatmo.com/images/my/app/signal_verylow.png
+- https://my.netatmo.com/images/my/app/signal_low.png
+- https://my.netatmo.com/images/my/app/signal_medium.png
+- https://my.netatmo.com/images/my/app/signal_high.png
+- https://my.netatmo.com/images/my/app/signal_full.png
 
 
 ## Wifi status
 
-- http://my.netatmo.com/img/my/app/wifi_low.png
-- http://my.netatmo.com/img/my/app/wifi_medium.png
-- http://my.netatmo.com/img/my/app/wifi_high.png
-- http://my.netatmo.com/img/my/app/wifi_full.png
+- https://my.netatmo.com/images/my/app/wifi_low.png
+- https://my.netatmo.com/images/my/app/wifi_medium.png
+- https://my.netatmo.com/images/my/app/wifi_high.png
+- https://my.netatmo.com/images/my/app/wifi_full.png

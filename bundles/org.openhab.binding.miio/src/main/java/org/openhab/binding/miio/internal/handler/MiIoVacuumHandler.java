@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
 import org.openhab.binding.miio.internal.robot.StatusType;
@@ -60,8 +61,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private String lastHistoryId;
 
     @NonNullByDefault
-    public MiIoVacuumHandler(Thing thing) {
+    public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
     @Override
@@ -133,14 +135,15 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
         updateState(CHANNEL_ERROR_CODE,
                 new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
+        updateState(CHANNEL_ERROR_ID, new DecimalType(statusData.get("error_code").getAsInt()));
         int fanLevel = statusData.get("fan_power").getAsInt();
-        FanModeType fanpower = FanModeType.getType(fanLevel);
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
-        updateState(CHANNEL_FAN_CONTROL, new DecimalType(fanpower.getId()));
+        updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
         updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+        updateState(CHANNEL_STATE_ID, new DecimalType(statusData.get("state").getAsInt()));
         State vacuum = OnOffType.OFF;
         String control;
         switch (state) {

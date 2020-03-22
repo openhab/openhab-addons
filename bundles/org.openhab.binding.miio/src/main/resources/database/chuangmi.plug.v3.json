@@ -43,7 +43,7 @@
 			},
 			{
 				"property": "wifi_led",
-				"friendlyName": "Wifi led",
+				"friendlyName": "Wifi LED",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,

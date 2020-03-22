@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 /*
  * This file is based on:
  *
@@ -244,7 +243,7 @@ public class LGWebOSTVSocket {
 
         JsonObject payload = new JsonObject();
         String key = config.getKey();
-        if (key != null && !key.isEmpty()) {
+        if (!key.isEmpty()) {
             payload.addProperty("client-key", key);
         }
         payload.addProperty("pairingType", "PROMPT"); // PIN, COMBINED
@@ -440,9 +439,34 @@ public class LGWebOSTVSocket {
         return request;
     }
 
+    public ServiceCommand<Boolean> getMute(ResponseListener<Boolean> listener) {
+        ServiceCommand<Boolean> request = new ServiceCommand<>(MUTE, null,
+                (jsonObj) -> jsonObj.get("mute").getAsBoolean(), listener);
+        sendCommand(request);
+        return request;
+    }
+
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
         ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                jsonObj -> "mastervolume_tv_speaker".equals(jsonObj.get("scenario").getAsString())
+                // "scenario" in the response determines whether "volume" is absolute or a delta value.
+                // it only makes sense to subscribe to changes in absolute volume
+                // accept: "mastervolume_tv_speaker" or "mastervolume_tv_speaker_ext"
+                // ignore external amp/receiver: "mastervolume_ext_speaker_arc" or "mastervolume_ext_speaker_urcu_oss"
+                jsonObj -> jsonObj.get("scenario").getAsString().startsWith("mastervolume_tv_speaker")
+                        ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                        : Float.NaN,
+                listener);
+        sendCommand(request);
+        return request;
+    }
+
+    public ServiceCommand<Float> getVolume(ResponseListener<Float> listener) {
+        ServiceCommand<Float> request = new ServiceCommand<>(VOLUME, null,
+                // "scenario" in the response determines whether "volume" is absolute or a delta value.
+                // it only makes sense to subscribe to changes in absolute volume
+                // accept: "mastervolume_tv_speaker" or "mastervolume_tv_speaker_ext"
+                // ignore external amp/receiver: "mastervolume_ext_speaker_arc" or "mastervolume_ext_speaker_urcu_oss"
+                jsonObj -> jsonObj.get("scenario").getAsString().startsWith("mastervolume_tv_speaker")
                         ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
                         : Float.NaN,
                 listener);
@@ -486,6 +510,14 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<ChannelInfo> subscribeCurrentChannel(ResponseListener<ChannelInfo> listener) {
         ServiceSubscription<ChannelInfo> request = new ServiceSubscription<>(CHANNEL, null,
+                jsonObj -> GSON.fromJson(jsonObj, ChannelInfo.class), listener);
+        sendCommand(request);
+
+        return request;
+    }
+
+    public ServiceCommand<ChannelInfo> getCurrentChannel(ResponseListener<ChannelInfo> listener) {
+        ServiceCommand<ChannelInfo> request = new ServiceCommand<>(CHANNEL, null,
                 jsonObj -> GSON.fromJson(jsonObj, ChannelInfo.class), listener);
         sendCommand(request);
 
@@ -644,8 +676,12 @@ public class LGWebOSTVSocket {
             LaunchSession launchSession = new LaunchSession();
             launchSession.setService(this);
             launchSession.setAppId(appId); // note that response uses id to mean appId
-            launchSession.setSessionId(obj.get("sessionId").getAsString());
-            launchSession.setSessionType(LaunchSessionType.App);
+            if (obj.has("sessionId")) {
+                launchSession.setSessionId(obj.get("sessionId").getAsString());
+                launchSession.setSessionType(LaunchSessionType.App);
+            } else {
+                launchSession.setSessionType(LaunchSessionType.Unknown);
+            }
             return launchSession;
         }, listener);
         sendCommand(request);
@@ -660,8 +696,12 @@ public class LGWebOSTVSocket {
             LaunchSession launchSession = new LaunchSession();
             launchSession.setService(this);
             launchSession.setAppId(obj.get("id").getAsString()); // note that response uses id to mean appId
-            launchSession.setSessionId(obj.get("sessionId").getAsString());
-            launchSession.setSessionType(LaunchSessionType.App);
+            if (obj.has("sessionId")) {
+                launchSession.setSessionId(obj.get("sessionId").getAsString());
+                launchSession.setSessionType(LaunchSessionType.App);
+            } else {
+                launchSession.setSessionType(LaunchSessionType.Unknown);
+            }
             return launchSession;
         }, listener);
         sendCommand(request);
@@ -702,12 +742,10 @@ public class LGWebOSTVSocket {
 
     public void closeApp(LaunchSession launchSession, ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system.launcher/close";
-        String appId = launchSession.getAppId();
-        String sessionId = launchSession.getSessionId();
 
         JsonObject payload = new JsonObject();
-        payload.addProperty("id", appId);
-        payload.addProperty("sessionId", sessionId);
+        payload.addProperty("id", launchSession.getAppId());
+        payload.addProperty("sessionId", launchSession.getSessionId());
 
         ServiceCommand<CommandConfirmation> request = new ServiceCommand<>(uri, payload,
                 x -> GSON.fromJson(x, CommandConfirmation.class), listener);
@@ -802,12 +840,17 @@ public class LGWebOSTVSocket {
 
     }
 
+    // Simulate Remote Control Button press
+
+    public void sendRCButton(String rcButton, ResponseListener<CommandConfirmation> listener) {
+        executeMouse(s -> s.button(rcButton));
+    }
+
     public interface ConfigProvider {
-        void storeKey(@Nullable String key);
+        void storeKey(String key);
 
         void storeProperties(Map<String, String> properties);
 
-        @Nullable
         String getKey();
     }
 

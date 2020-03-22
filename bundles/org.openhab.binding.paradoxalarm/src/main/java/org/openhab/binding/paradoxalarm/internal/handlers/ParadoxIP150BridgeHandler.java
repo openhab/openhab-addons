@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,12 +35,13 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.paradoxalarm.internal.communication.CommunicationState;
 import org.openhab.binding.paradoxalarm.internal.communication.GenericCommunicator;
+import org.openhab.binding.paradoxalarm.internal.communication.ICommunicatorBuilder;
 import org.openhab.binding.paradoxalarm.internal.communication.IDataUpdateListener;
 import org.openhab.binding.paradoxalarm.internal.communication.IP150Command;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxInitialLoginCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.ISocketTimeOutListener;
-import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
+import org.openhab.binding.paradoxalarm.internal.communication.ParadoxBuilderFactory;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformationConstants;
@@ -146,21 +147,16 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
 
     protected void createDiscoveredCommunicatorJob(PanelType panelType) {
         // If not detected properly, use the value from config
-        String panelTypeStr;
-        if (panelType != PanelType.UNKNOWN) {
-            panelTypeStr = panelType.name();
-        } else {
-            panelTypeStr = config.getPanelType();
+        if (panelType == PanelType.UNKNOWN) {
+            panelType = PanelType.from(config.getPanelType());
         }
 
         logger.debug("Phase2 - Creating communicator for panel {}", panelType);
-        String ipAddress = config.getIpAddress();
-        int tcpPort = config.getPort();
-        String ip150Password = config.getIp150Password();
-        String pcPassword = config.getPcPassword();
-        ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
-                pcPassword, scheduler);
-        communicator = factory.createCommunicator(panelTypeStr);
+        ICommunicatorBuilder builder = new ParadoxBuilderFactory().createBuilder(panelType);
+        communicator = builder.withIp150Password(config.getIp150Password()).withPcPassword(config.getPcPassword())
+                .withIpAddress(config.getIpAddress()).withTcpPort(config.getPort())
+                .withMaxPartitions(config.getMaxPartitions()).withMaxZones(config.getMaxZones())
+                .withScheduler(scheduler).build();
 
         ParadoxPanel panel = ParadoxPanel.getInstance();
         panel.setCommunicator(communicator);

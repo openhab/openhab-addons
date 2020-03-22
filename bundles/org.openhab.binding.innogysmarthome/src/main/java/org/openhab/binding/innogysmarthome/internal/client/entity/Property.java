@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines a {@link Property}, that is a basic key/value structure used for several data types in the innogy API.
  *
@@ -21,13 +19,10 @@ import com.google.api.client.util.Key;
  */
 public class Property {
 
-    @Key("name")
     private String name;
 
-    @Key("value")
     private Object value;
 
-    @Key("lastchanged")
     private String lastchanged;
 
     public Property() {

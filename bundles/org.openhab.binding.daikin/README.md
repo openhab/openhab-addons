@@ -44,8 +44,8 @@ For the BRP15B61:
 | outdoortemp     | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | mode            | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
 | homekit mode    | A mode that is compatible with homekit/alexa/google home (off, on, heat, cool)              | 
-| airbasefanspeed | The fan speed set for the unit (AUTO, LEVEL_1, LEVEL_2, LEVEL_3)                            |
-| zone1           | Turns zone 1 on/off for the air conditioning unit (if a zoned controller is installed.      |
+| airbasefanspeed | The fan speed set for the unit (AIRSIDE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, AUTO_LEVEL_1, AUTO_LEVEL_2, AUTO_LEVEL_3, AUTO_LEVEL_4, AUTO_LEVEL_5)  |
+| zone1           | Turns zone 1 on/off for the air conditioning unit (if a zone controller is installed.)      |
 | zone2           | Turns zone 2 on/off for the air conditioning unit.                                          |
 | zone3           | Turns zone 3 on/off for the air conditioning unit.                                          |
 | zone4           | Turns zone 4 on/off for the air conditioning unit.                                          |
@@ -67,7 +67,7 @@ daikin.items:
 
 ```
 Switch DaikinACUnit_Power { channel="daikin:ac_unit:living_room_ac:power" }
-Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:setpoint" }
+Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:settemp" }
 String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
 String DaikinACUnit_HomekitMode { channel="daikin:ac_unit:living_room_ac:homekitmode" }
 String DaikinACUnit_Fan { channel="daikin:ac_unit:living_room_ac:fanspeed" }

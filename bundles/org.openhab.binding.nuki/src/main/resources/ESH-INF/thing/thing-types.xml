@@ -47,7 +47,7 @@
 		<config-description>
 			<parameter name="nukiId" type="text" required="true">
 				<label>Nuki ID</label>
-				<description>The ID of the Nuki Smart Lock. Get it through the Bridge HTTP-API (https://nuki.io/en/api/), Endpoint */list*.</description>
+				<description>The 8-digit hexadecimal string that identifies the Nuki Smart Lock. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate).</description>
 			</parameter>
 			<parameter name="unlatch" type="boolean" required="false">
 				<label>Unlatch</label>

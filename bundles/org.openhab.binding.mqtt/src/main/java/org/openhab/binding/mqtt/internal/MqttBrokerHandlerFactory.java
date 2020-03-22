@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,6 @@
  */
 package org.openhab.binding.mqtt.internal;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,8 +27,15 @@ import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.handler.SystemBrokerHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The {@link MqttBrokerHandlerFactory} is responsible for creating things and thing
@@ -52,35 +51,21 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, MqttBindingConstants.BRIDGE_TYPE_BROKER)
             .collect(Collectors.toSet());
-    protected final Map<MQTTTopicDiscoveryParticipant, TopicSubscribeMultiConnection> subscriber = Collections
-            .synchronizedMap(new WeakHashMap<>());
+    private final Logger logger = LoggerFactory.getLogger(MqttBrokerHandlerFactory.class);
+    protected final Map<String, List<MQTTTopicDiscoveryParticipant>> discoveryTopics = new HashMap<>();
     protected final Set<AbstractBrokerHandler> handlers = Collections
             .synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
-    @NonNullByDefault({})
     private MqttService mqttService;
+
+    @Activate
+    public MqttBrokerHandlerFactory(@Reference MqttService mqttService) {
+        this.mqttService = mqttService;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    @Reference
-    public void setMqttService(MqttService service) {
-        mqttService = service;
-    }
-
-    public void unsetMqttService(MqttService service) {
-        mqttService = null;
-    }
-
-    /**
-     * Remove the given broker connection from all listeners.
-     */
-    @Override
-    protected void removeHandler(@NonNull ThingHandler thingHandler) {
-        handlers.remove(thingHandler);
-        subscriber.forEach((receiver, multiConnection) -> multiConnection.remove((AbstractBrokerHandler) thingHandler));
     }
 
     /**
@@ -88,7 +73,11 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
      */
     protected void createdHandler(AbstractBrokerHandler handler) {
         handlers.add(handler);
-        subscriber.forEach((receiver, multiConnection) -> multiConnection.add(handler));
+        discoveryTopics.forEach((topic, listenerList) -> {
+            listenerList.forEach(listener -> {
+                handler.registerDiscoveryListener(listener, topic);
+            });
+        });
     }
 
     @Override
@@ -119,12 +108,10 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
      */
     @Override
     public void subscribe(MQTTTopicDiscoveryParticipant listener, String topic) {
-        if (subscriber.containsKey(listener)) {
-            return;
-        }
-        final TopicSubscribeMultiConnection multiSubscriber = new TopicSubscribeMultiConnection(listener, topic);
-        handlers.forEach(multiSubscriber::add);
-        subscriber.put(listener, multiSubscriber);
+        List<MQTTTopicDiscoveryParticipant> listenerList = discoveryTopics
+                .computeIfAbsent(topic, t -> new ArrayList<>());
+        listenerList.add(listener);
+        handlers.forEach(broker -> broker.registerDiscoveryListener(listener, topic));
     }
 
     /**
@@ -133,9 +120,9 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     @SuppressWarnings("null")
     public void unsubscribe(MQTTTopicDiscoveryParticipant listener) {
-        TopicSubscribeMultiConnection multiSubscriber = subscriber.remove(listener);
-        if (multiSubscriber != null) {
-            multiSubscriber.stop();
-        }
+        discoveryTopics.forEach((topic, listenerList) -> {
+            listenerList.remove(listener);
+            handlers.forEach(broker -> broker.unregisterDiscoveryListener(listener, topic));
+        });
     }
 }

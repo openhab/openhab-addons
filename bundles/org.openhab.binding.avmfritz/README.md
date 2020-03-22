@@ -62,9 +62,20 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.69.
 ## Discovery
 
 The FRITZ!Box and the powerline adapter are discovered through UPnP in the local network.
-Auto-discovery is enabled by default.
 When added as things, a username/password has eventually to be set depending on your Box/Powerline security configuration.
 The credentials given in the settings must have HomeAuto permissions.
+This implies to enable "login to the home network with user name and password" setting in the FRITZ!Box.
+To do so
+
+- Click "System" in the FRITZ!Box user interface.
+- Click "FRITZ!Box Users" in the "System" menu.
+- Click on the "Login to the Home Network" tab.
+- Enable the option "Login with FRITZ!Box user name and password".
+- Click "Apply" to save the settings.
+
+Note: Now you can only log in to the FRITZ!Box with a user account, i.e. after entering a user name and password.
+
+Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
 ```

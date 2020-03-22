@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>2.5.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -17,8 +17,6 @@
 
   <modules>
     <!-- io -->
-    <!-- temporarily disabled due to malfunction -->
-    <!--module>org.openhab.io.azureiothub</module-->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
@@ -52,6 +50,8 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
+    <module>org.openhab.binding.bluetooth.airthings</module>
+    <module>org.openhab.binding.bluetooth.am43</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
     <module>org.openhab.binding.bluetooth.bluez</module>
     <module>org.openhab.binding.bluetooth.blukii</module>
@@ -88,6 +88,7 @@
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
+    <module>org.openhab.binding.goecharger</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.groheondus</module>
@@ -99,11 +100,13 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
     <module>org.openhab.binding.innogysmarthome</module>
+    <module>org.openhab.binding.insteon</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.jeelink</module>
@@ -115,6 +118,7 @@
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lametrictime</module>
     <module>org.openhab.binding.leapmotion</module>
+    <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
@@ -126,11 +130,13 @@
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcp23017</module>
+    <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.miio</module>
+    <module>org.openhab.binding.millheat</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
@@ -167,6 +173,7 @@
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
+    <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
@@ -185,6 +192,7 @@
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
+    <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sinope</module>
@@ -207,7 +215,6 @@
     <module>org.openhab.binding.telegram</module>    
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
-    <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
@@ -215,8 +222,10 @@
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
+    <module>org.openhab.binding.velux</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
+    <module>org.openhab.binding.weathercompany</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
@@ -230,8 +239,6 @@
     <!-- extensionservices -->
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
-    <!-- persistence -->
-    <module>org.openhab.persistence.mapdb</module>
     <!-- voice -->
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
@@ -287,7 +294,7 @@
   </dependencies>
 
   <properties>
-    <dep.noembedding></dep.noembedding>
+    <dep.noembedding/>
   </properties>
 
   <build>

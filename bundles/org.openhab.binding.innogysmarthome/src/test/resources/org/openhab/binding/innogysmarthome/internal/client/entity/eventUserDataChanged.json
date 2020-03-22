@@ -1,0 +1,15 @@
+{
+	"sequenceNumber": 0,
+	"type": "/event/UserDataChanged",
+	"timestamp": "2019-02-25T20:18:20.5600109Z",
+	"data": [
+		{
+			"key": "StatesId",
+			"partition": "HomepageDeviceVisibility"
+		},
+		{
+			"key": "UserData",
+			"partition": "Version"
+		}
+	]
+}

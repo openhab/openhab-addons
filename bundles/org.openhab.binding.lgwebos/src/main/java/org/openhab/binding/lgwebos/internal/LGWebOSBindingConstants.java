@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,9 +64,9 @@ public class LGWebOSBindingConstants {
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_CHANNEL = "channel";
-    public static final String CHANNEL_CHANNEL_NAME = "channelName";
     public static final String CHANNEL_TOAST = "toast";
     public static final String CHANNEL_MEDIA_PLAYER = "mediaPlayer";
     public static final String CHANNEL_MEDIA_STOP = "mediaStop";
     public static final String CHANNEL_APP_LAUNCHER = "appLauncher";
+    public static final String CHANNEL_RCBUTTON = "rcButton";
 }

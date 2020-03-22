@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 
 /**
@@ -76,14 +74,14 @@ public class TextValue extends Value {
     }
 
     @Override
-    public StateDescription createStateDescription(String unit, boolean readOnly) {
-        List<StateOption> stateOptions = new ArrayList<>();
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        StateDescriptionFragmentBuilder builder = super.createStateDescription(readOnly);
         final Set<String> states = this.states;
         if (states != null) {
             for (String state : states) {
-                stateOptions.add(new StateOption(state, state));
+                builder = builder.withOption(new StateOption(state, state));
             }
         }
-        return new StateDescription(null, null, null, "%s " + unit.replace("%", "%%"), readOnly, stateOptions);
+        return builder;
     }
 }
