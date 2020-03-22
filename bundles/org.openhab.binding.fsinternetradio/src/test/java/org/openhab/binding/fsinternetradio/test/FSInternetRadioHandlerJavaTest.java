@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -91,28 +90,28 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
      * to an ArrayList of channels. Then in the tests an additional channel is created and added to the ArrayList
      * when it's needed.
      */
-    private @Nullable Channel powerChannel;
+    private Channel powerChannel;
 
-    private @Nullable ThingHandlerCallback callback;
+    private ThingHandlerCallback callback;
 
-    private static @Nullable TestServer server;
+    private static TestServer server;
 
     /**
      * A HashMap which saves all the 'channel-acceppted_item_type' pairs.
      * It is set before all the tests.
      */
-    private static @Nullable HashMap<String, String> acceptedItemTypes;
-    private static @Nullable HashMap<String, String> ACCEPTED_ITEM_TYPES = acceptedItemTypes;
+    private static HashMap<String, String> acceptedItemTypes;
+    private static HashMap<String, String> ACCEPTED_ITEM_TYPES = acceptedItemTypes;
 
     /**
      * ArrayList of channels which is used to initialize a radioThing in the test cases.
      */
     private final ArrayList<Channel> channels = new ArrayList<Channel>();
 
-    private @Nullable FSInternetRadioHandler radioHandler;
+    private FSInternetRadioHandler radioHandler;
     private Thing radioThing;
 
-    private static @Nullable HttpClient httpClient;
+    private static HttpClient httpClient;
 
     // default configuration properties
     private static final String DEFAULT_CONFIG_PROPERTY_IP = "127.0.0.1";
@@ -763,7 +762,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
                 String.valueOf(DEFAULT_CONFIG_PROPERTY_PORT), DEFAULT_CONFIG_PROPERTY_REFRESH);
     }
 
-    private static Configuration createConfiguration(@Nullable String ip, String pin, String port, String refresh) {
+    private static Configuration createConfiguration(String ip, String pin, String port, String refresh) {
         Configuration config = new Configuration();
         config.put(FSInternetRadioBindingConstants.CONFIG_PROPERTY_IP, ip);
         config.put(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN, pin);
@@ -792,7 +791,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         powerChannel = createChannel(DEFAULT_THING_UID, powerChannelID, acceptedItemType);
     }
 
-    private @Nullable Item initializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
+    private Item initializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
 
         Item item = null;
 
@@ -850,7 +849,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     }
 
     @SuppressWarnings("null")
-    private @Nullable Thing initializeRadioThing(Configuration config) {
+    private Thing initializeRadioThing(Configuration config) {
         radioThing = ThingBuilder.create(DEFAULT_THING_TYPE_UID, DEFAULT_THING_UID).withConfiguration(config)
                 .withChannels(channels).build();
 
@@ -865,7 +864,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     }
 
     @SuppressWarnings("null")
-    private @Nullable Thing initializeRadioThingWithMockedHandler(Configuration config) {
+    private Thing initializeRadioThingWithMockedHandler(Configuration config) {
         radioThing = ThingBuilder.create(DEFAULT_THING_TYPE_UID, DEFAULT_THING_UID).withConfiguration(config)
                 .withChannels(channels).build();
 

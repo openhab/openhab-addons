@@ -56,7 +56,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     @Nullable
     FrontierSiliconRadio radio;
-    private final @Nullable HttpClient httpClient;
+    private final HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
     private @Nullable ScheduledFuture<?> updateJob;
@@ -125,7 +125,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         }
     };
 
-    public FSInternetRadioHandler(@Nullable Thing thing, @Nullable HttpClient httpClient) {
+    public FSInternetRadioHandler(@Nullable Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }

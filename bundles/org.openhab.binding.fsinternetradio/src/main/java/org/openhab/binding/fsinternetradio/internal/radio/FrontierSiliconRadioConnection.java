@@ -55,12 +55,12 @@ public class FrontierSiliconRadioConnection {
     private @Nullable String sessionId;
 
     /** http clients, store cookies, so it is kept in connection class. */
-    private @Nullable HttpClient httpClient = null;
+    private HttpClient httpClient;
 
     /** Flag indicating if we are successfully logged in. */
     private boolean isLoggedIn = false;
 
-    public FrontierSiliconRadioConnection(String hostname, int port, String pin, @Nullable HttpClient httpClient) {
+    public FrontierSiliconRadioConnection(String hostname, int port, String pin, HttpClient httpClient) {
         this.hostname = hostname;
         this.port = port;
         this.pin = pin;

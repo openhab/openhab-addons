@@ -17,7 +17,6 @@ import static org.openhab.binding.fsinternetradio.internal.radio.FrontierSilicon
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
@@ -47,7 +46,7 @@ public class FrontierSiliconRadio {
      *
      * @author Rainer Ostendorf
      */
-    public FrontierSiliconRadio(String hostname, int port, String pin, @Nullable HttpClient httpClient) {
+    public FrontierSiliconRadio(String hostname, int port, String pin, HttpClient httpClient) {
         this.conn = new FrontierSiliconRadioConnection(hostname, port, pin, httpClient);
     }
 
