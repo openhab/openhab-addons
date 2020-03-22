@@ -44,42 +44,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CommandTag {
-    private @Nullable String itemName;
-    private @Nullable String targetState;
-    private String fullTag;
-    private @Nullable CommandTagType tagType;
-    private boolean isValid = false;
-    private @Nullable String authorizationCode;
-
-    private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
-
-    private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
-
     private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(QuantityType.class,
             OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class, PlayPauseType.class,
             RewindFastforwardType.class, StringType.class);
+    private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
 
-    public String getItemName() {
-        String currentItemName = itemName;
-        return currentItemName != null ? currentItemName : "";
-    }
-
-    public String getTargetState() {
-        String currentTargetState = targetState;
-        return currentTargetState != null ? currentTargetState : "";
-    }
-
-    public String getFullTag() {
-        return fullTag;
-    }
-
-    public @Nullable CommandTagType getTagType() {
-        return tagType;
-    }
-
-    public boolean isValid() {
-        return isValid;
-    }
+    private @Nullable String authorizationCode;
+    private String fullTag;
+    private boolean isValid = false;
+    private @Nullable String itemName;
+    private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
+    private @Nullable CommandTagType tagType;
+    private @Nullable String targetState;
 
     public CommandTag(String line) {
         fullTag = line;
@@ -128,11 +104,6 @@ public class CommandTag {
         }
     }
 
-    public boolean isAuthorized(@Nullable String userAuthorizationCode) {
-        return isValid && (userAuthorizationCode == null || userAuthorizationCode.isEmpty()
-                || userAuthorizationCode.equals(authorizationCode));
-    }
-
     public @Nullable Command getCommand() {
         String currentTargetState = targetState;
         if (currentTargetState == null || currentTargetState.isEmpty()) {
@@ -167,4 +138,30 @@ public class CommandTag {
         return null;
     }
 
+    public String getFullTag() {
+        return fullTag;
+    }
+
+    public String getItemName() {
+        String currentItemName = itemName;
+        return currentItemName != null ? currentItemName : "";
+    }
+
+    public @Nullable CommandTagType getTagType() {
+        return tagType;
+    }
+
+    public String getTargetState() {
+        String currentTargetState = targetState;
+        return currentTargetState != null ? currentTargetState : "";
+    }
+
+    public boolean isAuthorized(@Nullable String userAuthorizationCode) {
+        return isValid && (userAuthorizationCode == null || userAuthorizationCode.isEmpty()
+                || userAuthorizationCode.equals(authorizationCode));
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
 }

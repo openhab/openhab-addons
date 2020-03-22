@@ -48,10 +48,10 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)
 public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CALENDAR);
-    private @Nullable HttpClient sharedHttpClient = null;
 
+    private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
+    private @Nullable HttpClient sharedHttpClient = null;
     private @Nullable EventPublisher eventPublisher = null;
 
     @Override

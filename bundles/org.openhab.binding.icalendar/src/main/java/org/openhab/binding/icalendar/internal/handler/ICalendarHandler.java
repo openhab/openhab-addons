@@ -64,19 +64,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ICalendarHandler extends BaseThingHandler implements CalendarUpdateListener {
 
-    private final Logger logger = LoggerFactory.getLogger(ICalendarHandler.class);
-    private HttpClient httpClient;
-
-    private @Nullable ICalendarConfiguration configuration;
     private File calendarFile;
-    private @Nullable AbstractPresentableCalendar runtimeCalendar;
-
-    private @Nullable ScheduledFuture<?> updateJobFuture;
+    private @Nullable ICalendarConfiguration configuration;
+    private @Nullable EventPublisher eventPublisherCallback = null;
+    private HttpClient httpClient;
+    private final Logger logger = LoggerFactory.getLogger(ICalendarHandler.class);
     private @Nullable ScheduledFuture<?> pullJobFuture;
-
-    @Nullable
-    private EventPublisher eventPublisherCallback = null;
-
+    private @Nullable AbstractPresentableCalendar runtimeCalendar;
+    private @Nullable ScheduledFuture<?> updateJobFuture;
     private Instant updateStatesLastCalledTime = Instant.now();
 
     public ICalendarHandler(Thing thing, HttpClient httpClient, @Nullable EventPublisher eventPublisher) {
@@ -85,6 +80,18 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
+        if (currentUpdateJobFuture != null) {
+            currentUpdateJobFuture.cancel(true);
+        }
+        ScheduledFuture<?> currentPullJobFuture = pullJobFuture;
+        if (currentPullJobFuture != null) {
+            currentPullJobFuture.cancel(true);
+        }
     }
 
     @Override
@@ -150,14 +157,86 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     }
 
     @Override
-    public void dispose() {
-        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
-        if (currentUpdateJobFuture != null) {
-            currentUpdateJobFuture.cancel(true);
+    public void onCalendarUpdated() {
+        if (reloadCalendar()) {
+            updateStates();
+        } else {
+            logger.trace("Calendar was updated, but loading failed.");
         }
-        ScheduledFuture<?> currentPullJobFuture = pullJobFuture;
-        if (currentPullJobFuture != null) {
-            currentPullJobFuture.cancel(true);
+    }
+
+    protected void setEventPublisher(EventPublisher eventPublisher) {
+        eventPublisherCallback = eventPublisher;
+    }
+
+    protected void unsetEventPublisher(EventPublisher eventPublisher) {
+        eventPublisherCallback = null;
+    }
+
+    private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
+        // no begun or ended events => exit quietly as there is nothing to do
+        if ((events == null) || (events.isEmpty())) {
+            return;
+        }
+        // prevent synchronization issues (MVN null pointer warnings) in "eventPublisherCallback"
+        @Nullable
+        EventPublisher syncEventPublisherCallback = eventPublisherCallback;
+        if (syncEventPublisherCallback == null) {
+            logger.warn("EventPublisher object not instantiated!");
+            return;
+        }
+        // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
+        @Nullable
+        ICalendarConfiguration syncConfiguration = configuration;
+        if (syncConfiguration == null) {
+            logger.warn("Configuration not instantiated!");
+            return;
+        }
+        // loop through all events in the list
+        for (Event event : events) {
+
+            // loop through all command tags in the event
+            for (CommandTag cmdTag : event.commandTags) {
+
+                // only process the BEGIN resp. END tags
+                if (cmdTag.getTagType() != execTime) {
+                    continue;
+                }
+                if (!cmdTag.isAuthorized(syncConfiguration.authorizationCode)) {
+                    logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.getFullTag());
+                    continue;
+                }
+                String itemName = cmdTag.getItemName();
+                if (!itemName.matches("^\\w+$")) {
+                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title,
+                            cmdTag.getFullTag());
+                    continue;
+                }
+                Command cmdState = cmdTag.getCommand();
+                if (cmdState == null) {
+                    logger.warn("Event: {}, Command Tag: {} => Invalid Target State!", event.title,
+                            cmdTag.getFullTag());
+                    continue;
+                }
+
+                // (try to) execute the command
+                try {
+                    syncEventPublisherCallback.post(ItemEventFactory.createCommandEvent(itemName, cmdState));
+                    if (logger.isDebugEnabled()) {
+                        String cmdType = cmdState.getClass().toString();
+                        int index = cmdType.lastIndexOf(".") + 1;
+                        if ((index > 0) && (index < cmdType.length())) {
+                            cmdType = cmdType.substring(index);
+                        }
+                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
+                                cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
+                    }
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    logger.warn("Event: {}, Command Tag: {} => Could not be pushed to target item.", event.title,
+                            cmdTag.getFullTag());
+                    logger.debug("Exception occured while pushing to item.", e);
+                }
+            }
         }
     }
 
@@ -187,6 +266,53 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             return false;
         }
         return true;
+    }
+
+    /**
+     * Reschedules the next update of the states.
+     */
+    private void rescheduleCalendarStateUpdate() {
+        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
+        if (currentUpdateJobFuture != null) {
+            if (!(currentUpdateJobFuture.isCancelled() || currentUpdateJobFuture.isDone())) {
+                currentUpdateJobFuture.cancel(true);
+            }
+            updateJobFuture = null;
+        }
+        AbstractPresentableCalendar currentCalendar = runtimeCalendar;
+        if (currentCalendar == null) {
+            return;
+        }
+        Instant now = Instant.now();
+        if (currentCalendar.isEventPresent(now)) {
+            Event currentEvent = currentCalendar.getCurrentEvent(now);
+            if (currentEvent == null) {
+                logger.debug(
+                        "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
+                return;
+            }
+            updateJobFuture = scheduler.schedule(() -> {
+                ICalendarHandler.this.updateStates();
+                ICalendarHandler.this.rescheduleCalendarStateUpdate();
+            }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+        } else {
+            Event nextEvent = currentCalendar.getNextEvent(now);
+            ICalendarConfiguration currentConfig = this.configuration;
+            if (currentConfig == null) {
+                logger.debug("Something is broken, the configuration is not available.");
+                return;
+            }
+            if (nextEvent == null) {
+                updateJobFuture = scheduler.schedule(() -> {
+                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
+                }, 1L, TimeUnit.DAYS);
+            } else {
+                updateJobFuture = scheduler.schedule(() -> {
+                    ICalendarHandler.this.updateStates();
+                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
+                }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+            }
+        }
     }
 
     /**
@@ -259,136 +385,4 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             updateStatesLastCalledTime = now;
         }
     }
-
-    private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
-        // no begun or ended events => exit quietly as there is nothing to do
-        if ((events == null) || (events.isEmpty())) {
-            return;
-        }
-        // prevent synchronization issues (MVN null pointer warnings) in "eventPublisherCallback"
-        @Nullable
-        EventPublisher syncEventPublisherCallback = eventPublisherCallback;
-        if (syncEventPublisherCallback == null) {
-            logger.warn("EventPublisher object not instantiated!");
-            return;
-        }
-        // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
-        @Nullable
-        ICalendarConfiguration syncConfiguration = configuration;
-        if (syncConfiguration == null) {
-            logger.warn("Configuration not instantiated!");
-            return;
-        }
-        // loop through all events in the list
-        for (Event event : events) {
-
-            // loop through all command tags in the event
-            for (CommandTag cmdTag : event.commandTags) {
-
-                // only process the BEGIN resp. END tags
-                if (cmdTag.getTagType() != execTime) {
-                    continue;
-                }
-                if (!cmdTag.isAuthorized(syncConfiguration.authorizationCode)) {
-                    logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.getFullTag());
-                    continue;
-                }
-                String itemName = cmdTag.getItemName();
-                if (!itemName.matches("^\\w+$")) {
-                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title,
-                            cmdTag.getFullTag());
-                    continue;
-                }
-                Command cmdState = cmdTag.getCommand();
-                if (cmdState == null) {
-                    logger.warn("Event: {}, Command Tag: {} => Invalid Target State!", event.title,
-                            cmdTag.getFullTag());
-                    continue;
-                }
-
-                // (try to) execute the command
-                try {
-                    syncEventPublisherCallback.post(ItemEventFactory.createCommandEvent(itemName, cmdState));
-                    if (logger.isDebugEnabled()) {
-                        String cmdType = cmdState.getClass().toString();
-                        int index = cmdType.lastIndexOf(".") + 1;
-                        if ((index > 0) && (index < cmdType.length())) {
-                            cmdType = cmdType.substring(index);
-                        }
-                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
-                                cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
-                    }
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Could not be pushed to target item.", event.title,
-                            cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item.", e);
-                }
-            }
-        }
-    }
-
-    protected void setEventPublisher(EventPublisher eventPublisher) {
-        eventPublisherCallback = eventPublisher;
-    }
-
-    protected void unsetEventPublisher(EventPublisher eventPublisher) {
-        eventPublisherCallback = null;
-    }
-
-    /**
-     * Reschedules the next update of the states.
-     */
-    private void rescheduleCalendarStateUpdate() {
-        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
-        if (currentUpdateJobFuture != null) {
-            if (!(currentUpdateJobFuture.isCancelled() || currentUpdateJobFuture.isDone())) {
-                currentUpdateJobFuture.cancel(true);
-            }
-            updateJobFuture = null;
-        }
-        AbstractPresentableCalendar currentCalendar = runtimeCalendar;
-        if (currentCalendar == null) {
-            return;
-        }
-        Instant now = Instant.now();
-        if (currentCalendar.isEventPresent(now)) {
-            Event currentEvent = currentCalendar.getCurrentEvent(now);
-            if (currentEvent == null) {
-                logger.debug(
-                        "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
-                return;
-            }
-            updateJobFuture = scheduler.schedule(() -> {
-                ICalendarHandler.this.updateStates();
-                ICalendarHandler.this.rescheduleCalendarStateUpdate();
-            }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-        } else {
-            Event nextEvent = currentCalendar.getNextEvent(now);
-            ICalendarConfiguration currentConfig = this.configuration;
-            if (currentConfig == null) {
-                logger.debug("Something is broken, the configuration is not available.");
-                return;
-            }
-            if (nextEvent == null) {
-                updateJobFuture = scheduler.schedule(() -> {
-                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, 1L, TimeUnit.DAYS);
-            } else {
-                updateJobFuture = scheduler.schedule(() -> {
-                    ICalendarHandler.this.updateStates();
-                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-            }
-        }
-    }
-
-    @Override
-    public void onCalendarUpdated() {
-        if (reloadCalendar()) {
-            updateStates();
-        } else {
-            logger.trace("Calendar was updated, but loading failed.");
-        }
-    }
-
 }

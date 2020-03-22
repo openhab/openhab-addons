@@ -52,13 +52,35 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class PullJob implements Runnable {
 
+    /**
+     * Interface for calling back when the update succeed.
+     */
+    public static interface CalendarUpdateListener {
+        /**
+         * Callback when update was successful and result was placed onto target file.
+         */
+        public void onCalendarUpdated();
+    }
+
+    /**
+     * Exception for failure if size of the response is greater than allowed.
+     */
+    public static class ResponseTooBigException extends Exception {
+
+        /**
+         * The only local definition. Rest of implementation is taken from Exception or is default.
+         */
+        private static final long serialVersionUID = 7033851403473533793L;
+
+    }
+
     private final static String TMP_FILE_PREFIX = "icalendardld";
-    private final Logger logger = LoggerFactory.getLogger(PullJob.class);
-    private HttpClient httpClient;
-    private URI sourceURI;
     private Authentication.@Nullable Result authentication;
     private File destination;
+    private HttpClient httpClient;
     private @Nullable CalendarUpdateListener listener;
+    private final Logger logger = LoggerFactory.getLogger(PullJob.class);
+    private URI sourceURI;
 
     /**
      * Constructor of PullJob for creating a single pull of a calendar.
@@ -177,27 +199,5 @@ class PullJob implements Runnable {
                 logger.debug("An Exception was thrown while calling back", e);
             }
         }
-    }
-
-    /**
-     * Interface for calling back when the update succeed.
-     */
-    public static interface CalendarUpdateListener {
-        /**
-         * Callback when update was successful and result was placed onto target file.
-         */
-        public void onCalendarUpdated();
-    }
-
-    /**
-     * Exception for failure if size of the response is greater than allowed.
-     */
-    public static class ResponseTooBigException extends Exception {
-
-        /**
-         * The only local definition. Rest of implementation is taken from Exception or is default.
-         */
-        private static final long serialVersionUID = 7033851403473533793L;
-
     }
 }

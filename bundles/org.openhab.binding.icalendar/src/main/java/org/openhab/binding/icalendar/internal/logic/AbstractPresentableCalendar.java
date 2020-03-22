@@ -44,14 +44,6 @@ public abstract class AbstractPresentableCalendar {
     }
 
     /**
-     * Checks whether an event is present at given Instant.
-     *
-     * @param instant The Instant, that should be checked.
-     * @return True if an event is present.
-     */
-    public abstract boolean isEventPresent(Instant instant);
-
-    /**
      * Searches the event currently (at given Instant) present.
      *
      * @param instant The Instant, the event should be returned for.
@@ -59,16 +51,6 @@ public abstract class AbstractPresentableCalendar {
      *         null if no event is present.
      */
     public abstract @Nullable Event getCurrentEvent(Instant instant);
-
-    /**
-     * The next event after given instant.
-     *
-     * @param instant The Instant after which the next event should be
-     *            searched.
-     * @return The next event after the given Instant or null if there is any
-     *         further in the calendar.
-     */
-    public abstract @Nullable Event getNextEvent(Instant instant);
 
     /**
      * Return a list of events that have just begun within the time frame
@@ -88,4 +70,21 @@ public abstract class AbstractPresentableCalendar {
      */
     public abstract @Nullable List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd);
 
+    /**
+     * The next event after given instant.
+     *
+     * @param instant The Instant after which the next event should be
+     *            searched.
+     * @return The next event after the given Instant or null if there is any
+     *         further in the calendar.
+     */
+    public abstract @Nullable Event getNextEvent(Instant instant);
+
+    /**
+     * Checks whether an event is present at given Instant.
+     *
+     * @param instant The Instant, that should be checked.
+     * @return True if an event is present.
+     */
+    public abstract boolean isEventPresent(Instant instant);
 }
