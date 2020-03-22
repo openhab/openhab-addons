@@ -386,13 +386,13 @@ public abstract class CommandHandler {
             try {
                 int button = this.getIntParameter("button", -1);
                 if (cmd == OnOffType.ON) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00,
-                            new byte[] { (byte) button, (byte) 0x09, (byte) 0x01 });
+                    //Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00, new byte[] { (byte) button, (byte) 0x09, (byte) 0x01 });
+                    Msg m = dev.makeExtendedMessage((byte)31, (byte)32, (byte)9, new byte[3]);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} on", nm(), dev.getAddress());
                 } else if (cmd == OnOffType.OFF) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00,
-                            new byte[] { (byte) button, (byte) 0x09, (byte) 0x00 });
+                    //Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00, new byte[] { (byte) button, (byte) 0x09, (byte) 0x00 });
+                    Msg m = dev.makeExtendedMessage((byte)31, (byte)32, (byte)8, new byte[3]);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} off", nm(), dev.getAddress());
                 }
