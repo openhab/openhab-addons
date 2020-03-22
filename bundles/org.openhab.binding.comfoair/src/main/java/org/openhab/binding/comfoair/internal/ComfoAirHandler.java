@@ -127,7 +127,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     logger.warn("Unhandled command type: {}", command.toString());
                 }
             } catch (final RuntimeException e) {
-                logger.warn("Updating ComfoAir failed: ", e);
+                logger.warn("Updating ComfoAir failed: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -136,7 +136,7 @@ public class ComfoAirHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         ComfoAirConfiguration config = getConfigAs(ComfoAirConfiguration.class);
-        String serialPort = (config.serialPort != null) ? config.serialPort : "";
+        String serialPort = config.serialPort;
 
         if (StringUtils.isNotEmpty(serialPort)) {
             comfoAirConnector = new ComfoAirSerialConnector(serialPortManager, serialPort, BAUDRATE);
@@ -253,7 +253,9 @@ public class ComfoAirHandler extends BaseThingHandler {
                     State value = dataType.convertToState(response, comfoAirCommandType);
 
                     if (value == null) {
-                        logger.warn("unexpected value for DATA: {}", ComfoAirSerialConnector.dumpData(response));
+                        if (logger.isWarnEnabled()) {
+                            logger.warn("unexpected value for DATA: {}", ComfoAirSerialConnector.dumpData(response));
+                        }
                         return UnDefType.UNDEF;
                     } else {
                         return value;
@@ -264,7 +266,7 @@ public class ComfoAirHandler extends BaseThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private class AffectedItemsUpdateThread extends Thread {
+    private class AffectedItemsUpdateThread implements Runnable {
 
         private Collection<ComfoAirCommand> affectedReadCommands;
 

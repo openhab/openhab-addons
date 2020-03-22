@@ -1997,7 +1997,7 @@ public enum ComfoAirCommandType {
         }
     };
 
-    Logger logger = LoggerFactory.getLogger(ComfoAirCommandType.class);
+    private final Logger logger = LoggerFactory.getLogger(ComfoAirCommandType.class);
     String key;
     Class<? extends ComfoAirDataType> data_type;
 

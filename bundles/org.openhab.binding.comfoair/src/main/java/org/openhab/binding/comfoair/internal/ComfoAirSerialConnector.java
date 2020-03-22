@@ -180,7 +180,9 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                 }
 
                 byte[] requestBlock = calculateRequest(requestCmd, requestData);
-                logger.trace("send DATA: {}", dumpData(requestBlock));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("send DATA: {}", dumpData(requestBlock));
+                }
 
                 if (!send(requestBlock)) {
                     return new int[0];
@@ -210,7 +212,7 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                             // interrupted transmissions are merged
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
-                            // ignore interruption
+                            logger.warn("Transmission was interrupted: {}", e.getMessage());
                         }
 
                     } while (inputStream != null && inputStream.available() > 0);
@@ -235,7 +237,9 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                                 && responseBlock[responseBlock.length - 1] == (byte) 0x0f
                                 && (responseBlock[5] & 0xff) == command.getReplyCmd()) {
 
-                            logger.trace("receive RAW DATA: {}", dumpData(responseBlock));
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("receive RAW DATA: {}", dumpData(responseBlock));
+                            }
 
                             byte[] cleanedBlock = cleanupBlock(responseBlock);
 
@@ -257,10 +261,10 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                                 // validate calculated checksum against submitted
                                 // checksum
                                 if (calculateChecksum(_block) == checksum) {
-
-                                    logger.trace("receive CMD: {} DATA: {}",
-                                            String.format("%02x", command.getReplyCmd()), dumpData(replyData));
-
+                                    if (logger.isTraceEnabled()) {
+                                        logger.trace("receive CMD: {} DATA: {}",
+                                                String.format("%02x", command.getReplyCmd()), dumpData(replyData));
+                                    }
                                     send(ACK);
 
                                     return replyData;
@@ -271,25 +275,25 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                                 logger.debug("Unable to handle data. Data size not valid");
                             }
 
-                            logger.trace("skip CMD: {} DATA: {}", String.format("%02x", command.getReplyCmd()),
-                                    dumpData(cleanedBlock));
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("skip CMD: {} DATA: {}", String.format("%02x", command.getReplyCmd()),
+                                        dumpData(cleanedBlock));
+                            }
                         }
                     }
-
                 } catch (IOException e) {
                     logger.debug("IO error: {}", e.getMessage());
                 }
 
                 try {
-
                     Thread.sleep(1000);
-                    logger.debug("Retry cmd. Last call was not successful. Request: {} Response: {}",
-                            dumpData(requestBlock), (responseBlock.length > 0 ? dumpData(responseBlock) : "null"));
-
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Retry cmd. Last call was not successful. Request: {} Response: {}",
+                                dumpData(requestBlock), (responseBlock.length > 0 ? dumpData(responseBlock) : "null"));
+                    }
                 } catch (InterruptedException e) {
-                    // ignore interruption
+                    logger.warn("Transmission was interrupted: {}", e.getMessage());
                 }
-
             } while (retry++ < 5);
 
             if (retry == 5) {
@@ -370,12 +374,10 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
      * @return the 0x07 cleaned byte values
      */
     private byte[] cleanupBlock(byte[] processBuffer) {
-
         int pos = 0;
         byte[] cleanedBuffer = new byte[50];
 
         for (int i = 4; i < processBuffer.length - 2; i++) {
-
             if ((byte) 0x07 == processBuffer[i] && (byte) 0x07 == processBuffer[i + 1]) {
                 i++;
             }
@@ -425,7 +427,9 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
      * @return successful flag
      */
     private boolean send(byte[] request) {
-        logger.trace("send DATA: {}", dumpData(request));
+        if (logger.isTraceEnabled()) {
+            logger.trace("send DATA: {}", dumpData(request));
+        }
 
         try {
             if (outputStream != null) {
@@ -484,20 +488,16 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                 newRequestData = new int[8];
 
                 if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
-
                     for (int i = 0; i < newRequestData.length; i++) {
-
                         if (dataPosition == i) {
                             newRequestData[i] = requestValue;
                         } else {
                             newRequestData[i] = preRequestData[i];
                         }
                     }
-
                 } else {
                     return new int[0];
                 }
-
             } else if (requestCmd == 0xcf) {
                 newRequestData = new int[9];
 
@@ -512,44 +512,34 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                             newRequestData[i] = preRequestData[j];
                         }
                     }
-
                 } else {
                     return new int[0];
                 }
-
             } else if (requestCmd == 0xd7) {
                 newRequestData = new int[8];
 
                 if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
-
                     for (int i = 0; i < newRequestData.length; i++) {
                         int j = i > 5 ? i + 3 : i;
 
                         if (dataPosition == i) {
-
                             if (dataPosition == 4) {
                                 requestValue = checkByteAndCalculateValue(command, requestValue, preRequestData[j]);
-
                                 newRequestData[i] = preRequestData[j] + requestValue;
-
                             } else {
                                 newRequestData[i] = requestValue;
                             }
-
                         } else {
                             newRequestData[i] = preRequestData[j];
                         }
                     }
-
                 } else {
                     return new int[0];
                 }
-
             } else if (requestCmd == 0xed) {
                 newRequestData = new int[5];
 
                 if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
-
                     for (int i = 0; i < newRequestData.length; i++) {
                         int j = i > 3 ? i + 2 : i;
 
@@ -559,42 +549,31 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                             newRequestData[i] = preRequestData[j];
                         }
                     }
-
                 } else {
                     return new int[0];
                 }
-
             } else if (requestCmd == 0x9f) {
                 newRequestData = new int[19];
 
                 if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
-
                     for (int i = 0; i < newRequestData.length; i++) {
-
                         if (dataPosition == i) {
-
                             if (dataPosition == 0 || dataPosition == 1 || dataPosition == 2) {
                                 requestValue = checkByteAndCalculateValue(command, requestValue, preRequestData[i]);
-
                                 newRequestData[i] = preRequestData[i] + requestValue;
-
                             } else {
                                 newRequestData[i] = requestValue;
                             }
-
                         } else {
                             newRequestData[i] = preRequestData[i];
                         }
                     }
-
                 } else {
                     return new int[0];
                 }
-
             } else {
                 return new int[0];
             }
-
             return newRequestData;
         } else {
             return new int[0];

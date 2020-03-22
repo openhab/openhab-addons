@@ -13,7 +13,6 @@
 package org.openhab.binding.comfoair.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ComfoAirConfiguration} class contains fields mapping thing configuration parameters.
@@ -26,7 +25,7 @@ public class ComfoAirConfiguration {
     /**
      * Serial port used for communication.
      */
-    public @Nullable String serialPort;
+    public String serialPort = "";
 
     /**
      * Polling interval for state refresh.
