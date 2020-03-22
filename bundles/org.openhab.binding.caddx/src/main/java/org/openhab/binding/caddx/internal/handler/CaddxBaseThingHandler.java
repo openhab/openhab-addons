@@ -74,7 +74,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     public CaddxBaseThingHandler(Thing thing, CaddxThingType caddxThingType) {
         super(thing);
         this.caddxThingType = caddxThingType;
-        getCaddxBridgeHandler();
     }
 
     @Override

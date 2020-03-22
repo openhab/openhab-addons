@@ -116,10 +116,6 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
         String cmd = null;
         String data = null;
-        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
-        if (bridgeHandler == null) {
-            return;
-        }
 
         if (command instanceof RefreshType) {
             if (channelUID.getId().equals(CaddxBindingConstants.ZONE_FAULTED)) {
@@ -139,6 +135,10 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
             return;
         }
 
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
         bridgeHandler.sendCommand(cmd, data);
     }
 

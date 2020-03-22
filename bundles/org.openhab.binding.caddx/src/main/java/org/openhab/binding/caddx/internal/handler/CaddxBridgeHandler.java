@@ -373,20 +373,28 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                                 if (thing != null) {
                                     continue;
                                 }
+
+                                event = new CaddxEvent(caddxMessage, i, null, null);
                                 disc.addThing(getThing(), CaddxThingType.PARTITION, event);
                             }
                         }
                         break;
                     case Zones_Snapshot_Message:
                         int zoneOffset = Integer.parseInt(caddxMessage.getPropertyById("zone_offset"));
+                        logger.debug("Zone offset is: {}", zoneOffset);
                         for (int i = 1; i <= 16; i++) {
                             if (caddxMessage.getPropertyById("zone_" + Integer.toString(i) + "_trouble")
                                     .equals("false")) {
                                 thing = findThing(CaddxThingType.ZONE, null, zoneOffset + i, null);
+                                logger.debug("good zone: {}", zoneOffset + i);
                                 if (thing != null) {
                                     continue;
                                 }
+
+                                event = new CaddxEvent(caddxMessage, null, zoneOffset + i, null);
                                 disc.addThing(getThing(), CaddxThingType.ZONE, event);
+                            } else {
+                                logger.debug("troubled zone: {}", zoneOffset + i);
                             }
                         }
                         break;
