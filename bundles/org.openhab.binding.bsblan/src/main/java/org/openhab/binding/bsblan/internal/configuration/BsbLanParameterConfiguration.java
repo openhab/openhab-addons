@@ -30,7 +30,7 @@ public class BsbLanParameterConfiguration {
     public Integer setId;
 
     /**
-     * Command type used for Change Requests (INF or SET)
+     * Command type used for change requests (INF or SET)
      */
     public String setType;
 }

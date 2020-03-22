@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -35,10 +37,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BsbLanParameterHandler.class);
-    private BsbLanParameterConfiguration parameterConfig;
+    private BsbLanParameterConfiguration parameterConfig = new BsbLanParameterConfiguration();
 
     public BsbLanParameterHandler(Thing thing) {
         super(thing);
@@ -83,11 +86,15 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
      */
     @Override
     protected void updateChannel(String channelId) {
-        BsbLanApiParameterQueryResponse data = getBridgeHandler().getCachedParameterQueryResponse();
+        BsbLanApiParameterQueryResponse data = null;
+        BsbLanBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            data = bridgeHandler.getCachedParameterQueryResponse();
+        }
         updateChannel(channelId, data);
     }
 
-    private void updateChannel(String channelId, BsbLanApiParameterQueryResponse data) {
+    private void updateChannel(String channelId, @Nullable BsbLanApiParameterQueryResponse data) {
         if (data == null) {
             logger.debug("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE,
@@ -141,6 +148,10 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         }
 
         BsbLanApiCaller api = getApiCaller();
+        if (api == null) {
+            logger.error("Failed to set parameter {} (API unavailable)", parameterConfig.setId);
+            return;
+        }
 
         boolean success = api.setParameter(parameterConfig.setId, value, Type.getTypeWithFallback(parameterConfig.setType));
         if (!success) {

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,10 +35,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BsbLanBaseThingHandler.class);
-    private BsbLanBridgeHandler bridgeHandler;
+    private @Nullable BsbLanBridgeHandler bridgeHandler;
 
     public BsbLanBaseThingHandler(Thing thing) {
         super(thing);
@@ -53,16 +56,17 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        if (getBridgeHandler() == null) {
+        BsbLanBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
             logger.debug("Initializing '{}': thing is only supported within a bridge", getDescription());
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
         logger.debug("Initializing '{}' thing", getDescription());
-        getBridgeHandler().registerThing(this);
+        bridgeHandler.registerThing(this);
     }
 
-    protected synchronized BsbLanBridgeHandler getBridgeHandler() {
+    protected synchronized @Nullable BsbLanBridgeHandler getBridgeHandler() {
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
@@ -71,8 +75,6 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof BsbLanBridgeHandler) {
                 this.bridgeHandler = (BsbLanBridgeHandler)handler;
-            } else {
-                return null;
             }
         }
         return this.bridgeHandler;
@@ -87,8 +89,12 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    protected BsbLanApiCaller getApiCaller() {
-        return new BsbLanApiCaller(getBridgeHandler().getBridgeConfiguration());
+    protected @Nullable BsbLanApiCaller getApiCaller() {
+        // use a local variable to avoid the build warning "Potential null pointer access"
+        BsbLanBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler == null)
+            return null;
+        return new BsbLanApiCaller(localBridgeHandler.getBridgeConfiguration());
     }
 
     /**
