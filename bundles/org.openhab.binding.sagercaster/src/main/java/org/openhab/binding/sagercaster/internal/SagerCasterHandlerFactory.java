@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.sagercaster.internal.handler.SagerCasterHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -34,13 +35,14 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.sagercaster")
+@NonNullByDefault
 public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAGERCASTER);
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
     private final SagerWeatherCaster sagerWeatherCaster;
 
+    @Activate
     public SagerCasterHandlerFactory(@Reference SagerWeatherCaster sagerWeatherCaster,
             @Reference WindDirectionStateDescriptionProvider provider) {
         this.stateDescriptionProvider = provider;
