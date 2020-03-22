@@ -156,14 +156,9 @@ public class CaddxBridgeDiscovery extends AbstractDiscoveryService implements Ca
         properties.put(CaddxBridgeConfiguration.SERIAL_PORT, port);
         properties.put(CaddxBridgeConfiguration.BAUD, baudrate);
 
-        try {
-            ThingUID thingUID = new ThingUID(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE, bridgeID);
-
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withLabel("Caddx Bridge - " + port).build());
-        } catch (Exception e) {
-            logger.warn("addBridge(): ", e);
-        }
+        ThingUID thingUID = new ThingUID(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE, bridgeID);
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withLabel("Caddx Bridge - " + port).build());
     }
 
     @Reference
