@@ -74,7 +74,7 @@ public class NeoHubBindingConstants {
     /*
      * socket timeout in seconds for the TCP connection to the hub
      */
-    public static final int TCP_SOCKET_IMEOUT = 5;
+    public static final int TCP_SOCKET_TIMEOUT = 5;
 
     /*
      * setup parameters for de-bouncing of state changes (time in seconds) so state
@@ -120,7 +120,7 @@ public class NeoHubBindingConstants {
     /*
      * logger message strings
      */
-    private static final String PLEASE_REPORT_BUG = "Unexpected situation - please report a bug: ";
+    public static final String PLEASE_REPORT_BUG = "Unexpected situation - please report a bug: ";
     public static final String MSG_HUB_CONFIG = PLEASE_REPORT_BUG + "hub needs to be initialized!";
     public static final String MSG_HUB_COMM = PLEASE_REPORT_BUG + "error communicating with the hub!";
     public static final String MSG_FMT_POLL_ERR = "Polling error: {}";
