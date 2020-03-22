@@ -100,21 +100,21 @@
 		<item-type>Number</item-type>
 		<label>Fanspeed</label>
 		<category>HVAC</category>
-		<state pattern="%d" readOnly="false" />
+		<state min="1" max="8" pattern="%d" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="min_fanspeed" advanced="true">
 		<item-type>Number</item-type>
 		<label>Minimal Fanspeed</label>
 		<category>HVAC</category>
-		<state pattern="%d" readOnly="false" />
+		<state min="1" max="8" pattern="%d" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="max_fanspeed" advanced="true">
 		<item-type>Number</item-type>
 		<label>Maximum Fanspeed</label>
 		<category>HVAC</category>
-		<state pattern="%d" readOnly="false" />
+		<state min="1" max="8" pattern="%d" readOnly="false" />
 	</channel-type>
 
 	<channel-type id="bypass_temperature" advanced="true">
