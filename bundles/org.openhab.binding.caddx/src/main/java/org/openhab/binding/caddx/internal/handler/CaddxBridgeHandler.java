@@ -352,19 +352,20 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
             // Find the thing
             Thing thing = findThing(caddxThingType, partition, zone, keypad);
-            CaddxDiscoveryService disc = getDiscoveryService();
+            CaddxDiscoveryService discoverService = getDiscoveryService();
             if (thing != null) {
                 CaddxBaseThingHandler thingHandler = (CaddxBaseThingHandler) thing.getHandler();
                 if (thingHandler != null) {
                     thingHandler.caddxEventReceived(event, thing);
                 }
             } else {
-                if (disc != null) {
-                    disc.addThing(getThing(), caddxThingType, event);
+                if (discoverService != null) {
+                    discoverService.addThing(getThing(), caddxThingType, event);
                 }
             }
 
-            if (disc != null) {
+            // Handle specific messages that add multiple discovered things
+            if (discoverService != null) {
                 switch (caddxMessage.getCaddxMessageType()) {
                     case Partitions_Snapshot_Message:
                         for (int i = 1; i <= 8; i++) {
@@ -375,32 +376,26 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                                 }
 
                                 event = new CaddxEvent(caddxMessage, i, null, null);
-                                disc.addThing(getThing(), CaddxThingType.PARTITION, event);
+                                discoverService.addThing(getThing(), CaddxThingType.PARTITION, event);
                             }
                         }
                         break;
                     case Zones_Snapshot_Message:
                         int zoneOffset = Integer.parseInt(caddxMessage.getPropertyById("zone_offset"));
-                        logger.debug("Zone offset is: {}", zoneOffset);
                         for (int i = 1; i <= 16; i++) {
                             if (caddxMessage.getPropertyById("zone_" + Integer.toString(i) + "_trouble")
                                     .equals("false")) {
                                 thing = findThing(CaddxThingType.ZONE, null, zoneOffset + i, null);
-                                logger.debug("good zone: {}", zoneOffset + i);
                                 if (thing != null) {
                                     continue;
                                 }
 
                                 event = new CaddxEvent(caddxMessage, null, zoneOffset + i, null);
-                                disc.addThing(getThing(), CaddxThingType.ZONE, event);
+                                discoverService.addThing(getThing(), CaddxThingType.ZONE, event);
                             } else {
                                 logger.debug("troubled zone: {}", zoneOffset + i);
                             }
                         }
-                        break;
-                    case Zone_Status_Message:
-                        break;
-                    case Zone_Name_Message:
                         break;
                     default:
                         break;
