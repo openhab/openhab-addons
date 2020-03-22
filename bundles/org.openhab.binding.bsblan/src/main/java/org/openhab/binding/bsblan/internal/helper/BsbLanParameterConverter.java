@@ -14,6 +14,8 @@ package org.openhab.binding.bsblan.internal.helper;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,11 +33,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public class BsbLanParameterConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BsbLanParameterConverter.class);
 
-    public static State getState(String channelId, BsbLanApiParameter parameter) {
+    public static @Nullable State getState(String channelId, BsbLanApiParameter parameter) {
         switch (channelId) {
             case Channels.Parameter.NAME:
                 return getStateForNameChannel(parameter);
@@ -81,7 +84,7 @@ public class BsbLanParameterConverter {
         return new DecimalType(value);
     }
 
-    private static State getStateForNumberValueChannel(BsbLanApiParameter parameter) {
+    private static @Nullable State getStateForNumberValueChannel(BsbLanApiParameter parameter) {
         try {
             switch (parameter.dataType)
             {
@@ -120,11 +123,7 @@ public class BsbLanParameterConverter {
      * @param command
      * @return null if conversion fails or channel is readonly.
      */
-    public static String getValue(String channelId, Command command) {
-        if (command == null) {
-            return null;
-        }
-
+    public static @Nullable String getValue(String channelId, Command command) {
         switch (channelId) {
             case Channels.Parameter.NUMBER_VALUE:
                 return getValueForNumberValueChannel(command);
@@ -141,7 +140,7 @@ public class BsbLanParameterConverter {
         }
     }
 
-    private static String getValueForNumberValueChannel(Command command) {
+    private static @Nullable String getValueForNumberValueChannel(Command command) {
         // check if numeric
         if (command.toString().matches("-?\\d+(\\.\\d+)?")) {
             return command.toString();
@@ -160,7 +159,7 @@ public class BsbLanParameterConverter {
         return command.toString();
     }
 
-    private static String getValueForSwitchValueChannel(Command command) {
+    private static @Nullable String getValueForSwitchValueChannel(Command command) {
         if (command.equals(OnOffType.ON)) {
             return "1";
         } else if (command.equals(OnOffType.OFF)) {

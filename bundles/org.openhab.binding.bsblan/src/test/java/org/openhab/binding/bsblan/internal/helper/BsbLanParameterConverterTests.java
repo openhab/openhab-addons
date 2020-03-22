@@ -220,7 +220,6 @@ public class BsbLanParameterConverterTests {
     public void testGetValueForNumberValueChannel() {
         assertNull("1", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, OnOffType.ON));
         assertNull("0", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, OnOffType.OFF));
-        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, null));
         assertEquals("42", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new DecimalType(42)));
         assertEquals("22.5", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new DecimalType(22.5)));
         assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new StringType("Not a number value")));
@@ -231,7 +230,6 @@ public class BsbLanParameterConverterTests {
     public void testGetValueForSwitchValueChannel() {
         assertEquals("1", BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, OnOffType.ON));
         assertEquals("0", BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, OnOffType.OFF));
-        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, null));
         assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(1)));
         assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(0)));
         assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(42)));
@@ -244,7 +242,6 @@ public class BsbLanParameterConverterTests {
     public void testGetValueForStringValueChannel() {
         assertEquals("1", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, OnOffType.ON));
         assertEquals("0", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, OnOffType.OFF));
-        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, null));
         assertEquals("42", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new DecimalType(42)));
         assertEquals("22.5", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE,  new DecimalType(22.5)));
         assertEquals("A string value", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new StringType("A string value")));
