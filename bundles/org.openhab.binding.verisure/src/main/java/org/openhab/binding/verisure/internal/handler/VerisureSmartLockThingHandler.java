@@ -40,8 +40,6 @@ import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLocks.Doorlock;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
 
-import com.google.gson.Gson;
-
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
  *
@@ -54,7 +52,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTLOCK);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
-    private final Gson gson = new Gson();
 
     public VerisureSmartLockThingHandler(Thing thing) {
         super(thing);
@@ -233,12 +230,10 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_SMARTLOCK)) {
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            updateStatus(ThingStatus.ONLINE);
             VerisureSmartLocks obj = (VerisureSmartLocks) thing;
-            if (obj != null) {
-                updateSmartLockState(obj);
-            }
+            updateSmartLockState(obj);
         } else {
             logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }

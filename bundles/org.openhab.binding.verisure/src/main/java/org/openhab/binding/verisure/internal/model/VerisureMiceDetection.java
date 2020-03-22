@@ -147,10 +147,6 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             return typename;
         }
 
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
         @Override
         public String toString() {
             return new ToStringBuilder(this).append("mice", mice).append("typename", typename).toString();
@@ -186,32 +182,16 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             return device;
         }
 
-        public void setDevice(Device device) {
-            this.device = device;
-        }
-
         public @Nullable Object getType() {
             return type;
-        }
-
-        public void setType(@Nullable Object type) {
-            this.type = type;
         }
 
         public List<Detection> getDetections() {
             return detections;
         }
 
-        public void setDetections(List<Detection> detections) {
-            this.detections = detections;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -252,40 +232,20 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             return count;
         }
 
-        public void setCount(int count) {
-            this.count = count;
-        }
-
         public @Nullable String getGatewayTime() {
             return gatewayTime;
-        }
-
-        public void setGatewayTime(@Nullable String gatewayTime) {
-            this.gatewayTime = gatewayTime;
         }
 
         public @Nullable String getNodeTime() {
             return nodeTime;
         }
 
-        public void setNodeTime(@Nullable String nodeTime) {
-            this.nodeTime = nodeTime;
-        }
-
         public int getDuration() {
             return duration;
         }
 
-        public void setDuration(int duration) {
-            this.duration = duration;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -329,32 +289,16 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             return deviceLabel;
         }
 
-        public void setDeviceLabel(@Nullable String deviceLabel) {
-            this.deviceLabel = deviceLabel;
-        }
-
         public @Nullable String getArea() {
             return area;
-        }
-
-        public void setArea(@Nullable String area) {
-            this.area = area;
         }
 
         public @Nullable Gui getGui() {
             return gui;
         }
 
-        public void setGui(@Nullable Gui gui) {
-            this.gui = gui;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -392,16 +336,8 @@ public class VerisureMiceDetection extends VerisureBaseThing {
             return support;
         }
 
-        public void setSupport(@Nullable String support) {
-            this.support = support;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override

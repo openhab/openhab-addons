@@ -59,15 +59,11 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_SMOKEDETECTOR)
-                || getThing().getThingTypeUID().equals(THING_TYPE_WATERDETECTOR)
-                || getThing().getThingTypeUID().equals(THING_TYPE_NIGHT_CONTROL)
-                || getThing().getThingTypeUID().equals(THING_TYPE_SIREN)) {
+
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            updateStatus(ThingStatus.ONLINE);
             VerisureClimates obj = (VerisureClimates) thing;
-            if (obj != null) {
-                updateClimateDeviceState(obj);
-            }
+            updateClimateDeviceState(obj);
         } else {
             logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }
@@ -87,19 +83,17 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
     public State getValue(String channelId, VerisureClimates climateJSON) {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                Double temperature = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureValue();
-                return temperature != null ? new QuantityType<Temperature>(temperature, SIUnits.CELSIUS)
-                        : UnDefType.NULL;
+                double temperature = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureValue();
+                return new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
             case CHANNEL_HUMIDITY:
                 if (climateJSON.getData().getInstallation().getClimates().get(0).isHumidityEnabled()) {
-                    Double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
-                    return humidity != null ? new DecimalType(humidity) : UnDefType.NULL;
+                    double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
+                    return new DecimalType(humidity);
                 }
-                return UnDefType.UNDEF;
             case CHANNEL_HUMIDITY_ENABLED:
-                Boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0)
+                boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0)
                         .isHumidityEnabled();
-                return humidityEnabled ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(humidityEnabled);
             case CHANNEL_LOCATION:
                 String location = climateJSON.getLocation();
                 return location != null ? new StringType(location) : UnDefType.NULL;

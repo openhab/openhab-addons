@@ -38,10 +38,6 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
         return data;
     }
 
-    public void setData(Data data) {
-        this.data = data;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_BROADBAND_CONNECTION;
@@ -81,16 +77,8 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
             return testDate;
         }
 
-        public void setTestDate(@Nullable String testDate) {
-            this.testDate = testDate;
-        }
-
         public boolean isBroadbandConnected() {
             return isBroadbandConnected;
-        }
-
-        public void setBroadbandConnected(boolean isBroadbandConnected) {
-            this.isBroadbandConnected = isBroadbandConnected;
         }
 
         public @Nullable String getTypename() {
@@ -136,10 +124,6 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
             return installation;
         }
 
-        public void setInstallation(Installation installation) {
-            this.installation = installation;
-        }
-
         @Override
         public String toString() {
             return new ToStringBuilder(this).append("installation", installation).toString();
@@ -175,16 +159,8 @@ public class VerisureBroadbandConnections extends VerisureBaseThing {
             return broadband;
         }
 
-        public void setBroadband(Broadband broadband) {
-            this.broadband = broadband;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override

@@ -38,10 +38,6 @@ public class VerisureInstallations extends VerisureBaseThing {
         return data;
     }
 
-    public void setData(Data data) {
-        this.data = data;
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("data", data).toString();
@@ -71,10 +67,6 @@ public class VerisureInstallations extends VerisureBaseThing {
 
         public Account getAccount() {
             return account;
-        }
-
-        public void setAccount(Account account) {
-            this.account = account;
         }
 
         @Override
@@ -112,16 +104,8 @@ public class VerisureInstallations extends VerisureBaseThing {
             return typename;
         }
 
-        public void setTypename(String typename) {
-            this.typename = typename;
-        }
-
         public List<Owainstallation> getOwainstallations() {
             return owainstallations;
-        }
-
-        public void setOwainstallations(List<Owainstallation> owainstallations) {
-            this.owainstallations = owainstallations;
         }
 
         @Override
@@ -164,48 +148,24 @@ public class VerisureInstallations extends VerisureBaseThing {
             return typename;
         }
 
-        public void setTypename(String typename) {
-            this.typename = typename;
-        }
-
         public @Nullable String getAlias() {
             return alias;
-        }
-
-        public void setAlias(String alias) {
-            this.alias = alias;
         }
 
         public @Nullable String getDealerId() {
             return dealerId;
         }
 
-        public void setDealerId(String dealerId) {
-            this.dealerId = dealerId;
-        }
-
         public @Nullable String getGiid() {
             return giid;
-        }
-
-        public void setGiid(String giid) {
-            this.giid = giid;
         }
 
         public @Nullable Object getSubsidiary() {
             return subsidiary;
         }
 
-        public void setSubsidiary(Object subsidiary) {
-            this.subsidiary = subsidiary;
-        }
-
         public @Nullable String getType() {
             return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
         }
 
         @Override

@@ -49,34 +49,27 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null) {
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             updateStatus(ThingStatus.ONLINE);
-            if (getThing().getThingTypeUID().equals(THING_TYPE_DOORWINDOW)) {
-                VerisureDoorWindows obj = (VerisureDoorWindows) thing;
-                updateDoorWindowState(obj);
-            } else {
-                logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-            }
+            VerisureDoorWindows obj = (VerisureDoorWindows) thing;
+            updateDoorWindowState(obj);
         } else {
-            logger.warn("Thing JSON is null: {}", getThing().getThingTypeUID());
+            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }
     }
 
     private void updateDoorWindowState(VerisureDoorWindows doorWindowJSON) {
         DoorWindow doorWindow = doorWindowJSON.getData().getInstallation().getDoorWindows().get(0);
-        if (doorWindow != null) {
-            getThing().getChannels().stream().map(Channel::getUID)
-                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
-                    .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), doorWindow);
-                        updateState(channelUID, state);
 
-                    });
-            updateTimeStamp(doorWindow.getReportTime());
-            super.update(doorWindowJSON);
-        } else {
-            logger.debug("DoorWindow is null for thing {}", thing.getUID());
-        }
+        getThing().getChannels().stream().map(Channel::getUID)
+                .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                .forEach(channelUID -> {
+                    State state = getValue(channelUID.getId(), doorWindow);
+                    updateState(channelUID, state);
+
+                });
+        updateTimeStamp(doorWindow.getReportTime());
+        super.update(doorWindowJSON);
     }
 
     public State getValue(String channelId, DoorWindow doorWindow) {

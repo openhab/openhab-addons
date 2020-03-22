@@ -236,10 +236,13 @@ public class VerisureSession {
         try {
             logger.debug("Check for login status, url: {}", url);
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
-            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-            String replacement = "";
             String content = response.getContentAsString();
-            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(), content.replaceAll(pattern, replacement));
+            if (logger.isTraceEnabled()) {
+                String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+                String replacement = "";
+                logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
+                        content.replaceAll(pattern, replacement));
+            }
 
             switch (response.getStatus()) {
                 case HttpStatus.OK_200:
@@ -278,11 +281,13 @@ public class VerisureSession {
         logger.debug("HTTP GET: {}", BASEURL + url);
         try {
             ContentResponse response = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
-            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-            String replacement = "";
             String content = response.getContentAsString();
-            logger.debug("HTTP Response ({}) Body:{}", response.getStatus(), content.replaceAll(pattern, replacement));
-
+            if (logger.isDebugEnabled()) {
+                String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+                String replacement = "";
+                logger.debug("HTTP Response ({}) Body:{}", response.getStatus(),
+                        content.replaceAll(pattern, replacement));
+            }
             if (response.getStatus() == HttpStatus.OK_200) {
                 result = gson.fromJson(content, jsonClass);
             }
@@ -370,10 +375,12 @@ public class VerisureSession {
                             url = apiServerInUse + urlString;
                         }
                     } else {
-                        String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-                        String replacement = "";
-                        logger.trace("HTTP Response ({}) Body:{}", httpStatus,
-                                content.replaceAll(pattern, replacement));
+                        if (logger.isTraceEnabled()) {
+                            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+                            String replacement = "";
+                            logger.trace("HTTP Response ({}) Body:{}", httpStatus,
+                                    content.replaceAll(pattern, replacement));
+                        }
                         return httpStatus;
                     }
                 } else {
@@ -390,10 +397,12 @@ public class VerisureSession {
 
         try {
             ContentResponse response = httpClient.GET(url);
-            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-            String replacement = "";
-            logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
-                    response.getContentAsString().replaceAll(pattern, replacement));
+            if (logger.isTraceEnabled()) {
+                String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+                String replacement = "";
+                logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
+                        response.getContentAsString().replaceAll(pattern, replacement));
+            }
             setPasswordFromCookie();
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             logger.warn("Caught an Exception {}", e.getMessage(), e);
@@ -551,13 +560,7 @@ public class VerisureSession {
             // Set unique deviceID
             String deviceId = "alarm" + installationId.toString();
             thing.setDeviceId(deviceId);
-            VerisureThing oldObj = verisureThings.get(thing.getDeviceId());
-            if (oldObj == null || !oldObj.equals(thing)) {
-                thing.setSiteId(installation.getInstallationId());
-                thing.setSiteName(installation.getInstallationName());
-                verisureThings.put(deviceId, thing);
-                notifyListeners(thing);
-            }
+            notifyListenersIfChanged(thing, installation, deviceId);
         } else {
             logger.debug("Failed to update alarm status, thing is null!");
         }

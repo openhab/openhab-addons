@@ -39,6 +39,8 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * Base class and handler for some of the different thing types that Verisure provides.
  *
@@ -50,10 +52,9 @@ import org.slf4j.LoggerFactory;
 public class VerisureThingHandler extends BaseThingHandler implements DeviceStatusListener {
 
     protected final Logger logger = LoggerFactory.getLogger(VerisureThingHandler.class);
-
     protected @Nullable VerisureSession session;
-
     protected VerisureThingConfiguration config = new VerisureThingConfiguration();
+    protected final Gson gson = new Gson();
 
     public VerisureThingHandler(Thing thing) {
         super(thing);
@@ -164,14 +165,12 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     }
 
     @Override
-    public void onDeviceStateChanged(@Nullable VerisureThing thing) {
+    public void onDeviceStateChanged(VerisureThing thing) {
         logger.trace("onDeviceStateChanged on thing: {}", thing);
-        if (thing != null) {
-            String deviceId = thing.getDeviceId();
-            // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-            if (config.getDeviceId().equalsIgnoreCase((deviceId.replaceAll("[^a-zA-Z0-9]+", "")))) {
-                update(thing);
-            }
+        String deviceId = thing.getDeviceId();
+        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
+        if (config.getDeviceId().equalsIgnoreCase((deviceId.replaceAll("[^a-zA-Z0-9]+", "")))) {
+            update(thing);
         }
     }
 

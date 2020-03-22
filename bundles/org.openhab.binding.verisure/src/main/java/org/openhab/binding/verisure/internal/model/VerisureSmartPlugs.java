@@ -128,10 +128,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             return typename;
         }
 
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
         @Override
         public String toString() {
             return new ToStringBuilder(this).append("smartplugs", smartplugs).append("typename", typename).toString();
@@ -153,7 +149,6 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             Installation rhs = ((Installation) other);
             return new EqualsBuilder().append(typename, rhs.typename).append(smartplugs, rhs.smartplugs).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -170,40 +165,20 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             return device;
         }
 
-        public void setDevice(Device device) {
-            this.device = device;
-        }
-
         public @Nullable String getCurrentState() {
             return currentState;
-        }
-
-        public void setCurrentState(@Nullable String currentState) {
-            this.currentState = currentState;
         }
 
         public @Nullable String getIcon() {
             return icon;
         }
 
-        public void setIcon(@Nullable String icon) {
-            this.icon = icon;
-        }
-
         public @Nullable Boolean isHazardous() {
             return isHazardous;
         }
 
-        public void setIsHazardous(boolean isHazardous) {
-            this.isHazardous = isHazardous;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override

@@ -56,16 +56,12 @@ public class VerisureMiceDetectionHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null) {
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             updateStatus(ThingStatus.ONLINE);
-            if (getThing().getThingTypeUID().equals(THING_TYPE_MICE_DETECTION)) {
-                VerisureMiceDetection obj = (VerisureMiceDetection) thing;
-                updateMiceDetectionState(obj);
-            } else {
-                logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-            }
+            VerisureMiceDetection obj = (VerisureMiceDetection) thing;
+            updateMiceDetectionState(obj);
         } else {
-            logger.warn("Thing JSON is null: {}", getThing().getThingTypeUID());
+            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }
     }
 

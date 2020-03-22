@@ -243,24 +243,12 @@ public class VerisureBaseThing implements VerisureThing {
             return deviceLabel;
         }
 
-        public void setDeviceLabel(@Nullable String deviceLabel) {
-            this.deviceLabel = deviceLabel;
-        }
-
         public @Nullable String getArea() {
             return area;
         }
 
-        public void setArea(@Nullable String area) {
-            this.area = area;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override

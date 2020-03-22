@@ -107,7 +107,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
             Data rhs = ((Data) other);
             return new EqualsBuilder().append(installation, rhs.installation).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -127,10 +126,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
 
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -156,7 +151,6 @@ public class VerisureUserPresences extends VerisureBaseThing {
             return new EqualsBuilder().append(userTrackings, rhs.userTrackings).append(typename, rhs.typename)
                     .isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -178,88 +172,44 @@ public class VerisureUserPresences extends VerisureBaseThing {
             return isCallingUser;
         }
 
-        public void setIsCallingUser(boolean isCallingUser) {
-            this.isCallingUser = isCallingUser;
-        }
-
         public @Nullable String getWebAccount() {
             return webAccount;
-        }
-
-        public void setWebAccount(@Nullable String webAccount) {
-            this.webAccount = webAccount;
         }
 
         public @Nullable String getStatus() {
             return status;
         }
 
-        public void setStatus(@Nullable String status) {
-            this.status = status;
-        }
-
         public @Nullable String getXbnContactId() {
             return xbnContactId;
-        }
-
-        public void setXbnContactId(@Nullable String xbnContactId) {
-            this.xbnContactId = xbnContactId;
         }
 
         public @Nullable String getCurrentLocationName() {
             return currentLocationName;
         }
 
-        public void setCurrentLocationName(@Nullable String currentLocationName) {
-            this.currentLocationName = currentLocationName;
-        }
-
         public @Nullable String getDeviceId() {
             return deviceId;
-        }
-
-        public void setDeviceId(@Nullable String deviceId) {
-            this.deviceId = deviceId;
         }
 
         public @Nullable String getName() {
             return name;
         }
 
-        public void setName(@Nullable String name) {
-            this.name = name;
-        }
-
         public @Nullable String getCurrentLocationTimestamp() {
             return currentLocationTimestamp;
-        }
-
-        public void setCurrentLocationTimestamp(@Nullable String currentLocationTimestamp) {
-            this.currentLocationTimestamp = currentLocationTimestamp;
         }
 
         public @Nullable String getDeviceName() {
             return deviceName;
         }
 
-        public void setDeviceName(@Nullable String deviceName) {
-            this.deviceName = deviceName;
-        }
-
         public @Nullable String getCurrentLocationId() {
             return currentLocationId;
         }
 
-        public void setCurrentLocationId(@Nullable String currentLocationId) {
-            this.currentLocationId = currentLocationId;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override

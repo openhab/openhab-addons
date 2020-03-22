@@ -36,8 +36,6 @@ import org.openhab.binding.verisure.internal.model.VerisureAlarms;
 import org.openhab.binding.verisure.internal.model.VerisureAlarms.ArmState;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
 
-import com.google.gson.Gson;
-
 /**
  * Handler for the Alarm Device thing type that Verisure provides.
  *
@@ -50,7 +48,6 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ALARM);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
-    private final Gson gson = new Gson();
 
     public VerisureAlarmThingHandler(Thing thing) {
         super(thing);
@@ -134,12 +131,10 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_ALARM)) {
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            updateStatus(ThingStatus.ONLINE);
             VerisureAlarms obj = (VerisureAlarms) thing;
-            if (obj != null) {
-                updateAlarmState(obj);
-            }
+            updateAlarmState(obj);
         } else {
             logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }

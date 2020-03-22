@@ -37,8 +37,6 @@ import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs;
 import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs.Smartplug;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
 
-import com.google.gson.Gson;
-
 /**
  * Handler for the Smart Plug Device thing type that Verisure provides.
  *
@@ -51,7 +49,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTPLUG);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
-    private final Gson gson = new Gson();
 
     public VerisureSmartPlugThingHandler(Thing thing) {
         super(thing);
@@ -120,12 +117,10 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_SMARTPLUG)) {
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            updateStatus(ThingStatus.ONLINE);
             VerisureSmartPlugs obj = (VerisureSmartPlugs) thing;
-            if (obj != null) {
-                updateSmartPlugState(obj);
-            }
+            updateSmartPlugState(obj);
         } else {
             logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }

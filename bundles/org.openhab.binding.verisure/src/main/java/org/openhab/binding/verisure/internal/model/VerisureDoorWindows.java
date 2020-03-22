@@ -106,7 +106,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
             Data rhs = ((Data) other);
             return new EqualsBuilder().append(installation, rhs.installation).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -126,10 +125,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
 
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -153,7 +148,6 @@ public class VerisureDoorWindows extends VerisureBaseThing {
             Installation rhs = ((Installation) other);
             return new EqualsBuilder().append(typename, rhs.typename).append(doorWindows, rhs.doorWindows).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -171,48 +165,24 @@ public class VerisureDoorWindows extends VerisureBaseThing {
             return device;
         }
 
-        public void setDevice(Device device) {
-            this.device = device;
-        }
-
         public @Nullable String getType() {
             return type;
-        }
-
-        public void setType(@Nullable String type) {
-            this.type = type;
         }
 
         public @Nullable String getState() {
             return state;
         }
 
-        public void setState(@Nullable String state) {
-            this.state = state;
-        }
-
         public boolean getWired() {
             return wired;
-        }
-
-        public void setWired(boolean wired) {
-            this.wired = wired;
         }
 
         public @Nullable String getReportTime() {
             return reportTime;
         }
 
-        public void setReportTime(@Nullable String reportTime) {
-            this.reportTime = reportTime;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override

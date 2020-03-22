@@ -48,12 +48,10 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
     @Override
     public synchronized void update(@Nullable VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_USERPRESENCE)) {
+        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            updateStatus(ThingStatus.ONLINE);
             VerisureUserPresences obj = (VerisureUserPresences) thing;
-            if (obj != null) {
-                updateUserPresenceState(obj);
-            }
+            updateUserPresenceState(obj);
         } else {
             logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }

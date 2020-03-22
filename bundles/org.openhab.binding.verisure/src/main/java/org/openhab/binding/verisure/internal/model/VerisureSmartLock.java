@@ -35,36 +35,12 @@ public class VerisureSmartLock {
         return autoRelockEnabled;
     }
 
-    public void setAutoRelockEnabled(boolean autoRelockEnabled) {
-        this.autoRelockEnabled = autoRelockEnabled;
-    }
-
-    /**
-     * @return the label
-     */
     public @Nullable String getDeviceLabel() {
         return deviceLabel;
     }
 
-    /**
-     * @param label the label to set
-     */
-    public void setDeviceLabel(String deviceLabel) {
-        this.deviceLabel = deviceLabel;
-    }
-
-    /**
-     * @return the doorLockVolumeSettings
-     */
     public DoorLockVolumeSettings getDoorLockVolumeSettings() {
         return doorLockVolumeSettings;
-    }
-
-    /**
-     * @param doorLockVolumeSettings to set
-     */
-    public void setDoorLockVolumeSettings(DoorLockVolumeSettings doorLockVolumeSettings) {
-        this.doorLockVolumeSettings = doorLockVolumeSettings;
     }
 
     @NonNullByDefault
@@ -79,40 +55,20 @@ public class VerisureSmartLock {
             return volume;
         }
 
-        public void setVolume(String volume) {
-            this.volume = volume;
-        }
-
         public @Nullable String getVoiceLevel() {
             return voiceLevel;
-        }
-
-        public void setVoiceLevel(String voiceLevel) {
-            this.voiceLevel = voiceLevel;
         }
 
         public @Nullable String getActive() {
             return active;
         }
 
-        public void setActive(String active) {
-            this.active = active;
-        }
-
         public List<String> getAvailableVolumes() {
             return availableVolumes;
         }
 
-        public void setAvailableVolumes(List<String> availableVolumes) {
-            this.availableVolumes = availableVolumes;
-        }
-
         public List<String> getAvailableVoiceLevels() {
             return availableVoiceLevels;
-        }
-
-        public void setAvailableVoiceLevels(List<String> availableVoiceLevels) {
-            this.availableVoiceLevels = availableVoiceLevels;
         }
 
         @Override
@@ -222,11 +178,8 @@ public class VerisureSmartLock {
             builder.append(deviceLabel);
             builder.append(", ");
         }
-        if (doorLockVolumeSettings != null) {
-            builder.append(doorLockVolumeSettings.toString());
-        }
+        builder.append(doorLockVolumeSettings.toString());
         builder.append("]");
         return super.toString() + "\n" + builder.toString();
     }
-
 }

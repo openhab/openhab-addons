@@ -128,10 +128,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             return typename;
         }
 
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
         public List<Doorlock> getDoorlocks() {
             return doorlocks;
         }
@@ -161,7 +157,6 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             Installation rhs = ((Installation) other);
             return new EqualsBuilder().append(typename, rhs.typename).append(doorlocks, rhs.doorlocks).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -181,64 +176,32 @@ public class VerisureSmartLocks extends VerisureBaseThing {
             return typename;
         }
 
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
-        }
-
         public @Nullable String getCurrentLockState() {
             return currentLockState;
-        }
-
-        public void setCurrentLockState(@Nullable String currentLockState) {
-            this.currentLockState = currentLockState;
         }
 
         public Device getDevice() {
             return device;
         }
 
-        public void setDevice(Device device) {
-            this.device = device;
-        }
-
         public @Nullable String getEventTime() {
             return eventTime;
-        }
-
-        public void setEventTime(@Nullable String eventTime) {
-            this.eventTime = eventTime;
         }
 
         public @Nullable String getMethod() {
             return method;
         }
 
-        public void setMethod(@Nullable String method) {
-            this.method = method;
-        }
-
         public boolean isMotorJam() {
             return motorJam;
-        }
-
-        public void setMotorJam(boolean motorJam) {
-            this.motorJam = motorJam;
         }
 
         public boolean getSecureModeActive() {
             return secureModeActive;
         }
 
-        public void setSecureModeActive(boolean secureModeActive) {
-            this.secureModeActive = secureModeActive;
-        }
-
         public @Nullable String getUserString() {
             return userString;
-        }
-
-        public void setUserString(@Nullable String userString) {
-            this.userString = userString;
         }
 
         @Override

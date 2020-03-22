@@ -99,56 +99,28 @@ public class VerisureClimates extends VerisureBaseThing {
             return device;
         }
 
-        public void setDevice(Device device) {
-            this.device = device;
-        }
-
         public boolean isHumidityEnabled() {
             return humidityEnabled;
-        }
-
-        public void setHumidityEnabled(boolean humidityEnabled) {
-            this.humidityEnabled = humidityEnabled;
         }
 
         public @Nullable String getHumidityTimestamp() {
             return humidityTimestamp;
         }
 
-        public void setHumidityTimestamp(@Nullable String humidityTimestamp) {
-            this.humidityTimestamp = humidityTimestamp;
-        }
-
         public double getHumidityValue() {
             return humidityValue;
-        }
-
-        public void setHumidityValue(double humidityValue) {
-            this.humidityValue = humidityValue;
         }
 
         public @Nullable String getTemperatureTimestamp() {
             return temperatureTimestamp;
         }
 
-        public void setTemperatureTimestamp(@Nullable String temperatureTimestamp) {
-            this.temperatureTimestamp = temperatureTimestamp;
-        }
-
         public double getTemperatureValue() {
             return temperatureValue;
         }
 
-        public void setTemperatureValue(double temperatureValue) {
-            this.temperatureValue = temperatureValue;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -217,7 +189,6 @@ public class VerisureClimates extends VerisureBaseThing {
             Data rhs = ((Data) other);
             return new EqualsBuilder().append(installation, rhs.installation).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -237,10 +208,6 @@ public class VerisureClimates extends VerisureBaseThing {
 
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -264,7 +231,6 @@ public class VerisureClimates extends VerisureBaseThing {
             Installation rhs = ((Installation) other);
             return new EqualsBuilder().append(climates, rhs.climates).append(typename, rhs.typename).isEquals();
         }
-
     }
 
     @NonNullByDefault
@@ -280,32 +246,16 @@ public class VerisureClimates extends VerisureBaseThing {
             return deviceLabel;
         }
 
-        public void setDeviceLabel(@Nullable String deviceLabel) {
-            this.deviceLabel = deviceLabel;
-        }
-
         public @Nullable String getArea() {
             return area;
-        }
-
-        public void setArea(@Nullable String area) {
-            this.area = area;
         }
 
         public Gui getGui() {
             return gui;
         }
 
-        public void setGui(Gui gui) {
-            this.gui = gui;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
@@ -345,16 +295,8 @@ public class VerisureClimates extends VerisureBaseThing {
             return label;
         }
 
-        public void setLabel(@Nullable String label) {
-            this.label = label;
-        }
-
         public @Nullable String getTypename() {
             return typename;
-        }
-
-        public void setTypename(@Nullable String typename) {
-            this.typename = typename;
         }
 
         @Override
