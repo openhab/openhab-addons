@@ -181,7 +181,9 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
      * Method for polling the RS485 Helios RemoteContol bus
      */
     public synchronized void polling() {
-        logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
+        if(logger.isTraceEnabled()){
+            logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
+        }
         pollCounter++;
         if (pollCounter > POLL_OFFLINE_THRESHOLD) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE, "No data received!");
@@ -230,10 +232,13 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         try {
             OutputStream out = outputStream;
             if (out != null) {
-                logger.trace("HeliosVentilation: Write to serial port: {}",
-                        String.format("%02x %02x %02x %02x", txFrame[1], txFrame[2], txFrame[3], txFrame[4]));
+                if(logger.isTraceEnabled()){
+                    logger.trace("HeliosVentilation: Write to serial port: {}",
+                            String.format("%02x %02x %02x %02x", txFrame[1], txFrame[2], txFrame[3], txFrame[4]));
+                }
 
                 out.write(txFrame);
+                out.flush();
                 // after each frame we have to wait.
                 // 30 ms is taken from what we roughly see the original remote control is doing
                 Thread.sleep(30);
@@ -399,8 +404,10 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                     memory.put(var, val);
                 }
                 do {
-                    String t = datapoint.asString(val);
-                    logger.trace("Received {} = {}", datapoint, t);
+                    if(logger.isTraceEnabled()){
+                        String t = datapoint.asString(val);
+                        logger.trace("Received {} = {}", datapoint, t);
+                    }
                     if (thing.getStatus() != ThingStatus.REMOVING) {
                         // plausible data received, so the thing is online
                         updateStatus(ThingStatus.ONLINE);
@@ -412,7 +419,9 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 } while (datapoint != null);
 
             } else {
-                logger.trace("Received unkown data @{} = {}", String.format("%02X ", var), String.format("%02X ", val));
+                if(logger.isTraceEnabled()){
+                    logger.trace("Received unkown data @{} = {}", String.format("%02X ", var), String.format("%02X ", val));
+                }
             }
         }
     }
