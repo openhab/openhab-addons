@@ -221,11 +221,11 @@ public class CaddxMessage {
         sb.append(String.format("%2s", Integer.toHexString(message[0])));
         sb.append(" ");
         sb.append(mt.name);
-        sb.append("\r\n");
+        sb.append(System.lineSeparator());
 
         for (CaddxProperty p : mt.properties) {
-            sb.append("\t" + p.toString(message));
-            sb.append("\r\n");
+            sb.append("\t").append(p.toString(message));
+            sb.append(System.lineSeparator());
         }
 
         return sb.toString();

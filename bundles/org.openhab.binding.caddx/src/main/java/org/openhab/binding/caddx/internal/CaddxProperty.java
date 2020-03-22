@@ -110,12 +110,12 @@ public class CaddxProperty {
                 sb.append(name);
                 sb.append(": ");
                 sb.append(new String(a));
-                sb.append("\r\n\r\n");
+                sb.append(System.lineSeparator()).append(System.lineSeparator());
                 for (int i = 0; i < byteLength; i++) {
                     sb.append(String.format("%2s", Integer.toHexString(message[byteFrom - 1 + i])));
                     sb.append(" - ");
                     sb.append((char) message[byteFrom - 1 + i]);
-                    sb.append("\r\n");
+                    sb.append(System.lineSeparator());
                 }
 
                 return sb.toString();
