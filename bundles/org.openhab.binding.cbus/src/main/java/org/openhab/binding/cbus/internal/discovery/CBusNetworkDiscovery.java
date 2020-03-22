@@ -60,8 +60,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
                     properties.put(CBusBindingConstants.PROPERTY_NAME, network.getName());
                     properties.put(CBusBindingConstants.PROPERTY_PROJECT, network.getProjectName());
                     ThingUID uid = new ThingUID(CBusBindingConstants.BRIDGE_TYPE_NETWORK,
-                            network.getProjectName().toLowerCase().replace(" ", "_")
-                                    + Integer.toString(network.getNetworkID()),
+                            network.getProjectName().toLowerCase().replace(" ", "_") + network.getNetworkID(),
                             cBusCGateHandler.getThing().getUID().getId());
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                             .withLabel(
