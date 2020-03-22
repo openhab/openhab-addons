@@ -14,6 +14,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * Class to handle numeric values
  *
  * @author Holger Hees - Initial Contribution
+ * @author Hans Böhm - Refactoring
  */
 public class DataTypeNumber implements ComfoAirDataType {
 
@@ -29,30 +31,25 @@ public class DataTypeNumber implements ComfoAirDataType {
 
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
-
         if (data == null || commandType == null) {
             logger.trace("\"DataTypeNumber\" class \"convertToState\" method parameter: null");
-            return null;
+            return UnDefType.NULL;
         } else {
-
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-
             int value = 0;
             int base = 0;
 
             for (int i = get_reply_data_pos.length - 1; i >= 0; i--) {
-
                 if (get_reply_data_pos[i] < data.length) {
                     value += data[get_reply_data_pos[i]] << base;
                     base += 8;
                 } else {
-                    return null;
+                    return UnDefType.NULL;
                 }
             }
 
             int[] possibleValues = commandType.getPossibleValues();
             if (possibleValues != null) {
-
                 // fix for unexpected value for "level" value. got a 0x33. valid was
                 // the 0x03. 0x30 was to much.
                 // send DATA: 07 f0 00 cd 00 7a 07 0f
@@ -62,22 +59,18 @@ public class DataTypeNumber implements ComfoAirDataType {
                         return new DecimalType(value);
                     }
                 }
-
-                return null;
+                return UnDefType.NULL;
             }
-
             return new DecimalType(value);
         }
     }
 
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-
         if (value == null || commandType == null) {
             logger.trace("\"DataTypeNumber\" class \"convertFromState\" method parameter: null");
             return null;
         } else {
-
             int[] template = commandType.getChangeDataTemplate();
             int[] possibleValues = commandType.getPossibleValues();
             int position = commandType.getChangeDataPos();
@@ -94,7 +87,6 @@ public class DataTypeNumber implements ComfoAirDataType {
                     }
                 }
             }
-
             return template;
         }
     }

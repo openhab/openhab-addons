@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,29 +33,25 @@ public class DataTypeTemperature implements ComfoAirDataType {
 
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
-
         if (data == null || commandType == null) {
             logger.trace("\"DataTypeTemperature\" class \"convertToState\" method parameter: null");
-            return null;
+            return UnDefType.NULL;
         } else {
-
             if (commandType.getGetReplyDataPos()[0] < data.length) {
                 return new QuantityType<>((((double) data[commandType.getGetReplyDataPos()[0]]) / 2) - 20,
                         SIUnits.CELSIUS);
             } else {
-                return null;
+                return UnDefType.NULL;
             }
         }
     }
 
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-
         if (value == null || commandType == null) {
             logger.trace("\"DataTypeTemperature\" class \"convertFromState\" method parameter: null");
             return null;
         } else {
-
             int[] template = commandType.getChangeDataTemplate();
 
             template[commandType.getChangeDataPos()] = (int) (((DecimalType) value).doubleValue() + 20) * 2;

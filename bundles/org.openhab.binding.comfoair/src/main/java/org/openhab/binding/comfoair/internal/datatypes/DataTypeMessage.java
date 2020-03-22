@@ -14,6 +14,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +30,11 @@ public class DataTypeMessage implements ComfoAirDataType {
 
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
-
         if (data == null || commandType == null) {
             logger.trace("\"DataTypeMessage\" class \"convertToState\" method parameter: null");
-            return null;
+            return UnDefType.NULL;
         } else {
-
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-
             int errorAlo = data[get_reply_data_pos[0]];
             int errorE = data[get_reply_data_pos[1]];
             int errorEA = data[get_reply_data_pos[2]];
@@ -45,29 +43,27 @@ public class DataTypeMessage implements ComfoAirDataType {
             String errorCode = "";
 
             if (errorAlo > 0) {
-                errorCode = "A:" + convertToCode(errorAlo);
-            }
-
-            else if (errorAhi > 0) {
+                errorCode = "A" + convertToCode(errorAlo);
+            } else if (errorAhi > 0) {
                 if (errorAhi == 0x80) {
                     errorCode = "A0";
+                } else {
+                    errorCode = "A" + (convertToCode(errorAhi) + 8);
                 }
-                errorCode = "A:" + (convertToCode(errorAhi) + 8);
             }
 
             if (errorE > 0) {
                 if (errorCode.length() > 0) {
                     errorCode += " ";
                 }
-                errorCode += "E:" + convertToCode(errorE);
+                errorCode += "E" + convertToCode(errorE);
             } else if (errorEA > 0) {
                 if (errorCode.length() > 0) {
                     errorCode += " ";
                 }
-                errorCode += "EA:" + convertToCode(errorEA);
+                errorCode += "EA" + convertToCode(errorEA);
             }
-
-            return new StringType(errorCode.length() > 0 ? errorCode : "Ok");
+            return new StringType(errorCode.length() > 0 ? errorCode : "OK");
         }
     }
 

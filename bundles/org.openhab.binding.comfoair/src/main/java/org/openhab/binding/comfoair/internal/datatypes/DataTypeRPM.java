@@ -14,6 +14,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,50 +23,44 @@ import org.slf4j.LoggerFactory;
  * Class to handle revolutions per minute values
  *
  * @author Grzegorz Miasko - Initial Contribution
+ * @author Hans Böhm
  */
 public class DataTypeRPM implements ComfoAirDataType {
-
     private Logger logger = LoggerFactory.getLogger(DataTypeRPM.class);
 
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
-
         if (data == null || commandType == null) {
             logger.trace("\"DataTypeRPM\" class \"convertToState\" method parameter: null");
-            return null;
+            return UnDefType.NULL;
         } else {
-
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
 
             int value = 0;
             int base = 0;
 
             for (int i = get_reply_data_pos.length - 1; i >= 0; i--) {
-
                 if (get_reply_data_pos[i] < data.length) {
                     value += data[get_reply_data_pos[i]] << base;
                     base += 8;
                 } else {
-                    return null;
+                    return UnDefType.NULL;
                 }
             }
-
+            // transferred value is (1875000 / rpm) per protocol
             return new DecimalType((int) (1875000.0 / value));
         }
     }
 
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-
         if (value == null || commandType == null) {
             logger.trace("\"DataTypeRPM\" class \"convertFromState\" method parameter: null");
             return null;
         } else {
-
             int[] template = commandType.getChangeDataTemplate();
-
+            // transferred value is (1875000 / rpm) per protocol
             template[commandType.getChangeDataPos()] = (int) (1875000 / ((DecimalType) value).doubleValue());
-
             return template;
         }
     }

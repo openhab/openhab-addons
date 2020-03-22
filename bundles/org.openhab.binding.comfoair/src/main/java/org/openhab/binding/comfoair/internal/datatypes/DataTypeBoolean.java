@@ -15,6 +15,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +27,14 @@ import org.slf4j.LoggerFactory;
  * @author Hans Böhm - Refactoring
  */
 public class DataTypeBoolean implements ComfoAirDataType {
-
     private Logger logger = LoggerFactory.getLogger(DataTypeBoolean.class);
 
     @Override
     public State convertToState(int[] data, ComfoAirCommandType commandType) {
-
         if (data == null || commandType == null) {
             logger.trace("\"DataTypeBoolean\" class \"convertToState\" method parameter: null");
-            return null;
+            return UnDefType.NULL;
         } else {
-
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
             int get_reply_data_bits = commandType.getGetReplyDataBits();
 
@@ -44,14 +42,13 @@ public class DataTypeBoolean implements ComfoAirDataType {
                 boolean result = (data[get_reply_data_pos[0]] & get_reply_data_bits) == get_reply_data_bits;
                 return (result) ? OnOffType.ON : OnOffType.OFF;
             } else {
-                return null;
+                return UnDefType.NULL;
             }
         }
     }
 
     @Override
     public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-
         if (value == null || commandType == null) {
             logger.trace("\"DataTypeBoolean\" class \"convertFromState\" method parameter: null");
             return null;
