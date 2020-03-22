@@ -15,8 +15,6 @@ package org.openhab.binding.fsinternetradio.internal.radio;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - changed the calling of the stopHttpClient() method, fixed the hardcoded URL path, fixed the
  *         for loop condition part
  */
-@NonNullByDefault
 public class FrontierSiliconRadioConnection {
 
     private final Logger logger = LoggerFactory.getLogger(FrontierSiliconRadioConnection.class);
@@ -52,7 +49,7 @@ public class FrontierSiliconRadioConnection {
     private final String pin;
 
     /** The session ID we get from the radio after logging in. */
-    private @Nullable String sessionId;
+    private String sessionId;
 
     /** http clients, store cookies, so it is kept in connection class. */
     private HttpClient httpClient;
@@ -133,7 +130,7 @@ public class FrontierSiliconRadioConnection {
      * @return request result
      * @throws IOException if the request failed.
      */
-    public @Nullable FrontierSiliconRadioApiResult doRequest(String requestString) throws IOException {
+    public FrontierSiliconRadioApiResult doRequest(String requestString) throws IOException {
         return doRequest(requestString, null);
     }
 
@@ -150,8 +147,7 @@ public class FrontierSiliconRadioConnection {
      * @throws IOException if the request failed.
      */
     @SuppressWarnings("null")
-    public @Nullable FrontierSiliconRadioApiResult doRequest(String requestString, @Nullable String params)
-            throws IOException {
+    public FrontierSiliconRadioApiResult doRequest(String requestString, String params) throws IOException {
         // 3 retries upon failure
         for (int i = 0; i < 3; i++) {
             if (!isLoggedIn && !doLogin()) {

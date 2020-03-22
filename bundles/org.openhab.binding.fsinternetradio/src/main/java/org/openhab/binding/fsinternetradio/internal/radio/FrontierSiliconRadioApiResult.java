@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  *
  * This class parses this XML data and provides functions for reading and casting typical fields.
  *
- * @author Rainer Ostendorf- Initial contribution
+ * @author Rainer Ostendorf - Initial contribution
  * @author Patrick Koenemann - contribution
  *
  */

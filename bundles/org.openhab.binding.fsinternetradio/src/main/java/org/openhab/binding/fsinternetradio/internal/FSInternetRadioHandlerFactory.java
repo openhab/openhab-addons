@@ -17,8 +17,6 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,7 +35,6 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Patrick Koenemann - Initial contribution
  */
-@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.fsinternetradio")
 public class FSInternetRadioHandlerFactory extends BaseThingHandlerFactory {
 
@@ -55,7 +52,7 @@ public class FSInternetRadioHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_RADIO)) {

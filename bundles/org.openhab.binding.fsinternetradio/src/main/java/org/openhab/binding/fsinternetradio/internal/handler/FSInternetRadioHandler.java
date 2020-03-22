@@ -20,8 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -49,17 +47,15 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - removed the unused boolean parameter, changed the check for the PIN
  * @author Svilen Valkanov - changed handler initialization
  */
-@NonNullByDefault
 public class FSInternetRadioHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioHandler.class);
 
-    @Nullable
     FrontierSiliconRadio radio;
     private final HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
-    private @Nullable ScheduledFuture<?> updateJob;
+    private ScheduledFuture<?> updateJob;
 
     /** Runnable for job {@link #updateJob} for periodic refresh. */
     private final Runnable updateRunnable = new Runnable() {
@@ -125,7 +121,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         }
     };
 
-    public FSInternetRadioHandler(@Nullable Thing thing, HttpClient httpClient) {
+    public FSInternetRadioHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }

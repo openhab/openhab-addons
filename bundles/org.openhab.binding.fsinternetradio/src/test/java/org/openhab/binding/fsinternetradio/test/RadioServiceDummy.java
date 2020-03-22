@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioConstants;
 
@@ -37,7 +35,6 @@ import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioCo
  * @author Markus Rathgeb - Migrated from Groovy to pure Java, made more robust
  * @author Velin Yordanov - Small adjustments
  */
-@NonNullByDefault
 public class RadioServiceDummy extends HttpServlet {
     private static Map<Integer, String> requestParameters = new ConcurrentHashMap<>();
 
@@ -53,7 +50,6 @@ public class RadioServiceDummy extends HttpServlet {
     private static final String REQUEST_GET_VOLUME = "/" + FrontierSiliconRadioConstants.REQUEST_GET_VOLUME;
     private static final String REQUEST_SET_MUTE = "/" + FrontierSiliconRadioConstants.REQUEST_SET_MUTE;
     private static final String REQUEST_GET_MUTE = "/" + FrontierSiliconRadioConstants.REQUEST_GET_MUTE;
-    private static final String REQUEST_SET_PRESET = "/" + FrontierSiliconRadioConstants.REQUEST_SET_PRESET;
     private static final String REQUEST_SET_PRESET_ACTION = "/"
             + FrontierSiliconRadioConstants.REQUEST_SET_PRESET_ACTION;
     private static final String REQUEST_GET_PLAY_INFO_TEXT = "/"
@@ -81,16 +77,16 @@ public class RadioServiceDummy extends HttpServlet {
     private boolean isInvalidValueExpected;
     private boolean isOKAnswerExpected = true;
 
-    private @Nullable String powerValue;
+    private String powerValue;
     private String powerTag = "";
 
-    private @Nullable String muteValue;
+    private String muteValue;
     private String muteTag = "";
 
-    private @Nullable String absoluteVolumeValue;
+    private String absoluteVolumeValue;
     private String absoluteVolumeTag = "";
 
-    private @Nullable String modeValue;
+    private String modeValue;
     private String modeTag = "";
 
     private String radioStation = "";
@@ -134,7 +130,7 @@ public class RadioServiceDummy extends HttpServlet {
 
     @SuppressWarnings("null")
     @Override
-    protected void doGet(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String queryString = request.getQueryString();
         Collection<String> requestParameterNames = Collections.list(request.getParameterNames());
@@ -231,11 +227,11 @@ public class RadioServiceDummy extends HttpServlet {
         }
     }
 
-    protected String makeU8Tag(final @Nullable String value) {
+    protected String makeU8Tag(final String value) {
         return String.format("<value><u8>%s</u8></value>", value);
     }
 
-    protected String makeU32Tag(final @Nullable String value) {
+    protected String makeU32Tag(final String value) {
         return String.format("<value><u32>%s</u32></value>", value);
     }
 

@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * add further supported devices!
  *
  * @author Patrick Koenemann - Initial contribution
- * @author Mihaela Memova - removed the getLabel(RemoteDevice device) method due to its unreachable code lines
+ * @author Mihaela Memova removed the getLabel(RemoteDevice device) method due to its unreachable code lines
+ * @author Markus Michels Teufel 3sixty added
  */
 @Component(immediate = true)
 public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryParticipant {
