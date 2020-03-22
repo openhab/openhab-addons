@@ -55,7 +55,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
                 ArrayList<Network> networks = Network.listAll(cBusCGateHandler.getCGateSession(), false);
                 for (Network network : networks) {
                     logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
-                    Map<String, Object> properties = new HashMap<>(2);
+                    Map<String, Object> properties = new HashMap<>(3);
                     properties.put(CBusBindingConstants.PROPERTY_ID, network.getNetworkID());
                     properties.put(CBusBindingConstants.PROPERTY_NAME, network.getName());
                     properties.put(CBusBindingConstants.PROPERTY_PROJECT, network.getProjectName());

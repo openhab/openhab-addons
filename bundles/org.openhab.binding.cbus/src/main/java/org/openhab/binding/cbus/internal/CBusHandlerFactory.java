@@ -53,35 +53,28 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_CGATE)) {
             CBusCGateHandler handler = new CBusCGateHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
         }
-
         if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK)) {
             CBusNetworkHandler handler = new CBusNetworkHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
         }
-
         if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_LIGHT)) {
             return new CBusLightHandler(thing);
         }
-
         if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)) {
             return new CBusTemperatureHandler(thing);
         }
-
         if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_TRIGGER)) {
             return new CBusTriggerHandler(thing);
         }
-
         if (thingTypeUID.equals(CBusBindingConstants.THING_TYPE_DALI)) {
             return new CBusDaliHandler(thing);
         }
-
         return null;
     }
 
