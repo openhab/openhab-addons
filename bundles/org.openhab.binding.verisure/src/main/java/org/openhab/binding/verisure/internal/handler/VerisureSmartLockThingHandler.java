@@ -86,8 +86,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                 BigDecimal installationId = smartLock.getSiteId();
                 String pinCode = session.getPinCode(installationId);
                 if (pinCode != null) {
-                    StringBuilder sb = new StringBuilder(deviceId);
-                    sb.insert(4, " ");
                     String url = START_GRAPHQL;
                     String operation;
                     if (command == OnOffType.OFF) {
@@ -278,13 +276,13 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                 String method = doorlock.getMethod();
                 return method != null ? new StringType(method) : UnDefType.NULL;
             case CHANNEL_MOTOR_JAM:
-                return doorlock.isMotorJam() ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(doorlock.isMotorJam());
             case CHANNEL_LOCATION:
                 String location = doorlock.getDevice().getArea();
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_AUTO_RELOCK:
                 if (smartLockJSON != null) {
-                    return smartLockJSON.getAutoRelockEnabled() ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(smartLockJSON.getAutoRelockEnabled());
                 } else {
                     return UnDefType.NULL;
                 }
@@ -308,7 +306,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     private static class SmartLock {
 
         private @Nullable String operationName;
-        private @Nullable Variables variables;
+        private Variables variables = new Variables();
         private @Nullable String query;
 
         public void setOperationName(String operationName) {
@@ -329,7 +327,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
         private @Nullable String giid;
         private @Nullable String deviceLabel;
-        private @Nullable Input input;
+        private Input input = new Input();
 
         public void setGiid(String giid) {
             this.giid = giid;

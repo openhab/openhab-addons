@@ -230,6 +230,14 @@ public class VerisureSession {
         });
     }
 
+    private void logTraceWithPattern(int responseStatus, String content) {
+        if (logger.isTraceEnabled()) {
+            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
+            String replacement = "";
+            logger.trace("HTTP Response ({}) Body:{}", responseStatus, content.replaceAll(pattern, replacement));
+        }
+    }
+
     private int areWeLoggedIn() {
         logger.debug("areWeLoggedIn() - Checking if we are logged in");
         String url = STATUS;
@@ -237,12 +245,7 @@ public class VerisureSession {
             logger.debug("Check for login status, url: {}", url);
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
             String content = response.getContentAsString();
-            if (logger.isTraceEnabled()) {
-                String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-                String replacement = "";
-                logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
-                        content.replaceAll(pattern, replacement));
-            }
+            logTraceWithPattern(response.getStatus(), content);
 
             switch (response.getStatus()) {
                 case HttpStatus.OK_200:
@@ -277,21 +280,15 @@ public class VerisureSession {
     }
 
     private @Nullable <T> T getJSONVerisureAPI(String url, Class<T> jsonClass) {
-        T result = null;
         logger.debug("HTTP GET: {}", BASEURL + url);
         try {
             ContentResponse response = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
             String content = response.getContentAsString();
-            if (logger.isDebugEnabled()) {
-                String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-                String replacement = "";
-                logger.debug("HTTP Response ({}) Body:{}", response.getStatus(),
-                        content.replaceAll(pattern, replacement));
-            }
+            logTraceWithPattern(response.getStatus(), content);
+
             if (response.getStatus() == HttpStatus.OK_200) {
-                result = gson.fromJson(content, jsonClass);
+                return gson.fromJson(content, jsonClass);
             }
-            return result;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             logger.warn("Caught an Exception {}", e.getMessage(), e);
         }
@@ -375,12 +372,7 @@ public class VerisureSession {
                             url = apiServerInUse + urlString;
                         }
                     } else {
-                        if (logger.isTraceEnabled()) {
-                            String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-                            String replacement = "";
-                            logger.trace("HTTP Response ({}) Body:{}", httpStatus,
-                                    content.replaceAll(pattern, replacement));
-                        }
+                        logTraceWithPattern(httpStatus, content);
                         return httpStatus;
                     }
                 } else {
@@ -548,7 +540,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "ArmState";
         String query = "query " + operation
-                + "($giid: String!) {\n  installation(giid: $giid) {\n    armState {\n      type\n      statusType\n      date\n      name\n      changedVia\n      allowedForFirstLine\n      allowed\n      errorCodes {\n        value\n        message\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n";
+                + "($giid: String!) {\n  installation(giid: $giid) {\n armState {\n type\n statusType\n date\n name\n changedVia\n allowedForFirstLine\n allowed\n errorCodes {\n value\n message\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLAlarmStatus = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get alarm status with URL {} and data {}", url, queryQLAlarmStatus);
@@ -572,7 +564,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "DoorLock";
         String query = "query " + operation
-                + "($giid: String!) {\n  installation(giid: $giid) {\n    doorlocks {\n      device {\n        deviceLabel\n        area\n        __typename\n      }\n      currentLockState\n      eventTime\n      secureModeActive\n      motorJam\n      userString\n      method\n      __typename\n    }\n    __typename\n  }\n}\n";
+                + "($giid: String!) {\n  installation(giid: $giid) {\n doorlocks {\n device {\n deviceLabel\n area\n __typename\n}\n currentLockState\n eventTime\n secureModeActive\n motorJam\n userString\n method\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLSmartLock = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get smart lock status with URL {} and data {}", url, queryQLSmartLock);
@@ -616,7 +608,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "SmartPlug";
         String query = "query " + operation
-                + "($giid: String!) {\n  installation(giid: $giid) {\n    smartplugs {\n      device {\n        deviceLabel\n        area\n        gui {\n          support\n          label\n          __typename\n        }\n        __typename\n      }\n      currentState\n      icon\n      isHazardous\n      __typename\n    }\n    __typename\n  }\n}\n";
+                + "($giid: String!) {\n  installation(giid: $giid) {\n smartplugs {\n device {\n deviceLabel\n area\n gui {\n support\n label\n __typename\n}\n __typename\n}\n currentState\n icon\n isHazardous\n __typename\n}\n __typename\n}\n}\n";
         String queryQLSmartPlug = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get smart plug status with URL {} and data {}", url, queryQLSmartPlug);
 
@@ -653,7 +645,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "Climate";
         String query = "query " + operation
-                + "($giid: String!) {\n installation(giid: $giid) {\n climates {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n humidityEnabled\n humidityTimestamp\n humidityValue\n temperatureTimestamp\n temperatureValue\n __typename\n }\n __typename\n }\n}\n";
+                + "($giid: String!) {\n installation(giid: $giid) {\n climates {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n humidityEnabled\n humidityTimestamp\n humidityValue\n temperatureTimestamp\n temperatureValue\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLClimates = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get climate status with URL {} and data {}", url, queryQLClimates);
@@ -709,7 +701,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "DoorWindow";
         String query = "query " + operation
-                + "($giid: String!) {\n installation(giid: $giid) {\n doorWindows {\n device {\n deviceLabel\n area\n __typename\n }\n type\n state\n wired\n reportTime\n __typename\n }\n __typename\n }\n}\n";
+                + "($giid: String!) {\n installation(giid: $giid) {\n doorWindows {\n device {\n deviceLabel\n area\n __typename\n }\n type\n state\n wired\n reportTime\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLDoorWindow = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get door&window status with URL {} and data {}", url, queryQLDoorWindow);
@@ -747,7 +739,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "Broadband";
         String query = "query " + operation
-                + "($giid: String!) {\n installation(giid: $giid) {\n broadband {\n testDate\n isBroadbandConnected\n __typename\n }\n __typename\n }\n}\n";
+                + "($giid: String!) {\n installation(giid: $giid) {\n broadband {\n testDate\n isBroadbandConnected\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLBroadbandConnection = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get broadband connection status with URL {} and data {}", url,
@@ -771,7 +763,7 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "userTrackings";
         String query = "query " + operation
-                + "($giid: String!) {\n  installation(giid: $giid) {\n    userTrackings {\n      isCallingUser\n      webAccount\n      status\n      xbnContactId\n      currentLocationName\n      deviceId\n      name\n      currentLocationTimestamp\n      deviceName\n      currentLocationId\n      __typename\n    }\n    __typename\n  }\n}\n";
+                + "($giid: String!) {\ninstallation(giid: $giid) {\n userTrackings {\n isCallingUser\n webAccount\n status\n xbnContactId\n currentLocationName\n deviceId\n name\n currentLocationTimestamp\n deviceName\n currentLocationId\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLUserPresence = createOperationJSON(operation, installationId, query);
         logger.debug("Trying to get user presence status with URL {} and data {}", url, queryQLUserPresence);
@@ -880,7 +872,7 @@ public class VerisureSession {
     private static class Operation {
 
         private @Nullable String operationName;
-        private @Nullable Variables variables;
+        private Variables variables = new Variables();
         private @Nullable String query;
 
         public void setOperationName(String operationName) {

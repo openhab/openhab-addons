@@ -75,8 +75,6 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                 String pinCode = session.getPinCode(installationId);
 
                 if (pinCode != null) {
-                    StringBuilder sb = new StringBuilder(deviceId);
-                    sb.insert(4, " ");
                     String url = START_GRAPHQL;
                     String operation, state = "";
 
@@ -173,7 +171,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     private static class Alarm {
 
         private @Nullable String operationName;
-        private @Nullable Variables variables;
+        private Variables variables = new Variables();
         private @Nullable String query;
 
         public void setOperationName(String operationName) {

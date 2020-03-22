@@ -73,8 +73,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
             VerisureSmartPlugs smartPlug = (VerisureSmartPlugs) session.getVerisureThing(deviceId);
             if (smartPlug != null) {
                 BigDecimal installationId = smartPlug.getSiteId();
-                StringBuilder sb = new StringBuilder(deviceId);
-                sb.insert(4, " ");
                 String url = START_GRAPHQL;
                 String operation;
                 boolean isOperation;
@@ -157,7 +155,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
                 String location = smartplug.getDevice().getArea();
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_HAZARDOUS:
-                return smartplug.isHazardous() ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(smartplug.isHazardous());
         }
         return UnDefType.UNDEF;
     }
@@ -166,7 +164,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     private static class SmartPlug {
 
         private @Nullable String operationName;
-        private @Nullable Variables variables;
+        private Variables variables = new Variables();
         private @Nullable String query;
 
         public void setOperationName(String operationName) {
