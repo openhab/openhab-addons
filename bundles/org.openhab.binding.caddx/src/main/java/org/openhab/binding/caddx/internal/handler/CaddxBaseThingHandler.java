@@ -117,7 +117,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
             Bridge bridge = getBridge();
 
             if (bridge == null) {
-                logger.warn("getCaddxBridgeHandler(): Unable to get bridge!");
+                logger.debug("getCaddxBridgeHandler(): Unable to get bridge!");
                 return null;
             }
 
@@ -128,7 +128,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
             if (handler instanceof CaddxBridgeHandler) {
                 this.caddxBridgeHandler = (CaddxBridgeHandler) handler;
             } else {
-                logger.trace("getCaddxBridgeHandler(): Unable to get bridge handler!");
+                logger.debug("getCaddxBridgeHandler(): Unable to get bridge handler!");
             }
         }
 
@@ -185,8 +185,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      * @param caddxThingType The Thing type
      */
     private void getConfiguration(CaddxThingType caddxThingType) {
-        logger.trace("getConfiguration(): caddxThingType - {}", caddxThingType);
-
         switch (caddxThingType) {
             case PARTITION:
                 CaddxPartitionConfiguration partitionConfiguration = getConfigAs(CaddxPartitionConfiguration.class);
@@ -293,8 +291,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      * @return thingRefresh
      */
     public boolean isThingHandlerInitialized() {
-        logger.trace("isThingHandlerInitialized(): thingHandlerInitialized - {}", thingHandlerInitialized);
-
         return thingHandlerInitialized;
     }
 

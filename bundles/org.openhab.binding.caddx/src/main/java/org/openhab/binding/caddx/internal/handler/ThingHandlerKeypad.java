@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.caddx.internal.CaddxEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is a class for handling a Keypad type Thing.
@@ -28,9 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ThingHandlerKeypad extends CaddxBaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(ThingHandlerKeypad.class);
-
     /**
      * Constructor.
      *
@@ -42,12 +37,12 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     @Override
     public void updateChannel(ChannelUID channelUID, String data) {
-        // logger.trace("updateChannel(): Keypad Channel UID: {}", channelUID);
+
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("handleCommand(): Command Received - {} {}.", channelUID, command);
+
     }
 
     @Override
