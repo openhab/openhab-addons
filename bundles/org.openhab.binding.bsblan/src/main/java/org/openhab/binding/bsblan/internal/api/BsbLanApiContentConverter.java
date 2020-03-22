@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bsblan.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public class BsbLanApiContentConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(BsbLanApiContentConverter.class);
     private static final Gson GSON = new Gson();
