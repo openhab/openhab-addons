@@ -134,7 +134,7 @@
 	<channel-type id="wind-evolution" advanced="true">
 		<item-type>String</item-type>
 		<label>Wind Evolution</label>
-		<description>Wind bearing Evolution Trend over observation delay</description>
+		<description>Wind bearing evolution trend over observation delay</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="1">Steady</option>
@@ -146,7 +146,8 @@
 		
 	<channel-type id="trend" advanced="true">
 		<item-type>String</item-type>
-		<label>Tendance</label>
+		<label>Pressure Trend</label>
+		<description>Pressure evolution trend over observation delay</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="1">Rising Rapidly</option>
@@ -160,7 +161,7 @@
 	
 	<channel-type id="timestamp" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Calculation time</label>
+		<label>Calculation Time</label>
 		<description>Weather forecast calculation date and time</description>
 		<category>Observation time</category>
 		<state readOnly="true"></state>
@@ -190,7 +191,7 @@
 	
 	<channel-type id="pressure">
 		<item-type>Number:Pressure</item-type>
-		<label>Seal Level Pressure</label>
+		<label>Sea Level Pressure</label>
 		<description>Sea Level Pressure</description>
 		<category>Pressure</category>
 		<state pattern="%.3f %unit%" />

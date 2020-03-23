@@ -99,7 +99,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping Astro device background discovery");
+        logger.debug("Stopping Sager Weather Caster background discovery");
         if (sagerCasterDiscoveryJob != null && !sagerCasterDiscoveryJob.isCancelled()) {
             if (sagerCasterDiscoveryJob.cancel(true)) {
                 sagerCasterDiscoveryJob = null;
