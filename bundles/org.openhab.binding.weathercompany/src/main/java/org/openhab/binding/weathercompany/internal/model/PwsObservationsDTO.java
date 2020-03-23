@@ -46,7 +46,7 @@ public class PwsObservationsDTO {
         /*
          * The relative humidity of the air
          */
-        public Integer humidity;
+        public Double humidity;
 
         /*
          * Latitude of the PWS
