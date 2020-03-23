@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = SagerWeatherCaster.class, scope = ServiceScope.SINGLETON)
 @NonNullByDefault
 public class SagerWeatherCaster {
-    private final Properties Forectaster = new Properties();
+    private final Properties forecaster = new Properties();
 
     // Northern Polar Zone & Northern Tropical Zone
     private final static String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
@@ -108,7 +108,7 @@ public class SagerWeatherCaster {
         InputStream input = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("/sagerForecaster.properties");
         try {
-            Forectaster.load(input);
+            forecaster.load(input);
         } catch (IOException e) {
             logger.warn("Error during Sager Forecaster startup", e);
         }
@@ -326,7 +326,7 @@ public class SagerWeatherCaster {
                     d1 = "Z";
                 }
         }
-        String forecast = Forectaster.getProperty(
+        String forecast = forecaster.getProperty(
                 d1 + String.valueOf(sagerPressure) + String.valueOf(pressureEvolution) + String.valueOf(nubes));
         prevision = (forecast != null) ? Optional.of(new Prevision(forecast)) : Optional.empty();
     }
