@@ -1,29 +1,43 @@
-package org.openhab.binding.fox.internal.connection;
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.fox.internal.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
-import org.openhab.binding.fox.internal.core.FoxException;
-import org.openhab.binding.fox.internal.core.FoxMessenger;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * The {@link FoxMessengerTcpIp} implements communication with Fox system via TCP/IP telnet service.
+ *
+ * @author Kamil Subzda - Initial contribution
+ */
+@NonNullByDefault
 public class FoxMessengerTcpIp implements FoxMessenger {
 
-    String host = "";
-    int port = 0;
-    int timeout = 250;
-    String password = null;
-    PrintStream printStream = null;
+    private String host = "";
+    private int port = 0;
+    private int timeout = 250;
+    private String password = "";
 
-    Socket socket;
-    PrintWriter toServer;
-    BufferedReader fromServer;
+    private @Nullable Socket socket;
+    private @Nullable PrintWriter toServer;
+    private @Nullable BufferedReader fromServer;
 
     public FoxMessengerTcpIp() {
         socket = null;
@@ -50,25 +64,27 @@ public class FoxMessengerTcpIp implements FoxMessenger {
     }
 
     public void setPassword(String password) {
-        this.password = (password != null && password.length() > 0) ? password : null;
-    }
-
-    public void setPrintStream(PrintStream printStream) {
-        this.printStream = printStream;
+        this.password = password;
     }
 
     @Override
     public void open() throws FoxException {
+        close();
+
         try {
             socket = new Socket(host, port);
             socket.setSoTimeout(timeout);
-            toServer = new PrintWriter(socket.getOutputStream(), true);
-            fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            if (socket != null) {
+                toServer = new PrintWriter(socket.getOutputStream(), true);
+            }
+            if (socket != null) {
+                fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            }
 
             boolean promptOk = false;
             StringBuilder sb = new StringBuilder();
             for (;;) {
-                int value = fromServer.read();
+                int value = fromServer != null ? fromServer.read() : -1;
                 if (value < 0) {
                     break;
                 }
@@ -77,15 +93,19 @@ public class FoxMessengerTcpIp implements FoxMessenger {
                 String prompt = sb.toString();
 
                 if (prompt.equals("pass: ")) {
-                    if (password != null) {
-                        toServer.println(password);
+                    if (password.length() > 0) {
+                        if (toServer != null) {
+                            toServer.println(password);
+                        }
                         sb = new StringBuilder();
                     } else {
                         throw new FoxException("Password demand but no password set");
                     }
                 } else if (prompt.equals("> Fox terminal")) {
                     promptOk = true;
-                    fromServer.readLine();
+                    if (fromServer != null) {
+                        fromServer.readLine();
+                    }
                     break;
                 } else if (prompt.equals("ACCESS DENIED")) {
                     throw new FoxException("Password rejected, access denied");
@@ -95,37 +115,44 @@ public class FoxMessengerTcpIp implements FoxMessenger {
             if (!promptOk) {
                 throw new FoxException("Wrong prompt received");
             }
-        } catch (IOException e) {
+        } catch (FoxException | IOException e) {
+            if (toServer != null) {
+                toServer.close();
+            }
+            try {
+                if (fromServer != null) {
+                    fromServer.close();
+                }
+            } catch (IOException e1) {
+            }
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e1) {
+            }
             throw new FoxException(e.getMessage());
-        }
-    }
-
-    private void printData(boolean toSystem, String text) {
-        if (printStream != null && text.startsWith("@")) {
-            printStream.println(String.format("%s Fox %s App %s",
-                    (new SimpleDateFormat("HH:mm:ss.SSS")).format(Calendar.getInstance().getTime()),
-                    toSystem ? "<--" : "-->", text.trim()));
         }
     }
 
     @Override
     public void write(String text) throws FoxException {
-        write(text, null);
+        write(text, "");
     }
 
     public void write(String text, String echo) throws FoxException {
-        if (toServer == null) {
+        if (toServer != null) {
+            toServer.println(text);
+            if (echo.length() > 0) {
+                readEcho(echo);
+            }
+        } else {
             throw new FoxException("Closed messenger");
-        }
-        toServer.println(text);
-        printData(true, text);
-        if (echo != null) {
-            readEcho(echo);
         }
     }
 
     private String purify(String line) {
-        String l = line != null ? line : "";
+        String l = line;
         while (l.length() > 0) {
             char start = l.charAt(0);
             if (start < 0x20 || start > 0x7f) {
@@ -143,10 +170,11 @@ public class FoxMessengerTcpIp implements FoxMessenger {
 
     private String readLine() throws FoxException {
         try {
-            if (fromServer == null) {
+            if (fromServer != null) {
+                return purify(fromServer.readLine());
+            } else {
                 throw new FoxException("Closed messenger");
             }
-            return purify(fromServer.readLine());
         } catch (SocketTimeoutException e) {
             return "";
         } catch (IOException e) {
@@ -164,7 +192,6 @@ public class FoxMessengerTcpIp implements FoxMessenger {
     @Override
     public String read() throws FoxException {
         String text = readLine();
-        printData(false, text);
         return text;
     }
 
@@ -184,13 +211,12 @@ public class FoxMessengerTcpIp implements FoxMessenger {
                 socket = null;
             }
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     public void ping() throws FoxException {
-        write("hello", null);
+        write("hello", "");
     }
 
     @Override

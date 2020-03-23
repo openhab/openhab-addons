@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.fox.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link FoxConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Kamil Subzda - Initial contribution
  */
+@NonNullByDefault
 public class FoxConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
-    public String gateHost;
-    public String gatePassword;
-    public String functions;
+    public @Nullable String gateHost;
+    public @Nullable String gatePassword;
+    public @Nullable String functions;
 }

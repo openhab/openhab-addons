@@ -28,10 +28,10 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.fox.internal.connection.FoxMessengerTcpIp;
 import org.openhab.binding.fox.internal.core.Fox;
 import org.openhab.binding.fox.internal.core.FoxException;
 import org.openhab.binding.fox.internal.core.FoxMessenger;
+import org.openhab.binding.fox.internal.core.FoxMessengerTcpIp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
 public class FoxHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoxHandler.class);
-    private Fox fox = new Fox();
-    private FoxMessenger messenger = new FoxMessengerTcpIp();
+    private Fox fox = new Fox(new FoxMessengerTcpIp());
     private Instant pingTime = Instant.now();
     private boolean pingError = false;
     private boolean finishConnectionTask = false;
@@ -54,15 +53,14 @@ public class FoxHandler extends BaseThingHandler {
     private FoxTaskHandler taskHandler = new FoxTaskHandler();
     private FoxResultHandler resultHandler = new FoxResultHandler();
 
-    private FoxDynamicStateDescriptionProvider stateDescriptionProvider;
-    private FoxDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private @Nullable FoxDynamicStateDescriptionProvider stateDescriptionProvider;
+    private @Nullable FoxDynamicCommandDescriptionProvider commandDescriptionProvider;
 
-    public FoxHandler(Thing thing, FoxDynamicStateDescriptionProvider stateDescriptionProvider,
-            FoxDynamicCommandDescriptionProvider commandDescriptionProvider) {
+    public FoxHandler(Thing thing, @Nullable FoxDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Nullable FoxDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
-        fox.setMessenger(messenger);
     }
 
     @Override
@@ -70,7 +68,7 @@ public class FoxHandler extends BaseThingHandler {
         if (CHANNEL_TASK_COMMAND.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 String data = ((StringType) command).toString();
-                logger.debug("TASK COMMAND >> " + data);
+                logger.debug("Tasks request: {}", data);
                 write(data);
             }
         }
@@ -78,33 +76,36 @@ public class FoxHandler extends BaseThingHandler {
 
     private void loadTaskCommands() {
         Channel taskCommandCh = getThing().getChannel(CHANNEL_TASK_COMMAND);
-        if (taskCommandCh != null) {
+        if (taskCommandCh != null && commandDescriptionProvider != null) {
             commandDescriptionProvider.setCommandOptions(taskCommandCh.getUID(), taskHandler.listCommands());
         }
     }
 
     private void loadTaskStates() {
         Channel taskStateCh = getThing().getChannel(CHANNEL_TASK_STATE);
-        if (taskStateCh != null) {
+        if (taskStateCh != null && stateDescriptionProvider != null) {
             stateDescriptionProvider.setStateOptions(taskStateCh.getUID(), taskHandler.listStates());
         }
     }
 
     private void loadResultTriggers() {
         Channel resultTriggerCh = getThing().getChannel(CHANNEL_RESULT_TRIGGER);
-        if (resultTriggerCh != null) {
+        if (resultTriggerCh != null && stateDescriptionProvider != null) {
             stateDescriptionProvider.setStateOptions(resultTriggerCh.getUID(), resultHandler.listStates());
         }
     }
 
     private void loadResultStates() {
         Channel resultStateCh = getThing().getChannel(CHANNEL_RESULT_STATE);
-        if (resultStateCh != null) {
+        if (resultStateCh != null && stateDescriptionProvider != null) {
             stateDescriptionProvider.setStateOptions(resultStateCh.getUID(), resultHandler.listStates());
         }
     }
 
     private void loadTasksAndResults(@Nullable String functionsJson) {
+        if (functionsJson == null) {
+            return;
+        }
         FoxFunctionsConfig config = new FoxFunctionsConfig(functionsJson);
         taskHandler.setCommands(config.getTasks());
         resultHandler.setStates(config.getResults());
@@ -118,10 +119,10 @@ public class FoxHandler extends BaseThingHandler {
         m.setHost(host);
         m.setTimeout(1000);
         m.setPassword(password);
-        // m.setPrintStream(System.out);
     }
 
     private void connect(String host, String password) throws FoxException {
+        FoxMessenger messenger = fox.getMessenger();
         messenger.close();
         if (messenger instanceof FoxMessengerTcpIp) {
             configMessengerTcpIp((FoxMessengerTcpIp) messenger, host, password);
@@ -135,7 +136,7 @@ public class FoxHandler extends BaseThingHandler {
                 taskHandler.request(fox, data);
                 pingTime = Instant.now();
             } catch (FoxException e) {
-                logger.debug(e.getMessage());
+                logger.debug("Write exception: {}", e.getMessage());
             }
         });
     }
@@ -146,10 +147,10 @@ public class FoxHandler extends BaseThingHandler {
 
     private boolean checkIfResultReceived(String data) {
         String result = resultHandler.findResult(data);
-        if (result != null && !result.isEmpty()) {
-            logger.debug("RESULT TRIGGER << " + result);
+        if (!result.isEmpty()) {
+            logger.debug("Result notice: {}", result);
             triggerChannel(CHANNEL_RESULT_TRIGGER, result);
-            logger.debug("RESULT STATE == " + result);
+            logger.debug("Result acquired == {}", result);
             updateState(CHANNEL_RESULT_STATE, new StringType(result));
             return true;
         }
@@ -158,8 +159,8 @@ public class FoxHandler extends BaseThingHandler {
 
     private boolean checkIfTaskReceived(String data) {
         String task = taskHandler.findTask(data);
-        if (task != null && !task.isEmpty()) {
-            logger.debug("TASK STATE == " + task);
+        if (!task.isEmpty()) {
+            logger.debug("Task executed: {}", task);
             updateState(CHANNEL_TASK_STATE, new StringType(task));
             return true;
         }
@@ -168,7 +169,7 @@ public class FoxHandler extends BaseThingHandler {
 
     private void ping() {
         try {
-            messenger.ping();
+            fox.getMessenger().ping();
         } catch (FoxException e) {
             pingError = true;
         }
@@ -176,7 +177,7 @@ public class FoxHandler extends BaseThingHandler {
 
     private void closeConnection() {
         try {
-            messenger.close();
+            fox.getMessenger().close();
         } catch (FoxException e) {
         }
     }
@@ -220,9 +221,9 @@ public class FoxHandler extends BaseThingHandler {
         markConnectionTaskFinished();
     }
 
-    private @Nullable Boolean openConnection(FoxConfiguration config) {
+    private @Nullable Boolean openConnection(String host, String password) {
         try {
-            connect(config.gateHost, StringUtils.trimToNull(config.gatePassword));
+            connect(host, password);
             if (checkIfFinishConnectionTaskRequest()) {
                 return null;
             }
@@ -237,7 +238,7 @@ public class FoxHandler extends BaseThingHandler {
         return false;
     }
 
-    private @Nullable Boolean readConnection(FoxConfiguration config) {
+    private @Nullable Boolean readConnection() {
         try {
             String data = read();
             if (checkIfFinishConnectionTaskRequest()) {
@@ -254,6 +255,7 @@ public class FoxHandler extends BaseThingHandler {
             });
             return true;
         } catch (FoxException e) {
+            logger.debug("Read exception: {}", e.getMessage());
             if (checkIfFinishConnectionTaskRequest()) {
                 return null;
             }
@@ -261,12 +263,12 @@ public class FoxHandler extends BaseThingHandler {
         return false;
     }
 
-    private void connectionTask(FoxConfiguration config) {
+    private void connectionTask(String host, String password) {
         waitForConnectionTaskFinish(30);
         Boolean connected = false;
         for (;;) {
             if (connected) {
-                connected = readConnection(config);
+                connected = readConnection();
                 if (connected == null) {
                     break;
                 }
@@ -274,7 +276,7 @@ public class FoxHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection broken");
                 }
             } else {
-                connected = openConnection(config);
+                connected = openConnection(host, password);
                 if (connected == null) {
                     break;
                 }
@@ -303,7 +305,7 @@ public class FoxHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, "Connecting to system...");
         scheduler.execute(() -> {
-            connectionTask(config);
+            connectionTask(StringUtils.trimToNull(config.gateHost), StringUtils.trimToNull(config.gatePassword));
         });
     }
 

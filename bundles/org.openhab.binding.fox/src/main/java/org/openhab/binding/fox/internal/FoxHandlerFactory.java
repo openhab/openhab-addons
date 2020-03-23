@@ -17,6 +17,7 @@ import static org.openhab.binding.fox.internal.FoxBindingConstants.THING_TYPE_SY
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -32,17 +33,17 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Kamil Subzda - Initial contribution
  */
-
+@NonNullByDefault
 @Component(configurationPid = "binding.fox", service = ThingHandlerFactory.class)
 public class FoxHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYSTEM);
 
     @Reference
-    private FoxDynamicStateDescriptionProvider stateDescriptionProvider;
+    private @Nullable FoxDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Reference
-    private FoxDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private @Nullable FoxDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

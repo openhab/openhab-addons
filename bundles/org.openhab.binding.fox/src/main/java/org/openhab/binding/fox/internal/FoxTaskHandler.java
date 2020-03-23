@@ -1,9 +1,22 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.fox.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.CommandOption;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.fox.internal.core.Fox;
@@ -11,6 +24,12 @@ import org.openhab.binding.fox.internal.core.FoxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link FoxResultHandler} is responsible for handling system tasks.
+ *
+ * @author Kamil Subzda - Initial contribution
+ */
+@NonNullByDefault
 public class FoxTaskHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoxTaskHandler.class);
@@ -32,12 +51,11 @@ public class FoxTaskHandler {
         for (CommandOption cmd : commandOptions) {
             stateOptions.add(new StateOption(cmd.getCommand(), cmd.getLabel()));
         }
-        logger.debug(stateOptions.toString());
         return stateOptions;
     }
 
     public List<CommandOption> listCommands() {
-        logger.debug(commandOptions.toString());
+        logger.debug("Tasks options: {}", commandOptions.toString());
         return new ArrayList<CommandOption>(commandOptions);
     }
 
@@ -56,16 +74,17 @@ public class FoxTaskHandler {
                 return commandOption.getCommand();
             }
         }
-        return null;
+        return "";
     }
 
     private String findCommandLabel(String commandValue) {
         for (CommandOption commandOption : commandOptions) {
             if (commandValue.equals(commandOption.getCommand())) {
-                return commandOption.getLabel();
+                String label = commandOption.getLabel();
+                return label != null ? label : "";
             }
         }
-        return null;
+        return "";
     }
 
     private int tryParseCommandValue(String commandValue) {
@@ -81,8 +100,7 @@ public class FoxTaskHandler {
     }
 
     private int findTaskIdByLabel(String commandLabel) {
-        String commandValue = findCommandValue(commandLabel);
-        return commandValue != null ? tryParseCommandValue(commandValue) : 0;
+        return tryParseCommandValue(findCommandValue(commandLabel));
     }
 
     private void tryDoTask(Fox fox, int taskId) throws FoxException {
@@ -104,7 +122,7 @@ public class FoxTaskHandler {
     }
 
     public String findTask(String task) {
-        return hasCommandValue(task) ? task : null;
+        return hasCommandValue(task) ? task : "";
     }
 
     public String findTaskLabel(String task) {
