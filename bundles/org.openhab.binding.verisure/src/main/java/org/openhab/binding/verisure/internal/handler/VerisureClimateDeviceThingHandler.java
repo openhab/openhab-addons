@@ -20,7 +20,6 @@ import java.util.Set;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -57,16 +56,15 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThing thing) {
-        logger.debug("update on thing: {}", thing);
+    public Class<VerisureClimates> getVerisureThingClass() {
+        return VerisureClimates.class;
+    }
 
-        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            updateStatus(ThingStatus.ONLINE);
-            VerisureClimates obj = (VerisureClimates) thing;
-            updateClimateDeviceState(obj);
-        } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-        }
+    @Override
+    public synchronized void update(VerisureThing thing) {
+        logger.debug("update on thing: {}", thing);
+        updateStatus(ThingStatus.ONLINE);
+        updateClimateDeviceState((VerisureClimates) thing);
     }
 
     private void updateClimateDeviceState(VerisureClimates climateJSON) {

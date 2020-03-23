@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs;
 import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs.Smartplug;
 import org.openhab.binding.verisure.internal.model.VerisureThing;
@@ -69,6 +70,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
 
     private void handleSmartPlugState(Command command) {
         String deviceId = config.getDeviceId();
+        VerisureSession session = getSession();
         if (session != null) {
             VerisureSmartPlugs smartPlug = (VerisureSmartPlugs) session.getVerisureThing(deviceId);
             if (smartPlug != null) {
@@ -113,15 +115,15 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThing thing) {
+    public Class<VerisureSmartPlugs> getVerisureThingClass() {
+        return VerisureSmartPlugs.class;
+    }
+
+    @Override
+    public synchronized void update(VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            updateStatus(ThingStatus.ONLINE);
-            VerisureSmartPlugs obj = (VerisureSmartPlugs) thing;
-            updateSmartPlugState(obj);
-        } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-        }
+        updateStatus(ThingStatus.ONLINE);
+        updateSmartPlugState((VerisureSmartPlugs) thing);
     }
 
     private void updateSmartPlugState(VerisureSmartPlugs smartPlugJSON) {

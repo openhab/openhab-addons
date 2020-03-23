@@ -479,9 +479,11 @@ public class VerisureSession {
     }
 
     private void notifyListeners(VerisureThing thing) {
-        for (DeviceStatusListener listener : deviceStatusListeners) {
-            listener.onDeviceStateChanged(thing);
-        }
+        deviceStatusListeners.stream().forEach(listener -> {
+            if (listener.getVerisureThingClass().equals(thing.getClass())) {
+                listener.onDeviceStateChanged(thing);
+            }
+        });
     }
 
     private void notifyListenersIfChanged(VerisureThing thing, VerisureInstallation installation, String deviceId) {
@@ -543,7 +545,7 @@ public class VerisureSession {
                 + "($giid: String!) {\n  installation(giid: $giid) {\n armState {\n type\n statusType\n date\n name\n changedVia\n allowedForFirstLine\n allowed\n errorCodes {\n value\n message\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLAlarmStatus = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get alarm status with URL {} and data {}", url, queryQLAlarmStatus);
+        logger.debug("Quering API for alarm status!");
 
         VerisureThing thing = postJSONVerisureAPI(url, queryQLAlarmStatus, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -567,7 +569,7 @@ public class VerisureSession {
                 + "($giid: String!) {\n  installation(giid: $giid) {\n doorlocks {\n device {\n deviceLabel\n area\n __typename\n}\n currentLockState\n eventTime\n secureModeActive\n motorJam\n userString\n method\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLSmartLock = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get smart lock status with URL {} and data {}", url, queryQLSmartLock);
+        logger.debug("Quering API for smart lock status");
 
         VerisureSmartLocks thing = (VerisureSmartLocks) postJSONVerisureAPI(url, queryQLSmartLock, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -610,7 +612,7 @@ public class VerisureSession {
         String query = "query " + operation
                 + "($giid: String!) {\n  installation(giid: $giid) {\n smartplugs {\n device {\n deviceLabel\n area\n gui {\n support\n label\n __typename\n}\n __typename\n}\n currentState\n icon\n isHazardous\n __typename\n}\n __typename\n}\n}\n";
         String queryQLSmartPlug = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get smart plug status with URL {} and data {}", url, queryQLSmartPlug);
+        logger.debug("Quering API for smart plug status");
 
         VerisureSmartPlugs thing = (VerisureSmartPlugs) postJSONVerisureAPI(url, queryQLSmartPlug, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -648,7 +650,7 @@ public class VerisureSession {
                 + "($giid: String!) {\n installation(giid: $giid) {\n climates {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n humidityEnabled\n humidityTimestamp\n humidityValue\n temperatureTimestamp\n temperatureValue\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLClimates = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get climate status with URL {} and data {}", url, queryQLClimates);
+        logger.debug("Quering API for climate status");
 
         VerisureClimates thing = (VerisureClimates) postJSONVerisureAPI(url, queryQLClimates, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -704,7 +706,7 @@ public class VerisureSession {
                 + "($giid: String!) {\n installation(giid: $giid) {\n doorWindows {\n device {\n deviceLabel\n area\n __typename\n }\n type\n state\n wired\n reportTime\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLDoorWindow = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get door&window status with URL {} and data {}", url, queryQLDoorWindow);
+        logger.debug("Quering API for door&window status");
 
         VerisureDoorWindows thing = (VerisureDoorWindows) postJSONVerisureAPI(url, queryQLDoorWindow, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -742,8 +744,7 @@ public class VerisureSession {
                 + "($giid: String!) {\n installation(giid: $giid) {\n broadband {\n testDate\n isBroadbandConnected\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLBroadbandConnection = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get broadband connection status with URL {} and data {}", url,
-                queryQLBroadbandConnection);
+        logger.debug("Quering API for broadband connection status");
 
         VerisureThing thing = postJSONVerisureAPI(url, queryQLBroadbandConnection, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -766,7 +767,7 @@ public class VerisureSession {
                 + "($giid: String!) {\ninstallation(giid: $giid) {\n userTrackings {\n isCallingUser\n webAccount\n status\n xbnContactId\n currentLocationName\n deviceId\n name\n currentLocationTimestamp\n deviceName\n currentLocationId\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLUserPresence = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get user presence status with URL {} and data {}", url, queryQLUserPresence);
+        logger.debug("Quering API for user presence status");
 
         VerisureUserPresences thing = (VerisureUserPresences) postJSONVerisureAPI(url, queryQLUserPresence, jsonClass);
         logger.debug("REST Response ({})", thing);
@@ -804,7 +805,7 @@ public class VerisureSession {
                 + "($giid: String!) {\n installation(giid: $giid) {\n mice {\n device {\n deviceLabel\n area\n gui {\n support\n __typename\n}\n __typename\n}\n type\n detections {\n count\n gatewayTime\n nodeTime\n duration\n __typename\n}\n __typename\n}\n __typename\n}\n}\n";
 
         String queryQLMiceDetection = createOperationJSON(operation, installationId, query);
-        logger.debug("Trying to get mice detection status with URL {} and data {}", url, queryQLMiceDetection);
+        logger.debug("Quering API for mice detection status");
 
         VerisureMiceDetection thing = (VerisureMiceDetection) postJSONVerisureAPI(url, queryQLMiceDetection, jsonClass);
         logger.debug("REST Response ({})", thing);

@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -46,15 +45,15 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThing thing) {
+    public Class<VerisureUserPresences> getVerisureThingClass() {
+        return VerisureUserPresences.class;
+    }
+
+    @Override
+    public synchronized void update(VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            updateStatus(ThingStatus.ONLINE);
-            VerisureUserPresences obj = (VerisureUserPresences) thing;
-            updateUserPresenceState(obj);
-        } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-        }
+        updateStatus(ThingStatus.ONLINE);
+        updateUserPresenceState((VerisureUserPresences) thing);
     }
 
     private void updateUserPresenceState(VerisureUserPresences userPresenceJSON) {

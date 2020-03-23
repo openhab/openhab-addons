@@ -20,10 +20,11 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  * or a device has been removed or added.
  *
  * @author Jarle Hjortland - Initial contribution
+ * @author Jan Gustafsson - Updated after code review comments
  *
  */
 @NonNullByDefault
-public interface DeviceStatusListener {
+public interface DeviceStatusListener<T extends VerisureThing> {
 
     /**
      * This method is called whenever the state of the given device has changed.
@@ -31,7 +32,7 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing that was changed.
      */
-    void onDeviceStateChanged(VerisureThing thing);
+    void onDeviceStateChanged(T thing);
 
     /**
      * This method us called whenever a device is removed.
@@ -39,7 +40,7 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing that is removed
      */
-    void onDeviceRemoved(VerisureThing thing);
+    void onDeviceRemoved(T thing);
 
     /**
      * This method us called whenever a device is added.
@@ -47,6 +48,11 @@ public interface DeviceStatusListener {
      * @param thing
      *            The thing which is added.
      */
-    void onDeviceAdded(VerisureThing thing);
+    void onDeviceAdded(T thing);
+
+    /**
+     * This method returms the thing's class
+     */
+    public Class<T> getVerisureThingClass();
 
 }

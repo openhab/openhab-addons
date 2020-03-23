@@ -45,14 +45,14 @@ import com.google.gson.Gson;
  * Base class and handler for some of the different thing types that Verisure provides.
  *
  * @author Jarle Hjortland - Initial contribution
- * @author Jan Gustafsson - Furher development
+ * @author Jan Gustafsson - Further development and updates after code review
  *
  */
 @NonNullByDefault
-public class VerisureThingHandler extends BaseThingHandler implements DeviceStatusListener {
+public abstract class VerisureThingHandler<T extends VerisureThing> extends BaseThingHandler
+        implements DeviceStatusListener<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(VerisureThingHandler.class);
-    protected @Nullable VerisureSession session;
     protected VerisureThingConfiguration config = new VerisureThingConfiguration();
     protected final Gson gson = new Gson();
 
@@ -69,16 +69,98 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 BridgeHandler bridgeHandler = bridge.getHandler();
                 if (bridgeHandler != null) {
                     bridgeHandler.handleCommand(channelUID, command);
+                    String deviceId = config.getDeviceId();
+                    VerisureSession session = getSession();
+                    if (session != null) {
+                        VerisureThing thing = session.getVerisureThing(deviceId);
+                        if (thing != null) {
+                            update(thing);
+                        } else {
+                            logger.debug("Thing is null!");
+                        }
+                    } else {
+                        logger.debug("Session is null!");
+                    }
+                } else {
+                    logger.debug("BridgeHandler is null!");
                 }
-            }
-            String deviceId = config.getDeviceId();
-            if (session != null) {
-                VerisureThing thing = session.getVerisureThing(deviceId);
-                update(thing);
+            } else {
+                logger.warn("Bridge is null!");
             }
         } else {
             logger.warn("Unknown command! {}", command);
         }
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("initialize on thing: {}", thing);
+        // Do not go online
+        config = getConfigAs(VerisureThingConfiguration.class);
+        // Set status to UNKNOWN and let background task set correct status
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                this.bridgeStatusChanged(bridge.getStatusInfo());
+            }
+        });
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("dispose on thing: {}", thing);
+        VerisureSession session = getSession();
+        if (session != null) {
+            session.unregisterDeviceStatusListener(this);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged bridgeStatusInfo: {}", bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            VerisureSession session = getSession();
+            if (session != null) {
+                String deviceId = config.getDeviceId();
+                VerisureThing thing = session.getVerisureThing(deviceId);
+                if (thing != null) {
+                    update(thing);
+                } else {
+                    logger.warn("Thing is null!");
+                }
+                session.registerDeviceStatusListener(this);
+            }
+        }
+        super.bridgeStatusChanged(bridgeStatusInfo);
+    }
+
+    @Override
+    public void onDeviceStateChanged(T thing) {
+        logger.trace("onDeviceStateChanged on thing: {}", thing);
+        String deviceId = thing.getDeviceId();
+        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
+        if (config.getDeviceId().equalsIgnoreCase((deviceId.replaceAll("[^a-zA-Z0-9]+", "")))) {
+            update(thing);
+        }
+    }
+
+    public synchronized void update(VerisureThing thing) {
+        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
+        BigDecimal siteId = thing.getSiteId();
+        updateState(cuid, new DecimalType(siteId.longValue()));
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
+        updateState(cuid, new StringType(thing.getSiteName()));
+    }
+
+    @Override
+    public void onDeviceRemoved(T thing) {
+        logger.trace("onDeviceRemoved on thing: {}", thing);
+    }
+
+    @Override
+    public void onDeviceAdded(T thing) {
+        logger.trace("onDeviceAdded on thing: {}", thing);
     }
 
     protected void scheduleImmediateRefresh(int refreshDelay) {
@@ -114,83 +196,14 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         }
     }
 
-    @Override
-    public void initialize() {
-        logger.debug("initialize on thing: {}", thing);
-        // Do not go online
-        config = getConfigAs(VerisureThingConfiguration.class);
-        // Set status to UNKNOWN and let background task set correct status
-        updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                this.bridgeStatusChanged(bridge.getStatusInfo());
-            }
-        });
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("dispose on thing: {}", thing);
+    protected @Nullable VerisureSession getSession() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
             if (vbh != null) {
-                session = vbh.getSession();
-                if (session != null) {
-                    session.unregisterDeviceStatusListener(this);
-                }
+                return vbh.getSession();
             }
         }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged bridgeStatusInfo: {}", bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
-                if (vbh != null) {
-                    session = vbh.getSession();
-                    String deviceId = config.getDeviceId();
-                    if (session != null) {
-                        update(session.getVerisureThing(deviceId));
-                        session.registerDeviceStatusListener(this);
-                    }
-                }
-            }
-        }
-        super.bridgeStatusChanged(bridgeStatusInfo);
-    }
-
-    @Override
-    public void onDeviceStateChanged(VerisureThing thing) {
-        logger.trace("onDeviceStateChanged on thing: {}", thing);
-        String deviceId = thing.getDeviceId();
-        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-        if (config.getDeviceId().equalsIgnoreCase((deviceId.replaceAll("[^a-zA-Z0-9]+", "")))) {
-            update(thing);
-        }
-    }
-
-    public synchronized void update(@Nullable VerisureThing thing) {
-        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-        if (thing != null) {
-            BigDecimal siteId = thing.getSiteId();
-            updateState(cuid, new DecimalType(siteId.longValue()));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-            updateState(cuid, new StringType(thing.getSiteName()));
-        }
-    }
-
-    @Override
-    public void onDeviceRemoved(@Nullable VerisureThing thing) {
-        logger.trace("onDeviceRemoved on thing: {}", thing);
-    }
-
-    @Override
-    public void onDeviceAdded(@Nullable VerisureThing thing) {
-        logger.trace("onDeviceAdded on thing: {}", thing);
+        return null;
     }
 }

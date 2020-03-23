@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -44,15 +43,15 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThing thing) {
+    public Class<VerisureBroadbandConnections> getVerisureThingClass() {
+        return VerisureBroadbandConnections.class;
+    }
+
+    @Override
+    public synchronized void update(VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            updateStatus(ThingStatus.ONLINE);
-            VerisureBroadbandConnections obj = (VerisureBroadbandConnections) thing;
-            updateBroadbandConnection(obj);
-        } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-        }
+        updateStatus(ThingStatus.ONLINE);
+        updateBroadbandConnection((VerisureBroadbandConnections) thing);
     }
 
     private void updateBroadbandConnection(VerisureBroadbandConnections vbcJSON) {

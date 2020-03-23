@@ -74,7 +74,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     public VerisureBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
-        // session = new VerisureSession(this.httpClient);
     }
 
     @Override

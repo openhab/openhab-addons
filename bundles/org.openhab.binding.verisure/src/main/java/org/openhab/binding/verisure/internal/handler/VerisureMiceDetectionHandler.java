@@ -21,7 +21,6 @@ import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -54,15 +53,15 @@ public class VerisureMiceDetectionHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThing thing) {
+    public Class<VerisureMiceDetection> getVerisureThingClass() {
+        return VerisureMiceDetection.class;
+    }
+
+    @Override
+    public synchronized void update(VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            updateStatus(ThingStatus.ONLINE);
-            VerisureMiceDetection obj = (VerisureMiceDetection) thing;
-            updateMiceDetectionState(obj);
-        } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-        }
+        updateStatus(ThingStatus.ONLINE);
+        updateMiceDetectionState((VerisureMiceDetection) thing);
     }
 
     private void updateMiceDetectionState(VerisureMiceDetection miceDetectionJSON) {

@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLock;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLock.DoorLockVolumeSettings;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
@@ -80,6 +81,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockState(Command command) {
         String deviceId = config.getDeviceId();
+        VerisureSession session = getSession();
         if (session != null) {
             VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
             if (smartLock != null) {
@@ -133,6 +135,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handeAutoRelockResult(String url, String data, BigDecimal installationId, Command command) {
         logger.debug("Trying to set Auto Relock {} with URL {} and data {}", command.toString(), url, data);
+        VerisureSession session = getSession();
         if (session != null) {
             int httpResultCode = session.sendCommand(url, data, installationId);
             if (httpResultCode == HttpStatus.OK_200) {
@@ -145,6 +148,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleAutoRelock(Command command) {
         String deviceId = config.getDeviceId();
+        VerisureSession session = getSession();
         if (session != null) {
             VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
             if (smartLock != null) {
@@ -176,6 +180,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockVolumeAndVoiceLevel(Command command, boolean setVolume) {
         String deviceId = config.getDeviceId();
+        VerisureSession session = getSession();
         if (session != null) {
             VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
             if (smartLock != null) {
@@ -226,15 +231,15 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(@Nullable VerisureThing thing) {
+    public Class<VerisureSmartLocks> getVerisureThingClass() {
+        return VerisureSmartLocks.class;
+    }
+
+    @Override
+    public synchronized void update(VerisureThing thing) {
         logger.debug("update on thing: {}", thing);
-        if (thing != null && SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            updateStatus(ThingStatus.ONLINE);
-            VerisureSmartLocks obj = (VerisureSmartLocks) thing;
-            updateSmartLockState(obj);
-        } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
-        }
+        updateStatus(ThingStatus.ONLINE);
+        updateSmartLockState((VerisureSmartLocks) thing);
     }
 
     private void updateSmartLockState(VerisureSmartLocks smartLocksJSON) {
