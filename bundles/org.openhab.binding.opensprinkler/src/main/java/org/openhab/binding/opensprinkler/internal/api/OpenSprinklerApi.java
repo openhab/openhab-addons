@@ -91,7 +91,7 @@ public interface OpenSprinklerApi {
     public abstract boolean isRainDetected() throws CommunicationApiException;
 
     /**
-     * Returns the current voltage draw of all connected zones of the OpenSprinkler device in milliamperes. Given the
+     * Returns the current draw of all connected zones of the OpenSprinkler device in milliamperes. Given the
      * device does not have the possibility to measure this, the returning value will be 0.
      *
      * @return current draw in milliamperes
