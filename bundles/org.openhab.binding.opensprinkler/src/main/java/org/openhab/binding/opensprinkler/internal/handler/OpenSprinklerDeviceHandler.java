@@ -51,7 +51,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     }
                     break;
                 case SENSOR_CURRENT_DRAW:
-                    updateState(channel, new QuantityType<ElectricCurrent>(new Integer(getApi().currentDraw()),
+                    updateState(channel, new QuantityType<ElectricCurrent>(getApi().currentDraw(),
                             MILLI(SmartHomeUnits.AMPERE)));
                     break;
                 default:
