@@ -77,6 +77,11 @@
 		<label>Battery Watermark Level</label>
 	</channel-type>
 
+	<channel-type id="beep">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
+	</channel-type>
+
 	<channel-type id="bottomOutlet">
 		<item-type>Switch</item-type>
 		<label>Bottom Outlet</label>
@@ -260,6 +265,11 @@
 	<channel-type id="ledBrightness">
 		<item-type>Number</item-type>
 		<label>LED Brightness</label>
+	</channel-type>
+
+	<channel-type id="ledOnOff">
+		<item-type>Switch</item-type>
+		<label>LED On/Off</label>
 	</channel-type>
 
 	<channel-type id="lightDimmer">

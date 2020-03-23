@@ -34,6 +34,7 @@ public class InsteonBindingConstants {
     public static final String BACKLIGHT_DURATION = "backlightDuration";
     public static final String BATTERY_LEVEL = "batteryLevel";
     public static final String BATTERY_WATERMARK_LEVEL = "batteryWatermarkLevel";
+    public static final String BEEP = "beep";
     public static final String BOTTOM_OUTLET = "bottomOutlet";
     public static final String BUTTON_A = "buttonA";
     public static final String BUTTON_B = "buttonB";
@@ -71,6 +72,7 @@ public class InsteonBindingConstants {
     public static final String KWH = "kWh";
     public static final String LAST_HEARD_FROM = "lastHeardFrom";
     public static final String LED_BRIGHTNESS = "ledBrightness";
+    public static final String LED_ONOFF = "ledOnOff";
     public static final String LIGHT_DIMMER = "lightDimmer";
     public static final String LIGHT_LEVEL = "lightLevel";
     public static final String LOAD_DIMMER = "loadDimmer";
