@@ -79,7 +79,7 @@ public class DayPartDTO {
      * in the air to the amount of vapor required to bring the air to saturation at a constant
      * temperature. Relative humidity is always expressed as a percentage
      */
-    public Integer[] relativeHumidity;
+    public Double[] relativeHumidity;
 
     /*
      * Daytime average cloud cover expressed as a percentage
@@ -95,7 +95,7 @@ public class DayPartDTO {
      * as "from whence the wind blows" meaning that a North wind blows from North to South. If you face
      * North in a North wind the wind is at your face. Face southward and the North wind is at your back
      */
-    public Integer[] windSpeed;
+    public Double[] windSpeed;
 
     /*
      * Average wind direction in magnetic notation
