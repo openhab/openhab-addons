@@ -77,6 +77,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        logger.trace("dispose called");
         disconnect();
     }
 
