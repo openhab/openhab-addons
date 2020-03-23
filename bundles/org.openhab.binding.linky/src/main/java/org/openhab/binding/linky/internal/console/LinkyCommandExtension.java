@@ -101,9 +101,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                 if (args.length >= 5) {
                     separator = args[4];
                 }
-                for (String line : handler.reportValues(start, end, separator).split("\n")) {
-                    console.println(line);
-                }
+                handler.reportValues(start, end, separator).forEach(line -> console.println(line));
             }
         } else {
             printUsage(console);

@@ -22,7 +22,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -125,11 +127,10 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("login");
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-        try {
-            Request requestLogin = new Request.Builder().url(LOGIN_BASE_URI)
-                    .post(LOGIN_BODY_BUILDER.add("IDToken1", config.username).add("IDToken2", config.password).build())
-                    .build();
-            Response response = client.newCall(requestLogin).execute();
+        Request requestLogin = new Request.Builder().url(LOGIN_BASE_URI)
+                .post(LOGIN_BODY_BUILDER.add("IDToken1", config.username).add("IDToken2", config.password).build())
+                .build();
+        try (Response response = client.newCall(requestLogin).execute()) {
             if (response.isRedirect()) {
                 logger.debug("Response status {} {} redirects to {}", response.code(), response.message(),
                         response.header("Location"));
@@ -255,8 +256,9 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void updateKwhChannel(String channelId, Double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
-        updateState(channelId, consumption != Double.NaN ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR)
-                : UnDefType.UNDEF);
+        updateState(channelId,
+                !Double.isNaN(consumption) ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR)
+                        : UnDefType.UNDEF);
     }
 
     /**
@@ -268,8 +270,8 @@ public class LinkyHandler extends BaseThingHandler {
      *
      * @return the report as a string
      */
-    public String reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
-        StringBuilder dump = new StringBuilder();
+    public List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
+        List<String> report = new ArrayList<>();
         if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
             // All values in the same month
             LinkyConsumptionData result = getConsumptionData(DAILY, startDay, endDay, true);
@@ -278,18 +280,18 @@ public class LinkyHandler extends BaseThingHandler {
                 int jump = result.getDecalage();
                 while (jump < result.getData().size() && !currentDay.isAfter(endDay)) {
                     double consumption = result.getData().get(jump).valeur;
-                    dump.append(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator);
+                    String line = currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
                     if (consumption >= 0) {
-                        dump.append(String.valueOf(consumption));
+                        line += String.valueOf(consumption);
                     }
-                    dump.append("\n");
+                    report.add(line);
                     jump++;
                     currentDay = currentDay.plusDays(1);
                 }
             } else {
                 LocalDate currentDay = startDay;
                 while (!currentDay.isAfter(endDay)) {
-                    dump.append(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator + "\n");
+                    report.add(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator);
                     currentDay = currentDay.plusDays(1);
                 }
             }
@@ -301,11 +303,11 @@ public class LinkyHandler extends BaseThingHandler {
                 if (last.isAfter(endDay)) {
                     last = endDay;
                 }
-                dump.append(reportValues(first, last, separator));
+                report.addAll(reportValues(first, last, separator));
                 first = last.plusDays(1);
             } while (!first.isAfter(endDay));
         }
-        return dump.toString();
+        return report;
     }
 
     private @Nullable LinkyConsumptionData getConsumptionData(LinkyTimeScale timeScale, LocalDate from, LocalDate to,
@@ -341,6 +343,7 @@ public class LinkyHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         } catch (JsonSyntaxException e) {
             logger.debug("Exception while converting JSON response : {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
         }
         if (tryRelog && login()) {
             result = getConsumptionData(timeScale, from, to, false);
