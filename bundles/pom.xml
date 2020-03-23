@@ -17,6 +17,8 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+    <!-- automation -->
+    <module>org.openhab.automation.scriptenginefactory.jython</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>

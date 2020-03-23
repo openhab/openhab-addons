@@ -5,6 +5,7 @@
 *       @openhab/add-ons-maintainers
 
 # Add-on maintainers:
+/bundles/org.openhab.automation.scriptenginefactory.jython/ @openhab-5iver
 /bundles/org.openhab.binding.adorne/ @theiding
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
