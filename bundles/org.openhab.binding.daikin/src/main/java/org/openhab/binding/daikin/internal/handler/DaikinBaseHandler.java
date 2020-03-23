@@ -109,6 +109,12 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                         return;
                     }
                     break;
+                case DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE:
+                    if (command instanceof StringType) {
+                        changeHomekitMode(command.toString());
+                        return;
+                    }
+                    break;
                 case DaikinBindingConstants.CHANNEL_AC_MODE:
                     if (command instanceof StringType) {
                         changeMode(((StringType) command).toString());
