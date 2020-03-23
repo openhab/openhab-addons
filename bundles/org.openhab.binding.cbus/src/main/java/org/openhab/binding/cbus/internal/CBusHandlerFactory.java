@@ -32,6 +32,7 @@ import org.openhab.binding.cbus.handler.CBusTemperatureHandler;
 import org.openhab.binding.cbus.handler.CBusTriggerHandler;
 import org.openhab.binding.cbus.internal.discovery.CBusGroupDiscovery;
 import org.openhab.binding.cbus.internal.discovery.CBusNetworkDiscovery;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -43,6 +44,10 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.cbus")
 public class CBusHandlerFactory extends BaseThingHandlerFactory {
+    @Nullable
+    ServiceRegistration<?> cbusCGateHandlerServiceReg = null;
+    @Nullable
+    ServiceRegistration<?> cbusNetworkHandlerServiceReg = null;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -78,15 +83,31 @@ public class CBusHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof CBusCGateHandler) {
+            ServiceRegistration<?> serviceReg = this.cbusCGateHandlerServiceReg;
+            if (serviceReg != null) {
+                serviceReg.unregister();
+            }
+        } else if (thingHandler instanceof CBusNetworkHandler) {
+            ServiceRegistration<?> serviceReg = this.cbusNetworkHandlerServiceReg;
+            if (serviceReg != null) {
+                serviceReg.unregister();
+            }
+        }
+        super.removeHandler(thingHandler);
+    }
+
     private void registerDeviceDiscoveryService(CBusCGateHandler cbusCgateHandler) {
         CBusNetworkDiscovery discoveryService = new CBusNetworkDiscovery(cbusCgateHandler);
-        super.bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
+        cbusCGateHandlerServiceReg = super.bundleContext.registerService(DiscoveryService.class.getName(),
+                discoveryService, new Hashtable<String, Object>());
     }
 
     private void registerDeviceDiscoveryService(CBusNetworkHandler cbusNetworkHandler) {
         CBusGroupDiscovery discoveryService = new CBusGroupDiscovery(cbusNetworkHandler);
-        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+        cbusNetworkHandlerServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
     }
 }
