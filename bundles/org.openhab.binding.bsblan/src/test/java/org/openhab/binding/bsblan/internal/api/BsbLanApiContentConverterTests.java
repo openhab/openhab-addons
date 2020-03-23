@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
@@ -31,6 +32,7 @@ import com.google.gson.JsonObject;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public class BsbLanApiContentConverterTests {
 
     @Test

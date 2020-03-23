@@ -15,6 +15,7 @@ package org.openhab.binding.bsblan.internal;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ import org.junit.Test;
  *
  * @author Peter Schraffl - Initial contribution
  */
+@NonNullByDefault
 public class BsbLanHandlerFactoryTests {
 
     public static final ThingTypeUID UNKNOWN_THING_TYPE_UID = new ThingTypeUID("bsblan", "unknown");
@@ -33,7 +35,6 @@ public class BsbLanHandlerFactoryTests {
      */
     @Test
     public void supportsThingType() {
-
         BsbLanHandlerFactory factory = new BsbLanHandlerFactory();
         assertFalse(factory.supportsThingType(UNKNOWN_THING_TYPE_UID));
 

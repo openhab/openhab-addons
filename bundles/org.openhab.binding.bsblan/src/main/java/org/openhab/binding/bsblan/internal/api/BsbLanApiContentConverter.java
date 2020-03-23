@@ -34,8 +34,7 @@ public class BsbLanApiContentConverter {
         return GSON.toJson(request);
     }
 
-    @Nullable
-    public static <T> T fromJson(String content, Class<T> resultType) {
+    public static <T> @Nullable T fromJson(String content, Class<T> resultType) {
         try {
             T result = GSON.fromJson(content, resultType);
             if (result == null) {

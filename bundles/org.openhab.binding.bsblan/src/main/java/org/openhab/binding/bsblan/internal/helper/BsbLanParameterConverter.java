@@ -86,20 +86,13 @@ public class BsbLanParameterConverter {
 
     private static @Nullable State getStateForNumberValueChannel(BsbLanApiParameter parameter) {
         try {
-            switch (parameter.dataType)
-            {
+            switch (parameter.dataType) {
                 // parse enum data type as integer
                 case DT_ENUM:
-                {
-                    int value = Integer.parseInt(parameter.value);
-                    return new DecimalType(value);
-                }
+                    return new DecimalType(Integer.parseInt(parameter.value));
 
                 default:
-                {
-                    double value = Double.parseDouble(parameter.value);
-                    return new DecimalType(value);
-                }
+                    return new DecimalType(Double.parseDouble(parameter.value));
             }
         }
         catch (NumberFormatException e) {
