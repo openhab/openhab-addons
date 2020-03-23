@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.6-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.helperlibraries.jython</artifactId>
+
+  <name>openHAB Add-ons :: Automation :: Jython Helper Libraries</name>
+  
+  <repositories>
+    <repository>
+        <id>bintray-openhab-scripters-openhab-helper-libraries</id>
+        <name>openhab-scripters-openhab-helper-libraries</name>
+        <url>https://openhab-scripters.bintray.com/openhab-helper-libraries/openhab-helper-libraries-jython/</url>
+    </repository>
+  </repositories>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.automation.module.script</artifactId>
+      <version>${ohc.version}</version>
+      <scope>provided</scope>
+    </dependency>
+	<dependency>
+	  <groupId>openhab-helper-libraries-jython</groupId>
+	  <artifactId>openhab-helper-libraries-jython</artifactId>
+	  <version>0.0.4</version>
+      <scope>provided</scope>
+	</dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.6.4</version>
+    </dependency>
+  </dependencies>
+
+</project>
