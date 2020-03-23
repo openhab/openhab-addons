@@ -69,1980 +69,401 @@ public enum ComfoAirCommandType {
      *            byte value on read_reply_data_pos position to be considered by command (used with
      *            DataTypeBoolean.class data_type)
      */
-    ACTIVATE {
-        {
-            key = "bindingControl#activate";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x03 };
-            change_command = 0x9b;
-            change_data_size = 1;
-            change_data_pos = 0;
-            change_affected = new String[] {};
-            read_command = 0x9c;
-            read_reply_command = 0x9c;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x03;
-        }
-    },
-
-    MENU20_MODE {
-        {
-            key = "menuP1#menu20Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    MENU21_MODE {
-        {
-            key = "menuP1#menu21Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    MENU22_MODE {
-        {
-            key = "menuP1#menu22Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    MENU23_MODE {
-        {
-            key = "menuP1#menu23Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    MENU24_MODE {
-        {
-            key = "menuP1#menu24Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x10;
-        }
-    },
-
-    MENU25_MODE {
-        {
-            key = "menuP1#menu25Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x20;
-        }
-    },
-
-    MENU26_MODE {
-        {
-            key = "menuP1#menu26Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x40;
-        }
-    },
-
-    MENU27_MODE {
-        {
-            key = "menuP1#menu27Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 6 };
-            read_reply_data_bits = 0x80;
-        }
-    },
-
-    MENU28_MODE {
-        {
-            key = "menuP1#menu28Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 7 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    MENU29_MODE {
-        {
-            key = "menuP1#menu29Mode";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 7 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    BATHROOM_START_DELAY {
-        {
-            key = "menuP2#bathroomStartDelay";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 0;
-            change_affected = new String[] { "menuP1#menu21Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    BATHROOM_END_DELAY {
-        {
-            key = "menuP2#bathroomEndDelay";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 1;
-            change_affected = new String[] { "menuP1#menu22Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    L1_END_DELAY {
-        {
-            key = "menuP2#L1EndDelay";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 2;
-            change_affected = new String[] { "menuP1#menu27Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    PULSE_VENTILATION {
-        {
-            key = "menuP2#pulseVentilation";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 3;
-            change_affected = new String[] { "menuP1#menu23Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    FILTER_WEEKS {
-        {
-            key = "menuP2#filterWeeks";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 4;
-            change_affected = new String[] { "menuP1#menu24Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    RF_SHORT_DELAY {
-        {
-            key = "menuP2#RFShortDelay";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 5;
-            change_affected = new String[] { "menuP1#menu25Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    RF_LONG_DELAY {
-        {
-            key = "menuP2#RFLongDelay";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 6;
-            change_affected = new String[] { "menuP1#menu26Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 6 };
-        }
-    },
-
-    COOKERHOOD_DELAY {
-        {
-            key = "menuP2#cookerhoodDelay";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcb;
-            change_data_size = 8;
-            change_data_pos = 7;
-            change_affected = new String[] { "menuP1#menu20Mode" };
-            read_command = 0xc9;
-            read_reply_command = 0xca;
-            read_reply_data_pos = new int[] { 7 };
-        }
-    },
-
-    CHIMNEY_STATE {
-        {
-            key = "menuP9#chimneyState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    BYPASS_STATE {
-        {
-            key = "menuP9#bypassState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    EWT_STATE {
-        {
-            key = "menuP9#EWTState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    HEATER_STATE {
-        {
-            key = "menuP9#heaterState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    V_CONTROL_STATE {
-        {
-            key = "menuP9#vControlState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x10;
-        }
-    },
-
-    FROST_STATE {
-        {
-            key = "menuP9#frostState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x20;
-        }
-    },
-
-    COOKERHOOD_STATE {
-        {
-            key = "menuP9#cookerhoodState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x40;
-        }
-    },
-
-    ENTHALPY_STATE {
-        {
-            key = "menuP9#enthalpyState";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x80;
-        }
-    },
-
-    FAN_OUT_0 {
-        {
-            key = "ventilation#fanOut0";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 0;
-            change_affected = new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    FAN_OUT_1 {
-        {
-            key = "ventilation#fanOut1";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 1;
-            change_affected = new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    FAN_OUT_2 {
-        {
-            key = "ventilation#fanOut2";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 2;
-            change_affected = new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    FAN_OUT_3 {
-        {
-            key = "ventilation#fanOut3";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 6;
-            change_affected = new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 10 };
-        }
-    },
-
-    FAN_IN_0 {
-        {
-            key = "ventilation#fanIn0";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 3;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    FAN_IN_1 {
-        {
-            key = "ventilation#fanIn1";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 4;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    FAN_IN_2 {
-        {
-            key = "ventilation#fanIn2";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 5;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    FAN_IN_3 {
-        {
-            key = "ventilation#fanIn3";
-            data_type = DataTypeNumber.class;
-            change_command = 0xcf;
-            change_data_size = 9;
-            change_data_pos = 7;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 11 };
-        }
-    },
-
-    FAN_IN_PERCENT {
-        {
-            key = "ventilation#fanInPercent";
-            data_type = DataTypeNumber.class;
-            read_command = 0x0b;
-            read_reply_command = 0x0c;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    FAN_OÚT_PERCENT {
-        {
-            key = "ventilation#fanOutPercent";
-            data_type = DataTypeNumber.class;
-            read_command = 0x0b;
-            read_reply_command = 0x0c;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    FAN_IN_RPM {
-        {
-            key = "ventilation#fanInRPM";
-            data_type = DataTypeRPM.class;
-            read_command = 0x0b;
-            read_reply_command = 0x0c;
-            read_reply_data_pos = new int[] { 2, 3 };
-        }
-    },
-
-    FAN_OUT_RPM {
-        {
-            key = "ventilation#fanOutRPM";
-            data_type = DataTypeRPM.class;
-            read_command = 0x0b;
-            read_reply_command = 0x0c;
-            read_reply_data_pos = new int[] { 4, 5 };
-        }
-    },
-
-    FAN_LEVEL {
-        {
-            key = "ccease#fanLevel";
-            data_type = DataTypeNumber.class;
-            possible_values = new int[] { 0x01, 0x02, 0x03, 0x04 };
-            change_command = 0x99;
-            change_data_size = 1;
-            change_data_pos = 0;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanOutPercent",
-                    "ventilation#fanInRPM", "ventilation#fanOutRPM" };
-            read_command = 0xcd;
-            read_reply_command = 0xce;
-            read_reply_data_pos = new int[] { 8 };
-        }
-    },
-
-    TARGET_TEMPERATUR {
-        {
-            key = "ccease#targetTemperature";
-            data_type = DataTypeTemperature.class;
-            change_command = 0xd3;
-            change_data_size = 1;
-            change_data_pos = 0;
-            change_affected = new String[] { "bypass#bypassFactor", "bypass#bypassLevel", "bypass#bypassSummer" };
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    OUTDOOR_TEMPERATURE_IN {
-        {
-            key = "temperatures#outdoorTemperatureIn";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    OUTDOOR_TEMPERATURE_OUT {
-        {
-            key = "temperatures#outdoorTemperatureOut";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    INDOOR_TEMPERATURE_IN {
-        {
-            key = "temperatures#indoorTemperatureIn";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    INDOOR_TEMPERATURE_OUT {
-        {
-            key = "temperatures#indoorTemperatureOut";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    IS_T1_SENSOR {
-        {
-            key = "temperatures#isT1Sensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    IS_T2_SENSOR {
-        {
-            key = "temperatures#isT2Sensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    IS_T3_SENSOR {
-        {
-            key = "temperatures#isT3Sensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    IS_T4_SENSOR {
-        {
-            key = "temperatures#isT4Sensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    IS_EWT_SENSOR {
-        {
-            key = "temperatures#isEWTSensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x10;
-        }
-    },
-
-    IS_HEATER_SENSOR {
-        {
-            key = "temperatures#isHeaterSensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x20;
-        }
-    },
-
-    IS_COOKERHOOD_SENSOR {
-        {
-            key = "temperatures#isCookerhoodSensor";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 5 };
-            read_reply_data_bits = 0x40;
-        }
-    },
-
-    EWT_TEMPERATUR {
-        {
-            key = "temperatures#ewtTemperature";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 6 };
-        }
-    },
-
-    HEATER_TEMPERATUR {
-        {
-            key = "temperatures#heaterTemperature";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 7 };
-        }
-    },
-
-    COOKERHOOD_TEMPERATUR {
-        {
-            key = "temperatures#cookerhoodTemperature";
-            data_type = DataTypeTemperature.class;
-            read_command = 0xd1;
-            read_reply_command = 0xd2;
-            read_reply_data_pos = new int[] { 8 };
-        }
-    },
-
-    IS_PREHEATER {
-        {
-            key = "options#isPreheater";
-            data_type = DataTypeBoolean.class;
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 1;
-            change_affected = new String[] { "temperatures#outdoorTemperatureIn", "temperatures#indoorTemperatureIn",
+    ACTIVATE("bindingControl#activate", DataTypeBoolean.class, new int[] { 0x03 }, 0x9b, 1, 0, new String[] {}, 0x9c,
+            0x9c, new int[] { 0 }, 0x03),
+    MENU20_MODE("menuP1#menu20Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x01),
+    MENU21_MODE("menuP1#menu21Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x02),
+    MENU22_MODE("menuP1#menu22Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x04),
+    MENU23_MODE("menuP1#menu23Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x08),
+    MENU24_MODE("menuP1#menu24Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x10),
+    MENU25_MODE("menuP1#menu25Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x20),
+    MENU26_MODE("menuP1#menu26Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x40),
+    MENU27_MODE("menuP1#menu27Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 6 }, 0x80),
+    MENU28_MODE("menuP1#menu28Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 7 }, 0x01),
+    MENU29_MODE("menuP1#menu29Mode", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 7 }, 0x02),
+    BATHROOM_START_DELAY("menuP2#bathroomStartDelay", DataTypeNumber.class, 0xcb, 8, 0,
+            new String[] { "menuP1#menu21Mode" }, 0xc9, 0xca, new int[] { 0 }),
+    BATHROOM_END_DELAY("menuP2#bathroomEndDelay", DataTypeNumber.class, 0xcb, 8, 1,
+            new String[] { "menuP1#menu22Mode" }, 0xc9, 0xca, new int[] { 1 }),
+    L1_END_DELAY("menuP2#L1EndDelay", DataTypeNumber.class, 0xcb, 8, 2, new String[] { "menuP1#menu27Mode" }, 0xc9,
+            0xca, new int[] { 2 }),
+    PULSE_VENTILATION("menuP2#pulseVentilation", DataTypeNumber.class, 0xcb, 8, 3, new String[] { "menuP1#menu23Mode" },
+            0xc9, 0xca, new int[] { 3 }),
+    FILTER_WEEKS("menuP2#filterWeeks", DataTypeNumber.class, 0xcb, 8, 4, new String[] { "menuP1#menu24Mode" }, 0xc9,
+            0xca, new int[] { 4 }),
+    RF_SHORT_DELAY("menuP2#RFShortDelay", DataTypeNumber.class, 0xcb, 8, 5, new String[] { "menuP1#menu25Mode" }, 0xc9,
+            0xca, new int[] { 5 }),
+    RF_LONG_DELAY("menuP2#RFLongDelay", DataTypeNumber.class, 0xcb, 8, 6, new String[] { "menuP1#menu26Mode" }, 0xc9,
+            0xca, new int[] { 6 }),
+    COOKERHOOD_DELAY("menuP2#cookerhoodDelay", DataTypeNumber.class, 0xcb, 8, 7, new String[] { "menuP1#menu20Mode" },
+            0xc9, 0xca, new int[] { 7 }),
+    CHIMNEY_STATE("menuP9#chimneyState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x01),
+    BYPASS_STATE("menuP9#bypassState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x02),
+    EWT_STATE("menuP9#EWTState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x04),
+    HEATER_STATE("menuP9#heaterState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x08),
+    V_CONTROL_STATE("menuP9#vControlState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x10),
+    FROST_STATE("menuP9#frostState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x20),
+    COOKERHOOD_STATE("menuP9#cookerhoodState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x40),
+    ENTHALPY_STATE("menuP9#enthalpyState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x80),
+    FAN_OUT_0("ventilation#fanOut0", DataTypeNumber.class, 0xcf, 9, 0,
+            new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" }, 0xcd, 0xce, new int[] { 0 }),
+    FAN_OUT_1("ventilation#fanOut1", DataTypeNumber.class, 0xcf, 9, 1,
+            new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" }, 0xcd, 0xce, new int[] { 1 }),
+    FAN_OUT_2("ventilation#fanOut2", DataTypeNumber.class, 0xcf, 9, 2,
+            new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" }, 0xcd, 0xce, new int[] { 2 }),
+    FAN_OUT_3("ventilation#fanOut3", DataTypeNumber.class, 0xcf, 9, 6,
+            new String[] { "ventilation#fanOutPercent", "ventilation#fanOutRPM" }, 0xcd, 0xce, new int[] { 10 }),
+    FAN_IN_0("ventilation#fanIn0", DataTypeNumber.class, 0xcf, 9, 3,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" }, 0xcd, 0xce, new int[] { 3 }),
+    FAN_IN_1("ventilation#fanIn1", DataTypeNumber.class, 0xcf, 9, 4,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" }, 0xcd, 0xce, new int[] { 4 }),
+    FAN_IN_2("ventilation#fanIn2", DataTypeNumber.class, 0xcf, 9, 5,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" }, 0xcd, 0xce, new int[] { 5 }),
+    FAN_IN_3("ventilation#fanIn3", DataTypeNumber.class, 0xcf, 9, 7,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanInRPM" }, 0xcd, 0xce, new int[] { 11 }),
+    FAN_IN_PERCENT("ventilation#fanInPercent", DataTypeNumber.class, 0x0b, 0x0c, new int[] { 0 }),
+    FAN_OÚT_PERCENT("ventilation#fanOutPercent", DataTypeNumber.class, 0x0b, 0x0c, new int[] { 1 }),
+    FAN_IN_RPM("ventilation#fanInRPM", DataTypeRPM.class, 0x0b, 0x0c, new int[] { 2, 3 }),
+    FAN_OUT_RPM("ventilation#fanOutRPM", DataTypeRPM.class, 0x0b, 0x0c, new int[] { 4, 5 }),
+    FAN_LEVEL("ccease#fanLevel", DataTypeNumber.class, new int[] { 0x01, 0x02, 0x03, 0x04 }, 0x99, 1, 0,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanOutPercent", "ventilation#fanInRPM",
+                    "ventilation#fanOutRPM" },
+            0xcd, 0xce, new int[] { 8 }),
+    TARGET_TEMPERATUR("ccease#targetTemperature", DataTypeTemperature.class, 0xd3, 1, 0,
+            new String[] { "bypass#bypassFactor", "bypass#bypassLevel", "bypass#bypassSummer" }, 0xd1, 0xd2,
+            new int[] { 0 }),
+    OUTDOOR_TEMPERATURE_IN("temperatures#outdoorTemperatureIn", DataTypeTemperature.class, 0xd1, 0xd2, new int[] { 1 }),
+    OUTDOOR_TEMPERATURE_OUT("temperatures#outdoorTemperatureOut", DataTypeTemperature.class, 0xd1, 0xd2,
+            new int[] { 4 }),
+    INDOOR_TEMPERATURE_IN("temperatures#indoorTemperatureIn", DataTypeTemperature.class, 0xd1, 0xd2, new int[] { 2 }),
+    INDOOR_TEMPERATURE_OUT("temperatures#indoorTemperatureOut", DataTypeTemperature.class, 0xd1, 0xd2, new int[] { 3 }),
+    IS_T1_SENSOR("temperatures#isT1Sensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x01),
+    IS_T2_SENSOR("temperatures#isT2Sensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x02),
+    IS_T3_SENSOR("temperatures#isT3Sensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x04),
+    IS_T4_SENSOR("temperatures#isT4Sensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x08),
+    IS_EWT_SENSOR("temperatures#isEWTSensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x10),
+    IS_HEATER_SENSOR("temperatures#isHeaterSensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x20),
+    IS_COOKERHOOD_SENSOR("temperatures#isCookerhoodSensor", DataTypeBoolean.class, 0xd1, 0xd2, new int[] { 5 }, 0x40),
+    EWT_TEMPERATUR("temperatures#ewtTemperature", DataTypeTemperature.class, 0xd1, 0xd2, new int[] { 6 }),
+    HEATER_TEMPERATUR("temperatures#heaterTemperature", DataTypeTemperature.class, 0xd1, 0xd2, new int[] { 7 }),
+    COOKERHOOD_TEMPERATUR("temperatures#cookerhoodTemperature", DataTypeTemperature.class, 0xd1, 0xd2, new int[] { 8 }),
+    IS_PREHEATER("options#isPreheater", DataTypeBoolean.class, 0xd7, 8, 1,
+            new String[] { "temperatures#outdoorTemperatureIn", "temperatures#indoorTemperatureIn",
                     "preheater#preheaterFrostProtect", "preheater#preheaterFrostTime", "preheater#preheaterHeating",
                     "menuP9#frostState", "preheater#preheaterSafety", "times#preheaterTime",
-                    "preheater#preheaterValve" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    IS_BYPASS {
-        {
-            key = "options#isBypass";
-            data_type = DataTypeBoolean.class;
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 1;
-            change_affected = new String[] { "temperatures#indoorTemperatureIn", "temperatures#outdoorTemperatureOut" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    RECU_TYPE {
-        {
-            key = "options#recuType";
-            data_type = DataTypeNumber.class;
-            possible_values = new int[] { 0x01, 0x02 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 2;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanOutPercent",
-                    "temperatures#indoorTemperatureIn", "temperatures#outdoorTemperatureOut",
-                    "temperatures#indoorTemperatureOut", "temperatures#outdoorTemperatureIn" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    RECU_SIZE {
-        {
-            key = "options#recuSize";
-            data_type = DataTypeNumber.class;
-            possible_values = new int[] { 0x01, 0x02 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 3;
-            change_affected = new String[] { "ventilation#fanInPercent", "ventilation#fanOutPercent",
-                    "ventilation#fanOut0", "ventilation#fanOut1", "ventilation#fanOut2", "ventilation#fanOut3",
-                    "ventilation#fanIn0", "ventilation#fanIn1", "ventilation#fanIn2", "ventilation#fanIn3" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    IS_CHIMNEY {
-        {
-            key = "options#isChimney";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x01 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 4;
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 4 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    IS_COOKERHOOD {
-        {
-            key = "options#isCookerhood";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x02 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 4;
-            change_affected = new String[] { "menuP2#cookerhoodDelay", "menuP9#cookerhoodState",
-                    "cookerhood#cookerhoodSpeed", "temperatures#cookerhoodTemperature" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 4 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    IS_HEATER {
-        {
-            key = "options#isHeater";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x04 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 4;
-            change_affected = new String[] { "heater#heaterTargetTemperature", "heater#heaterPower",
-                    "menuP9#heaterState", "heater#heaterPowerI", "temperatures#heaterTemperature" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 4 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    IS_ENTHALPY {
-        {
-            key = "options#isEnthalpy";
-            data_type = DataTypeNumber.class;
-            possible_values = new int[] { 0x00, 0x01, 0x02 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 6;
-            change_affected = new String[] { "enthalpy#enthalpyTemperature", "enthalpy#enthalpyHumidity",
-                    "enthalpy#enthalpyLevel", "menuP9#enthalpyState", "enthalpy#enthalpyTime" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 9 };
-        }
-    },
-
-    IS_EWT {
-        {
-            key = "options#isEWT";
-            data_type = DataTypeNumber.class;
-            possible_values = new int[] { 0x00, 0x01, 0x02 };
-            change_command = 0xd7;
-            change_data_size = 8;
-            change_data_pos = 7;
-            change_affected = new String[] { "ewt#ewtSpeed", "ewt#ewtTemperatureLow", "menuP9#ewtState",
-                    "ewt#ewtTemperatureHigh", "temperatures#ewtTemperature" };
-            read_command = 0xd5;
-            read_reply_command = 0xd6;
-            read_reply_data_pos = new int[] { 10 };
-        }
-    },
-
-    EWT_SPEED {
-        {
-            key = "ewt#ewtSpeed";
-            data_type = DataTypeNumber.class;
-            change_command = 0xed;
-            change_data_size = 5;
-            change_data_pos = 2;
-            change_affected = new String[] { "menuP9#ewtState", "temperatures#ewtTemperature" };
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    EWT_TEMPERATURE_LOW {
-        {
-            key = "ewt#ewtTemperatureLow";
-            data_type = DataTypeTemperature.class;
-            change_command = 0xed;
-            change_data_size = 5;
-            change_data_pos = 0;
-            change_affected = new String[] { "menuP9#ewtState" };
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    EWT_TEMPERATURE_HIGH {
-        {
-            key = "ewt#ewtTemperatureHigh";
-            data_type = DataTypeTemperature.class;
-            change_command = 0xed;
-            change_data_size = 5;
-            change_data_pos = 1;
-            change_affected = new String[] { "menuP9#ewtState" };
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    COOKERHOOD_SPEED {
-        {
-            key = "cookerhood#cookerhoodSpeed";
-            data_type = DataTypeNumber.class;
-            change_command = 0xed;
-            change_data_size = 5;
-            change_data_pos = 3;
-            change_affected = new String[] { "menuP9#cookerhoodState", "temperatures#cookerhoodTemperature" };
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    HEATER_POWER {
-        {
-            key = "heater#heaterPower";
-            data_type = DataTypeNumber.class;
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    HEATER_POWER_I {
-        {
-            key = "heater#heaterPowerI";
-            data_type = DataTypeNumber.class;
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    HEATER_TARGET_TEMPERATUR {
-        {
-            key = "heater#heaterTargetTemperature";
-            data_type = DataTypeTemperature.class;
-            change_command = 0xed;
-            change_data_size = 5;
-            change_data_pos = 4;
-            change_affected = new String[] { "menuP9#heaterState", "heater#heaterPower",
-                    "temperatures#heaterTemperature" };
-            read_command = 0xeb;
-            read_reply_command = 0xec;
-            read_reply_data_pos = new int[] { 6 };
-        }
-    },
-
-    SOFTWARE_MAIN_VERSION {
-        {
-            key = "software#softwareMainVersion";
-            data_type = DataTypeNumber.class;
-            read_command = 0x69;
-            read_reply_command = 0x6a;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    SOFTWARE_MINOR_VERSION {
-        {
-            key = "software#softwareMinorVersion";
-            data_type = DataTypeNumber.class;
-            read_command = 0x69;
-            read_reply_command = 0x6a;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    SOFTWARE_BETA_VERSION {
-        {
-            key = "software#softwareBetaVersion";
-            data_type = DataTypeNumber.class;
-            read_command = 0x69;
-            read_reply_command = 0x6a;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    ERROR_MESSAGE {
-        {
-            key = "ccease#errorMessage";
-            data_type = DataTypeMessage.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 0, 1, 9, 13 };
-        }
-    },
-
-    ERRORA_CURRENT {
-        {
-            key = "error#errorACurrent";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    ERRORA_LAST {
-        {
-            key = "error#errorALast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    ERRORA_PRELAST {
-        {
-            key = "error#errorAPrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    ERRORA_PREPRELAST {
-        {
-            key = "error#errorAPrePrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 6 };
-        }
-    },
-
-    ERRORAHIGH_CURRENT {
-        {
-            key = "error#errorAHighCurrent";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 13 };
-        }
-    },
-
-    ERRORAHIGH_LAST {
-        {
-            key = "error#errorAHighLast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 14 };
-        }
-    },
-
-    ERRORAHIGH_PRELAST {
-        {
-            key = "error#errorAHighPrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 15 };
-        }
-    },
-
-    ERRORAHIGH_PREPRELAST {
-        {
-            key = "error#errorAHighPrePrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 16 };
-        }
-    },
-
-    ERRORE_CURRENT {
-        {
-            key = "error#errorECurrent";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    ERRORE_LAST {
-        {
-            key = "error#errorELast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    ERRORE_PRELAST {
-        {
-            key = "error#errorEPrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    ERRORE_PREPRELAST {
-        {
-            key = "error#errorEPrePrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 7 };
-        }
-    },
-
-    ERROREA_CURRENT {
-        {
-            key = "error#errorEACurrent";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 9 };
-        }
-    },
-
-    ERROREA_LAST {
-        {
-            key = "error#errorEALast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 10 };
-        }
-    },
-
-    ERROREA_PRELAST {
-        {
-            key = "error#errorEAPrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 11 };
-        }
-    },
-
-    ERROREA_PREPRELAST {
-        {
-            key = "error#errorEAPrePrelast";
-            data_type = DataTypeNumber.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 12 };
-        }
-    },
-
-    ERROR_RESET {
-        {
-            key = "ccease#errorReset";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x01 };
-            change_command = 0xdb;
-            change_data_size = 4;
-            change_data_pos = 0;
-            change_affected = new String[] { "ccease#errorMessage" };
-        }
-    },
-
-    FILTER_HOURS {
-        {
-            key = "times#filterHours";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 15, 16 };
-        }
-    },
-
-    FILTER_RESET {
-        {
-            key = "ccease#filterReset";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x01 };
-            change_command = 0xdb;
-            change_data_size = 4;
-            change_data_pos = 3;
-            change_affected = new String[] { "times#filterHours", "ccease#filterError" };
-        }
-    },
-
-    FILTER_ERROR {
-        {
-            key = "ccease#filterError";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xd9;
-            read_reply_command = 0xda;
-            read_reply_data_pos = new int[] { 8 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    BYPASS_FACTOR {
-        {
-            key = "bypass#bypassFactor";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdf;
-            read_reply_command = 0xe0;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    BYPASS_LEVEL {
-        {
-            key = "bypass#bypassLevel";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdf;
-            read_reply_command = 0xe0;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    BYPASS_CORRECTION {
-        {
-            key = "bypass#bypassCorrection";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdf;
-            read_reply_command = 0xe0;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    BYPASS_SUMMER {
-        {
-            key = "bypass#bypassSummer";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xdf;
-            read_reply_command = 0xe0;
-            read_reply_data_pos = new int[] { 6 };
-        }
-    },
-
-    ENTHALPY_TEMPERATUR {
-        {
-            key = "enthalpy#enthalpyTemperature";
-            data_type = DataTypeTemperature.class;
-            read_command = 0x97;
-            read_reply_command = 0x98;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    ENTHALPY_HUMIDITY {
-        {
-            key = "enthalpy#enthalpyHumidity";
-            data_type = DataTypeNumber.class;
-            read_command = 0x97;
-            read_reply_command = 0x98;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    ENTHALPY_LEVEL {
-        {
-            key = "enthalpy#enthalpyLevel";
-            data_type = DataTypeNumber.class;
-            read_command = 0x97;
-            read_reply_command = 0x98;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    ENTHALPY_TIME {
-        {
-            key = "enthalpy#enthalpyTime";
-            data_type = DataTypeNumber.class;
-            read_command = 0x97;
-            read_reply_command = 0x98;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    PREHEATER_VALVE {
-        {
-            key = "preheater#preheaterValve";
-            data_type = DataTypeNumber.class;
-            read_command = 0xe1;
-            read_reply_command = 0xe2;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    PREHEATER_FROST_PROTECT {
-        {
-            key = "preheater#preheaterFrostProtect";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xe1;
-            read_reply_command = 0xe2;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    PREHEATER_HEATING {
-        {
-            key = "preheater#preheaterHeating";
-            data_type = DataTypeBoolean.class;
-            read_command = 0xe1;
-            read_reply_command = 0xe2;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    PREHEATER_FROST_TIME {
-        {
-            key = "preheater#preheaterFrostTime";
-            data_type = DataTypeNumber.class;
-            read_command = 0xe1;
-            read_reply_command = 0xe2;
-            read_reply_data_pos = new int[] { 3, 4 };
-        }
-    },
-
-    PREHEATER_OPTION {
-        {
-            key = "preheater#preheaterSafety";
-            data_type = DataTypeNumber.class;
-            read_command = 0xe1;
-            read_reply_command = 0xe2;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    LEVEL0_TIME {
-        {
-            key = "times#level0Time";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 0, 1, 2 };
-        }
-    },
-
-    LEVEL1_TIME {
-        {
-            key = "times#level1Time";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 3, 4, 5 };
-        }
-    },
-
-    LEVEL2_TIME {
-        {
-            key = "times#level2Time";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 6, 7, 8 };
-        }
-    },
-
-    LEVEL3_TIME {
-        {
-            key = "times#level3Time";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 17, 18, 19 };
-        }
-    },
-
-    FREEZE_TIME {
-        {
-            key = "times#freezeTime";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 9, 10 };
-        }
-    },
-
-    PREHEATER_TIME {
-        {
-            key = "times#preheaterTime";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 11, 12 };
-        }
-    },
-
-    BYPASS_TIME {
-        {
-            key = "times#bypassTime";
-            data_type = DataTypeNumber.class;
-            read_command = 0xdd;
-            read_reply_command = 0xde;
-            read_reply_data_pos = new int[] { 13, 14 };
-        }
-    },
-
-    IS_ANALOG1 {
-        {
-            key = "analog#isAnalog1";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x01 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 0;
-            change_affected = new String[] { "analog#analog1Mode", "analog#analog1Negative", "analog#analog1Min",
-                    "analog#analog1Max", "analog#analog1Value", "analog#analog1Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    IS_ANALOG2 {
-        {
-            key = "analog#isAnalog2";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x02 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 0;
-            change_affected = new String[] { "analog#analog2Mode", "analog#analog2Negative", "analog#analog2Min",
-                    "analog#analog2Max", "analog#analog2Value", "analog#analog2Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    IS_ANALOG3 {
-        {
-            key = "analog#isAnalog3";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x04 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 0;
-            change_affected = new String[] { "analog#analog3Mode", "analog#analog3Negative", "analog#analog3Min",
-                    "analog#analog3Max", "analog#analog3Value", "analog#analog3Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    IS_ANALOG4 {
-        {
-            key = "analog#isAnalog4";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x08 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 0;
-            change_affected = new String[] { "analog#analog4Mode", "analog#analog4Negative", "analog#analog4Min",
-                    "analog#analog4Max", "analog#analog4Value", "analog#analog4Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    IS_RF {
-        {
-            key = "analog#isRF";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x10 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 0;
-            change_affected = new String[] { "analog#RFMode", "analog#RFNegative", "analog#RFMin", "analog#RFMax",
-                    "analog#RFValue" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x10;
-        }
-    },
-
-    ANALOG1_MODE {
-        {
-            key = "analog#analog1Mode";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x01 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 1;
-            change_affected = new String[] { "analog#analog1Negative", "analog#analog1Min", "analog#analog1Max",
-                    "analog#analog1Value", "analog#analog1Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    ANALOG2_MODE {
-        {
-            key = "analog#analog2Mode";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x02 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 1;
-            change_affected = new String[] { "analog#analog2Negative", "analog#analog2Min", "analog#analog2Max",
-                    "analog#analog2Value", "analog#analog2Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    ANALOG3_MODE {
-        {
-            key = "analog#analog3Mode";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x04 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 1;
-            change_affected = new String[] { "analog#analog3Negative", "analog#analog3Min", "analog#analog3Max",
-                    "analog#analog3Value", "analog#analog3Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    ANALOG4_MODE {
-        {
-            key = "analog#analog4Mode";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x08 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 1;
-            change_affected = new String[] { "analog#analog4Negative", "analog#analog4Min", "analog#analog4Max",
-                    "analog#analog4Value", "analog#analog4Volt" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    RF_MODE {
-        {
-            key = "analog#RFMode";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x10 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 1;
-            change_affected = new String[] { "analog#RFNegative", "analog#RFMin", "analog#RFMax", "analog#RFValue" };
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x10;
-        }
-    },
-
-    ANALOG1_NEGATIVE {
-        {
-            key = "analog#analog1Negative";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x01 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 2;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 2 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    ANALOG2_NEGATIVE {
-        {
-            key = "analog#analog2Negative";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x02 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 2;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 2 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    ANALOG3_NEGATIVE {
-        {
-            key = "analog#analog3Negative";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x04 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 2;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 2 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    ANALOG4_NEGATIVE {
-        {
-            key = "analog#analog4Negative";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x08 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 2;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 2 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    RF_NEGATIVE {
-        {
-            key = "analog#RFNegative";
-            data_type = DataTypeBoolean.class;
-            possible_values = new int[] { 0x10 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 2;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 2 };
-            read_reply_data_bits = 0x10;
-        }
-    },
-
-    ANALOG1_MIN {
-        {
-            key = "analog#analog1Min";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 3;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    ANALOG1_MAX {
-        {
-            key = "analog#analog1Max";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 4;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 4 };
-        }
-    },
-
-    ANALOG1_VALUE {
-        {
-            key = "analog#analog1Value";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 5;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 5 };
-        }
-    },
-
-    ANALOG2_MIN {
-        {
-            key = "analog#analog2Min";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 6;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 6 };
-        }
-    },
-
-    ANALOG2_MAX {
-        {
-            key = "analog#analog2Max";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 7;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 7 };
-        }
-    },
-
-    ANALOG2_VALUE {
-        {
-            key = "analog#analog2Value";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 8;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 8 };
-        }
-    },
-
-    ANALOG3_MIN {
-        {
-            key = "analog#analog3Min";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 9;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 9 };
-        }
-    },
-
-    ANALOG3_MAX {
-        {
-            key = "analog#analog3Max";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 10;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 10 };
-        }
-    },
-
-    ANALOG3_VALUE {
-        {
-            key = "analog#analog3Value";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 11;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 11 };
-        }
-    },
-
-    ANALOG4_MIN {
-        {
-            key = "analog#analog4Min";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 12;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 12 };
-        }
-    },
-
-    ANALOG4_MAX {
-        {
-            key = "analog#analog4Max";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 13;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 13 };
-        }
-    },
-
-    ANALOG4_VALUE {
-        {
-            key = "analog#analog4Value";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 14;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 14 };
-        }
-    },
-
-    RF_MIN {
-        {
-            key = "analog#RFMin";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 15;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 15 };
-        }
-    },
-
-    RF_MAX {
-        {
-            key = "analog#RFMax";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 16;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 16 };
-        }
-    },
-
-    RF_VALUE {
-        {
-            key = "analog#RFValue";
-            data_type = DataTypeNumber.class;
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 17;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 17 };
-        }
-    },
-
-    ANALOG_MODE {
-        {
-            key = "analog#analogMode";
-            data_type = DataTypeNumber.class;
-            possible_values = new int[] { 0x00, 0x01 };
-            change_command = 0x9f;
-            change_data_size = 19;
-            change_data_pos = 18;
-            change_affected = new String[] {};
-            read_command = 0x9d;
-            read_reply_command = 0x9e;
-            read_reply_data_pos = new int[] { 18 };
-        }
-    },
-
-    ANALOG1_VOLT {
-        {
-            key = "analog#analog1Volt";
-            data_type = DataTypeVolt.class;
-            read_command = 0x13;
-            read_reply_command = 0x14;
-            read_reply_data_pos = new int[] { 0 };
-        }
-    },
-
-    ANALOG2_VOLT {
-        {
-            key = "analog#analog2Volt";
-            data_type = DataTypeVolt.class;
-            read_command = 0x13;
-            read_reply_command = 0x14;
-            read_reply_data_pos = new int[] { 1 };
-        }
-    },
-
-    ANALOG3_VOLT {
-        {
-            key = "analog#analog3Volt";
-            data_type = DataTypeVolt.class;
-            read_command = 0x13;
-            read_reply_command = 0x14;
-            read_reply_data_pos = new int[] { 2 };
-        }
-    },
-
-    ANALOG4_VOLT {
-        {
-            key = "analog#analog4Volt";
-            data_type = DataTypeVolt.class;
-            read_command = 0x13;
-            read_reply_command = 0x14;
-            read_reply_data_pos = new int[] { 3 };
-        }
-    },
-
-    IS_L1_SWITCH {
-        {
-            key = "inputs#isL1Switch";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    IS_L2_SWITCH {
-        {
-            key = "inputs#isL2Switch";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 0 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    IS_BATHROOM_SWITCH {
-        {
-            key = "inputs#isBathroomSwitch";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x01;
-        }
-    },
-
-    IS_COOKERHOOD_SWITCH {
-        {
-            key = "inputs#isCookerhoodSwitch";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x02;
-        }
-    },
-
-    IS_EXTERNAL_FILTER {
-        {
-            key = "inputs#isExternalFilter";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x04;
-        }
-    },
-
-    IS_WTW {
-        {
-            key = "inputs#isWTW";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x08;
-        }
-    },
-
-    IS_BATHROOM2_SWITCH {
-        {
-            key = "inputs#isBathroom2Switch";
-            data_type = DataTypeBoolean.class;
-            read_command = 0x03;
-            read_reply_command = 0x04;
-            read_reply_data_pos = new int[] { 1 };
-            read_reply_data_bits = 0x10;
-        }
-    };
+                    "preheater#preheaterValve" },
+            0xd5, 0xd6, new int[] { 0 }),
+    IS_BYPASS("options#isBypass", DataTypeBoolean.class, 0xd7, 8, 1,
+            new String[] { "temperatures#indoorTemperatureIn", "temperatures#outdoorTemperatureOut" }, 0xd5, 0xd6,
+            new int[] { 1 }),
+    RECU_TYPE("options#recuType", DataTypeNumber.class, new int[] { 0x01, 0x02 }, 0xd7, 8, 2,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanOutPercent", "temperatures#indoorTemperatureIn",
+                    "temperatures#outdoorTemperatureOut", "temperatures#indoorTemperatureOut",
+                    "temperatures#outdoorTemperatureIn" },
+            0xd5, 0xd6, new int[] { 2 }),
+    RECU_SIZE("options#recuSize", DataTypeNumber.class, new int[] { 0x01, 0x02 }, 0xd7, 8, 3,
+            new String[] { "ventilation#fanInPercent", "ventilation#fanOutPercent", "ventilation#fanOut0",
+                    "ventilation#fanOut1", "ventilation#fanOut2", "ventilation#fanOut3", "ventilation#fanIn0",
+                    "ventilation#fanIn1", "ventilation#fanIn2", "ventilation#fanIn3" },
+            0xd5, 0xd6, new int[] { 3 }),
+    IS_CHIMNEY("options#isChimney", DataTypeBoolean.class, new int[] { 0x01 }, 0xd7, 8, 4, new String[] {}, 0xd5, 0xd6,
+            new int[] { 4 }, 0x01),
+    IS_COOKERHOOD("options#isCookerhood", DataTypeBoolean.class, new int[] { 0x02 }, 0xd7, 8, 4,
+            new String[] { "menuP2#cookerhoodDelay", "menuP9#cookerhoodState", "cookerhood#cookerhoodSpeed",
+                    "temperatures#cookerhoodTemperature" },
+            0xd5, 0xd6, new int[] { 4 }, 0x02),
+    IS_HEATER("options#isHeater", DataTypeBoolean.class, new int[] { 0x04 }, 0xd7, 8, 4,
+            new String[] { "heater#heaterTargetTemperature", "heater#heaterPower", "menuP9#heaterState",
+                    "heater#heaterPowerI", "temperatures#heaterTemperature" },
+            0xd5, 0xd6, new int[] { 4 }, 0x04),
+    IS_ENTHALPY("options#isEnthalpy", DataTypeNumber.class, new int[] { 0x00, 0x01, 0x02 }, 0xd7, 8, 6,
+            new String[] { "enthalpy#enthalpyTemperature", "enthalpy#enthalpyHumidity", "enthalpy#enthalpyLevel",
+                    "menuP9#enthalpyState", "enthalpy#enthalpyTime" },
+            0xd5, 0xd6, new int[] { 9 }),
+    IS_EWT("options#isEWT", DataTypeNumber.class, new int[] { 0x00, 0x01, 0x02 }, 0xd7, 8, 7,
+            new String[] { "ewt#ewtSpeed", "ewt#ewtTemperatureLow", "menuP9#ewtState", "ewt#ewtTemperatureHigh",
+                    "temperatures#ewtTemperature" },
+            0xd5, 0xd6, new int[] { 10 }),
+    EWT_SPEED("ewt#ewtSpeed", DataTypeNumber.class, 0xed, 5, 2,
+            new String[] { "menuP9#ewtState", "temperatures#ewtTemperature" }, 0xeb, 0xec, new int[] { 2 }),
+    EWT_TEMPERATURE_LOW("ewt#ewtTemperatureLow", DataTypeTemperature.class, 0xed, 5, 0,
+            new String[] { "menuP9#ewtState" }, 0xeb, 0xec, new int[] { 0 }),
+    EWT_TEMPERATURE_HIGH("ewt#ewtTemperatureHigh", DataTypeTemperature.class, 0xed, 5, 1,
+            new String[] { "menuP9#ewtState" }, 0xeb, 0xec, new int[] { 1 }),
+    COOKERHOOD_SPEED("cookerhood#cookerhoodSpeed", DataTypeNumber.class, 0xed, 5, 3,
+            new String[] { "menuP9#cookerhoodState", "temperatures#cookerhoodTemperature" }, 0xeb, 0xec,
+            new int[] { 3 }),
+    HEATER_POWER("heater#heaterPower", DataTypeNumber.class, 0xeb, 0xec, new int[] { 4 }),
+    HEATER_POWER_I("heater#heaterPowerI", DataTypeNumber.class, 0xeb, 0xec, new int[] { 5 }),
+    HEATER_TARGET_TEMPERATUR("heater#heaterTargetTemperature", DataTypeTemperature.class, 0xed, 5, 4,
+            new String[] { "menuP9#heaterState", "heater#heaterPower", "temperatures#heaterTemperature" }, 0xeb, 0xec,
+            new int[] { 6 }),
+    SOFTWARE_MAIN_VERSION("software#softwareMainVersion", DataTypeNumber.class, 0x69, 0x6a, new int[] { 0 }),
+    SOFTWARE_MINOR_VERSION("software#softwareMinorVersion", DataTypeNumber.class, 0x69, 0x6a, new int[] { 1 }),
+    SOFTWARE_BETA_VERSION("software#softwareBetaVersion", DataTypeNumber.class, 0x69, 0x6a, new int[] { 2 }),
+    ERROR_MESSAGE("ccease#errorMessage", DataTypeMessage.class, 0xd9, 0xda, new int[] { 0, 1, 9, 13 }),
+    ERRORA_CURRENT("error#errorACurrent", DataTypeNumber.class, 0xd9, 0xda, new int[] { 0 }),
+    ERRORA_LAST("error#errorALast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 2 }),
+    ERRORA_PRELAST("error#errorAPrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 4 }),
+    ERRORA_PREPRELAST("error#errorAPrePrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 6 }),
+    ERRORAHIGH_CURRENT("error#errorAHighCurrent", DataTypeNumber.class, 0xd9, 0xda, new int[] { 13 }),
+    ERRORAHIGH_LAST("error#errorAHighLast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 14 }),
+    ERRORAHIGH_PRELAST("error#errorAHighPrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 15 }),
+    ERRORAHIGH_PREPRELAST("error#errorAHighPrePrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 16 }),
+    ERRORE_CURRENT("error#errorECurrent", DataTypeNumber.class, 0xd9, 0xda, new int[] { 1 }),
+    ERRORE_LAST("error#errorELast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 3 }),
+    ERRORE_PRELAST("error#errorEPrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 5 }),
+    ERRORE_PREPRELAST("error#errorEPrePrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 7 }),
+    ERROREA_CURRENT("error#errorEACurrent", DataTypeNumber.class, 0xd9, 0xda, new int[] { 9 }),
+    ERROREA_LAST("error#errorEALast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 10 }),
+    ERROREA_PRELAST("error#errorEAPrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 11 }),
+    ERROREA_PREPRELAST("error#errorEAPrePrelast", DataTypeNumber.class, 0xd9, 0xda, new int[] { 12 }),
+    ERROR_RESET("ccease#errorReset", DataTypeBoolean.class, new int[] { 0x01 }, 0xdb, 4, 0,
+            new String[] { "ccease#errorMessage" }),
+    FILTER_HOURS("times#filterHours", DataTypeNumber.class, 0xdd, 0xde, new int[] { 15, 16 }),
+    FILTER_RESET("ccease#filterReset", DataTypeBoolean.class, new int[] { 0x01 }, 0xdb, 4, 3,
+            new String[] { "times#filterHours", "ccease#filterError" }),
+    FILTER_ERROR("ccease#filterError", DataTypeBoolean.class, 0xd9, 0xda, new int[] { 8 }, 0x01),
+    BYPASS_FACTOR("bypass#bypassFactor", DataTypeNumber.class, 0xdf, 0xe0, new int[] { 2 }),
+    BYPASS_LEVEL("bypass#bypassLevel", DataTypeNumber.class, 0xdf, 0xe0, new int[] { 3 }),
+    BYPASS_CORRECTION("bypass#bypassCorrection", DataTypeNumber.class, 0xdf, 0xe0, new int[] { 4 }),
+    BYPASS_SUMMER("bypass#bypassSummer", DataTypeBoolean.class, 0xdf, 0xe0, new int[] { 6 }),
+    ENTHALPY_TEMPERATUR("enthalpy#enthalpyTemperature", DataTypeTemperature.class, 0x97, 0x98, new int[] { 0 }),
+    ENTHALPY_HUMIDITY("enthalpy#enthalpyHumidity", DataTypeNumber.class, 0x97, 0x98, new int[] { 1 }),
+    ENTHALPY_LEVEL("enthalpy#enthalpyLevel", DataTypeNumber.class, 0x97, 0x98, new int[] { 4 }),
+    ENTHALPY_TIME("enthalpy#enthalpyTime", DataTypeNumber.class, 0x97, 0x98, new int[] { 5 }),
+    PREHEATER_VALVE("preheater#preheaterValve", DataTypeNumber.class, 0xe1, 0xe2, new int[] { 0 }),
+    PREHEATER_FROST_PROTECT("preheater#preheaterFrostProtect", DataTypeBoolean.class, 0xe1, 0xe2, new int[] { 1 }),
+    PREHEATER_HEATING("preheater#preheaterHeating", DataTypeBoolean.class, 0xe1, 0xe2, new int[] { 2 }),
+    PREHEATER_FROST_TIME("preheater#preheaterFrostTime", DataTypeNumber.class, 0xe1, 0xe2, new int[] { 3, 4 }),
+    PREHEATER_OPTION("preheater#preheaterSafety", DataTypeNumber.class, 0xe1, 0xe2, new int[] { 5 }),
+    LEVEL0_TIME("times#level0Time", DataTypeNumber.class, 0xdd, 0xde, new int[] { 0, 1, 2 }),
+    LEVEL1_TIME("times#level1Time", DataTypeNumber.class, 0xdd, 0xde, new int[] { 3, 4, 5 }),
+    LEVEL2_TIME("times#level2Time", DataTypeNumber.class, 0xdd, 0xde, new int[] { 6, 7, 8 }),
+    LEVEL3_TIME("times#level3Time", DataTypeNumber.class, 0xdd, 0xde, new int[] { 17, 18, 19 }),
+    FREEZE_TIME("times#freezeTime", DataTypeNumber.class, 0xdd, 0xde, new int[] { 9, 10 }),
+    PREHEATER_TIME("times#preheaterTime", DataTypeNumber.class, 0xdd, 0xde, new int[] { 11, 12 }),
+    BYPASS_TIME("times#bypassTime", DataTypeNumber.class, 0xdd, 0xde, new int[] { 13, 14 }),
+    IS_ANALOG1("analog#isAnalog1", DataTypeBoolean.class, new int[] { 0x01 }, 0x9f, 19, 0,
+            new String[] { "analog#analog1Mode", "analog#analog1Negative", "analog#analog1Min", "analog#analog1Max",
+                    "analog#analog1Value", "analog#analog1Volt" },
+            0x9d, 0x9e, new int[] { 0 }, 0x01),
+    IS_ANALOG2("analog#isAnalog2", DataTypeBoolean.class, new int[] { 0x02 }, 0x9f, 19, 0,
+            new String[] { "analog#analog2Mode", "analog#analog2Negative", "analog#analog2Min", "analog#analog2Max",
+                    "analog#analog2Value", "analog#analog2Volt" },
+            0x9d, 0x9e, new int[] { 0 }, 0x02),
+    IS_ANALOG3("analog#isAnalog3", DataTypeBoolean.class, new int[] { 0x04 }, 0x9f, 19, 0,
+            new String[] { "analog#analog3Mode", "analog#analog3Negative", "analog#analog3Min", "analog#analog3Max",
+                    "analog#analog3Value", "analog#analog3Volt" },
+            0x9d, 0x9e, new int[] { 0 }, 0x04),
+    IS_ANALOG4("analog#isAnalog4", DataTypeBoolean.class, new int[] { 0x08 }, 0x9f, 19, 0,
+            new String[] { "analog#analog4Mode", "analog#analog4Negative", "analog#analog4Min", "analog#analog4Max",
+                    "analog#analog4Value", "analog#analog4Volt" },
+            0x9d, 0x9e, new int[] { 0 }, 0x08),
+    IS_RF("analog#isRF", DataTypeBoolean.class, new int[] { 0x10 }, 0x9f, 19, 0,
+            new String[] { "analog#RFMode", "analog#RFNegative", "analog#RFMin", "analog#RFMax", "analog#RFValue" },
+            0x9d, 0x9e, new int[] { 0 }, 0x10),
+    ANALOG1_MODE("analog#analog1Mode", DataTypeBoolean.class, new int[] { 0x01 }, 0x9f, 19, 1,
+            new String[] { "analog#analog1Negative", "analog#analog1Min", "analog#analog1Max", "analog#analog1Value",
+                    "analog#analog1Volt" },
+            0x9d, 0x9e, new int[] { 1 }, 0x01),
+    ANALOG2_MODE("analog#analog2Mode", DataTypeBoolean.class, new int[] { 0x02 }, 0x9f, 19, 1,
+            new String[] { "analog#analog2Negative", "analog#analog2Min", "analog#analog2Max", "analog#analog2Value",
+                    "analog#analog2Volt" },
+            0x9d, 0x9e, new int[] { 1 }, 0x02),
+    ANALOG3_MODE("analog#analog3Mode", DataTypeBoolean.class, new int[] { 0x04 }, 0x9f, 19, 1,
+            new String[] { "analog#analog3Negative", "analog#analog3Min", "analog#analog3Max", "analog#analog3Value",
+                    "analog#analog3Volt" },
+            0x9d, 0x9e, new int[] { 1 }, 0x04),
+    ANALOG4_MODE("analog#analog4Mode", DataTypeBoolean.class, new int[] { 0x08 }, 0x9f, 19, 1,
+            new String[] { "analog#analog4Negative", "analog#analog4Min", "analog#analog4Max", "analog#analog4Value",
+                    "analog#analog4Volt" },
+            0x9d, 0x9e, new int[] { 1 }, 0x08),
+    RF_MODE("analog#RFMode", DataTypeBoolean.class, new int[] { 0x10 }, 0x9f, 19, 1,
+            new String[] { "analog#RFNegative", "analog#RFMin", "analog#RFMax", "analog#RFValue" }, 0x9d, 0x9e,
+            new int[] { 1 }, 0x10),
+    ANALOG1_NEGATIVE("analog#analog1Negative", DataTypeBoolean.class, new int[] { 0x01 }, 0x9f, 19, 2, new String[] {},
+            0x9d, 0x9e, new int[] { 2 }, 0x01),
+    ANALOG2_NEGATIVE("analog#analog2Negative", DataTypeBoolean.class, new int[] { 0x02 }, 0x9f, 19, 2, new String[] {},
+            0x9d, 0x9e, new int[] { 2 }, 0x02),
+    ANALOG3_NEGATIVE("analog#analog3Negative", DataTypeBoolean.class, new int[] { 0x04 }, 0x9f, 19, 2, new String[] {},
+            0x9d, 0x9e, new int[] { 2 }, 0x04),
+    ANALOG4_NEGATIVE("analog#analog4Negative", DataTypeBoolean.class, new int[] { 0x08 }, 0x9f, 19, 2, new String[] {},
+            0x9d, 0x9e, new int[] { 2 }, 0x08),
+    RF_NEGATIVE("analog#RFNegative", DataTypeBoolean.class, new int[] { 0x10 }, 0x9f, 19, 2, new String[] {}, 0x9d,
+            0x9e, new int[] { 2 }, 0x10),
+    ANALOG1_MIN("analog#analog1Min", DataTypeNumber.class, 0x9f, 19, 3, new String[] {}, 0x9d, 0x9e, new int[] { 3 }),
+    ANALOG1_MAX("analog#analog1Max", DataTypeNumber.class, 0x9f, 19, 4, new String[] {}, 0x9d, 0x9e, new int[] { 4 }),
+    ANALOG1_VALUE("analog#analog1Value", DataTypeNumber.class, 0x9f, 19, 5, new String[] {}, 0x9d, 0x9e,
+            new int[] { 5 }),
+    ANALOG2_MIN("analog#analog2Min", DataTypeNumber.class, 0x9f, 19, 6, new String[] {}, 0x9d, 0x9e, new int[] { 6 }),
+    ANALOG2_MAX("analog#analog2Max", DataTypeNumber.class, 0x9f, 19, 7, new String[] {}, 0x9d, 0x9e, new int[] { 7 }),
+    ANALOG2_VALUE("analog#analog2Value", DataTypeNumber.class, 0x9f, 19, 8, new String[] {}, 0x9d, 0x9e,
+            new int[] { 8 }),
+    ANALOG3_MIN("analog#analog3Min", DataTypeNumber.class, 0x9f, 19, 9, new String[] {}, 0x9d, 0x9e, new int[] { 9 }),
+    ANALOG3_MAX("analog#analog3Max", DataTypeNumber.class, 0x9f, 19, 10, new String[] {}, 0x9d, 0x9e, new int[] { 10 }),
+    ANALOG3_VALUE("analog#analog3Value", DataTypeNumber.class, 0x9f, 19, 11, new String[] {}, 0x9d, 0x9e,
+            new int[] { 11 }),
+    ANALOG4_MIN("analog#analog4Min", DataTypeNumber.class, 0x9f, 19, 12, new String[] {}, 0x9d, 0x9e, new int[] { 12 }),
+    ANALOG4_MAX("analog#analog4Max", DataTypeNumber.class, 0x9f, 19, 13, new String[] {}, 0x9d, 0x9e, new int[] { 13 }),
+    ANALOG4_VALUE("analog#analog4Value", DataTypeNumber.class, 0x9f, 19, 14, new String[] {}, 0x9d, 0x9e,
+            new int[] { 14 }),
+    RF_MIN("analog#RFMin", DataTypeNumber.class, 0x9f, 19, 15, new String[] {}, 0x9d, 0x9e, new int[] { 15 }),
+    RF_MAX("analog#RFMax", DataTypeNumber.class, 0x9f, 19, 16, new String[] {}, 0x9d, 0x9e, new int[] { 16 }),
+    RF_VALUE("analog#RFValue", DataTypeNumber.class, 0x9f, 19, 17, new String[] {}, 0x9d, 0x9e, new int[] { 17 }),
+    ANALOG_MODE("analog#analogMode", DataTypeNumber.class, new int[] { 0x00, 0x01 }, 0x9f, 19, 18, new String[] {},
+            0x9d, 0x9e, new int[] { 18 }),
+    ANALOG1_VOLT("analog#analog1Volt", DataTypeVolt.class, 0x13, 0x14, new int[] { 0 }),
+    ANALOG2_VOLT("analog#analog2Volt", DataTypeVolt.class, 0x13, 0x14, new int[] { 1 }),
+    ANALOG3_VOLT("analog#analog3Volt", DataTypeVolt.class, 0x13, 0x14, new int[] { 2 }),
+    ANALOG4_VOLT("analog#analog4Volt", DataTypeVolt.class, 0x13, 0x14, new int[] { 3 }),
+    IS_L1_SWITCH("inputs#isL1Switch", DataTypeBoolean.class, 0x03, 0x04, new int[] { 0 }, 0x01),
+    IS_L2_SWITCH("inputs#isL2Switch", DataTypeBoolean.class, 0x03, 0x04, new int[] { 0 }, 0x02),
+    IS_BATHROOM_SWITCH("inputs#isBathroomSwitch", DataTypeBoolean.class, 0x03, 0x04, new int[] { 1 }, 0x01),
+    IS_COOKERHOOD_SWITCH("inputs#isCookerhoodSwitch", DataTypeBoolean.class, 0x03, 0x04, new int[] { 1 }, 0x02),
+    IS_EXTERNAL_FILTER("inputs#isExternalFilter", DataTypeBoolean.class, 0x03, 0x04, new int[] { 1 }, 0x04),
+    IS_WTW("inputs#isWTW", DataTypeBoolean.class, 0x03, 0x04, new int[] { 1 }, 0x08),
+    IS_BATHROOM2_SWITCH("inputs#isBathroom2Switch", DataTypeBoolean.class, 0x03, 0x04, new int[] { 1 }, 0x10);
 
     private final Logger logger = LoggerFactory.getLogger(ComfoAirCommandType.class);
-    String key;
-    Class<? extends ComfoAirDataType> data_type;
+    private String key;
+    private Class<? extends ComfoAirDataType> data_type;
 
     /*
      * Possible values
      */
-    int[] possible_values;
+    private int[] possible_values;
 
     /*
      * Cmd code to change properties on the comfoair.
      */
-    int change_command;
+    private int change_command;
     /*
      * The size of the data block.
      */
-    int change_data_size;
+    private int change_data_size;
     /*
      * The byte inside the data block which holds the crucial value.
      */
-    int change_data_pos;
+    private int change_data_pos;
     /*
      * Affected commands which should be refreshed after a successful change
      * command call.
      */
-    String[] change_affected;
+    private String[] change_affected;
 
     /*
      * Command for reading properties.
      */
-    int read_command;
+    private int read_command;
 
     /*
      * ACK Command which identifies the matching response.
      */
-    int read_reply_command;
+    private int read_reply_command;
 
     /*
      * The byte position inside the response data.
      */
-    int[] read_reply_data_pos;
+    private int[] read_reply_data_pos;
 
     /*
      * Bit mask for boolean response properties to identify a true value.
      */
-    int read_reply_data_bits;
+    private int read_reply_data_bits;
+
+    /*
+     * Constructor for full read/write command
+     */
+    private ComfoAirCommandType(String key, Class<? extends ComfoAirDataType> data_type, int[] possible_values,
+            int change_command, int change_data_size, int change_data_pos, String[] change_affected, int read_command,
+            int read_reply_command, int[] read_reply_data_pos, int read_reply_data_bits) {
+        this.key = key;
+        this.data_type = data_type;
+        this.possible_values = possible_values;
+        this.change_command = change_command;
+        this.change_data_size = change_data_size;
+        this.change_data_pos = change_data_pos;
+        this.change_affected = change_affected;
+        this.read_command = read_command;
+        this.read_reply_command = read_reply_command;
+        this.read_reply_data_pos = read_reply_data_pos;
+        this.read_reply_data_bits = read_reply_data_bits;
+    }
+
+    /*
+     * Constructor for read/write command w/o predefined read_reply_data_bits
+     */
+    private ComfoAirCommandType(String key, Class<? extends ComfoAirDataType> data_type, int[] possible_values,
+            int change_command, int change_data_size, int change_data_pos, String[] change_affected, int read_command,
+            int read_reply_command, int[] read_reply_data_pos) {
+        this.key = key;
+        this.data_type = data_type;
+        this.possible_values = possible_values;
+        this.change_command = change_command;
+        this.change_data_size = change_data_size;
+        this.change_data_pos = change_data_pos;
+        this.change_affected = change_affected;
+        this.read_command = read_command;
+        this.read_reply_command = read_reply_command;
+        this.read_reply_data_pos = read_reply_data_pos;
+    }
+
+    /*
+     * Constructor for read/write command w/o predefined read_reply_data_bits & possible_values
+     */
+    private ComfoAirCommandType(String key, Class<? extends ComfoAirDataType> data_type, int change_command,
+            int change_data_size, int change_data_pos, String[] change_affected, int read_command,
+            int read_reply_command, int[] read_reply_data_pos) {
+        this.key = key;
+        this.data_type = data_type;
+        this.change_command = change_command;
+        this.change_data_size = change_data_size;
+        this.change_data_pos = change_data_pos;
+        this.change_affected = change_affected;
+        this.read_command = read_command;
+        this.read_reply_command = read_reply_command;
+        this.read_reply_data_pos = read_reply_data_pos;
+    }
+
+    /*
+     * Constructor for write-only command (reset)
+     */
+    private ComfoAirCommandType(String key, Class<? extends ComfoAirDataType> data_type, int[] possible_values,
+            int change_command, int change_data_size, int change_data_pos, String[] change_affected) {
+        this.key = key;
+        this.data_type = data_type;
+        this.possible_values = possible_values;
+        this.change_command = change_command;
+        this.change_data_size = change_data_size;
+        this.change_data_pos = change_data_pos;
+        this.change_affected = change_affected;
+    }
+
+    /*
+     * Constructor for read-only command
+     */
+    private ComfoAirCommandType(String key, Class<? extends ComfoAirDataType> data_type, int read_command,
+            int read_reply_command, int[] read_reply_data_pos, int read_reply_data_bits) {
+        this.key = key;
+        this.data_type = data_type;
+        this.read_command = read_command;
+        this.read_reply_command = read_reply_command;
+        this.read_reply_data_pos = read_reply_data_pos;
+        this.read_reply_data_bits = read_reply_data_bits;
+    }
+
+    /*
+     * Constructor for read-only command w/o read_reply_data_bits
+     */
+    private ComfoAirCommandType(String key, Class<? extends ComfoAirDataType> data_type, int read_command,
+            int read_reply_command, int[] read_reply_data_pos) {
+        this.key = key;
+        this.data_type = data_type;
+        this.read_command = read_command;
+        this.read_reply_command = read_reply_command;
+        this.read_reply_data_pos = read_reply_data_pos;
+    }
 
     /**
      * @return command key

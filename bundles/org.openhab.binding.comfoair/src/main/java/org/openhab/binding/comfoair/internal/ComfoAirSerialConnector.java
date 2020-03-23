@@ -86,7 +86,7 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                 inputStream = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
                 outputStream = serialPort.getOutputStream();
 
-                ComfoAirCommand command = ComfoAirCommandType.getChangeCommand(ComfoAirCommandType.ACTIVATE.key,
+                ComfoAirCommand command = ComfoAirCommandType.getChangeCommand(ComfoAirCommandType.ACTIVATE.getKey(),
                         OnOffType.ON);
 
                 if (command != null) {
@@ -121,7 +121,7 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
         SerialPort serialPort = this.serialPort;
 
         if (serialPort != null) {
-            ComfoAirCommand command = ComfoAirCommandType.getChangeCommand(ComfoAirCommandType.ACTIVATE.key,
+            ComfoAirCommand command = ComfoAirCommandType.getChangeCommand(ComfoAirCommandType.ACTIVATE.getKey(),
                     OnOffType.OFF);
 
             if (command != null) {
