@@ -52,7 +52,7 @@ public class FrontierSiliconRadioConnection {
     private String sessionId;
 
     /** http clients, store cookies, so it is kept in connection class. */
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     /** Flag indicating if we are successfully logged in. */
     private boolean isLoggedIn = false;
