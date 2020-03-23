@@ -69,12 +69,12 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
     private @Nullable VerisureSession session;
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public VerisureBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
-        session = new VerisureSession(this.httpClient);
+        // session = new VerisureSession(this.httpClient);
     }
 
     @Override
@@ -125,11 +125,13 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Verisure Binding");
         VerisureBridgeConfiguration config = getConfigAs(VerisureBridgeConfiguration.class);
-        VerisureBridgeHandler.refresh = config.refresh;
+        refresh = config.refresh;
         this.pinCode = config.pin;
         if (config.username == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username and password is mandatory");
+        } else if (refresh < 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh time cannot negative!");
         } else {
             try {
                 authstring = "j_username=" + config.username + "&j_password="
@@ -261,8 +263,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                 refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh,
                         TimeUnit.SECONDS);
                 logger.debug("Scheduling at fixed delay refreshjob {}", refreshJob);
-            } catch (IllegalArgumentException e) {
-                logger.warn("Refresh time value is invalid! Please change the refresh time configuration!", e);
             } catch (RejectedExecutionException e) {
                 logger.warn("Automatic refresh job cannot be started!");
             }
