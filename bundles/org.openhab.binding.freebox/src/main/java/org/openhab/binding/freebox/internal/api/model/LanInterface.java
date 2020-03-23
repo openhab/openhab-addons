@@ -31,7 +31,7 @@ public class LanInterface {
         return hostCount;
     }
 
-    public boolean asHosts() {
+    public boolean hasHosts() {
         return hostCount > 0;
     }
 }

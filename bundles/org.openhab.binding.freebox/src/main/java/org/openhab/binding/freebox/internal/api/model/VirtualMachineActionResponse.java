@@ -19,7 +19,7 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  * response of the login API
  * https://dev.freebox.fr/sdk/os/login/#
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @RelativePath(relativeUrl = "vm/", retryAuth = true)
 public class VirtualMachineActionResponse extends EmptyResponse {

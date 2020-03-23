@@ -17,8 +17,8 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
 
 /**
  * The {@link VirtualMachineResponse} is the Java class used to map the
- * response of the LCD configuration API
- * https://dev.freebox.fr/sdk/os/lcd/#
+ * response of Virtual Machine API
+ * https://dev.freebox.fr/sdk/os/vm/#
  *
  * @author Gaël L'hopital - Initial contribution
  */

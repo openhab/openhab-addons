@@ -17,7 +17,7 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
 
 /**
  * The {@link LanHostResponse} is the Java class used to map the
- * response of the LCD configuration API
+ * response of the lan browser API
  * https://dev.freebox.fr/sdk/os/lcd/#
  *
  * @author Gaël L'hopital - Initial contribution

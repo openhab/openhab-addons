@@ -60,11 +60,11 @@ public class FreeboxBindingConstants {
     public static final String API_VERSION = "apiVersion";
 
     // List of all Group Channel ids
-    public static final String CONNECTION_STATUS = "connectionStatus";
+    public static final String CONNECTION_STATUS = "connections-status";
     public static final String SYS_INFO = "sysinfo";
     public static final String ACTIONS = "actions";
     public static final String SAMBA = "samba";
-    public static final String PLAYER_ACTIONS = "playeractions";
+    public static final String PLAYER_ACTIONS = "player-actions";
     public static final String CONNECTIVITY = "connectivity";
     public static final String STATE = "state";
     public static final String DISPLAY = "display";

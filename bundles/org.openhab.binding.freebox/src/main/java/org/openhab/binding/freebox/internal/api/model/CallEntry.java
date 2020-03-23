@@ -34,13 +34,11 @@ public class CallEntry {
     }
 
     private int id;
-    private CallType type;
-    // Call creation timestamp.
-    private long datetime;
+    private CallType type = CallType.UNKNOWN;
+    private long datetime; // Call creation timestamp.
     private String number;
     private String name;
-    // Call duration in seconds.
-    private int duration;
+    private int duration; // Call duration in seconds.
     @SerializedName("new")
     private boolean newCall;
     private int contactId;

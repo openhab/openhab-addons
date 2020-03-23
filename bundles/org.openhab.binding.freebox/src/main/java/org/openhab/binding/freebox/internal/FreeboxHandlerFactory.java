@@ -132,16 +132,12 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
             callbackUrl = (String) url;
         } else {
             String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress != null) {
-                int port = HttpServiceUtil.getHttpServicePort(bundleContext);
-                if (port != -1) {
-                    // we do not use SSL as it can cause certificate validation issues.
-                    callbackUrl = String.format("http://%s:%d", ipAddress, port);
-                } else {
-                    logger.warn("Cannot find port of the http service.");
-                }
+            int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+            if (port != -1 && ipAddress != null) {
+                // we do not use SSL as it can cause certificate validation issues.
+                callbackUrl = String.format("http://%s:%d", ipAddress, port);
             } else {
-                logger.warn("No network interface could be found.");
+                logger.warn("No network interface could be found or Cannot find port of the http service.");
             }
         }
     }

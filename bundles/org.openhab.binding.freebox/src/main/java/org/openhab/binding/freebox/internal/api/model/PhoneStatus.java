@@ -70,7 +70,7 @@ public class PhoneStatus {
         return gainRx;
     }
 
-    protected void setGain_rx(Integer gain_rx) {
+    protected void setGainRx(Integer gain_rx) {
         this.gainRx = gain_rx;
     }
 

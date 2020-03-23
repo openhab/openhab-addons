@@ -81,7 +81,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="connectionStatus">
+	<channel-group-type id="connection-status">
 		<label>Connection Status details</label>
 		<channels>
 			<channel id="line_status" typeId="line_status" />
@@ -130,7 +130,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="playeractions">
+	<channel-group-type id="player-actions">
 		<label>Freebox player behaviour</label>
 		<channels>
 			<channel id="airmedia_status" typeId="airmedia_status" />

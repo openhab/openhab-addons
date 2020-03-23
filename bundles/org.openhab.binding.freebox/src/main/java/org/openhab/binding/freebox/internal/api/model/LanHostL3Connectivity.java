@@ -31,7 +31,7 @@ public class LanHostL3Connectivity {
     }
 
     private String addr;
-    private L3Af af;
+    private L3Af af = L3Af.UNKNOWN;
     private boolean active;
     private boolean reachable;
     private long lastActivity;

@@ -35,7 +35,7 @@ public class LanConfig {
     private String nameDns;
     private String nameMdns;
     private String nameNetbios;
-    private NetworkMode type;
+    private NetworkMode type = NetworkMode.UNKNOWN;
 
     public String getIp() {
         return ip;

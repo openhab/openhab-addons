@@ -37,7 +37,7 @@ public class ServerActions implements ThingActions {
     private @Nullable ServerHandler handler;
 
     public ServerActions() {
-        logger.info("Freebox actions service instanciated");
+        logger.info("Freebox Server actions service instanciated");
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ServerActions implements ThingActions {
         if (actions instanceof ServerActions) {
             ((ServerActions) actions).reboot();
         } else {
-            throw new IllegalArgumentException("Instance is not an FreeboxServerActionsService class.");
+            throw new IllegalArgumentException("Instance is not an ServerActions class.");
         }
     }
 }

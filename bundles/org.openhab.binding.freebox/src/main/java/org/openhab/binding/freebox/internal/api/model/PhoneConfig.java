@@ -40,7 +40,7 @@ public class PhoneConfig {
         return dectEcoMode;
     }
 
-    public void setDect_eco_mode(Boolean dectEcoMode) {
+    public void setDectEcoMode(Boolean dectEcoMode) {
         this.dectEcoMode = dectEcoMode;
     }
 
@@ -80,7 +80,7 @@ public class PhoneConfig {
         return dectEnabled;
     }
 
-    public void setDect_enabled(Boolean dectEnabled) {
+    public void setDectEnabled(Boolean dectEnabled) {
         this.dectEnabled = dectEnabled;
     }
 
@@ -88,7 +88,7 @@ public class PhoneConfig {
         return dectRingOnOff;
     }
 
-    public void setDect_ring_on_off(Boolean dectRingOnOff) {
+    public void setDectRingOnOff(Boolean dectRingOnOff) {
         this.dectRingOnOff = dectRingOnOff;
     }
 }

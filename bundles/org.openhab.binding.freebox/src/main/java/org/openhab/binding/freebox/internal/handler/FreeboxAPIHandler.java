@@ -54,6 +54,7 @@ import org.openhab.binding.freebox.internal.api.model.AuthorizeResponse;
 import org.openhab.binding.freebox.internal.api.model.AuthorizeResult;
 import org.openhab.binding.freebox.internal.api.model.DiscoveryResponse;
 import org.openhab.binding.freebox.internal.api.model.EmptyResponse;
+import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
 import org.openhab.binding.freebox.internal.api.model.LanHostsResponse;
 import org.openhab.binding.freebox.internal.api.model.LanInterface;
@@ -62,7 +63,6 @@ import org.openhab.binding.freebox.internal.api.model.LoginResponse;
 import org.openhab.binding.freebox.internal.api.model.LogoutResponse;
 import org.openhab.binding.freebox.internal.api.model.OpenSessionRequest;
 import org.openhab.binding.freebox.internal.api.model.OpenSessionResult;
-import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
 import org.openhab.binding.freebox.internal.config.FreeboxAPIConfiguration;
 import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.osgi.framework.Bundle;
@@ -246,8 +246,7 @@ public class FreeboxAPIHandler extends BaseBridgeHandler {
         try {
             String token = appToken;
             if (StringUtils.isEmpty(token)) {
-                AuthorizeRequest request = new AuthorizeRequest(appId,
-                        FrameworkUtil.getBundle(getClass()));
+                AuthorizeRequest request = new AuthorizeRequest(appId, FrameworkUtil.getBundle(getClass()));
                 AuthorizeResult response = executePost(AuthorizeResponse.class, null, request);
                 token = response.getAppToken();
 
@@ -420,7 +419,7 @@ public class FreeboxAPIHandler extends BaseBridgeHandler {
     public List<LanHost> getLanHosts() throws FreeboxException {
         List<LanHost> hosts = new ArrayList<>();
         List<LanInterface> lans = executeGet(LanInterfacesResponse.class, null);
-        lans.stream().filter(LanInterface::asHosts).forEach(lan -> {
+        lans.stream().filter(LanInterface::hasHosts).forEach(lan -> {
             List<LanHost> lanHosts;
             try {
                 lanHosts = executeGet(LanHostsResponse.class, lan.getName());

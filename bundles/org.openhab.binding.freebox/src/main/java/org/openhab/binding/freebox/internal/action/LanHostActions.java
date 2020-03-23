@@ -37,7 +37,7 @@ public class LanHostActions implements ThingActions {
     private @Nullable LanHostHandler handler;
 
     public LanHostActions() {
-        logger.info("Freebox actions service instanciated");
+        logger.info("Freebox Lan Hosts actions service instanciated");
     }
 
     @Override
@@ -62,11 +62,11 @@ public class LanHostActions implements ThingActions {
         }
     }
 
-    public static void reboot(@Nullable ThingActions actions) {
+    public static void wol(@Nullable ThingActions actions) {
         if (actions instanceof LanHostActions) {
             ((LanHostActions) actions).wol();
         } else {
-            throw new IllegalArgumentException("Instance is not an LanHostActionsService class.");
+            throw new IllegalArgumentException("Instance is not an LanHostActions class.");
         }
     }
 }
