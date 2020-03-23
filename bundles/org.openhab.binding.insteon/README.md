@@ -119,6 +119,7 @@ In order to determine which channels a device supports, you can look at the devi
 | backlightDuration | Number | Back Light Duration |
 | batteryLevel | Number | Battery Level |
 | batteryWatermarkLevel | Number | Battery Watermark Level |
+| beep | Switch | Makes Device Beep |
 | bottomOutlet | Switch | Bottom Outlet |
 | buttonA | Switch | Button A |
 | buttonB | Switch | Button B |
@@ -156,6 +157,7 @@ In order to determine which channels a device supports, you can look at the devi
 | kWh | Number | Kilowatt Hour |
 | lastHeardFrom | DateTime | Last Heard From |
 | ledBrightness | Number | LED brightness |
+| ledOnOff | Switch | LED On/Off |
 | lightDimmer | Dimmer | light Dimmer |
 | lightLevel | Number | Light Level |
 | loadDimmer | Dimmer | Load Dimmer |
