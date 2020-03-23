@@ -218,7 +218,6 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
      * If <code>device</code> is a supported device, a unique thing ID (e.g. serial number) must be returned. Further
      * supported devices should be added here, based on the available UPnP information.
      */
-    @SuppressWarnings("null")
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();

@@ -122,7 +122,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     private static final String DEFAULT_CONFIG_PROPERTY_REFRESH = "1";
     private static final Configuration DEFAULT_COMPLETE_CONFIGURATION = createDefaultConfiguration();
 
-    @SuppressWarnings("null")
     @BeforeClass
     public static void setUpClass() throws Exception {
         ServletHolder holder = new ServletHolder(radioServiceDummy);
@@ -138,7 +137,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         createThePowerChannel();
     }
 
-    @SuppressWarnings("null")
     @AfterClass
     public static void tearDownClass() throws Exception {
         server.stopServer();
@@ -208,12 +206,10 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify OFFLINE Thing status when the HTTP response cannot be parsed correctly.
      */
-    @SuppressWarnings("null")
     @Test
     public void offlineIfParseError() {
         // create a thing with two channels - the power channel and any of the others
         String modeChannelID = FSInternetRadioBindingConstants.CHANNEL_MODE;
-        @SuppressWarnings("null")
         String acceptedItemType = ACCEPTED_ITEM_TYPES.get(modeChannelID);
         createChannel(DEFAULT_THING_UID, modeChannelID, acceptedItemType);
 
@@ -241,7 +237,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the HTTP status is handled correctly when it is not OK_200.
      */
-    @SuppressWarnings("null")
     @Test
     public void httpStatusNokHandling() {
         // create a thing with two channels - the power channel and any of the others
@@ -282,7 +277,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the power channel is updated.
      */
-    @SuppressWarnings("null")
     @Test
     public void powerChannelUpdated() {
         Thing radioThing = initializeRadioThing(DEFAULT_COMPLETE_CONFIGURATION);
@@ -321,7 +315,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the mute channel is updated.
      */
-    @SuppressWarnings("null")
     @Test
     public void muteChhannelUpdated() {
         String muteChannelID = FSInternetRadioBindingConstants.CHANNEL_MUTE;
@@ -359,7 +352,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the mode channel is updated.
      */
-    @SuppressWarnings("null")
     @Test
     public void modeChannelUdpated() {
         String modeChannelID = FSInternetRadioBindingConstants.CHANNEL_MODE;
@@ -396,7 +388,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the volume is updated through the CHANNEL_VOLUME_ABSOLUTE using INCREASE and DECREASE commands.
      */
-    @SuppressWarnings("null")
     @Test
     public void volumechannelUpdatedAbsIncDec() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
@@ -418,7 +409,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the volume is updated through the CHANNEL_VOLUME_ABSOLUTE using UP and DOWN commands.
      */
-    @SuppressWarnings("null")
     @Test
     public void volumeChannelUpdatedAbsUpDown() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
@@ -440,7 +430,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the invalid values when updating CHANNEL_VOLUME_ABSOLUTE are handled correctly.
      */
-    @SuppressWarnings("null")
     @Test
     public void invalidAbsVolumeValues() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
@@ -507,7 +496,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the volume is updated through the CHANNEL_VOLUME_PERCENT using INCREASE and DECREASE commands.
      */
-    @SuppressWarnings("null")
     @Test
     public void volumeChannelUpdatedPercIncDec() {
 
@@ -540,7 +528,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the volume is updated through the CHANNEL_VOLUME_PERCENT using UP and DOWN commands.
      */
-    @SuppressWarnings("null")
     @Test
     public void volumeChannelUpdatedPercUpDown() {
 
@@ -573,7 +560,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the valid and invalid values when updating CHANNEL_VOLUME_PERCENT are handled correctly.
      */
-    @SuppressWarnings("null")
     @Test
     public void validInvalidPercVolume() {
         String absoluteVolumeChannelID = FSInternetRadioBindingConstants.CHANNEL_VOLUME_ABSOLUTE;
@@ -614,7 +600,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         });
     }
 
-    @SuppressWarnings("null")
     private void testChannelWithINCREASEAndDECREASECommands(ChannelUID channelUID, Item item) {
         synchronized (channelUID) {
             // First we have to make sure that the item state is 0
@@ -650,7 +635,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         }
     }
 
-    @SuppressWarnings("null")
     private void testChannelWithUPAndDOWNCommands(ChannelUID channelUID, Item item) {
         synchronized (channelUID) {
             // First we have to make sure that the item state is 0
@@ -688,7 +672,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the preset channel is updated.
      */
-    @SuppressWarnings("null")
     @Test
     public void presetChannelUpdated() {
         String presetChannelID = FSInternetRadioBindingConstants.CHANNEL_PRESET;
@@ -713,7 +696,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the playInfoName channel is updated.
      */
-    @SuppressWarnings("null")
     @Test
     public void playInfoNameChannelUpdated() {
         String playInfoNameChannelID = FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_NAME;
@@ -737,7 +719,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     /**
      * Verify the playInfoText channel is updated.
      */
-    @SuppressWarnings("null")
     @Test
     public void playInfoTextChannelUpdated() {
         String playInfoTextChannelID = FSInternetRadioBindingConstants.CHANNEL_PLAY_INFO_TEXT;
@@ -771,7 +752,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         return config;
     }
 
-    @SuppressWarnings("null")
     private static void setTheChannelsMap() {
         ACCEPTED_ITEM_TYPES = new HashMap<String, String>();
         ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_POWER, "Switch");
@@ -784,7 +764,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         ACCEPTED_ITEM_TYPES.put(FSInternetRadioBindingConstants.CHANNEL_VOLUME_PERCENT, "Dimmer");
     }
 
-    @SuppressWarnings("null")
     private void createThePowerChannel() {
         String powerChannelID = FSInternetRadioBindingConstants.CHANNEL_POWER;
         String acceptedItemType = ACCEPTED_ITEM_TYPES.get(powerChannelID);
@@ -848,7 +827,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         return true;
     }
 
-    @SuppressWarnings("null")
     private Thing initializeRadioThing(Configuration config) {
         radioThing = ThingBuilder.create(DEFAULT_THING_TYPE_UID, DEFAULT_THING_UID).withConfiguration(config)
                 .withChannels(channels).build();
@@ -863,7 +841,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         return radioThing;
     }
 
-    @SuppressWarnings("null")
     private Thing initializeRadioThingWithMockedHandler(Configuration config) {
         radioThing = ThingBuilder.create(DEFAULT_THING_TYPE_UID, DEFAULT_THING_UID).withConfiguration(config)
                 .withChannels(channels).build();
@@ -878,7 +855,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         return radioThing;
     }
 
-    @SuppressWarnings("null")
     private void turnTheRadioOn(Thing radioThing) {
         radioHandler.handleCommand(getChannelUID(radioThing, FSInternetRadioBindingConstants.CHANNEL_POWER),
                 OnOffType.ON);
@@ -894,7 +870,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         });
     }
 
-    @SuppressWarnings("null")
     private void verifyOnlineStatusIsSet() {
         ThingStatusInfoBuilder statusBuilder = ThingStatusInfoBuilder.create(ThingStatus.ONLINE,
                 ThingStatusDetail.NONE);
@@ -902,7 +877,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         verify(callback, atLeast(1)).statusUpdated(radioThing, statusInfo);
     }
 
-    @SuppressWarnings("null")
     private void verifyConfigurationError() {
         ThingStatusInfoBuilder statusBuilder = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE,
                 ThingStatusDetail.CONFIGURATION_ERROR);
@@ -910,7 +884,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         verify(callback, atLeast(1)).statusUpdated(radioThing, statusInfo);
     }
 
-    @SuppressWarnings("null")
     private void verifyCommunicationError(String exceptionMessage) {
         ArgumentCaptor<ThingStatusInfo> captor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeast(1)).statusUpdated(isA(Thing.class), captor.capture());

@@ -128,7 +128,6 @@ public class RadioServiceDummy extends HttpServlet {
         return requestParameters.isEmpty();
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

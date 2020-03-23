@@ -59,7 +59,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     /** Runnable for job {@link #updateJob} for periodic refresh. */
     private final Runnable updateRunnable = new Runnable() {
-        @SuppressWarnings("null")
         @Override
         public void run() {
             if (radio == null) {
@@ -154,7 +153,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     private void radioLogin() {
         scheduler.execute(new Runnable() {
-            @SuppressWarnings("null")
             @Override
             public void run() {
                 try {
@@ -185,7 +183,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
         radio = null;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         Validate.notNull(radio);

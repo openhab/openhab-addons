@@ -75,7 +75,6 @@ public class FrontierSiliconRadioConnection {
      * @return <code>true</code> if login was successful; <code>false</code> otherwise.
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public boolean doLogin() throws IOException {
         isLoggedIn = false; // reset login flag
 
@@ -146,7 +145,6 @@ public class FrontierSiliconRadioConnection {
      * @return request result
      * @throws IOException if the request failed.
      */
-    @SuppressWarnings("null")
     public FrontierSiliconRadioApiResult doRequest(String requestString, String params) throws IOException {
         // 3 retries upon failure
         for (int i = 0; i < 3; i++) {

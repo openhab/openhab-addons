@@ -70,7 +70,6 @@ public class FrontierSiliconRadio {
      * @return true when radio is on, false when radio is off
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public boolean getPower() throws IOException {
         final FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_POWER);
         return result.getValueU8AsBoolean();
@@ -94,7 +93,6 @@ public class FrontierSiliconRadio {
      * @return volume: 0=muted, 32=max. volume
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public int getVolumeAbsolute() throws IOException {
         FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_VOLUME);
         currentVolume = result.getValueU8AsInt();
@@ -107,7 +105,6 @@ public class FrontierSiliconRadio {
      * @return volume: 0=muted, 100=max. volume (100 corresponds 32 absolute value)
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public int getVolumePercent() throws IOException {
         FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_VOLUME);
         currentVolume = result.getValueU8AsInt();
@@ -170,7 +167,6 @@ public class FrontierSiliconRadio {
      * @return operating mode. On hama radio: 0="Internet Radio", 1=Spotify, 2=Player, 3="AUX IN"
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public int getMode() throws IOException {
         FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_MODE);
         return result.getValueU32AsInt();
@@ -194,7 +190,6 @@ public class FrontierSiliconRadio {
      * @return the station name, e.g. "WDR2"
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public String getPlayInfoName() throws IOException {
         FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_PLAY_INFO_NAME);
         return result.getValueC8ArrayAsString();
@@ -206,7 +201,6 @@ public class FrontierSiliconRadio {
      * @return the radio info text, e.g. music title
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public String getPlayInfoText() throws IOException {
         FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_PLAY_INFO_TEXT);
         return result.getValueC8ArrayAsString();
@@ -230,7 +224,6 @@ public class FrontierSiliconRadio {
      * @return true: radio is muted, false: radio is not muted
      * @throws IOException if communication with the radio failed, e.g. because the device is not reachable.
      */
-    @SuppressWarnings("null")
     public boolean getMuted() throws IOException {
         FrontierSiliconRadioApiResult result = conn.doRequest(REQUEST_GET_MUTE);
         return result.getValueU8AsBoolean();

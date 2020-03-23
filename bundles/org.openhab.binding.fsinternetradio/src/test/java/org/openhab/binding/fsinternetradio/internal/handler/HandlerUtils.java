@@ -28,7 +28,6 @@ public class HandlerUtils {
      * @param handler the handler
      * @return the managed radio object
      */
-    @SuppressWarnings("null")
     public static FrontierSiliconRadio getRadio(final FSInternetRadioHandler handler) {
         return handler.radio;
     }
