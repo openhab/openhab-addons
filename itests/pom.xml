@@ -17,6 +17,7 @@
   <name>openHAB Add-ons :: Integration Tests</name>
 
   <modules>
+    <module>org.openhab.persistence.mapdb.tests</module>    
   </modules>
 
   <dependencies>
