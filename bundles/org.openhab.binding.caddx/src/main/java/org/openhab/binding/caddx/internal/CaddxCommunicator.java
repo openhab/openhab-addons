@@ -17,10 +17,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.TooManyListenersException;
-import java.util.concurrent.Exchanger;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,7 +55,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private SerialPort serialPort;
     private InputStream in;
     private OutputStream out;
-    Exchanger<CaddxMessage> exchanger = new Exchanger<>();
+    SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<CaddxMessage>();
 
     // Receiver state variables
     private boolean inMessage = false;
@@ -235,20 +234,19 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                 // Check for an incoming message
                 CaddxMessage incomingMessage = null;
-                CaddxMessage throwAway = new CaddxMessage(new byte[] { 0x1d }, false);
                 try {
-                    incomingMessage = exchanger.exchange(throwAway, 3, TimeUnit.SECONDS);
-                } catch (TimeoutException e) {
-                    if (expectedMessageNumbers == null) { // Nothing expected, Nothing received we continue
-                        logger.trace("CaddxCommunicator.run(): Nothing expected, Nothing received we continue");
-                        continue;
-                    }
-                    logger.debug("CaddxCommunicator.run() TimeoutException caught.");
+                    incomingMessage = exchanger.poll(3, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    logger.debug("CaddxCommunicator.run() InterruptedException caught.");
+                    Thread.currentThread().interrupt();
                 }
 
                 // Log
                 if (incomingMessage == null) {
-                    logger.debug("CaddxCommunicator.run() NoMessage received.");
+                    if (expectedMessageNumbers == null) { // Nothing expected, Nothing received we continue
+                        logger.trace("CaddxCommunicator.run(): Nothing expected, Nothing received we continue");
+                        continue;
+                    }
                 } else {
                     if (logger.isDebugEnabled()) {
                         logger.debug("<-: {}", incomingMessage.getName());
@@ -416,12 +414,12 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         try {
             logger.trace("CaddxCommunicator.handleBinaryProtocol() Exchanging");
 
-            exchanger.exchange(caddxMessage, 3, TimeUnit.SECONDS);
+            if (!exchanger.offer(caddxMessage, 3, TimeUnit.SECONDS)) {
+                logger.debug("Offered message was not received");
+            }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             logger.trace("CaddxCommunicator.handleBinaryProtocol() InterruptedException caught.");
-        } catch (TimeoutException e) {
-            logger.trace("CaddxCommunicator.handleBinaryProtocol() TimeoutException caught.");
+            Thread.currentThread().interrupt();
         }
 
         // Initialize state for next reception
@@ -518,12 +516,12 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         try {
             logger.trace("CaddxCommunicator.serialEvent() Exchanging");
 
-            exchanger.exchange(caddxMessage, 3, TimeUnit.SECONDS);
+            if (!exchanger.offer(caddxMessage, 3, TimeUnit.SECONDS)) {
+                logger.debug("Offered message was not received");
+            }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             logger.trace("CaddxCommunicator.handleAsciiProtocol() InterruptedException caught.");
-        } catch (TimeoutException e) {
-            logger.trace("CaddxCommunicator.handleAsciiProtocol() TimeoutException caught.");
+            Thread.currentThread().interrupt();
         }
 
         // Initialize state for next reception
