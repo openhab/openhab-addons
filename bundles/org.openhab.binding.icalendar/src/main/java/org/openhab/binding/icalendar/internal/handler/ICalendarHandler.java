@@ -145,12 +145,16 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 updateStates();
                 rescheduleCalendarStateUpdate();
             } else {
+                logger.warn(
+                        "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded. Going offline.");
                 updateStatus(ThingStatus.OFFLINE);
             }
             pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime.longValue(),
                     currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
         } else {
             updateStatus(ThingStatus.OFFLINE);
+            logger.debug(
+                    "The calendar is currently offline as no local copy exists. It will go online as soon as a valid valid calendar is retrieved.");
             pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0,
                     currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
         }
