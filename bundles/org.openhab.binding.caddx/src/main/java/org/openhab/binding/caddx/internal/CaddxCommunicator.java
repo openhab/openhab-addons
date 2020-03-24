@@ -54,8 +54,8 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private String serialPortName;
     private int baudRate;
     private SerialPort serialPort;
-    private @Nullable InputStream in;
-    private @Nullable OutputStream out;
+    private InputStream in;
+    private OutputStream out;
     Exchanger<CaddxMessage> exchanger = new Exchanger<>();
 
     // Receiver state variables
@@ -66,6 +66,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private byte[] message;
     private int messageBufferIndex = 0;
     private boolean unStuff = false;
+    private int tempAsciiByte = 0;
 
     public CaddxCommunicator(SerialPortManager portManager, CaddxProtocol protocol, String serialPortName, int baudRate)
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
@@ -85,8 +86,19 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         serialPort.enableReceiveThreshold(1);
         serialPort.disableReceiveTimeout();
 
-        in = serialPort.getInputStream();
-        out = serialPort.getOutputStream();
+        InputStream localIn = serialPort.getInputStream();
+        if (localIn == null) {
+            logger.warn("Cannot get the input stream of the serial port");
+            throw new IOException("Input stream is null");
+        }
+        in = localIn;
+
+        OutputStream localOut = serialPort.getOutputStream();
+        if (localOut == null) {
+            logger.warn("Cannot get the output stream of the serial port");
+            throw new IOException("Output stream is null");
+        }
+        out = localOut;
 
         serialPort.notifyOnDataAvailable(true);
         serialPort.addEventListener(this);
@@ -154,14 +166,11 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Close the streams first to unblock blocked reads and writes
         try {
-            InputStream localIn = in;
-            OutputStream localOut = out;
-            if (localIn != null) {
-                localIn.close();
-            }
-            if (localOut != null) {
-                localOut.close();
-            }
+            in.close();
+        } catch (IOException e) {
+        }
+        try {
+            out.close();
         } catch (IOException e) {
         }
 
@@ -337,6 +346,14 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         }
     }
 
+    private int readByte(InputStream stream) {
+        try {
+            return stream.read();
+        } catch (IOException e) {
+            return -1;
+        }
+    }
+
     private void receiveInBinaryProtocol(SerialPortEvent serialPortEvent) {
         int b = 0;
 
@@ -345,14 +362,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         {
             b = 0;
             while (b != 0x7E && b != -1) {
-                try {
-                    InputStream localIn = in;
-                    if (localIn != null) {
-                        b = localIn.read();
-                    }
-                } catch (IOException e) {
-                    b = -1;
-                }
+                b = readByte(in);
             }
             if (b == -1) {
                 return;
@@ -365,15 +375,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Read the message length
         if (messageBufferLength == 0) {
-            b = 0;
-            try {
-                InputStream localIn = in;
-                if (localIn != null) {
-                    b = localIn.read();
-                }
-            } catch (IOException e) {
-                b = -1;
-            }
+            b = readByte(in);
             if (b == -1) {
                 return;
             }
@@ -385,15 +387,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Read the message
         while (true) {
-            b = 0;
-            try {
-                InputStream localIn = in;
-                if (localIn != null) {
-                    b = localIn.read();
-                }
-            } catch (IOException e) {
-                b = -1;
-            }
+            b = readByte(in);
             if (b == -1) {
                 return;
             }
@@ -440,22 +434,36 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         unStuff = false;
     }
 
+    private int readAsciiByte(InputStream stream) {
+        if (!haveFirstByte) { // this is the 1st digit
+            int b = readByte(in);
+            if (b == -1) {
+                return -1;
+            }
+            tempAsciiByte = (b - 0x30) * 0x10;
+            haveFirstByte = true;
+        }
+
+        if (haveFirstByte) { // this is the 2nd digit
+            int b = readByte(in);
+            if (b == -1) {
+                return -1;
+            }
+            tempAsciiByte += (b - 0x30);
+            haveFirstByte = false;
+        }
+
+        return tempAsciiByte;
+    }
+
     private void receiveInAsciiProtocol(SerialPortEvent serialPortEvent) {
         int b = 0;
 
         // Read the start byte
         if (!inMessage) // skip until 0x0A
         {
-            b = 0;
             while (b != 0x0A && b != -1) {
-                try {
-                    InputStream localIn = in;
-                    if (localIn != null) {
-                        b = localIn.read();
-                    }
-                } catch (IOException e) {
-                    b = -1;
-                }
+                b = readByte(in);
             }
             if (b == -1) {
                 return;
@@ -470,30 +478,14 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Read the message length
         if (!haveMessageLength) {
-            b = 0;
             while (!haveMessageLength) {
-                try {
-                    InputStream localIn = in;
-                    if (localIn != null) {
-                        b = localIn.read();
-                    }
-                } catch (IOException e) {
-                    b = -1;
-                }
+                b = readAsciiByte(in);
                 if (b == -1) {
                     return;
                 }
 
-                if (!haveFirstByte) { // this is the 1st digit
-                    b = b - 0x30;
-                    messageBufferLength = b * 0x10;
-                    haveFirstByte = true;
-                } else {
-                    b = b - 0x30;
-                    messageBufferLength = messageBufferLength + b + 2;
-                    haveMessageLength = true;
-                    haveFirstByte = false;
-                }
+                messageBufferLength = b + 2; // add 2 bytes for the checksum
+                haveMessageLength = true;
             }
 
             message = new byte[messageBufferLength];
@@ -502,32 +494,15 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Read the message
         while (true) {
-            b = 0;
-
-            // Read the byte
+            // Read a byte
             while (true) {
-                try {
-                    InputStream localIn = in;
-                    if (localIn != null) {
-                        b = localIn.read();
-                    }
-                } catch (IOException e) {
-                    b = -1;
-                }
+                b = readAsciiByte(in);
                 if (b == -1) {
                     return;
                 }
 
-                if (!haveFirstByte) { // this is the 1st digit
-                    b = b - 0x30;
-                    message[messageBufferIndex] = (byte) (b * 0x10);
-                    haveFirstByte = true;
-                } else {
-                    b = b - 0x30;
-                    message[messageBufferIndex] = (byte) (message[messageBufferIndex] + b);
-                    haveFirstByte = false;
-                    break;
-                }
+                message[messageBufferIndex] = (byte) b;
+                break;
             }
 
             messageBufferIndex++;
@@ -554,10 +529,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         // Initialize state for next reception
         inMessage = false;
         haveMessageLength = false;
-        haveFirstByte = false;
         messageBufferLength = 0;
-        message = new byte[0];
         messageBufferIndex = 0;
-        unStuff = false;
     }
 }
