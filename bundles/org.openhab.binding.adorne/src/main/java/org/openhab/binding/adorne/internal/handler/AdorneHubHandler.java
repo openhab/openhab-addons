@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChangeNotify {
-    private Logger logger = LoggerFactory.getLogger(AdorneHubHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AdorneHubHandler.class);
     private @Nullable AdorneHubController adorneHubController = null;
 
     public AdorneHubHandler(Bridge bridge) {

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.adorne", service = ThingHandlerFactory.class)
 public class AdorneHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(AdorneHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AdorneHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_HUB, THING_TYPE_SWITCH, THING_TYPE_DIMMER).collect(Collectors.toSet()));
 

@@ -89,7 +89,8 @@ public class AdorneSwitchHandler extends BaseThingHandler {
         if (configZoneId != null) {
             zoneId = configZoneId;
         } else {
-            throw new IllegalStateException("zoneId must not be null as it is a required configuration parameter");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
         }
         updateStatus(ThingStatus.ONLINE);
     }

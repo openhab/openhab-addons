@@ -15,9 +15,6 @@ package org.openhab.binding.adorne.internal.hub;
 import static org.openhab.binding.adorne.internal.AdorneBindingConstants.*;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonStreamParser;
 
 /**
  * The {@link AdorneHubController} manages the interaction with the Adorne hub. The controller maintains a connection
@@ -53,7 +48,7 @@ import com.google.gson.JsonStreamParser;
  */
 @NonNullByDefault
 public class AdorneHubController {
-    private Logger logger = LoggerFactory.getLogger(AdorneHubController.class);
+    private final Logger logger = LoggerFactory.getLogger(AdorneHubController.class);
 
     private static final int HUB_CONNECT_TIMEOUT = 10000;
     private static final int HUB_RECONNECT_SLEEP_MINIMUM = 1;
@@ -82,12 +77,12 @@ public class AdorneHubController {
     private static final String HUB_SERVICE_SYSTEM_INFO = "SystemInfo";
 
     private @Nullable Future<?> hubController;
-    private String hubHost;
+    private final String hubHost;
     private int hubPort;
-    private @Nullable Connection hubConnection;
-    private CompletableFuture<@Nullable Void> hubControllerConnected;
+    private @Nullable AdorneHubConnection hubConnection;
+    private final CompletableFuture<@Nullable Void> hubControllerConnected;
     private int hubReconnectSleep; // Sleep time before we attempt re-connect
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
 
     private volatile boolean stopWhenCommandsServed; // Stop the controller once all pending commands have been served
     private volatile long stopTimestamp; // Stop the controller after this timestamp
@@ -98,8 +93,8 @@ public class AdorneHubController {
     private final Map<Integer, CompletableFuture<AdorneDeviceState>> stateCommands;
     private @Nullable CompletableFuture<List<Integer>> zoneCommand;
     private @Nullable CompletableFuture<String> macAddressCommand;
-    private AtomicInteger commandId; // We assign increasing command ids to all REST commands to the hub for easier
-                                     // troubleshooting
+    private final AtomicInteger commandId; // We assign increasing command ids to all REST commands to the hub for
+                                           // easier troubleshooting
 
     private final AdorneHubChangeNotify changeListener;
 
@@ -107,36 +102,6 @@ public class AdorneHubController {
     private final Object hubConnectionLock;
     private final Object macAddressCommandLock;
     private final Object zoneCommandLock;
-
-    @NonNullByDefault
-    private class Connection {
-        public Socket hubSocket;
-        public PrintStream hubOut;
-        public InputStreamReader hubInReader;
-        public JsonStreamParser hubIn;
-
-        private Connection(Socket hubSocket, PrintStream hubOut, InputStreamReader hubInReader,
-                JsonStreamParser hubIn) {
-            this.hubSocket = hubSocket;
-            this.hubOut = hubOut;
-            this.hubInReader = hubInReader;
-            this.hubIn = hubIn;
-        }
-
-        private void close() {
-            try {
-                hubInReader.close(); // Closes underlying input stream as well
-            } catch (IOException e) {
-                logger.warn("Closing hub input reader failed ({})", e.getMessage());
-            }
-            hubOut.close(); // Closes underlying output stream as well
-            try {
-                hubSocket.close();
-            } catch (IOException e) {
-                logger.warn("Closing hub controller socket failed ({})", e.getMessage());
-            }
-        }
-    }
 
     public AdorneHubController(AdorneHubConfiguration config, ScheduledExecutorService scheduler,
             AdorneHubChangeNotify changeListener) {
@@ -171,7 +136,7 @@ public class AdorneHubController {
     public CompletableFuture<@Nullable Void> start() {
         logger.info("Starting hub controller");
         hubController = scheduler.submit(this::msgLoop);
-        return (hubControllerConnected);
+        return hubControllerConnected;
     }
 
     /**
@@ -192,13 +157,9 @@ public class AdorneHubController {
         // here. Because waiting on input is long-running we can't just synchronize it with the stop check as case 2
         // above. But that is ok as waiting on input has a timeout and will honor stop after that.
         synchronized (hubConnectionLock) {
-            Connection hubConnection = this.hubConnection;
+            AdorneHubConnection hubConnection = this.hubConnection;
             if (hubConnection != null) {
-                try {
-                    hubConnection.hubSocket.shutdownInput();
-                } catch (IOException e) {
-                    logger.debug("Couldn't shutdown hub socket");
-                }
+                hubConnection.cancel();
             }
         }
 
@@ -263,7 +224,7 @@ public class AdorneHubController {
                 stateCommands.put(zoneId, stateCommand);
             }
         }
-        return (stateCommand);
+        return stateCommand;
     }
 
     /**
@@ -282,7 +243,7 @@ public class AdorneHubController {
                 this.zoneCommand = zoneCommand = new CompletableFuture<>();
             }
         }
-        return (zoneCommand);
+        return zoneCommand;
     }
 
     /**
@@ -301,15 +262,15 @@ public class AdorneHubController {
                 this.macAddressCommand = macAddressCommand = new CompletableFuture<>();
             }
         }
-        return (macAddressCommand);
+        return macAddressCommand;
     }
 
     private void sendRestCmd(String cmd) {
         logger.debug("Sending command {}", cmd);
         synchronized (hubConnectionLock) {
-            Connection hubConnection = this.hubConnection;
+            AdorneHubConnection hubConnection = this.hubConnection;
             if (hubConnection != null) {
-                hubConnection.hubOut.print(cmd);
+                hubConnection.putMsg(cmd);
             } else {
                 throw new IllegalStateException("Can't send command. Adorne Hub connection is not available.");
             }
@@ -341,7 +302,17 @@ public class AdorneHubController {
                     hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM; // Reset
                 }
 
-                if ((hubMsg = getHubMsg()) == null) {
+                hubMsg = null;
+                try {
+                    AdorneHubConnection hubConnection = this.hubConnection;
+                    if (hubConnection != null) {
+                        hubMsg = hubConnection.getMsg();
+                    }
+                } catch (JsonParseException e) {
+                    logger.debug("Failed to read valid message {}", e.getMessage());
+                    disconnect(); // Disconnect so we can recover
+                }
+                if (hubMsg == null) {
                     continue;
                 }
 
@@ -362,15 +333,19 @@ public class AdorneHubController {
                     processMsgSystemInfo(hubMsg);
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (
+
+        RuntimeException e) {
             logger.warn("Hub controller failed", e);
         }
 
         // Shut down
         disconnect();
+
         cancelCommands();
         hubControllerConnected.cancel(false);
         logger.info("Exiting hub controller");
+
     }
 
     private boolean shouldStop() {
@@ -383,24 +358,18 @@ public class AdorneHubController {
         boolean commandsServed = stopWhenCommandsServed && stateCommandsIsEmpty && (zoneCommand == null)
                 && (macAddressCommand == null);
 
-        return (isCancelled() || timeoutExceeded || commandsServed);
+        return isCancelled() || timeoutExceeded || commandsServed;
     }
 
     private boolean isCancelled() {
         Future<?> hubController = this.hubController;
-        return (hubController == null || hubController.isCancelled());
+        return hubController == null || hubController.isCancelled();
     }
 
     private boolean connect() {
         try {
             if (hubConnection == null) {
-                Socket hubSocket;
-                hubSocket = new Socket(hubHost, hubPort);
-                hubSocket.setSoTimeout(HUB_CONNECT_TIMEOUT);
-                PrintStream hubOut = new PrintStream(hubSocket.getOutputStream());
-                InputStreamReader hubInReader = new InputStreamReader(hubSocket.getInputStream());
-                JsonStreamParser hubIn = new JsonStreamParser(hubInReader);
-                hubConnection = new Connection(hubSocket, hubOut, hubInReader, hubIn);
+                hubConnection = new AdorneHubConnection(hubHost, hubPort, HUB_CONNECT_TIMEOUT);
                 logger.debug("Hub connection established");
 
                 // Working around an Adorne Hub bug: the first command sent from a new connection intermittently
@@ -422,7 +391,7 @@ public class AdorneHubController {
     private void disconnect() {
         hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM; // Reset our reconnect sleep time
         synchronized (hubConnectionLock) {
-            Connection hubConnection = this.hubConnection;
+            AdorneHubConnection hubConnection = this.hubConnection;
             if (hubConnection != null) {
                 hubConnection.close();
                 this.hubConnection = null;
@@ -461,37 +430,6 @@ public class AdorneHubController {
                 this.hubController = scheduler.schedule(this::msgLoop, sleep, TimeUnit.SECONDS);
             }
         }
-    }
-
-    private @Nullable JsonObject getHubMsg() {
-        JsonElement hubMsg = null;
-        JsonObject hubMsgJsonObject = null;
-        Connection hubConnection = this.hubConnection;
-
-        if (hubConnection != null && !isCancelled()) {
-            // Note that the stop check is only best effort. With worst case timing we can still enter next and will
-            // honor a stop request after HUB_CONNECT_TIMEOUT, which is fine.
-            try {
-                hubMsg = hubConnection.hubIn.next();
-            } catch (JsonParseException e) {
-                logger.debug("Failed to read valid message {}", e.getMessage());
-                disconnect(); // Disconnect so we can recover
-            }
-            if (hubMsg instanceof JsonObject) {
-                hubMsgJsonObject = (JsonObject) hubMsg;
-            }
-        }
-
-        if (hubMsg == null || (hubMsg instanceof JsonPrimitive && hubMsg.getAsCharacter() == 0)) {
-            return null; // We have nothing further to log or do
-        }
-        logger.debug("Received message {}", hubMsg);
-        if (hubMsgJsonObject == null) {
-            logger.debug("Received message is not valid JSON object. Ignoring it.");
-            return null;
-        }
-
-        return hubMsgJsonObject;
     }
 
     /**
@@ -580,9 +518,9 @@ public class AdorneHubController {
             if (commandId == Integer.MAX_VALUE) {
                 newCommandId = 0;
             }
-            return (++newCommandId);
+            return ++newCommandId;
         };
 
-        return (commandId.updateAndGet(op));
+        return commandId.updateAndGet(op);
     }
 }
