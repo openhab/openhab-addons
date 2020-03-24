@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -101,7 +100,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                     duration = Duration.ofMinutes(1);
                 }
                 if (eventList == null) {
-                    eventList = new LinkedList<Event>();
+                    eventList = new ArrayList<Event>();
                 }
                 eventList.add(new VEventWPeriod(event, begInst, begInst.plus(duration)).toEvent());
                 break;
@@ -139,7 +138,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 }
                 // fall through => means we are within the time frame
                 if (eventList == null) {
-                    eventList = new LinkedList<Event>();
+                    eventList = new ArrayList<Event>();
                 }
                 eventList.add(new VEventWPeriod(event, begInst, endInst).toEvent());
                 break;

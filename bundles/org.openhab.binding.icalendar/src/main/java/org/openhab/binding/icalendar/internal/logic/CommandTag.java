@@ -124,14 +124,16 @@ public class CommandTag {
 
         // string ends with % => try PercentType
         if (currentTargetState.endsWith("%")) {
-            if ((cmd = TypeParser.parseCommand(percentCommandType,
-                    currentTargetState.substring(0, currentTargetState.length() - 1))) != null) {
+            cmd = TypeParser.parseCommand(percentCommandType,
+                    currentTargetState.substring(0, currentTargetState.length() - 1));
+            if (cmd != null) {
                 return cmd;
             }
         }
 
         // try all other possible CommandTypes
-        if ((cmd = TypeParser.parseCommand(otherCommandTypes, currentTargetState)) != null) {
+        cmd = TypeParser.parseCommand(otherCommandTypes, currentTargetState);
+        if (cmd != null) {
             return cmd;
         }
 
