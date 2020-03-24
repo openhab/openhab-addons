@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -53,52 +50,10 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
     @Override
     public void updateChannel(ChannelUID channelUID, String data) {
         if (channelUID.getId().equals(CaddxBindingConstants.ZONE_NAME)) {
-            StringBuilder s = new StringBuilder(data.length());
+            getThing().setLabel(data);
+            updateState(channelUID, new StringType(data));
 
-            CharacterIterator it = new StringCharacterIterator(data);
-            for (char ch = it.first(); ch != CharacterIterator.DONE; ch = it.next()) {
-                switch (ch) {
-                    case 0xb7:
-                        s.append('Γ');
-                        break;
-                    case 0x10:
-                        s.append('Δ');
-                        break;
-                    case 0x13:
-                        s.append('Θ');
-                        break;
-                    case 0x14:
-                        s.append('Λ');
-                        break;
-                    case 0x12:
-                        s.append('Ξ');
-                        break;
-                    case 0xc8:
-                        s.append('Π');
-                        break;
-                    case 0x16:
-                        s.append('Σ');
-                        break;
-                    case 0xcc:
-                        s.append('Φ');
-                        break;
-                    case 0x17:
-                        s.append('Ψ');
-                        break;
-                    case 0x15:
-                        s.append('Ω');
-                        break;
-                    default:
-                        s.append(ch);
-                        break;
-                }
-            }
-
-            String value = s.toString();
-            getThing().setLabel(value);
-            updateState(channelUID, new StringType(value));
-
-            logger.trace("  updateChannel: {} = {}", channelUID, value);
+            logger.trace("  updateChannel: {} = {}", channelUID, data);
         } else {
             // All Zone channels are OnOffType
             OnOffType onOffType;

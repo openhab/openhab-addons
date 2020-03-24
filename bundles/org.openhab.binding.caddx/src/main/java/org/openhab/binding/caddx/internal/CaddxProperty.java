@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.caddx.internal;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -79,7 +84,7 @@ public class CaddxProperty {
                 return Integer.toString(val);
             case STRING:
                 byte[] str = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength);
-                return new String(str);
+                return mapCaddxString(new String(str, StandardCharsets.US_ASCII));
             case BIT:
                 return (((message[byteFrom - 1] & (1 << bitFrom)) > 0) ? "true" : "false");
             default:
@@ -90,6 +95,8 @@ public class CaddxProperty {
     public String toString(byte[] message) {
         int mask;
         int val;
+        StringWriter sWriter = new StringWriter();
+        PrintWriter pWriter = new PrintWriter(sWriter);
 
         switch (type) {
             case INT:
@@ -101,28 +108,83 @@ public class CaddxProperty {
                     val = (message[byteFrom - 1] & mask) >> bitFrom;
                 }
 
-                return name + ": " + String.format("%2s", Integer.toHexString(val)) + " - " + Integer.toString(val)
-                        + " - " + ((val >= 32 && val <= 'z') ? ((char) val) : "-");
+                pWriter.printf("%s: %02x - %d - %c", name, val, val, Character.isValidCodePoint(val) ? val : 32);
+                pWriter.flush();
+
+                return sWriter.toString();
             case STRING:
-                StringBuilder sb = new StringBuilder();
+                pWriter.print(name);
+                pWriter.print(": ");
 
                 byte[] a = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength);
-                sb.append(name);
-                sb.append(": ");
-                sb.append(new String(a));
-                sb.append(System.lineSeparator()).append(System.lineSeparator());
+                pWriter.println(mapCaddxString(new String(a, StandardCharsets.US_ASCII)));
+                pWriter.println();
                 for (int i = 0; i < byteLength; i++) {
-                    sb.append(String.format("%2s", Integer.toHexString(message[byteFrom - 1 + i])));
-                    sb.append(" - ");
-                    sb.append((char) message[byteFrom - 1 + i]);
-                    sb.append(System.lineSeparator());
+                    pWriter.printf("%02x", message[byteFrom - 1 + i]);
+                    pWriter.print(" - ");
+                    pWriter.println((char) message[byteFrom - 1 + i]);
                 }
+                pWriter.flush();
 
-                return sb.toString();
+                return sWriter.toString();
             case BIT:
-                return name + ": " + (((message[byteFrom - 1] & (1 << bitFrom)) > 0) ? "true" : "false");
+                pWriter.print(name);
+                pWriter.print(": ");
+                pWriter.print(((message[byteFrom - 1] & (1 << bitFrom)) > 0));
+                pWriter.flush();
+
+                return sWriter.toString();
             default:
-                return "Unknown type: " + type.toString();
+                pWriter.print("Unknown type: ");
+                pWriter.print(type.toString());
+                pWriter.flush();
+
+                return sWriter.toString();
         }
+    }
+
+    private String mapCaddxString(String str) {
+        StringBuilder s = new StringBuilder(str.length());
+
+        CharacterIterator it = new StringCharacterIterator(str);
+        for (char ch = it.first(); ch != CharacterIterator.DONE; ch = it.next()) {
+            switch (ch) {
+                case 0xb7:
+                    s.append('Γ');
+                    break;
+                case 0x10:
+                    s.append('Δ');
+                    break;
+                case 0x13:
+                    s.append('Θ');
+                    break;
+                case 0x14:
+                    s.append('Λ');
+                    break;
+                case 0x12:
+                    s.append('Ξ');
+                    break;
+                case 0xc8:
+                    s.append('Π');
+                    break;
+                case 0x16:
+                    s.append('Σ');
+                    break;
+                case 0xcc:
+                    s.append('Φ');
+                    break;
+                case 0x17:
+                    s.append('Ψ');
+                    break;
+                case 0x15:
+                    s.append('Ω');
+                    break;
+                default:
+                    s.append(ch);
+                    break;
+            }
+        }
+
+        return s.toString();
     }
 }
