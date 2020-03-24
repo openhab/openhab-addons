@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openhab.addons.bundles</groupId>
+		<artifactId>org.openhab.addons.reactor.bundles</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.openhab.persistence.mysql</artifactId>
+
+    <name>openHAB Add-ons :: Bundles :: Persistence Service :: MySQL</name>
+
+    <properties>
+        <bnd.importpackage>!com.mongodb.*,!io.netty.*,!com.bea.*,!io.reactivex.*,!org.reactivestreams.*,!de.erichseifert.*,!org.w3c.*,!org.jvnet.*,!com.ctc.*,!com.sun.*,!com.sleepycat.*,!dagger.*,!org.codehaus.*,!org.glassfish.*,!com.ibm.*,!javax.xml.*,!net.sf.*,!nu.xom.*,!org.bson.*,!org.dom4j.*,!org.jdom.*,!org.jdom2.*,!org.kxml2.io.*,!org.xmlpull.*,!sun.*,!com.mchange.*,!org.jboss.*,!com.google.protobuf</bnd.importpackage>
+    </properties>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.13</version>
+		</dependency>
+	</dependencies>
+</project>
