@@ -52,6 +52,7 @@ import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
 import org.openhab.binding.hue.internal.State;
+import org.openhab.binding.hue.internal.State.AlertMode;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -774,7 +775,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      * @return {@code true} if the available information of both states are equal.
      */
     private boolean isEqual(State state1, State state2) {
-        return state1.getAlertMode().equals(state2.getAlertMode()) && state1.isOn() == state2.isOn()
+        AlertMode alertMode1 = state1.getAlertMode();
+        AlertMode alertMode2 = state2.getAlertMode();
+
+        return ((alertMode1 == null && alertMode2 == null) || (alertMode1 != null && alertMode1.equals(alertMode2)))
+                && state1.isOn() == state2.isOn()
                 && state1.getBrightness() == state2.getBrightness()
                 && state1.getColorTemperature() == state2.getColorTemperature() && state1.getHue() == state2.getHue()
                 && state1.getSaturation() == state2.getSaturation() && state1.isReachable() == state2.isReachable()

@@ -149,6 +149,9 @@ public class State {
      * @return last alert mode
      */
     public AlertMode getAlertMode() {
+        if (alert == null) {
+            return null;
+        }
         return AlertMode.valueOf(alert.toUpperCase());
     }
 
