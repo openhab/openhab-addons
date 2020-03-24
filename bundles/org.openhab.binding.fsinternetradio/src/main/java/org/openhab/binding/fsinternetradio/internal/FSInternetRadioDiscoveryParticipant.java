@@ -18,8 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -146,72 +148,66 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
     }
 
     @Override
+    @Nullable
     public DiscoveryResult createResult(RemoteDevice device) {
-        final ThingUID uid = getThingUID(device);
+        ThingUID uid = getThingUID(device);
         if (uid != null) {
-            final Map<String, Object> properties = new HashMap<>(1);
-            final String ip = getIp(device);
-            if (ip != null) {
-                properties.put(CONFIG_PROPERTY_IP, ip);
+            Map<String, Object> properties = new HashMap<>(1);
+            Optional<String> ip = getIp(device);
+            if (ip.isPresent()) {
+                properties.put(CONFIG_PROPERTY_IP, ip.get());
 
                 // add manufacturer and model, if provided
-                final String manufacturer = getManufacturer(device);
-                if (manufacturer != null) {
+                Optional<String> manufacturer = getManufacturer(device);
+                Optional<String> model = getModel(device);
+                if (manufacturer.isPresent()) {
                     properties.put(PROPERTY_MANUFACTURER, manufacturer);
                 }
-                final String model = getModel(device) != null ? getModel(device) : getFriendlyName(device);
-                if (model != null) {
-                    properties.put(PROPERTY_MODEL, model);
-                }
-                final String thingName = (manufacturer == null) && (getModel(device) == null) ? getFriendlyName(device)
-                        : device.getDisplayString();
-                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(thingName).build();
+                properties.put(PROPERTY_MODEL, model.isPresent() ? model : getFriendlyName(device));
+                Optional<String> thingName = !manufacturer.isPresent() && !model.isPresent() ? getFriendlyName(device)
+                        : Optional.of(device.getDisplayString());
+                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(thingName.get()).build();
             }
         }
         return null;
     }
 
-    private String getManufacturer(RemoteDevice device) {
-        final DeviceDetails details = device.getDetails();
-        if ((details != null) && (details.getManufacturerDetails() != null)) {
-            String manufacturer = details.getManufacturerDetails().getManufacturer().trim();
-            return manufacturer.isEmpty() ? null : manufacturer;
-        }
-        return null;
+    private Optional<String> getManufacturer(RemoteDevice device) {
+        return Optional.ofNullable(device.getDetails()).map(DeviceDetails::getManufacturerDetails)
+                .map(details -> details.getManufacturer().trim()).filter(manufacturer -> !manufacturer.isEmpty());
     }
 
-    private String getModel(RemoteDevice device) {
-        final DeviceDetails details = device.getDetails();
+    private Optional<String> getModel(RemoteDevice device) {
+        DeviceDetails details = device.getDetails();
         if ((details != null) && (details.getModelDetails().getModelNumber() != null)) {
-            String model = details.getModelDetails().getModelNumber().trim();
-            return model.isEmpty() ? null : model;
+            Optional.ofNullable(details.getModelDetails().getModelNumber().trim());
         }
-        return null;
+        return Optional.empty();
     }
 
-    private String getFriendlyName(RemoteDevice device) {
-        final DeviceDetails details = device.getDetails();
+    private Optional<String> getFriendlyName(RemoteDevice device) {
+        String name = null;
+        DeviceDetails details = device.getDetails();
         if ((details != null) && (details.getFriendlyName() != null)) {
-            String name = details.getFriendlyName().trim();
-            return name.isEmpty() ? null : name;
+            name = details.getFriendlyName().trim();
         }
-        return null;
+        return Optional.ofNullable(name);
     }
 
-    private String getIp(RemoteDevice device) {
-        final DeviceDetails details = device.getDetails();
+    private Optional<String> getIp(RemoteDevice device) {
+        DeviceDetails details = device.getDetails();
         if (details != null) {
             if (details.getBaseURL() != null) {
-                return details.getBaseURL().getHost();
+                return Optional.ofNullable(details.getBaseURL().getHost());
             }
         }
-        final RemoteDeviceIdentity identity = device.getIdentity();
+        RemoteDeviceIdentity identity = device.getIdentity();
         if (identity != null) {
             if (identity.getDescriptorURL() != null) {
-                return identity.getDescriptorURL().getHost();
+                return Optional.ofNullable(identity.getDescriptorURL().getHost());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
