@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ChartProvider.class)
 public class RRD4jChartServlet implements Servlet, ChartProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(RRD4jChartServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(RRD4jChartServlet.class);
 
     /** the URI of this servlet */
     public static final String SERVLET_NAME = "/rrdchart.png";
@@ -80,7 +80,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
             new Color(0, 255, 255, 30), new Color(255, 0, 128, 30), new Color(255, 128, 128, 30),
             new Color(255, 255, 0, 30) };
 
-    protected static final Map<String, Long> PERIODS = new HashMap<String, Long>();
+    protected static final Map<String, Long> PERIODS = new HashMap<>();
 
     static {
         PERIODS.put("h", -3600000L);
@@ -107,9 +107,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     protected void activate() {
         try {
             logger.debug("Starting up rrd chart servlet at {}", SERVLET_NAME);
-
-            Hashtable<String, String> props = new Hashtable<String, String>();
-            httpService.registerServlet(SERVLET_NAME, this, props, httpService.createDefaultHttpContext());
+            httpService.registerServlet(SERVLET_NAME, this, new Hashtable<>(), httpService.createDefaultHttpContext());
         } catch (NamespaceException e) {
             logger.error("Error during servlet startup", e);
         } catch (ServletException e) {
@@ -196,32 +194,20 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void init(ServletConfig config) throws ServletException {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ServletConfig getServletConfig() {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getServletInfo() {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void destroy() {
     }

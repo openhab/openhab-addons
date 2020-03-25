@@ -14,6 +14,8 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.BeforeClass;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
@@ -24,51 +26,52 @@ import org.openhab.core.types.State;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class SwitchItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
-    private static final String name = "switch";
-    private static final OnOffType state1 = OnOffType.OFF;
-    private static final OnOffType state2 = OnOffType.ON;
+    private static final String NAME = "switch";
+    private static final OnOffType STATE1 = OnOffType.OFF;
+    private static final OnOffType STATE2 = OnOffType.ON;
     // There is no OnOffType state value between OFF and ON.
     // Omit extended query tests AbstractTwoItemIntegrationTest by setting stateBetween to null.
-    private static final OnOffType stateBetween = null;
+    private static final @Nullable OnOffType STATE_BETWEEN = null;
 
     @BeforeClass
     public static void storeData() throws InterruptedException {
-        SwitchItem item = (SwitchItem) items.get(name);
-        item.setState(state1);
+        SwitchItem item = (SwitchItem) ITEMS.get(NAME);
+        item.setState(STATE1);
         beforeStore = new Date();
         Thread.sleep(10);
         service.store(item);
         afterStore1 = new Date();
         Thread.sleep(10);
-        item.setState(state2);
+        item.setState(STATE2);
         service.store(item);
         Thread.sleep(10);
         afterStore2 = new Date();
 
-        logger.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
+        LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
     }
 
     @Override
     protected String getItemName() {
-        return name;
+        return NAME;
     }
 
     @Override
     protected State getFirstItemState() {
-        return state1;
+        return STATE1;
     }
 
     @Override
     protected State getSecondItemState() {
-        return state2;
+        return STATE2;
     }
 
     @Override
-    protected State getQueryItemStateBetween() {
-        return stateBetween;
+    protected @Nullable State getQueryItemStateBetween() {
+        return STATE_BETWEEN;
     }
 
 }

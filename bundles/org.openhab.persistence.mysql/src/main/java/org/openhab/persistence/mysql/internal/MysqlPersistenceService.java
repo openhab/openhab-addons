@@ -34,7 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -106,7 +105,7 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
 
     private static final Pattern EXTRACT_CONFIG_PATTERN = Pattern.compile("^(.*?)\\.([0-9.a-zA-Z]+)$");
 
-    private static final Logger logger = LoggerFactory.getLogger(MysqlPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(MysqlPersistenceService.class);
 
     private String driverClass = "com.mysql.jdbc.Driver";
     private @NonNullByDefault({}) String url;
@@ -349,13 +348,13 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
      */
     @Override
     public void store(Item item, @Nullable String alias) {
-        // Don't log undefined/uninitialised data
+        // Don't log undefined/uninitialized data
         if (item.getState() instanceof UnDefType) {
             return;
         }
 
-        // If we've not initialised the bundle, then return
-        if (initialized == false) {
+        // If we've not initialized the bundle, then return
+        if (!initialized) {
             return;
         }
 
@@ -658,7 +657,7 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
             ResultSet rs = st.executeQuery(queryString);
 
             long count = 0;
-            List<HistoricItem> items = new ArrayList<HistoricItem>();
+            List<HistoricItem> items = new ArrayList<>();
             State state;
             while (rs.next()) {
                 count++;
@@ -705,7 +704,7 @@ public class MysqlPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public @NonNull Set<@NonNull PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() {
         return Collections.emptySet();
     }
 

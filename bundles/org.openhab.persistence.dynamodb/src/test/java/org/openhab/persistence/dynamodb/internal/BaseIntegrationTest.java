@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.BeforeClass;
 import org.openhab.core.common.registry.RegistryChangeListener;
@@ -48,10 +48,11 @@ import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class BaseIntegrationTest {
-    protected static final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
-    protected static DynamoDBPersistenceService service;
-    protected final static Map<String, Item> items = new HashMap<>();
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
+    protected static @Nullable DynamoDBPersistenceService service;
+    protected static final Map<String, Item> ITEMS = new HashMap<>();
 
     static {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
@@ -59,122 +60,123 @@ public class BaseIntegrationTest {
 
     @BeforeClass
     public static void initService() throws InterruptedException {
-        items.put("dimmer", new DimmerItem("dimmer"));
-        items.put("number", new NumberItem("number"));
-        items.put("string", new StringItem("string"));
-        items.put("switch", new SwitchItem("switch"));
-        items.put("contact", new ContactItem("contact"));
-        items.put("color", new ColorItem("color"));
-        items.put("rollershutter", new RollershutterItem("rollershutter"));
-        items.put("datetime", new DateTimeItem("datetime"));
-        items.put("call", new CallItem("call"));
-        items.put("location", new LocationItem("location"));
+        ITEMS.put("dimmer", new DimmerItem("dimmer"));
+        ITEMS.put("number", new NumberItem("number"));
+        ITEMS.put("string", new StringItem("string"));
+        ITEMS.put("switch", new SwitchItem("switch"));
+        ITEMS.put("contact", new ContactItem("contact"));
+        ITEMS.put("color", new ColorItem("color"));
+        ITEMS.put("rollershutter", new RollershutterItem("rollershutter"));
+        ITEMS.put("datetime", new DateTimeItem("datetime"));
+        ITEMS.put("call", new CallItem("call"));
+        ITEMS.put("location", new LocationItem("location"));
 
         service = new DynamoDBPersistenceService();
-        service.setItemRegistry(new ItemRegistry() {
+        service.setItemRegistry(
 
-            @Override
-            public Collection<Item> getItems(String pattern) {
-                throw new NotImplementedException();
-            }
+                new ItemRegistry() {
 
-            @Override
-            public Collection<Item> getItems() {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Collection<Item> getItems(String pattern) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public Item getItemByPattern(String name) throws ItemNotFoundException, ItemNotUniqueException {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Collection<Item> getItems() {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public Item getItem(String name) throws ItemNotFoundException {
-                Item item = items.get(name);
-                if (item == null) {
-                    throw new ItemNotFoundException(name);
-                }
-                return item;
-            }
+                    @Override
+                    public Item getItemByPattern(String name) throws ItemNotFoundException, ItemNotUniqueException {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public void addRegistryChangeListener(RegistryChangeListener<Item> listener) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Item getItem(String name) throws ItemNotFoundException {
+                        Item item = ITEMS.get(name);
+                        if (item == null) {
+                            throw new ItemNotFoundException(name);
+                        }
+                        return item;
+                    }
 
-            @Override
-            public @NonNull Collection<@NonNull Item> getAll() {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public void addRegistryChangeListener(RegistryChangeListener<Item> listener) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public Stream<Item> stream() {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Collection<Item> getAll() {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public @Nullable Item get(String key) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Stream<Item> stream() {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public void removeRegistryChangeListener(RegistryChangeListener<Item> listener) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public @Nullable Item get(String key) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public @NonNull Item add(@NonNull Item element) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public void removeRegistryChangeListener(RegistryChangeListener<Item> listener) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public @Nullable Item update(@NonNull Item element) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Item add(Item element) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public @Nullable Item remove(@NonNull String key) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public @Nullable Item update(Item element) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public Collection<Item> getItemsOfType(@NonNull String type) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public @Nullable Item remove(String key) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public Collection<Item> getItemsByTag(@NonNull String... tags) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Collection<Item> getItemsOfType(String type) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public Collection<Item> getItemsByTagAndType(@NonNull String type, @NonNull String... tags) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Collection<Item> getItemsByTag(String... tags) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public <T extends @NonNull Item> Collection<T> getItemsByTag(@NonNull Class<T> typeFilter,
-                    @NonNull String... tags) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public Collection<Item> getItemsByTagAndType(String type, String... tags) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public @Nullable Item remove(@NonNull String itemName, boolean recursive) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public <T extends Item> Collection<T> getItemsByTag(Class<T> typeFilter, String... tags) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public void addRegistryHook(RegistryHook<Item> hook) {
-                throw new NotImplementedException();
-            }
+                    @Override
+                    public @Nullable Item remove(String itemName, boolean recursive) {
+                        throw new NotImplementedException();
+                    }
 
-            @Override
-            public void removeRegistryHook(RegistryHook<Item> hook) {
-                throw new NotImplementedException();
-            }
-        });
+                    @Override
+                    public void addRegistryHook(RegistryHook<Item> hook) {
+                        throw new NotImplementedException();
+                    }
 
-        HashMap<String, Object> config = new HashMap<>();
+                    @Override
+                    public void removeRegistryHook(RegistryHook<Item> hook) {
+                        throw new NotImplementedException();
+                    }
+                });
+
+        Map<String, Object> config = new HashMap<>();
         config.put("region", System.getProperty("DYNAMODBTEST_REGION"));
         config.put("accessKey", System.getProperty("DYNAMODBTEST_ACCESS"));
         config.put("secretKey", System.getProperty("DYNAMODBTEST_SECRET"));
@@ -185,7 +187,7 @@ public class BaseIntegrationTest {
 
         for (Entry<String, Object> entry : config.entrySet()) {
             if (entry.getValue() == null) {
-                logger.warn(String.format(
+                LOGGER.warn(String.format(
                         "Expecting %s to have value for integration tests. Integration tests will be skipped",
                         entry.getKey()));
                 service = null;

@@ -15,21 +15,19 @@ package org.openhab.persistence.mysql.internal;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.openhab.core.types.State;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.types.State;
 
 /**
  * This is a Java bean used to return historic items from a SQL database.
  *
- * @author Chris Jackson
- * @since 1.3.0
- *
+ * @author Chris Jackson - Initial contribution
  */
 public class MysqlItem implements HistoricItem {
 
-    final private String name;
-    final private State state;
-    final private Date timestamp;
+    private final String name;
+    private final State state;
+    private final Date timestamp;
 
     public MysqlItem(String name, State state, Date timestamp) {
         this.name = name;

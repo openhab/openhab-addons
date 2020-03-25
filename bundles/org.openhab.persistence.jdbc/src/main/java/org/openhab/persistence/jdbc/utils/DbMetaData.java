@@ -28,7 +28,7 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 public class DbMetaData {
 
-    private static final Logger logger = LoggerFactory.getLogger(DbMetaData.class);
+    private final Logger logger = LoggerFactory.getLogger(DbMetaData.class);
 
     private int dbMajorVersion;
     private int dbMinorVersion;
@@ -73,11 +73,9 @@ public class DbMetaData {
 
             dbProductVersion = meta.getDatabaseProductVersion();
             logger.debug("dbProductVersion = '{}'", dbProductVersion);
-
         } catch (SQLException e1) {
             logger.error("Asking for 'dbMajorVersion' seems to be unsupported: '{}'", e1.getMessage());
         }
-
     }
 
     public int getDbMajorVersion() {

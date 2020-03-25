@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 //import org.apache.commons.math3.stat.StatUtils;
 
 /**
@@ -23,9 +25,10 @@ import java.util.Queue;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class MovingAverage {
 
-    private final Queue<BigDecimal> win = new LinkedList<BigDecimal>();
+    private final Queue<BigDecimal> win = new LinkedList<>();
     private final int period;
     private BigDecimal sum = BigDecimal.ZERO;
 

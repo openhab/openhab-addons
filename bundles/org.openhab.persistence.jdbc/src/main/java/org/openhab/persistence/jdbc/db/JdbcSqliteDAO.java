@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcSqliteDAO extends JdbcBaseDAO {
-    private static final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
     /********
      * INIT *
@@ -42,11 +42,11 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
-        SQL_GET_DB = "PRAGMA DATABASE_LIST"; // "SELECT SQLITE_VERSION()"; // "PRAGMA DATABASE_LIST"->db Path/Name
+        sqlGetDB = "PRAGMA DATABASE_LIST"; // "SELECT SQLITE_VERSION()"; // "PRAGMA DATABASE_LIST"->db Path/Name
                                              // "PRAGMA SCHEMA_VERSION";
-        SQL_IF_TABLE_EXISTS = "SELECT name FROM sqlite_master WHERE type='table' AND name='#searchTable#'";
-        SQL_CREATE_ITEMS_TABLE_IF_NOT = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INTEGER PRIMARY KEY AUTOINCREMENT, #colname# #coltype# NOT NULL)";
-        SQL_INSERT_ITEM_VALUE = "INSERT OR IGNORE INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
+        sqlIfTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='#searchTable#'";
+        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INTEGER PRIMARY KEY AUTOINCREMENT, #colname# #coltype# NOT NULL)";
+        sqlInsertItemValue = "INSERT OR IGNORE INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
     }
 
     /**
@@ -61,7 +61,6 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      * INFO: https://github.com/brettwooldridge/HikariCP
      */
     private void initDbProps() {
-
         // Properties for HikariCP
         databaseProps.setProperty("driverClassName", "org.sqlite.JDBC");
         // driverClassName OR BETTER USE dataSourceClassName
@@ -74,12 +73,12 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     @Override
     public String doGetDB() {
-        return Yank.queryColumn(SQL_GET_DB, "file", String.class, null).get(0);
+        return Yank.queryColumn(sqlGetDB, "file", String.class, null).get(0);
     }
 
     @Override
     public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_CREATE_ITEMS_TABLE_IF_NOT,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
@@ -93,7 +92,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
     @Override
     public void doStoreItemValue(Item item, ItemVO vo) {
         vo = storeItemValueProvider(item, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_INSERT_ITEM_VALUE,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = new Object[] { vo.getValue() };

@@ -46,9 +46,9 @@ import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
  */
 public class JpaHistoricItem implements HistoricItem {
 
-    final private String name;
-    final private State state;
-    final private Date timestamp;
+    private final String name;
+    private final State state;
+    private final Date timestamp;
 
     public JpaHistoricItem(String name, State state, Date timestamp) {
         this.name = name;
@@ -84,7 +84,7 @@ public class JpaHistoricItem implements HistoricItem {
      * @return list of historic items
      */
     public static List<HistoricItem> fromResultList(List<JpaPersistentItem> jpaQueryResult, Item item) {
-        List<HistoricItem> ret = new ArrayList<HistoricItem>();
+        List<HistoricItem> ret = new ArrayList<>();
         for (JpaPersistentItem i : jpaQueryResult) {
             HistoricItem hi = fromPersistedItem(i, item);
             ret.add(hi);
@@ -126,7 +126,6 @@ public class JpaHistoricItem implements HistoricItem {
                 }
             }
             state = pType;
-
         } else if (item instanceof StringListType) {
             state = new StringListType(pItem.getValue());
         } else {

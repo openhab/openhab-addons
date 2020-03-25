@@ -31,7 +31,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
@@ -85,13 +84,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
             new NamedThreadFactory("RRD4j"));
 
-    private Map<String, @Nullable RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
 
     private static final String DATASOURCE_STATE = "state";
 
-    public final static String DB_FOLDER = getUserPersistenceDataFolder() + File.separator + "rrd4j";
+    public static final String DB_FOLDER = getUserPersistenceDataFolder() + File.separator + "rrd4j";
 
-    private static final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
 
     private Map<String, @Nullable ScheduledFuture<?>> scheduledJobs = new HashMap<>();
 
@@ -153,7 +152,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 }
             } catch (IllegalArgumentException e) {
                 if (e.getMessage().contains("at least one second step is required")) {
-
                     // we try to store the value one second later
                     ScheduledFuture<?> job = scheduledJobs.get(name);
                     if (job != null) {
@@ -223,7 +221,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 }
                 FetchRequest request = db.createFetchRequest(consolidationFunction, start, end, 1);
 
-                List<HistoricItem> items = new ArrayList<HistoricItem>();
+                List<HistoricItem> items = new ArrayList<>();
                 FetchData result = request.fetchData();
                 long ts = result.getFirstTimestamp();
                 long step = result.getRowCount() > 1 ? result.getStep() : 0;
@@ -243,7 +241,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public @NonNull Set<@NonNull PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() {
         return Collections.emptySet();
     }
 
@@ -342,7 +340,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return new DecimalType(value);
     }
 
-    static private String getUserPersistenceDataFolder() {
+    private static String getUserPersistenceDataFolder() {
         String progArg = System.getProperty("smarthome.userdata");
         if (progArg != null) {
             return progArg + File.separator + "persistence";
@@ -355,7 +353,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
      * @{inheritDoc
      */
     public void activate(final Map<String, Object> config) {
-
         // add default configurations
         RrdDefConfig defaultNumeric = new RrdDefConfig("default_numeric");
         defaultNumeric.setDef("GAUGE,60,U,U,60");
@@ -376,7 +373,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         Iterator<String> keys = config.keySet().iterator();
         while (keys.hasNext()) {
-
             String key = keys.next();
 
             if (key.equals("service.pid") || key.equals("component.name")) {
@@ -465,8 +461,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         public RrdDefConfig(String name) {
             this.name = name;
-            archives = new ArrayList<RrdArchiveDef>();
-            itemNames = new ArrayList<String>();
+            archives = new ArrayList<>();
+            itemNames = new ArrayList<>();
             isInitialized = false;
         }
 

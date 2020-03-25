@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
@@ -33,6 +34,7 @@ import org.openhab.core.library.items.SwitchItem;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class AbstractDynamoDBItemGetDynamoItemClassTest {
 
     @Test

@@ -1,6 +1,7 @@
 # Amazon DynamoDB Persistence
 
-This service allows you to persist state updates using the [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) database. Query functionality is also fully supported.
+This service allows you to persist state updates using the [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) database.
+Query functionality is also fully supported.
 
 Features:
 
@@ -33,9 +34,12 @@ This service is provided "AS IS", and the user takes full responsibility of any 
 
 ## Prerequisites
 
-You must first set up an Amazon account as described below.  
+You must first set up an Amazon account as described below.
 
-Users are recommended to familiarize themselves with AWS pricing before using this service.  Please note that there might be charges from Amazon when using this service to query/store data to DynamoDB. See [Amazon DynamoDB pricing pages](https://aws.amazon.com/dynamodb/pricing/) for more details. Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits. 
+Users are recommended to familiarize themselves with AWS pricing before using this service.
+Please note that there might be charges from Amazon when using this service to query/store data to DynamoDB.
+See [Amazon DynamoDB pricing pages](https://aws.amazon.com/dynamodb/pricing/) for more details.
+Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits. 
 
 ### Setting Up an Amazon Account
 
@@ -55,8 +59,8 @@ This service can be configured in the file `services/dynamodb.cfg`.
 
 ### Basic configuration
 
-| Property  | Default | Required | Description                                                                                                                                                   |
-| --------- | ------- | :------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Property  | Default | Required | Description                                                                                                                                                      |
+| --------- | ------- | :------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | accessKey |         |   Yes    | access key as shown in [Setting up Amazon account](#setting-up-an-amazon-account).                                                                               |
 | secretKey |         |   Yes    | secret key as shown in [Setting up Amazon account](#setting-up-an-amazon-account).                                                                               |
 | region    |         |   Yes    | AWS region ID as described in [Setting up Amazon account](#setting-up-an-amazon-account). The region needs to match the region that was used to create the user. |
@@ -109,7 +113,9 @@ All item- and event-related configuration is done in the file `persistence/dynam
 
 ### Tables Creation
 
-When an item is persisted via this service, a table is created (if necessary). Currently, the service will create at most two tables for different item types. The tables will be named `<tablePrefix><item-type>`, where the `<item-type>` is either `bigdecimal` (numeric items) or `string` (string and complex items).
+When an item is persisted via this service, a table is created (if necessary).
+Currently, the service will create at most two tables for different item types.
+The tables will be named `<tablePrefix><item-type>`, where the `<item-type>` is either `bigdecimal` (numeric items) or `string` (string and complex items).
 
 Each table will have three columns: `itemname` (item name), `timeutc` (in ISO 8601 format with millisecond accuracy), and `itemstate` (either a number or string representing item state).
 
@@ -119,13 +125,16 @@ By default, the service is asynchronous which means that data is not written imm
 The size of the buffer, in terms of datapoints, can be configured with `bufferSize`.
 Every `bufferCommitIntervalMillis` the whole buffer of data is flushed to DynamoDB.
 
-It is recommended to have the buffering enabled since the synchronous behaviour (writing data immediately) might have adverse impact to the whole system when there is many items persisted at the same time. The buffering can be disabled by setting `bufferSize` to zero.
+It is recommended to have the buffering enabled since the synchronous behaviour (writing data immediately) might have adverse impact to the whole system when there is many items persisted at the same time.
+The buffering can be disabled by setting `bufferSize` to zero.
 
 The defaults should be suitable in many use cases.
 
 ### Caveats
 
-When the tables are created, the read/write capacity is configured according to configuration. However, the service does not modify the capacity of existing tables. As a workaround, you can modify the read/write capacity of existing tables using the [Amazon console](https://aws.amazon.com/console/).
+When the tables are created, the read/write capacity is configured according to configuration.
+However, the service does not modify the capacity of existing tables.
+As a workaround, you can modify the read/write capacity of existing tables using the [Amazon console](https://aws.amazon.com/console/).
 
 ## Developer Notes
 
@@ -136,26 +145,30 @@ When the tables are created, the read/write capacity is configured according to 
 3. `scripts/fetch_sdk.sh`
 4. Copy `scripts/target/site/dependencies.html` and `scripts/target/dependency/*.jar` to `lib/`
 5. Generate `build.properties` entries
-`ls lib/*.jar | python -c "import sys; print('  ' + ',\\\\\\n  '.join(map(str.strip, sys.stdin.readlines())))"`
+    `ls lib/*.jar | python -c "import sys; print('  ' + ',\\\\\\n  '.join(map(str.strip, sys.stdin.readlines())))"`
 6. Generate `META-INF/MANIFEST.MF` `Bundle-ClassPath` entries
-`ls lib/*.jar | python -c "import sys; print('  ' + ',\\n  '.join(map(str.strip, sys.stdin.readlines())))"`
+    `ls lib/*.jar | python -c "import sys; print('  ' + ',\\n  '.join(map(str.strip, sys.stdin.readlines())))"`
 7. Generate `.classpath` entries
-`ls lib/*.jar | python -c "import sys;pre='<classpathentry exported=\"true\" kind=\"lib\" path=\"';post='\"/>'; print('\\t' + pre + (post + '\\n\\t' + pre).join(map(str.strip, sys.stdin.readlines())) + post)"`
+    `ls lib/*.jar | python -c "import sys;pre='<classpathentry exported=\"true\" kind=\"lib\" path=\"';post='\"/>'; print('\\t' + pre + (post + '\\n\\t' + pre).join(map(str.strip, sys.stdin.readlines())) + post)"`
 
-After these changes, it's good practice to run integration tests (against live AWS DynamoDB) in `org.openhab.persistence.dynamodb.test` bundle. See README.md in the test bundle for more information how to execute the tests.
+After these changes, it's good practice to run integration tests (against live AWS DynamoDB) in `org.openhab.persistence.dynamodb.test` bundle.
+See README.md in the test bundle for more information how to execute the tests.
 
 ### Running integration tests
 
 To run integration tests, one needs to provide AWS credentials.
 
 Eclipse instructions
+
 1. Run all tests (in package org.openhab.persistence.dynamodb.internal) as JUnit Tests
 2. Configure the run configuration, and open Arguments sheet
 3. In VM arguments, provide the credentials for AWS
+
 ````
 -DDYNAMODBTEST_REGION=REGION-ID
 -DDYNAMODBTEST_ACCESS=ACCESS-KEY
 -DDYNAMODBTEST_SECRET=SECRET
 ````
 
-The tests will create tables with prefix `dynamodb-integration-tests-`. Note that when tests are begun, all data is removed from that table!
+The tests will create tables with prefix `dynamodb-integration-tests-`.
+Note that when tests are begun, all data is removed from that table!

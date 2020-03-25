@@ -15,8 +15,11 @@ package org.openhab.persistence.jdbc.utils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.persistence.FilterCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +29,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class StringUtilsExt {
-    private static final Logger logger = LoggerFactory.getLogger(StringUtilsExt.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StringUtilsExt.class);
 
     /**
      * Replaces multiple found words with the given Array contents
      *
-     * @param str - String for replacement
-     * @param separate - A String or Array to be replaced
-     * @param separators - Array will be merged to str
+     * @param str String for replacement
+     * @param separate A String or Array to be replaced
+     * @param separators Array will be merged to str
      * @return
      */
     public static final String replaceArrayMerge(String str, String separate, Object[] separators) {
@@ -75,8 +79,8 @@ public class StringUtilsExt {
      * jdbc:dbShortcut://192.168.0.145:3306/databaseName?param1=false&param2=true
      * <p/>
      *
-     * @param url - JDBC-URI
-     * @param def - Predefined Properties Object
+     * @param url JDBC-URI
+     * @param def Predefined Properties Object
      * @return A merged Properties Object may contain:<br/>
      *         parseValid (mandatory)<br/>
      *         scheme<br/>
@@ -87,8 +91,7 @@ public class StringUtilsExt {
      *         serverName<br/>
      *         pathQuery<br/>
      */
-    public static Properties parseJdbcURL(String url, Properties def) {
-
+    public static Properties parseJdbcURL(String url, @Nullable Properties def) {
         Properties props;
         if (def == null) {
             props = new Properties();
@@ -114,14 +117,14 @@ public class StringUtilsExt {
         }
 
         if (url.split(":").length < 3 || url.indexOf("/") == -1) {
-            logger.error("parseJdbcURL: URI '{}' is not well formated, expected uri like 'jdbc:dbShortcut:/path'", url);
+            LOGGER.error("parseJdbcURL: URI '{}' is not well formated, expected uri like 'jdbc:dbShortcut:/path'", url);
             props.put("parseValid", "false");
             return props;
         }
 
         String[] protAndDb = stringBeforeSubstr(url, ":", 1).split(":");
         if (!"jdbc".equals(protAndDb[0])) {
-            logger.error("parseJdbcURL: URI '{}' is not well formated, expected suffix 'jdbc' found '{}'", url,
+            LOGGER.error("parseJdbcURL: URI '{}' is not well formated, expected suffix 'jdbc' found '{}'", url,
                     protAndDb[0]);
             props.put("parseValid", "false");
             return props;
@@ -137,7 +140,7 @@ public class StringUtilsExt {
                 dbURI = new URI(stringAfterSubstr(url, ":", 2).replaceFirst(" ", ""));
             }
         } catch (URISyntaxException e) {
-            logger.error("parseJdbcURL: URI '{}' is not well formated.", url, e);
+            LOGGER.error("parseJdbcURL: URI '{}' is not well formated.", url, e);
             return props;
         }
 
@@ -181,82 +184,63 @@ public class StringUtilsExt {
     }
 
     /**
-     * @param s
-     * @param substr
-     * @return - Returns a String before the last occurrence of a Substring
+     * Returns a String before the last occurrence of a substring
      */
     public static String stringBeforeLastSubstr(String s, String substr) {
-        ArrayList<Integer> a = substrPos(s, substr);
+        List<Integer> a = substrPos(s, substr);
         return s.substring(0, a.get(a.size() - 1));
     }
 
     /**
-     * @param s
-     * @param substr
-     * @return - Returns a String after the last occurrence of a Substring
+     * Returns a String after the last occurrence of a substring
      */
     public static String stringAfterLastSubstr(String s, String substr) {
-        ArrayList<Integer> a = substrPos(s, substr);
+        List<Integer> a = substrPos(s, substr);
         return s.substring(a.get(a.size() - 1) + 1);
     }
 
     /**
-     * @param s
-     * @param substr
-     * @return - Returns a String after the first occurrence of a Substring
+     * Returns a String after the first occurrence of a substring
      */
     public static String stringAfterSubstr(String s, String substr) {
         return s.substring(s.indexOf(substr) + 1);
     }
 
     /**
-     * @param s
-     * @param substr
-     * @param pos
-     * @return - Returns a String after the n occurrence of a Substring
+     * Returns a String after the n occurrence of a substring
      */
     public static String stringAfterSubstr(String s, String substr, int n) {
         return s.substring(substrPos(s, substr).get(n) + 1);
     }
 
     /**
-     * @param s
-     * @param substr
-     * @return - Returns a String before the first occurrence of a Substring
+     * Returns a String before the first occurrence of a substring
      */
     public static String stringBeforeSubstr(String s, String substr) {
         return s.substring(0, s.indexOf(substr));
     }
 
     /**
-     * @param s
-     * @param substr
-     * @param pos
-     * @return - Returns a String before the n occurrence of a Substring
+     * Returns a String before the n occurrence of a substring.
      */
     public static String stringBeforeSubstr(String s, String substr, int n) {
         return s.substring(0, substrPos(s, substr).get(n));
     }
 
     /**
-     * @param s
-     * @param substr
-     * @return - Returns an ArrayList with Indices of the occurrence of a Substring
+     * Returns a list with indices of the occurrence of a substring.
      */
-    public static ArrayList<Integer> substrPos(String s, String substr) {
+    public static List<Integer> substrPos(String s, String substr) {
         return substrPos(s, substr, true);
     }
 
     /**
-     * @param s
-     * @param substr
-     * @param ignoreCase
-     * @return - Returns an ArrayList with Indices of the occurrence of a Substring
+     * Returns a list with indices of the occurrence of a substring.
      */
-    public static ArrayList<Integer> substrPos(String s, String substr, boolean ignoreCase) {
+    public static List<Integer> substrPos(String s, String substr, boolean ignoreCase) {
         int substrLength = substr.length();
         int strLength = s.length();
-        ArrayList<Integer> arr = new ArrayList<Integer>();
+        List<Integer> arr = new ArrayList<>();
 
         for (int i = 0; i < strLength - substrLength + 1; i++) {
             if (s.regionMatches(ignoreCase, i, substr, 0, substrLength)) {

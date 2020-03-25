@@ -14,6 +14,7 @@ package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
@@ -21,6 +22,7 @@ import org.junit.Test;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class DynamoDBTableNameResolverTest {
 
     @Test

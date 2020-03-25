@@ -66,25 +66,25 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
     private static final String UNDEFINED_PLACEHOLDER = "<org.openhab.core.types.UnDefType.UNDEF>";
 
-    static final Map<Class<? extends Item>, Class<? extends DynamoDBItem<?>>> itemClassToDynamoItemClass = new HashMap<Class<? extends Item>, Class<? extends DynamoDBItem<?>>>();
+    private static final Map<Class<? extends Item>, Class<? extends DynamoDBItem<?>>> ITEM_CLASS_MAP = new HashMap<>();
 
     static {
-        itemClassToDynamoItemClass.put(CallItem.class, DynamoDBStringItem.class);
-        itemClassToDynamoItemClass.put(ContactItem.class, DynamoDBBigDecimalItem.class);
-        itemClassToDynamoItemClass.put(DateTimeItem.class, DynamoDBStringItem.class);
-        itemClassToDynamoItemClass.put(LocationItem.class, DynamoDBStringItem.class);
-        itemClassToDynamoItemClass.put(NumberItem.class, DynamoDBBigDecimalItem.class);
-        itemClassToDynamoItemClass.put(RollershutterItem.class, DynamoDBBigDecimalItem.class);
-        itemClassToDynamoItemClass.put(StringItem.class, DynamoDBStringItem.class);
-        itemClassToDynamoItemClass.put(SwitchItem.class, DynamoDBBigDecimalItem.class);
-        itemClassToDynamoItemClass.put(DimmerItem.class, DynamoDBBigDecimalItem.class); // inherited from SwitchItem (!)
-        itemClassToDynamoItemClass.put(ColorItem.class, DynamoDBStringItem.class); // inherited from DimmerItem
+        ITEM_CLASS_MAP.put(CallItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP.put(ContactItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP.put(DateTimeItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP.put(LocationItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP.put(NumberItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP.put(RollershutterItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP.put(StringItem.class, DynamoDBStringItem.class);
+        ITEM_CLASS_MAP.put(SwitchItem.class, DynamoDBBigDecimalItem.class);
+        ITEM_CLASS_MAP.put(DimmerItem.class, DynamoDBBigDecimalItem.class); // inherited from SwitchItem (!)
+        ITEM_CLASS_MAP.put(ColorItem.class, DynamoDBStringItem.class); // inherited from DimmerItem
     }
 
     public static final Class<DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass)
             throws NullPointerException {
         @SuppressWarnings("unchecked")
-        Class<DynamoDBItem<?>> dtoclass = (Class<DynamoDBItem<?>>) itemClassToDynamoItemClass.get(itemClass);
+        Class<DynamoDBItem<?>> dtoclass = (Class<DynamoDBItem<?>>) ITEM_CLASS_MAP.get(itemClass);
         if (dtoclass == null) {
             throw new IllegalArgumentException(String.format("Unknown item class %s", itemClass));
         }
@@ -117,8 +117,10 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             return new DynamoDBBigDecimalItem(name,
                     ((UpDownType) state) == UpDownType.UP ? BigDecimal.ONE : BigDecimal.ZERO, time);
         } else if (state instanceof DateTimeType) {
-            return new DynamoDBStringItem(name, DATEFORMATTER.format(((DateTimeType) state).getCalendar().getTime()),
-                    time);
+            synchronized (DATEFORMATTER) {
+                return new DynamoDBStringItem(name,
+                        DATEFORMATTER.format(((DateTimeType) state).getCalendar().getTime()), time);
+            }
         } else if (state instanceof UnDefType) {
             return new DynamoDBStringItem(name, UNDEFINED_PLACEHOLDER, time);
         } else if (state instanceof StringListType) {
@@ -145,7 +147,9 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                 } else if (item instanceof DateTimeItem) {
                     Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                     try {
-                        cal.setTime(DATEFORMATTER.parse(dynamoStringItem.getState()));
+                        synchronized (DATEFORMATTER) {
+                            cal.setTime(DATEFORMATTER.parse(dynamoStringItem.getState()));
+                        }
                     } catch (ParseException e) {
                         logger.warn("Failed to parse {} as date. Outputting UNDEF instead",
                                 dynamoStringItem.getState());

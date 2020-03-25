@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,11 +50,12 @@ import org.openhab.core.types.State;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest {
 
-    protected static Date beforeStore;
-    protected static Date afterStore1;
-    protected static Date afterStore2;
+    protected static @Nullable Date beforeStore;
+    protected static @Nullable Date afterStore1;
+    protected static @Nullable Date afterStore2;
 
     protected abstract String getItemName();
 
@@ -75,7 +78,7 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
      *
      * @return
      */
-    protected abstract State getQueryItemStateBetween();
+    protected abstract @Nullable State getQueryItemStateBetween();
 
     protected void assertStateEquals(State expected, State actual) {
         assertEquals(expected, actual);

@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
@@ -102,9 +101,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private static final String VALUE_COLUMN_NAME = "value";
 
     private @NonNullByDefault({}) InfluxDB influxDB;
-    private static final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
     private static final String TIME_COLUMN_NAME = "time";
-    private static final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+    private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
     private @NonNullByDefault({}) String dbName;
     private @NonNullByDefault({}) String url;
     private @NonNullByDefault({}) String user;
@@ -172,7 +171,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             // reuse an existing InfluxDB object because concerning the database it has no state
             // connection
             influxDB = InfluxDBFactory.connect(url, user, password);
-            influxDB.enableBatch(200, 100, timeUnit);
+            influxDB.enableBatch(200, 100, TIME_UNIT);
         }
         connected = true;
     }
@@ -224,7 +223,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public @NonNull Set<@NonNull PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() {
         return Collections.emptySet();
     }
 
@@ -266,8 +265,8 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         }
         Object value = stateToObject(state);
         logger.trace("storing {} in influxdb value {}, {}", name, value, item);
-        Point point = Point.measurement(name).field(VALUE_COLUMN_NAME, value).time(System.currentTimeMillis(), timeUnit)
-                .build();
+        Point point = Point.measurement(name).field(VALUE_COLUMN_NAME, value)
+                .time(System.currentTimeMillis(), TIME_UNIT).build();
         try {
             influxDB.write(dbName, retentionPolicy, point);
         } catch (RuntimeException e) {
@@ -300,7 +299,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             return Collections.emptyList();
         }
 
-        List<HistoricItem> historicItems = new ArrayList<HistoricItem>();
+        List<HistoricItem> historicItems = new ArrayList<>();
 
         StringBuffer query = new StringBuffer();
         query.append("select ").append(VALUE_COLUMN_NAME).append(' ').append("from \"").append(retentionPolicy)
@@ -356,7 +355,6 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 query.append(getTimeFilter(filter.getEndDate()));
                 query.append(" ");
             }
-
         }
 
         if (filter.getOrdering() == Ordering.DESCENDING) {
@@ -377,7 +375,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         Query influxdbQuery = new Query(query.toString(), dbName);
 
         List<Result> results = Collections.emptyList();
-        results = influxDB.query(influxdbQuery, timeUnit).getResults();
+        results = influxDB.query(influxdbQuery, TIME_UNIT).getResults();
         for (Result result : results) {
             List<Series> seriess = result.getSeries();
             if (result.getError() != null) {
@@ -407,7 +405,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                             }
                         }
                         if (valueColumn == null || timestampColumn == null) {
-                            throw new RuntimeException("missing column");
+                            throw new IllegalStateException("missing column");
                         }
                         for (int i = 0; i < valuess.size(); i++) {
                             Double rawTime = (Double) valuess.get(i).get(timestampColumn);

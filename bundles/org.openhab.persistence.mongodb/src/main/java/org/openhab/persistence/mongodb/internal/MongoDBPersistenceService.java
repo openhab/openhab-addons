@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -83,7 +82,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     private static final String FIELD_TIMESTAMP = "timestamp";
     private static final String FIELD_VALUE = "value";
 
-    private static final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
 
     private @NonNullByDefault({}) String url;
     private @NonNullByDefault({}) String db;
@@ -144,13 +143,13 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        // Don't log undefined/uninitialised data
+        // Don't log undefined/uninitialized data
         if (item.getState() instanceof UnDefType) {
             return;
         }
 
-        // If we've not initialised the bundle, then return
-        if (initialized == false) {
+        // If we've not initialized the bundle, then return
+        if (!initialized) {
             logger.warn("MongoDB not initialized");
             return;
         }
@@ -206,7 +205,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public @NonNull Set<@NonNull PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() {
         return Collections.emptySet();
     }
 
@@ -266,7 +265,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         String name = filter.getItemName();
         Item item = getItem(name);
 
-        List<HistoricItem> items = new ArrayList<HistoricItem>();
+        List<HistoricItem> items = new ArrayList<>();
         DBObject query = new BasicDBObject();
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());

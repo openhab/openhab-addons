@@ -51,16 +51,16 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
         // System Information Functions: https://www.postgresql.org/docs/9.2/static/functions-info.html
-        SQL_GET_DB = "SELECT CURRENT_DATABASE()";
-        SQL_IF_TABLE_EXISTS = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
-        SQL_CREATE_ITEMS_TABLE_IF_NOT = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
-        SQL_CREATE_NEW_ENTRY_IN_ITEMS_TABLE = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
-        SQL_GET_ITEM_TABLES = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='public' AND NOT table_name='#itemsManageTable#'";
+        sqlGetDB = "SELECT CURRENT_DATABASE()";
+        sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
+        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
+        sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
+        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='public' AND NOT table_name='#itemsManageTable#'";
         // http://stackoverflow.com/questions/17267417/how-do-i-do-an-upsert-merge-insert-on-duplicate-update-in-postgresql
         // for later use, PostgreSql > 9.5 to prevent PRIMARY key violation use:
         // SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( NOW(), CAST( ? as #dbType#) ) ON
         // CONFLICT DO NOTHING";
-        SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
+        sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
     }
 
     /**
@@ -85,7 +85,6 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      * INFO: https://github.com/brettwooldridge/HikariCP
      */
     private void initDbProps() {
-
         // Performance:
         // databaseProps.setProperty("dataSource.cachePrepStmts", "true");
         // databaseProps.setProperty("dataSource.prepStmtCacheSize", "250");
@@ -104,7 +103,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      **************/
     @Override
     public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_CREATE_ITEMS_TABLE_IF_NOT,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#", "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype(), vo.getItemsManageTable() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
@@ -114,7 +113,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     @Override
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_CREATE_NEW_ENTRY_IN_ITEMS_TABLE,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemname() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
@@ -123,7 +122,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     @Override
     public List<ItemsVO> doGetItemTables(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_GET_ITEM_TABLES, new String[] { "#itemsManageTable#" },
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables, new String[] { "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doGetItemTables sql={}", sql);
         return Yank.queryBeanList(sql, ItemsVO.class, null);
@@ -135,7 +134,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     @Override
     public void doStoreItemValue(Item item, ItemVO vo) {
         vo = storeItemValueProvider(item, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_INSERT_ITEM_VALUE,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = new Object[] { vo.getValue() };
@@ -150,7 +149,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
 
-        List<HistoricItem> items = new ArrayList<HistoricItem>();
+        List<HistoricItem> items = new ArrayList<>();
         for (int i = 0; i < m.size(); i++) {
             items.add(new JdbcItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
         }
@@ -160,7 +159,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     /****************************
      * SQL generation Providers *
      ****************************/
-    static final DateTimeFormatter jdbcDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * @param filter
@@ -177,11 +176,11 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + jdbcDateFormat.format(filter.getBeginDateZoned()) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDateZoned()) + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + jdbcDateFormat.format(filter.getEndDateZoned()) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDateZoned()) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {

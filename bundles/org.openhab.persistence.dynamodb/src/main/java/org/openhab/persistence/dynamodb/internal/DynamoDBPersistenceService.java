@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
@@ -296,12 +295,10 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
 
             // table found or just created, wait
             return waitForTableToBecomeActive(tableName);
-
         } catch (AmazonClientException e) {
             logger.error("Exception when creating table", e);
             return false;
         }
-
     }
 
     private boolean waitForTableToBecomeActive(String tableName) {
@@ -376,7 +373,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     }
 
     @Override
-    public @NonNull Set<@NonNull PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() {
         return Collections.emptySet();
     }
 
@@ -404,7 +401,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     }
 
     private Map<String, Deque<DynamoDBItem<?>>> readBuffer() {
-        Map<String, Deque<DynamoDBItem<?>>> batchesByTable = new HashMap<String, Deque<DynamoDBItem<?>>>(2);
+        Map<String, Deque<DynamoDBItem<?>>> batchesByTable = new HashMap<>(2);
         // Get batch of data
         while (!buffer.isEmpty()) {
             DynamoDBItem<?> dynamoItem = buffer.poll();
@@ -412,13 +409,12 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
                 break;
             }
             String tableName = tableNameResolver.fromItem(dynamoItem);
-            Deque<DynamoDBItem<?>> batch = batchesByTable.computeIfAbsent(tableName,
-                    new Function<String, Deque<DynamoDBItem<?>>>() {
-                        @Override
-                        public Deque<DynamoDBItem<?>> apply(String t) {
-                            return new ArrayDeque<DynamoDBItem<?>>();
-                        }
-                    });
+            Deque<DynamoDBItem<?>> batch = batchesByTable.computeIfAbsent(tableName, new Function<>() {
+                @Override
+                public Deque<DynamoDBItem<?>> apply(String t) {
+                    return new ArrayDeque<>();
+                }
+            });
             batch.add(dynamoItem);
         }
         return batchesByTable;
@@ -479,9 +475,6 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         logger.debug("got a query");
@@ -507,7 +500,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
         logger.debug("item {} (class {}) will be tried to query using dto class {} from table {}", itemName,
                 item.getClass(), dtoClass, tableName);
 
-        List<HistoricItem> historicItems = new ArrayList<HistoricItem>();
+        List<HistoricItem> historicItems = new ArrayList<>();
 
         DynamoDBQueryExpression<DynamoDBItem<?>> queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
                 filter);

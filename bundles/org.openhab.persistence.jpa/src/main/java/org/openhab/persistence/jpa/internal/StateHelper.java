@@ -34,7 +34,7 @@ public class StateHelper {
      * @return state converted as string
      * @throws Exception
      */
-    static public String toString(State state) throws Exception {
+    public static String toString(State state) throws Exception {
         if (state instanceof DateTimeType) {
             return String.valueOf(((DateTimeType) state).getCalendar().getTime().getTime());
         }
