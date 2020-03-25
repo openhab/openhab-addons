@@ -1276,7 +1276,7 @@ public enum CaddxMessageType {
             // Byte 4 User number
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "User number", false)),
 
-    Secondary_Keypad_Function(0x3e, new int[] { 0x1d, 0x1c, 0x1f }, 4, "Secondary Keypad Function",
+    Secondary_Keypad_Function(0x3e, new int[] { 0x1d, 0x1c, 0x1f }, 3, "Secondary Keypad Function",
             "This message will contain a value that defines with function to perform, and the partitions to use.",
             CaddxDirection.Out, CaddxSource.None,
 

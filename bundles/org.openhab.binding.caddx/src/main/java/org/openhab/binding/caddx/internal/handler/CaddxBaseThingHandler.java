@@ -61,16 +61,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     /** Keypad Address. */
     private int keypadAddress;
 
-    /**
-     * Constructor.
-     *
-     * @param thing
-     */
-    /*
-     * public CaddxBaseThingHandler(Thing thing) {
-     * super(thing);
-     * }
-     */
     public CaddxBaseThingHandler(Thing thing, CaddxThingType caddxThingType) {
         super(thing);
         this.caddxThingType = caddxThingType;

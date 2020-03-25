@@ -75,10 +75,10 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
             }
         } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_PRIMARY_COMMAND)) {
             cmd = channelUID.getId();
-            data = command.toString() + "," + String.format("%d", getPartitionNumber() - 1) + ",0";
+            data = String.format("%s,%d,0", command.toString(), (1 << getPartitionNumber() - 1));
         } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_SECONDARY_COMMAND)) {
             cmd = channelUID.getId();
-            data = command.toString() + "," + String.format("%d", getPartitionNumber() - 1);
+            data = String.format("%s,%d", command.toString(), (1 << getPartitionNumber() - 1));
         } else {
             logger.debug("Unknown command");
             return;

@@ -69,8 +69,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
     public CaddxCommunicator(SerialPortManager portManager, CaddxProtocol protocol, String serialPortName, int baudRate)
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
-        logger.trace("CaddxCommunicator() Started {}", serialPortName);
-
         this.portManager = portManager;
         this.protocol = protocol;
         this.serialPortName = serialPortName;
@@ -123,8 +121,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     }
 
     public void addListener(CaddxPanelListener listener) {
-        logger.trace("CaddxCommunicator.addListener() Started");
-
         if (!listenerQueue.contains(listener)) {
             listenerQueue.add(listener);
         }
@@ -140,8 +136,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
      *            Fletcher sum is computed and appended by transmit.
      */
     public void transmit(CaddxMessage msg) { // byte... msg) {
-        logger.trace("CaddxCommunicator.transmit() Started");
-
         messages.add(msg);
     }
 
@@ -152,13 +146,11 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
      * @param msg The message
      */
     public void transmitFirst(CaddxMessage msg) {
-        logger.trace("CaddxCommunicator.transmitFirst() Started");
-
         messages.addFirst(msg);
     }
 
     public void stop() {
-        logger.trace("CaddxCommunicator.stop() Started");
+        logger.trace("CaddxCommunicator stopping");
 
         // kick thread out of waiting for FIFO
         thread.interrupt();
@@ -187,13 +179,11 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     @SuppressWarnings("null")
     @Override
     public void run() {
-        logger.trace("CaddxCommunicator.run() Started");
-
         int @Nullable [] expectedMessageNumbers = null;
 
         @Nullable
         CaddxMessage outgoingMessage = null;
-        boolean skipTransmit = false;
+        boolean skipTransmit = true;
 
         try {
             // loop until the thread is interrupted, sending out messages
@@ -264,10 +254,10 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                         if (incomingMessage.hasAcknowledgementFlag()) {
                             if (incomingMessage.isChecksumCorrect()) {
                                 // send ACK
-                                messages.putFirst(new CaddxMessage(CaddxMessageType.Positive_Acknowledge, ""));
+                                transmitFirst(new CaddxMessage(CaddxMessageType.Positive_Acknowledge, ""));
                             } else {
                                 // Send NAK
-                                messages.putFirst(new CaddxMessage(CaddxMessageType.Negative_Acknowledge, ""));
+                                transmitFirst(new CaddxMessage(CaddxMessageType.Negative_Acknowledge, ""));
                             }
                         }
                     }
@@ -277,7 +267,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                         // Message expected. Nothing received
                         if (outgoingMessage != null) {
-                            messages.putFirst(outgoingMessage); // put message in queue again
+                            transmitFirst(outgoingMessage); // put message in queue again
                             continue;
                         }
                     } else {
@@ -294,7 +284,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                             // Non expected reply received
                             if (outgoingMessage != null) {
-                                messages.putFirst(outgoingMessage); // put message in queue again
+                                transmitFirst(outgoingMessage); // put message in queue again
                                 skipTransmit = true; // Skip the transmit on the next cycle to receive the panel message
                             }
                         }
@@ -316,10 +306,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         } catch (IOException e) {
             logger.debug("CaddxCommunicator.run() IOException. Stopping sender thread. {}", getSerialPortName());
             Thread.currentThread().interrupt();
-        } catch (InterruptedException e) {
-            logger.debug("CaddxCommunicator.run() InterruptedException. Stopping sender thread. {}",
-                    getSerialPortName());
-            Thread.currentThread().interrupt();
         }
 
         logger.warn("CaddxCommunicator.run() Sender thread stopped. {}", getSerialPortName());
@@ -332,12 +318,12 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
      */
     @Override
     public void serialEvent(@Nullable SerialPortEvent serialPortEvent) {
-        logger.trace("CaddxCommunicator.serialEvent() Started");
         if (serialPortEvent == null) {
             return;
         }
 
         if (serialPortEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            logger.trace("Data receiving from the serial port");
             if (protocol == CaddxProtocol.Binary) {
                 receiveInBinaryProtocol(serialPortEvent);
             } else {

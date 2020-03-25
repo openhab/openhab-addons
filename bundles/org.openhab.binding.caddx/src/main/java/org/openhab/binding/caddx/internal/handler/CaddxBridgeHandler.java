@@ -64,7 +64,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_00 = { 0x25, 0x00 };
     static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_10 = { 0x25, 0x10 };
     static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_20 = { 0x25, 0x20 };
-    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_30 = { 0x25, 0x30 };
     static final byte[] DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST = { 0x27 };
 
     private final SerialPortManager portManager;
@@ -232,7 +231,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 break;
             case SEND_COMMAND:
                 if (!command.toString().isEmpty()) {
-                    String[] tokens = command.toString().split(",");
+                    String[] tokens = command.toString().split("\\|");
 
                     String cmd = tokens[0];
                     String data = "";
@@ -280,6 +279,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         } else if (CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST.equals(command)) {
             msg = new CaddxMessage(CaddxMessageType.Log_Event_Request, data);
         } else {
+            logger.trace("Unknown command {}", command);
             return false;
         }
 

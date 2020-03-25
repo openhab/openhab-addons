@@ -87,25 +87,20 @@ public class CaddxMessage {
 
     public CaddxMessage(CaddxMessageType type, String data) {
         int length = type.length;
+        if (length > 4) {
+            throw new IllegalArgumentException("CaddxMessage: message type not supported.");
+        }
+
+        String[] tokens = data.split("\\,");
+        if (length != 1 && tokens.length != length - 1) {
+            logger.debug("msg.length={}, tokens.length={}", length, tokens.length);
+            throw new IllegalArgumentException("CaddxMessage: data has not the correct format.");
+        }
+
         byte[] msg = new byte[length];
         msg[0] = (byte) type.number;
-        switch (length) {
-            case 1:
-                break;
-            case 2:
-                msg[1] = (byte) Integer.parseInt(data);
-                break;
-            case 3:
-                String[] tokens = data.split(",");
-                if (tokens.length != 2) {
-                    throw new IllegalArgumentException("CaddxMessage: data has not the correct format.");
-                }
-
-                msg[1] = (byte) Integer.parseInt(tokens[0]);
-                msg[2] = (byte) (1 << Integer.parseInt(tokens[1]));
-                break;
-            default:
-                throw new IllegalArgumentException("CaddxMessage: message type not supported.");
+        for (int i = 0; i < length - 1; i++) {
+            msg[i + 1] = (byte) Integer.parseInt(tokens[i]);
         }
 
         byte[] fletcherSum = fletcher(msg);
