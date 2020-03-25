@@ -45,10 +45,10 @@ class EnergenieSocket {
 
     public EnergenieSocket(final String host, final String password) {
         this.host = host;
-        key = getKey(password);
+        this.key = getKey(password);
     }
 
-    private byte[] getKey(final String password) {
+    private static byte[] getKey(final String password) {
         final int passwordLength = password.length();
         String passwordString = password;
         for (int i = 0; i < (8 - passwordLength); i++) {

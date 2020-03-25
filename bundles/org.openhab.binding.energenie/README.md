@@ -82,10 +82,10 @@ sitemap energenie label="Energenie Devices"
 {
     Frame {
        // Power extenders
-       Switch item=socket1
-       Switch item=socket2
-       Switch item=socket3
-       Switch item=socket4
+       Switch item=Socket1
+       Switch item=Socket2
+       Switch item=Socket3
+       Switch item=Socket4
        
        // Power measurement
        Number item=Voltage

@@ -54,8 +54,6 @@ public class EnergenieHandler extends BaseThingHandler {
      */
     private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(4), this::refreshState);
     private final String statusOn;
-    @SuppressWarnings("unused")
-    private final String statusOff;
 
     private @Nullable EnergenieSocket energenieSocket;
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -68,19 +66,15 @@ public class EnergenieHandler extends BaseThingHandler {
         switch (protocol) {
             case "EG_PROTO_V20":
                 statusOn = STATE_ON;
-                statusOff = STATE_OFF;
                 break;
             case "EG_PROTO_V21":
                 statusOn = V21_STATE_ON;
-                statusOff = V21_STATE_OFF;
                 break;
             case "EG_PROTO_WLAN":
                 statusOn = WLAN_STATE_ON;
-                statusOff = WLAN_STATE_OFF;
                 break;
             default:
                 statusOn = STATE_ON;
-                statusOff = STATE_OFF;
                 break;
         }
     }
