@@ -65,10 +65,11 @@ public abstract class DenonMarantzConnector {
                 break;
             case 2:
             case 3:
+            case 4:
                 zonePrefix = "Z" + zone;
                 break;
             default:
-                throw new UnsupportedCommandTypeException("Zone must be in range [1-3], zone: " + zone);
+                throw new UnsupportedCommandTypeException("Zone must be in range [1-4], zone: " + zone);
         }
         String cmd = zonePrefix;
         if (command instanceof StringType) {
@@ -92,8 +93,8 @@ public abstract class DenonMarantzConnector {
     }
 
     public void sendMuteCommand(Command command, int zone) throws UnsupportedCommandTypeException {
-        if (zone < 1 || zone > 3) {
-            throw new UnsupportedCommandTypeException("Zone must be in range [1-3], zone: " + zone);
+        if (zone < 1 || zone > 4) {
+            throw new UnsupportedCommandTypeException("Zone must be in range [1-4], zone: " + zone);
         }
         StringBuilder sb = new StringBuilder();
         if (zone != 1) {
@@ -124,10 +125,11 @@ public abstract class DenonMarantzConnector {
                 break;
             case 2:
             case 3:
+            case 4:
                 zonePrefix = "Z" + zone;
                 break;
             default:
-                throw new UnsupportedCommandTypeException("Zone must be in range [0-3], zone: " + zone);
+                throw new UnsupportedCommandTypeException("Zone must be in range [0-4], zone: " + zone);
         }
         String cmd = zonePrefix;
         if (command == OnOffType.ON) {
@@ -150,10 +152,11 @@ public abstract class DenonMarantzConnector {
                 break;
             case 2:
             case 3:
+            case 4:
                 zonePrefix = "Z" + zone;
                 break;
             default:
-                throw new UnsupportedCommandTypeException("Zone must be in range [1-3], zone: " + zone);
+                throw new UnsupportedCommandTypeException("Zone must be in range [1-4], zone: " + zone);
         }
         String cmd = zonePrefix;
         if (command instanceof RefreshType) {

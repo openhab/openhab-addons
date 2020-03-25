@@ -21,7 +21,11 @@
 			</channel-group>
 			<channel-group id="zone3" typeId="zone">
 				<label>Zone 3 Control</label>
-				<description>Channels for zone2 of this AVR.</description>
+				<description>Channels for zone3 of this AVR.</description>
+			</channel-group>
+			<channel-group id="zone4" typeId="zone">
+				<label>Zone 4 Control</label>
+				<description>Channels for zone4 of this AVR.</description>
 			</channel-group>
 		</channel-groups>
 
@@ -47,7 +51,7 @@
 
 			<parameter name="zoneCount" type="integer" groupName="receiverProperties">
 				<label>Zone Count of the Receiver</label>
-				<description>Number of zones (including main zone), values 1-3 are supported.</description>
+				<description>Number of zones (including main zone), values 1-4 are supported.</description>
 				<default>2</default>
 			</parameter>
 
