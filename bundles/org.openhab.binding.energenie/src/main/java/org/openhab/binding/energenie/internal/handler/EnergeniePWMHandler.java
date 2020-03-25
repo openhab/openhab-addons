@@ -134,7 +134,12 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // PWM devices don't support any commands, just value reading
+        if (command instanceof RefreshType) {
+            try {
+                getState();
+            } catch (Exception e) {
+                logger.debug("Exception during poll", e);
+            }
     }
 
     @Override

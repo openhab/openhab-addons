@@ -173,12 +173,6 @@ public class EnergenieHandler extends BaseThingHandler {
             final String socket = CHANNEL_SOCKET_PREFIX + (i + 1);
             final String stringStatus = String.format("0x%02x", status[i]);
             updateState(socket, OnOffType.from(stringStatus.equals(statusOn)));
-
-            // if (stringStatus.equals(statusOn)) {
-            // updateState(socket, OnOffType.ON);
-            // } else if (stringStatus.equals(statusOff)) {
-            // updateState(socket, OnOffType.OFF);
-            // }
         }
     }
 }
