@@ -66,6 +66,12 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_ZONE3_MUTE = "zone3#mute";
     public static final String CHANNEL_ZONE3_INPUT = "zone3#input";
 
+    public static final String CHANNEL_ZONE4_POWER = "zone4#power";
+    public static final String CHANNEL_ZONE4_VOLUME = "zone4#volume";
+    public static final String CHANNEL_ZONE4_VOLUME_DB = "zone4#volumeDB";
+    public static final String CHANNEL_ZONE4_MUTE = "zone4#mute";
+    public static final String CHANNEL_ZONE4_INPUT = "zone4#input";
+
     // HashMap of Zone2 Channel Type UIDs (to be added to Thing later when needed)
     public static final LinkedHashMap<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
     static {
@@ -84,6 +90,16 @@ public class DenonMarantzBindingConstants {
         ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
         ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
         ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
+    }
+
+    // HashMap of Zone4 Channel Type UIDs (to be added to Thing later when needed)
+    public static final LinkedHashMap<String, ChannelTypeUID> ZONE4_CHANNEL_TYPES = new LinkedHashMap<String, ChannelTypeUID>();
+    static {
+        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
+        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
+        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
+        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
+        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
     }
 
     /**
