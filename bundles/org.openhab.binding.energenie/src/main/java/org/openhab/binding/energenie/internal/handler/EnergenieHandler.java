@@ -54,6 +54,7 @@ public class EnergenieHandler extends BaseThingHandler {
      */
     private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(4), this::refreshState);
     private final String statusOn;
+    @SuppressWarnings("unused")
     private final String statusOff;
 
     private @Nullable EnergenieSocket energenieSocket;
