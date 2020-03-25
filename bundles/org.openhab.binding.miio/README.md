@@ -27,8 +27,10 @@ The following things types are available:
 | Midea Air Conditioner xa1    | miio:unsupported | midea.aircondition.xa1 | No        |            |
 | Mi Air Monitor v1            | miio:basic       | [zhimi.airmonitor.v1](#zhimi-airmonitor-v1) | Yes       |            |
 | Mi Air Quality Monitor 2gen  | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
+| Mi Air Quality Monitor S1    | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
 | Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
 | Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes       |            |
+| Mi Air Humidifier 2          | miio:basic       | [zhimi.humidifier.cb1](#zhimi-humidifier-cb1) | Yes       |            |
 | Mija Smart humidifier        | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
 | Mi Air Purifier v1           | miio:basic       | [zhimi.airpurifier.v1](#zhimi-airpurifier-v1) | Yes       |            |
 | Mi Air Purifier v2           | miio:basic       | [zhimi.airpurifier.v2](#zhimi-airpurifier-v2) | Yes       |            |
@@ -43,7 +45,8 @@ The following things types are available:
 | Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.ma4](#zhimi-airpurifier-ma4) | Yes       |            |
 | Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |            |
 | Mi Air Purifier Super 2      | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |            |
-| Mi Fresh Air Ventilator      | miio:unsupported | dmaker.airfresh.t2017  | No        |            |
+| Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
+| Mi Fresh Air Ventilator A1   | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
 | Xiao AI Smart Alarm Clock    | miio:unsupported | zimi.clock.myk01       | No        |            |
 | Yeelight Smart Bath Heater   | miio:unsupported | yeelight.bhf_light.v2  | No        |            |
 | XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
@@ -141,6 +144,24 @@ The following things types are available:
 | Yeelight Color Bulb          | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
 
 
+# Advanced: Unsupported devices
+
+Newer devices may not yet be supported.
+However, many devices share large similarties with existing devices.
+The binding allows to try/test if your new device is working with database files of older devices as well.
+For this, first remove your unsupported thing. Manually add a miio:basic thing. 
+Besides the regular configuration (like ip address, token) the modelId needs to be provided.
+Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
+Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
+
+# Advanced: adding local database files to support new devices
+
+Things using the basic handler (miio:basic things) are driven by json 'database' files.
+This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
+The config/misc/miio (e.g. in Linux `/opt/openhab2/config/misc/miio/`) is scanned for database files and will be used for your devices. 
+Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
+For format, please check the current database files in Openhab github.
+
 # Discovery
 
 The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
@@ -153,12 +174,12 @@ Accept only one of the 2 discovery results, the alternate one can further be ign
 
 The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
 Some devices provide the token upon discovery. This may depends on the firmware version.
-
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
-Note: latest Android MiHome no longer has the tokens in the database. Use 5.0.19 version or lower 
-The token needs to be retrieved from the application database. The easiest way on Android to do is by using [MiToolkit](https://github.com/ultrara1n/MiToolkit/releases).
 
-Alternatively, on Android open a backup file, or browse a rooted device, find the mio2db file with and read it sqlite.
+The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
+It seems that version was released with debug messages turned on by mistake. 
+An APK file with the old version can be easily found using one of the popular web search engines. 
+After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
 
 For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
 Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.
@@ -225,14 +246,23 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| aqi              | Number  | Air Quality Index                   |
 | battery          | Number  | Battery                             |
-| usb_state        | Switch  | USB State                           |
-| time_state       | Switch  | Time State                          |
-| night_state      | Switch  | Night State                         |
-| night_begin      | Number  | Night Begin Time                    |
-| night_end        | Number  | Night End Time                      |
+| pm25             | Number  | PM2.5                               |
+| co2              | Number  | CO2e                                |
+| tvoc             | Number  | tVOC                                |
+| humidity         | Number  | Humidity                            |
+| temperature      | Number  | Temperature                         |
+
+### Mi Air Quality Monitor S1 (<a name="cgllc-airmonitor-s1">cgllc.airmonitor.s1</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| battery          | Number  | Battery                             |
+| pm25             | Number  | PM2.5                               |
+| co2              | Number  | CO2                                 |
+| tvoc             | Number  | tVOC                                |
+| humidity         | Number  | Humidity                            |
+| temperature      | Number  | Temperature                         |
 
 ### Mi Air Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
@@ -263,6 +293,23 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | setHumidity      | Number  | Humidity Set                        |
 | aqi              | Number  | Air Quality Index                   |
 | translevel       | Number  | Trans_level                         |
+| bright           | Number  | LED Brightness                      |
+| buzzer           | Switch  | Buzzer Status                       |
+| depth            | Number  | Depth                               |
+| dry              | Switch  | Dry                                 |
+| usedhours        | Number  | Run Time                            |
+| motorspeed       | Number  | Motor Speed                         |
+| temperature      | Number  | Temperature                         |
+| childlock        | Switch  | Child Lock                          |
+
+### Mi Air Humidifier 2 (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| mode             | String  | Mode                                |
+| humidity         | Number  | Humidity                            |
+| setHumidity      | Number  | Humidity Set                        |
 | bright           | Number  | LED Brightness                      |
 | buzzer           | Switch  | Buzzer Status                       |
 | depth            | Number  | Depth                               |
@@ -544,6 +591,50 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number  | Temperature                         |
 | purifyvolume     | Number  | Purivied Volume                     |
 | childlock        | Switch  | Child Lock                          |
+
+### Mi Fresh Air Ventilator (<a name="dmaker-airfresh-t2017">dmaker.airfresh.t2017</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| airFreshMode     | String  | Mode                                |
+| airFreshPTCPower | Switch  | PTC                                 |
+| airFreshPtcLevel | String  | PTC Level                           |
+| airFreshPTCStatus | Switch  | PTC Status                          |
+| airFreshDisplayDirection | String  | Screen direction                    |
+| airFreshDisplay  | Switch  | Display                             |
+| airFreshChildLock | Switch  | Child Lock                          |
+| airFreshSound    | Switch  | Sound                               |
+| airFreshPM25     | Number  | PM2.5                               |
+| airFreshCO2      | Number  | CO2                                 |
+| airFreshCurrentSpeed | Number  | Current Speed                       |
+| airFreshFavoriteSpeed | Number  | Favorite Speed                      |
+| airFreshTemperature | Number  | Temperature Outside                 |
+| airFreshFilterPercents | Number  | Filter Percents Remaining           |
+| airFreshFilterDays | Number  | Filter Days Remaining               |
+| airFreshFilterProPercents | Number  | Filter Pro Percents Remaining       |
+| airFreshFilterProDays | Number  | Filter Pro Days Remaining           |
+| airFreshResetFilter | String  | Reset Filter                        |
+
+### Mi Fresh Air Ventilator A1 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| airFreshMode     | String  | Mode                                |
+| airFreshPTCPower | Switch  | PTC                                 |
+| airFreshPTCStatus | Switch  | PTC Status                          |
+| airFreshDisplay  | Switch  | Display                             |
+| airFreshChildLock | Switch  | Child Lock                          |
+| airFreshSound    | Switch  | Sound                               |
+| airFreshPM25     | Number  | PM2.5                               |
+| airFreshCO2      | Number  | CO2                                 |
+| airFreshCurrentSpeed | Number  | Current Speed                       |
+| airFreshFavoriteSpeed | Number  | Favorite Speed                      |
+| airFreshTemperature | Number  | Temperature Outside                 |
+| airFreshFilterPercents | Number  | Filter Percents Remaining           |
+| airFreshFilterDays | Number  | Filter Days Remaining               |
+| airFreshResetFilterA1 | String  | Reset Filter                        |
 
 ### Mi Air Purifier mb1 (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
@@ -860,6 +951,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | temperature      | Number  | Temperature                         |
+| led              | Switch  | Indicator light                     |
 
 ### Mi Power-plug v1 (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
 
@@ -890,6 +982,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | temperature      | Number  | Temperature                         |
+| led              | Switch  | Indicator light                     |
 
 ### Mi Smart Plug (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
 
@@ -897,6 +990,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | temperature      | Number  | Temperature                         |
+| led              | Switch  | Indicator light                     |
 
 ### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
@@ -1336,14 +1430,26 @@ note: Autogenerated example. Replace the id (airmonitor) in the channel with you
 
 ```java
 Group G_airmonitor "Mi Air Quality Monitor 2gen" <status>
-Switch power "Power" (G_airmonitor) {channel="miio:basic:airmonitor:power"}
-Number aqi "Air Quality Index" (G_airmonitor) {channel="miio:basic:airmonitor:aqi"}
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
-Switch usb_state "USB State" (G_airmonitor) {channel="miio:basic:airmonitor:usb_state"}
-Switch time_state "Time State" (G_airmonitor) {channel="miio:basic:airmonitor:time_state"}
-Switch night_state "Night State" (G_airmonitor) {channel="miio:basic:airmonitor:night_state"}
-Number night_begin "Night Begin Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_begin"}
-Number night_end "Night End Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_end"}
+Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
+Number co2 "CO2e" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
+Number tvoc "tVOC" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc"}
+Number humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
+Number temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
+```
+
+### Mi Air Quality Monitor S1 (cgllc.airmonitor.s1) item file lines
+
+note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airmonitor "Mi Air Quality Monitor S1" <status>
+Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
+Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
+Number co2 "CO2" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
+Number tvoc "tVOC" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc"}
+Number humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
+Number temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
 ```
 
 ### Mi Air Humidifier (zhimi.humidifier.v1) item file lines
@@ -1380,6 +1486,26 @@ Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidi
 Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Number aqi "Air Quality Index" (G_humidifier) {channel="miio:basic:humidifier:aqi"}
 Number translevel "Trans_level" (G_humidifier) {channel="miio:basic:humidifier:translevel"}
+Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
+Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
+Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
+Number temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+```
+
+### Mi Air Humidifier 2 (zhimi.humidifier.cb1) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_humidifier "Mi Air Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
@@ -1700,6 +1826,56 @@ Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpu
 Number temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+```
+
+### Mi Fresh Air Ventilator (dmaker.airfresh.t2017) item file lines
+
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airfresh "Mi Fresh Air Ventilator" <status>
+Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
+String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
+Switch airFreshPTCPower "PTC" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCPower"}
+String airFreshPtcLevel "PTC Level" (G_airfresh) {channel="miio:basic:airfresh:airFreshPtcLevel"}
+Switch airFreshPTCStatus "PTC Status" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCStatus"}
+String airFreshDisplayDirection "Screen direction" (G_airfresh) {channel="miio:basic:airfresh:airFreshDisplayDirection"}
+Switch airFreshDisplay "Display" (G_airfresh) {channel="miio:basic:airfresh:airFreshDisplay"}
+Switch airFreshChildLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:airFreshChildLock"}
+Switch airFreshSound "Sound" (G_airfresh) {channel="miio:basic:airfresh:airFreshSound"}
+Number airFreshPM25 "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:airFreshPM25"}
+Number airFreshCO2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:airFreshCO2"}
+Number airFreshCurrentSpeed "Current Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshCurrentSpeed"}
+Number airFreshFavoriteSpeed "Favorite Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshFavoriteSpeed"}
+Number airFreshTemperature "Temperature Outside" (G_airfresh) {channel="miio:basic:airfresh:airFreshTemperature"}
+Number airFreshFilterPercents "Filter Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterPercents"}
+Number airFreshFilterDays "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterDays"}
+Number airFreshFilterProPercents "Filter Pro Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterProPercents"}
+Number airFreshFilterProDays "Filter Pro Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterProDays"}
+String airFreshResetFilter "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilter"}
+```
+
+### Mi Fresh Air Ventilator A1 (dmaker.airfresh.a1) item file lines
+
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airfresh "Mi Fresh Air Ventilator A1" <status>
+Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
+String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
+Switch airFreshPTCPower "PTC" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCPower"}
+Switch airFreshPTCStatus "PTC Status" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCStatus"}
+Switch airFreshDisplay "Display" (G_airfresh) {channel="miio:basic:airfresh:airFreshDisplay"}
+Switch airFreshChildLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:airFreshChildLock"}
+Switch airFreshSound "Sound" (G_airfresh) {channel="miio:basic:airfresh:airFreshSound"}
+Number airFreshPM25 "PM2.5" (G_airfresh) {channel="miio:basic:airfresh:airFreshPM25"}
+Number airFreshCO2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:airFreshCO2"}
+Number airFreshCurrentSpeed "Current Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshCurrentSpeed"}
+Number airFreshFavoriteSpeed "Favorite Speed" (G_airfresh) {channel="miio:basic:airfresh:airFreshFavoriteSpeed"}
+Number airFreshTemperature "Temperature Outside" (G_airfresh) {channel="miio:basic:airfresh:airFreshTemperature"}
+Number airFreshFilterPercents "Filter Percents Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterPercents"}
+Number airFreshFilterDays "Filter Days Remaining" (G_airfresh) {channel="miio:basic:airfresh:airFreshFilterDays"}
+String airFreshResetFilterA1 "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilterA1"}
 ```
 
 ### Mi Air Purifier mb1 (zhimi.airpurifier.mb1) item file lines
@@ -2079,6 +2255,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Power-plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Power-plug v1 (chuangmi.plug.v1) item file lines
@@ -2121,6 +2298,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Power-plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Mi Smart Plug (chuangmi.plug.hmi205) item file lines
@@ -2131,6 +2309,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
 ### Qing Mi Smart Power Strip v1 (qmi.powerstrip.v1) item file lines

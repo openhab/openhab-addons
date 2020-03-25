@@ -50,8 +50,12 @@ public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaBaseThingHandler {
             }
         } else if (CLOUD_DEVICE_STATUS_STATE.equals(state.getName())) {
             Channel ch = thing.getChannel(CLOUD_STATUS);
-            State newState = parseTahomaState(ch.getAcceptedItemType(), state);
-            updateState(ch.getUID(), newState);
+            if (ch != null) {
+                State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+                if (newState != null) {
+                    updateState(ch.getUID(), newState);
+                }
+            }
         }
     }
 

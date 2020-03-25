@@ -139,8 +139,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 actionGroupDiscovered(label, oid, oid);
             }
         } else {
-            logger.debug("Cannot start discovery since the bridge is not online! Rescheduling...");
-            scheduler.schedule(this::runDiscovery, 60, TimeUnit.SECONDS);
+            logger.debug("Cannot start discovery since the bridge is not online!");
         }
     }
 
@@ -344,13 +343,16 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID) {
-        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID);
+        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID, hasState(device, RSSI_LEVEL_STATE));
     }
 
-    private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID) {
+    private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID, boolean rssi) {
         Map<String, Object> properties = new HashMap<>();
         properties.put("url", deviceURL);
-        properties.put("label", label);
+        properties.put(NAME_STATE, label);
+        if (rssi) {
+            properties.put(RSSI_LEVEL_STATE, "-1");
+        }
 
         ThingUID thingUID = new ThingUID(thingTypeUID, bridge.getThing().getUID(), oid);
 
@@ -361,7 +363,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private void actionGroupDiscovered(String label, String deviceURL, String oid) {
-        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ACTIONGROUP);
+        deviceDiscovered(label, deviceURL, oid, THING_TYPE_ACTIONGROUP, false);
     }
 
     private void gatewayDiscovered(SomfyTahomaGateway gw) {

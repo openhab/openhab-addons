@@ -19,17 +19,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Defines an EIR record used in the BLE advertisement packets.
  *
- * @author Chris Jackson
+ * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public class EirRecord {
-    private EirDataType type;
-    private Object record;
+    private EirDataType type = EirDataType.UNKNOWN;
+    private Object record = new Object();
 
-    EirRecord(int[] data) {
+    EirRecord(int @Nullable [] data) {
         if (data == null || data.length == 0) {
             return;
         }
@@ -130,14 +134,16 @@ public class EirRecord {
     }
 
     private UUID process16BitUUID(int[] data, int index) {
-        long high = ((long) data[index] << 32) + ((long) data[index + 1] << 40);
-        return new UUID(high, 0);
+        // 0000xxxx-0000-1000-8000-00805F9B34FB
+        long high = ((long) data[index] << 32) + ((long) data[index + 1] << 40) + 0x00001000L;
+        return new UUID(high, 0x800000805f9b34fbL);
     }
 
     private UUID process32BitUUID(int[] data, int index) {
+        // xxxxxxxx-0000-1000-8000-00805F9B34FB
         long high = ((long) data[index] << 32) + ((long) data[index + 1] << 40) + ((long) data[index + 2] << 48)
-                + ((long) data[index + 3] << 56);
-        return new UUID(high, 0);
+                + ((long) data[index + 3] << 56) + 0x00001000L;
+        return new UUID(high, 0x800000805f9b34fbL);
     }
 
     private UUID process128BitUUID(int[] data, int index) {

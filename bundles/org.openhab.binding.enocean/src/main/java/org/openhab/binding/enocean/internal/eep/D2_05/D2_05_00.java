@@ -116,8 +116,8 @@ public class D2_05_00 extends _VLDMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:

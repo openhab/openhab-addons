@@ -73,6 +73,9 @@ public class LutronBindingConstants {
     public static final String SERIAL_NUMBER = "serialNumber";
     public static final String DISCOVERY_FILE = "discoveryFile";
 
+    public static final String PROPERTY_PRODFAM = "productFamily";
+    public static final String PROPERTY_PRODTYP = "productType";
+
     // Thing config properties
     public static final String INTEGRATION_ID = "integrationId";
 

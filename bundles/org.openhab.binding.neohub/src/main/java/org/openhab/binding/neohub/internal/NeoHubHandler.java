@@ -29,8 +29,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 
-import org.openhab.binding.neohub.internal.NeoHubInfoResponse.DeviceInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +45,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private NeoHubConfiguration config;
     private NeoHubSocket socket;
-
-    private NeoHubInfoResponse lastInfoResponse = null;
 
     private ScheduledFuture<?> lazyPollingScheduler;
     private ScheduledFuture<?> fastPollingScheduler;
@@ -154,7 +150,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
      */
     public synchronized NeoHubReturnResult toNeoHubSendChannelValue(String commandStr) {
         if (socket == null || config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
             return NeoHubReturnResult.ERR_INITIALIZATION;
         }
 
@@ -165,6 +160,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             startFastPollingBurst();
 
             return NeoHubReturnResult.SUCCEEDED;
+
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("set value error \"{}\"", e.getMessage());
@@ -180,23 +176,36 @@ public class NeoHubHandler extends BaseBridgeHandler {
      */
     protected NeoHubInfoResponse fromNeoHubFetchPollingResponse() {
         if (socket == null || config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            logger.warn(MSG_HUB_CONFIG);
             return null;
         }
 
         try {
             @Nullable
             String response = socket.sendMessage(CMD_CODE_INFO);
+            
+            NeoHubInfoResponse newInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
 
-            lastInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
+            if (newInfoResponse == null) {
+                logger.warn(MSG_FMT_POLL_ERR, "failed to create InfoResponse");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return null;
+            }
+
+            if (newInfoResponse.getDevices() == null) {
+                logger.warn(MSG_FMT_POLL_ERR, "no devices found");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return null;
+            }
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
 
-            return lastInfoResponse;
+            return newInfoResponse;
+
         } catch (Exception e) {
-            logger.warn("set value error \"{}\"", e.getMessage());
+            logger.warn(MSG_FMT_POLL_ERR, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return null;
         }
@@ -208,16 +217,16 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * handlers
      */
     private synchronized void lazyPollingSchedulerExecute() {
-        fromNeoHubFetchPollingResponse();
+        NeoHubInfoResponse infoResponse = fromNeoHubFetchPollingResponse(); 
 
-        if (lastInfoResponse != null) {
+        if (infoResponse != null) {
             List<Thing> children = getThing().getThings();
 
-            // dispatch the infoResponse to each of the hub's owned devices ..
+            // dispatch myInfoResponse to each of the hub's owned devices ..
             for (Thing child : children) {
                 ThingHandler device = child.getHandler();
                 if (device instanceof NeoBaseHandler) {
-                    ((NeoBaseHandler) device).toBaseSendPollResponse(this, lastInfoResponse);
+                    ((NeoBaseHandler) device).toBaseSendPollResponse(infoResponse);
                 }
             }
         }
@@ -237,28 +246,4 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * determine if the particular device name is configured in the hub
-     * 
-     * @return the device is fully configured
-     * 
-     */
-    public boolean isConfigured(String deviceName) {
-        if (lastInfoResponse == null) {
-            fromNeoHubFetchPollingResponse();
-        }
-        return lastInfoResponse != null && lastInfoResponse.getDeviceInfo(deviceName) != null;
-    }
-
-    /**
-     * determine if the particular device name is communicating with the hub
-     * 
-     * @return the device is fully configured and talking to the hub
-     * 
-     */
-    public boolean isOnline(String deviceName) {
-        DeviceInfo deviceInfo;
-        return isConfigured(deviceName) && (deviceInfo = lastInfoResponse.getDeviceInfo(deviceName)) != null
-                && !deviceInfo.isOffline();
-    }
 }

@@ -8,8 +8,17 @@ Currently, the binding supports a single type of Thing, being the `command` Thin
 
 ## Binding Configuration
 
-The binding does not require any specific configuration.
+For security reasons all commands need to be whitelisted.
+Allowed commands need to be added to the `misc/exec.whitelist` file in the configuration directory.
+Every command needs to be on a separate line.
 
+Example:
+
+```shell
+/bin/echo "Hello world!"
+/usr/local/bin/apcaccess status
+php ./configurations/scripts/script.php %2$s
+```
 
 **Linux:**
 Note that the commands are executed in the context and with the privileges of the process running the Java Virtual Machine.
@@ -27,18 +36,16 @@ It is not advised to run the virtual machine as superuser/root.
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
-
-- `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result,
-- `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid repetition.
+- `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result string.
+- `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid automatic repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
-- `autorun` - A boolean parameter to make the command execute immediately every time the input channel is sent a command.
+- `autorun` - A boolean parameter to make the command execute immediately every time the input channel is sent a different openHAB command. If choosing autorun, you may wish to also set `interval=0`. Note that sending the same command a second time will not trigger execution.
 
-For each command a separate Thing has to be defined.
+For each shell command, a separate Thing has to be defined.
 
 ```java
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
-
 
 The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
@@ -46,7 +53,7 @@ The following parameters are automatically added:
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
 -   the current (or last) command to the input channel (see below, example: `%2$s`)
 
-note - if you trigger execution using autorun or the run channel, the %2 substitution will use the most recent command sent to the input channel.
+note - if you trigger execution using interval or the run channel, the `%2` substitution will use the most recent command (if there has been one) sent to the input channel.  The state of the Item linked to input channel is ignored.
 
 ## Channels
 
@@ -87,14 +94,14 @@ Following is an example how to set up an exec command thing, pass it a parameter
 
 ```java
 // "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.
-// e.g: "ls" as <YOUR COMMAND> and "-a" or "-l" as additional argument set to the input channel in the rule.
+// e.g: "ls" as <YOUR COMMAND> and "-a" or "-l" as additional argument sent to the input channel in the rule.
 Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
 ```
 
 **demo.items**
 
 ```java
-Switch YourTrigger
+Switch YourTrigger "External trigger [%s]"
 Number YourNumber "Your Number [%.1f °C]"
 
 // state of the execution, is running or finished
@@ -121,7 +128,7 @@ sitemap demo label="Your Value"
 **demo.rules**
 
 ```java
-rule "begin your execution"
+rule "Set up your parameters"
 when
    Item YourTrigger changed
 then
@@ -129,23 +136,44 @@ then
    if(YourTrigger.state == ON){
       yourcommand_Args.sendCommand("Additional Argument to command line for ON")
    }else{
-      yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
+      yourcommand_Args.sendCommand("Different Argument to command line for OFF")
    }
-
-      // Trigger execution (if autorun false)
-   yourcommand_Run.sendCommand(ON)
-      // the Run indicator state will go ON shortly, and return OFF when script finished
+      // Caution : openHAB bus is asynchronous
+      // we must let the command work before triggering execution (if autorun false)
 end
 
+rule "begin your execution"
+when
+   Item yourcommand_Args received command
+then
+      // Separately triggering RUN allows subsequent executions with unchanged parameter %2
+      // which autorun does not.
+   if (yourcommand_Run.state != ON) {
+      yourcommand_Run.sendCommand(ON)
+         // the Run indicator state will go ON shortly, and return OFF when script finished
+   }else{
+      logInfo("Your command exec", "Script already in use, skipping execution.")
+   }
+end
 
-rule "process your results"
+rule "script complete"
 when
    Item yourcommand_Run changed from ON to OFF
 then
+      // Logging of ending
+   logInfo("Your command exec", "Script has completed.")
+      // Caution : openHAB bus is asynchronous
+      // there is no guarantee the output Item will get updated before the run channel triggers rules
+end
+
+rule "process your results"
+when
+   Item yourcommand_Out received update
+then
       // Logging of raw command line result
-   logInfo("Your command exec", "Result:" + yourcommand_Out.state )
+   logInfo("Your command exec", "Raw result:" + yourcommand_Out.state )
       // If the returned string is just a number it can be parsed
-      // If not a regex or another transformation can be used
+      // If not, a regex or another transformation could be used
    YourNumber.postUpdate(Integer::parseInt(yourcommand_Out.state.toString) as Number)
 end
 

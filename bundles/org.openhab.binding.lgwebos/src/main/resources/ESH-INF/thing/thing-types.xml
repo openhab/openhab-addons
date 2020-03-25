@@ -13,7 +13,6 @@
 			<channel id="mute" typeId="muteType" />
 			<channel id="volume" typeId="volumeType" />
 			<channel id="channel" typeId="channelType" />
-			<channel id="channelName" typeId="channelNameChannelType" />
 			<channel id="toast" typeId="toastType" />
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="mediaStopType" />
@@ -58,12 +57,6 @@
 		<item-type>String</item-type>
 		<label>Channel</label>
 		<description>Current Channel</description>
-	</channel-type>
-	<channel-type id="channelNameChannelType">
-		<item-type>String</item-type>
-		<label>Channel Name</label>
-		<description>Current Channel Name</description>
-		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="toastType">
 		<item-type>String</item-type>

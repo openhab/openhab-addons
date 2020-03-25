@@ -34,8 +34,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.weathercompany.internal.config.WeatherCompanyObservationsConfig;
-import org.openhab.binding.weathercompany.internal.model.PwsObservations;
-import org.openhab.binding.weathercompany.internal.model.PwsObservations.Observations;
+import org.openhab.binding.weathercompany.internal.model.PwsObservationsDTO;
+import org.openhab.binding.weathercompany.internal.model.PwsObservationsDTO.Observations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +110,8 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         StringBuilder sb = new StringBuilder(BASE_PWS_URL);
         // Set to use Imperial units. UoM will convert to the other units
         sb.append("?units=e");
+        // Get temperatures with one decimal point precision
+        sb.append("&numericPrecision=decimal");
         // Set response type as JSON
         sb.append("&format=json");
         // Set PWS station Id from config
@@ -134,7 +136,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         }
         try {
             logger.debug("Handler: Parsing PWS observations response: {}", response);
-            PwsObservations pwsObservations = gson.fromJson(response, PwsObservations.class);
+            PwsObservationsDTO pwsObservations = gson.fromJson(response, PwsObservationsDTO.class);
             logger.debug("Handler: Successfully parsed PWS observations response object");
             updateStatus(ThingStatus.ONLINE);
             updatePwsObservations(pwsObservations);
@@ -145,7 +147,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         }
     }
 
-    private void updatePwsObservations(PwsObservations pwsObservations) {
+    private void updatePwsObservations(PwsObservationsDTO pwsObservations) {
         if (pwsObservations.observations.length == 0) {
             logger.debug("Handler: PWS observation object contains no observations!");
             return;

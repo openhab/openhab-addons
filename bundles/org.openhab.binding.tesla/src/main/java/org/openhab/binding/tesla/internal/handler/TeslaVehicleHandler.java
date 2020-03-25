@@ -628,14 +628,14 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     public void openFrunk() {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("which_trunk", "front");
-        sendCommand(COMMAND_TRUNK_OPEN, gson.toJson(payloadObject), account.commandTarget);
+        sendCommand(COMMAND_ACTUATE_TRUNK, gson.toJson(payloadObject), account.commandTarget);
         requestData(VEHICLE_STATE);
     }
 
     public void openTrunk() {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("which_trunk", "rear");
-        sendCommand(COMMAND_TRUNK_OPEN, gson.toJson(payloadObject), account.commandTarget);
+        sendCommand(COMMAND_ACTUATE_TRUNK, gson.toJson(payloadObject), account.commandTarget);
         requestData(VEHICLE_STATE);
     }
 

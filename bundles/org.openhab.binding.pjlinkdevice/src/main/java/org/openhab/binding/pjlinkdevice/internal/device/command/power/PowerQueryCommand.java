@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.power;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for retrieving the devices power status as described in
@@ -27,17 +26,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PowerQueryCommand extends AbstractCommand<PowerQueryRequest, PowerQueryResponse> {
 
-  public PowerQueryCommand(PJLinkDevice pjLinkDevice) {
-    super(pjLinkDevice);
-  }
+    public PowerQueryCommand(PJLinkDevice pjLinkDevice) {
+        super(pjLinkDevice);
+    }
 
-  @Override
-  public PowerQueryRequest createRequest() {
-    return new PowerQueryRequest();
-  }
+    @Override
+    public PowerQueryRequest createRequest() {
+        return new PowerQueryRequest();
+    }
 
-  @Override
-  public PowerQueryResponse parseResponse(String response) throws ResponseException {
-    return new PowerQueryResponse(response);
-  }
+    @Override
+    public PowerQueryResponse parseResponse(String response) throws ResponseException {
+        return new PowerQueryResponse(response);
+    }
 }

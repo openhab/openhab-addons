@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.miio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Will be thrown instead of the many possible errors in the crypto module
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoCryptoException extends Exception {
 
     public MiIoCryptoException() {

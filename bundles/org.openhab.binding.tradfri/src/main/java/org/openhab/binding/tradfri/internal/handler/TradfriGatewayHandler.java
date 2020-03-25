@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -41,6 +43,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tradfri.internal.CoapCallback;
 import org.openhab.binding.tradfri.internal.DeviceUpdateListener;
@@ -48,6 +51,7 @@ import org.openhab.binding.tradfri.internal.TradfriBindingConstants;
 import org.openhab.binding.tradfri.internal.TradfriCoapClient;
 import org.openhab.binding.tradfri.internal.TradfriCoapHandler;
 import org.openhab.binding.tradfri.internal.config.TradfriGatewayConfig;
+import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryService;
 import org.openhab.binding.tradfri.internal.model.TradfriVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,6 +133,11 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
                 }
             });
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(TradfriDiscoveryService.class);
     }
 
     private void establishConnection() {
@@ -243,8 +252,8 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
             logger.warn("Invalid response received from gateway '{}'", responseText, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Invalid response received from gateway '%s'", responseText));
-        } catch (ConnectorException |IOException e) {
-            logger.debug("Error connecting to gateway ",e);
+        } catch (ConnectorException | IOException e) {
+            logger.debug("Error connecting to gateway ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error connecting to gateway."));
         }

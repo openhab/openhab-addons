@@ -167,6 +167,7 @@ public class MiIoAsyncCommunication {
             JsonElement response;
             response = parser.parse(decryptedResponse);
             if (response.isJsonObject()) {
+                needPing = false;
                 logger.trace("Received  JSON message {}", response.toString());
                 miIoSendCommand.setResponse(response.getAsJsonObject());
                 return miIoSendCommand;

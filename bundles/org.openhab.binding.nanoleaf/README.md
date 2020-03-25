@@ -59,12 +59,14 @@ Troubleshooting: In seldom cases (in particular together with updating the bindi
 **Knowing which panel has which id**
 
 Unfortunately it is not easy to find out which panel gets which id while this is pretty important if you have lots of them and you want to assign rules to it. 
-Don't worry: the binding comes with some helpful support in the background (this works only well for the canvas device!)
+Don't worry: the binding comes with some helpful support in the background the canvas type (this is only provided for the canvas device because triangles can have weird layouts that are hard to express in a log output)
 
 - fire up your browser and open the openhab server on port 9001 which shows the logs.
+- Set up a switch item with the channel panelLayout on the controller (see NanoRetrieveLayout below) and set the switch to true
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
 
 Compare the following output with the right picture at the beginning of the article
+
 ```                                     
             31413                    9162       13276     
 
@@ -74,8 +76,9 @@ Compare the following output with the right picture at the beginning of the arti
 
                                     41451                                     
                                
-```                 
-
+```      
+           
+Disclaimer: this works best with square devices and not necessarily well with triangles due to the more geometrically flexible layout.
 
 ## Thing Configuration
 
@@ -113,6 +116,7 @@ The controller bridge has the following channels:
 | rhythmState         | Switch    | Connection state of the rhythm module                                  | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                    | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable          | No        |
+| panelLayout         | Switch    | Set to true will log out panel layout (returns to off automatically    | No        |
 
 A lightpanel thing has the following channels:
 
@@ -127,9 +131,20 @@ A lightpanel thing has the following channels:
 
 The color and panelColor channels support full color control with hue, saturation and brightness values. 
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
-The same applies to the panelColor channel of a lightpanel thing.
+The same applies to the panelColor channel of an individual lightpanel thing.
 
-What might not be obvious and even maybe confusing is the fact that brightness and color use the *same* channel but two different *itemTypes*. While the Color-itemtype controls the color, the Dimmer-itemtype controls the brightness on the same channel 
+What might not be obvious and even maybe confusing is the fact that brightness and color use the *same* channel but two different *itemTypes*. While the Color-itemtype controls the color, the Dimmer-itemtype controls the brightness on the same channel.
+
+**Limitations assigning specific colors on individual panels:**
+
+- Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
+- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that the following happens 
+  - As soon as you set an individual panel a so called "static effect" is created which replaces the chosen dynamic effect. You can even see that in the nanoleaf app that shows that a static effect is now running.
+  - Unfortunately, at least at the moment, the colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF
+  - The the first panelColor command is applied to that panel (and of course then all subsequent commands)
+  - The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.
+  
+  
 
 **Touch Support**
 
@@ -156,11 +171,18 @@ The following files provide a full example for a configuration (using a things f
 ### nanoleaf.things
 
 ```
-Bridge nanoleaf:controller:MyLightPanels [ address="192.168.1.100", port=16021, authToken="AbcDefGhiJk879LmNopqRstUv1234WxyZ", refreshInterval=60 ] {
+Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100", port=16021, authToken="AbcDefGhiJk879LmNopqRstUv1234WxyZ", refreshInterval=60 ] {
     Thing lightpanel 135 [ id=135 ]
     Thing lightpanel 158 [ id=158 ]
 }
 ```
+
+If you define your device statically in the thing file, autodiscovery of the same thing is suppressed by using
+
+* the [address="..." ]  of the controller 
+* and the [id=123] of the lightpanel
+
+in the bracket to identify the uniqueness of the discovered device. Therefore it is recommended to the give the controller a fixed ip address.
 
 Note: To generate the `authToken`:
     
@@ -191,6 +213,8 @@ String NanoleafEffect "Effect" { channel="nanoleaf:controller:MyLightPanels:effe
 Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmState" }
 Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
 Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
+Switch NanoRetrieveLayout "Nano Layout" { channel="nanoleaf:controller:D81E7A7E424E:panelLayout" }
+
 // note that the next to items use the exact same channel but the two different types Color and Dimmer to control different parameters
 Color Panel1Color "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
 Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
@@ -219,6 +243,7 @@ sitemap nanoleaf label="Nanoleaf"
             Text item=NanoleafRhythmState
             Text item=NanoleafRhythmActive
             Selection item=NanoleafRhythmSource mappings=[0="Microphone", 1="Aux"]
+            Switch item=NanoRetrieveLayout
     }
     
     Frame label="Panels" {
@@ -268,6 +293,7 @@ then
             hue = 0
             direction = direction * -1            
         }        
+        // replace NanoleafColor with Panel1Color to run rainbow on a single panel
         NanoleafColor.sendCommand(new HSBType(new DecimalType(hue), saturation, brightness))
     }
 end

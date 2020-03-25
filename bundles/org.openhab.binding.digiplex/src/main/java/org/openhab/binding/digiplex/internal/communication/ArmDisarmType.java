@@ -14,6 +14,8 @@ package org.openhab.binding.digiplex.internal.communication;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * Indicates type of arm/disarm message returned for PRT3 module
@@ -21,6 +23,7 @@ import java.util.Arrays;
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public enum ArmDisarmType {
     ARM("AA"),
     QUICK_ARM("AQ"),

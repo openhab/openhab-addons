@@ -26,7 +26,7 @@ import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
 import org.openhab.binding.jeelink.internal.RollingReadingAverage;
-import org.openhab.binding.jeelink.internal.config.JeeLinkSensorConfig;
+import org.openhab.binding.jeelink.internal.config.BufferedSensorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
     private final Logger logger = LoggerFactory.getLogger(Ec3kSensorHandler.class);
 
-    public Ec3kSensorHandler(Thing thing) {
-        super(thing);
+    public Ec3kSensorHandler(Thing thing, String sensorType) {
+        super(thing, sensorType);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
             }
         };
 
-        JeeLinkSensorConfig cfg = getConfigAs(JeeLinkSensorConfig.class);
+        BufferedSensorConfig cfg = getConfigAs(BufferedSensorConfig.class);
         if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
             publisher = new RollingAveragePublisher<Ec3kReading>(cfg.bufferSize, cfg.updateInterval, publisher,
                     scheduler) {
