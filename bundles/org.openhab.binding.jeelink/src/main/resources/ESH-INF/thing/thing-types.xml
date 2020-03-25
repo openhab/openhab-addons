@@ -363,6 +363,35 @@
 		</config-description>
 	</thing-type>
 
+	<!-- LGW Sensor SensorThing Type -->
+	<thing-type id="lgw">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.lgw.label</label>
+		<description>@text/thing-type.lgw.description</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>600</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<channel-type id="wind-angle">
 		<item-type>Number:Angle</item-type>
 		<label>@text/channel-type.wind-angle.label</label>

@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.jeelink.internal.ec3k.Ec3kSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
+import org.openhab.binding.jeelink.internal.lacrosse.LgwSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.Tx22SensorDefinition;
 import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
 import org.openhab.binding.jeelink.internal.revolt.RevoltSensorDefinition;
@@ -37,7 +38,8 @@ public abstract class SensorDefinition<R extends Reading> {
     
     private static final Set<SensorDefinition<?>> SENSOR_DEFS = Stream
             .of(new LaCrosseSensorDefinition(), new Ec3kSensorDefinition(), new Pca301SensorDefinition(),
-                    new Tx22SensorDefinition(), new RevoltSensorDefinition()).collect(Collectors.toSet());
+                    new Tx22SensorDefinition(), new RevoltSensorDefinition(), new LgwSensorDefinition())
+            .collect(Collectors.toSet());
     private static final Set<JeeLinkReadingConverter<?>> CONVERTERS = SENSOR_DEFS.stream()
             .map(SensorDefinition::createConverter).collect(Collectors.toSet());
 
