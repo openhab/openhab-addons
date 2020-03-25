@@ -29,7 +29,7 @@
 				<description>Pulsing Buzzer</description>
 			</channel>
 			<channel id="partition_tlm_fault_memory" typeId="partition_condition">
-				<label>TLM fault memory</label>
+				<label>TLM Fault Memory</label>
 				<description>TLM fault memory</description>
 			</channel>
 			<channel id="partition_armed" typeId="partition_condition">
@@ -104,7 +104,7 @@
 			</channel>
 
 			<channel id="partition_led_extinguish" typeId="partition_condition">
-				<label>Led extinguish</label>
+				<label>Led Extinguish</label>
 				<description>Led extinguish</description>
 			</channel>
 			<channel id="partition_cross_timing" typeId="partition_condition">
@@ -211,7 +211,7 @@
 		<config-description>
 			<parameter name="partitionNumber" type="integer" required="true" min="0" max="7">
 				<label>Partition Number</label>
-				<description>The Partition Number (1-8).</description>
+				<description>The Partition Number (0-7).</description>
 				<default>0</default>
 			</parameter>
 		</config-description>

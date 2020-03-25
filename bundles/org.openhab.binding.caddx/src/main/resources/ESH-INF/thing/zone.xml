@@ -124,7 +124,7 @@
 				<description>Fast loop response</description>
 			</channel>
 			<channel id="zone_double_eol_tamper" typeId="zone_type">
-				<label>Double EOL tamper</label>
+				<label>Double EOL Tamper</label>
 				<description>Double EOL tamper</description>
 			</channel>
 			<channel id="zone_type_trouble" typeId="zone_type">
@@ -174,7 +174,7 @@
 				<description>Inhibited (force armed)</description>
 			</channel>
 			<channel id="zone_low_battery" typeId="zone_condition">
-				<label>Low battery</label>
+				<label>Low Battery</label>
 				<description>Low Battery</description>
 			</channel>
 			<channel id="zone_loss_of_supervision" typeId="zone_condition">
