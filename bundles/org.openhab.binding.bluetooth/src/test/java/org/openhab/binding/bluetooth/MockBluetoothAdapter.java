@@ -67,4 +67,9 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
         return devices.containsKey(address);
     }
 
+    @Override
+    public @Nullable String getLocation() {
+        return null;
+    }
+
 }

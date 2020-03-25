@@ -74,6 +74,7 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
         return getThing().getLocation();
     }
 
+    @Override
     public boolean isDiscoveryEnabled() {
         Object discovery = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
         if (discovery != null && discovery.toString().equalsIgnoreCase(Boolean.FALSE.toString())) {
@@ -157,6 +158,21 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
                 devices.get(address).addBluetoothDevice(device);
             }
         }
+    }
+
+    @Override
+    public void deviceRemoved(BluetoothDevice device) {
+        synchronized (devices) {
+            BluetoothAddress address = device.getAddress();
+            if (devices.containsKey(address)) {
+                devices.remove(address).removeBluetoothDevice(device);
+            }
+        }
+    }
+
+    @Override
+    public boolean hasDevice(BluetoothAddress address) {
+        return devices.containsKey(address);
     }
 
 }

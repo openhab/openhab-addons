@@ -381,4 +381,8 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
 
+    @Override
+    public void onAdapterChanged(BluetoothAdapter adapter) {
+    }
+
 }
