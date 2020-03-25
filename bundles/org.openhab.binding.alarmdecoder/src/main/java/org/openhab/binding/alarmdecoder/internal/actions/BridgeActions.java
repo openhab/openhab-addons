@@ -40,8 +40,6 @@ public class BridgeActions implements ThingActions {
         logger.trace("Alarm Decoder bridge actions service created");
     }
 
-    // TODO: activate() and deactivate() methods?
-
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof ADBridgeHandler) {
