@@ -36,6 +36,5 @@ public class SensiboTemperatureUnitParser {
             default:
                 throw new IllegalArgumentException("Do not understand temperature unit " + symbol);
         }
-
     }
 }

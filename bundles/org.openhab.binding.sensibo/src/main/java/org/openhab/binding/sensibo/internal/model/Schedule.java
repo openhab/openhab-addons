@@ -61,5 +61,4 @@ public class Schedule {
     public boolean isEnabled() {
         return enabled;
     }
-
 }
