@@ -36,7 +36,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs;
 import org.openhab.binding.verisure.internal.model.VerisureSmartPlugs.Smartplug;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Smart Plug Device thing type that Verisure provides.
@@ -45,7 +44,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
+public class VerisureSmartPlugThingHandler extends VerisureThingHandler<VerisureSmartPlugs> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTPLUG);
 
@@ -72,7 +71,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartPlugs smartPlug = (VerisureSmartPlugs) session.getVerisureThing(deviceId);
+            VerisureSmartPlugs smartPlug = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartPlug != null) {
                 BigDecimal installationId = smartPlug.getSiteId();
                 String url = START_GRAPHQL;
@@ -120,10 +119,10 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureSmartPlugs thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateSmartPlugState((VerisureSmartPlugs) thing);
+        updateSmartPlugState(thing);
     }
 
     private void updateSmartPlugState(VerisureSmartPlugs smartPlugJSON) {

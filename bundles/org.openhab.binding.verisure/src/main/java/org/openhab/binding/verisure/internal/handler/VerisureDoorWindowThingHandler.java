@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.model.VerisureDoorWindows;
 import org.openhab.binding.verisure.internal.model.VerisureDoorWindows.DoorWindow;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
@@ -37,7 +36,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
+public class VerisureDoorWindowThingHandler extends VerisureThingHandler<VerisureDoorWindows> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DOORWINDOW);
 
@@ -51,10 +50,10 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureDoorWindows thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateDoorWindowState((VerisureDoorWindows) thing);
+        updateDoorWindowState(thing);
     }
 
     private void updateDoorWindowState(VerisureDoorWindows doorWindowJSON) {

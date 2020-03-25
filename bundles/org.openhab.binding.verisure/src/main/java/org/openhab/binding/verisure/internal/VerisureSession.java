@@ -149,8 +149,13 @@ public class VerisureSession {
     public void dispose() {
     }
 
-    public @Nullable VerisureThing getVerisureThing(String deviceId) {
-        return verisureThings.get(deviceId);
+    @SuppressWarnings("unchecked")
+    public <T extends VerisureThing> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
+        VerisureThing thing = verisureThings.get(deviceId);
+        if (thing != null && thingType.isInstance(thing)) {
+            return (T) thing;
+        }
+        return null;
     }
 
     public HashMap<String, VerisureThing> getVerisureThings() {

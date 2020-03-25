@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.model.VerisureAlarms;
 import org.openhab.binding.verisure.internal.model.VerisureAlarms.ArmState;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Alarm Device thing type that Verisure provides.
@@ -44,7 +43,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureAlarmThingHandler extends VerisureThingHandler {
+public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlarms> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ALARM);
 
@@ -71,7 +70,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureAlarms alarm = (VerisureAlarms) session.getVerisureThing(deviceId);
+            VerisureAlarms alarm = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (alarm != null) {
                 BigDecimal installationId = alarm.getSiteId();
                 String pinCode = session.getPinCode(installationId);
@@ -134,10 +133,10 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureAlarms thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateAlarmState((VerisureAlarms) thing);
+        updateAlarmState(thing);
     }
 
     private void updateAlarmState(VerisureAlarms alarmsJSON) {

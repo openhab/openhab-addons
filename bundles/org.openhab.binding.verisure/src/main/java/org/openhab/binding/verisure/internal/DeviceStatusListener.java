@@ -51,7 +51,7 @@ public interface DeviceStatusListener<T extends VerisureThing> {
     void onDeviceAdded(T thing);
 
     /**
-     * This method returms the thing's class
+     * This method returns the thing's class
      */
     public Class<T> getVerisureThingClass();
 

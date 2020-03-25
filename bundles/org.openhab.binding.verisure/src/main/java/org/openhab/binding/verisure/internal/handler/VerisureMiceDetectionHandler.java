@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.model.VerisureMiceDetection;
 import org.openhab.binding.verisure.internal.model.VerisureMiceDetection.Detection;
 import org.openhab.binding.verisure.internal.model.VerisureMiceDetection.Mouse;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Mice Detection thing type that Verisure provides.
@@ -44,7 +43,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureMiceDetectionHandler extends VerisureThingHandler {
+public class VerisureMiceDetectionHandler extends VerisureThingHandler<VerisureMiceDetection> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MICE_DETECTION);
 
@@ -58,10 +57,10 @@ public class VerisureMiceDetectionHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureMiceDetection thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateMiceDetectionState((VerisureMiceDetection) thing);
+        updateMiceDetectionState(thing);
     }
 
     private void updateMiceDetectionState(VerisureMiceDetection miceDetectionJSON) {

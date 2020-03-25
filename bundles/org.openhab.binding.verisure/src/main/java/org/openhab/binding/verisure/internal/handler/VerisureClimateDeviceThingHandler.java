@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.verisure.internal.model.VerisureClimates;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for all Climate Device thing types that Verisure provides.
@@ -41,7 +40,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
+public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<VerisureClimates> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
     static {
@@ -61,10 +60,10 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureClimates thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateClimateDeviceState((VerisureClimates) thing);
+        updateClimateDeviceState(thing);
     }
 
     private void updateClimateDeviceState(VerisureClimates climateJSON) {

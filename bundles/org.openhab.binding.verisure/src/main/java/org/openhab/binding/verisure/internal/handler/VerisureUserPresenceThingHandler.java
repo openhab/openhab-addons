@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 import org.openhab.binding.verisure.internal.model.VerisureUserPresences;
 import org.openhab.binding.verisure.internal.model.VerisureUserPresences.UserTracking;
 
@@ -36,7 +35,7 @@ import org.openhab.binding.verisure.internal.model.VerisureUserPresences.UserTra
  *
  */
 @NonNullByDefault
-public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
+public class VerisureUserPresenceThingHandler extends VerisureThingHandler<VerisureUserPresences> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_USERPRESENCE);
 
@@ -50,10 +49,10 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureUserPresences thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateUserPresenceState((VerisureUserPresences) thing);
+        updateUserPresenceState(thing);
     }
 
     private void updateUserPresenceState(VerisureUserPresences userPresenceJSON) {

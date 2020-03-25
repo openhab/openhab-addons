@@ -72,7 +72,8 @@ public abstract class VerisureThingHandler<T extends VerisureThing> extends Base
                     String deviceId = config.getDeviceId();
                     VerisureSession session = getSession();
                     if (session != null) {
-                        VerisureThing thing = session.getVerisureThing(deviceId);
+                        @Nullable
+                        T thing = session.getVerisureThing(deviceId, getVerisureThingClass());
                         if (thing != null) {
                             update(thing);
                         } else {
@@ -123,7 +124,8 @@ public abstract class VerisureThingHandler<T extends VerisureThing> extends Base
             VerisureSession session = getSession();
             if (session != null) {
                 String deviceId = config.getDeviceId();
-                VerisureThing thing = session.getVerisureThing(deviceId);
+                @Nullable
+                T thing = session.getVerisureThing(deviceId, getVerisureThingClass());
                 if (thing != null) {
                     update(thing);
                 } else {
@@ -145,7 +147,7 @@ public abstract class VerisureThingHandler<T extends VerisureThing> extends Base
         }
     }
 
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(T thing) {
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = thing.getSiteId();
         updateState(cuid, new DecimalType(siteId.longValue()));

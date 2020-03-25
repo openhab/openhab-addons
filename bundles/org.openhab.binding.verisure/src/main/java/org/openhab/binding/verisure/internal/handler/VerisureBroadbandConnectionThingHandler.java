@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnections;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Broadband COnnection thing type that Verisure provides.
@@ -33,7 +32,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandler {
+public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandler<VerisureBroadbandConnections> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .singleton(THING_TYPE_BROADBAND_CONNECTION);
@@ -48,10 +47,10 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureBroadbandConnections thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateBroadbandConnection((VerisureBroadbandConnections) thing);
+        updateBroadbandConnection(thing);
     }
 
     private void updateBroadbandConnection(VerisureBroadbandConnections vbcJSON) {

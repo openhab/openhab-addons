@@ -39,7 +39,6 @@ import org.openhab.binding.verisure.internal.model.VerisureSmartLock;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLock.DoorLockVolumeSettings;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLocks;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLocks.Doorlock;
-import org.openhab.binding.verisure.internal.model.VerisureThing;
 
 /**
  * Handler for the Smart Lock Device thing type that Verisure provides.
@@ -48,7 +47,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThing;
  *
  */
 @NonNullByDefault
-public class VerisureSmartLockThingHandler extends VerisureThingHandler {
+public class VerisureSmartLockThingHandler extends VerisureThingHandler<VerisureSmartLocks> {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTLOCK);
 
@@ -83,7 +82,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
+            VerisureSmartLocks smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 String pinCode = session.getPinCode(installationId);
@@ -150,7 +149,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
+            VerisureSmartLocks smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 String csrf = session.getCsrfToken(installationId);
@@ -182,7 +181,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLock = (VerisureSmartLocks) session.getVerisureThing(deviceId);
+            VerisureSmartLocks smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLock != null) {
                 DoorLockVolumeSettings volumeSettings = smartLock.getSmartLockJSON().getDoorLockVolumeSettings();
                 if (volumeSettings != null) {
@@ -236,10 +235,10 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     @Override
-    public synchronized void update(VerisureThing thing) {
+    public synchronized void update(VerisureSmartLocks thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        updateSmartLockState((VerisureSmartLocks) thing);
+        updateSmartLockState(thing);
     }
 
     private void updateSmartLockState(VerisureSmartLocks smartLocksJSON) {
