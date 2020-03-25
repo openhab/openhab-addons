@@ -61,21 +61,30 @@ public class NeoHubSocket {
      * @throws IOException, RuntimeException
      * 
      */
-    public synchronized String sendMessage(final String request) throws IOException, NeoHubException {
+    public String sendMessage(final String request) throws IOException, NeoHubException {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_IMEOUT * 1000);
+            // timeout for socket connect
+            socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_TIMEOUT * 1000);
+
+            // timeout for socket read
+            socket.setSoTimeout(TCP_SOCKET_TIMEOUT * 1000);
 
             try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
-                    OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
+                 OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
+
                 if (logger.isDebugEnabled()) {
                     logger.debug("sending {} characters..", request.length());
                     logger.debug(">> {}", request);
                 }
-
+                
                 writer.write(request);
                 writer.write(0); // NULL terminate the command string
                 writer.flush();
 
+                if (logger.isTraceEnabled()) {
+                    logger.trace("sent {} characters..", request.length());
+                }
+                
                 StringBuilder builder = new StringBuilder();
                 int inChar;
                 while ((inChar = reader.read()) > 0) { // NULL termination & end of stream (-1)
