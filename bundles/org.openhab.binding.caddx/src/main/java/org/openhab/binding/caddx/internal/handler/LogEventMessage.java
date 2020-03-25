@@ -86,7 +86,7 @@ public class LogEventMessage {
             }
 
             return sb.toString();
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             logger.debug("LogEventMessage error. {}", e.getMessage(), e);
             return "logmessage cannot be constructed";
         }
