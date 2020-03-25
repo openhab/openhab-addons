@@ -29,13 +29,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoGenericHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoGenericHandler.class);
 
-    @NonNullByDefault
     public MiIoGenericHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        super(thing);
-        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+        super(thing, miIoDatabaseWatchService);
     }
 
     @Override
