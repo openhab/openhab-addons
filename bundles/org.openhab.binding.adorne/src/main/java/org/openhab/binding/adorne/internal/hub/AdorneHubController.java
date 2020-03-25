@@ -333,9 +333,7 @@ public class AdorneHubController {
                     processMsgSystemInfo(hubMsg);
                 }
             }
-        } catch (
-
-        RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.warn("Hub controller failed", e);
         }
 
