@@ -67,8 +67,7 @@ public class CBusTriggerHandler extends CBusGroupHandler {
         Network network = networkHandler.getNetwork();
         if (network == null)
             return null;
-        Application application = network
-                .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TRIGGER));
+        Application application = network.getApplication(CBusBindingConstants.CBUS_APPLICATION_TRIGGER);
         return application.getGroup(groupID);
     }
 }

@@ -394,15 +394,16 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         if (address == null || value == null)
             return;
         String[] addressParts = address.trim().replace("//", "").split("/");
-        updateGroup(addressParts[1], addressParts[2], addressParts[3], value);
+        int application = Integer.parseInt(addressParts[2]);
+
+        updateGroup(addressParts[1], application, addressParts[3], value);
     }
 
-    private void updateGroup(String network, String application, String group, String value) {
-        boolean handled = false;
+    private void updateGroup(String network, int application, String group, String value) {
         for (Thing networkThing : getThing().getThings()) {
             // Is this networkThing from the network we are looking for...
-            if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
-                    .getConfiguration().get(CBusBindingConstants.PROPERTY_ID).toString().equals(network)) {
+            if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK)
+                    && networkThing.getConfiguration().get(CBusBindingConstants.PROPERTY_ID) == network) {
                 ThingHandler thingHandler = networkThing.getHandler();
                 if (thingHandler == null) {
                     continue;
@@ -410,10 +411,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 // Loop through all the things on this network and see if they match the application / group
                 for (Thing thing : ((CBusNetworkHandler) thingHandler).getThing().getThings()) {
                     // Handle Lighting Application messages
-                    if (application.equals(CBusBindingConstants.CBUS_APPLICATION_LIGHTING)
+                    if (application == CBusBindingConstants.CBUS_APPLICATION_LIGHTING
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_LIGHT)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_STATE);
                         Channel channelLevel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
                         if (channel != null && channelLevel != null) {
@@ -442,13 +442,11 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                                     thing.getUID(), value);
                         }
 
-                        handled = true;
                     }
                     // DALI Application
-                    else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_DALI)
+                    else if (application == CBusBindingConstants.CBUS_APPLICATION_DALI
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_DALI)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
                         if (channel != null) {
                             ChannelUID channelUID = channel.getUID();
@@ -475,13 +473,11 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             logger.debug("Failed to Updat CBus Lighting Group {} with value {}: No Channel",
                                     thing.getUID(), value);
                         }
-                        handled = true;
                     }
                     // Temperature Application
-                    else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE)
+                    else if (application == CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP);
 
                         if (channel != null) {
@@ -492,13 +488,11 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             logger.trace("Failed to Update CBus Temperature Group {} with value {}: No Channel",
                                     thing.getUID(), value);
                         }
-                        handled = true;
                     }
                     // Trigger Application
-                    else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_TRIGGER)
+                    else if (application == CBusBindingConstants.CBUS_APPLICATION_TRIGGER
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
                         if (channel != null) {
                             ChannelUID channelUID = channel.getUID();
@@ -506,16 +500,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             updateState(channelUID, val);
                             logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
                         }
-                        handled = true;
                     }
                 }
             }
-        }
-        if (!handled) {
-            // logger.warn("Unhandled CBus value update for {}/{}/{}: {}", network, application, group, value);
-            ;
-        } else {
-            logger.trace("CBus value update for {}/{}/{}: {}", network, application, group, value);
         }
     }
 

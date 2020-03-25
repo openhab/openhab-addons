@@ -44,19 +44,17 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.cbus")
 public class CBusHandlerFactory extends BaseThingHandlerFactory {
-    @Nullable
-    ServiceRegistration<?> cbusCGateHandlerServiceReg = null;
-    @Nullable
-    ServiceRegistration<?> cbusNetworkHandlerServiceReg = null;
+
+    private @Nullable ServiceRegistration<?> cbusCGateHandlerServiceReg = null;
+    private @Nullable ServiceRegistration<?> cbusNetworkHandlerServiceReg = null;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Nullable
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(CBusBindingConstants.BRIDGE_TYPE_CGATE)) {
             CBusCGateHandler handler = new CBusCGateHandler((Bridge) thing);

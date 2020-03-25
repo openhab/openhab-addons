@@ -95,8 +95,7 @@ public class CBusLightHandler extends CBusGroupHandler {
             return null;
         Network network = networkHandler.getNetwork();
         if (network != null) {
-            Application lighting = network
-                    .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_LIGHTING));
+            Application lighting = network.getApplication(CBusBindingConstants.CBUS_APPLICATION_LIGHTING);
             return lighting.getGroup(groupID);
         }
         return null;

@@ -78,8 +78,8 @@ public class CBusDaliHandler extends CBusGroupHandler {
         Network network = networkHandler.getNetwork();
         if (network == null)
             return null;
-        Application lighting = network.getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_DALI));
-        return lighting.getGroup(groupID);
+        Application application = network.getApplication(CBusBindingConstants.CBUS_APPLICATION_DALI);
+        return application.getGroup(groupID);
     }
 
 }

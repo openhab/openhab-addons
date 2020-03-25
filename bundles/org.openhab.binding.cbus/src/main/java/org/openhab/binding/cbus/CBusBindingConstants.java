@@ -71,8 +71,8 @@ public class CBusBindingConstants {
 
     public static final String CONFIG_GROUP_ID = "group";
 
-    public static final String CBUS_APPLICATION_LIGHTING = "56";
-    public static final String CBUS_APPLICATION_TEMPERATURE = "25";
-    public static final String CBUS_APPLICATION_TRIGGER = "202";
-    public static final String CBUS_APPLICATION_DALI = "95";
+    public static final int CBUS_APPLICATION_LIGHTING = 56;
+    public static final int CBUS_APPLICATION_TEMPERATURE = 25;
+    public static final int CBUS_APPLICATION_TRIGGER = 202;
+    public static final int CBUS_APPLICATION_DALI = 95;
 }

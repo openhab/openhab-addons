@@ -55,7 +55,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
     protected void startScan() {
         if (cbusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             try {
-                Map<String, ThingTypeUID> applications = new HashMap<String, ThingTypeUID>();
+                Map<Integer, ThingTypeUID> applications = new HashMap<Integer, ThingTypeUID>();
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_LIGHTING, CBusBindingConstants.THING_TYPE_LIGHT);
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_DALI, CBusBindingConstants.THING_TYPE_DALI);
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE,
@@ -66,8 +66,8 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                 Network network = cbusNetworkHandler.getNetwork();
                 if (network == null)
                     return;
-                for (Map.Entry<String, ThingTypeUID> applicationItem : applications.entrySet()) {
-                    Application application = network.getApplication(Integer.parseInt(applicationItem.getKey()));
+                for (Map.Entry<Integer, ThingTypeUID> applicationItem : applications.entrySet()) {
+                    Application application = network.getApplication(applicationItem.getKey());
                     if (application == null) {
                         continue;
                     }
