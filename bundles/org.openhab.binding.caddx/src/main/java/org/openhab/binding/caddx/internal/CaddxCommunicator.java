@@ -263,9 +263,11 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                         // Check if Acknowledgement handling is required.
                         if (incomingMessage.hasAcknowledgementFlag()) {
                             if (incomingMessage.isChecksumCorrect()) {
-                                messages.putFirst(new CaddxMessage(new byte[] { 0x1d }, false)); // send ACK
+                                // send ACK
+                                messages.putFirst(new CaddxMessage(CaddxMessageType.Positive_Acknowledge, ""));
                             } else {
-                                messages.putFirst(new CaddxMessage(new byte[] { 0x1d }, false)); // send ACK
+                                // Send NAK
+                                messages.putFirst(new CaddxMessage(CaddxMessageType.Negative_Acknowledge, ""));
                             }
                         }
                     }
