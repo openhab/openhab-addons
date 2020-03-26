@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +51,6 @@ import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
 import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.State.AlertMode;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -232,7 +230,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     final FullLight lastFullLight = lastLightStateCopy.remove(lightId);
                     final State lastFullLightState = lastFullLight.getState();
                     lastLightStates.put(lightId, fullLight);
-                    if (!isEqual(lastFullLightState, fullLight.getState())) {
+                    if (!lastFullLightState.equals(fullLight.getState())) {
                         logger.debug("Status update for Hue light '{}' detected.", lightId);
                         notifyLightStatusListeners(fullLight, STATE_CHANGED);
                     }
@@ -765,26 +763,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 logger.error("An exception occurred while calling the Sensor Listeners", e);
             }
         }
-    }
-
-    /**
-     * Compare to states for equality.
-     *
-     * @param state1 Reference state
-     * @param state2 State which is checked for equality.
-     * @return {@code true} if the available information of both states are equal.
-     */
-    private boolean isEqual(State state1, State state2) {
-        AlertMode alertMode1 = state1.getAlertMode();
-        AlertMode alertMode2 = state2.getAlertMode();
-
-        return ((alertMode1 == null && alertMode2 == null) || (alertMode1 != null && alertMode1.equals(alertMode2)))
-                && state1.isOn() == state2.isOn()
-                && state1.getBrightness() == state2.getBrightness()
-                && state1.getColorTemperature() == state2.getColorTemperature() && state1.getHue() == state2.getHue()
-                && state1.getSaturation() == state2.getSaturation() && state1.isReachable() == state2.isReachable()
-                && Objects.equals(state1.getColorMode(), state2.getColorMode())
-                && Objects.equals(state1.getEffect(), state2.getEffect());
     }
 
     @Override

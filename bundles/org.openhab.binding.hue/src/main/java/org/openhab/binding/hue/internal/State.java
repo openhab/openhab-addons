@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal;
 
+import java.util.Arrays;
+
 /**
  * Current state of light.
  *
@@ -186,5 +188,52 @@ public class State {
      */
     public boolean isReachable() {
         return reachable;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        State other = (State) obj;
+        if (alert == null) {
+            if (other.alert != null)
+                return false;
+        } else if (!alert.equals(other.alert))
+            return false;
+        if (bri != other.bri)
+            return false;
+        if (colormode == null) {
+            if (other.colormode != null)
+                return false;
+        } else if (!colormode.equals(other.colormode))
+            return false;
+        if (ct != other.ct)
+            return false;
+        if (effect == null) {
+            if (other.effect != null)
+                return false;
+        } else if (!effect.equals(other.effect))
+            return false;
+        if (hue != other.hue)
+            return false;
+        if (on != other.on)
+            return false;
+        if (reachable != other.reachable)
+            return false;
+        if (sat != other.sat)
+            return false;
+        if (!Arrays.equals(xy, other.xy))
+            return false;
+        return true;
     }
 }
