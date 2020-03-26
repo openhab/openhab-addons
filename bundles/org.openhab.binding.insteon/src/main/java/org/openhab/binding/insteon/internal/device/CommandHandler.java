@@ -346,6 +346,7 @@ public abstract class CommandHandler {
                             getGroup(conf));
                     Msg m = dev.makeStandardMessage((byte) 0x0f, cmd1, value, group);
                     dev.enqueueMessage(m, feature);
+                    feature.pollRelatedDevices();
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
