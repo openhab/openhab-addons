@@ -203,25 +203,25 @@ public class ComfoAirHandler extends BaseThingHandler {
 
             if (requestCmd != null) {
                 switch (requestCmd) {
-                    case 0x9f:
-                        preRequestCmd = 0x9d;
-                        preReplyCmd = 0x9e;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_ANALOGS:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_ANALOGS;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_ANALOGS;
                         break;
-                    case 0xcb:
-                        preRequestCmd = 0xc9;
-                        preReplyCmd = 0xca;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_DELAYS:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_DELAYS;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_DELAYS;
                         break;
-                    case 0xcf:
-                        preRequestCmd = 0xcd;
-                        preReplyCmd = 0xce;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_FAN_LEVEL:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_FAN_LEVEL;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_FAN_LEVEL;
                         break;
-                    case 0xd7:
-                        preRequestCmd = 0xd5;
-                        preReplyCmd = 0xd6;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_STATES:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_SET_STATES;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_STATES;
                         break;
-                    case 0xed:
-                        preRequestCmd = 0xeb;
-                        preReplyCmd = 0xec;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_EWT:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_EWT;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_EWT;
                         break;
                     default:
                         preRequestCmd = requestCmd;

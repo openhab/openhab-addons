@@ -27,12 +27,12 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ComfoAirCommand {
 
-    private List<String> keys;
+    private final List<String> keys;
     private @Nullable Integer requestCmd;
     private @Nullable Integer replyCmd;
     private int[] requestData;
-    private @Nullable Integer requestValue;
-    private @Nullable Integer dataPosition;
+    private final @Nullable Integer requestValue;
+    private final @Nullable Integer dataPosition;
 
     /**
      * @param key

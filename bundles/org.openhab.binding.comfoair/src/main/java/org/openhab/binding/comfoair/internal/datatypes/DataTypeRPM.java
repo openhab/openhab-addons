@@ -34,18 +34,10 @@ public class DataTypeRPM implements ComfoAirDataType {
             logger.trace("\"DataTypeRPM\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
-            int[] get_reply_data_pos = commandType.getGetReplyDataPos();
+            int value = calculateNumberValue(data, commandType);
 
-            int value = 0;
-            int base = 0;
-
-            for (int i = get_reply_data_pos.length - 1; i >= 0; i--) {
-                if (get_reply_data_pos[i] < data.length) {
-                    value += data[get_reply_data_pos[i]] << base;
-                    base += 8;
-                } else {
-                    return UnDefType.NULL;
-                }
+            if (value < 0) {
+                return UnDefType.NULL;
             }
             // transferred value is (1875000 / rpm) per protocol
             return new DecimalType((int) (1875000.0 / value));

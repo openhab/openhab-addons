@@ -40,7 +40,7 @@ public class DataTypeBoolean implements ComfoAirDataType {
 
             if (get_reply_data_pos[0] < data.length) {
                 boolean result = (data[get_reply_data_pos[0]] & get_reply_data_bits) == get_reply_data_bits;
-                return (result) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(result);
             } else {
                 return UnDefType.NULL;
             }

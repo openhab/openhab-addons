@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * Class to handle error messages
  *
  * @author Holger Hees - Initial Contribution
+ * @author Hans Böhm - Refactoring
  */
 public class DataTypeMessage implements ComfoAirDataType {
 
@@ -40,30 +41,34 @@ public class DataTypeMessage implements ComfoAirDataType {
             int errorEA = data[get_reply_data_pos[2]];
             int errorAhi = data[get_reply_data_pos[3]];
 
-            String errorCode = "";
+            StringBuilder errorCode = new StringBuilder();
 
             if (errorAlo > 0) {
-                errorCode = "A" + convertToCode(errorAlo);
+                errorCode.append("A");
+                errorCode.append(convertToCode(errorAlo));
             } else if (errorAhi > 0) {
                 if (errorAhi == 0x80) {
-                    errorCode = "A0";
+                    errorCode.append("A0");
                 } else {
-                    errorCode = "A" + (convertToCode(errorAhi) + 8);
+                    errorCode.append("A");
+                    errorCode.append(convertToCode(errorAhi) + 8);
                 }
             }
 
             if (errorE > 0) {
                 if (errorCode.length() > 0) {
-                    errorCode += " ";
+                    errorCode.append(" ");
                 }
-                errorCode += "E" + convertToCode(errorE);
+                errorCode.append("E");
+                errorCode.append(convertToCode(errorE));
             } else if (errorEA > 0) {
                 if (errorCode.length() > 0) {
-                    errorCode += " ";
+                    errorCode.append(" ");
                 }
-                errorCode += "EA" + convertToCode(errorEA);
+                errorCode.append("EA");
+                errorCode.append(convertToCode(errorEA));
             }
-            return new StringType(errorCode.length() > 0 ? errorCode : "OK");
+            return new StringType(errorCode.length() > 0 ? errorCode.toString() : "OK");
         }
     }
 
