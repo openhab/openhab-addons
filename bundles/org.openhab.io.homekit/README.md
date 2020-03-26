@@ -80,6 +80,7 @@ A full list of supported accessory types can be found in the table below.
 |                       | homekit:CurrentHeatingCoolingMode | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | homekit:TargetTemperature         | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"             |
 | WindowCovering        |                                   | Rollershutter             | A window covering                                                                                                                                                                                                                             |
+| Lock                  |                                   | Switch                    | A Lock Mechanism                                                                                                                                                                                                                              |
 
 **Please note:** `TargetTemperature` has been renamed to `homekit:TargetTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
 
