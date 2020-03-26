@@ -196,11 +196,8 @@ public class MiIoAsyncCommunication {
 
     public synchronized void startReceiver() {
         MessageSenderThread senderThread = this.senderThread;
-        if (senderThread == null) {
+        if (senderThread == null || !senderThread.isAlive()) {
             senderThread = new MessageSenderThread();
-        }
-        if (!senderThread.isAlive()) {
-            senderThread.start();
         }
         this.senderThread = senderThread;
     }
@@ -210,7 +207,6 @@ public class MiIoAsyncCommunication {
      * device
      *
      */
-    @NonNullByDefault
     private class MessageSenderThread extends Thread {
         public MessageSenderThread() {
             super("Mi IO MessageSenderThread");

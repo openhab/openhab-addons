@@ -59,9 +59,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> consumables;
     private ExpiringCache<String> dnd;
     private ExpiringCache<String> history;
-    private ExpiringCache<String> map;
     private String lastHistoryId = "";
-    private String lastMap = "";
     private int inCleaning;
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
@@ -111,18 +109,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        map = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.GET_MAP);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during dnd refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
-
     }
 
     @Override
@@ -134,7 +120,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
             updateData();
-            lastMap = "";
             return;
         }
         if (channelUID.getId().equals(CHANNEL_VACUUM)) {
@@ -202,7 +187,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
         updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
         inCleaning = statusData.get("in_cleaning").getAsInt();
-        updateState(CHANNEL_IN_CLEANING, new DecimalType(fanLevel));
+        updateState(CHANNEL_IN_CLEANING, new DecimalType(inCleaning));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));

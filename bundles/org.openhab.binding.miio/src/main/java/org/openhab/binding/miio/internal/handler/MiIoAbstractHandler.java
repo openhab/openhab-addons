@@ -63,7 +63,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
 
     protected @Nullable ScheduledFuture<?> pollingJob;
-    protected MiIoBindingConfiguration configuration;
+    // protected MiIoBindingConfiguration configuration;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
@@ -85,7 +85,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         super(thing);
         parser = new JsonParser();
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
-        this.configuration = getConfigAs(MiIoBindingConfiguration.class);
     }
 
     @Override
@@ -95,7 +94,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     public void initialize() {
         logger.debug("Initializing Mi IO device handler '{}' with thingType {}", getThing().getUID(),
                 getThing().getThingTypeUID());
-        configuration = getConfigAs(MiIoBindingConfiguration.class);
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         if (!tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
@@ -270,6 +269,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         if (miioCom != null) {
             return miioCom;
         }
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         @Nullable
         String deviceId = configuration.deviceId;
         try {
@@ -323,7 +323,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             Configuration config = editConfiguration();
             config.put(PROPERTY_DID, deviceId);
             updateConfiguration(config);
-            configuration = getConfigAs(MiIoBindingConfiguration.class);
         } else {
             logger.debug("Could not update config with device ID: {}", deviceId);
         }
@@ -385,6 +384,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected boolean updateThingType(JsonObject miioInfo) {
+        MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         String model = miioInfo.get("model").getAsString();
         miDevice = MiIoDevices.getType(model);
         if (configuration.model == null || configuration.model.isEmpty()) {

@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal.basic;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -125,7 +126,7 @@ public class MiIoBasicChannel {
 
     public List<MiIoDeviceAction> getActions() {
         final @Nullable List<MiIoDeviceAction> miIoDeviceActions = this.miIoDeviceActions;
-        return (miIoDeviceActions != null) ? miIoDeviceActions : new ArrayList<MiIoDeviceAction>();
+        return (miIoDeviceActions != null) ? miIoDeviceActions : Collections.emptyList();
     }
 
     public void setActions(List<MiIoDeviceAction> miIoDeviceActions) {

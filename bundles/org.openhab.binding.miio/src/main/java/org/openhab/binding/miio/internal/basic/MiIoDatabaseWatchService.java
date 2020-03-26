@@ -58,6 +58,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     private static final String LOCAL_DATABASE_PATH = ConfigConstants.getConfigFolder() + File.separator + "misc"
             + File.separator + BINDING_ID;
     private static final String DATABASE_FILES = ".json";
+    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDatabaseWatchService.class);
     private Map<String, URL> databaseList = new HashMap<>();
@@ -113,8 +114,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
             logger.trace("Adding devices for db file: {}", db);
             try {
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                Gson gson = new GsonBuilder().serializeNulls().create();
-                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                MiIoBasicDevice devdb = GSON.fromJson(deviceMapping, MiIoBasicDevice.class);
                 for (String id : devdb.getDevice().getId()) {
                     workingDatabaseList.put(id, db);
                 }

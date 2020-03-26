@@ -76,7 +76,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         logger.debug("Start Xiaomi Mi IO background discovery");
         final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
         if (miIoDiscoveryJob == null || miIoDiscoveryJob.isCancelled()) {
-            this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> discover(), 0, SEARCH_INTERVAL,
+            this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, SEARCH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }

@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
@@ -193,6 +194,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
         final MiIoAsyncCommunication miioCom = this.miioCom;
         try {
@@ -253,6 +255,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     @Override
     protected boolean initializeData() {
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
                 Utils.hexStringToByteArray(configuration.deviceId), lastId, configuration.timeout);
         miioCom.registerListener(this);
@@ -269,6 +272,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
      * Checks if the channel structure has been build already based on the model data. If not build it.
      */
     private void checkChannelStructure() {
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         if (!hasChannelStructure) {
             if (configuration.model == null || configuration.model.isEmpty()) {
                 logger.debug("Model needs to be determined");
