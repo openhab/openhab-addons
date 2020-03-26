@@ -75,7 +75,8 @@ public class DoorbellHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DoorbellHandler.class);
 
     // Get a dedicated threadpool for the long-running listener thread
-    private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager.getScheduledPool("doorbirdHandler");
+    private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager
+            .getScheduledPool("doorbirdListener" + "-" + thing.getUID().getId());
     private @Nullable ScheduledFuture<?> listenerJob;
     private final DoorbirdUdpListener udpListener;
 
