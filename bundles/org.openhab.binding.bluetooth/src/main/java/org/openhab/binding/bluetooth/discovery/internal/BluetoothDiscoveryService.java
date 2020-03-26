@@ -50,11 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial Contribution
  * @author Kai Kreuzer - Introduced BluetoothAdapters and BluetoothDiscoveryParticipants
- *         <<<<<<< HEAD
- * @author Connor Petty - Added roaming support
- *         =======
- * @author Connor Petty - Introduced connection based discovery
- *         >>>>>>> 59fdd798ad241addcf60653060fa17d5f02f2218
+ * @author Connor Petty - Introduced connection based discovery and added roaming support
  */
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
