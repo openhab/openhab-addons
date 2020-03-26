@@ -114,8 +114,9 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
         AdorneHubController adorneHubController = this.adorneHubController;
         if (adorneHubController != null) {
             adorneHubController.stop();
+            this.adorneHubController = null;
+            logger.debug("Discovery timed out. Scan stopped.");
         }
-        logger.debug("Discovery timed out. Scan stopped.");
     }
 
     // Nothing to do on change notifications
