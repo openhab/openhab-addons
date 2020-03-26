@@ -1,0 +1,87 @@
+package org.openhab.persistence.influxdb2.internal;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+public class InfluxDB2PersistenceServiceTest {
+    private InfluxDB2PersistenceService instance;
+    @Mock
+    private InfluxDBRepository influxDBRepository;
+
+    private Map<String, @Nullable Object> validConfig;
+    private Map<String, @Nullable Object> invalidConfig;
+
+    @Before
+    public void before() {
+        MockitoAnnotations.initMocks(this);
+
+        instance = new InfluxDB2PersistenceService() {
+            @Override
+            protected @NotNull InfluxDBRepository createInfluxDBRepository() {
+                return influxDBRepository;
+            }
+        };
+
+        validConfig = ConfigurationTestHelper.createValidConfigurationParameters();
+        invalidConfig = ConfigurationTestHelper.createInvalidConfigurationParameters();
+    }
+
+    @After
+    public void after() {
+        validConfig = null;
+        invalidConfig = null;
+        instance = null;
+        influxDBRepository = null;
+    }
+
+    @Test
+    public void activateWithValidConfigShouldConnectRepository() {
+        instance.activate(validConfig);
+        verify(influxDBRepository).connect();
+    }
+
+    @Test
+    public void activateWithInvalidConfigShouldNotConnectRepository() {
+        instance.activate(invalidConfig);
+        verify(influxDBRepository, never()).connect();
+    }
+
+    @Test
+    public void activateWithNullConfigShouldNotConnectRepository() {
+        instance.activate(null);
+        verify(influxDBRepository, never()).connect();
+    }
+
+    @Test
+    public void deactivateShouldDisconnectRepository() {
+        instance.activate(validConfig);
+        instance.deactivate();
+        verify(influxDBRepository).disconnect();
+    }
+
+    @Test
+    public void storeItemWithConnectedRepository() {
+        instance.activate(validConfig);
+        when(influxDBRepository.isConnected()).thenReturn(true);
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+        verify(influxDBRepository).write(any());
+    }
+
+    @Test
+    public void storeItemWithDisconnectedRepositoryIsIgnored() {
+        instance.activate(validConfig);
+        when(influxDBRepository.isConnected()).thenReturn(false);
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+        verify(influxDBRepository, never()).write(any());
+    }
+}
