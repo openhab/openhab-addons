@@ -156,7 +156,11 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     protected void updateLastActivityTime() {
         if (device != null) {
             ZonedDateTime activityTime = device.getLastActivityTime();
-            updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
+            if (activityTime != null) {
+                updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
+            } else {
+                updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, UnDefType.NULL);
+            }
         }
     }
 

@@ -65,25 +65,25 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public boolean enableNotifications(@Nullable BluetoothCharacteristic characteristic) {
+    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.enableNotifications(characteristic) : false;
     }
 
     @Override
-    public boolean enableNotifications(@Nullable BluetoothDescriptor descriptor) {
+    public boolean enableNotifications(BluetoothDescriptor descriptor) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.enableNotifications(descriptor) : false;
     }
 
     @Override
-    public boolean disableNotifications(@Nullable BluetoothCharacteristic characteristic) {
+    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.disableNotifications(characteristic) : false;
     }
 
     @Override
-    public boolean disableNotifications(@Nullable BluetoothDescriptor descriptor) {
+    public boolean disableNotifications(BluetoothDescriptor descriptor) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.disableNotifications(descriptor) : false;
     }
@@ -95,9 +95,9 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public @Nullable ConnectionState getConnectionState() {
+    public ConnectionState getConnectionState() {
         BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.getConnectionState() : null;
+        return delegate != null ? delegate.getConnectionState() : ConnectionState.DISCOVERED;
     }
 
     @Override
