@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InfluxDBStateConvertUtils {
-    private static final String DIGITAL_VALUE_OFF = "false";
-    private static final String DIGITAL_VALUE_ON = "true";
+    static final String DIGITAL_VALUE_OFF = "false"; //Visible for testing
+    static final String DIGITAL_VALUE_ON = "true"; //Visible for testing
     private static Logger logger = LoggerFactory.getLogger(InfluxDBStateConvertUtils.class);
 
     /**

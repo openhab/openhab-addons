@@ -19,6 +19,7 @@
   <modules>
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
+    <module>org.openhab.persistence.influxdb2</module>
     <module>org.openhab.persistence.jdbc</module>
     <module>org.openhab.persistence.jpa</module>
     <module>org.openhab.persistence.mapdb</module>
