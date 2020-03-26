@@ -62,8 +62,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private final Logger logger = LoggerFactory.getLogger(PHCBridgeHandler.class);
 
     private static final int BAUD = 19200;
-    private static final int SEND_RETRY_COUNT = 15; // max count to send the same message
-    private static final int SEND_RETRY_TIME_MILLIS = 80; // time to wait for an acknowledge before send the message
+    private static final int SEND_RETRY_COUNT = 20; // max count to send the same message
+    private static final int SEND_RETRY_TIME_MILLIS = 60; // time to wait for an acknowledge before send the message
                                                           // again in milliseconds
 
     private @Nullable InputStream serialIn;
@@ -178,9 +178,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 buffer.offer(bytes);
 
                 if (logger.isTraceEnabled()) {
-                    logger.trace("buffer offered {}", HexUtils.bytesToHex(bytes));
+                    logger.trace("buffer offered {}", HexUtils.bytesToHex(bytes, " "));
                 }
-
             } catch (IOException e) {
                 logger.warn("Error on reading input stream to internal buffer", e);
             }
@@ -193,23 +192,14 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private void processReceivedBytes() {
         int faultCounter = 0;
 
-        while (true) {
-            // Recognition of messages from byte buffer.
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+        try {
+            byte module = buffer.get();
 
-            byte module = -1;
-            while (buffer.size() >= 5) {
-                if (module == -1) {
-                    module = buffer.get();
-                }
-
+            while (true) {
+                // Recognition of messages from byte buffer.
                 // not a known module address
                 if (!modules.contains(module)) {
-                    module = -1;
+                    module = buffer.get();
                     continue;
                 }
 
@@ -220,7 +210,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 byte sizeToggle = buffer.get();
 
                 // read length of command and check if makes sense
-                if ((sizeToggle < 1 || sizeToggle > 9) && ((sizeToggle & 0xFF) < 0x81 || (sizeToggle & 0xFF) > 0x89)) {
+                if ((sizeToggle < 1 || sizeToggle > 3) && ((sizeToggle & 0xFF) < 0x81 || (sizeToggle & 0xFF) > 0x83)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("get invalid sizeToggle: {}", new String(HexUtils.byteToHex(sizeToggle)));
                     }
@@ -237,124 +227,122 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
                 byte[] command = new byte[size];
 
-                try {
-                    for (int i = 0; i < size; i++) {
-                        command[i] = buffer.get();
-                    }
+                for (int i = 0; i < size; i++) {
+                    command[i] = buffer.get();
+                }
 
-                    // log command
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("command read: {}", PHCHelper.bytesToBinaryString(command));
-                    }
+                // log command
+                if (logger.isTraceEnabled()) {
+                    logger.trace("command read: {}", PHCHelper.bytesToBinaryString(command));
+                }
 
-                    // read crc
-                    byte crcByte1 = buffer.get();
-                    byte crcByte2 = buffer.get();
+                // read crc
+                byte crcByte1 = buffer.get();
+                byte crcByte2 = buffer.get();
 
-                    short crc = (short) (crcByte1 & 0xFF);
-                    crc |= (crcByte2 << 8);
+                short crc = (short) (crcByte1 & 0xFF);
+                crc |= (crcByte2 << 8);
 
-                    logger.trace("get crc: {}", (crcByte1 << 8) | crcByte2);
+                // calculate checkCrc
+                short checkCrc = calcCrc(module, sizeToggle, command);
 
-                    // calculate checkCrc
-                    short checkCrc = (short) 0xFFFF;
-                    checkCrc = crc16Update(checkCrc, module);
-                    checkCrc = crc16Update(checkCrc, sizeToggle);
+                // check crc
+                if (crc != checkCrc) {
+                    logger.debug("CRC not correct (crc from message, calculated crc): {}, {}", crc, checkCrc);
 
-                    for (byte commandByte : command) {
-                        checkCrc = crc16Update(checkCrc, commandByte);
-                    }
-                    checkCrc ^= 0xFFFF;
+                    faultCounter = handleCrcFault(faultCounter);
 
-                    logger.debug("crc {}, checkCrc {}", crc, checkCrc);
+                    module = buffer.get();
+                    continue;
+                }
 
-                    // check crc
-                    if (crc != checkCrc) {
-                        logger.debug("CRC not correct(module/sizeToggle/command): {} {} {}", module, sizeToggle,
-                                command);
-
-                        faultCounter++;
-
-                        if (faultCounter >= 5) {
-                            faultCounter = 0;
-
-                            // Normally recognizing shifted -> move one byte
-                            if (buffer.hasNext()) {
-                                buffer.get();
-                            }
-                        }
-
-                        module = -1;
-                        continue;
-                    }
-                } catch (IllegalStateException e) {
-                    // In exceptional cases the message is longer than the buffer
-                    break;
+                if (logger.isTraceEnabled()) {
+                    logger.trace("get crc: {}", HexUtils.bytesToHex(new byte[] { crcByte1, crcByte2 }, " "));
                 }
 
                 faultCounter = 0;
 
-                logger.debug("crc correct");
+                processReceivedMsg(module, toggle, command);
+                module = buffer.get();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-                // Acknowledgement received (command first byte 0)
-                if (command[0] == 0) {
-                    String moduleType;
-                    byte channel = 0; // only needed for dim
-                    if ((module & 0xE0) == 0x40) {
-                        moduleType = PHCBindingConstants.CHANNELS_AM;
-                    } else if ((module & 0xE0) == 0xA0) {
-                        moduleType = PHCBindingConstants.CHANNELS_DIM;
-                        channel = (byte) ((command[0] >>> 5) & 0x0F);
-                    } else {
-                        moduleType = PHCBindingConstants.CHANNELS_EM_LED;
-                    }
-
-                    setModuleOutputState(moduleType, (byte) (module & 0x1F), command[1], channel);
-                    toggleMap.put(module, !toggle);
-
-                    // initialization (first byte FF)
-                } else if (command[0] == (byte) 0xFF) {
-                    if ((module & 0xE0) == 0x00) { // EM
-                        sendEmConfig(module);
-                    } else if ((module & 0xE0) == 0x40 || (module & 0xE0) == 0xA0) { // AM, JRM and DIM
-                        sendAmConfig(module);
-                    }
-
-                    logger.debug("initialization: {}", module);
-
-                    // ignored - ping (first byte 01)
-                } else if (command[0] == 0x01) {
-                    logger.debug("first byte 0x01 -> ignored");
-
-                    // EM command / update
-                } else {
-                    if (((module & 0xE0) == 0x00)) {
-                        sendEmAcknowledge(module, toggle);
-                        logger.debug("send acknowledge (modul, toggle) {} {}", module, toggle);
-
-                        byte channel = (byte) ((command[0] >>> 4) & 0x0F);
-
-                        OnOffType onOff = OnOffType.OFF;
-
-                        if ((command[0] & 0x0F) == 2) {
-                            onOff = OnOffType.ON;
-                        }
-
-                        QueueObject qo = new QueueObject(PHCBindingConstants.CHANNELS_EM, module, channel, onOff);
-
-                        logger.debug("QueueObject found: {}", qo);
-
-                        // put recognized message into queue
-                        if (!receiveQueue.contains(qo)) {
-                            receiveQueue.offer(qo);
-                        }
-
-                        // ignore if message not from EM module
-                    } else {
-                        logger.debug("Incoming message not from EM module: {} {} {}", module, sizeToggle, command);
-                    }
+    private int handleCrcFault(int faultCounter) throws InterruptedException {
+        if (faultCounter > 0) {
+            // Normally in this case we read the message repeatedly offset to the real -> skip one to 6 bytes
+            for (int i = 0; i < faultCounter; i++) {
+                if (buffer.hasNext()) {
+                    buffer.get();
                 }
-                module = -1;
+            }
+        }
+
+        int resCounter = faultCounter + 1;
+        if (resCounter > 6) {
+            resCounter = 0;
+        }
+        return resCounter;
+    }
+
+    private void processReceivedMsg(byte module, boolean toggle, byte[] command) {
+        // Acknowledgement received (command first byte 0)
+        if (command[0] == 0) {
+            String moduleType;
+            byte channel = 0; // only needed for dim
+            if ((module & 0xE0) == 0x40) {
+                moduleType = PHCBindingConstants.CHANNELS_AM;
+            } else if ((module & 0xE0) == 0xA0) {
+                moduleType = PHCBindingConstants.CHANNELS_DIM;
+                channel = (byte) ((command[0] >>> 5) & 0x0F);
+            } else {
+                moduleType = PHCBindingConstants.CHANNELS_EM_LED;
+            }
+
+            setModuleOutputState(moduleType, (byte) (module & 0x1F), command[1], channel);
+            toggleMap.put(module, !toggle);
+
+            // initialization (first byte FF)
+        } else if (command[0] == (byte) 0xFF) {
+            if ((module & 0xE0) == 0x00) { // EM
+                sendEmConfig(module);
+            } else if ((module & 0xE0) == 0x40 || (module & 0xE0) == 0xA0) { // AM, JRM and DIM
+                sendAmConfig(module);
+            }
+
+            logger.debug("initialization: {}", module);
+
+            // ignored - ping (first byte 01)
+        } else if (command[0] == 0x01) {
+            logger.debug("first byte 0x01 -> ignored");
+
+            // EM command / update
+        } else {
+            if (((module & 0xE0) == 0x00)) {
+                sendEmAcknowledge(module, toggle);
+                logger.debug("send acknowledge (modul, toggle) {} {}", module, toggle);
+
+                byte channel = (byte) ((command[0] >>> 4) & 0x0F);
+
+                OnOffType onOff = OnOffType.OFF;
+
+                if ((command[0] & 0x0F) == 2) {
+                    onOff = OnOffType.ON;
+                }
+
+                QueueObject qo = new QueueObject(PHCBindingConstants.CHANNELS_EM, module, channel, onOff);
+
+                // put recognized message into queue
+                if (!receiveQueue.contains(qo)) {
+                    receiveQueue.offer(qo);
+                }
+
+                // ignore if message not from EM module
+            } else if (logger.isDebugEnabled()) {
+                logger.debug("Incoming message (module, toggle, command) not from EM module: {} {} {}",
+                        new String(HexUtils.byteToHex(module)), toggle, PHCHelper.bytesToBinaryString(command));
             }
         }
     }
@@ -387,7 +375,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             } catch (InterruptedException e1) {
                 Thread.currentThread().interrupt();
             }
-
         }
     }
 
@@ -416,8 +403,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-        } while (!isChannelOutputState(qo.getModuleType(), qo.getModuleAddress(), qo.getChannel(),
-                qo.getCommand()) && sendCount < SEND_RETRY_COUNT);
+        } while (!isChannelOutputState(qo.getModuleType(), qo.getModuleAddress(), qo.getChannel(), qo.getCommand())
+                && sendCount < SEND_RETRY_COUNT);
 
         if (PHCBindingConstants.CHANNELS_JRM.equals(qo.getModuleType())) {
             // there aren't state per channel for JRM modules
@@ -641,12 +628,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
         System.arraycopy(cmd, 0, buffer, 2, len);
 
-        short crc = (short) 0xFFFF;
-
-        for (int i = 0; i < (2 + len); i++) {
-            crc = crc16Update(crc, buffer[i]);
-        }
-        crc ^= 0xFFFF;
+        short crc = calcCrc(modulAddr, buffer[1], cmd);
 
         buffer[2 + len] = (byte) (crc & 0xFF);
         buffer[3 + len] = (byte) ((crc >> 8) & 0xFF);
@@ -655,7 +637,29 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     }
 
     /**
-     * Calculate/update the 16 bit crc of the message.
+     * Calculate the 16 bit crc of the message.
+     * 
+     * @param module
+     * @param sizeToggle
+     * @param cmd
+     * @return
+     */
+    private short calcCrc(byte module, byte sizeToggle, byte[] cmd) {
+        short crc = (short) 0xFFFF;
+
+        crc = crc16Update(crc, module);
+        crc = crc16Update(crc, sizeToggle);
+
+        for (byte b : cmd) {
+            crc = crc16Update(crc, b);
+        }
+
+        crc ^= 0xFFFF;
+        return crc;
+    }
+
+    /**
+     * Update the 16 bit crc of the message.
      *
      * @param crc
      * @param data

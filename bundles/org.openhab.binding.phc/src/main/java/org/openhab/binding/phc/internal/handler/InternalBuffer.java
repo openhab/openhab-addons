@@ -13,8 +13,9 @@
 package org.openhab.binding.phc.internal.handler;
 
 import java.util.Arrays;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 
 /**
  * Buffer for received messages
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 class InternalBuffer {
     private static final int MAX_SIZE = 512;
 
-    private final Queue<byte[]> byteQueue = new ConcurrentLinkedQueue<byte[]>();
+    private final BlockingQueue<byte[]> byteQueue = new LinkedBlockingQueue<byte[]>();
     private byte[] buffer;
     private int bufferIndex = 0;
     private int size;
@@ -42,10 +43,10 @@ class InternalBuffer {
     }
 
     public boolean hasNext() {
-        return (getBuffer() != null);
+        return (size > 0);
     }
 
-    public byte get() {
+    public byte get() throws InterruptedException {
         byte[] buf = getBuffer();
         if (buf != null) {
             byte result = buf[bufferIndex++];
@@ -63,9 +64,9 @@ class InternalBuffer {
         return size;
     }
 
-    private byte[] getBuffer() {
+    private byte[] getBuffer() throws InterruptedException {
         if (buffer == null || bufferIndex == buffer.length) {
-            buffer = byteQueue.poll();
+            buffer = byteQueue.take();
             bufferIndex = 0;
         }
 
