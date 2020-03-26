@@ -18,6 +18,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -38,6 +40,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Kai Kreuzer - Initial contribution and API
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth")
 public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
 
@@ -48,7 +51,7 @@ public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
         SUPPORTED_THING_TYPES_UIDS.add(BluetoothBindingConstants.THING_TYPE_ROAMING);
     }
 
-    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -56,7 +59,7 @@ public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BluetoothBindingConstants.THING_TYPE_BEACON)) {

@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth;
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - refactoring and extension
  */
+@NonNullByDefault
 public class BluetoothBindingConstants {
 
     public static final String BINDING_ID = "bluetooth";
