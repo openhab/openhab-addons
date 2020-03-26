@@ -695,12 +695,12 @@ Bridge insteon:network:local      [port="/dev/ttyUSB0"] {
 
 Flipping this switch to "ON" will cause the modem to send a broadcast message with group=2, and all devices that are configured to respond to it should react.
 
-## 3-way Switch Configurations and the "related" Keyword
+## Channel "related" Property
 
 When an Insteon device changes its state because it is directly operated (for example by flipping a switch manually), it sends out a broadcast message to announce the state change, and the binding (if the PLM modem is properly linked as a responder) should update the corresponding openHAB items.
 Other linked devices however may also change their state in response, but those devices will *not* send out a broadcast message, and so openHAB will not learn about their state change until the next poll.
 One common scenario is e.g. a switch in a 3-way configuration, with one switch controlling the load, and the other switch being linked as a controller.
-In this scenario, the "related" keyword can be used to cause the binding to poll a related device whenever a state change occurs for another device.
+In this scenario, the "related" keyword can be used to have the binding poll a related device whenever a state change occurs for another device.
 A typical example would be two dimmers (A and B) in a 3-way configuration:
 
 ```
@@ -713,6 +713,20 @@ Bridge insteon:network:local [port="/dev/ttyUSB0"] {
     Channels:
       Type dimmer : dimmer [related="AA.BB.CC"]
   }
+}
+```
+
+Another scenario is a group broadcast message, the binding doesn't know which devices have responded to the message since its a broadcast message.
+In this scenario, the "related" keyword can be used to have the binding poll one or more related device when group message are sent.
+A typical example would be a switch configured to broadcast to a group, and one or more devices configured to respond to the message:
+
+```
+Bridge insteon:network:local [port="/dev/ttyUSB0"] {
+  Thing device AABBCC             [address="A.BB.CC", productKey="0x000045"] {
+    Channels:
+      Type switch : broadcastOnOff#3 [related="AA.BB.DD"]
+  }
+  Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"]
 }
 ```
 

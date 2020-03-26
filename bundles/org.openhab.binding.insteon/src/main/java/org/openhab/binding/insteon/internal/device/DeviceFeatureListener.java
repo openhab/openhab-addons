@@ -176,7 +176,7 @@ public class DeviceFeatureListener {
      * polls all devices that are related to this item
      * by the "related" keyword
      */
-    private void pollRelatedDevices() {
+    public void pollRelatedDevices() {
         for (InsteonAddress a : relatedDevices) {
             logger.debug("polling related device {} in {} ms", a, TIME_DELAY_POLL_RELATED_MSEC);
             InsteonDevice d = binding.getDevice(a);
