@@ -78,11 +78,7 @@ public enum EnergeniePWMStateEnum {
             final double value;
 
             try {
-                if (Double.parseDouble(slicedResponse[0]) / 1 == Double.parseDouble(slicedResponse[0])) {
-                    value = Double.parseDouble(slicedResponse[0]) / divisor;
-                } else {
-                    value = -1.0;
-                }
+                value = Double.parseDouble(slicedResponse[0]) / divisor;
                 return QuantityType.valueOf(value, unit);
 
             } catch (NumberFormatException e) {
