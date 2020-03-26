@@ -111,6 +111,8 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
      */
     @Override
     protected void stopScan() {
+        super.stopScan();
+
         AdorneHubController adorneHubController = this.adorneHubController;
         if (adorneHubController != null) {
             adorneHubController.stop();
