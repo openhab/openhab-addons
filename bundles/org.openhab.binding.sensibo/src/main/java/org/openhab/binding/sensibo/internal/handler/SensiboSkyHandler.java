@@ -131,7 +131,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         handleCommand(channelUID, command, getSensiboModel());
     }
 
-    private void updateAcState(SensiboSky sensiboSky, String property, Object value) {
+    /*
+     * Package private in order to be reachable from unit test
+     */
+    void updateAcState(SensiboSky sensiboSky, String property, Object value) {
         StateChange stateChange = checkStateChangeValid(sensiboSky, property, value);
         if (stateChange.valid) {
             getAccountHandler().ifPresent(
@@ -408,7 +411,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         return generatedChannelTypes.get(channelTypeUID);
     }
 
-    private StateChange checkStateChangeValid(SensiboSky sensiboSky, String property, Object newPropertyValue) {
+    /*
+     * Package private in order to be reachable from unit test
+     */
+    StateChange checkStateChangeValid(SensiboSky sensiboSky, String property, Object newPropertyValue) {
 
         StateChange stateChange = new StateChange(newPropertyValue);
 
