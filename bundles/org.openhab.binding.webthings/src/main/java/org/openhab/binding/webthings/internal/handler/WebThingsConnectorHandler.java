@@ -14,14 +14,15 @@ package org.openhab.binding.webthings.internal.handler;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingConstants.*;
 import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.*;
+import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiUtilities.getSecurityLink;
 
 import org.openhab.binding.webthings.internal.config.WebThingsConnectorConfiguration;
+import org.openhab.binding.webthings.internal.websockets.WebThingsConnectorSocketHandler;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
-
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +33,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
@@ -51,7 +53,7 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
     private @Nullable WebThingsConnectorConfiguration config;
 
     private WebSocketClient client = new WebSocketClient();
-    private WebThingsSocketHandler socket = new WebThingsSocketHandler(this);
+    private WebThingsConnectorSocketHandler socket = new WebThingsConnectorSocketHandler(this);
 
     // private @Nullable WebThingsWsClient ws;
 
@@ -62,7 +64,7 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
     /**
      * @return the socket
      */
-    public WebThingsSocketHandler getSocket() {
+    public WebThingsConnectorSocketHandler getSocket() {
         return socket;
     }
 
@@ -129,7 +131,7 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not create websocket");
             }
         });
     }
@@ -147,6 +149,9 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
                 logger.error("Could not stop socket client: {}", e.getMessage());
             }
         }
+        if(config != null && config.uid != null && CONNECTOR_HANDLER_LIST.containsKey(config.uid)){
+            CONNECTOR_HANDLER_LIST.remove(config.uid);
+        }
         super.dispose();
     }
 
@@ -156,7 +161,8 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
      * @throws IOException 
      * @return Reconnect successful or not
      */
-    public boolean reconnect(int maxTries) { 
+    public boolean reconnect(int maxTries) {
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "Lost connection. Trying to reconnect websocket."); 
         int count = 0;
         while(true){
             logger.warn("Trying to reconnect to thing: {} - Try: {}/{}", config.id, count, maxTries); 
@@ -177,8 +183,10 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
                 };
             } catch(URISyntaxException e){
                 logger.error("URISyntaxException in reconnect method: {}", e.getMessage());
+                return false;
             } catch(Exception e){
                 logger.error("Exception in reconnect method: {}", e.getMessage());
+                return false;
             }
         }
         return false; 
@@ -191,20 +199,34 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
     private URI getUriFromConfig() throws URISyntaxException{
         String destUri;
         String websocketType;
+        String host;
 
         // Do not use SSL when local address is used
         if(serverUrl.contains(".mozilla-iot.org")){
             websocketType = "wss://";
+            host = serverUrl.replaceFirst("https://", "");
         }else{
             websocketType = "ws://";
+            host = serverUrl.replaceFirst("http://", "");
             logger.warn("WARNING: WebSocket uses unsecured connection (no SSL)!");
         }
-        
+      
         // Clean up link
-        if(serverUrl.substring(serverUrl.length()-1).equals("\\")){
-            destUri = websocketType + serverUrl + "things/" + config.id + "?jwt=" + token;
+        String base = "";
+        String security = "bearer";
+        String securityToken = token;
+
+        if(config.gateway){
+            base = "things/";
         }else{
-            destUri = websocketType + serverUrl + "/things/" + config.id + "?jwt=" + token;
+            security = config.security;
+            securityToken = config.securityToken;
+        }
+
+        if(serverUrl.substring(serverUrl.length()-1).equals("/")){
+            destUri = websocketType + host + base + config.id + getSecurityLink(security, securityToken);
+        }else{
+            destUri = websocketType + host + "/" + base + config.id + getSecurityLink(security, securityToken);
         }
         return new URI(destUri);
     }
@@ -212,6 +234,11 @@ public class WebThingsConnectorHandler extends BaseThingHandler {
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
     /**

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.webthings.internal.handler;
+package org.openhab.binding.webthings.internal.converters;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.*;
 
@@ -36,18 +36,17 @@ import org.mozilla.iot.webthing.Property;
 import org.mozilla.iot.webthing.Thing;
 import org.mozilla.iot.webthing.Value;
 import org.mozilla.iot.webthing.example.SingleThing.FadeAction;
-import org.openhab.binding.webthings.internal.json.ItemStateEventPayload;
-import org.openhab.binding.webthings.internal.json.CompleteThingDTO;
-import org.openhab.binding.webthings.internal.json.WebThingsPropertyCommand;
-
+import org.openhab.binding.webthings.internal.dto.ItemStateEventPayload;
+import org.openhab.binding.webthings.internal.dto.CompleteThingDTO;
+import org.openhab.binding.webthings.internal.dto.WebThingsPropertyCommand;
 
 /**
- * The {@link WebThingsHandler} is responsible to handle all interactions with the webthing framework
+ * The {@link OpenhabToWebThingConverter} is responsible to handle all interactions with the webthing framework
  *
  * @author schneider_sven - Initial contribution
  */
 @NonNullByDefault
-public class WebThingsHandler{
+public class OpenhabToWebThingConverter {
     private List<Thing> webThingList = new ArrayList<Thing>();
 
     /**
@@ -373,7 +372,12 @@ public class WebThingsHandler{
         String jsonString = null;
 
         Gson g = new Gson();
-        WebThingsPropertyCommand propertyCommand = new WebThingsPropertyCommand(id, "setProperty");
+        WebThingsPropertyCommand propertyCommand;
+        if(id != ""){
+            propertyCommand = new WebThingsPropertyCommand(id, "setProperty");
+        }else{
+            propertyCommand = new WebThingsPropertyCommand("setProperty");
+        }
 
         // Switch possible command types from: https://www.eclipse.org/smarthome/documentation/javadoc/org/eclipse/smarthome/core/types/Command.html
         // TODO: Add more command transformations
@@ -429,6 +433,8 @@ public class WebThingsHandler{
             case "PlayPause":
                 break;
             case "Point":
+                String point = command.getValue();
+                propertyCommand.addData(property, point); 
                 break;
             case "Refresh":
                 break;
@@ -437,6 +443,8 @@ public class WebThingsHandler{
             case "StopMove":
                 break;
             case "StringList":
+                String stringList = command.getValue();
+                propertyCommand.addData(property, stringList); 
                 break;
             case "String":
                 String string = command.getValue();
@@ -451,67 +459,6 @@ public class WebThingsHandler{
         jsonString = g.toJson(propertyCommand);
 
         return jsonString;
-    }
-
-    /**
-     * Get REST API body for openHAB channel based on webThing command
-     * @param itemType ItemType of openHAB item
-     * @param command Command with value to be transformed
-     * @return Finished JSON string
-     */
-    public static String getCommandFromProperty(String itemType, String command){
-        String value = null;
-
-        // TODO: Add more command transformations
-        switch (itemType) {
-            case "Color":
-                Color rgb = Color.decode(command);
-                float[] hsb = new float[3];
-                hsb = Color.RGBtoHSB(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), hsb);
-
-                value = String.valueOf(hsb[0]*360) + "," + String.valueOf(hsb[1]*100) + "," + String.valueOf(hsb[2]*100);
-                break;
-            case "Contact":
-                if(command.equals("true")){
-                    value = "OPEN";
-                }else{
-                    value = "CLOSED";
-                }
-                break;
-            case "DateTime":
-                value = command;
-                break;
-            case "Dimmer":
-                value = command;
-                break;
-            case "Group":
-                break;
-            case "Image":
-                break;
-            case "Location":
-                break;
-            case "Number":
-                value = command;
-                break;
-            case "Player":
-                break;
-            case "Rollershutter":
-                break;
-            case "String":
-                value = command; 
-                break;
-            case "Switch":
-                if(command.equals("true")){
-                    value = "ON";
-                }else{
-                    value = "OFF";
-                }
-                break;     
-            default:
-                value = null;
-                break;
-        }
-        return value;
     }
 
     /**

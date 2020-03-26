@@ -30,6 +30,9 @@ public class WebThingsBindingGlobals {
     public static String serverUrl = "";
     public static String openhabIp = "";
     public static Boolean mozilla = true;
+    public static String system  = "";
+    public static String userdataPath  = "";
+    public static Boolean backgroundDiscovery = true;
 
     /**
      * Set binding configuration params
@@ -47,6 +50,15 @@ public class WebThingsBindingGlobals {
         }
         if(params.get("mozilla") != null){
             mozilla = (Boolean) params.get("mozilla");
+        }
+        if(params.get("system") != null){
+            system = (String) params.get("system");
+        }
+        if(params.get("userdataPath") != null){
+            userdataPath = (String) params.get("userdataPath");
+        }
+        if(params.get("backgroundDiscovery") != null){
+            backgroundDiscovery = (Boolean) params.get("backgroundDiscovery");
         }
     }
 }

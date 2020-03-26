@@ -13,8 +13,8 @@
 package org.openhab.binding.webthings.internal.events;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingConstants.*;
-import static org.openhab.binding.webthings.internal.handler.WebThingsHandler.*;
-import org.openhab.binding.webthings.internal.json.ItemStateEventPayload;
+import static org.openhab.binding.webthings.internal.converters.OpenhabToWebThingConverter.*;
+import org.openhab.binding.webthings.internal.dto.ItemStateEventPayload;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,6 +25,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.smarthome.core.events.*;
 import org.eclipse.smarthome.core.items.events.ItemStateChangedEvent;
 import org.openhab.binding.webthings.internal.handler.WebThingsConnectorHandler;
+import org.openhab.binding.webthings.internal.handler.WebThingsWebThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,30 +69,14 @@ public class WebThingsItemEventSubscriber implements EventSubscriber {
 
         if (event instanceof ItemStateChangedEvent) {
             //ItemStateChangedEvent itemStateEvent = (ItemStateChangedEvent) event;
-            if(topic.indexOf("_") >= 0){
-                // TODO: Handle channel names with multiple parts (e.g. color_temp)
-                String thingID = getThingFromTopic(topic);
-                String channel;
-                if(topic.contains("color_temperature")){
-                    thingID = thingID.substring(0, thingID.lastIndexOf(":"));
-                    channel = "color_temperature";
-                }else{
-                    channel = getChannelFromTopic(topic);
-                }
+            if(topic.contains("webthings_webthing")){
+                String thingUID = topic.substring(ordinalIndexOf(topic, "/", 1) +1, ordinalIndexOf(topic, "_", 2));
+                thingUID = thingUID.replace("_", ":");
+                if(WEBTHING_HANDLER_LIST.containsKey(thingUID)){
+                    WebThingsWebThingHandler handler = WEBTHING_HANDLER_LIST.get(thingUID);
+                    // Get channel ID based on UID
+                    String channelId = topic.substring(ordinalIndexOf(topic, "_", 2) +1, topic.lastIndexOf("/"));
 
-                // Get handler of relevant connector
-                if(CONNECTOR_HANDLER_LIST.containsKey(thingID)){
-                    WebThingsConnectorHandler handler = CONNECTOR_HANDLER_LIST.get(thingID);
-                    
-                    /* Only works for self hosted things
-                    for(Thing thing: WEBTHINGS_HANDLER.getWebThingList()){
-                        if(thing.getId().equals(thingID)){
-                            thing.setProperty(channel, value);
-                        }
-                    }
-                    */
-
-                    // Get session of socket to WebThing
                     Session session = handler.getSocket().getSession();
                     if(session != null && session.isOpen()){
                         logger.debug("Session ready to send");
@@ -99,16 +84,17 @@ public class WebThingsItemEventSubscriber implements EventSubscriber {
                         // Transform payload to command and get usable JSON from that command
                         Gson g = new Gson();
                         ItemStateEventPayload command = g.fromJson(payload, ItemStateEventPayload.class);
-                        String jsonCommand = getPropertyFromCommand(handler.getHandlerConfig().id, channel, command);
+                        String jsonCommand = getPropertyFromCommand("", channelId, command);
                         if(jsonCommand != null){
-                            if(!jsonCommand.replace("setProperty", "propertyStatus").equals(handler.getSocket().getLastMessage())){
+                            String lastMessage = handler.getSocket().getLastMessage();
+                            if(lastMessage == null || !jsonCommand.replace("setProperty", "propertyStatus").equals(lastMessage.replaceAll("\\s+",""))){
                                 try {
                                     // Send command to WebThing via socket
                                     session.getRemote().sendString(jsonCommand);
                                     logger.info("Send command to WebThing: {}", jsonCommand);
                                     handler.getSocket().setLastMessage(jsonCommand);  
                                 } catch (IOException e) {
-                                    logger.warn("Could not send command: {} to WebThing: {}", jsonCommand, thingID);
+                                    logger.warn("Could not send command: {} to WebThing: {}", jsonCommand, thingUID);
                                 }
                             } else{
                                 logger.debug("Not sending: Command equals last send message - Command: {}", jsonCommand);
@@ -118,6 +104,62 @@ public class WebThingsItemEventSubscriber implements EventSubscriber {
                         }
                     } else{
                         logger.warn("Could not process OH command: Session is empty or not open");
+                    }
+                }
+            }
+            else{
+                if(topic.indexOf("_") >= 0){
+                    // TODO: Handle channel names with multiple parts (e.g. color_temp)
+                    String thingID = getThingFromTopic(topic);
+                    String channel;
+                    if(topic.contains("color_temperature")){
+                        thingID = thingID.substring(0, thingID.lastIndexOf(":"));
+                        channel = "color_temperature";
+                    }else{
+                        channel = getChannelFromTopic(topic);
+                    }
+
+                    // Get handler of relevant connector
+                    if(CONNECTOR_HANDLER_LIST.containsKey(thingID)){
+                        WebThingsConnectorHandler handler = CONNECTOR_HANDLER_LIST.get(thingID);
+                        
+                        /* Only works for self hosted things
+                        for(Thing thing: WEBTHINGS_HANDLER.getWebThingList()){
+                            if(thing.getId().equals(thingID)){
+                                thing.setProperty(channel, value);
+                            }
+                        }
+                        */
+
+                        // Get session of socket to WebThing
+                        Session session = handler.getSocket().getSession();
+                        if(session != null && session.isOpen()){
+                            logger.debug("Session ready to send");
+
+                            // Transform payload to command and get usable JSON from that command
+                            Gson g = new Gson();
+                            ItemStateEventPayload command = g.fromJson(payload, ItemStateEventPayload.class);
+                            String jsonCommand = getPropertyFromCommand(handler.getHandlerConfig().id, channel, command);
+                            if(jsonCommand != null){
+                                String lastMessage = handler.getSocket().getLastMessage();
+                                if(lastMessage == null || !jsonCommand.replace("setProperty", "propertyStatus").equals(lastMessage.replaceAll("\\s+",""))){
+                                    try {
+                                        // Send command to WebThing via socket
+                                        session.getRemote().sendString(jsonCommand);
+                                        logger.info("Send command to WebThing: {}", jsonCommand);
+                                        handler.getSocket().setLastMessage(jsonCommand);  
+                                    } catch (IOException e) {
+                                        logger.warn("Could not send command: {} to WebThing: {}", jsonCommand, thingID);
+                                    }
+                                } else{
+                                    logger.debug("Not sending: Command equals last send message - Command: {}", jsonCommand);
+                                }                      
+                            }else{
+                                logger.warn("Could not convert OH Command to Json String");
+                            }
+                        } else{
+                            logger.warn("Could not process OH command: Session is empty or not open");
+                        }
                     }
                 }
             }
@@ -147,5 +189,13 @@ public class WebThingsItemEventSubscriber implements EventSubscriber {
         channel = channel.substring(0, channel.lastIndexOf("/", channel.length()));
 
         return channel;
+    }
+
+    private int ordinalIndexOf(String str, String substr, int n) {
+        int pos = -1;
+        do {
+            pos = str.indexOf(substr, pos + 1);
+        } while (n-- > 0 && pos != -1);
+        return pos;
     }
 }

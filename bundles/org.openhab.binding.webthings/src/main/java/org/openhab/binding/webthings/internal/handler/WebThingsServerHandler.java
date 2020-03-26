@@ -15,10 +15,11 @@ package org.openhab.binding.webthings.internal.handler;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingConstants.*;
-import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiHandler.*;
+import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiUtilities.*;
 
-import org.openhab.binding.webthings.internal.json.CompleteThingDTO;
+import org.openhab.binding.webthings.internal.dto.CompleteThingDTO;
 import org.openhab.binding.webthings.internal.config.WebThingsServerConfiguration;
+import org.openhab.binding.webthings.internal.converters.OpenhabToWebThingConverter;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -50,7 +51,7 @@ import org.mozilla.iot.webthing.*;
 public class WebThingsServerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WebThingsServerHandler.class);
-    private final WebThingsHandler webThingsHandler = new WebThingsHandler();
+    private final OpenhabToWebThingConverter converter = new OpenhabToWebThingConverter();
 
     private @Nullable WebThingsServerConfiguration config;
     private @Nullable WebThingServer webThingServer;
@@ -70,8 +71,8 @@ public class WebThingsServerHandler extends BaseThingHandler {
     /**
      * @return the webThingsHandler
      */
-    public WebThingsHandler getWebThingsHandler() {
-        return webThingsHandler;
+    public OpenhabToWebThingConverter getWebThingsConverter() {
+        return converter;
     }
 
     @Override
@@ -103,8 +104,8 @@ public class WebThingsServerHandler extends BaseThingHandler {
                 }
 
                 // Create WebThing Server
-                webThingServer = new WebThingServer( new WebThingServer.MultipleThings( webThingsHandler.getWebThingList(),
-                                                                                        "openHAB WebThings"),
+                webThingServer = new WebThingServer( new WebThingServer.MultipleThings( converter.getWebThingList(),
+                                                                                        this.getThing().getUID().toString().replace(":", "-")),
                                                                                         config.port);
 
                 Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -150,7 +151,7 @@ public class WebThingsServerHandler extends BaseThingHandler {
         // Stop WebThing Server before disposing of handler
         if (webThingServer != null && webThingServer.isAlive()) {
             webThingServer.stop();
-            webThingsHandler.getWebThingList().clear();
+            converter.getWebThingList().clear();
             logger.info("Stopping WebThingServer - Hostname: {} - Port: {}", webThingServer.getHostname(),
                     webThingServer.getListeningPort());
         }
@@ -194,14 +195,14 @@ public class WebThingsServerHandler extends BaseThingHandler {
             // Create a WebThing for all imported openHAB things which are not part of this binding || Property for each channel of openHAB thing
             if(config.allThings){
                 if(!thingDTO.thingTypeUID.equals("webthings:connector") && !thingDTO.thingTypeUID.equals("webthings:server")){
-                    wotThings.add(webThingsHandler.createCustomThing(thingDTO));
+                    wotThings.add(converter.createCustomThing(thingDTO));
                 }
 
             // Create a WebThing for all selected openHAB things || Property for each channel of openHAB thing
             } else{
                 for(Object option: config.things){
                     if(option.toString().equals(thingDTO.UID)){
-                        wotThings.add(webThingsHandler.createCustomThing(thingDTO));
+                        wotThings.add(converter.createCustomThing(thingDTO));
                         continue;
                     }
                 }
@@ -210,7 +211,7 @@ public class WebThingsServerHandler extends BaseThingHandler {
 
         // Add WebThings to webThingList
         if (!wotThings.isEmpty()) {
-            webThingsHandler.addThingList(wotThings);
+            converter.addThingList(wotThings);
         }
     }
 
@@ -268,14 +269,14 @@ public class WebThingsServerHandler extends BaseThingHandler {
             // Create a WebThing for all imported openHAB things which are not part of this binding || Property for each item linked to openHAB thing
             if(config.allThings){
                 if(!thingDTO.thingTypeUID.equals("webthings:connector") && !thingDTO.thingTypeUID.equals("webthings:server")){
-                    wotThings.add(webThingsHandler.createCustomThing(thingDTO, openhabItemsMap));
+                    wotThings.add(converter.createCustomThing(thingDTO, openhabItemsMap));
                 }
 
             // Create a WebThing for all selected openHAB things || Property for each item linked to openHAB thing
             } else{
                 for(Object option: config.things){
                     if(option.toString().equals(thingDTO.UID)){
-                        wotThings.add(webThingsHandler.createCustomThing(thingDTO, openhabItemsMap));
+                        wotThings.add(converter.createCustomThing(thingDTO, openhabItemsMap));
                         continue;
                     }
                 }
@@ -284,7 +285,7 @@ public class WebThingsServerHandler extends BaseThingHandler {
 
         // Add WebThings to webThingList
         if(!wotThings.isEmpty()){
-            webThingsHandler.addThingList(wotThings);
+            converter.addThingList(wotThings);
         }
     }
 

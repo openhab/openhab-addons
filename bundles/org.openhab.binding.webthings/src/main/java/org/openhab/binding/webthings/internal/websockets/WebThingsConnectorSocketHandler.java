@@ -10,13 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.webthings.internal.handler;
+package org.openhab.binding.webthings.internal.websockets;
 
-import static org.openhab.binding.webthings.internal.handler.WebThingsHandler.*;
-import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiHandler.*;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import static org.openhab.binding.webthings.internal.converters.WebThingToOpenhabConverter.*;
+import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiUtilities.*;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -25,80 +22,42 @@ import com.google.gson.Gson;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.CloseException;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.smarthome.core.items.dto.ItemDTO;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.webthings.internal.json.WebThingsPropertyCommand;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.webthings.internal.dto.WebThingsPropertyCommand;
+import org.openhab.binding.webthings.internal.handler.WebThingsConnectorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The {@link WebThingsSocketHandler} is responsible for handling the websocket with webthings
+ * The {@link WebThingsWebThingSocketHandler} is responsible for handling the websocket with webthings
  *
  * @author schneider_sven - Initial contribution
  */
 @WebSocket(maxTextMessageSize = 64 * 1024)
-public class WebThingsSocketHandler{
-    private final Logger logger = LoggerFactory.getLogger(WebThingsSocketHandler.class);
-    private final CountDownLatch closeLatch;
-    private final Object onMessageLock = new Object();
-    
-    @SuppressWarnings("unused")
-    private Session session;
-    private String lastMessage;
+public class WebThingsConnectorSocketHandler extends WebThingsSocketHandler{
+    private final Logger logger = LoggerFactory.getLogger(WebThingsConnectorSocketHandler.class);
+
     private WebThingsConnectorHandler connectorHandler;
     //private WebThingsConnectorHandler thingsHandler;
 
-    public WebThingsSocketHandler(WebThingsConnectorHandler connectorHandler) {
-        this.closeLatch = new CountDownLatch(1);
+    public WebThingsConnectorSocketHandler(WebThingsConnectorHandler connectorHandler) {
+        super();
         this.connectorHandler = connectorHandler;
     }
 
-    /**
-     * @return the session
-     */
-    public Session getSession() {
-        return session;
-    }
-
-    /**
-     * @return the lastMessage
-     */
-    public String getLastMessage() {
-        return lastMessage;
-    }
-
-    /**
-     * @param lastMessage the lastMessage to set
-     */
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
-    }
-
-    public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {
-        return this.closeLatch.await(duration, unit);
-    }
-
-    @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
-        logger.info("Connection closed - Code: {} Reason: {}", statusCode, reason);
+    public void dispose() {
         connectorHandler.updateStatus(ThingStatus.OFFLINE);
-        this.session = null;
-        this.closeLatch.countDown(); // trigger latch
-    }
-
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
-        logger.info("Got connect: {}", session);
-        this.session = session;
     }
 
     @OnWebSocketMessage
@@ -115,12 +74,19 @@ public class WebThingsSocketHandler{
                     // Create object from msg
                     WebThingsPropertyCommand command = g.fromJson(msg, WebThingsPropertyCommand.class);
 
-                    if(command.getMessageType().equals("propertyStatus") && !msg.equals(getLastMessage().replace("setProperty", "propertyStatus"))){
+                    String lastMessageFormatted = "";
+                    if(lastMessage != null){
+                        lastMessageFormatted = lastMessage.substring(1, lastMessage.length());
+                        if(lastMessage.contains("setProperty")){
+                            lastMessageFormatted = lastMessageFormatted.replace("setProperty", "propertyStatus");
+                        }
+                    }
+                    
+                    if(command.getMessageType().equals("propertyStatus") && (lastMessage == null || !msg.replaceAll("\\s+","").contains(lastMessageFormatted))){
                         // Get thing UID
                         String thing = connectorHandler.getHandlerConfig().uid.replace(":", "_");
                         List<String> channels = new ArrayList<String>(command.getData().keySet());
 
-                        // 
                         for(String channel: channels){
                             String item = thing + "_" + channel;
                             try{
@@ -130,14 +96,20 @@ public class WebThingsSocketHandler{
 
                                 try{       
                                     // get string for API call based on command
-                                    String value = getCommandFromProperty(itemType, command.getData().get(channel).toString());
-                                    if(value != null){
-                                        logger.info("Updating openHAB item: {} value: {}", item, value);
+                                    String value = command.getData().get(channel).toString();
+                                    if(itemType != null && value != null){
+                                        Command ohCommand = getCommandFromProperty(itemType, value);
+                                        String  ohCommandAsString = ohCommand.toString();
+                                        if(!ohCommandAsString.equals("EmptyCommand")){
+                                            logger.info("Updating openHAB item: {} value: {}", item, ohCommandAsString);
 
-                                        // Update openHAB item via API
-                                        updateOpenhabItem(value, item);
-                                    }else{
-                                        logger.warn("Could not find itemType: {} for thing: {}", channel, thing);
+                                            // Update openHAB item via API
+                                            updateOpenhabItem(ohCommandAsString, item);
+                                        }else{
+                                            logger.warn("Could not find itemType: {} for thing: {}", channel, thing);
+                                        }
+                                    } else{
+                                        logger.warn("ItemType: {} or value: {} is null", itemType, value);
                                     }
                                 }catch(Exception e){
                                     logger.warn("Unhandled incoming command");
@@ -151,7 +123,7 @@ public class WebThingsSocketHandler{
                 // Set thing status to offline if websocket returns connected == false
                 }else if(msg.contains("messageType\":\"connected")){
                     if(msg.contains("false")){
-                        connectorHandler.updateStatus(ThingStatus.OFFLINE);
+                        connectorHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "WebThing returned connected:false");
                     }else{
                         connectorHandler.updateStatus(ThingStatus.ONLINE);
                     }
@@ -164,13 +136,17 @@ public class WebThingsSocketHandler{
     @OnWebSocketError
     public void onError(Throwable cause) {
         boolean thingReachable = false;
+        connectorHandler.updateStatus(ThingStatus.UNKNOWN);
 
         // Try to reconnect when error occuers
-        if(cause instanceof CloseException || cause instanceof EofException){
+        if(cause instanceof CloseException || cause instanceof EofException || cause instanceof IOException){
             //https://stackoverflow.com/questions/44095346/reconnect-after-onwebsocketclose-jetty-9-4
             thingReachable = connectorHandler.reconnect(4);
-        } else if(cause instanceof SSLHandshakeException){
+        }else if(cause instanceof SSLHandshakeException){
             logger.error("SSL error: {}", cause.getMessage());
+        }else if(cause instanceof SocketTimeoutException){
+            logger.error("WebSocket Error: {}", cause.getMessage());
+            connectorHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Websocket connection timed out");
         }else{
             logger.error("WebSocket Error: {}", cause.getMessage());
         }
@@ -179,7 +155,7 @@ public class WebThingsSocketHandler{
         if(thingReachable){
             connectorHandler.updateStatus(ThingStatus.ONLINE);
         }else{
-            connectorHandler.updateStatus(ThingStatus.OFFLINE);
+            connectorHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Lost websocket connection");
         }
     }
 }

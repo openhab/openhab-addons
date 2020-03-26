@@ -24,6 +24,28 @@
 				<label>UID of openHAB Thing</label>
 				<description>Enter the unique ID seen in openHAB</description>
 			</parameter>
+			<parameter name="gateway" type="boolean" required="true">
+				<default>true</default>
+				<label>Local Gateway</label>
+				<description>Connect with WebThing from configured Gateway?</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="security" type="text" required="false">
+				<label>SecurityScheme</label>
+				<description>Enter the link to the WebThing</description>
+				<options>
+					<option value="none">None</option>
+					<option value="bearer">Bearer</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="securityToken" type="text" required="false">
+				<default></default>
+				<context>password</context>
+				<label>Security Token</label>
+				<description>Token for Authorization</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -56,8 +78,43 @@
 				<label>WebThings to be hosted</label>
 				<description>Select WebThings to be hosted</description>
 			</parameter>
+		</config-description>
+	</thing-type>
 
+	<!-- WebThing Thing -->
+	<thing-type id="webthing">
+		<label>WebThings WebThing</label>
+		<description>OpenHAB representation of an imported WebThing</description>
 
+		<channels>
+			<channel id="updateChannel" typeId="updateChannel" />
+		</channels>
+
+		<config-description>
+			<parameter name="link" type="text" required="true">
+				<context>url</context>
+				<label>Link of WebThing</label>
+				<description>Enter the link to the WebThing</description>
+			</parameter>
+			<parameter name="security" type="text" required="true">
+				<label>SecurityScheme</label>
+				<description>Enter the link to the WebThing</description>
+				<options>
+					<option value="none">None</option>
+					<option value="bearer">Bearer</option>
+				</options>
+			</parameter>
+			<parameter name="securityToken" type="text" required="false">
+				<default></default>
+				<context>password</context>
+				<label>Security Token</label>
+				<description>Token for Authorization</description>
+			</parameter>
+			<parameter name="importToken" type="boolean" required="false">
+				<default>false</default>
+				<label>Import Token</label>
+				<description>Import Token from Binding Configuration?</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

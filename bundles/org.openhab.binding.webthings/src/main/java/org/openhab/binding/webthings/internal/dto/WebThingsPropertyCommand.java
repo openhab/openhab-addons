@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.webthings.internal.json;
+package org.openhab.binding.webthings.internal.dto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,12 @@ public class WebThingsPropertyCommand {
 
     public WebThingsPropertyCommand(String id, String messageType){
         this.id = id;
+        this.messageType = messageType;
+        this.data = new HashMap<String,Object>();
+    }
+
+    public WebThingsPropertyCommand(String messageType){
+        this.id = null;
         this.messageType = messageType;
         this.data = new HashMap<String,Object>();
     }

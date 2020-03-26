@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.webthings.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.webthings.internal.handler.WebThingsConnectorHandler;
 import org.openhab.binding.webthings.internal.handler.WebThingsServerHandler;
+import org.openhab.binding.webthings.internal.handler.WebThingsWebThingHandler;
 
 /**
  * The {@link WebThingsBindingConstants} class defines common constants, which are
@@ -29,11 +34,14 @@ import org.openhab.binding.webthings.internal.handler.WebThingsServerHandler;
 @NonNullByDefault
 public class WebThingsBindingConstants {
 
-    private static final String BINDING_ID = "webthings";
+    public static final String BINDING_ID = "webthings";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONNECTOR = new ThingTypeUID(BINDING_ID, "connector");
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
+    public static final ThingTypeUID THING_TYPE_WEBTHING = new ThingTypeUID(BINDING_ID, "webthing");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream.of(THING_TYPE_CONNECTOR, THING_TYPE_SERVER, THING_TYPE_WEBTHING).collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_UPDATE = "updateChannel";
@@ -42,5 +50,6 @@ public class WebThingsBindingConstants {
 
     // List of all other constants
     public static final Map<String, WebThingsConnectorHandler> CONNECTOR_HANDLER_LIST = new HashMap<String, WebThingsConnectorHandler>();
+    public static final Map<String, WebThingsWebThingHandler> WEBTHING_HANDLER_LIST = new HashMap<String, WebThingsWebThingHandler>();
     public static final Map<Integer, WebThingsServerHandler> SERVER_HANDLER_LIST = new HashMap<Integer, WebThingsServerHandler>();
 }

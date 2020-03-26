@@ -18,16 +18,13 @@ package org.openhab.binding.webthings.internal.config;
  *
  * @author Sven Schneider - Initial contribution
  */
-public class WebThingsConnectorConfiguration {
+public class WebThingsWebThingConfiguration {
 
     /**
-     * Connector configuration parameters.
+     * WebThing configuration parameters.
      */
-    public String id;
-    public String uid;
-
-    //Advanced
-    public boolean gateway;
+    public String link;
     public String security;
     public String securityToken;
+    public Boolean importToken;
 }

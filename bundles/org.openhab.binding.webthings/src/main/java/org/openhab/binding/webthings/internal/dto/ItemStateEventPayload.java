@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.webthings.internal.json;
+package org.openhab.binding.webthings.internal.dto;
 
 /**
  * The {@link ItemStateEventPayload} can be used to save event types and values as string
@@ -20,6 +20,11 @@ package org.openhab.binding.webthings.internal.json;
 public class ItemStateEventPayload {
     private String type;
     private String value;
+
+    public ItemStateEventPayload(String type, String value){
+        this.type = type;
+        this.value = value;
+    }
 
     public String getType() { return type; }
     public void setType(String value) { this.type = value; }

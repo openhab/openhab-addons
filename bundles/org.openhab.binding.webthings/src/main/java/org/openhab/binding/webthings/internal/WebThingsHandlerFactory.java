@@ -47,6 +47,7 @@ public class WebThingsHandlerFactory extends BaseThingHandlerFactory {
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CONNECTOR);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WEBTHING);
     }
 
     @Override
@@ -59,6 +60,9 @@ public class WebThingsHandlerFactory extends BaseThingHandlerFactory {
         serverParams.put("token", (String) properties.get("token"));
         serverParams.put("openhabIp", (String) properties.get("openhabIp"));
         serverParams.put("mozilla", properties.get("mozilla"));
+        serverParams.put("system", properties.get("system"));
+        serverParams.put("userdataPath", properties.get("userdataPath"));
+        serverParams.put("backgroundDiscovery", properties.get("backgroundDiscovery"));
 
         try {
             Thread.sleep(5000);
@@ -81,7 +85,10 @@ public class WebThingsHandlerFactory extends BaseThingHandlerFactory {
             return new WebThingsConnectorHandler(thing);
         } else if(THING_TYPE_SERVER.equals(thingTypeUID)){
             return new WebThingsServerHandler(thing);
+        } else if(THING_TYPE_WEBTHING.equals(thingTypeUID)){
+            return new WebThingsWebThingHandler(thing);
         }
+        
 
         return null;
     }

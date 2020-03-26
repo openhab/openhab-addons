@@ -13,16 +13,22 @@
 package org.openhab.binding.webthings.internal.components;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingConstants.*;
-import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiHandler.*;
+import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.*;
+import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiUtilities.*;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +56,7 @@ public class WebThingsConfigOptionProvider implements ConfigOptionProvider {
         }
         if(uri.getSchemeSpecificPart().equals(THING_TYPE_SERVER.getAsString()) && param.equals(CHANNEL_THINGS)){
             List<ParameterOption> options = new ArrayList<ParameterOption>();
-            List<ThingDTO> openhabThings;
+            List<ThingDTO> openhabThings = new ArrayList<ThingDTO>();
 
             int count = 0;
             int maxTries = 4;
@@ -72,12 +78,40 @@ public class WebThingsConfigOptionProvider implements ConfigOptionProvider {
                 }
             }
 
-            // Add ParameterOption for every openHAB thing
-            for(ThingDTO thing: openhabThings){
-                options.add(new ParameterOption(thing.UID,thing.UID));
+            if(!openhabThings.isEmpty()){
+                // Add ParameterOption for every openHAB thing
+                for(ThingDTO thing: openhabThings){
+                    options.add(new ParameterOption(thing.UID,thing.UID));
+                }
+                return options;
             }
-            return options;
+            // If import via API was unsuccessful try directly from database
+            else{
+                Map<String,Object> backupImport = null;
+                String file = null;
+
+                // Check if custom path was set and build db string
+                if(system != null){
+                    file = system + "/jsondb/org.eclipse.smarthome.core.thing.Thing.json";
+                }else{
+                    file = userdataPath + "/jsondb/org.eclipse.smarthome.core.thing.Thing.json";
+                }
+
+                // Import things from jsondb
+                try{
+                    backupImport = new Gson().fromJson(new FileReader(file), new TypeToken<Map<String,Object>>(){}.getType());
+                }catch (FileNotFoundException e){
+                    logger.error("File not found");
+                    return null;
+                }
+
+                // Add ParameterOption for every openHAB thing
+                for(String s : backupImport.keySet()){
+                    options.add(new ParameterOption(s, s));
+                }
+                return options;
+            }
         }
         return null;
-    } 
+    }
 }

@@ -14,7 +14,7 @@ package org.openhab.binding.webthings.internal.utilities;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.*;
 
-import org.openhab.binding.webthings.internal.json.CompleteThingDTO;
+import org.openhab.binding.webthings.internal.dto.CompleteThingDTO;
 import org.openhab.binding.webthings.internal.config.WebThingsConnectorConfiguration;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.dto.ItemDTO;
@@ -32,6 +32,7 @@ import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -44,12 +45,12 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link WebThingsRestApiHandler} is for handling REST API calls
+ * The {@link WebThingsRestApiUtilities} is for handling REST API calls
  *
  * @author schneider_sven - Initial contribution
  */
 @NonNullByDefault
-public class WebThingsRestApiHandler {
+public class WebThingsRestApiUtilities {
     private static String apiResponse ="";
     private static StringBuilder stringBuilder = new StringBuilder();
 
@@ -357,6 +358,113 @@ public class WebThingsRestApiHandler {
     }
 
     /**
+     * get all WebThings via REST API
+     * @param link Link to WebThing
+     * @param security Security Type
+     * @param securityToken Required authorization data
+     * @return List of WebThings
+     * @throws IOException Invalid link
+     */
+    public static List<JsonObject> getAllWebThings(String link, String security, String securityToken) throws IOException{
+        return getAllWebThings(link, security, securityToken, "");
+    }
+
+    /**
+     * get all WebThings via REST API
+     * @param link Link to WebThing
+     * @param security Security Type
+     * @param securityToken Required authorization data
+     * @param additionalLink Add additional sub-link to get property/actions/events
+     * @return List of WebThings
+     * @throws IOException Invalid link
+     */
+    public static List<JsonObject> getAllWebThings(String link, String security, String securityToken, String additionalLink) throws IOException{
+        if(!link.contains("http")){
+            link = "https://" + link;
+        }
+
+
+        apiResponse = new String();
+        String destUri;
+        if(link.charAt(link.length() -1) == '/'){
+            destUri = link + additionalLink + getSecurityLink(security, securityToken);
+        }else{
+            destUri = link + "/" + additionalLink + getSecurityLink(security, securityToken);
+        }
+        
+        
+        URL destUrl = new URL(destUri);
+        HttpURLConnection httpUrlConnection = setConnection(destUrl, "GET");
+
+        // Set Header
+        httpUrlConnection.setRequestProperty("Accept", "application/json");
+
+        //sendBodyToServer(body, connectionCreateThing);
+        readAnswerFromServer(httpUrlConnection);
+
+        // Get Thing Id by JSON Body
+        apiResponse = stringBuilder.toString();
+        
+        // Convert string into ThingDTO
+        Gson g = new Gson();
+        List<JsonObject> things = g.fromJson(apiResponse, new TypeToken<ArrayList<JsonObject>>(){}.getType());
+
+        closeConnection(httpUrlConnection);
+        return things;
+    }
+
+    /**
+     * get single WebThing Thing via REST API
+     * @param link Link to WebThing
+     * @param security Security Type
+     * @param securityToken Required authorization data
+     * @return WebThing
+     * @throws IOException Thing does not exist
+     */
+    public static JsonObject getWebThing(String link, String security, String securityToken) throws IOException{
+        return getWebThing(link, security, securityToken, "");
+    }
+
+    /**
+     * get single WebThing Thing/Properties/Actions/Events via REST API
+     * @param link Link to WebThing
+     * @param security Security Type
+     * @param securityToken Required authorization data
+     * @param additionalLink Add additional sub-link to get property/actions/events
+     * @return WebThing
+     * @throws IOException Thing does not exist
+     */
+    public static JsonObject getWebThing(String link, String security, String securityToken, String additionalLink) throws IOException{
+        apiResponse = new String();
+        String destUri = "";
+
+        if(additionalLink != null && !additionalLink.isEmpty()){
+            destUri = link + additionalLink + getSecurityLink(security, securityToken);;
+        } else{
+           destUri = link + getSecurityLink(security, securityToken);
+        }
+        
+        URL destUrl = new URL(destUri);
+        HttpURLConnection httpUrlConnection = setConnection(destUrl, "GET");
+
+        // Set Header
+        httpUrlConnection.setRequestProperty("Accept", "application/json");
+
+        //sendBodyToServer(body, connectionCreateThing);
+        readAnswerFromServer(httpUrlConnection);
+
+        // Get Thing Id by JSON Body
+        apiResponse = stringBuilder.toString();
+        
+        // Convert string into ThingDTO
+        Gson g = new Gson();
+        JsonObject thing = g.fromJson(apiResponse, JsonObject.class);
+
+        closeConnection(httpUrlConnection);
+        return thing;
+    }
+
+    /**
      * Update a WebThing Property via Rest API %%% Work in Progress %%%
      * @param body
      * @param config
@@ -402,6 +510,24 @@ public class WebThingsRestApiHandler {
         apiResponse = stringBuilder.toString();
 
         closeConnection(connectionCreateThing);
+    }
+
+    /**
+     * 
+     * @param security
+     * @return
+     */
+    public static String getSecurityLink(String security, String securityToken){
+        String securityLink ="";
+        switch(security) {
+            case "none":
+                securityLink = "";
+                break;
+            case "bearer":
+                securityLink = "?jwt=" + securityToken;
+                break; 
+        }
+        return securityLink;
     }
 
     // Set Connection to Server
