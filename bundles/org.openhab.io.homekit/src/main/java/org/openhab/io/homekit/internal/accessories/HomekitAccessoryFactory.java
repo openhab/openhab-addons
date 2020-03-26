@@ -49,8 +49,8 @@ public class HomekitAccessoryFactory {
         Map<HomekitCharacteristicType, Item> characteristicItems = getCharacteristicItems(taggedItem);
 
         switch (taggedItem.getAccessoryType()) {
-            case DOOR:
-                return new HomeKitDoorImpl(taggedItem, itemRegistry, updater);
+            case LOCK:
+                return new HomekitLockImpl(taggedItem, itemRegistry, updater);
             case LEAK_SENSOR:
                 HomekitTaggedItem leakSensorAccessory = getPrimaryAccessory(taggedItem,
                         HomekitAccessoryType.LEAK_SENSOR, itemRegistry).orElseThrow(
@@ -100,8 +100,6 @@ public class HomekitAccessoryFactory {
             case HUMIDITY_SENSOR:
                 return new HomekitHumiditySensorImpl(taggedItem, itemRegistry, updater);
             case BLINDS:
-            case WINDOW:
-                return new HomekitWindowImpl(taggedItem, itemRegistry, updater);
             case WINDOW_COVERING:
                 return new HomekitWindowCoveringImpl(taggedItem, itemRegistry, updater);
             case SMOKE_SENSOR:
