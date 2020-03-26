@@ -68,7 +68,6 @@ public class FoxHandler extends BaseThingHandler {
         if (CHANNEL_TASK_COMMAND.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 String data = ((StringType) command).toString();
-                logger.debug("Tasks request: {}", data);
                 write(data);
             }
         }
@@ -130,13 +129,39 @@ public class FoxHandler extends BaseThingHandler {
         messenger.open();
     }
 
+    private boolean requestTask(String task) {
+        try {
+            if (taskHandler.request(fox, task) || taskHandler.requestByLabel(fox, task)) {
+                logger.debug("Tasks request: {}", task);
+                return true;
+            }
+        } catch (FoxException e) {
+            logger.debug("Write exception: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    private void executedTask(String task) {
+        updateState(CHANNEL_TASK_STATE, new StringType(task));
+        logger.debug("Task executed: {}", task);
+    }
+
+    private void noticeResult(String result) {
+        triggerChannel(CHANNEL_RESULT_TRIGGER, result);
+        String resultLabel = resultHandler.findResultLabel(result);
+        triggerChannel(CHANNEL_RESULT_TRIGGER, resultLabel);
+        logger.debug("Result notice: {}", result);
+    }
+
+    private void acquireResult(String result) {
+        updateState(CHANNEL_RESULT_STATE, new StringType(result));
+        logger.debug("Result acquired == {}", result);
+    }
+
     private void write(String data) {
         scheduler.execute(() -> {
-            try {
-                taskHandler.request(fox, data);
+            if (requestTask(data)) {
                 pingTime = Instant.now();
-            } catch (FoxException e) {
-                logger.debug("Write exception: {}", e.getMessage());
             }
         });
     }
@@ -146,12 +171,10 @@ public class FoxHandler extends BaseThingHandler {
     }
 
     private boolean checkIfResultReceived(String data) {
-        String result = resultHandler.findResult(data);
-        if (!result.isEmpty()) {
-            logger.debug("Result notice: {}", result);
-            triggerChannel(CHANNEL_RESULT_TRIGGER, result);
-            logger.debug("Result acquired == {}", result);
-            updateState(CHANNEL_RESULT_STATE, new StringType(result));
+        String checked = resultHandler.findResult(data);
+        if (!checked.isEmpty()) {
+            noticeResult(checked);
+            acquireResult(checked);
             return true;
         }
         return false;
@@ -160,8 +183,7 @@ public class FoxHandler extends BaseThingHandler {
     private boolean checkIfTaskReceived(String data) {
         String task = taskHandler.findTask(data);
         if (!task.isEmpty()) {
-            logger.debug("Task executed: {}", task);
-            updateState(CHANNEL_TASK_STATE, new StringType(task));
+            executedTask(task);
             return true;
         }
         return false;
@@ -221,7 +243,7 @@ public class FoxHandler extends BaseThingHandler {
         markConnectionTaskFinished();
     }
 
-    private @Nullable Boolean openConnection(String host, String password) {
+    private @Nullable Boolean openConnection(String host, String password, StringBuilder status) {
         try {
             connect(host, password);
             if (checkIfFinishConnectionTaskRequest()) {
@@ -231,6 +253,8 @@ public class FoxHandler extends BaseThingHandler {
             pingError = false;
             return true;
         } catch (FoxException e) {
+            logger.debug("Open exception: {}", e.getMessage());
+            status.append(e.getMessage());
             if (checkIfFinishConnectionTaskRequest()) {
                 return null;
             }
@@ -276,14 +300,16 @@ public class FoxHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection broken");
                 }
             } else {
-                connected = openConnection(host, password);
+                StringBuilder status = new StringBuilder();
+                connected = openConnection(host, password, status);
                 if (connected == null) {
                     break;
                 }
                 if (connected) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot open connection");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            String.format("Cannot open connection: %s", status.toString()));
                 }
             }
         }

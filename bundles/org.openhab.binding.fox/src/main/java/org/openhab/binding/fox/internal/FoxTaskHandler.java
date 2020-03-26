@@ -103,22 +103,20 @@ public class FoxTaskHandler {
         return tryParseCommandValue(findCommandValue(commandLabel));
     }
 
-    private void tryDoTask(Fox fox, int taskId) throws FoxException {
-        fox.doTask(taskId);
+    private boolean tryDoTask(Fox fox, int taskId) throws FoxException {
+        if (taskId > 0) {
+            fox.doTask(taskId);
+            return true;
+        }
+        return false;
     }
 
-    public void request(Fox fox, String commandValue) throws FoxException {
-        int taskId = findTaskId(commandValue);
-        if (taskId > 0) {
-            tryDoTask(fox, taskId);
-        }
+    public boolean request(Fox fox, String commandValue) throws FoxException {
+        return tryDoTask(fox, findTaskId(commandValue));
     }
 
-    public void requestByLabel(Fox fox, String commandLabel) throws FoxException {
-        int taskId = findTaskIdByLabel(commandLabel);
-        if (taskId > 0) {
-            tryDoTask(fox, taskId);
-        }
+    public boolean requestByLabel(Fox fox, String commandLabel) throws FoxException {
+        return tryDoTask(fox, findTaskIdByLabel(commandLabel));
     }
 
     public String findTask(String task) {
