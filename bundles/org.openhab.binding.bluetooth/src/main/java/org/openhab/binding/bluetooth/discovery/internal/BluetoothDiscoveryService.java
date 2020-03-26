@@ -40,6 +40,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,19 +101,15 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("Deactivating Bluetooth discovery service");
     }
 
-    @Reference
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
     protected void setRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
         this.roamingAdapter = Optional.of(roamingAdapter);
-        for (BluetoothAdapter adapter : adapters) {
-            roamingAdapter.addBluetoothAdapter(adapter);
-        }
+        adapters.forEach(roamingAdapter::addBluetoothAdapter);
     }
 
     protected void unsetRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
         this.roamingAdapter = Optional.empty();
-        for (BluetoothAdapter adapter : adapters) {
-            roamingAdapter.removeBluetoothAdapter(adapter);
-        }
+        adapters.forEach(roamingAdapter::removeBluetoothAdapter);
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
