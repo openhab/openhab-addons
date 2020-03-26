@@ -22,3 +22,5 @@ features/**/src/main/feature
 .vscode
 .factorypath
 *.jar
+bundles/org.openhab.io.homekit/src/main/java/io
+bundles/org.openhab.io.homekit/src/main/java/org/openhab/io/homekit/internal/accessories/HomekitWindowImpl.java
