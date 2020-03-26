@@ -17,6 +17,7 @@ import static org.openhab.binding.adorne.internal.AdorneBindingConstants.*;
 import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -41,9 +42,10 @@ import org.slf4j.LoggerFactory;
 public class AdorneDiscoveryService extends AbstractDiscoveryService implements AdorneHubChangeNotify {
 
     private final Logger logger = LoggerFactory.getLogger(AdorneDiscoveryService.class);
-    private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 10;
     private static final String DISCOVERY_HUB_LABEL = "Adorne Hub";
     private static final String DISCOVERY_ZONE_ID = "zoneId";
+    private @Nullable AdorneHubController adorneHubController;
 
     /**
      * Creates a AdorneDiscoveryService with disabled auto-discovery.
@@ -51,6 +53,10 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
     public AdorneDiscoveryService() {
         // Passing false as last argument to super constructor turns off background discovery
         super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVERY_TIMEOUT_SECONDS, false);
+
+        // We create the hub controller with default host and port. In the future we could let users create hubs
+        // manually with custom host and port settings and then perform discovery here for those hubs.
+        adorneHubController = null;
     }
 
     /**
@@ -60,13 +66,9 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
     protected void startScan() {
         logger.debug("Discovery scan started");
 
-        // We create the hub controller with default host and port. In the future we could let users create hubs
-        // manually with custom host and port settings and then perform discovery here for those hubs.
-        AdorneHubConfiguration config = new AdorneHubConfiguration(); // Use default configuration
-        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler, this);
-
-        // Limit life of hub controller to the duration of discovery
-        adorneHubController.stopBy(System.currentTimeMillis() + DISCOVERY_TIMEOUT_SECONDS * 1000);
+        AdorneHubController adorneHubController = new AdorneHubController(new AdorneHubConfiguration(), scheduler,
+                this);
+        this.adorneHubController = adorneHubController;
 
         // Hack - we wrap the ThingUID in an array to make it appear effectively final to the compiler throughout the
         // chain of futures. Passing it through the chain as context would bloat the code.
@@ -102,6 +104,18 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
             logger.warn("Discovery failed ({})", e.getMessage());
             return null;
         });
+    }
+
+    /**
+     * Notification to stop scanning
+     */
+    @Override
+    protected void stopScan() {
+        AdorneHubController adorneHubController = this.adorneHubController;
+        if (adorneHubController != null) {
+            adorneHubController.stop();
+        }
+        logger.debug("Discovery timed out. Scan stopped.");
     }
 
     // Nothing to do on change notifications

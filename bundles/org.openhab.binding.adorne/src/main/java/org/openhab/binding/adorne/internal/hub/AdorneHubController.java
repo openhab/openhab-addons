@@ -85,7 +85,6 @@ public class AdorneHubController {
     private final ScheduledExecutorService scheduler;
 
     private volatile boolean stopWhenCommandsServed; // Stop the controller once all pending commands have been served
-    private volatile long stopTimestamp; // Stop the controller after this timestamp
 
     // When we submit commmands to the hub we don't correlate commands and responses. We simply use the first available
     // response that answers our question. For that we store all pending commands.
@@ -115,7 +114,6 @@ public class AdorneHubController {
         hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM;
 
         stopWhenCommandsServed = false;
-        stopTimestamp = 0;
 
         stopLock = new Object();
         hubConnectionLock = new Object();
@@ -143,6 +141,7 @@ public class AdorneHubController {
      * Stops the hub controller. Can't restart afterwards. If called before start nothing happens.
      */
     public void stop() {
+        logger.info("Stopping hub controller");
         synchronized (stopLock) {
             // Canceling the controller tells the message loop to stop and also cancels recreation of the message loop
             // if that is pending after a disconnect.
@@ -171,15 +170,6 @@ public class AdorneHubController {
      */
     public void stopWhenCommandsServed() {
         stopWhenCommandsServed = true;
-    }
-
-    /**
-     * Stops the hub controller after a certain point in time.
-     *
-     * @param stopTimestamp timestamp to stop after
-     */
-    public void stopBy(long stopTimestamp) {
-        this.stopTimestamp = stopTimestamp;
     }
 
     /**
@@ -347,8 +337,6 @@ public class AdorneHubController {
     }
 
     private boolean shouldStop() {
-        long stopTimestamp = this.stopTimestamp;
-        boolean timeoutExceeded = stopTimestamp > 0 && System.currentTimeMillis() > stopTimestamp;
         boolean stateCommandsIsEmpty;
         synchronized (stateCommands) {
             stateCommandsIsEmpty = stateCommands.isEmpty();
@@ -356,7 +344,7 @@ public class AdorneHubController {
         boolean commandsServed = stopWhenCommandsServed && stateCommandsIsEmpty && (zoneCommand == null)
                 && (macAddressCommand == null);
 
-        return isCancelled() || timeoutExceeded || commandsServed;
+        return isCancelled() || commandsServed;
     }
 
     private boolean isCancelled() {
