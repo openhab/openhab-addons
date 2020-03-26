@@ -13,7 +13,6 @@
 package org.openhab.binding.cbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -24,10 +23,8 @@ import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Group;
-import com.daveoxley.cbus.Network;
 
 /**
  * The {@link CBusDaliHandler} is responsible for handling commands, which are
@@ -41,7 +38,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
     private Logger logger = LoggerFactory.getLogger(CBusDaliHandler.class);
 
     public CBusDaliHandler(Thing thing) {
-        super(thing);
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_DALI);
     }
 
     @Override
@@ -69,17 +66,4 @@ public class CBusDaliHandler extends CBusGroupHandler {
             }
         }
     }
-
-    @Override
-    protected @Nullable Group getGroup(int groupID) throws CGateException {
-        CBusNetworkHandler networkHandler = cBusNetworkHandler;
-        if (networkHandler == null)
-            return null;
-        Network network = networkHandler.getNetwork();
-        if (network == null)
-            return null;
-        Application application = network.getApplication(CBusBindingConstants.CBUS_APPLICATION_DALI);
-        return application.getGroup(groupID);
-    }
-
 }

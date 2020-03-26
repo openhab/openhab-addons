@@ -26,8 +26,10 @@ import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Group;
+import com.daveoxley.cbus.Network;
 
 /**
  * The {@link CBusGroupHandler} is responsible for handling commands, which are
@@ -42,9 +44,11 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
     protected @Nullable Group group = null;
+    protected int applicationId = -1;
 
-    public CBusGroupHandler(Thing thing) {
+    public CBusGroupHandler(Thing thing, int applicationId) {
         super(thing);
+        this.applicationId = applicationId;
     }
 
     @Override
@@ -52,18 +56,20 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        cBusNetworkHandler = getCBusNetworkHandler();
 
-        try {
-            this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
-            if (this.group == null)
-                logger.debug("cannot create group {} ",
-                        getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
-        } catch (Exception e) {
-            logger.warn("Cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
+        cBusNetworkHandler = getCBusNetworkHandler();
+        /*
+         * try {
+         * this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
+         * if (this.group == null)
+         * logger.debug("cannot create group {} ",
+         * getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+         * } catch (Exception e) {
+         * logger.warn("Cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), e);
+         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+         * return;
+         * }
+         */
         updateStatus();
     }
 
@@ -95,7 +101,21 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         }
     }
 
-    protected abstract @Nullable Group getGroup(int groupID) throws CGateException;
+    protected @Nullable Group getGroup(int groupID) {
+        try {
+            CBusNetworkHandler networkHandler = cBusNetworkHandler;
+            if (networkHandler == null)
+                return null;
+            Network network = networkHandler.getNetwork();
+            if (network != null) {
+                Application application = network.getApplication(applicationId);
+                return application.getGroup(groupID);
+            }
+        } catch (CGateException e) {
+            /* If anything threw an exception we just need to return null */
+        }
+        return null;
+    }
 
     private synchronized @Nullable CBusNetworkHandler getCBusNetworkHandler() {
         CBusNetworkHandler bridgeHandler = null;

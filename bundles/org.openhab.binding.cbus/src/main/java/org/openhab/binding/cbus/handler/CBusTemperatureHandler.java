@@ -13,16 +13,10 @@
 package org.openhab.binding.cbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
-
-import com.daveoxley.cbus.Application;
-import com.daveoxley.cbus.CGateException;
-import com.daveoxley.cbus.Group;
-import com.daveoxley.cbus.Network;
 
 /**
  * The {@link CBusTemperatureHandler} is responsible for handling commands, which are
@@ -34,23 +28,11 @@ import com.daveoxley.cbus.Network;
 public class CBusTemperatureHandler extends CBusGroupHandler {
 
     public CBusTemperatureHandler(Thing thing) {
-        super(thing);
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Read only thing - no commands to handle
-    }
-
-    @Override
-    protected @Nullable Group getGroup(int groupID) throws CGateException {
-        CBusNetworkHandler networkHandler = cBusNetworkHandler;
-        if (networkHandler == null)
-            return null;
-        Network network = networkHandler.getNetwork();
-        if (network == null)
-            return null;
-        Application application = network.getApplication(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE);
-        return application.getGroup(groupID);
     }
 }

@@ -159,18 +159,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         public void run() {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        CGateSession session = cGateSession;
-                        if (session == null || !session.isConnected()) {
-                            if (!getThing().getStatus().equals(ThingStatus.ONLINE))
+                    CGateSession session = cGateSession;
+                    if (session == null || !session.isConnected()) {
+                        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
                                 connect();
-                            else {
-                                updateStatus();
-                            }
+                        } else {
+                            updateStatus();
                         }
-                    } catch (Exception e) {
                     }
-
                     Thread.sleep(10000l);
                 }
             } catch (InterruptedException e) {
@@ -198,16 +194,18 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 }
             } catch (CGateConnectException e) {
                 updateStatus();
-		logger.warn("Failed to connect to CGate: {}", e.getMessage());
+                logger.warn("Failed to connect to CGate: {}", e.getMessage());
                 try {
                     cGateSession.close();
                 } catch (CGateException e2) {
+                    // We dont really care if an exception is thrown when clossing the connection after a failure
+                    // connecting.
                 }
             }
         }
     }
 
-    public void updateStatus() {
+    private void updateStatus() {
         ThingStatus lastStatus = getThing().getStatus();
         CGateSession cGateSession = this.cGateSession;
         if (cGateSession == null)

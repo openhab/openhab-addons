@@ -106,7 +106,12 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             if (projectObject == null) {
                 CGateSession session = cbusCGateHandler.getCGateSession();
                 if (session != null)
-                    projectObject = (Project) session.getCGateObject("//" + project);
+                    try {
+                        projectObject = (Project) session.getCGateObject("//" + project);
+                    } catch (CGateException e2) {
+                        // We dont need to do anything other than stop this propagating
+                    }
+
                 if (projectObject == null) {
                     logger.debug("Cant get projectobject");
                     return;
@@ -116,8 +121,12 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             if (network == null) {
                 CGateSession session = cbusCGateHandler.getCGateSession();
                 if (session != null) {
-                    network = (Network) session.getCGateObject("//" + project + "/" + networkID);
-                    this.network = network;
+                    try {
+                        network = (Network) session.getCGateObject("//" + project + "/" + networkID);
+                        this.network = network;
+                    } catch (CGateException e2) {
+                        // We dont need to do anything other than stop this propagating
+                    }
                 }
                 if (network == null) {
                     logger.debug("cgateOnline: Cant get network");
@@ -150,7 +159,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         updateStatus();
     }
 
-    public void updateStatus() {
+    private void updateStatus() {
         logger.debug("updateStatus");
         ThingStatus lastStatus = getThing().getStatus();
         Network network = getNetwork();
