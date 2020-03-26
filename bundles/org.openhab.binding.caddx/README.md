@@ -193,7 +193,7 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 
 The following is an example of a things file (caddx.things):
 
-```perl
+```
 Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", serialPort="/dev/ttyUSB0", baud=38400 ] {
     Thing partition partition1 "Groundfloor alarm"        [ partitionNumber=1 ]
     Thing zone      zone1      "Livingroom motion sensor" [ zoneNumber=1 ]
@@ -207,7 +207,7 @@ Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", s
 
 The following is an example of an item file (caddx.items):
 
-```java
+```
 Group:Switch:OR(ON, OFF)        MotionSensors   "Motion Sensors"   <motion>   ["MotionDetector"]
 Group:Switch:OR(ON, OFF)        Windows         "Windows"          <window>   ["Window"]
 
@@ -224,7 +224,7 @@ Switch    Partition1_EntryGuard "Entry Guard [%s]"    <groundfloor>   { channel=
 
 The following is an example of a sitemap file (home.sitemap):
 
-```java
+```
 sitemap home label="Home" {
     Frame label="Ground floor" {
     Text item=Partition1_Armed
