@@ -188,7 +188,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="menuP1">
-		<label>Menu P1: Control states</label>
+		<label>Menu P1: Control States</label>
 		<channels>
 			<channel id="menu20Mode" typeId="menu20_mode" />
 			<channel id="menu21Mode" typeId="menu21_mode" />
@@ -204,7 +204,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="menuP2">
-		<label>Menu P2: Delay settings</label>
+		<label>Menu P2: Delay Settings</label>
 		<channels>
 			<channel id="bathroomStartDelay" typeId="bathroom_start_delay" />
 			<channel id="bathroomEndDelay" typeId="bathroom_end_delay" />
@@ -218,7 +218,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="menuP9">
-		<label>Menu P9: Option States</label>
+		<label>Menu P9: Option Control States</label>
 		<channels>
 			<channel id="chimneyState" typeId="chimney_state" />
 			<channel id="bypassState" typeId="bypass_state" />

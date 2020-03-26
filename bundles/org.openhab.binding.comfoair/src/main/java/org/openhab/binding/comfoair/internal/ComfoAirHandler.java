@@ -146,15 +146,20 @@ public class ComfoAirHandler extends BaseThingHandler {
         }
         if (comfoAirConnector != null) {
             comfoAirConnector.open();
-            updateStatus(ThingStatus.ONLINE);
+            if (comfoAirConnector != null && comfoAirConnector.isConnected()) {
+                updateStatus(ThingStatus.ONLINE);
 
-            List<Channel> channels = this.thing.getChannels();
+                List<Channel> channels = this.thing.getChannels();
 
-            poller = scheduler.scheduleWithFixedDelay(() -> {
-                for (Channel channel : channels) {
-                    updateChannelState(channel);
-                }
-            }, 0, (config.refreshInterval > 0) ? config.refreshInterval : DEFAULT_REFRESH_INTERVAL, TimeUnit.SECONDS);
+                poller = scheduler.scheduleWithFixedDelay(() -> {
+                    for (Channel channel : channels) {
+                        updateChannelState(channel);
+                    }
+                }, 0, (config.refreshInterval > 0) ? config.refreshInterval : DEFAULT_REFRESH_INTERVAL,
+                        TimeUnit.SECONDS);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
