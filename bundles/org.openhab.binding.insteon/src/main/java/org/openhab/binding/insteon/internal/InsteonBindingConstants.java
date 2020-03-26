@@ -47,6 +47,7 @@ public class InsteonBindingConstants {
     public static final String BROADCAST_ON_OFF = "broadcastOnOff";
     public static final String CONTACT = "contact";
     public static final String COOL_SET_POINT = "coolSetPoint";
+    public static final String DAWNDUSK = "dawndusk";
     public static final String DIMMER = "dimmer";
     public static final String FAN = "fan";
     public static final String FAN_MODE = "fanMode";
@@ -79,6 +80,7 @@ public class InsteonBindingConstants {
     public static final String LOAD_SWITCH = "loadSwitch";
     public static final String LOAD_SWITCH_FAST_ON_OFF = "loadSwitchFastOnOff";
     public static final String LOAD_SWITCH_MANUAL_CHANGE = "loadSwitchManualChange";
+    public static final String LOWBAT = "lowbat";
     public static final String MANUAL_CHANGE = "manualChange";
     public static final String MANUAL_CHANGE_BUTTON_A = "manualChangeButtonA";
     public static final String MANUAL_CHANGE_BUTTON_B = "manualChangeButtonB";

@@ -142,6 +142,11 @@
 		<label>Cool Set Point</label>
 	</channel-type>
 
+	<channel-type id="dawndusk">
+		<item-type>Contact</item-type>
+		<label>Dawn/Dusk</label>
+	</channel-type>
+
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
@@ -300,6 +305,11 @@
 	<channel-type id="loadSwitchManualChange">
 		<item-type>Number</item-type>
 		<label>Load Switch Manual Change</label>
+	</channel-type>
+
+	<channel-type id="lowbat">
+		<item-type>Contact</item-type>
+		<label>Low Battery Warning</label>
 	</channel-type>
 
 	<channel-type id="manualChange">

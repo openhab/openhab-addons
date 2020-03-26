@@ -132,6 +132,7 @@ In order to determine which channels a device supports, you can look at the devi
 | broadcastOnOff | Switch | Broadcast On/Off |
 | contact | Contact | Contact |
 | coolSetPoint | Number | Cool Set Point |
+| dawndusk | Contact | Light Sensor above or below threshold |
 | dimmer | Dimmer | Dimmer |
 | fan | Number | Fan |
 | fanMode | Number | Fan Mode |
@@ -164,6 +165,7 @@ In order to determine which channels a device supports, you can look at the devi
 | loadSwitch | Switch | Load Switch |
 | loadSwitchFastOnOff | Switch | Load Switch Fast On/Off |
 | loadSwitchManualChange | Number | Load Switch Manual Change |
+| lowbat | Contact | Momentary trip on motion sensor low battery warning |
 | manualChange | Number | Manual Change |
 | manualChangeButtonA | Number | Manual Change Button A |
 | manualChangeButtonB | Number | Manual Change Button B |

@@ -76,7 +76,7 @@ Example entry:
      <model>2842-222</model>
      <description>Motion Sensor</description>
      <feature name="contact">WirelessMotionSensorContact</feature>
-     <feature name="dawn_Dusk">WirelessMotionSensorDawndusk</feature>
+     <feature name="dawndusk">WirelessMotionSensorDawndusk</feature>
      <feature name="lowbat">WirelessMotionSensorLowbat</feature>
      <feature name="data">MotionSensorData</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
