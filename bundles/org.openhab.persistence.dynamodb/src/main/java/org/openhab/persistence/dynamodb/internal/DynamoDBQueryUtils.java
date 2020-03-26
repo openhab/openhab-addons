@@ -86,7 +86,6 @@ public class DynamoDBQueryUtils {
                             new AttributeValue().withN(dynamoBigDecimalItem.getState().toPlainString())));
                 }
             });
-
         }
     }
 

@@ -59,25 +59,25 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcBaseDAO {
-    private static final Logger logger = LoggerFactory.getLogger(JdbcBaseDAO.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcBaseDAO.class);
 
     public Properties databaseProps = new Properties();
     protected String urlSuffix = "";
-    public Map<String, String> sqlTypes = new HashMap<String, String>();
+    public Map<String, String> sqlTypes = new HashMap<>();
 
     // Get Database Meta data
     protected DbMetaData dbMeta;
 
-    protected String SQL_PING_DB;
-    protected String SQL_GET_DB;
-    protected String SQL_IF_TABLE_EXISTS;
-    protected String SQL_CREATE_NEW_ENTRY_IN_ITEMS_TABLE;
-    protected String SQL_CREATE_ITEMS_TABLE_IF_NOT;
-    protected String SQL_DELETE_ITEMS_ENTRY;
-    protected String SQL_GET_ITEMID_TABLE_NAMES;
-    protected String SQL_GET_ITEM_TABLES;
-    protected String SQL_CREATE_ITEM_TABLE;
-    protected String SQL_INSERT_ITEM_VALUE;
+    protected String sqlPingDB;
+    protected String sqlGetDB;
+    protected String sqlIfTableExists;
+    protected String sqlCreateNewEntryInItemsTable;
+    protected String sqlCreateItemsTableIfNot;
+    protected String sqlDeleteItemsEntry;
+    protected String sqlGetItemIDTableNames;
+    protected String sqlGetItemTables;
+    protected String sqlCreateItemTable;
+    protected String sqlInsertItemValue;
 
     /********
      * INIT *
@@ -126,17 +126,17 @@ public class JdbcBaseDAO {
 
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
-        SQL_PING_DB = "SELECT 1";
-        SQL_GET_DB = "SELECT DATABASE()";
-        SQL_IF_TABLE_EXISTS = "SHOW TABLES LIKE '#searchTable#'";
+        sqlPingDB = "SELECT 1";
+        sqlGetDB = "SELECT DATABASE()";
+        sqlIfTableExists = "SHOW TABLES LIKE '#searchTable#'";
 
-        SQL_CREATE_NEW_ENTRY_IN_ITEMS_TABLE = "INSERT INTO #itemsManageTable# (ItemName) VALUES ('#itemname#')";
-        SQL_CREATE_ITEMS_TABLE_IF_NOT = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INT NOT NULL AUTO_INCREMENT,#colname# #coltype# NOT NULL,PRIMARY KEY (ItemId))";
-        SQL_DELETE_ITEMS_ENTRY = "DELETE FROM items WHERE ItemName=#itemname#";
-        SQL_GET_ITEMID_TABLE_NAMES = "SELECT itemid, itemname FROM #itemsManageTable#";
-        SQL_GET_ITEM_TABLES = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
-        SQL_CREATE_ITEM_TABLE = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
-        SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
+        sqlCreateNewEntryInItemsTable = "INSERT INTO #itemsManageTable# (ItemName) VALUES ('#itemname#')";
+        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INT NOT NULL AUTO_INCREMENT,#colname# #coltype# NOT NULL,PRIMARY KEY (ItemId))";
+        sqlDeleteItemsEntry = "DELETE FROM items WHERE ItemName=#itemname#";
+        sqlGetItemIDTableNames = "SELECT itemid, itemname FROM #itemsManageTable#";
+        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
+        sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
+        sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
     }
 
     /**
@@ -233,7 +233,6 @@ public class JdbcBaseDAO {
         // databaseProps.setProperty("idleTimeout", ""+idleTimeout);
         // databaseProps.setProperty("maxLifetime", ""+maxLifetime);
         // databaseProps.setProperty("validationTimeout",""+validationTimeout);
-
     }
 
     public void initAfterFirstDbConnection() {
@@ -246,22 +245,22 @@ public class JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     public Integer doPingDB() {
-        return Yank.queryScalar(SQL_PING_DB, Integer.class, null);
+        return Yank.queryScalar(sqlPingDB, Integer.class, null);
     }
 
     public String doGetDB() {
-        return Yank.queryScalar(SQL_GET_DB, String.class, null);
+        return Yank.queryScalar(sqlGetDB, String.class, null);
     }
 
     public boolean doIfTableExists(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_IF_TABLE_EXISTS, new String[] { "#searchTable#" },
+        String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
         return Yank.queryScalar(sql, String.class, null) != null;
     }
 
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_CREATE_NEW_ENTRY_IN_ITEMS_TABLE,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemname() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
@@ -269,7 +268,7 @@ public class JdbcBaseDAO {
     }
 
     public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_CREATE_ITEMS_TABLE_IF_NOT,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
@@ -278,21 +277,21 @@ public class JdbcBaseDAO {
     }
 
     public void doDeleteItemsEntry(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_DELETE_ITEMS_ENTRY, new String[] { "#itemname#" },
+        String sql = StringUtilsExt.replaceArrayMerge(sqlDeleteItemsEntry, new String[] { "#itemname#" },
                 new String[] { vo.getItemname() });
         logger.debug("JDBC::doDeleteItemsEntry sql={}", sql);
         Yank.execute(sql, null);
     }
 
     public List<ItemsVO> doGetItemIDTableNames(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_GET_ITEMID_TABLE_NAMES, new String[] { "#itemsManageTable#" },
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemIDTableNames, new String[] { "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doGetItemIDTableNames sql={}", sql);
         return Yank.queryBeanList(sql, ItemsVO.class, null);
     }
 
     public List<ItemsVO> doGetItemTables(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_GET_ITEM_TABLES,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables,
                 new String[] { "#jdbcUriDatabaseName#", "#itemsManageTable#" },
                 new String[] { vo.getJdbcUriDatabaseName(), vo.getItemsManageTable() });
         logger.debug("JDBC::doGetItemTables sql={}", sql);
@@ -308,7 +307,7 @@ public class JdbcBaseDAO {
     }
 
     public void doCreateItemTable(ItemVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_CREATE_ITEM_TABLE,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemTable,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
                 new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
         logger.debug("JDBC::doCreateItemTable sql={}", sql);
@@ -317,7 +316,7 @@ public class JdbcBaseDAO {
 
     public void doStoreItemValue(Item item, ItemVO vo) {
         vo = storeItemValueProvider(item, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(SQL_INSERT_ITEM_VALUE,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" },
                 new String[] { vo.getTableName(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = new Object[] { vo.getValue(), vo.getValue() };
@@ -331,7 +330,7 @@ public class JdbcBaseDAO {
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
 
-        List<HistoricItem> items = new ArrayList<HistoricItem>();
+        List<HistoricItem> items = new ArrayList<>();
         for (int i = 0; i < m.size(); i++) {
             items.add(new JdbcItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
         }
@@ -341,7 +340,7 @@ public class JdbcBaseDAO {
     /*************
      * Providers *
      *************/
-    static final DateTimeFormatter jdbcDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
             String simpleName) {
@@ -352,11 +351,11 @@ public class JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + jdbcDateFormat.format(filter.getBeginDateZoned()) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDateZoned()) + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + jdbcDateFormat.format(filter.getEndDateZoned()) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDateZoned()) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC ";
         if (filter.getPageSize() != 0x7fffffff) {
@@ -471,33 +470,24 @@ public class JdbcBaseDAO {
                 return new DecimalType(((Integer) v).intValue());
             }
             return DecimalType.valueOf(((String) v).toString());
-
         } else if (item instanceof ColorItem) {
             return HSBType.valueOf(((String) v).toString());
-
         } else if (item instanceof DimmerItem) {
             return new PercentType(objectAsInteger(v));
-
         } else if (item instanceof SwitchItem) {
             return OnOffType.valueOf(((String) v).toString().trim());
-
         } else if (item instanceof ContactItem) {
             return OpenClosedType.valueOf(((String) v).toString().trim());
-
         } else if (item instanceof RollershutterItem) {
             return new PercentType(objectAsInteger(v));
-
         } else if (item instanceof DateTimeItem) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(objectAsLong(v));
             return new DateTimeType(calendar);
-
         } else if (item instanceof StringItem) {
             return StringType.valueOf(((String) v).toString());
-
         } else {// Call, Location, String
             return StringType.valueOf(((String) v).toString());
-
         }
     }
 

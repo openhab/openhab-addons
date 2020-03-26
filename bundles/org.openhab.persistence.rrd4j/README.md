@@ -2,8 +2,8 @@
 
 The [rrd4j](https://github.com/rrd4j/rrd4j) Persistence service is based on a round-robin database.
 
-In contrast to a "normal" database such as db4o, a round-robin database does not grow in size - it has a fixed allocated size, which is used. 
-This is accomplished by saving a fixed amount of datapoints and by doing data compression, which means that the older the data is, the less values are available. 
+In contrast to a "normal" database such as db4o, a round-robin database does not grow in size - it has a fixed allocated size, which is used.
+This is accomplished by saving a fixed amount of datapoints and by doing data compression, which means that the older the data is, the less values are available.
 The data is kept in several "archives", each holding the data for its set timeframe in the set granularity.
 The start point for all archives is the actually saved datapoint.
 So while you might have a value every minute for the last 8 hours, you might only have one every day for the last year.
@@ -28,11 +28,11 @@ Attempting to use rrd4j to store complex datatypes (e.g. for restore-on-startup)
 
 This service can be configured in the file `services/rrd4j.cfg`.
 
-| Property | Default | Required | Description |
-|----------|---------|:--------:|-------------|
-| `<dsname>`.def | |        | `<dstype>,<heartbeat>,[<min>\|U],[<max>\|U],<step>`. For example, `COUNTER,900,0,U,300` |
-| `<dsname>`.archives | |        | `<consolidationfunction>,<xff>,<steps>,<rows>`. For example, `AVERAGE,0.5,1,365:AVERAGE,0.5,7,300` |
-| `<dsname>`.items  |     |      | `<list of items for this dsname>`. For example, `Item1,Item2` |
+| Property            | Default | Required | Description                                                  |
+| ------------------- | ------- | :------: | ------------------------------------------------------------ |
+| `<dsname>`.def      |         |          | `<dstype>,<heartbeat>,[<min>\|U],[<max>\|U],<step>`. For example, `COUNTER,900,0,U,300` |
+| `<dsname>`.archives |         |          | `<consolidationfunction>,<xff>,<steps>,<rows>`. For example, `AVERAGE,0.5,1,365:AVERAGE,0.5,7,300` |
+| `<dsname>`.items    |         |          | `<list of items for this dsname>`. For example, `Item1,Item2` |
 
 where:
 
@@ -59,7 +59,9 @@ Depending on the data to be stored, several types for datasources exist:
 
 ### Heartbeat, MIN, MAX
 
-Each datasource also has a value for heartbeat, minimum and maximum. This heartbeat setting helps the database to detect "missing" values, i.e. if no new value is stored after "heartbeat" seconds, the value is considered missing when charting. Minimum and maximum define the range of acceptable values for that datasource.
+Each datasource also has a value for heartbeat, minimum and maximum.
+This heartbeat setting helps the database to detect "missing" values, i.e. if no new value is stored after "heartbeat" seconds, the value is considered missing when charting.
+Minimum and maximum define the range of acceptable values for that datasource.
 
 ### Step(s)
 
@@ -82,7 +84,7 @@ The purpose to have several archives is raised if a different granularity is nee
 In the example below data for each minute are saved for the last 8 hours (granularity 1), looking at the last 24 hours a granularity of 10 (i.e. 10 readings are consolidated to one reading) is used and so forth.
 For the first archive (and maybe the only one) a steps-size of one should be used.
 This way a sample is taken after each step.
-  
+
 ### Example
 
 So in the example shown below, we have 480 boxes, which each represent the value of one minute (Step is set to 60s, Granularity = 1).
@@ -106,6 +108,7 @@ ctr7d.def=COUNTER,900,0,U,60
 ctr7d.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,10,144:AVERAGE,0.5,60,672
 ctr7d.items=Item3,Item4
 ```
+
 In case no rrd4j.cfg is created the following default configuration will be used for all items persisted (i.e. all items with an allocated strategy in the rrd4j.persist file).
 
 Default rrd4j.cfg
@@ -114,17 +117,18 @@ Default rrd4j.cfg
 defaultNumeric.def=GAUGE,60,U,U,60
 defaultNumeric.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,4,360:AVERAGE,0.5,14,644:AVERAGE,0.5,60,720:AVERAGE,0.5,720,730:AVERAGE,0.5,10080,520
 ```
+
 The Datasource type is GAUGE, the heartbeat is 60s, MIN and MAX are unlimited and the step size is 60s.
 The archives are:
 
 | Archive | Boxes | Granularity [min] | Period covered |
-|:---------:|:---------:|:--------:|:-------------:|
-| 1 | 480 | 1 | 8 hrs |
-| 2 | 360 | 4 | 24 hrs |
-| 3 | 644 | 14 | 6.26 days |
-| 4 | 720 | 60 | 30 days |
-| 5 | 730 | 720 | 365 days |
-| 6 | 520 | 10080 | 10 years |
+| :-----: | :---: | :---------------: | :------------: |
+|    1    |  480  |         1         |     8 hrs      |
+|    2    |  360  |         4         |     24 hrs     |
+|    3    |  644  |        14         |   6.26 days    |
+|    4    |  720  |        60         |    30 days     |
+|    5    |  730  |        720        |    365 days    |
+|    6    |  520  |       10080       |    10 years    |
 
 All item- and event-related configuration is done in the file `persistence/rrd4j.persist`, i.e. openHAB will persist items that are setup in this file with a strategy. 
 
@@ -149,6 +153,11 @@ Items {
 
 ## Troubleshooting
 
-From time to time, you may find that if you change the item type of a persisted data, you may experience charting or other problems. To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/etc/rrd4j` folder or `/var/lib/openhab/persistence/rrd4j` folder for apt-get installed openHABs.
+From time to time, you may find that if you change the item type of a persisted data, you may experience charting or other problems.
+To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/etc/rrd4j` folder or `/var/lib/openhab/persistence/rrd4j` folder for apt-get installed openHABs.
 
-Restore of items after startup is taking some time. Rules are already started in parallel. Especially in rules that are started via "System started" trigger, it may happen that the restore is not completed resulting in defined items. In these cases the use of restored items has to be delayed by a couple of seconds. This delay has to be determined experimentally.
+Restore of items after startup is taking some time.
+Rules are already started in parallel.
+Especially in rules that are started via "System started" trigger, it may happen that the restore is not completed resulting in defined items.
+In these cases the use of restored items has to be delayed by a couple of seconds.
+This delay has to be determined experimentally.

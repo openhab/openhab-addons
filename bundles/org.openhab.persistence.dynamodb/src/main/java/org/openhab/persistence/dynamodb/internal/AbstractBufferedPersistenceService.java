@@ -48,7 +48,7 @@ public abstract class AbstractBufferedPersistenceService<T> implements Persisten
 
     protected void resetWithBufferSize(int bufferSize) {
         int capacity = Math.max(1, bufferSize);
-        buffer = new ArrayBlockingQueue<T>(capacity, true);
+        buffer = new ArrayBlockingQueue<>(capacity, true);
         writeImmediately = bufferSize == 0;
     }
 

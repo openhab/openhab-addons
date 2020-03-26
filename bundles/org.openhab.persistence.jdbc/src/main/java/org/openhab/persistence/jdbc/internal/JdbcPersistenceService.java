@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -137,7 +136,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     }
 
     @Override
-    public @NonNull Set<@NonNull PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() {
         return Collections.emptySet();
     }
 
@@ -151,7 +150,6 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
      */
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
-
         if (!checkDBAccessability()) {
             logger.warn("JDBC::query: database not connected, query aborted for item '{}'", filter.getItemName());
             return Collections.emptyList();
@@ -198,7 +196,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         }
 
         long timerStart = System.currentTimeMillis();
-        List<HistoricItem> items = new ArrayList<HistoricItem>();
+        List<HistoricItem> items = new ArrayList<>();
         items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
 
         logger.debug("JDBC::query: query for {} returned {} rows in {} ms", item.getName(), items.size(),

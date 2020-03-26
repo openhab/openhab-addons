@@ -57,7 +57,6 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      * INFO: https://github.com/brettwooldridge/HikariCP
      */
     private void initDbProps() {
-
         // Performancetuning
         databaseProps.setProperty("dataSource.cachePrepStmts", "true");
         databaseProps.setProperty("dataSource.prepStmtCacheSize", "250");
@@ -91,7 +90,7 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      **************/
     @Override
     public Integer doPingDB() {
-        return Yank.queryScalar(SQL_PING_DB, Long.class, null).intValue();
+        return Yank.queryScalar(sqlPingDB, Long.class, null).intValue();
     }
 
     /*************

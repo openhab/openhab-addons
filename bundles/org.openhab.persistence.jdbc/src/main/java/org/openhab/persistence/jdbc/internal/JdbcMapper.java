@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcMapper {
-    static final Logger logger = LoggerFactory.getLogger(JdbcMapper.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcMapper.class);
 
     // Error counter - used to reconnect to database on error
     protected int errCnt;
     protected boolean initialized = false;
     protected JdbcConfiguration conf = null;
-    protected Map<String, String> sqlTables = new HashMap<String, String>();
+    protected Map<String, String> sqlTables = new HashMap<>();
     private long afterAccessMin = 10000;
     private long afterAccessMax = 0;
     private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
@@ -285,14 +285,13 @@ public class JdbcMapper {
     }
 
     private void formatTableNames() {
-
         boolean tmpinit = initialized;
         if (tmpinit) {
             initialized = false;
         }
 
         List<ItemsVO> al;
-        HashMap<Integer, String> tableIds = new HashMap<Integer, String>();
+        Map<Integer, String> tableIds = new HashMap<>();
 
         //
         al = getItemIDTableNames();
@@ -307,7 +306,7 @@ public class JdbcMapper {
 
         String oldName = "";
         String newName = "";
-        List<ItemVO> oldNewTablenames = new ArrayList<ItemVO>();
+        List<ItemVO> oldNewTablenames = new ArrayList<>();
         for (int i = 0; i < al.size(); i++) {
             int id = -1;
             oldName = al.get(i).getTable_name();

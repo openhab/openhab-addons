@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jpa", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JpaPersistenceService implements QueryablePersistenceService {
-    private static final Logger logger = LoggerFactory.getLogger(JpaPersistenceService.class);
+    private final Logger logger = LoggerFactory.getLogger(JpaPersistenceService.class);
 
     @Reference
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
@@ -230,7 +230,6 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         } catch (Exception e) {
             logger.error("Error on querying database!", e);
             em.getTransaction().rollback();
-
         } finally {
             em.close();
         }
@@ -246,7 +245,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
     protected EntityManagerFactory newEntityManagerFactory() {
         logger.trace("Creating EntityManagerFactory...");
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.jdbc.url", config.dbConnectionUrl);
         properties.put("javax.persistence.jdbc.driver", config.dbDriverClass);
         if (config.dbUserName != null) {

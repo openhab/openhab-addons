@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
 
     private static final Pattern EXTRACT_CONFIG_PATTERN = Pattern.compile("^(.*?)\\.([0-9.a-zA-Z]+)$");
     private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.db.Jdbc";
@@ -226,7 +226,6 @@ public class JdbcConfiguration {
     }
 
     private void setDBDAOClass(String sn) {
-
         serviceName = "none";
 
         // set database type

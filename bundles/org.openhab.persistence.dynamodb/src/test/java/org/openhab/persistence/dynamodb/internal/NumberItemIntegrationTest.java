@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.BeforeClass;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
@@ -27,53 +29,54 @@ import org.openhab.core.types.State;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class NumberItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
-    private static final String name = "number";
+    private static final String NAME = "number";
     // On purpose we have super accurate number here (testing limits of aws)
-    private static final DecimalType state1 = new DecimalType(new BigDecimal(
+    private static final DecimalType STATE1 = new DecimalType(new BigDecimal(
             "-32343243.193490838904389298049802398048923849032809483209483209482309840239840932840932849083094809483"));
-    private static final DecimalType state2 = new DecimalType(600.9123);
-    private static final DecimalType stateBetween = new DecimalType(500);
+    private static final DecimalType STATE2 = new DecimalType(600.9123);
+    private static final DecimalType STATE_BETWEEN = new DecimalType(500);
 
     @BeforeClass
     public static void storeData() throws InterruptedException {
-        NumberItem item = (NumberItem) items.get(name);
+        NumberItem item = (NumberItem) ITEMS.get(NAME);
 
-        item.setState(state1);
+        item.setState(STATE1);
 
         beforeStore = new Date();
         Thread.sleep(10);
         service.store(item);
         afterStore1 = new Date();
         Thread.sleep(10);
-        item.setState(state2);
+        item.setState(STATE2);
         service.store(item);
         Thread.sleep(10);
         afterStore2 = new Date();
 
-        logger.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
+        LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
     }
 
     @Override
     protected String getItemName() {
-        return name;
+        return NAME;
     }
 
     @Override
     protected State getFirstItemState() {
-        return state1;
+        return STATE1;
     }
 
     @Override
     protected State getSecondItemState() {
-        return state2;
+        return STATE2;
     }
 
     @Override
-    protected State getQueryItemStateBetween() {
-        return stateBetween;
+    protected @Nullable State getQueryItemStateBetween() {
+        return STATE_BETWEEN;
     }
 
     /**

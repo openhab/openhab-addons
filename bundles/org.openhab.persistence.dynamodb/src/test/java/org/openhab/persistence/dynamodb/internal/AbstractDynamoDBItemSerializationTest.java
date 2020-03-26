@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.CallItem;
@@ -52,6 +53,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class AbstractDynamoDBItemSerializationTest {
 
     private final Date date = new Date(400);

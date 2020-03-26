@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Helmut Lehmeyer - Initial contribution
  */
 public class JdbcMariadbDAO extends JdbcBaseDAO {
-    private static final Logger logger = LoggerFactory.getLogger(JdbcMariadbDAO.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcMariadbDAO.class);
 
     /********
      * INIT *
@@ -52,7 +52,6 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      * INFO: https://github.com/brettwooldridge/HikariCP
      */
     private void initDbProps() {
-
         // Performancetuning
         databaseProps.setProperty("dataSource.cachePrepStmts", "true");
         databaseProps.setProperty("dataSource.prepStmtCacheSize", "250");
@@ -86,7 +85,7 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      **************/
     @Override
     public Integer doPingDB() {
-        return Yank.queryScalar(SQL_PING_DB, Long.class, null).intValue();
+        return Yank.queryScalar(sqlPingDB, Long.class, null).intValue();
     }
 
     /*************

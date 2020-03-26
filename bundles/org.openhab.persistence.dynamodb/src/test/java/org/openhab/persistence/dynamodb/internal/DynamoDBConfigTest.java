@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -31,6 +32,7 @@ import com.amazonaws.regions.Regions;
  * @author Sami Salonen - Initial contribution
  *
  */
+@NonNullByDefault
 public class DynamoDBConfigTest {
 
     private static Map<String, Object> mapFrom(String... args) {
@@ -49,7 +51,7 @@ public class DynamoDBConfigTest {
 
     @Test
     public void testEmpty() throws Exception {
-        assertNull(DynamoDBConfig.fromConfig(new HashMap<String, Object>()));
+        assertNull(DynamoDBConfig.fromConfig(new HashMap<>()));
     }
 
     @Test

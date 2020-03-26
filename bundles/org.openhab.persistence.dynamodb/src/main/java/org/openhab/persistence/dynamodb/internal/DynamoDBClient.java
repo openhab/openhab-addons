@@ -28,7 +28,7 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
  * @author Sami Salonen - Initial contribution
  */
 public class DynamoDBClient {
-    private static final Logger logger = LoggerFactory.getLogger(DynamoDBClient.class);
+    private final Logger logger = LoggerFactory.getLogger(DynamoDBClient.class);
     private DynamoDB dynamo;
     private AmazonDynamoDB client;
 

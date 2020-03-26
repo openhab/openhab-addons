@@ -38,7 +38,7 @@ public class DynamoDBConfig {
     public static final long DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS = 1000;
     public static final int DEFAULT_BUFFER_SIZE = 1000;
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamoDBConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBConfig.class);
 
     private String tablePrefix = DEFAULT_TABLE_PREFIX;
     private Regions region;
@@ -56,7 +56,7 @@ public class DynamoDBConfig {
      */
     public static DynamoDBConfig fromConfig(Map<String, Object> config) {
         if (config == null || config.isEmpty()) {
-            logger.error("Configuration not provided! At least AWS region and credentials must be provided.");
+            LOGGER.error("Configuration not provided! At least AWS region and credentials must be provided.");
             return null;
         }
 
@@ -78,14 +78,14 @@ public class DynamoDBConfig {
             String accessKey = (String) config.get("accessKey");
             String secretKey = (String) config.get("secretKey");
             if (!isBlank(accessKey) && !isBlank(secretKey)) {
-                logger.debug("accessKey and secretKey specified. Using those.");
+                LOGGER.debug("accessKey and secretKey specified. Using those.");
                 credentials = new BasicAWSCredentials(accessKey, secretKey);
             } else {
-                logger.debug("accessKey and/or secretKey blank. Checking profilesConfigFile and profile.");
+                LOGGER.debug("accessKey and/or secretKey blank. Checking profilesConfigFile and profile.");
                 String profilesConfigFile = (String) config.get("profilesConfigFile");
                 String profile = (String) config.get("profile");
                 if (isBlank(profilesConfigFile) || isBlank(profile)) {
-                    logger.error("Specify either 1) accessKey and secretKey; or 2) profilesConfigFile and "
+                    LOGGER.error("Specify either 1) accessKey and secretKey; or 2) profilesConfigFile and "
                             + "profile for providing AWS credentials");
                     return null;
                 }
@@ -94,14 +94,14 @@ public class DynamoDBConfig {
 
             String table = (String) config.get("tablePrefix");
             if (isBlank(table)) {
-                logger.debug("Using default table name {}", DEFAULT_TABLE_PREFIX);
+                LOGGER.debug("Using default table name {}", DEFAULT_TABLE_PREFIX);
                 table = DEFAULT_TABLE_PREFIX;
             }
 
             final boolean createTable;
             String createTableParam = (String) config.get("createTable");
             if (isBlank(createTableParam)) {
-                logger.debug("Creating table on demand: {}", DEFAULT_CREATE_TABLE_ON_DEMAND);
+                LOGGER.debug("Creating table on demand: {}", DEFAULT_CREATE_TABLE_ON_DEMAND);
                 createTable = DEFAULT_CREATE_TABLE_ON_DEMAND;
             } else {
                 createTable = Boolean.parseBoolean(createTableParam);
@@ -110,7 +110,7 @@ public class DynamoDBConfig {
             final long readCapacityUnits;
             String readCapacityUnitsParam = (String) config.get("readCapacityUnits");
             if (isBlank(readCapacityUnitsParam)) {
-                logger.debug("Read capacity units: {}", DEFAULT_READ_CAPACITY_UNITS);
+                LOGGER.debug("Read capacity units: {}", DEFAULT_READ_CAPACITY_UNITS);
                 readCapacityUnits = DEFAULT_READ_CAPACITY_UNITS;
             } else {
                 readCapacityUnits = Long.parseLong(readCapacityUnitsParam);
@@ -119,7 +119,7 @@ public class DynamoDBConfig {
             final long writeCapacityUnits;
             String writeCapacityUnitsParam = (String) config.get("writeCapacityUnits");
             if (isBlank(writeCapacityUnitsParam)) {
-                logger.debug("Write capacity units: {}", DEFAULT_WRITE_CAPACITY_UNITS);
+                LOGGER.debug("Write capacity units: {}", DEFAULT_WRITE_CAPACITY_UNITS);
                 writeCapacityUnits = DEFAULT_WRITE_CAPACITY_UNITS;
             } else {
                 writeCapacityUnits = Long.parseLong(writeCapacityUnitsParam);
@@ -128,7 +128,7 @@ public class DynamoDBConfig {
             final long bufferCommitIntervalMillis;
             String bufferCommitIntervalMillisParam = (String) config.get("bufferCommitIntervalMillis");
             if (isBlank(bufferCommitIntervalMillisParam)) {
-                logger.debug("Buffer commit interval millis: {}", DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS);
+                LOGGER.debug("Buffer commit interval millis: {}", DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS);
                 bufferCommitIntervalMillis = DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS;
             } else {
                 bufferCommitIntervalMillis = Long.parseLong(bufferCommitIntervalMillisParam);
@@ -137,7 +137,7 @@ public class DynamoDBConfig {
             final int bufferSize;
             String bufferSizeParam = (String) config.get("bufferSize");
             if (isBlank(bufferSizeParam)) {
-                logger.debug("Buffer size: {}", DEFAULT_BUFFER_SIZE);
+                LOGGER.debug("Buffer size: {}", DEFAULT_BUFFER_SIZE);
                 bufferSize = DEFAULT_BUFFER_SIZE;
             } else {
                 bufferSize = Integer.parseInt(bufferSizeParam);
@@ -146,7 +146,7 @@ public class DynamoDBConfig {
             return new DynamoDBConfig(region, credentials, table, createTable, readCapacityUnits, writeCapacityUnits,
                     bufferCommitIntervalMillis, bufferSize);
         } catch (Exception e) {
-            logger.error("Error with configuration", e);
+            LOGGER.error("Error with configuration", e);
             return null;
         }
     }
@@ -201,7 +201,7 @@ public class DynamoDBConfig {
         for (int i = 0; i < regions.length; i++) {
             regionNames[i] = regions[i].getName();
         }
-        logger.error("Specify valid AWS region to use, got {}. Valid values include: {}", region,
+        LOGGER.error("Specify valid AWS region to use, got {}. Valid values include: {}", region,
                 StringUtils.join(regionNames, ','));
     }
 }

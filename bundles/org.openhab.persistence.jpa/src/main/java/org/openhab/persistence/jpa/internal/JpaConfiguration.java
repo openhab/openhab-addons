@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class JpaConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(JpaConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(JpaConfiguration.class);
 
     private static final String CFG_CONNECTION_URL = "url";
     private static final String CFG_DRIVER_CLASS = "driver";
