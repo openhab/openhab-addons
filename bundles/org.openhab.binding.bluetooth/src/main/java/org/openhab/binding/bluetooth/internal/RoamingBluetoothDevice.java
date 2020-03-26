@@ -200,6 +200,7 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
 
         @Override
         public void onAdapterChanged(BluetoothAdapter adapter) {
+            // do nothing since we are the ones that are supposed to trigger this
         }
 
     }
