@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -341,12 +342,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private static String getUserPersistenceDataFolder() {
-        String progArg = System.getProperty("smarthome.userdata");
-        if (progArg != null) {
-            return progArg + File.separator + "persistence";
-        } else {
-            return "etc";
-        }
+        return ConfigConstants.getUserDataFolder() + File.separator + "persistence";
     }
 
     /**
