@@ -12,11 +12,11 @@ This binding's implementation of the REST API is motivated by the great work of 
 
 ## Supported Things
 
-| Thing Type|Description|
-|-|-|
-|hub|The Adorne [Hub LC7001](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls/lc7001.aspx) serves as the bridge to control all Adorne devices|
-|switch|All Adorne switches and outlets|
-|dimmer|All Adorne dimmers|
+| Thing Type | Description                                                                                                                                                           |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hub        | The Adorne [Hub LC7001](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls/lc7001.aspx) serves as the bridge to control all Adorne devices |
+| switch     | All Adorne switches and outlets                                                                                                                                       |
+| dimmer     | All Adorne dimmers                                                                                                                                                    |
 
 ## Discovery
 
@@ -30,17 +30,17 @@ Background discovery is not supported.
 ### Hub
 
 The hub offers two optional configuration parameters:
-|Parameter|Description|
-|-|-|
-|host|The URL to reach the hub. The hub makes itself known through mDNS as `LCM1.local` and the host parameter defaults to this value. As long as the OpenHAB server and the hub are on the same broadcast domain for mDNS the host parameter doesn't need to be specified. |
-|port|The port the hub communicates on. By default the hub answers on port 2112 and the port parameter defaults to this value. As long as the hub configuration hasn't been changed the port parameter doesn't need to be specified.|
+| Parameter | Description                                                                                                                                                                                                                                                           |
+|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host      | The URL to reach the hub. The hub makes itself known through mDNS as `LCM1.local` and the host parameter defaults to this value. As long as the OpenHAB server and the hub are on the same broadcast domain for mDNS the host parameter doesn't need to be specified. |
+| port      | The port the hub communicates on. By default the hub answers on port 2112 and the port parameter defaults to this value. As long as the hub configuration hasn't been changed the port parameter doesn't need to be specified.                                        |
 
 ### Devices
 
 All devices share one required paramenter:
-|Parameter|Description|
-|-|-|
-|zoneId|The zone ID that is assigned by the hub to each device as a unique identifier.|
+| Parameter | Description                                                                    |
+|-----------|--------------------------------------------------------------------------------|
+| zoneId    | The zone ID that is assigned by the hub to each device as a unique identifier. |
 
 Legrand does not provide an easy way to look up a zone ID for a device.
 However, zone IDs are simply assigned sequentially starting with 0 in the order devices are added to the hub.
@@ -48,10 +48,10 @@ So the first device will have zone ID 0, the next 1 and so on.
 
 ## Channels
 
-|Channel Type ID|Item Type|Commands|Description|Thing Types Supporting This Channel|
-|-|-|-|-|-|
-|power|Switch|ON, OFF|Turn device on and off|switch, dimmer|
-|brightness|Dimmer|1-100|Set device's brightness|dimmer|
+| Channel Type ID | Item Type | Commands | Description             | Thing Types Supporting This Channel |
+|-----------------|-----------|----------|-------------------------|-------------------------------------|
+| power           | Switch    | ON, OFF  | Turn device on and off  | switch, dimmer                      |
+| brightness      | Dimmer    | 1-100    | Set device's brightness | dimmer                              |
 
 Note that the brightness channel is limited to values from 1 to 100.
 All other commands are ignored.

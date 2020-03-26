@@ -15,8 +15,7 @@ package org.openhab.binding.adorne.internal.hub;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AdorneHubChangeNotify} interface is used by the {@link AdorneHubController} to notify listeners
- * about
+ * The {@link AdorneHubChangeNotify} interface is used by the {@link AdorneHubController} to notify listeners about
  * Adorne device status and hub connection changes.
  *
  * @author Mark Theiding - Initial contribution

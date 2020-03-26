@@ -15,6 +15,7 @@
 				<description>
 					Host name or IP address.
 				</description>
+				<context>network_address</context>
 			</parameter>
 			<parameter name="port" type="integer">
 				<default>2112</default>
