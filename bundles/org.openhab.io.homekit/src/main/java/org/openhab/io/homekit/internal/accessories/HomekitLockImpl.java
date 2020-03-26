@@ -29,9 +29,9 @@ import io.github.hapjava.accessories.properties.LockMechanismState;
  * @author blafois
  *
  */
-public class HomeKitLockImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements LockableLockMechanism {
+public class HomekitLockImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements LockableLockMechanism {
 
-    public HomeKitLockImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
+    public HomekitLockImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, SwitchItem.class);
     }
 

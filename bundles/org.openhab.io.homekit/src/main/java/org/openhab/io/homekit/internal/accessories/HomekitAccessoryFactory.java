@@ -50,7 +50,7 @@ public class HomekitAccessoryFactory {
 
         switch (taggedItem.getAccessoryType()) {
             case LOCK:
-                return new HomeKitLockImpl(taggedItem, itemRegistry, updater);
+                return new HomekitLockImpl(taggedItem, itemRegistry, updater);
             case LEAK_SENSOR:
                 HomekitTaggedItem leakSensorAccessory = getPrimaryAccessory(taggedItem,
                         HomekitAccessoryType.LEAK_SENSOR, itemRegistry).orElseThrow(
