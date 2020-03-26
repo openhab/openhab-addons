@@ -334,6 +334,17 @@ public class DeviceFeature {
     }
 
     /**
+     * Poll all device feature listeners for related devices
+     */
+    public void pollRelatedDevices() {
+        synchronized (listeners) {
+            for (DeviceFeatureListener listener : listeners) {
+                listener.pollRelatedDevices();
+            }
+        }
+    }
+
+    /**
      * Adds a message handler to this device feature.
      *
      * @param cm1 The insteon cmd1 of the incoming message for which the handler should be used
