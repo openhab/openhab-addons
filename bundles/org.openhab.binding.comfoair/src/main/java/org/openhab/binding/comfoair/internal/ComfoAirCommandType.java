@@ -99,7 +99,7 @@ public enum ComfoAirCommandType {
             0xc9, 0xca, new int[] { 7 }),
     CHIMNEY_STATE("menuP9#chimneyState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x01),
     BYPASS_STATE("menuP9#bypassState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x02),
-    EWT_STATE("menuP9#EWTState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x04),
+    EWT_STATE("menuP9#ewtState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x04),
     HEATER_STATE("menuP9#heaterState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x08),
     V_CONTROL_STATE("menuP9#vControlState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x10),
     FROST_STATE("menuP9#frostState", DataTypeBoolean.class, 0xd5, 0xd6, new int[] { 8 }, 0x20),
