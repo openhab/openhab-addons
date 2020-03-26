@@ -100,9 +100,9 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
 
             if (!controlInfo.power) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("off"));
-            } else if (controlInfo.mode.name() == "COLD") {
+            } else if (controlInfo.mode == AirbaseMode.COLD) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("cool"));
-            } else if (controlInfo.mode.name() == "HEAT") {
+            } else if (controlInfo.mode == AirbaseMode.HEAT) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("heat"));
             } else {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("auto"));

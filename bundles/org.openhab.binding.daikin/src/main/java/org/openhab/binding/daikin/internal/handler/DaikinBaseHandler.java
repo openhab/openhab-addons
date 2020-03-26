@@ -207,7 +207,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     private void changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (homekitmode.equals("off")) {
+        if ("off".equals(homekitmode)) {
            changePower(false);
         } else {
            changePower(true);
