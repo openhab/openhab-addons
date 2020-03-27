@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InfluxDBStateConvertUtils {
-    static final String DIGITAL_VALUE_OFF = "false"; //Visible for testing
-    static final String DIGITAL_VALUE_ON = "true"; //Visible for testing
+    static final String DIGITAL_VALUE_OFF = "false"; // Visible for testing
+    static final String DIGITAL_VALUE_ON = "true"; // Visible for testing
     private static Logger logger = LoggerFactory.getLogger(InfluxDBStateConvertUtils.class);
 
     /**
@@ -152,7 +152,7 @@ public class InfluxDBStateConvertUtils {
         }
     }
 
-    private static boolean toBoolean(Object object) {
+    private static boolean toBoolean(@Nullable Object object) {
         if (object instanceof Boolean)
             return (Boolean) object;
         else if (object != null) {
