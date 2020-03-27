@@ -77,7 +77,7 @@ public class PS4ArtworkHandler {
      * @param locale Locale used on PlayStation store to find art work.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
-    static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
+    public static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
         return fetchArtworkForTitleid(titleid, size, locale, false);
     }
 
@@ -92,7 +92,8 @@ public class PS4ArtworkHandler {
      *            along with the game.
      * @return A JPEG image as a RawType if an art work file is found otherwise null.
      */
-    static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale, boolean forceRefetch) {
+    public static @Nullable RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale,
+            boolean forceRefetch) {
         // Try to find the image in the cache first, then try to download it from PlayStation Store.
         RawType artwork = null;
         if (titleid.isEmpty()) {

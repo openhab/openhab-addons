@@ -18,7 +18,10 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 
 If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker.
 The result file is called ".ps4-wake.credentials.json" in your home directory.
+
 Then you need to pair your OpenHAB device with the PS4.
+This can be done by saving the Thing while the pairing screen is open on the PS4. The code is only needed during pairing.
+
 Then, if you have a pass code when you log in to your PS4 you have to specify that as well.
  
 
@@ -49,9 +52,9 @@ Example of how to configure a thing.
 demo.thing
 
 ```
-Thing playstation:PS4:123456789ABC "PlayStation4" @ "Living Room" [ ipAdress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+Thing playstation:PS4:123456789ABC "PlayStation4" @ "Living Room" [ ipAddress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
 
-Thing playstation:PS3:123456789ABC "PlayStation3" @ "Living Room" [ ipAdress="192.168.0.2" ]
+Thing playstation:PS3:123456789ABC "PlayStation3" @ "Living Room" [ ipAddress="192.168.0.2" ]
 ```
 
 Here are some examples on how to map the channels to items.
