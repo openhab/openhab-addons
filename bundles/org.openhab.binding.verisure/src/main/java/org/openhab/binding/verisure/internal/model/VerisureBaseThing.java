@@ -134,12 +134,16 @@ public class VerisureBaseThing implements VerisureThing {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
+        result = prime * result + ((deviceId.equals("")) ? 0 : deviceId.hashCode());
+        String location = this.location;
         result = prime * result + ((location == null) ? 0 : location.hashCode());
+        String name = this.name;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        String status = this.status;
         result = prime * result + ((status == null) ? 0 : status.hashCode());
+        String siteName = this.siteName;
         result = prime * result + ((siteName == null) ? 0 : siteName.hashCode());
-        result = prime * result + ((siteId == null) ? 0 : siteId.hashCode());
+        result = prime * result + ((siteId.equals(new BigDecimal(0))) ? 0 : siteId.hashCode());
         return result;
     }
 
@@ -153,11 +157,7 @@ public class VerisureBaseThing implements VerisureThing {
         }
 
         VerisureBaseThing other = (VerisureBaseThing) obj;
-        if (deviceId == null) {
-            if (other.deviceId != null) {
-                return false;
-            }
-        } else if (deviceId != null && !deviceId.equals(other.deviceId)) {
+        if (!deviceId.equals(other.deviceId)) {
             return false;
         }
 
@@ -209,10 +209,8 @@ public class VerisureBaseThing implements VerisureThing {
             builder.append(name);
             builder.append(", ");
         }
-        if (deviceId != null) {
-            builder.append(", deviceId=");
-            builder.append(deviceId);
-        }
+        builder.append(", deviceId=");
+        builder.append(deviceId);
         if (location != null) {
             builder.append(", location=");
             builder.append(location);

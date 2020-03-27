@@ -181,10 +181,11 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
         String deviceId = config.getDeviceId();
         VerisureSession session = getSession();
         if (session != null) {
-            VerisureSmartLocks smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
-            if (smartLock != null) {
-                DoorLockVolumeSettings volumeSettings = smartLock.getSmartLockJSON().getDoorLockVolumeSettings();
-                if (volumeSettings != null) {
+            VerisureSmartLocks smartLocks = session.getVerisureThing(deviceId, getVerisureThingClass());
+            if (smartLocks != null) {
+                VerisureSmartLock smartLock = smartLocks.getSmartLockJSON();
+                if (smartLock != null) {
+                    DoorLockVolumeSettings volumeSettings = smartLock.getDoorLockVolumeSettings();
                     String volume;
                     String voiceLevel;
                     if (setVolume) {
@@ -205,7 +206,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                             logger.debug("Failed to change voice level, setting not allowed {}", command.toString());
                             return;
                         }
-                        BigDecimal installationId = smartLock.getSiteId();
+                        BigDecimal installationId = smartLocks.getSiteId();
                         String csrf = session.getCsrfToken(installationId);
                         if (csrf != null) {
                             String url = SMARTLOCK_VOLUME_COMMAND;
@@ -309,8 +310,11 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
     @NonNullByDefault
     private static class SmartLock {
 
+        @SuppressWarnings("unused")
         private @Nullable String operationName;
+        @SuppressWarnings("unused")
         private Variables variables = new Variables();
+        @SuppressWarnings("unused")
         private @Nullable String query;
 
         public void setOperationName(String operationName) {
@@ -329,8 +333,11 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
     @NonNullByDefault
     private static class Variables {
 
+        @SuppressWarnings("unused")
         private @Nullable String giid;
+        @SuppressWarnings("unused")
         private @Nullable String deviceLabel;
+        @SuppressWarnings("unused")
         private Input input = new Input();
 
         public void setGiid(String giid) {
@@ -349,6 +356,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
     @NonNullByDefault
     private static class Input {
 
+        @SuppressWarnings("unused")
         private @Nullable String code;
 
         public void setCode(String code) {

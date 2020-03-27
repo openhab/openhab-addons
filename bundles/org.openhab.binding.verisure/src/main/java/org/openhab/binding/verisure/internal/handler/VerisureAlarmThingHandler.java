@@ -171,8 +171,11 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
     @NonNullByDefault
     private static class Alarm {
 
+        @SuppressWarnings("unused")
         private @Nullable String operationName;
+        @SuppressWarnings("unused")
         private Variables variables = new Variables();
+        @SuppressWarnings("unused")
         private @Nullable String query;
 
         public void setOperationName(String operationName) {
@@ -191,7 +194,9 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
     @NonNullByDefault
     private static class Variables {
 
+        @SuppressWarnings("unused")
         private @Nullable String giid;
+        @SuppressWarnings("unused")
         private @Nullable String code;
 
         public void setGiid(String giid) {
@@ -201,7 +206,5 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         public void setCode(String code) {
             this.code = code;
         }
-
     }
-
 }

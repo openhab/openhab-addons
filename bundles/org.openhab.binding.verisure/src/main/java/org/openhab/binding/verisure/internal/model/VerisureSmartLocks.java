@@ -36,7 +36,7 @@ import com.google.gson.annotations.SerializedName;
 public class VerisureSmartLocks extends VerisureBaseThing {
 
     private Data data = new Data();
-    private @Nullable VerisureSmartLock smartLockJSON = new VerisureSmartLock();
+    private @Nullable VerisureSmartLock smartLockJSON;
 
     public Data getData() {
         return data;

@@ -75,10 +75,13 @@ public class VerisureSmartLock {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
+            String active = this.active;
             result = prime * result + ((active == null) ? 0 : active.hashCode());
             result = prime * result + availableVoiceLevels.hashCode();
             result = prime * result + availableVolumes.hashCode();
+            String voiceLevel = this.voiceLevel;
             result = prime * result + ((voiceLevel == null) ? 0 : voiceLevel.hashCode());
+            String volume = this.volume;
             result = prime * result + ((volume == null) ? 0 : volume.hashCode());
             return result;
         }
@@ -95,6 +98,7 @@ public class VerisureSmartLock {
                 return false;
             }
             DoorLockVolumeSettings other = (DoorLockVolumeSettings) obj;
+
             if (active == null) {
                 if (other.active != null) {
                     return false;
@@ -136,6 +140,7 @@ public class VerisureSmartLock {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
+        String deviceLabel = this.deviceLabel;
         result = prime * result + ((deviceLabel == null) ? 0 : deviceLabel.hashCode());
         result = prime * result + doorLockVolumeSettings.hashCode();
         return result;

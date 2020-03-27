@@ -44,6 +44,7 @@ import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureBridgeConfiguration;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.discovery.VerisureThingDiscoveryService;
+import org.openhab.binding.verisure.internal.model.VerisureThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,23 +139,24 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                         + "&spring-security-redirect=" + START_REDIRECT;
                 updateStatus(ThingStatus.UNKNOWN);
                 scheduler.execute(() -> {
+
                     if (session == null) {
-                        logger.debug("Session is null, probably configuration change, let's create a new one");
+                        logger.debug("Session is null, let's create a new one");
                         session = new VerisureSession(this.httpClient);
                     }
-                    if (!session.initialize(authstring, pinCode, config.username)) {
-                        logger.warn("Failed to initialize bridge, please check your credentials!");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                                "Failed to login to Verisure, please check your credentials!");
-                        return;
+                    VerisureSession session = this.session;
+                    if (session != null) {
+                        if (!session.initialize(authstring, pinCode, config.username)) {
+                            logger.warn("Failed to initialize bridge, please check your credentials!");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
+                                    "Failed to login to Verisure, please check your credentials!");
+                            return;
+                        }
+                        startAutomaticRefresh();
                     }
-                    startAutomaticRefresh();
                 });
-            } catch (RuntimeException e) {
-                logger.warn("Failed to initialize! Exception caught: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (UnsupportedEncodingException e) {
-                logger.warn("Failed to URL Encode password, exception caught: {} ", e.getMessage(), e);
+            } catch (RuntimeException | UnsupportedEncodingException e) {
+                logger.warn("Exception caught: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -166,23 +168,26 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         stopAutomaticRefresh();
         stopImmediateRefresh();
         if (session != null) {
-            session.dispose();
             session = null;
         }
     }
 
-    public boolean registerObjectStatusListener(DeviceStatusListener deviceStatusListener) {
-        if (session != null) {
+    public <T extends VerisureThing> boolean registerObjectStatusListener(
+            DeviceStatusListener<T> deviceStatusListener) {
+        VerisureSession mySession = session;
+        if (mySession != null) {
             logger.debug("registerObjectStatusListener for listener {}", deviceStatusListener);
-            return session.registerDeviceStatusListener(deviceStatusListener);
+            return mySession.registerDeviceStatusListener(deviceStatusListener);
         }
         return false;
     }
 
-    public boolean unregisterObjectStatusListener(DeviceStatusListener deviceStatusListener) {
-        if (session != null) {
+    public <T extends VerisureThing> boolean unregisterObjectStatusListener(
+            DeviceStatusListener<T> deviceStatusListener) {
+        VerisureSession mySession = session;
+        if (mySession != null) {
             logger.debug("unregisterObjectStatusListener for listener {}", deviceStatusListener);
-            return session.unregisterDeviceStatusListener(deviceStatusListener);
+            return mySession.unregisterDeviceStatusListener(deviceStatusListener);
         }
         return false;
     }
@@ -193,7 +198,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         stopAutomaticRefresh();
         stopImmediateRefresh();
         if (session != null) {
-            session.dispose();
             session = null;
         }
     }
@@ -206,6 +210,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private void refreshAndUpdateStatus() {
         logger.debug("VerisureBridgeHandler - Polling thread is up'n running!");
         try {
+            VerisureSession session = this.session;
             if (session != null) {
                 boolean success = session.refresh();
                 if (success) {
@@ -223,6 +228,8 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     void scheduleImmediateRefresh(int refreshDelay) {
         logger.debug("VerisureBridgeHandler - scheduleImmediateRefresh");
         immediateRefreshJobLock.lock();
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        ScheduledFuture<?> immediateRefreshJob = this.immediateRefreshJob;
         try {
             // We schedule in 10 sec, to avoid multiple updates
             if (refreshJob != null) {
@@ -232,6 +239,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Current remaining delay {} for immediate refresh job {}",
                             immediateRefreshJob.getDelay(TimeUnit.SECONDS), immediateRefreshJob);
                 }
+
                 if (refreshJob.getDelay(TimeUnit.SECONDS) > refreshDelay) {
                     if (immediateRefreshJob == null || immediateRefreshJob.getDelay(TimeUnit.SECONDS) <= 0) {
                         if (immediateRefreshJob != null) {
@@ -242,7 +250,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                         // refresh if their status is pending. As the status update happens inside the
                         // refreshAndUpdateStatus
                         // execution the isDone() will return false and would not allow the rescheduling of the task.
-                        immediateRefreshJob = scheduler.schedule(this::refreshAndUpdateStatus, refreshDelay,
+                        this.immediateRefreshJob = scheduler.schedule(this::refreshAndUpdateStatus, refreshDelay,
                                 TimeUnit.SECONDS);
                         logger.debug("Scheduling new immediate refresh job {}", immediateRefreshJob);
                     }
@@ -256,38 +264,41 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startAutomaticRefresh() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         logger.debug("Start automatic refresh {}", refreshJob);
         if (refreshJob == null || refreshJob.isCancelled()) {
             try {
-                refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh,
+                this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh,
                         TimeUnit.SECONDS);
-                logger.debug("Scheduling at fixed delay refreshjob {}", refreshJob);
+                logger.debug("Scheduling at fixed delay refreshjob {}", this.refreshJob);
             } catch (RejectedExecutionException e) {
                 logger.warn("Automatic refresh job cannot be started!");
             }
         }
     }
 
+    private void stopAutomaticRefresh() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        logger.debug("Stop automatic refresh for job {}", refreshJob);
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+    }
+
     private void stopImmediateRefresh() {
         immediateRefreshJobLock.lock();
+        ScheduledFuture<?> immediateRefreshJob = this.immediateRefreshJob;
         try {
             logger.debug("Stop immediate refresh for job {}", immediateRefreshJob);
             if (immediateRefreshJob != null && !immediateRefreshJob.isCancelled()) {
                 immediateRefreshJob.cancel(true);
-                immediateRefreshJob = null;
+                this.immediateRefreshJob = null;
             }
         } catch (RejectedExecutionException e) {
             logger.warn("Immediate refresh job cannot be scheduled!");
         } finally {
             immediateRefreshJobLock.unlock();
-        }
-    }
-
-    private void stopAutomaticRefresh() {
-        logger.debug("Stop automatic refresh for job {}", refreshJob);
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
         }
     }
 }

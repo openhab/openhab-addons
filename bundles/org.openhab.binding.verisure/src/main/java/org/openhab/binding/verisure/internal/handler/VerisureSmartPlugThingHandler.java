@@ -164,8 +164,11 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
     @NonNullByDefault
     private static class SmartPlug {
 
+        @SuppressWarnings("unused")
         private @Nullable String operationName;
+        @SuppressWarnings("unused")
         private Variables variables = new Variables();
+        @SuppressWarnings("unused")
         private @Nullable String query;
 
         public void setOperationName(String operationName) {
@@ -184,8 +187,11 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
     @NonNullByDefault
     private static class Variables {
 
+        @SuppressWarnings("unused")
         private @Nullable String giid;
+        @SuppressWarnings("unused")
         private @Nullable String deviceLabel;
+        @SuppressWarnings("unused")
         private boolean state;
 
         public void setGiid(String giid) {

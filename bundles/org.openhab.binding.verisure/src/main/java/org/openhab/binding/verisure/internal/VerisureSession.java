@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
@@ -61,6 +62,7 @@ import com.google.gson.Gson;
  *
  * @author Jarle Hjortland - Initial contribution
  * @author Jan Gustafsson - Re-design and support for several sites and update to new Verisure API
+ * @param <T>
  *
  */
 @NonNullByDefault
@@ -69,13 +71,12 @@ public class VerisureSession {
     private final HashMap<String, VerisureThing> verisureThings = new HashMap<String, VerisureThing>();
     private final Logger logger = LoggerFactory.getLogger(VerisureSession.class);
     private final Gson gson = new Gson();
-    private final List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private final List<DeviceStatusListener<VerisureThing>> deviceStatusListeners = new CopyOnWriteArrayList<>();
     private final HashMap<BigDecimal, VerisureInstallation> verisureInstallations = new HashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
             "https://m-api02.verisure.com");
     private int apiServerInUseIndex = 0;
     private String apiServerInUse = APISERVERLIST.get(apiServerInUseIndex);
-    private boolean areWeLoggedOut = true;
     private String authstring = "";
     private @Nullable String csrf;
     private @Nullable String pinCode;
@@ -107,21 +108,16 @@ public class VerisureSession {
 
     public boolean refresh() {
         logger.debug("VerisureSession:refresh");
-        int statusCode = areWeLoggedIn();
-        if (statusCode == 503) {
-            return false;
-        } else if (!areWeLoggedOut && (statusCode == 1)) {
-            updateStatus();
-            return true;
-        } else {
+        try {
             if (logIn()) {
                 updateStatus();
-                areWeLoggedOut = false;
                 return true;
             } else {
-                areWeLoggedOut = true;
                 return false;
             }
+        } catch (HttpResponseException e) {
+            logger.warn("Caught an HttpResponseException {}", e.getMessage(), e);
+            return false;
         }
     }
 
@@ -136,20 +132,18 @@ public class VerisureSession {
         }
     }
 
-    public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+    public boolean unregisterDeviceStatusListener(DeviceStatusListener<? extends VerisureThing> deviceStatusListener) {
         logger.debug("unregisterDeviceStatusListener for listener {}", deviceStatusListener);
         return deviceStatusListeners.remove(deviceStatusListener);
     }
 
-    public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        logger.debug("registerDeviceStatusListener for listener {}", deviceStatusListener);
-        return deviceStatusListeners.add(deviceStatusListener);
-    }
-
-    public void dispose() {
-    }
-
     @SuppressWarnings("unchecked")
+    public boolean registerDeviceStatusListener(DeviceStatusListener<? extends VerisureThing> deviceStatusListener) {
+        logger.debug("registerDeviceStatusListener for listener {}", deviceStatusListener);
+        return deviceStatusListeners.add((DeviceStatusListener<VerisureThing>) deviceStatusListener);
+    }
+
+    @SuppressWarnings({ "unchecked", "null" })
     public <T extends VerisureThing> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
         VerisureThing thing = verisureThings.get(deviceId);
         if (thing != null && thingType.isInstance(thing)) {
@@ -243,13 +237,14 @@ public class VerisureSession {
         }
     }
 
-    private int areWeLoggedIn() {
+    private boolean areWeLoggedIn() {
         logger.debug("areWeLoggedIn() - Checking if we are logged in");
         String url = STATUS;
         try {
             logger.debug("Check for login status, url: {}", url);
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
             String content = response.getContentAsString();
+            String error = "";
             logTraceWithPattern(response.getStatus(), content);
 
             switch (response.getStatus()) {
@@ -257,23 +252,25 @@ public class VerisureSession {
                     if (content.contains("<title>MyPages</title>")) {
                         logger.debug("Status code 200 and on MyPages!");
                         setPasswordFromCookie();
-                        return 1;
+                        return true;
                     } else {
                         logger.debug("Not on MyPages, we need to login again!");
-                        return 0;
+                        return false;
                     }
                 case HttpStatus.MOVED_TEMPORARILY_302:
                     // Redirection
                     logger.debug("Status code 302. Redirected. Probably not logged in");
-                    return 0;
+                    return false;
                 case HttpStatus.INTERNAL_SERVER_ERROR_500:
                     // Verisure service temporarily down
-                    logger.debug("Status code 500. Verisure service temporarily down");
-                    return HttpStatus.INTERNAL_SERVER_ERROR_500;
+                    error = "Status code 500. Verisure service temporarily down";
+                    logger.debug(error);
+                    throw new HttpResponseException(error, response);
                 case HttpStatus.SERVICE_UNAVAILABLE_503:
                     // Verisure service temporarily down
-                    logger.debug("Status code 503. Verisure service temporarily down");
-                    return HttpStatus.SERVICE_UNAVAILABLE_503;
+                    error = "Status code 503. Verisure service temporarily down";
+                    logger.debug(error);
+                    throw new HttpResponseException(error, response);
                 default:
                     logger.info("Status code {} body {}", response.getStatus(), content);
                     break;
@@ -281,7 +278,7 @@ public class VerisureSession {
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             logger.warn("Caught an Exception {}", e.getMessage(), e);
         }
-        return 0;
+        return false;
     }
 
     private @Nullable <T> T getJSONVerisureAPI(String url, Class<T> jsonClass) {
@@ -385,7 +382,7 @@ public class VerisureSession {
                 }
             }
         }
-        return 999;
+        return HttpStatus.SERVICE_UNAVAILABLE_503;
     }
 
     private int setSessionCookieAuthLogin() {
@@ -429,6 +426,7 @@ public class VerisureSession {
                 List<Owainstallation> owaInstList = installations.getData().getAccount().getOwainstallations();
                 Boolean pinCodesMatchInstallations = true;
                 List<String> pinCodes = new ArrayList<>();
+                String pinCode = this.pinCode;
                 if (pinCode != null) {
                     pinCodes = Arrays.asList(pinCode.split(","));
                     if (owaInstList.size() != pinCodes.size()) {
@@ -472,18 +470,22 @@ public class VerisureSession {
     }
 
     private synchronized boolean logIn() {
-        logger.debug("Attempting to log in to mypages.verisure.com");
-        String url = LOGON_SUF;
-        logger.debug("Login URL: {}", url);
-        int httpStatusCode = postVerisureAPI(url, authstring);
-        if (httpStatusCode != HttpStatus.OK_200) {
-            logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
-            return false;
+        if (!areWeLoggedIn()) {
+            logger.debug("Attempting to log in to mypages.verisure.com");
+            String url = LOGON_SUF;
+            logger.debug("Login URL: {}", url);
+            int httpStatusCode = postVerisureAPI(url, authstring);
+            if (httpStatusCode != HttpStatus.OK_200) {
+                logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
+                return false;
+            }
+            return true;
+        } else {
+            return true;
         }
-        return true;
     }
 
-    private void notifyListeners(VerisureThing thing) {
+    private <T extends VerisureThing> void notifyListeners(T thing) {
         deviceStatusListeners.stream().forEach(listener -> {
             if (listener.getVerisureThingClass().equals(thing.getClass())) {
                 listener.onDeviceStateChanged(thing);
@@ -508,7 +510,6 @@ public class VerisureSession {
 
     private void updateStatus() {
         logger.debug("VerisureSession:updateStatus");
-
         verisureInstallations.forEach((installationId, installation) -> {
             configureInstallationInstance(installation.getInstallationId());
             int httpResultCode = setSessionCookieAuthLogin();
@@ -877,8 +878,11 @@ public class VerisureSession {
     @NonNullByDefault
     private static class Operation {
 
+        @SuppressWarnings("unused")
         private @Nullable String operationName;
+        @SuppressWarnings("unused")
         private Variables variables = new Variables();
+        @SuppressWarnings("unused")
         private @Nullable String query;
 
         public void setOperationName(String operationName) {
@@ -897,6 +901,7 @@ public class VerisureSession {
     @NonNullByDefault
     private static class Variables {
 
+        @SuppressWarnings("unused")
         private @Nullable String giid;
 
         public void setGiid(String giid) {

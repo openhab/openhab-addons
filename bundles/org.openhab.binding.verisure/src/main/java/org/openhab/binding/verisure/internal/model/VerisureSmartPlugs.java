@@ -173,7 +173,7 @@ public class VerisureSmartPlugs extends VerisureBaseThing {
             return icon;
         }
 
-        public @Nullable Boolean isHazardous() {
+        public boolean isHazardous() {
             return isHazardous;
         }
 
