@@ -137,8 +137,6 @@ public class LinkyHandler extends BaseThingHandler {
             } else {
                 logger.debug("Response status {} {}", response.code(), response.message());
             }
-            response.close();
-
             // Do a first call to get data; this first call will fail with code 302
             getConsumptionData(DAILY, LocalDate.now(), LocalDate.now(), false);
             updateStatus(ThingStatus.ONLINE);
