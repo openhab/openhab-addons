@@ -355,7 +355,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     @Override
     protected boolean initializeData() {
-        initalizeNetworkCache();
         updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         this.miioCom = getConnection();
         return true;

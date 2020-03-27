@@ -74,7 +74,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected int lastId;
 
     protected Map<Integer, String> cmds = new ConcurrentHashMap<Integer, String>();
-    protected @Nullable ExpiringCache<String> network;
+    protected final ExpiringCache<String> network = new ExpiringCache<String>(CACHE_EXPIRY_NETWORK, () -> {
+        int ret = sendCommand(MiIoCommand.MIIO_INFO);
+        if (ret != 0) {
+            return "id:" + ret;
+        }
+        return "failed";
+    });;
     protected static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
 
@@ -329,38 +335,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected boolean initializeData() {
-        initalizeNetworkCache();
         this.miioCom = getConnection();
         return true;
     }
 
-    /**
-     * Prepares the ExpiringCache for network data
-     *
-     * @return
-     */
-    protected ExpiringCache<String> initalizeNetworkCache() {
-        final ExpiringCache<String> network = new ExpiringCache<String>(CACHE_EXPIRY_NETWORK, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.MIIO_INFO);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during network status refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
-        this.network = network;
-        return network;
-    }
-
     protected void refreshNetwork() {
-        @Nullable
-        ExpiringCache<String> network = this.network;
-        if (network == null) {
-            network = initalizeNetworkCache();
-        }
         network.getValue();
     }
 
@@ -458,10 +437,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         if (response.isError()) {
             logger.debug("Error received: {}", response.getResponse().get("error"));
             if (MiIoCommand.MIIO_INFO.equals(response.getCommand())) {
-                ExpiringCache<String> network = this.network;
-                if (network != null) {
-                    network.invalidateValue();
-                }
+                network.invalidateValue();
             }
             return;
         }

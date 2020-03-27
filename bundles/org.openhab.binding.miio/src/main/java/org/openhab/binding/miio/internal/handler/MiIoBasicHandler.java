@@ -201,8 +201,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             if (!hasConnection() || skipUpdate()) {
                 return;
             }
-            if (miioCom == null) {
-                initializeData();
+            if (miioCom == null || !initializeData()) {
                 return;
             }
             try {
@@ -261,7 +260,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         miioCom.registerListener(this);
         try {
             miioCom.sendPing(configuration.host);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.debug("ping {} failed", configuration.host);
         }
         this.miioCom = miioCom;
@@ -425,22 +424,24 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             val = transformed;
         }
         try {
-            if (basicChannel.getType().equals("Number")) {
-                updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
-            }
-            if (basicChannel.getType().equals("String")) {
-                updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
-            }
-            if (basicChannel.getType().equals("Switch")) {
-                updateState(basicChannel.getChannel(),
-                        val.getAsString().toLowerCase().equals("on") || val.getAsString().toLowerCase().equals("true")
-                                ? OnOffType.ON
-                                : OnOffType.OFF);
-            }
-            if (basicChannel.getType().equals("Color")) {
-                Color rgb = new Color(val.getAsInt());
-                HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
-                updateState(basicChannel.getChannel(), hsb);
+            switch (basicChannel.getType().toLowerCase()) {
+                case "Number":
+                    updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
+                    break;
+                case "String":
+                    updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
+                    break;
+                case "Switch":
+                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
+                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
+                    break;
+                case "Color":
+                    Color rgb = new Color(val.getAsInt());
+                    HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+                    updateState(basicChannel.getChannel(), hsb);
+                    break;
+                default:
+                    logger.debug("No update logic for channeltype '{}' ", basicChannel.getType());
             }
         } catch (Exception e) {
             logger.debug("Error updating {} property {} with '{}' : {}: {}", getThing().getUID(),

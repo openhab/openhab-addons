@@ -88,9 +88,7 @@ public class MiIoAsyncCommunication {
         this.timeout = timeout;
         setId(id);
         parser = new JsonParser();
-        MessageSenderThread senderThread = new MessageSenderThread();
-        senderThread.start();
-        this.senderThread = senderThread;
+        startReceiver();
     }
 
     protected List<MiIoMessageListener> getListeners() {
@@ -198,6 +196,7 @@ public class MiIoAsyncCommunication {
         MessageSenderThread senderThread = this.senderThread;
         if (senderThread == null || !senderThread.isAlive()) {
             senderThread = new MessageSenderThread();
+            senderThread.start();
         }
         this.senderThread = senderThread;
     }

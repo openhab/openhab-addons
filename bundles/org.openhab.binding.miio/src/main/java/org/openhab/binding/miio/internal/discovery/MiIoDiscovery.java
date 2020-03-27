@@ -224,7 +224,6 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      * The thread, which waits for data and submits the unique results addresses to the discovery results
      *
      */
-    @NonNullByDefault
     private class ReceiverThread extends Thread {
         @Override
         public void run() {
