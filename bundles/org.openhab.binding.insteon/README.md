@@ -119,7 +119,7 @@ In order to determine which channels a device supports, you can look at the devi
 | backlightDuration | Number | Back Light Duration |
 | batteryLevel | Number | Battery Level |
 | batteryWatermarkLevel | Number | Battery Watermark Level |
-| beep | Switch | Makes Device Beep |
+| beep | Switch | Beep |
 | bottomOutlet | Switch | Bottom Outlet |
 | buttonA | Switch | Button A |
 | buttonB | Switch | Button B |
@@ -132,7 +132,6 @@ In order to determine which channels a device supports, you can look at the devi
 | broadcastOnOff | Switch | Broadcast On/Off |
 | contact | Contact | Contact |
 | coolSetPoint | Number | Cool Set Point |
-| dawndusk | Contact | Light Sensor above or below threshold |
 | dimmer | Dimmer | Dimmer |
 | fan | Number | Fan |
 | fanMode | Number | Fan Mode |
@@ -159,13 +158,14 @@ In order to determine which channels a device supports, you can look at the devi
 | lastHeardFrom | DateTime | Last Heard From |
 | ledBrightness | Number | LED brightness |
 | ledOnOff | Switch | LED On/Off |
+| lighDark | Contact | Light Sensor above or below threshold |
 | lightDimmer | Dimmer | light Dimmer |
 | lightLevel | Number | Light Level |
 | loadDimmer | Dimmer | Load Dimmer |
 | loadSwitch | Switch | Load Switch |
 | loadSwitchFastOnOff | Switch | Load Switch Fast On/Off |
 | loadSwitchManualChange | Number | Load Switch Manual Change |
-| lowbat | Contact | Momentary trip on motion sensor low battery warning |
+| lowBattery | Contact | Low Battery |
 | manualChange | Number | Manual Change |
 | manualChangeButtonA | Number | Manual Change Button A |
 | manualChangeButtonB | Number | Manual Change Button B |

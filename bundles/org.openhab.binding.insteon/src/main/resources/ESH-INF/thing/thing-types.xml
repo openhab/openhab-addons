@@ -142,11 +142,6 @@
 		<label>Cool Set Point</label>
 	</channel-type>
 
-	<channel-type id="dawndusk">
-		<item-type>Contact</item-type>
-		<label>Dawn/Dusk</label>
-	</channel-type>
-
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
@@ -277,6 +272,11 @@
 		<label>LED On/Off</label>
 	</channel-type>
 
+	<channel-type id="lightDark">
+		<item-type>Contact</item-type>
+		<label>Light/Dark</label>
+	</channel-type>
+
 	<channel-type id="lightDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Light Dimmer</label>
@@ -307,7 +307,7 @@
 		<label>Load Switch Manual Change</label>
 	</channel-type>
 
-	<channel-type id="lowbat">
+	<channel-type id="lowBattery">
 		<item-type>Contact</item-type>
 		<label>Low Battery Warning</label>
 	</channel-type>
