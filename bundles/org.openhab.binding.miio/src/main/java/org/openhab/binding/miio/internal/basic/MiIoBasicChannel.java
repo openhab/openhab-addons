@@ -89,8 +89,11 @@ public class MiIoBasicChannel {
 
     public String getChannelType() {
         final @Nullable String ct = channelType;
-        return ct == null || ct.isEmpty() ? BINDING_ID + ":" + channel
-                : (ct.startsWith("system") ? ct : BINDING_ID + ":" + ct);
+        if (ct == null || ct.isEmpty()) {
+            return BINDING_ID + ":" + getChannel();
+        } else {
+            return (ct.startsWith("system") ? ct : BINDING_ID + ":" + ct);
+        }
     }
 
     public void setChannelType(String channelType) {
