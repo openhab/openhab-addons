@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.smarthome.core.events.*;
 import org.eclipse.smarthome.core.items.events.ItemStateChangedEvent;
-import org.openhab.binding.webthings.internal.handler.WebThingsConnectorHandler;
 import org.openhab.binding.webthings.internal.handler.WebThingsWebThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,88 +106,7 @@ public class WebThingsItemEventSubscriber implements EventSubscriber {
                     }
                 }
             }
-            else{
-                if(topic.indexOf("_") >= 0){
-                    // TODO: Handle channel names with multiple parts (e.g. color_temp)
-                    String thingID = getThingFromTopic(topic);
-                    String channel;
-                    if(topic.contains("color_temperature")){
-                        thingID = thingID.substring(0, thingID.lastIndexOf(":"));
-                        channel = "color_temperature";
-                    }else{
-                        channel = getChannelFromTopic(topic);
-                    }
-
-                    // Get handler of relevant connector
-                    if(CONNECTOR_HANDLER_LIST.containsKey(thingID)){
-                        WebThingsConnectorHandler handler = CONNECTOR_HANDLER_LIST.get(thingID);
-                        
-                        /* Only works for self hosted things
-                        for(Thing thing: WEBTHINGS_HANDLER.getWebThingList()){
-                            if(thing.getId().equals(thingID)){
-                                thing.setProperty(channel, value);
-                            }
-                        }
-                        */
-
-                        // Get session of socket to WebThing
-                        Session session = handler.getSocket().getSession();
-                        if(session != null && session.isOpen()){
-                            logger.debug("Session ready to send");
-
-                            // Transform payload to command and get usable JSON from that command
-                            Gson g = new Gson();
-                            ItemStateEventPayload command = g.fromJson(payload, ItemStateEventPayload.class);
-                            String jsonCommand = getPropertyFromCommand(handler.getHandlerConfig().id, channel, command);
-                            if(jsonCommand != null){
-                                String lastMessage = handler.getSocket().getLastMessage();
-                                if(lastMessage == null || !jsonCommand.replace("setProperty", "propertyStatus").equals(lastMessage.replaceAll("\\s+",""))){
-                                    try {
-                                        // Send command to WebThing via socket
-                                        session.getRemote().sendString(jsonCommand);
-                                        logger.info("Send command to WebThing: {}", jsonCommand);
-                                        handler.getSocket().setLastMessage(jsonCommand);  
-                                    } catch (IOException e) {
-                                        logger.warn("Could not send command: {} to WebThing: {}", jsonCommand, thingID);
-                                    }
-                                } else{
-                                    logger.debug("Not sending: Command equals last send message - Command: {}", jsonCommand);
-                                }                      
-                            }else{
-                                logger.warn("Could not convert OH Command to Json String");
-                            }
-                        } else{
-                            logger.warn("Could not process OH command: Session is empty or not open");
-                        }
-                    }
-                }
-            }
         }
-    }
-
-    /**
-     * Extract thing ID from zopic
-     * @param topic
-     * @return Thing ID
-     */
-    private String getThingFromTopic(String topic){
-        String thingID = topic.substring(0, topic.lastIndexOf("_", topic.length()));
-        thingID = thingID.substring(thingID.lastIndexOf("/") +1, thingID.length());
-        thingID = thingID.replace("_", ":");
-
-        return thingID;
-    }
-
-    /**
-     * Extract channel id from topic
-     * @param topic
-     * @return channel id
-     */
-    private String getChannelFromTopic(String topic){
-        String channel = topic.substring(topic.lastIndexOf("_") +1, topic.length());
-        channel = channel.substring(0, channel.lastIndexOf("/", channel.length()));
-
-        return channel;
     }
 
     private int ordinalIndexOf(String str, String substr, int n) {

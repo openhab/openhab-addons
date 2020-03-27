@@ -12,23 +12,5 @@
   <artifactId>org.openhab.binding.webthings</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: WebThings Binding</name>
-
-  <!-- https://mvnrepository.com/artifact/org.mozilla.iot/webthing -->
-  <dependencies>
-    <dependency>
-        <groupId>org.mozilla.iot</groupId>
-        <artifactId>webthing</artifactId>
-        <version>0.12.0</version>
-        <scope>provided</scope>
-    </dependency>
-
-  <!-- https://mvnrepository.com/artifact/org.json/json -->
-  <dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20180813</version>
-    <scope>provided</scope>
-  </dependency>
-</dependencies>
-
+  
 </project>

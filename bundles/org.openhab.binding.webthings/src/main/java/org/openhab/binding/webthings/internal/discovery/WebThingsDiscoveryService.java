@@ -72,8 +72,8 @@ public class WebThingsDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting openHAB GateWay discovery scan");
-        if(serverUrl == null || token == null){
-            logger.debug("Binding not configured -> Will not discover things from gateway");
+        if(serverUrl == "" || token == ""){
+            logger.warn("Binding not configured -> Will not discover things from gateway");
             return;
         }
 

@@ -21,38 +21,22 @@
 				<label>Bearer Token</label>
 				<description>Token for Authorization</description>
 			</parameter>
-			<parameter name="openhabIp" type="text">
-				<default>localhost:8080</default>
-				<context>network-address</context>
-				<label>IP and Port</label>
-				<description>IP:Port of openHAB Server</description>
-			</parameter>
-			<parameter name="mozilla" type="boolean">
-				<default>false</default>
-				<label>Match capabilities</label>
-				<description>If true the binding tries to match Mozilla capabilities/types</description>
-			</parameter>
-			<parameter name="system" type="text">
-				<default></default>
-				<label>Operating System</label>
-				<options>
-					<option value="/var/lib/openhab2">Linux Repo</option>
-					<option value="/opt/openhab2/userdata">Linux manual</option>
-					<option value="C:\\openHAB2\\userdata">Windows</option>
-				</options>
-				<description>Set userdata path based on installation</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="userdataPath" type="text">
-				<default></default>
-				<label>Custom path</label>
-				<description>Set custom userdata path (without trailing slash)</description>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="backgroundDiscovery" type="boolean">
 				<default>true</default>
 				<label>Background Discovery</label>
 				<description>Run automated background discovery?</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer">
+				<default>2500</default>
+				<label>Reconnect Interval</label>
+				<description>Time between reconnect attempts after connection loss in ms</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectAttempts" type="integer">
+				<default>4</default>
+				<label>Reconnect Attempts</label>
+				<description>Number of reconnect attempts</description>
 				<advanced>true</advanced>
 			</parameter>
 	</config-description>

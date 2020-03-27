@@ -45,8 +45,6 @@ public class WebThingsHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CONNECTOR);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WEBTHING);
     }
 
@@ -58,17 +56,11 @@ public class WebThingsHandlerFactory extends BaseThingHandlerFactory {
 
         serverParams.put("serverUrl", (String) properties.get("serverUrl"));
         serverParams.put("token", (String) properties.get("token"));
-        serverParams.put("openhabIp", (String) properties.get("openhabIp"));
-        serverParams.put("mozilla", properties.get("mozilla"));
-        serverParams.put("system", properties.get("system"));
-        serverParams.put("userdataPath", properties.get("userdataPath"));
         serverParams.put("backgroundDiscovery", properties.get("backgroundDiscovery"));
+        serverParams.put("reconnectInterval", properties.get("reconnectInterval"));
+        serverParams.put("reconnectAttempts", properties.get("reconnectAttempts"));
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        setParams(serverParams);
     }
 
     @Override
@@ -81,11 +73,7 @@ public class WebThingsHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         setParams(serverParams);
 
-        if (THING_TYPE_CONNECTOR.equals(thingTypeUID)) {
-            return new WebThingsConnectorHandler(thing);
-        } else if(THING_TYPE_SERVER.equals(thingTypeUID)){
-            return new WebThingsServerHandler(thing);
-        } else if(THING_TYPE_WEBTHING.equals(thingTypeUID)){
+        if(THING_TYPE_WEBTHING.equals(thingTypeUID)){
             return new WebThingsWebThingHandler(thing);
         }
         

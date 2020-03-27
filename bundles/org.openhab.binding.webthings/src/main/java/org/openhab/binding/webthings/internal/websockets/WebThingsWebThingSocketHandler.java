@@ -13,6 +13,7 @@
 package org.openhab.binding.webthings.internal.websockets;
 
 import static org.openhab.binding.webthings.internal.converters.WebThingToOpenhabConverter.*;
+import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.reconnectAttempts;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -125,7 +126,7 @@ public class WebThingsWebThingSocketHandler extends WebThingsSocketHandler{
         // Try to reconnect when error occuers
         if(cause instanceof CloseException || cause instanceof EofException || cause instanceof IOException){
             //https://stackoverflow.com/questions/44095346/reconnect-after-onwebsocketclose-jetty-9-4
-            thingReachable = webThingHandler.reconnect(4);
+            thingReachable = webThingHandler.reconnect(reconnectAttempts);
         } else if(cause instanceof SSLHandshakeException){
             logger.error("SSL error: {}", cause.getMessage());
         }else if(cause instanceof SocketTimeoutException){

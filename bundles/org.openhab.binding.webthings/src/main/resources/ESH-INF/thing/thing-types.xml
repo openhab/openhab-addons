@@ -4,83 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- WebThing Connector -->
-	<thing-type id="connector">
-		<label>WebThings Connector Thing</label>
-		<description>Thing to connect a WebThing and an OpenHAB Thing</description>
-
-		<channels>
-			<channel id="id" typeId="id" />
-			<channel id="uid" typeId="uid" />
-			<channel id="updateChannel" typeId="updateChannel" />
-		</channels>
-
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>ID of WebThing</label>
-				<description>Enter the ID seen in the WebThings Gateway</description>
-			</parameter>
-			<parameter name="uid" type="text" required="true">
-				<label>UID of openHAB Thing</label>
-				<description>Enter the unique ID seen in openHAB</description>
-			</parameter>
-			<parameter name="gateway" type="boolean" required="true">
-				<default>true</default>
-				<label>Local Gateway</label>
-				<description>Connect with WebThing from configured Gateway?</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="security" type="text" required="false">
-				<label>SecurityScheme</label>
-				<description>Enter the link to the WebThing</description>
-				<options>
-					<option value="none">None</option>
-					<option value="bearer">Bearer</option>
-				</options>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="securityToken" type="text" required="false">
-				<default></default>
-				<context>password</context>
-				<label>Security Token</label>
-				<description>Token for Authorization</description>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<!-- WebThing Server -->
-	<thing-type id="server">
-		<label>WebThings Server Thing</label>
-		<description>Webserver to host WebThings</description>
-
-		<channels>
-			<channel id="things" typeId="things" />
-			<channel id="port" typeId="port" />
-		</channels>
-
-		<config-description>
-			<parameter name="port" type="integer" required="true">
-				<label>Port of WebThing Server</label>
-				<description>Enter the Port on which the WebThing Server shall be accessible</description>
-			</parameter>
-			<parameter name="linked" type="boolean" required="true">
-				<default>true</default>
-				<label>Linked items</label>
-				<description>Create properties for channels (=false) or all linked Items (=true)</description>
-			</parameter>
-			<parameter name="allThings" type="boolean" required="true">
-				<default>true</default>
-				<label>Host all  things</label>
-				<description>Host selected things (=false) or all things (=true) from openHAB</description>
-			</parameter>
-			<parameter name="things" type="text" required="false" multiple="true">
-				<label>WebThings to be hosted</label>
-				<description>Select WebThings to be hosted</description>
-			</parameter>
-		</config-description>
-	</thing-type>
-
 	<!-- WebThing Thing -->
 	<thing-type id="webthing">
 		<label>WebThings WebThing</label>
@@ -119,46 +42,10 @@
 	</thing-type>
 
 	<!-- Channels -->
-	<channel-type id="id">
-		<item-type>String</item-type>
-		<label>WebThings ID Channel</label>
-		<description>ID of WebThing in Gateway</description>
-	</channel-type>
-
-	<channel-type id="uid">
-		<item-type>String</item-type>
-		<label>WebThings UID Channel</label>
-		<description>UID of Thing in openHAB</description>
-	</channel-type>
-
 	<channel-type id="updateChannel">
 		<item-type>Switch</item-type>
 		<label>WebThing Update Channel</label>
 		<description>Switch for Updating WebThing properties</description>
-	</channel-type>
-
-	<channel-type id="things">
-		<item-type>Text</item-type>
-		<label>Hosted WebThings</label>
-		<description>List of hosted WebThings</description>
-	</channel-type>
-
-	<channel-type id="port">
-		<item-type>Number</item-type>
-		<label>Port of WebThing Server</label>
-		<description>Port on which the WebThing Server is accessible</description>
-	</channel-type>
-
-	<channel-type id="linked">
-		<item-type>Switch</item-type>
-		<label>Linked items</label>
-		<description>Create properties for channels only (=false) or all linked Items (=true)</description>
-	</channel-type>
-
-	<channel-type id="allThings">
-		<item-type>Switch</item-type>
-		<label>Host all  things</label>
-		<description>Host selected things (=false) or all things (=true) from openHAB</description>
 	</channel-type>
 
 </thing:thing-descriptions>

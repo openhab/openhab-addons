@@ -14,6 +14,7 @@ package org.openhab.binding.webthings.internal.handler;
 
 import static org.openhab.binding.webthings.internal.WebThingsBindingConstants.*;
 import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.token;
+import static org.openhab.binding.webthings.internal.WebThingsBindingGlobals.reconnectInterval;
 import static org.openhab.binding.webthings.internal.utilities.WebThingsRestApiUtilities.*;
 import static org.openhab.binding.webthings.internal.converters.WebThingToOpenhabConverter.*;
 
@@ -126,7 +127,7 @@ public class WebThingsWebThingHandler extends BaseThingHandler {
         config = getConfigAs(WebThingsWebThingConfiguration.class);
 
         // If selected, import token from binding config and save into thing configuration
-        if(config.securityToken.isEmpty() && config.importToken){
+        if((config.securityToken == null || config.securityToken.isEmpty()) && config.importToken){
             Configuration newConfig = getConfig();
             newConfig.put("securityToken", token);
             updateConfiguration(newConfig);
@@ -308,7 +309,7 @@ public class WebThingsWebThingHandler extends BaseThingHandler {
                 return true;
             } catch (IOException e) {
                 try {
-                    Thread.sleep(2500);
+                    Thread.sleep(reconnectInterval);
                 } catch (InterruptedException e1) {
                     logger.error("Could not stop sleep thread: {}", e1.getMessage());
                     break;
@@ -371,7 +372,6 @@ public class WebThingsWebThingHandler extends BaseThingHandler {
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        // TODO Auto-generated method stub
         super.handleConfigurationUpdate(configurationParameters);
     }
 }

@@ -28,11 +28,9 @@ public class WebThingsBindingGlobals {
     // List of all binding configuration parameters
     public static String token = "";
     public static String serverUrl = "";
-    public static String openhabIp = "";
-    public static Boolean mozilla = true;
-    public static String system  = "";
-    public static String userdataPath  = "";
     public static Boolean backgroundDiscovery = true;
+    public static Integer reconnectInterval = 2500;
+    public static Integer reconnectAttempts = 4;
 
     /**
      * Set binding configuration params
@@ -45,20 +43,14 @@ public class WebThingsBindingGlobals {
         if(params.get("token") != null){
             token = (String) params.get("token");
         }
-        if(params.get("openhabIp") != null){
-            openhabIp = (String) params.get("openhabIp");
-        }
-        if(params.get("mozilla") != null){
-            mozilla = (Boolean) params.get("mozilla");
-        }
-        if(params.get("system") != null){
-            system = (String) params.get("system");
-        }
-        if(params.get("userdataPath") != null){
-            userdataPath = (String) params.get("userdataPath");
-        }
         if(params.get("backgroundDiscovery") != null){
             backgroundDiscovery = (Boolean) params.get("backgroundDiscovery");
+        }
+        if(params.get("reconnectInterval") != null){
+            reconnectInterval = Integer.parseInt((String) params.get("reconnectInterval"));
+        }
+        if(params.get("reconnectAttempts") != null){
+            reconnectAttempts = Integer.parseInt((String) params.get("reconnectAttempts"));
         }
     }
 }
