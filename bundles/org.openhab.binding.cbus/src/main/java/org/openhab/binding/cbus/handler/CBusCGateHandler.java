@@ -162,7 +162,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     CGateSession session = cGateSession;
                     if (session == null || !session.isConnected()) {
                         if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                                connect();
+                            connect();
                         } else {
                             updateStatus();
                         }
@@ -189,9 +189,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             try {
                 cGateSession.connect();
                 updateStatus();
-                if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                    initializeChildThings();
-                }
             } catch (CGateConnectException e) {
                 updateStatus();
                 logger.warn("Failed to connect to CGate: {}", e.getMessage());
@@ -221,18 +218,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             boolean isOnline = getThing().getStatus().equals(ThingStatus.ONLINE);
             updateChildThings(isOnline);
         }
-    }
-
-    private void initializeChildThings() {
-        threadPool.execute(() -> {
-            // now also re-initialize all network handlers
-            for (Thing thing : getThing().getThings()) {
-                ThingHandler handler = thing.getHandler();
-                if (handler instanceof CBusNetworkHandler) {
-                    ((CBusNetworkHandler) handler).cgateStateChanged(true);
-                }
-            }
-        });
     }
 
     private void updateChildThings(boolean isOnline) {
@@ -387,15 +372,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             return;
         String[] addressParts = address.trim().replace("//", "").split("/");
         int application = Integer.parseInt(addressParts[2]);
-
         updateGroup(addressParts[1], application, addressParts[3], value);
     }
 
     private void updateGroup(String network, int application, String group, String value) {
         for (Thing networkThing : getThing().getThings()) {
             // Is this networkThing from the network we are looking for...
-            if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK)
-                    && networkThing.getConfiguration().get(CBusBindingConstants.PROPERTY_ID) == network) {
+            if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
+                    .getConfiguration().get(CBusBindingConstants.PROPERTY_ID).toString().equals(network)) {
                 ThingHandler thingHandler = networkThing.getHandler();
                 if (thingHandler == null) {
                     continue;
@@ -405,7 +389,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     // Handle Lighting Application messages
                     if (application == CBusBindingConstants.CBUS_APPLICATION_LIGHTING
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_LIGHT)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
+                                    .equals(group)) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_STATE);
                         Channel channelLevel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
                         if (channel != null && channelLevel != null) {
@@ -438,7 +423,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     // DALI Application
                     else if (application == CBusBindingConstants.CBUS_APPLICATION_DALI
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_DALI)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
+                                    .equals(group)) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
                         if (channel != null) {
                             ChannelUID channelUID = channel.getUID();
@@ -469,7 +455,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     // Temperature Application
                     else if (application == CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
+                                    .equals(group)) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP);
 
                         if (channel != null) {
@@ -484,7 +471,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     // Trigger Application
                     else if (application == CBusBindingConstants.CBUS_APPLICATION_TRIGGER
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID) == group) {
+                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
+                                    .equals(group)) {
                         Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
                         if (channel != null) {
                             ChannelUID channelUID = channel.getUID();

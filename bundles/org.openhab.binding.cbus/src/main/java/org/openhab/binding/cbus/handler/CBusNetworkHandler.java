@@ -108,6 +108,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 if (session != null)
                     try {
                         projectObject = (Project) session.getCGateObject("//" + project);
+                        this.projectObject = projectObject;
                     } catch (CGateException e2) {
                         // We dont need to do anything other than stop this propagating
                     }
@@ -142,9 +143,11 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 logger.debug("Network is syncing so wait for it to be ok");
             }
             if (!"ok".equals(state)) {
-                ScheduledFuture<?> initNetwork = getInitNetwork();
+                ScheduledFuture<?> initNetwork = this.initNetwork;
                 if (initNetwork == null || initNetwork.isCancelled()) {
-                    initNetwork = scheduler.scheduleWithFixedDelay(checkNetworkOnline, 30, 30, TimeUnit.SECONDS);
+                    this.initNetwork = scheduler.scheduleWithFixedDelay(() -> {
+                        checkNetworkOnline();
+                    }, 30, 30, TimeUnit.SECONDS);
                     logger.debug("Schedule a check every minute");
                 } else
                     logger.debug("initNetwork alreadys started");
@@ -157,6 +160,26 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         updateStatus();
+    }
+
+    private void checkNetworkOnline() {
+        Network network = getNetwork();
+        try {
+            if (network != null && network.isOnline()) {
+                logger.debug("Network is online");
+                ScheduledFuture<?> initNetwork = this.initNetwork;
+                if (initNetwork != null)
+                    initNetwork.cancel(false);
+                updateStatus();
+            } else {
+                ThingStatus lastStatus = getThing().getStatus();
+                logger.debug("Network still not online {}", lastStatus);
+                updateStatus();
+            }
+        } catch (CGateException e) {
+            logger.warn("Cannot check if network is online {} ", network.getNetworkID());
+            updateStatus();
+        }
     }
 
     private void updateStatus() {
@@ -183,10 +206,12 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         if (!getThing().getStatus().equals(lastStatus)) {
-            ScheduledFuture<?> networkSync = getNetworkSync();
+            ScheduledFuture<?> networkSync = this.networkSync;
             if (lastStatus == ThingStatus.OFFLINE) {
                 if (networkSync == null || networkSync.isCancelled())
-                    networkSync = scheduler.scheduleWithFixedDelay(networkSyncRunnable, (int) (10 * Math.random()),
+                    this.networkSync = scheduler.scheduleWithFixedDelay(() -> {
+                        doNetworkSync();
+                    }, (int) (10 * Math.random()),
                             Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()),
                             TimeUnit.SECONDS);
             } else {
@@ -200,6 +225,18 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                     ((CBusGroupHandler) handler).updateStatus();
                 }
             }
+        }
+    }
+
+    private void doNetworkSync() {
+        Network network = getNetwork();
+        try {
+            if (getThing().getStatus().equals(ThingStatus.ONLINE) && network != null) {
+                logger.info("Starting network sync on network {}", network.getNetworkID());
+                network.startSync();
+            }
+        } catch (CGateException e) {
+            logger.warn("Cannot start network sync on network {} - {}", network.getNetworkID(), e.getMessage());
         }
     }
 
@@ -227,52 +264,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         return network;
     }
 
-    public @Nullable ScheduledFuture<?> getInitNetwork() {
-        return initNetwork;
-    }
-
-    public @Nullable ScheduledFuture<?> getNetworkSync() {
-        return networkSync;
-    }
-
-    public @Nullable Project getProjectObject() {
+    private @Nullable Project getProjectObject() {
         return projectObject;
     }
-
-    private Runnable networkSyncRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Network network = getNetwork();
-            try {
-                if (getThing().getStatus().equals(ThingStatus.ONLINE) && network != null) {
-                    logger.info("Starting network sync on network {}", network.getNetworkID());
-                    network.startSync();
-                }
-            } catch (CGateException e) {
-                logger.warn("Cannot start network sync on network {} ", network.getNetworkID());
-            }
-        }
-    };
-    private Runnable checkNetworkOnline = new Runnable() {
-        @Override
-        public void run() {
-            Network network = getNetwork();
-            try {
-                if (network != null && network.isOnline()) {
-                    logger.debug("Network is online");
-                    ScheduledFuture<?> initNetwork = getInitNetwork();
-                    if (initNetwork != null)
-                        initNetwork.cancel(false);
-                    updateStatus();
-                } else {
-                    ThingStatus lastStatus = getThing().getStatus();
-                    logger.debug("Network still not online {}", lastStatus);
-                    updateStatus();
-                }
-            } catch (CGateException e) {
-                logger.warn("Cannot check if network is online {} ", network.getNetworkID());
-                updateStatus();
-            }
-        }
-    };
 }
