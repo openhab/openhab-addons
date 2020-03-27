@@ -365,11 +365,13 @@ public abstract class CommandHandler {
         public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x09, new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
+                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x09, 
+                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} on", nm(), dev.getAddress());
                 } else if (cmd == OnOffType.OFF) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x08, new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
+                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x08, 
+                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} off", nm(), dev.getAddress());
                 }

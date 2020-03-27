@@ -403,7 +403,7 @@
 	<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
-<feature name="WirelessMotionSensorLightdark">
+<feature name="WirelessMotionSensorLightlevelabovethreshold">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="2">NoOpMsgHandler</message-handler>
 	<message-handler cmd="0x11" group="2">OpenedSleepingContactHandler</message-handler>

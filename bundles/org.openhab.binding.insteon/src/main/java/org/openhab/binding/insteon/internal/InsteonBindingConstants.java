@@ -73,9 +73,9 @@ public class InsteonBindingConstants {
     public static final String LAST_HEARD_FROM = "lastHeardFrom";
     public static final String LED_BRIGHTNESS = "ledBrightness";
     public static final String LED_ONOFF = "ledOnOff";
-    public static final String LIGHTDARK = "lightDark";
     public static final String LIGHT_DIMMER = "lightDimmer";
     public static final String LIGHT_LEVEL = "lightLevel";
+    public static final String LIGHT_LEVEL_ABOVE_THRESHOLD = "lightLevelAboveThreshold";
     public static final String LOAD_DIMMER = "loadDimmer";
     public static final String LOAD_SWITCH = "loadSwitch";
     public static final String LOAD_SWITCH_FAST_ON_OFF = "loadSwitchFastOnOff";

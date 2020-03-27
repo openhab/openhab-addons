@@ -272,11 +272,6 @@
 		<label>LED On/Off</label>
 	</channel-type>
 
-	<channel-type id="lightDark">
-		<item-type>Contact</item-type>
-		<label>Light/Dark</label>
-	</channel-type>
-
 	<channel-type id="lightDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Light Dimmer</label>
@@ -285,6 +280,11 @@
 	<channel-type id="lightLevel">
 		<item-type>Number</item-type>
 		<label>Light Level</label>
+	</channel-type>
+	
+	<channel-type id="lightLevelAboveThreshold">
+		<item-type>Contact</item-type>
+		<label>Light Light Level Above Threshold</label>
 	</channel-type>
 
 	<channel-type id="loadDimmer">

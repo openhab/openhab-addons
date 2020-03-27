@@ -158,9 +158,9 @@ In order to determine which channels a device supports, you can look at the devi
 | lastHeardFrom | DateTime | Last Heard From |
 | ledBrightness | Number | LED brightness |
 | ledOnOff | Switch | LED On/Off |
-| lighDark | Contact | Light Sensor above or below threshold |
 | lightDimmer | Dimmer | light Dimmer |
 | lightLevel | Number | Light Level |
+| lightLevelAboveThreshold | Contact | Light Level Above/Below Threshold |
 | loadDimmer | Dimmer | Load Dimmer |
 | loadSwitch | Switch | Load Switch |
 | loadSwitchFastOnOff | Switch | Load Switch Fast On/Off |
