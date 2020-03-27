@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="adorne"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub" />
+		</supported-bridge-type-refs>
+
+		<label>Adorne Switch</label>
+		<description>Controls an Adorne switch or outlet.</description>
+
+		<channels>
+			<channel id="power" typeId="system.power" />
+		</channels>
+
+		<config-description>
+			<parameter name="zoneId" type="integer" required="true">
+				<label>Zone ID</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub" />
+		</supported-bridge-type-refs>
+
+		<label>Adorne Dimmer Switch</label>
+		<description>Controls an Adorne dimmer switch.</description>
+
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="brightness" typeId="system.brightness" />
+		</channels>
+
+		<config-description>
+			<parameter name="zoneId" type="integer" required="true">
+				<label>Zone ID</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
