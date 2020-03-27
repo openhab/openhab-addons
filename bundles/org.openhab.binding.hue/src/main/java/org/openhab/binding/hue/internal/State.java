@@ -190,11 +190,22 @@ public class State {
         return reachable;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((alert == null) ? 0 : alert.hashCode());
+        result = prime * result + bri;
+        result = prime * result + ((colormode == null) ? 0 : colormode.hashCode());
+        result = prime * result + ct;
+        result = prime * result + ((effect == null) ? 0 : effect.hashCode());
+        result = prime * result + hue;
+        result = prime * result + (on ? 1231 : 1237);
+        result = prime * result + (reachable ? 1231 : 1237);
+        result = prime * result + sat;
+        result = prime * result + Arrays.hashCode(xy);
+        return result;
+    }
 
     @Override
     public boolean equals(Object obj) {
