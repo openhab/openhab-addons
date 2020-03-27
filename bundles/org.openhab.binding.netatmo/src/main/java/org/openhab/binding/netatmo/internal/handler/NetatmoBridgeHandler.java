@@ -43,6 +43,8 @@ import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.squareup.okhttp.OkHttpClient;
+
 import io.swagger.client.ApiClient;
 import io.swagger.client.api.HealthyhomecoachApi;
 import io.swagger.client.api.PartnerApi;
@@ -165,12 +167,10 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }, 2, configuration.reconnectInterval, TimeUnit.SECONDS);
     }
 
-    // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
-    // not trusted by default java certificate control mechanism
     private void initializeApiClient() throws RetrofitError {
         ApiClient apiClient = new ApiClient();
 
-        OAuth auth = new OAuth(new TrustingOkHttpClient(),
+        OAuth auth = new OAuth(new OkHttpClient(),
                 OAuthClientRequest.tokenLocation("https://api.netatmo.net/oauth2/token"));
         auth.setFlow(OAuthFlow.password);
         auth.setAuthenticationRequestBuilder(OAuthClientRequest.authorizationLocation(""));
@@ -179,7 +179,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         apiClient.getTokenEndPoint().setClientId(configuration.clientId).setClientSecret(configuration.clientSecret)
                 .setUsername(configuration.username).setPassword(configuration.password).setScope(getApiScope());
 
-        apiClient.configureFromOkclient(new TrustingOkHttpClient());
+        apiClient.configureFromOkclient(new OkHttpClient());
         apiClient.getAdapterBuilder().setLogLevel(logger.isDebugEnabled() ? LogLevel.FULL : LogLevel.NONE);
 
         apiMap = new APIMap(apiClient);
