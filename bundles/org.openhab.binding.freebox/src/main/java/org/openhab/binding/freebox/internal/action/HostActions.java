@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.freebox.internal.handler.LanHostHandler;
+import org.openhab.binding.freebox.internal.handler.HostHandler;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +30,18 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "freebox")
 @NonNullByDefault
-public class LanHostActions implements ThingActions {
+public class HostActions implements ThingActions {
+    private final static Logger logger = LoggerFactory.getLogger(HostActions.class);
+    private @Nullable HostHandler handler;
 
-    private final static Logger logger = LoggerFactory.getLogger(LanHostActions.class);
-
-    private @Nullable LanHostHandler handler;
-
-    public LanHostActions() {
+    public HostActions() {
         logger.info("Freebox Lan Hosts actions service instanciated");
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof LanHostHandler) {
-            this.handler = (LanHostHandler) handler;
+        if (handler instanceof HostHandler) {
+            this.handler = (HostHandler) handler;
         }
     }
 
@@ -63,8 +61,8 @@ public class LanHostActions implements ThingActions {
     }
 
     public static void wol(@Nullable ThingActions actions) {
-        if (actions instanceof LanHostActions) {
-            ((LanHostActions) actions).wol();
+        if (actions instanceof HostActions) {
+            ((HostActions) actions).wol();
         } else {
             throw new IllegalArgumentException("Instance is not an LanHostActions class.");
         }

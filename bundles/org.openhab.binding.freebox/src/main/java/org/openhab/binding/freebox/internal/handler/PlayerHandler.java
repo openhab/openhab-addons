@@ -14,9 +14,7 @@ package org.openhab.binding.freebox.internal.handler;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.AirMediaConfig;
-import org.openhab.binding.freebox.internal.api.model.LanHost;
 import org.openhab.binding.freebox.internal.api.model.UPnPAVConfig;
 import org.openhab.binding.freebox.internal.config.PlayerConfiguration;
 import org.slf4j.Logger;
@@ -46,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class PlayerHandler extends LanHostHandler {
+public class PlayerHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(PlayerHandler.class);
 
     public PlayerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
@@ -57,34 +54,36 @@ public class PlayerHandler extends LanHostHandler {
     protected Map<String, String> discoverAttributes() throws FreeboxException {
         final Map<String, String> properties = super.discoverAttributes();
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        List<LanHost> hosts = bridgeHandler.getLanHosts();
-        List<LanHost> matching = hosts.stream().filter(host -> config.hostAddress.equals(host.getIpv4()))
-                .collect(Collectors.toList());
-        if (!matching.isEmpty()) {
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, matching.get(0).getMAC());
-            properties.put("Interface", matching.get(0).getInterface());
-        }
+        // Désactivé le temps que je finisse de nettoyer LanHost
+        // Ici je travaillais avec lanhosts mais on ferait mieux de basculer sur le dhcp
+        // https://dev.freebox.fr/sdk/os/dhcp/
+        // List<LanHost> hosts = bridgeHandler.getLanHosts();
+        // List<LanHost> matching = hosts.stream().filter(host -> config.hostAddress.equals(host.getIpv4()))
+        // .collect(Collectors.toList());
+        // if (!matching.isEmpty()) {
+        // properties.put(Thing.PROPERTY_MAC_ADDRESS, matching.get(0).getMAC());
+        // properties.put("Interface", matching.get(0).getInterface());
+        // }
         return properties;
     }
 
     @Override
-    protected boolean internalHandleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    protected boolean internalHandleCommand(@NonNull ChannelUID channelUID, @NonNull Command command)
+            throws FreeboxException {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
             boolean enable = command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
                     || command.equals(OpenClosedType.OPEN);
-            try {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case AIRMEDIASTATUS:
-                        updateChannelSwitchState(PLAYER_ACTIONS, AIRMEDIASTATUS, enableAirMedia(enable));
-                        return true;
-                    case UPNPAVSTATUS:
-                        updateChannelSwitchState(PLAYER_ACTIONS, UPNPAVSTATUS, enableUPnPAV(enable));
-                        return true;
-                }
-            } catch (FreeboxException e) {
-                logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command,
-                        channelUID.getId());
+            switch (channelUID.getIdWithoutGroup()) {
+                case AIRMEDIA_STATUS:
+                    updateState(new ChannelUID(getThing().getUID(), PLAYER_ACTIONS, AIRMEDIA_STATUS),
+                            OnOffType.from(enableAirMedia(enable)));
+                    return true;
+                case UPNPAV_STATUS:
+                    updateState(new ChannelUID(getThing().getUID(), PLAYER_ACTIONS, UPNPAV_STATUS),
+                            OnOffType.from(enableUPnPAV(enable)));
+                    return true;
             }
+
         }
         return super.internalHandleCommand(channelUID, command);
     }
@@ -92,7 +91,7 @@ public class PlayerHandler extends LanHostHandler {
     public boolean enableAirMedia(boolean enable) throws FreeboxException {
         AirMediaConfig config = new AirMediaConfig();
         config.setEnabled(enable);
-        config = bridgeHandler.execute(config, null);
+        config = getApiManager().execute(config, null);
         return config.isEnabled();
         // return bridgeHandler.executePut(FreeboxAirMediaConfigResponse.class, config).isEnabled();
     }
@@ -100,7 +99,7 @@ public class PlayerHandler extends LanHostHandler {
     public boolean enableUPnPAV(boolean enable) throws FreeboxException {
         UPnPAVConfig config = new UPnPAVConfig();
         config.setEnabled(enable);
-        config = bridgeHandler.execute(config, null);
+        config = getApiManager().execute(config, null);
         return config.isEnabled();
         // return bridgeHandler.executePut(FreeboxUPnPAVConfigResponse.class, config).isEnabled();
     }

@@ -45,7 +45,7 @@ public class OpenSessionRequest {
         this.password = hmacSha1(appToken, challenge);
     }
 
-    private String hmacSha1(String appToken, String challenge) throws FreeboxException {
+    private String hmacSha1(String appToken, String challenge) throws IllegalArgumentException {
         try {
             // Get an hmac_sha1 key from the raw key bytes
             SecretKeySpec signingKey = new SecretKeySpec(appToken.getBytes(), ALGORITHM);
@@ -63,7 +63,7 @@ public class OpenSessionRequest {
             // Covert array of Hex bytes to a String
             return new String(hexBytes, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
+            throw new IllegalArgumentException("Computing the hmac-sha1 of the challenge and the app token failed.");
         }
     }
 }

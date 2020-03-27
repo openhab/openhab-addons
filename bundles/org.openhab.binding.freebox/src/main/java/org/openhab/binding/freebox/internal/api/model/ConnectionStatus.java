@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class ConnectionStatus {
 
     public static enum State {
@@ -36,6 +39,7 @@ public class ConnectionStatus {
     }
 
     public static enum Type {
+        UNKNOWN,
         @SerializedName("ethernet")
         ETHERNET,
         @SerializedName("rfc2684")
@@ -45,6 +49,7 @@ public class ConnectionStatus {
     }
 
     public static enum Media {
+        UNKNOWN,
         @SerializedName("ftth")
         FTTH,
         @SerializedName("xdsl")
@@ -52,10 +57,10 @@ public class ConnectionStatus {
     }
 
     private State state = State.UNKNOWN;
-    private Type type;
-    private Media media;
-    private String ipv4;
-    private String ipv6;
+    private Type type = Type.UNKNOWN;
+    private Media media = Media.UNKNOWN;
+    private String ipv4 = "";
+    private String ipv6 = "";
     // current upload rate in byte/s
     private long rateUp;
     // current download rate in byte/s
@@ -70,7 +75,7 @@ public class ConnectionStatus {
     private long bytesDown;
     // Some customers share the same IPv4 and each customer is then assigned a port range. The first value is the first
     // port of the assigned range and the second value is the last port (inclusive).
-    private Long[] ipv4PortRange;
+    private long[] ipv4PortRange = new long[0];
 
     public State getState() {
         return state;

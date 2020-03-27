@@ -16,14 +16,14 @@ import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.RelativePath;
 
 /**
- * The {@link WifiGlobalConfigResponse} is the Java class used to map the
+ * The {@link WifiConfigResponse} is the Java class used to map the
  * response of the Wifi global configuration API
  * https://dev.freebox.fr/sdk/os/wifi/# *
  *
  * @author Laurent Garnier - Initial contribution
  */
 @RelativePath(relativeUrl = "wifi/config/", retryAuth = true)
-public class WifiGlobalConfigResponse extends FreeboxResponse<WifiGlobalConfig> {
+public class WifiConfigResponse extends FreeboxResponse<WifiConfig> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();

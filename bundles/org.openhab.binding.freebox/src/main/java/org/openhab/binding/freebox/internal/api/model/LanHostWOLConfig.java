@@ -12,33 +12,27 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link LanHostWOLConfig} is the Java class used to map the "AirMediaConfig"
- * structure used by the AirMedia configuration API
- * https://dev.freebox.fr/sdk/os/airmedia/#
+ * The {@link LanHostWOLConfig} is the Java class used to send a
+ * WOL order to the given host
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
-@RequestAnnotation(responseClass = LanHostWOLResponse.class, relativeUrl = "lan/wol/", retryAuth = true, method = "POST")
+@RequestAnnotation(responseClass = LanHostWOLResponse.class, relativeUrl = "lan/wol/pub/", retryAuth = true, method = "POST")
+@NonNullByDefault
 public class LanHostWOLConfig {
-    protected String mac;
-    protected String password;
+    protected final String mac;
+    protected final String password;
 
-    public String getMac() {
-        return mac;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setMac(String mac) {
+    public LanHostWOLConfig(String mac, String password) {
         this.mac = mac;
+        this.password = password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public LanHostWOLConfig(String mac) {
+        this(mac, "");
     }
 }

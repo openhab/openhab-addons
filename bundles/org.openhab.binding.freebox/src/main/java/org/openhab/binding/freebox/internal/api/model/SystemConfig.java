@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SystemConfig} is the Java class used to map the "SystemConfig"
@@ -21,19 +24,20 @@ import java.util.List;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class SystemConfig {
-    private String firmwareVersion;
-    private String mac;
-    private String serial;
-    private String uptime;
-    private long uptimeVal;
-    private String boardName;
-    private boolean boxAuthenticated;
-    private String diskStatus;
-    private String boxFlavor;
-    private String userMainStorage;
-    private List<Sensor> fans;
-    private List<Sensor> sensors;
+    private String firmwareVersion = "";
+    private String mac = "";
+    private String serial = "";
+    private String uptime = "";
+    private long uptimeVal = -1;
+    private String boardName = "";
+    private boolean boxAuthenticated = false;
+    private String diskStatus = "";
+    private String boxFlavor = "";
+    private String userMainStorage = "";
+    private List<Sensor> fans = new ArrayList<>();
+    private List<Sensor> sensors = new ArrayList<>();
 
     public List<Sensor> getSensors() {
         return sensors;

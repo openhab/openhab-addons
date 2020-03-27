@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class CallEntry {
     public static enum CallType {
         UNKNOWN,
@@ -36,8 +39,8 @@ public class CallEntry {
     private int id;
     private CallType type = CallType.UNKNOWN;
     private long datetime; // Call creation timestamp.
-    private String number;
-    private String name;
+    private String number = "";
+    private String name = "";
     private int duration; // Call duration in seconds.
     @SerializedName("new")
     private boolean newCall;

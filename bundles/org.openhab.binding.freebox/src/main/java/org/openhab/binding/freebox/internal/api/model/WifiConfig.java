@@ -12,19 +12,33 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link WifiGlobalConfig} is the Java class used to map the "WifiGlobalConfig"
+ * The {@link WifiConfig} is the Java class used to map the "WifiGlobalConfig"
  * structure used by the Wifi global configuration API
  * https://dev.freebox.fr/sdk/os/wifi/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = WifiGlobalConfigResponse.class, relativeUrl = "wifi/config/", retryAuth = true, method = "PUT")
-public class WifiGlobalConfig {
-    private Boolean enabled;
-    private String macFilterState;
+@RequestAnnotation(responseClass = WifiConfigResponse.class, relativeUrl = "wifi/config/", retryAuth = true, method = "PUT")
+@NonNullByDefault
+public class WifiConfig {
+    public static enum FilterState {
+        UNKNOWN,
+        @SerializedName("disabled")
+        DISABLED,
+        @SerializedName("whitelist")
+        WHITELIST,
+        @SerializedName("blacklist")
+        BLACKLIST;
+    }
+
+    private Boolean enabled = Boolean.FALSE;
+    private FilterState macFilterState = FilterState.UNKNOWN;
 
     public Boolean isEnabled() {
         return enabled;
@@ -34,11 +48,11 @@ public class WifiGlobalConfig {
         this.enabled = enabled;
     }
 
-    public String getMacFilterState() {
+    public FilterState getMacFilterState() {
         return macFilterState;
     }
 
-    public void setMacFilterState(String macFilterState) {
+    public void setMacFilterState(FilterState macFilterState) {
         this.macFilterState = macFilterState;
     }
 }

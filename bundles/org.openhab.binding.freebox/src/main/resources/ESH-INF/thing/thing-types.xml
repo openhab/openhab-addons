@@ -4,58 +4,21 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="server">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
-		</supported-bridge-type-refs>
-
-		<label>Freebox Server</label>
-		<description>Provides various informations regarding the status of the Freebox Server</description>
-
-		<channel-groups>
-			<channel-group typeId="display" id="display" />
-			<channel-group typeId="sensors" id="sensors" />
-			<channel-group typeId="samba" id="samba" />
-			<channel-group typeId="sysinfo" id="sysinfo" />
-			<channel-group typeId="actions" id="actions" />
-			<channel-group typeId="connection-status" id="connection-status" />
-		</channel-groups>		
-
-		<config-description-ref uri="thing-type:freebox:server" />
-
-	</thing-type>
-
-	<thing-type id="delta">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
-		</supported-bridge-type-refs>
-
-		<label>Freebox Delta</label>
-		<description>Provides various informations regarding the status of the Freebox Delta</description>
-
-		<channel-groups>
-			<channel-group typeId="sensors" id="sensors" />
-			<channel-group typeId="samba" id="samba" />
-			<channel-group typeId="sysinfo" id="sysinfo" />
-			<channel-group typeId="actions" id="actions" />
-			<channel-group typeId="connection-status" id="connection-status" />
-		</channel-groups>	
-
-		<config-description-ref uri="thing-type:freebox:server" />
-
-	</thing-type>
-
 	<thing-type id="player">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
+			<bridge-type-ref id="revolution" />
+			<bridge-type-ref id="delta" />
 		</supported-bridge-type-refs>
 
 		<label>Freebox Player</label>
+		<description>The player is the device connected to your TV</description>
 		
 		<channel-groups>
 			<channel-group typeId="connectivity" id="connectivity" />
 			<channel-group typeId="player-actions" id="player-actions" />
 		</channel-groups>
+
+        	<representation-property>hostAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freebox:player" />
 
@@ -63,7 +26,8 @@
 
 	<thing-type id="phone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
+			<bridge-type-ref id="revolution" />
+			<bridge-type-ref id="delta" />
 		</supported-bridge-type-refs>
 
 		<label>Phone</label>
@@ -81,9 +45,10 @@
 
 	</thing-type>
 
-	<thing-type id="net_device">
+	<thing-type id="host">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
+			<bridge-type-ref id="revolution" />
+			<bridge-type-ref id="delta" />
 		</supported-bridge-type-refs>
 
 
@@ -94,13 +59,14 @@
 			<channel-group typeId="connectivity" id="connectivity" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:freebox:net_device" />
+		<config-description-ref uri="thing-type:freebox:host" />
 
 	</thing-type>
 
 	<thing-type id="airplay">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
+			<bridge-type-ref id="revolution" />
+			<bridge-type-ref id="delta" />
 		</supported-bridge-type-refs>
 
 		<label>AirPlay Receiver</label>
@@ -114,7 +80,8 @@
 
 	<thing-type id="vm">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api" />
+			<bridge-type-ref id="revolution" />
+			<bridge-type-ref id="delta" />
 		</supported-bridge-type-refs>
 
 		<label>Virtual Machine</label>

@@ -96,31 +96,14 @@ public class AirMediaHandler extends APIConsumerHandler implements AudioSink {
     protected Map<String, String> discoverAttributes() throws FreeboxException {
         final Map<String, String> properties = super.discoverAttributes();
         airPlayConfig = getConfigAs(AirPlayerConfiguration.class);
-        List<AirMediaReceiver> devices = bridgeHandler.executeGet(AirMediaReceiversResponse.class, null);
-        List<AirMediaReceiver> matching = devices.stream()
-                .filter(device -> airPlayConfig.name.equals(device.getName())).collect(Collectors.toList());
+        List<AirMediaReceiver> devices = getApiManager().executeGet(AirMediaReceiversResponse.class, null);
+        List<AirMediaReceiver> matching = devices.stream().filter(device -> airPlayConfig.name.equals(device.getName()))
+                .collect(Collectors.toList());
         if (!matching.isEmpty()) {
             properties.put("audio", Boolean.valueOf(matching.get(0).isAudioCapable()).toString());
             properties.put("video", Boolean.valueOf(matching.get(0).isVideoCapable()).toString());
         }
         return properties;
-    }
-
-    @Override
-    protected void internalPoll() {
-        // The Freebox API allows pushing media only to receivers with photo or video capabilities
-        // but not to receivers with only audio capability
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
-    public String getId() {
-        return getThing().getUID().toString();
-    }
-
-    @Override
-    public @Nullable String getLabel(@Nullable Locale locale) {
-        return getThing().getLabel();
     }
 
     @Override
@@ -136,7 +119,7 @@ public class AirMediaHandler extends APIConsumerHandler implements AudioSink {
                 try {
                     request.setAction(MediaAction.STOP);
                     request.setType(MediaType.VIDEO);
-                    bridgeHandler.execute(request, airPlayConfig.name);
+                    getApiManager().execute(request, airPlayConfig.name);
                 } catch (FreeboxException e) {
                     logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
                 }
@@ -163,7 +146,7 @@ public class AirMediaHandler extends APIConsumerHandler implements AudioSink {
                         request.setAction(MediaAction.START);
                         request.setType(MediaType.VIDEO);
                         request.setMedia(url);
-                        bridgeHandler.execute(request, airPlayConfig.name);
+                        getApiManager().execute(request, airPlayConfig.name);
                     } catch (FreeboxException e) {
                         logger.warn("Audio stream playback failed: {}", e.getMessage());
                     }
@@ -189,6 +172,16 @@ public class AirMediaHandler extends APIConsumerHandler implements AudioSink {
     }
 
     @Override
+    public String getId() {
+        return getThing().getUID().toString();
+    }
+
+    @Override
+    public @Nullable String getLabel(@Nullable Locale locale) {
+        return getThing().getLabel();
+    }
+
+    @Override
     public Set<Class<? extends AudioStream>> getSupportedStreams() {
         return SUPPORTED_STREAMS;
     }
@@ -202,6 +195,12 @@ public class AirMediaHandler extends APIConsumerHandler implements AudioSink {
     @Override
     public void setVolume(PercentType volume) throws IOException {
         logger.info("setVolume received but AirMedia does not have the capability - ignoring it.");
+    }
+
+    @Override
+    protected void internalPoll() throws FreeboxException {
+        // TODO Auto-generated method stub
+
     }
 
 }

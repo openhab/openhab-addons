@@ -21,13 +21,9 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.CallEntry;
 import org.openhab.binding.freebox.internal.api.model.CallEntry.CallType;
@@ -48,71 +44,62 @@ import tec.uom.se.unit.Units;
  */
 @NonNullByDefault
 public class PhoneHandler extends APIConsumerHandler {
-    private final static String LAST_CALL_TIMESTAMP = "lastCallTimestamp";
+    private final static String LAST_CALL_TIMESTAMP = "last-call-timestamp";
     private final Logger logger = LoggerFactory.getLogger(PhoneHandler.class);
-    private Long lastCallTimestamp = 0L;
+    private Long lastCallTimestamp;
 
     public PhoneHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
-        if (thing.getProperties().containsKey(LAST_CALL_TIMESTAMP)) {
-            lastCallTimestamp = Long.parseLong(thing.getProperties().get(LAST_CALL_TIMESTAMP)) - 1;
-        }
+        lastCallTimestamp = thing.getProperties().containsKey(LAST_CALL_TIMESTAMP)
+                ? Long.parseLong(thing.getProperties().get(LAST_CALL_TIMESTAMP)) - 1
+                : 0L;
     }
 
     @Override
-    protected void internalPoll() {
-        try {
-            logger.debug("Polling phone status...");
-            PhoneStatus phoneStatus = bridgeHandler.executeGet(PhoneStatusResponse.class, null).get(0);
-            updateChannelSwitchState(STATE, ONHOOK, phoneStatus.isOnHook());
-            updateChannelSwitchState(STATE, RINGING, phoneStatus.isRinging());
+    protected void internalPoll() throws FreeboxException {
+        logger.debug("Polling phone status...");
+        PhoneStatus phoneStatus = getApiManager().executeGet(PhoneStatusResponse.class, null).get(0);
+        updateChannelOnOff(STATE, ONHOOK, phoneStatus.isOnHook());
+        updateChannelOnOff(STATE, RINGING, phoneStatus.isRinging());
 
-            logger.debug("Polling phone calls since last...");
-            List<CallEntry> callEntries = bridgeHandler.executeGet(CallEntryResponse.class,
-                    "_dc=" + lastCallTimestamp.toString());
-            if (callEntries != null) {
-                callEntries = callEntries.stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
-                        .filter(c -> c.getDatetime() > lastCallTimestamp).collect(Collectors.toList());
-                if (callEntries.size() > 0) {
-                    callEntries.forEach(call -> {
-                        String channelGroup = call.getType().name().toLowerCase();
-                        updateChannels(call, channelGroup);
-                        updateChannels(call, ANY);
-                        if (call.getType() != CallType.INCOMING) {
-                            lastCallTimestamp = call.getDatetime();
-                        }
-                    });
-                    updateProperty(LAST_CALL_TIMESTAMP, lastCallTimestamp.toString());
-                }
+        logger.debug("Polling phone calls since last...");
+        List<CallEntry> callEntries = getApiManager().executeGet(CallEntryResponse.class,
+                "_dc=" + lastCallTimestamp.toString());
+        if (callEntries != null) {
+            callEntries = callEntries.stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
+                    .filter(c -> c.getDatetime() > lastCallTimestamp).collect(Collectors.toList());
+            if (callEntries.size() > 0) {
+                callEntries.forEach(call -> {
+                    String channelGroup = call.getType().name().toLowerCase();
+                    updateChannels(call, channelGroup);
+                    updateChannels(call, ANY);
+                    if (call.getType() != CallType.INCOMING) {
+                        lastCallTimestamp = call.getDatetime();
+                    }
+                });
+                updateProperty(LAST_CALL_TIMESTAMP, lastCallTimestamp.toString());
             }
-            updateStatus(ThingStatus.ONLINE);
-
-        } catch (FreeboxException e) {
-            handleFreeboxException(e);
         }
     }
 
     private void updateChannels(CallEntry call, String group) {
-        updateChannelStringState(group, CALLNUMBER, call.getNumber());
-        updateChannelQuantityType(group, CALLDURATION, new QuantityType<>(call.getDuration(), Units.SECOND));
-        updateChannelDateTimeState(group, CALLTIMESTAMP, call.getDatetime());
-        updateState(new ChannelUID(getThing().getUID(), group, CALLNAME),
-                call.getNumber().equals(call.getName()) ? UnDefType.UNDEF : new StringType(call.getName()));
+        updateChannelString(group, CALL_NUMBER, call.getNumber());
+        updateChannelQuantity(group, CALL_DURATION, call.getDuration(), Units.SECOND);
+        updateChannelDateTimeState(group, CALL_TIMESTAMP, call.getDatetime());
+        if (!call.getNumber().equals(call.getName())) {
+            updateChannelString(group, CALL_NAME, call.getNumber());
+        }
         if (ANY.equals(group)) {
-            updateChannelStringState(ANY, CALLSTATUS, call.getType().name());
+            updateChannelString(ANY, CALL_STATUS, call.getType().name());
         }
     }
 
     @Override
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) {
+    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         if (RINGING.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            String request = "fxs_ring_" + (((OnOffType) command) == OnOffType.ON ? "start" : "stop") + "/";
-            try {
-                bridgeHandler.executePost(PhoneActionResponse.class, request, null);
-                return true;
-            } catch (FreeboxException e) {
-                handleFreeboxException(e);
-            }
+            String request = "fxs_ring_" + (((OnOffType) command) == OnOffType.ON ? "start" : "stop");
+            getApiManager().executePost(PhoneActionResponse.class, request, null);
+            return true;
         }
         return false;
     }

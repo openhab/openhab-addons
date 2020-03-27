@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <thing:thing-descriptions bindingId="freebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="lcd_brightness" advanced="true">
+	<channel-type id="lcd-brightness" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
@@ -9,7 +9,7 @@
 		<state pattern="%d %unit%" />
 	</channel-type>
 
-	<channel-type id="lcd_orientation">
+	<channel-type id="lcd-orientation">
 		<item-type>Number</item-type>
 		<label>Screen Orientation</label>
 		<description>Screen Orientation in degrees</description>
@@ -23,7 +23,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="lcd_forced" advanced="true">
+	<channel-type id="lcd-forced" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Forced Orientation</label>
 		<description>Indicates whether the screen orientation forced</description>
@@ -45,59 +45,45 @@
 		<state readOnly="true" pattern="%d rpm" />
 	</channel-type>
 
-	<channel-type id="fileshare_status" advanced="true">
+	<channel-type id="fileshare-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Window File Sharing Enabled</label>
 		<description>Indicates whether Window File Sharing is enabled</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="printershare_status" advanced="true">
+	<channel-type id="printershare-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Window Printer Sharing Enabled</label>
 		<description>Indicates whether Window Printer Sharing is enabled</description>
 		<category>Switch</category>
 	</channel-type>
+	
+	<channel-type id="bandwidth-usage">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Bandwidth usage</label>
+        <description>Current bandwidth usage</description>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
 
-	<channel-type id="rate_up" advanced="true">
+	<channel-type id="transfer-rate" advanced="true">
 		<item-type>Number:DataTransferRate</item-type>
-		<label>Upload Rate</label>
-		<description>Current upload rate</description>
+		<label>Transfer Rate</label>
+		<description>Current transfer rate</description>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
-	<channel-type id="rate_down" advanced="true">
-		<item-type>Number:DataTransferRate</item-type>
-		<label>Download Rate</label>
-		<description>Current download rate</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
-	</channel-type>
-
-	<channel-type id="bytes_up" advanced="true">
+	<channel-type id="transfer-bytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
-		<label>Uploaded</label>
-		<description>Total data uploaded since last connection</description>
+		<label>Transfered bytes</label>
+		<description>Total data transfered since last connection</description>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
-	<channel-type id="bytes_down" advanced="true">
-		<item-type>Number:DataAmount</item-type>
-		<label>Downloaded</label>
-		<description>Total data downloaded since last connection</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
-	</channel-type>
-
-	<channel-type id="bandwidthUp" advanced="true">
+	<channel-type id="bandwidth" advanced="true">
 		<item-type>Number:DataTransferRate</item-type>
-		<label>Bandwidth Up</label>
-		<description>Available upload bandwidth</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
-	</channel-type>
-
-	<channel-type id="bandwidthDown" advanced="true">
-		<item-type>Number:DataTransferRate</item-type>
-		<label>Bandwidth Down</label>
-		<description>Available download bandwidth</description>
+		<label>Bandwidth</label>
+		<description>Available bandwidth</description>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 
@@ -115,21 +101,21 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="xdsl_status">
+	<channel-type id="xdsl-status">
 		<item-type>String</item-type>
 		<label>xDSL Status</label>
 		<description>Status of the xDSL line</description>
 		<state readOnly="true" />
 	</channel-type>
 	
-	<channel-type id="ftth_status">
+	<channel-type id="ftth-status">
 		<item-type>Switch</item-type>
 		<label>FTTH Status</label>
 		<description>Status of the Fiber Optic line</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="line_status">
+	<channel-type id="line-status">
 		<item-type>String</item-type>
 		<label>Line Status</label>
 		<description>Status of network line connexion</description>
@@ -143,28 +129,28 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="wifi_status">
+	<channel-type id="wifi-status">
 		<item-type>Switch</item-type>
 		<label>Wifi Enabled</label>
 		<description>Indicates whether the wifi network is enabled</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="ftp_status" advanced="true">
+	<channel-type id="ftp-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>FTP Server Enabled</label>
 		<description>Indicates whether the FTP server is enabled</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="airmedia_status" advanced="true">
+	<channel-type id="airmedia-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Air Media Enabled</label>
 		<description>Indicates whether Air Media is enabled</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="upnpav_status" advanced="true">
+	<channel-type id="upnpav-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>UPnP AV Enabled</label>
 		<description>Indicates whether UPnP AV is enabled</description>
@@ -186,28 +172,13 @@
 		<category>Alarm</category>
 	</channel-type>
 
-	<channel-type id="call_number">
+	<channel-type id="phone-number">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
-		<description>Called number for outgoing calls. Caller number for incoming calls</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="called_number">
-		<item-type>String</item-type>
-		<label>Phone Number</label>
-		<description>Called number</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="caller_number">
-		<item-type>String</item-type>
-		<label>Phone Number</label>
-		<description>Caller number</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="call_duration">
+	<channel-type id="call-duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Call duration in seconds</description>
@@ -220,14 +191,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="call_timestamp">
-		<item-type>DateTime</item-type>
-		<label>Timestamp</label>
-		<description>Call creation timestamp</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="call_status">
+	<channel-type id="call-status">
 		<item-type>String</item-type>
 		<label>Call Type</label>
 		<description>Call Type (ingoing, outgoing, missed)</description>
@@ -241,31 +205,17 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="call_name">
+	<channel-type id="call-name">
 		<item-type>String</item-type>
-		<label>Call Name</label>
+		<label>Name</label>
 		<description>Called name for outgoing calls. Caller name for incoming calls</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="called_name">
-		<item-type>String</item-type>
-		<label>Called Name</label>
-		<description>Called name</description>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="caller_name">
-		<item-type>String</item-type>
-		<label>Caller Name</label>
-		<description>Caller name</description>
-		<state readOnly="true" />
+        <state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="reachable">
 		<item-type>Switch</item-type>
 		<label>Reachable</label>
-		<description>Indicates whether the network device is reachable</description>
+		<description>Indicates if the network device is reachable or not</description>
 		<category>Switch</category>
 		<state readOnly="true" />
 	</channel-type>

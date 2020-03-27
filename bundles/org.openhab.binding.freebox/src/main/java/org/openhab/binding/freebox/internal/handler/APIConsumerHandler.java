@@ -19,11 +19,12 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -36,6 +37,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.freebox.internal.api.ApiManager;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.config.APIConsumerConfiguration;
 import org.slf4j.Logger;
@@ -51,26 +54,11 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
     final Logger logger = LoggerFactory.getLogger(APIConsumerHandler.class);
     private final TimeZoneProvider timeZoneProvider;
     private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
-    protected @NonNullByDefault({}) FreeboxAPIHandler bridgeHandler;
+    protected @NonNullByDefault({}) ServerHandler bridgeHandler;
 
     public APIConsumerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType || (getThing().getStatus() == ThingStatus.UNKNOWN || (getThing()
-                .getStatus() == ThingStatus.OFFLINE
-                && (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE
-                        || getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_UNINITIALIZED
-                        || getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)))) {
-            return;
-        }
-        if (bridgeHandler == null || !internalHandleCommand(channelUID, command)) {
-            logger.debug("Thing {}: unexpected command {} from channel {}", getThing().getUID(), command,
-                    channelUID.getId());
-        }
     }
 
     protected Map<String, String> discoverAttributes() throws FreeboxException {
@@ -84,13 +72,10 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
         logger.debug("Initializing handler for thing {}", getThing().getUID());
         APIConsumerConfiguration configuration = getConfigAs(APIConsumerConfiguration.class);
 
-        if (thing.getProperties().isEmpty()) {
+        if (thing.getProperties().isEmpty() && checkBridgeHandler()) {
             try {
-                checkBridgeHandler();
                 Map<String, String> properties = discoverAttributes();
-                if (!properties.isEmpty()) {
-                    updateProperties(properties);
-                }
+                updateProperties(properties);
             } catch (FreeboxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Error getting Freebox Server configuration items");
@@ -101,9 +86,35 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
             logger.debug("Scheduling state update every {} seconds...", configuration.refreshInterval);
             globalJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (checkBridgeHandler()) {
-                    internalPoll();
+                    try {
+                        internalPoll();
+                        updateStatus(ThingStatus.ONLINE);
+                    } catch (FreeboxException e) {
+                        logger.warn("Error polling thing {} : {}", this.getThing().getUID(), e.getMessage());
+                        updateStatus(ThingStatus.OFFLINE);
+                    }
                 }
             }, 5, configuration.refreshInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType || (getThing().getStatus() == ThingStatus.UNKNOWN || (getThing()
+                .getStatus() == ThingStatus.OFFLINE
+                && (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE
+                        || getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_UNINITIALIZED
+                        || getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)))) {
+            return;
+        }
+        try {
+            if (bridgeHandler == null || !internalHandleCommand(channelUID, command)) {
+                logger.debug("Thing {}: unexpected command {} from channel {}", getThing().getUID(), command,
+                        channelUID.getId());
+            }
+        } catch (FreeboxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
@@ -112,7 +123,7 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
-                bridgeHandler = (FreeboxAPIHandler) handler;
+                bridgeHandler = (ServerHandler) handler;
                 updateStatus(ThingStatus.ONLINE);
                 return true;
             } else {
@@ -134,34 +145,12 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) {
+    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         // By default, does nothing
         return false;
     }
 
-    protected abstract void internalPoll();
-
-    protected void updateChannelStringState(String group, String channel, String state) {
-        updateState(new ChannelUID(getThing().getUID(), group, channel), StringType.valueOf(state));
-    }
-
-    protected void updateChannelSwitchState(String group, String channel, boolean state) {
-        updateState(new ChannelUID(getThing().getUID(), group, channel), OnOffType.from(state));
-    }
-
-    protected void updateChannelDecimalState(String group, String channel, int state) {
-        updateState(new ChannelUID(getThing().getUID(), group, channel), new DecimalType(state));
-    }
-
-    protected void updateChannelDecimalState(String group, String channel, long state) {
-        updateState(new ChannelUID(getThing().getUID(), group, channel), new DecimalType(state));
-    }
-
-    protected void updateChannelQuantityType(String group, String channelId, @Nullable QuantityType<?> quantity) {
-        if (quantity != null) {
-            updateState(new ChannelUID(getThing().getUID(), group, channelId), quantity);
-        }
-    }
+    protected abstract void internalPoll() throws FreeboxException;
 
     protected void logCommandException(FreeboxException e, ChannelUID channelUID, Command command) {
         if (e.isMissingRights()) {
@@ -173,16 +162,6 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
         }
     }
 
-    protected void handleFreeboxException(FreeboxException e) {
-        if (e.isMissingRights()) {
-            logger.debug("Phone state job: missing right {}", e.getResponse().getMissingRight());
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            logger.debug("Phone state job failed: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
     protected ZonedDateTime convertTimestamp(long timestamp) {
         Instant i = Instant.ofEpochSecond(timestamp);
         return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
@@ -190,6 +169,39 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
 
     protected void updateChannelDateTimeState(String group, String channel, long timestamp) {
         updateState(new ChannelUID(getThing().getUID(), group, channel), new DateTimeType(convertTimestamp(timestamp)));
+    }
+
+    protected ApiManager getApiManager() {
+        return bridgeHandler.getApiManager();
+    }
+
+    protected void updateChannelOnOff(String group, String channelId, boolean value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, OnOffType.from(value));
+        }
+    }
+
+    protected void updateChannelString(String group, String channelId, String value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, new StringType(value));
+        }
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, QuantityType<?> qtty, Unit<?> unit) {
+        updateChannelQuantity(group, channelId, qtty.toUnit(unit));
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, double d, Unit<?> unit) {
+        updateChannelQuantity(group, channelId, new QuantityType<>(d, unit));
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, @Nullable QuantityType<?> quantity) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, quantity != null ? quantity : UnDefType.NULL);
+        }
     }
 
 }

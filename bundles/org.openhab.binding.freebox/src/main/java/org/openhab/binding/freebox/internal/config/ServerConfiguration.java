@@ -15,19 +15,19 @@ package org.openhab.binding.freebox.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link FreeboxAPIConfiguration} is responsible for holding
+ * The {@link ServerConfiguration} is responsible for holding
  * configuration informations needed to access/poll the Freebox API
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FreeboxAPIConfiguration {
+public class ServerConfiguration {
     public static final String HOST_ADDRESS = "hostAddress";
     public static final String HTTPS_AVAILABLE = "httpsAvailable";
     public static final String REMOTE_HTTPS_PORT = "remoteHttpsPort";
 
     public String hostAddress = "mafreebox.freebox.fr";
-    public @NonNullByDefault({}) String appToken;
+    public String appToken = "";
     public boolean httpsAvailable = false;
     public long remoteHttpsPort = -1L;
     public Boolean background = true;
@@ -35,4 +35,5 @@ public class FreeboxAPIConfiguration {
     public Boolean discoverNetDevice = false;
     public Boolean discoverAirPlayReceiver = true;
     public Boolean discoverVM = true;
+    public Integer refreshInterval = 30;
 }

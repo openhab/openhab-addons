@@ -18,7 +18,7 @@ package org.openhab.binding.freebox.internal.config;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class PlayerConfiguration extends LanHostConfiguration {
+public class PlayerConfiguration extends HostConfiguration {
     public static final String HOST_ADDRESS = "hostAddress";
     public static final String PORT = "port";
 

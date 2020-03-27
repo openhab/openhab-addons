@@ -13,12 +13,12 @@
 package org.openhab.binding.freebox.internal.config;
 
 /**
- * The {@link LanHostConfiguration} is responsible for holding
+ * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
  * thing type
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class LanHostConfiguration extends APIConsumerConfiguration {
+public class HostConfiguration extends APIConsumerConfiguration {
     public String macAddress;
 }

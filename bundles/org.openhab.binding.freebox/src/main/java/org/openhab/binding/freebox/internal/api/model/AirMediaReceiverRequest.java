@@ -41,8 +41,8 @@ public class AirMediaReceiverRequest {
         PHOTO;
     }
 
-    private MediaAction action;
-    private MediaType mediaType;
+    private MediaAction action = MediaAction.UNKNOWN;
+    private MediaType mediaType = MediaType.UNKNOWN;
     private String password;
     private Integer position;
     private String media;

@@ -33,34 +33,30 @@ public class FreeboxBindingConstants {
 
     public static final String CALLBACK_URL = "callbackUrl";
     // List of all Bridge Type UIDs
-    public static final ThingTypeUID FREEBOX_BRIDGE_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
+    // public static final ThingTypeUID FREEBOX_BRIDGE_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
+    public static final ThingTypeUID FREEBOX_BRIDGE_TYPE_REVOLUTION = new ThingTypeUID(BINDING_ID, "revolution");
+    public static final ThingTypeUID FREEBOX_BRIDGE_TYPE_DELTA = new ThingTypeUID(BINDING_ID, "delta");
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID FREEBOX_THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
-    public static final ThingTypeUID FREEBOX_THING_TYPE_DELTA = new ThingTypeUID(BINDING_ID, "delta");
     public static final ThingTypeUID FREEBOX_THING_TYPE_PHONE = new ThingTypeUID(BINDING_ID, "phone");
-    public static final ThingTypeUID FREEBOX_THING_TYPE_NET_DEVICE = new ThingTypeUID(BINDING_ID, "net_device");
+    public static final ThingTypeUID FREEBOX_THING_TYPE_HOST = new ThingTypeUID(BINDING_ID, "host");
     public static final ThingTypeUID FREEBOX_THING_TYPE_AIRPLAY = new ThingTypeUID(BINDING_ID, "airplay");
     public static final ThingTypeUID FREEBOX_THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
     public static final ThingTypeUID FREEBOX_THING_TYPE_VM = new ThingTypeUID(BINDING_ID, "vm");
 
     // All supported Thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(FREEBOX_THING_TYPE_SERVER, FREEBOX_THING_TYPE_DELTA, FREEBOX_THING_TYPE_PHONE,
-                    FREEBOX_THING_TYPE_NET_DEVICE, FREEBOX_THING_TYPE_AIRPLAY, FREEBOX_THING_TYPE_PLAYER,
-                    FREEBOX_THING_TYPE_VM).collect(Collectors.toSet()));
-
-    // All supported Thing types
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(FREEBOX_THING_TYPE_PHONE, FREEBOX_THING_TYPE_NET_DEVICE,
-                    FREEBOX_THING_TYPE_AIRPLAY, FREEBOX_THING_TYPE_VM).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(FREEBOX_BRIDGE_TYPE_REVOLUTION, FREEBOX_BRIDGE_TYPE_DELTA,
+                    FREEBOX_THING_TYPE_PHONE, FREEBOX_THING_TYPE_HOST, FREEBOX_THING_TYPE_AIRPLAY,
+                    FREEBOX_THING_TYPE_PLAYER, FREEBOX_THING_TYPE_VM).collect(Collectors.toSet()));
 
     // List of properties
-    public static final String API_BASE_URL = "apiBaseUrl";
-    public static final String API_VERSION = "apiVersion";
+    public static final String PROPERTY_API_VERSION = "apiVersion";
+    public static final String PROPERTY_MEDIA = "media";
+    public static final String PROPERTY_INTERFACE = "interface";
 
     // List of all Group Channel ids
-    public static final String CONNECTION_STATUS = "connections-status";
+    public static final String CONNECTION_STATUS = "connection-status";
     public static final String SYS_INFO = "sysinfo";
     public static final String ACTIONS = "actions";
     public static final String SAMBA = "samba";
@@ -78,38 +74,40 @@ public class FreeboxBindingConstants {
     // List of all Channel ids
     public static final String UPTIME = "uptime";
     public static final String BOX_EVENT = "boxevent";
-    public static final String LCDBRIGHTNESS = "lcd_brightness";
-    public static final String LCDORIENTATION = "lcd_orientation";
-    public static final String LCDFORCED = "lcd_forced";
-    public static final String WIFISTATUS = "wifi_status";
-    public static final String XDSLSTATUS = "xdsl_status";
-    public static final String FTTHSTATUS = "ftth_status";
+    public static final String LCD_BRIGHTNESS = "lcd-brightness";
+    public static final String LCD_ORIENTATION = "lcd-orientation";
+    public static final String LCD_FORCED = "lcd-forced";
+    public static final String WIFI_STATUS = "wifi-status";
+    public static final String XDSL_STATUS = "xdsl-status";
+    public static final String FTTH_STATUS = "ftth-status";
     public static final String IPV4 = "ipv4";
 
-    public static final String LINESTATUS = "line_status";
-    public static final String RATEUP = "rate_up";
-    public static final String RATEDOWN = "rate_down";
-    public static final String BYTESUP = "bytes_up";
-    public static final String BYTESDOWN = "bytes_down";
-    public static final String BWUP = "bandwidthUp";
-    public static final String BWDOWN = "bandwidthDown";
+    public static final String LINE_STATUS = "line-status";
+    public static final String RATE_UP = "rate-up";
+    public static final String RATE_DOWN = "rate-down";
+    public static final String BYTES_UP = "bytes-up";
+    public static final String BYTES_DOWN = "bytes-down";
+    public static final String BW_UP = "bandwidth-up";
+    public static final String BW_DOWN = "bandwidth-down";
+    public static final String PCT_BW_UP = "bandwidth-usage-up";
+    public static final String PCT_BW_DOWN = "bandwidth-usage-down";
 
     public static final String ONHOOK = "onhook";
     public static final String RINGING = "ringing";
-    public static final String CALLNUMBER = "call_number";
-    public static final String CALLDURATION = "call_duration";
-    public static final String CALLTIMESTAMP = "call_timestamp";
-    public static final String CALLSTATUS = "call_status";
-    public static final String CALLNAME = "call_name";
-    public static final String FTPSTATUS = "ftp_status";
-    public static final String SAMBAFILESTATUS = "fileshare_status";
-    public static final String SAMBAPRINTERSTATUS = "printershare_status";
+    public static final String CALL_NUMBER = "call-number";
+    public static final String CALL_DURATION = "call-duration";
+    public static final String CALL_TIMESTAMP = "call-timestamp";
+    public static final String CALL_STATUS = "call-status";
+    public static final String CALL_NAME = "call-name";
+    public static final String FTP_STATUS = "ftp-status";
+    public static final String SAMBA_FILE_STATUS = "fileshare-status";
+    public static final String SAMBA_PRINTER_STATUS = "printershare-status";
     public static final String REACHABLE = "reachable";
-    public static final String LAST_SEEN = "lastSeen";
+    public static final String LAST_SEEN = "last-seen";
 
     // Freebox player channels
-    public static final String AIRMEDIASTATUS = "airmedia_status";
-    public static final String UPNPAVSTATUS = "upnpav_status";
+    public static final String AIRMEDIA_STATUS = "airmedia-status";
+    public static final String UPNPAV_STATUS = "upnpav-status";
 
     // Virtual machine channels
     public static final String STATUS = "status";

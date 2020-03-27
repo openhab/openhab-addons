@@ -13,10 +13,10 @@
 package org.openhab.binding.freebox.internal.discovery;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.FREEBOX_THING_TYPE_PLAYER;
+import static org.openhab.binding.freebox.internal.config.PlayerConfiguration.*;
 
+import java.net.InetAddress;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -28,7 +28,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.freebox.internal.config.PlayerConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +38,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 @NonNullByDefault
 public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant {
-
     private final Logger logger = LoggerFactory.getLogger(PlayerDiscoveryParticipant.class);
-
-    private static final String SERVICE_TYPE = "_hid._udp.local.";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -54,32 +50,49 @@ public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public String getServiceType() {
-        return SERVICE_TYPE;
+        return "_hid._udp.local.";
+    }
+
+    /**
+     * Gets the ip address found in the {@link ServiceInfo}
+     *
+     * @param service a non-null service
+     * @return the ip address of the service or null if none found.
+     */
+    private @Nullable InetAddress getIpAddress(ServiceInfo service) {
+        InetAddress address = null;
+        for (InetAddress addr : service.getInet4Addresses()) {
+            return addr;
+        }
+        // Fallback for Inet6addresses
+        for (InetAddress addr : service.getInet6Addresses()) {
+            return addr;
+        }
+        return address;
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(ServiceInfo service) {
-        String[] hosts = service.getHostAddresses();
-        if (getServiceType().equals(service.getType()) && hosts != null && hosts.length > 0 && !hosts[0].isEmpty()) {
-            return new ThingUID(FREEBOX_THING_TYPE_PLAYER, hosts[0].replaceAll("[^A-Za-z0-9_]", "_"));
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        if (service.hasData() && service.getServer() != null) {
+            String application = service.getApplication();
+            return new ThingUID(FREEBOX_THING_TYPE_PLAYER, application);
         }
         return null;
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(ServiceInfo service) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         logger.debug("createResult ServiceInfo: {}", service);
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null) {
-            logger.info("Created a DiscoveryResult for Freebox Player {} on IP {}", thingUID,
-                    service.getHostAddresses()[0]);
-            Map<String, Object> properties = new HashMap<>(2);
-            properties.put(PlayerConfiguration.HOST_ADDRESS, service.getHostAddresses()[0]);
-            properties.put(PlayerConfiguration.PORT, service.getPort());
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(service.getName())
-                    .build();
+            InetAddress ip = getIpAddress(service);
+            if (ip != null) {
+                String id = ip.toString().substring(1);
+                logger.info("Created a DiscoveryResult for Freebox Player {} on address {}", thingUID, id);
+                return DiscoveryResultBuilder.create(thingUID).withLabel(service.getName())
+                        .withProperty(HOST_ADDRESS, id).withProperty(PORT, service.getPort())
+                        .withRepresentationProperty(HOST_ADDRESS).build();
+            }
         }
         return null;
     }

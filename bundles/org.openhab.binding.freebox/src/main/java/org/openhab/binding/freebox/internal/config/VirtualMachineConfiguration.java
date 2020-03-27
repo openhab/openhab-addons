@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VirtualMachineConfiguration extends LanHostConfiguration {
+public class VirtualMachineConfiguration extends HostConfiguration {
     public static final String VM_ID = "vmId";
 
     public Integer vmId = 1;

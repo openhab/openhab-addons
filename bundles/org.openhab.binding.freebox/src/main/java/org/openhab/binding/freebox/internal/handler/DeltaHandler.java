@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.handler;
 
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
-import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.Bridge;
 
 /**
  * The {@link DeltaHandler} is responsible for handling commands, which are
@@ -23,8 +22,8 @@ import org.eclipse.smarthome.core.thing.Thing;
  */
 public class DeltaHandler extends ServerHandler {
 
-    public DeltaHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public DeltaHandler(Bridge bridge) {
+        super(bridge);
     }
 
 }

@@ -34,8 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.freebox.internal.handler.AirMediaHandler;
 import org.openhab.binding.freebox.internal.handler.DeltaHandler;
-import org.openhab.binding.freebox.internal.handler.FreeboxAPIHandler;
-import org.openhab.binding.freebox.internal.handler.LanHostHandler;
+import org.openhab.binding.freebox.internal.handler.HostHandler;
 import org.openhab.binding.freebox.internal.handler.PhoneHandler;
 import org.openhab.binding.freebox.internal.handler.PlayerHandler;
 import org.openhab.binding.freebox.internal.handler.RevolutionHandler;
@@ -86,31 +85,27 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_API) || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_API)) {
-            return new FreeboxAPIHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_AIRPLAY)) {
-            if (callbackUrl != null) {
-                AirMediaHandler handler = new AirMediaHandler(thing, timeZoneProvider, audioHTTPServer, callbackUrl);
-                @SuppressWarnings("unchecked")
-                ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                        .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
-                audioSinkRegistrations.put(thing.getUID(), reg);
-                return handler;
-            }
-        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_SERVER)) {
-            return new RevolutionHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_DELTA)) {
-            return new DeltaHandler(thing, timeZoneProvider);
+        if (thingTypeUID.equals(FREEBOX_THING_TYPE_AIRPLAY) && callbackUrl != null) {
+            AirMediaHandler handler = new AirMediaHandler(thing, timeZoneProvider, audioHTTPServer, callbackUrl);
+            @SuppressWarnings("unchecked")
+            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                    .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
+            audioSinkRegistrations.put(thing.getUID(), reg);
+            return handler;
+        } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_REVOLUTION)) {
+            return new RevolutionHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_DELTA)) {
+            return new DeltaHandler((Bridge) thing);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PLAYER)) {
             return new PlayerHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_NET_DEVICE)) {
-            return new LanHostHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_HOST)) {
+            return new HostHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PHONE)) {
             return new PhoneHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_VM)) {
@@ -137,7 +132,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
                 // we do not use SSL as it can cause certificate validation issues.
                 callbackUrl = String.format("http://%s:%d", ipAddress, port);
             } else {
-                logger.warn("No network interface could be found or Cannot find port of the http service.");
+                logger.warn("No network interface could be found or cannot find port of the http service.");
             }
         }
     }

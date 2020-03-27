@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class LanConfig {
     public static enum NetworkMode {
         UNKNOWN,
@@ -30,11 +33,11 @@ public class LanConfig {
         BRIDGE;
     }
 
-    private String ip;
-    private String name;
-    private String nameDns;
-    private String nameMdns;
-    private String nameNetbios;
+    private String ip = "";
+    private String name = "";
+    private String nameDns = "";
+    private String nameMdns = "";
+    private String nameNetbios = "";
     private NetworkMode type = NetworkMode.UNKNOWN;
 
     public String getIp() {

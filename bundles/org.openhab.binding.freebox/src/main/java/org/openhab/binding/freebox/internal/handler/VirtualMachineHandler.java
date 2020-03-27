@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VirtualMachineHandler extends LanHostHandler {
+public class VirtualMachineHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(PhoneHandler.class);
     private @NonNullByDefault({}) VirtualMachineConfiguration vmConfig;
 
@@ -51,31 +51,24 @@ public class VirtualMachineHandler extends LanHostHandler {
     }
 
     @Override
-    protected void internalPoll() {
-        try {
-            logger.debug("Polling Virtual machine status");
-            super.internalPoll();
-            VirtualMachine vm = bridgeHandler.executeGet(VirtualMachineResponse.class,
-                    vmConfig.vmId.toString());
-            if (vm != null) {
-                updateChannelSwitchState(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
-            }
-        } catch (FreeboxException e) {
-            handleFreeboxException(e);
+    protected void internalPoll() throws FreeboxException {
+        logger.debug("Polling Virtual machine status");
+        super.internalPoll();
+        VirtualMachine vm = getApiManager().executeGet(VirtualMachineResponse.class, vmConfig.vmId.toString());
+        if (vm != null) {
+            updateState(new ChannelUID(getThing().getUID(), VM_STATUS, STATUS),
+                    OnOffType.from(vm.getStatus() == Status.RUNNING));
         }
     }
 
     @Override
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) {
+    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
             boolean startIt = ((OnOffType) command) == OnOffType.ON;
             String request = vmConfig.vmId.toString() + "/" + (startIt ? "start" : "powerbutton");
-            try {
-                bridgeHandler.executePost(VirtualMachineActionResponse.class, request, null);
-                return true;
-            } catch (FreeboxException e) {
-                handleFreeboxException(e);
-            }
+            getApiManager().executePost(VirtualMachineActionResponse.class, request, null);
+            return true;
+
         }
         return false;
     }

@@ -13,6 +13,7 @@
 package org.openhab.binding.freebox.internal.discovery;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
+import static org.openhab.binding.freebox.internal.config.ServerConfiguration.*;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,40 +35,39 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ServerDiscoveryParticipant} is responsible for discovering
- * the Freebox Server (bridge) thing using mDNS discovery service
+ * the various servers flavors of bridges thing using mDNS discovery service
  *
  * @author Laurent Garnier - Initial contribution
  */
-@Component(immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 @NonNullByDefault
 public class ServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
+    private static final String FBX_DELTA_GW = "fbxgw7";
 
     private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryParticipant.class);
-
-    private static final String SERVICE_TYPE = "_fbx-api._tcp.local.";
-    private static final String FBX_DELTA_GW = "fbxgw7";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.unmodifiableSet(
-                Stream.of(FREEBOX_THING_TYPE_SERVER, FREEBOX_THING_TYPE_DELTA).collect(Collectors.toSet()));
+                Stream.of(FREEBOX_BRIDGE_TYPE_REVOLUTION, FREEBOX_BRIDGE_TYPE_DELTA).collect(Collectors.toSet()));
     }
 
     @Override
     public String getServiceType() {
-        return SERVICE_TYPE;
+        return "_fbx-api._tcp.local.";
     }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        if (getServiceType().equals(service.getType()) && (service.getPropertyString("uid") != null)) {
-            String id = service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_");
+        if (service.hasData()) {
+            String application = service.getApplication();
             String boxModel = service.getPropertyString("box_model");
-            if (boxModel.contains(FBX_DELTA_GW)) {
-                return new ThingUID(FREEBOX_THING_TYPE_DELTA, id);
-            } else {
-                return new ThingUID(FREEBOX_THING_TYPE_SERVER, id);
+            if (boxModel != null && application != null && !application.isEmpty()) {
+                return new ThingUID(
+                        boxModel.contains(FBX_DELTA_GW) ? FREEBOX_BRIDGE_TYPE_DELTA : FREEBOX_BRIDGE_TYPE_REVOLUTION,
+                        application.replaceAll("[^A-Za-z0-9_]", "_"));
             }
+
         }
         return null;
     }
@@ -77,11 +77,13 @@ public class ServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
         logger.debug("createResult ServiceInfo: {}", service);
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null) {
+            String apiDomain = service.getPropertyString("api_domain");
+            Boolean httpsAvailable = "1".equals(service.getPropertyString("https_available"));
+            String httpsPort = service.getPropertyString("https_port");
             logger.info("Created a DiscoveryResult for Freebox Server {}.", thingUID);
-            String id = service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_");
-            ThingUID bridgeUID = new ThingUID(FREEBOX_BRIDGE_TYPE_API, id);
-
-            return DiscoveryResultBuilder.create(thingUID).withLabel(service.getName()).withBridge(bridgeUID).build();
+            return DiscoveryResultBuilder.create(thingUID).withLabel(service.getName())
+                    .withProperty(HOST_ADDRESS, apiDomain).withProperty(HTTPS_AVAILABLE, httpsAvailable)
+                    .withProperty(REMOTE_HTTPS_PORT, httpsPort).withRepresentationProperty(HOST_ADDRESS).build();
         }
         return null;
     }

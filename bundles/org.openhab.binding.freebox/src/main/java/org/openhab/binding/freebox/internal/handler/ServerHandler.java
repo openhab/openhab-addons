@@ -15,42 +15,57 @@ package org.openhab.binding.freebox.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.dimension.DataTransferRate;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.freebox.internal.action.ServerActions;
+import org.openhab.binding.freebox.internal.api.ApiManager;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.model.AirMediaConfig;
 import org.openhab.binding.freebox.internal.api.model.AirMediaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.ConnectionStatus;
+import org.openhab.binding.freebox.internal.api.model.ConnectionStatus.Media;
 import org.openhab.binding.freebox.internal.api.model.ConnectionStatusResponse;
+import org.openhab.binding.freebox.internal.api.model.DiscoveryResponse;
 import org.openhab.binding.freebox.internal.api.model.FtpConfig;
 import org.openhab.binding.freebox.internal.api.model.FtpConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.FtthStatus;
 import org.openhab.binding.freebox.internal.api.model.FtthStatusResponse;
+import org.openhab.binding.freebox.internal.api.model.LanConfig;
 import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
 import org.openhab.binding.freebox.internal.api.model.LanConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.RebootResponse;
@@ -58,10 +73,15 @@ import org.openhab.binding.freebox.internal.api.model.SambaConfig;
 import org.openhab.binding.freebox.internal.api.model.SambaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.SystemConfig;
 import org.openhab.binding.freebox.internal.api.model.SystemConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.UPnPAVConfig;
 import org.openhab.binding.freebox.internal.api.model.UPnPAVConfigResponse;
-import org.openhab.binding.freebox.internal.api.model.WifiGlobalConfig;
-import org.openhab.binding.freebox.internal.api.model.WifiGlobalConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.WifiConfig;
+import org.openhab.binding.freebox.internal.api.model.WifiConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.XdslStatus;
 import org.openhab.binding.freebox.internal.api.model.XdslStatusResponse;
+import org.openhab.binding.freebox.internal.config.ServerConfiguration;
+import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,291 +91,300 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public abstract class ServerHandler extends APIConsumerHandler {
-    final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+public abstract class ServerHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+    private final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+    private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
+    private static final String appId = FrameworkUtil.getBundle(ApiManager.class).getSymbolicName();
+
+    // private @Nullable String baseAddress;
+    protected final ApiManager apiManager;
+    private ConnectionStatus.Media media = Media.UNKNOWN;
+    private NetworkMode networkMode = NetworkMode.UNKNOWN;
+    private @NonNullByDefault({}) QuantityType<DataTransferRate> bandwidthUp;
+    private @NonNullByDefault({}) QuantityType<DataTransferRate> bandwidthDown;
+
     private long uptime = -1;
 
-    public ServerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public ServerHandler(Bridge thing) {
+        super(thing);
+        apiManager = new ApiManager(appId);
     }
 
     @Override
-    protected Map<String, String> discoverAttributes() throws FreeboxException {
-        final Map<String, String> properties = super.discoverAttributes();
-        SystemConfig systemConfig = bridgeHandler.executeGet(SystemConfigResponse.class, null);
+    public void initialize() {
+        logger.debug("Initializing Freebox Server handler for thing {}.", getThing().getUID());
+        ServerConfiguration configuration = getConfigAs(ServerConfiguration.class);
 
+        updateStatus(ThingStatus.UNKNOWN);
+
+        logger.debug("Binding will schedule a job to establish a connection...");
+
+        scheduler.submit(() -> {
+            try {
+                DiscoveryResponse discovery = apiManager.authorize(configuration);
+                if (thing.getProperties().isEmpty()) {
+                    discoverAttributes(discovery);
+                }
+                media = Media.valueOf(editProperties().get(PROPERTY_MEDIA));
+
+                fetchLanConfig();
+
+                if (globalJob == null || globalJob.isCancelled()) {
+                    logger.debug("Scheduling state update every {} seconds...", configuration.refreshInterval);
+                    globalJob = scheduler.scheduleWithFixedDelay(() -> {
+                        try {
+                            internalPoll();
+                            updateStatus(ThingStatus.ONLINE);
+                        } catch (FreeboxException e) {
+                            logger.debug("Thing {}: exception : {} {}", getThing().getUID(), e.getMessage(), e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }, 5, configuration.refreshInterval, TimeUnit.SECONDS);
+                }
+            } catch (FreeboxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+        });
+    }
+
+    protected void discoverAttributes(DiscoveryResponse discovery) throws FreeboxException {
+        SystemConfig systemConfig = apiManager.executeGet(SystemConfigResponse.class, null);
+        ConnectionStatus connectionStatus = apiManager.executeGet(ConnectionStatusResponse.class, null);
+
+        this.media = connectionStatus.getMedia();
+
+        // Gather various generic informations regarding the 'server' thing
+        final Map<String, String> properties = new HashMap<>();
+        properties.put(PROPERTY_API_VERSION, discovery.getApiVersion());
+        properties.put(PROPERTY_MEDIA, media.name());
+        properties.put(Thing.PROPERTY_VENDOR, "Freebox SAS");
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemConfig.getSerial());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, systemConfig.getBoardName());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemConfig.getFirmwareVersion());
         properties.put(Thing.PROPERTY_MAC_ADDRESS, systemConfig.getMac());
+        updateProperties(properties);
 
-        List<String> itemList = new ArrayList<>();
-        List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
-
+        // Gather the list of fans
+        ThingBuilder thingBuilder = editThing();
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
         systemConfig.getFans().forEach(fan -> {
-            itemList.add(fan.getId());
-            Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), PROPERTY_SENSORS, fan.getId()), null)
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(), PROPERTY_SENSORS, fan.getId()), "Number")
                     .withLabel(fan.getName()).withType(new ChannelTypeUID("freebox:fanspeed")).build();
             channels.add(channel);
         });
-        properties.put(PROPERTY_FANS, itemList.stream().collect(Collectors.joining(",")));
 
-        itemList.clear();
+        // Gather the list of temperature sensors
         systemConfig.getSensors().forEach(sensor -> {
-            itemList.add(sensor.getId());
             Channel channel = ChannelBuilder
-                    .create(new ChannelUID(thing.getUID(), PROPERTY_SENSORS, sensor.getId()), null)
+                    .create(new ChannelUID(thing.getUID(), PROPERTY_SENSORS, sensor.getId()), "Number:Temperature")
                     .withLabel(sensor.getName()).withType(new ChannelTypeUID("freebox:temperature")).build();
             channels.add(channel);
         });
-        properties.put(PROPERTY_SENSORS, itemList.stream().collect(Collectors.joining(",")));
 
-        // add all valid channels to the thing builder
-        ThingBuilder thingBuilder = editThing();
+        switch (media) {
+            case FTTH:
+                Channel ftthChannel = ChannelBuilder
+                        .create(new ChannelUID(thing.getUID(), CONNECTION_STATUS, FTTH_STATUS), "Switch")
+                        .withType(new ChannelTypeUID("freebox:" + FTTH_STATUS)).build();
+                channels.add(ftthChannel);
+
+                break;
+            case XDSL:
+                Channel xdslChannel = ChannelBuilder
+                        .create(new ChannelUID(thing.getUID(), CONNECTION_STATUS, XDSL_STATUS), "String")
+                        .withType(new ChannelTypeUID("freebox:" + XDSL_STATUS)).build();
+                channels.add(xdslChannel);
+                break;
+            default:
+                throw new FreeboxException("No internet connection media discovered");
+        }
+
         thingBuilder.withChannels(channels);
         updateThing(thingBuilder.build());
+    }
 
-        return properties;
+    private void fetchLanConfig() throws FreeboxException {
+        LanConfig response = apiManager.executeGet(LanConfigResponse.class, null);
+        networkMode = response.getType();
+    }
+
+    private void fetchConnectionStatus() throws FreeboxException {
+        ConnectionStatus connectionStatus = apiManager.executeGet(ConnectionStatusResponse.class, null);
+        updateChannelString(CONNECTION_STATUS, LINE_STATUS, connectionStatus.getState().name());
+        updateChannelString(CONNECTION_STATUS, IPV4, connectionStatus.getIpv4());
+
+        if (bandwidthUp == null || bandwidthDown == null) {
+            bandwidthUp = new QuantityType<>(connectionStatus.getBandwidthUp(), BIT_PER_SECOND);
+            bandwidthDown = new QuantityType<>(connectionStatus.getBandwidthDown(), BIT_PER_SECOND);
+            updateChannelQuantity(CONNECTION_STATUS, BW_UP, bandwidthUp, MEGABIT_PER_SECOND);
+            updateChannelQuantity(CONNECTION_STATUS, BW_DOWN, bandwidthDown, MEGABIT_PER_SECOND);
+        }
+
+        QuantityType<DataTransferRate> rateUp = new QuantityType<>(connectionStatus.getRateUp() * 8, BIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, RATE_UP, rateUp, KILOBIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_UP, rateUp.multiply(HUNDRED).divide(bandwidthUp), PERCENT);
+
+        QuantityType<DataTransferRate> rateDown = new QuantityType<>(connectionStatus.getRateDown() * 8,
+                BIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, RATE_DOWN, rateDown, KILOBIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_DOWN, rateDown.multiply(HUNDRED).divide(bandwidthDown),
+                PERCENT);
+
+        updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(connectionStatus.getBytesUp(), OCTET),
+                GIBIOCTET);
+        updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(connectionStatus.getBytesDown(), OCTET),
+                GIBIOCTET);
+    }
+
+    private void fetchSystemConfig() throws FreeboxException {
+        SystemConfig systemConfig = apiManager.executeGet(SystemConfigResponse.class, null);
+
+        systemConfig.getFans().forEach(fan -> {
+            updateChannelQuantity(PROPERTY_SENSORS, fan.getId(), fan.getValue(), SIUnits.CELSIUS);
+        });
+
+        systemConfig.getSensors().forEach(sensor -> {
+            updateChannelDecimal(PROPERTY_SENSORS, sensor.getId(), sensor.getValue());
+        });
+        long newUptime = systemConfig.getUptimeVal();
+        if (newUptime < uptime) {
+            triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "restarted");
+            Map<String, String> properties = editProperties();
+            if (!properties.get(Thing.PROPERTY_FIRMWARE_VERSION).equals(systemConfig.getFirmwareVersion())) {
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemConfig.getFirmwareVersion());
+                triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "firmware_updated");
+                updateProperties(properties);
+            }
+        }
+        uptime = newUptime;
+        updateChannelQuantity(SYS_INFO, UPTIME, uptime, SECOND);
     }
 
     @Override
-    protected boolean internalHandleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
             boolean enable = command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
                     || command.equals(OpenClosedType.OPEN);
             try {
                 switch (channelUID.getIdWithoutGroup()) {
-                    case WIFISTATUS:
-                        updateChannelSwitchState(ACTIONS, WIFISTATUS, enableWifi(enable));
-                        return true;
-                    case FTPSTATUS:
-                        updateChannelSwitchState(ACTIONS, FTPSTATUS, enableFtp(enable));
-                        return true;
-                    case SAMBAFILESTATUS:
-                        updateChannelSwitchState(SAMBA, SAMBAFILESTATUS, enableSambaFileShare(enable));
-                        return true;
-                    case SAMBAPRINTERSTATUS:
-                        updateChannelSwitchState(SAMBA, SAMBAPRINTERSTATUS, enableSambaPrintShare(enable));
-                        return true;
+                    case WIFI_STATUS:
+                        updateChannelOnOff(ACTIONS, WIFI_STATUS, enableWifi(enable));
+                        break;
+                    case FTP_STATUS:
+                        updateChannelOnOff(ACTIONS, FTP_STATUS, enableFtp(enable));
+                        break;
+                    case SAMBA_FILE_STATUS:
+                        updateChannelOnOff(SAMBA, SAMBA_FILE_STATUS, enableSambaFileShare(enable));
+                        break;
+                    case SAMBA_PRINTER_STATUS:
+                        updateChannelOnOff(SAMBA, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
+                        break;
                 }
             } catch (FreeboxException e) {
-                logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command,
+                logger.debug("Thing {}: invalid command {} on channel {}", getThing().getUID(), command,
                         channelUID.getId());
             }
-
         }
-        return false;
-
     }
 
     @Override
-    protected void internalPoll() {
-        try {
-
-            logger.debug("Polling server state...");
-            fetchSystemConfig();
-            boolean commOk = true;
-            commOk &= fetchWifiConfig();
-            commOk &= (fetchxDslStatus() || fetchFtthPresent());
-            commOk &= fetchConnectionStatus();
-            commOk &= fetchFtpConfig();
-            commOk &= fetchAirMediaConfig();
-            commOk &= fetchUPnPAVConfig();
-            commOk &= fetchSambaConfig();
-
-            if (commOk) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchxDslStatus: {}", getThing().getUID(), e.getMessage(), e);
+    public void dispose() {
+        logger.debug("Disposing Freebox Server handler for thing {}", getThing().getUID());
+        if (globalJob != null && !globalJob.isCancelled()) {
+            globalJob.cancel(true);
+            globalJob = null;
         }
-
+        apiManager.closeSession();
+        super.dispose();
     }
 
-    private boolean fetchConnectionStatus() {
-        try {
-            ConnectionStatus connectionStatus = bridgeHandler.executeGet(ConnectionStatusResponse.class,
-                    null);
-            updateChannelStringState(CONNECTION_STATUS, LINESTATUS, connectionStatus.getState().name());
-            updateChannelStringState(SYS_INFO, IPV4, connectionStatus.getIpv4());
-            updateChannelQuantityType(CONNECTION_STATUS, RATEUP,
-                    new QuantityType<>(connectionStatus.getRateUp() * 8, BIT_PER_SECOND).toUnit(KILOBIT_PER_SECOND));
-            updateChannelQuantityType(CONNECTION_STATUS, RATEDOWN,
-                    new QuantityType<>(connectionStatus.getRateDown() * 8, BIT_PER_SECOND).toUnit(KILOBIT_PER_SECOND));
-            updateChannelQuantityType(CONNECTION_STATUS, BYTESUP,
-                    new QuantityType<>(connectionStatus.getBytesUp(), OCTET).toUnit(GIBIOCTET));
-            updateChannelQuantityType(CONNECTION_STATUS, BYTESDOWN,
-                    new QuantityType<>(connectionStatus.getBytesDown(), OCTET).toUnit(GIBIOCTET));
-            updateChannelQuantityType(CONNECTION_STATUS, BWUP,
-                    new QuantityType<>(connectionStatus.getBandwidthUp(), BIT_PER_SECOND).toUnit(MEGABIT_PER_SECOND));
-            updateChannelQuantityType(CONNECTION_STATUS, BWDOWN,
-                    new QuantityType<>(connectionStatus.getBandwidthDown(), BIT_PER_SECOND).toUnit(MEGABIT_PER_SECOND));
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchConnectionStatus: {}", getThing().getUID(), e.getMessage(), e);
-            internalPoll();
-            return false;
+    protected void internalPoll() throws FreeboxException {
+        logger.debug("Polling server state...");
+        fetchConnectionStatus();
+        fetchSystemConfig();
+        fetchWifiConfig();
+        fetchLinePresence();
+        fetchFtpConfig();
+        fetchAirMediaConfig();
+        fetchUPnPAVConfig();
+        fetchSambaConfig();
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void fetchLinePresence() throws FreeboxException {
+        if (media == Media.FTTH) {
+            FtthStatus response = apiManager.executeGet(FtthStatusResponse.class, null);
+            updateChannelOnOff(CONNECTION_STATUS, FTTH_STATUS, response.getSfpHasSignal());
+        } else {
+            XdslStatus response = apiManager.executeGet(XdslStatusResponse.class, null);
+            updateChannelString(CONNECTION_STATUS, XDSL_STATUS, response.getStatus());
+
         }
     }
 
-    private boolean fetchxDslStatus() {
-        try {
-            String status = bridgeHandler.executeGet(XdslStatusResponse.class, null).getStatus();
-            if (StringUtils.isNotEmpty(status)) {
-                updateChannelStringState(SYS_INFO, XDSLSTATUS, status);
-            }
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchxDslStatus: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
+    private void fetchWifiConfig() throws FreeboxException {
+        WifiConfig wifiConfig = apiManager.executeGet(WifiConfigResponse.class, null);
+        updateChannelOnOff(ACTIONS, WIFI_STATUS, wifiConfig.isEnabled());
+    }
+
+    private void fetchFtpConfig() throws FreeboxException {
+        FtpConfig response = apiManager.executeGet(FtpConfigResponse.class, null);
+        updateChannelOnOff(ACTIONS, FTP_STATUS, response.isEnabled());
+    }
+
+    private void fetchAirMediaConfig() throws FreeboxException {
+        if (networkMode != NetworkMode.BRIDGE) {
+            AirMediaConfig response = apiManager.executeGet(AirMediaConfigResponse.class, null);
+            updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, response.isEnabled());
         }
     }
 
-    private boolean fetchFtthPresent() {
-        try {
-            boolean status = bridgeHandler.executeGet(FtthStatusResponse.class, null).getSfpPresent();
-            updateChannelSwitchState(SYS_INFO, FTTHSTATUS, status);
-            return status;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchxFtthStatus: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
+    private void fetchUPnPAVConfig() throws FreeboxException {
+        if (networkMode != NetworkMode.BRIDGE) {
+            UPnPAVConfig response = apiManager.executeGet(UPnPAVConfigResponse.class, null);
+            updateChannelOnOff(PLAYER_ACTIONS, UPNPAV_STATUS, response.isEnabled());
         }
     }
 
-    boolean fetchWifiConfig() {
-        try {
-            Boolean enabled = bridgeHandler.executeGet(WifiGlobalConfigResponse.class, null).isEnabled();
-            updateChannelSwitchState(ACTIONS, WIFISTATUS, enabled);
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchWifiConfig: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
-        }
-    }
-
-    boolean fetchFtpConfig() {
-        try {
-            Boolean enabled = bridgeHandler.executeGet(FtpConfigResponse.class, null).isEnabled();
-            updateChannelSwitchState(ACTIONS, FTPSTATUS, enabled); // TODO Auto-generated method stub
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchFtpConfig: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
-        }
-    }
-
-    boolean fetchAirMediaConfig() {
-        try {
-            if (!isInLanBridgeMode()) {
-                Boolean enabled = bridgeHandler.executeGet(AirMediaConfigResponse.class, null).isEnabled();
-                updateChannelSwitchState(PLAYER_ACTIONS, AIRMEDIASTATUS, enabled);
-            }
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchAirMediaConfig: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
-        }
-    }
-
-    boolean fetchUPnPAVConfig() {
-        try {
-            if (!isInLanBridgeMode()) {
-                Boolean enabled = bridgeHandler.executeGet(UPnPAVConfigResponse.class, null).isEnabled();
-                updateChannelSwitchState(PLAYER_ACTIONS, UPNPAVSTATUS, enabled);
-            }
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchUPnPAVConfig: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
-        }
-    }
-
-    boolean fetchSambaConfig() {
-        try {
-            SambaConfig config = bridgeHandler.executeGet(SambaConfigResponse.class, null);
-            updateChannelSwitchState(SAMBA, SAMBAFILESTATUS, config.isFileShareEnabled());
-            updateChannelSwitchState(SAMBA, SAMBAPRINTERSTATUS, config.isPrintShareEnabled()); // TODO Auto-generated
-                                                                                               // method
-            // stub);
-            return true;
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: exception in fetchSambaConfig: {}", getThing().getUID(), e.getMessage(), e);
-            return false;
-        }
-    }
-
-    private void fetchSystemConfig() throws FreeboxException {
-        SystemConfig systemConfig = bridgeHandler.executeGet(SystemConfigResponse.class, null);
-
-        Map<String, String> properties = editProperties();
-        if (!properties.get(Thing.PROPERTY_FIRMWARE_VERSION).equals(systemConfig.getFirmwareVersion())) {
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemConfig.getFirmwareVersion());
-            triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "firmware_updated");
-            updateProperties(properties);
-        }
-
-        long newUptime = systemConfig.getUptimeVal();
-        if (newUptime < uptime) {
-            triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "restarted");
-        }
-        uptime = newUptime;
-
-        updateChannelQuantityType(SYS_INFO, UPTIME, new QuantityType<>(uptime, SmartHomeUnits.SECOND));
-
-        systemConfig.getFans().forEach(fan -> {
-            int value = fan.getValue();
-            updateState(new ChannelUID(getThing().getUID(), PROPERTY_SENSORS, fan.getId()),
-                    new QuantityType<>(value, SIUnits.CELSIUS));
-        });
-
-        systemConfig.getSensors().forEach(sensor -> {
-            int value = sensor.getValue();
-            updateState(new ChannelUID(getThing().getUID(), PROPERTY_SENSORS, sensor.getId()), new DecimalType(value));
-        });
-    }
-
-    public boolean isInLanBridgeMode() throws FreeboxException {
-        return bridgeHandler.executeGet(LanConfigResponse.class, null).getType() == NetworkMode.BRIDGE;
-    }
-
-    public boolean isWifiEnabled() throws FreeboxException {
-        return bridgeHandler.executeGet(WifiGlobalConfigResponse.class, null).isEnabled();
+    private void fetchSambaConfig() throws FreeboxException {
+        SambaConfig response = apiManager.executeGet(SambaConfigResponse.class, null);
+        updateChannelOnOff(SAMBA, SAMBA_FILE_STATUS, response.isFileShareEnabled());
+        updateChannelOnOff(SAMBA, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
     }
 
     public boolean enableWifi(boolean enable) throws FreeboxException {
-        WifiGlobalConfig config = new WifiGlobalConfig();
+        WifiConfig config = new WifiConfig();
         config.setEnabled(enable);
-        config = bridgeHandler.execute(config, null);
+        config = apiManager.execute(config, null);
         return config.isEnabled();
     }
 
     public boolean enableFtp(boolean enable) throws FreeboxException {
         FtpConfig config = new FtpConfig();
         config.setEnabled(enable);
-        config = bridgeHandler.execute(config, null);
+        config = apiManager.execute(config, null);
         return config.isEnabled();
     }
 
     public boolean enableSambaFileShare(boolean enable) throws FreeboxException {
         SambaConfig config = new SambaConfig();
         config.setFileShareEnabled(enable);
-        config = bridgeHandler.execute(config, null);
+        config = apiManager.execute(config, null);
         return config.isFileShareEnabled();
     }
 
     public boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
         SambaConfig config = new SambaConfig();
         config.setPrintShareEnabled(enable);
-        config = bridgeHandler.execute(config, null);
+        config = apiManager.execute(config, null);
         return config.isPrintShareEnabled();
     }
 
     public void reboot() {
         try {
-            bridgeHandler.executePost(RebootResponse.class, null, null);
+            apiManager.executePost(RebootResponse.class, null, null);
         } catch (FreeboxException e) {
             logger.debug("Thing {}: error rebooting server", getThing().getUID());
         }
@@ -363,7 +392,52 @@ public abstract class ServerHandler extends APIConsumerHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(ServerActions.class);
+        return Collections.unmodifiableList(
+                Stream.of(ServerActions.class, FreeboxDiscoveryService.class).collect(Collectors.toList()));
+
     }
 
+    public ServerConfiguration getConfiguration() {
+        return getConfigAs(ServerConfiguration.class);
+    }
+
+    public ApiManager getApiManager() {
+        return apiManager;
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, QuantityType<?> qtty, Unit<?> unit) {
+        updateChannelQuantity(group, channelId, qtty.toUnit(unit));
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, double d, Unit<?> unit) {
+        updateChannelQuantity(group, channelId, new QuantityType<>(d, unit));
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, @Nullable QuantityType<?> quantity) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, quantity != null ? quantity : UnDefType.NULL);
+        }
+    }
+
+    protected void updateChannelString(String group, String channelId, String value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, new StringType(value));
+        }
+    }
+
+    protected void updateChannelOnOff(String group, String channelId, boolean value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, OnOffType.from(value));
+        }
+    }
+
+    protected void updateChannelDecimal(String group, String channelId, int value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, new DecimalType(value));
+        }
+    }
 }

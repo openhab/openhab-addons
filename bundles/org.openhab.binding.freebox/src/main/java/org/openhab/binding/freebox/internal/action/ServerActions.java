@@ -31,9 +31,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "freebox")
 @NonNullByDefault
 public class ServerActions implements ThingActions {
-
     private final static Logger logger = LoggerFactory.getLogger(ServerActions.class);
-
     private @Nullable ServerHandler handler;
 
     public ServerActions() {

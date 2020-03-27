@@ -15,7 +15,7 @@ package org.openhab.binding.freebox.internal.api.model;
 /**
  * The {@link FtthStatus} is the Java class used to map the "FtthStatus"
  * structure used by the response of the connection Ftth status API
- * https://dev.freebox.fr/sdk/os/connection/#
+ * https://dev.freebox.fr/sdk/os/connection/#FtthStatus
  *
  * @author Gaël L'hopital - Initial contribution
  */

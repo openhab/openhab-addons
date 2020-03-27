@@ -15,19 +15,15 @@ package org.openhab.binding.freebox.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.LcdConfig;
@@ -42,87 +38,98 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - updated to a bridge handler and delegate few things to another handler
  * @author Laurent Garnier - update discovery configuration
- * @author Laurent Garnier - use new internal API manager
  */
+@NonNullByDefault
 public class RevolutionHandler extends ServerHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RevolutionHandler.class);
 
-    public RevolutionHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public RevolutionHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
-    protected boolean internalHandleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             switch (channelUID.getIdWithoutGroup()) {
-                case LCDBRIGHTNESS:
+                case LCD_BRIGHTNESS:
                     setBrightness(command);
-                    return true;
-                case LCDORIENTATION:
+                case LCD_ORIENTATION:
                     setOrientation(command);
-                    return true;
-                case LCDFORCED:
+                case LCD_FORCED:
                     setForced(command);
-                    return true;
                 default:
-                    return super.internalHandleCommand(channelUID, command);
+                    super.handleCommand(channelUID, command);
             }
         } catch (FreeboxException e) {
             logCommandException(e, channelUID, command);
-            internalPoll();
+            try {
+                internalPoll();
+            } catch (FreeboxException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         }
-        return false;
+    }
+
+    public void logCommandException(FreeboxException e, ChannelUID channelUID, Command command) {
+        if (e.isMissingRights()) {
+            logger.debug("Thing {}: missing right {} while handling command {} from channel {}", getThing().getUID(),
+                    e.getResponse().getMissingRight(), command, channelUID.getId());
+        } else {
+            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+                    channelUID.getId(), e);
+        }
     }
 
     @Override
-    protected void internalPoll() {
+    protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         logger.debug("Polling server state...");
 
-        try {
-            LcdConfig config = getLcdConfig();
-            updateChannelQuantityType(DISPLAY, LCDBRIGHTNESS, new QuantityType<>(config.getBrightness(), PERCENT));
-            updateChannelDecimalState(DISPLAY, LCDORIENTATION, config.getOrientation());
-            updateChannelSwitchState(DISPLAY, LCDFORCED, config.isOrientationForced());
-        } catch (FreeboxException e) {
-            logger.debug("Phone state job failed: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        LcdConfig config = getLcdConfig();
+        updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.getBrightness(), PERCENT);
+        updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_ORIENTATION),
+                new DecimalType(config.getOrientation()));
+        updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_FORCED),
+                OnOffType.from(config.isOrientationForced()));
+
     }
 
     private void setBrightness(Command command) throws FreeboxException {
         if (command instanceof IncreaseDecreaseType) {
-            updateChannelQuantityType(DISPLAY, LCDBRIGHTNESS,
-                    new QuantityType<>(shiftLcdBrightness((IncreaseDecreaseType) command), PERCENT));
+            updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, shiftLcdBrightness((IncreaseDecreaseType) command), PERCENT);
         } else if (command instanceof OnOffType) {
-            updateChannelQuantityType(DISPLAY, LCDBRIGHTNESS,
-                    new QuantityType<>(setLcdBrightness(command == OnOffType.ON ? 100 : 0), PERCENT));
+            updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, setLcdBrightness(command == OnOffType.ON ? 100 : 0),
+                    PERCENT);
         } else if (command instanceof DecimalType || command instanceof PercentType) {
-            updateChannelQuantityType(DISPLAY, LCDBRIGHTNESS,
-                    new QuantityType<>(setLcdBrightness(((DecimalType) command).intValue()), PERCENT));
+            updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, setLcdBrightness(((DecimalType) command).intValue()),
+                    PERCENT);
         } else {
-            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCDBRIGHTNESS);
+            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCD_BRIGHTNESS);
         }
     }
 
     private void setOrientation(Command command) throws FreeboxException {
         if (command instanceof DecimalType) {
             LcdConfig config = setLcdOrientation(((DecimalType) command).intValue());
-            updateChannelDecimalState(DISPLAY, LCDORIENTATION, config.getOrientation());
-            updateChannelSwitchState(DISPLAY, LCDFORCED, config.isOrientationForced());
+            updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_ORIENTATION),
+                    new DecimalType(config.getOrientation()));
+            updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_FORCED),
+                    OnOffType.from(config.isOrientationForced()));
         } else {
-            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCDORIENTATION);
+            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCD_ORIENTATION);
         }
     }
 
     private void setForced(Command command) throws FreeboxException {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            updateChannelSwitchState(DISPLAY, LCDFORCED, setLcdOrientationForced(command.equals(OnOffType.ON)
-                    || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)));
+            updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_FORCED),
+                    OnOffType.from(setLcdOrientationForced(command.equals(OnOffType.ON))
+                            || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)));
 
         } else {
-            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCDFORCED);
+            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCD_FORCED);
         }
     }
 
@@ -132,20 +139,20 @@ public class RevolutionHandler extends ServerHandler {
         newValue = Math.max(newValue, 0);
         config.setOrientation(newValue);
         config.setOrientationForced(true);
-        LcdConfig result = bridgeHandler.execute(config, null);
+        LcdConfig result = apiManager.execute(config, null);
         // FreeboxLcdConfig result = bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config);
         return result;
     }
 
     public LcdConfig getLcdConfig() throws FreeboxException {
-        LcdConfig result = bridgeHandler.executeGet(LcdConfigResponse.class, null);
+        LcdConfig result = apiManager.executeGet(LcdConfigResponse.class, null);
         return result;
     }
 
     public boolean setLcdOrientationForced(boolean forced) throws FreeboxException {
         LcdConfig config = getLcdConfig();
         config.setOrientationForced(forced);
-        LcdConfig result = bridgeHandler.execute(config, null);
+        LcdConfig result = apiManager.execute(config, null);
         return result.isOrientationForced();
         // return bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config).isOrientationForced();
     }
@@ -157,7 +164,7 @@ public class RevolutionHandler extends ServerHandler {
         } else {
             config.setBrightness(Math.max(0, config.getBrightness() - 1));
         }
-        LcdConfig result = bridgeHandler.execute(config, null);
+        LcdConfig result = apiManager.execute(config, null);
         return result.getBrightness();
         // return bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config).getBrightness();
     }
@@ -167,7 +174,7 @@ public class RevolutionHandler extends ServerHandler {
         int newValue = Math.min(100, brightness);
         newValue = Math.max(newValue, 0);
         config.setBrightness(newValue);
-        LcdConfig result = bridgeHandler.execute(config, null);
+        LcdConfig result = apiManager.execute(config, null);
         return result.getBrightness();
         // return bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config).getBrightness();
     }
