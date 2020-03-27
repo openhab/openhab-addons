@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
@@ -42,7 +41,7 @@ public class FoxDynamicStateDescriptionProvider implements DynamicStateDescripti
 
     /**
      * For a given channel UID, set a {@link List} of {@link StateOption}s that should be used for the channel, instead
-     * of the one defined statically in the {@link ChannelType}.
+     * of the one defined statically.
      *
      * @param channelUID the channel UID of the channel
      * @param options a {@link List} of {@link StateOption}s

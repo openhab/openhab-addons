@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -50,17 +51,23 @@ class FoxFunctionsConfigRoot {
  */
 @NonNullByDefault
 public class FoxFunctionsConfig {
-    FoxFunctionsConfigRoot root;
+    FoxFunctionsConfigRoot root = new FoxFunctionsConfigRoot();
 
-    FoxFunctionsConfig(String json) {
+    @Nullable
+    FoxFunctionsConfigRoot parse(String json) {
         if (!json.isEmpty()) {
             try {
-                root = new Gson().fromJson(json, FoxFunctionsConfigRoot.class);
+                return new Gson().fromJson(json, FoxFunctionsConfigRoot.class);
             } catch (JsonSyntaxException e) {
-                root = new FoxFunctionsConfigRoot();
             }
-        } else {
-            root = new FoxFunctionsConfigRoot();
+        }
+        return null;
+    }
+
+    FoxFunctionsConfig(String json) {
+        FoxFunctionsConfigRoot rootFromJson = parse(json);
+        if (rootFromJson != null) {
+            root = rootFromJson;
         }
     }
 

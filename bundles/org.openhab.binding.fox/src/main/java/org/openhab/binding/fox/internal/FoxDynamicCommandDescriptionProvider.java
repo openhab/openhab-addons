@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.DynamicCommandDescriptionProvider;
 import org.eclipse.smarthome.core.types.CommandDescription;
 import org.eclipse.smarthome.core.types.CommandDescriptionBuilder;
@@ -41,7 +40,7 @@ public class FoxDynamicCommandDescriptionProvider implements DynamicCommandDescr
 
     /**
      * For a given channel UID, set a {@link List} of {@link CommandOption}s that should be used for the channel,
-     * instead of the one defined statically in the {@link ChannelType}.
+     * instead of the one defined statically.
      *
      * @param channelUID the channel UID of the channel
      * @param options a {@link List} of {@link CommandOption}s

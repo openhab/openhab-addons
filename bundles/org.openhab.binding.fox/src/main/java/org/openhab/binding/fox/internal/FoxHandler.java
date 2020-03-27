@@ -75,29 +75,33 @@ public class FoxHandler extends BaseThingHandler {
 
     private void loadTaskCommands() {
         Channel taskCommandCh = getThing().getChannel(CHANNEL_TASK_COMMAND);
-        if (taskCommandCh != null && commandDescriptionProvider != null) {
-            commandDescriptionProvider.setCommandOptions(taskCommandCh.getUID(), taskHandler.listCommands());
+        FoxDynamicCommandDescriptionProvider cmdProvider = commandDescriptionProvider;
+        if (taskCommandCh != null && cmdProvider != null) {
+            cmdProvider.setCommandOptions(taskCommandCh.getUID(), taskHandler.listCommands());
         }
     }
 
     private void loadTaskStates() {
         Channel taskStateCh = getThing().getChannel(CHANNEL_TASK_STATE);
-        if (taskStateCh != null && stateDescriptionProvider != null) {
-            stateDescriptionProvider.setStateOptions(taskStateCh.getUID(), taskHandler.listStates());
+        FoxDynamicStateDescriptionProvider stProvider = stateDescriptionProvider;
+        if (taskStateCh != null && stProvider != null) {
+            stProvider.setStateOptions(taskStateCh.getUID(), taskHandler.listStates());
         }
     }
 
     private void loadResultTriggers() {
         Channel resultTriggerCh = getThing().getChannel(CHANNEL_RESULT_TRIGGER);
-        if (resultTriggerCh != null && stateDescriptionProvider != null) {
-            stateDescriptionProvider.setStateOptions(resultTriggerCh.getUID(), resultHandler.listStates());
+        FoxDynamicStateDescriptionProvider stProvider = stateDescriptionProvider;
+        if (resultTriggerCh != null && stProvider != null) {
+            stProvider.setStateOptions(resultTriggerCh.getUID(), resultHandler.listStates());
         }
     }
 
     private void loadResultStates() {
         Channel resultStateCh = getThing().getChannel(CHANNEL_RESULT_STATE);
-        if (resultStateCh != null && stateDescriptionProvider != null) {
-            stateDescriptionProvider.setStateOptions(resultStateCh.getUID(), resultHandler.listStates());
+        FoxDynamicStateDescriptionProvider stProvider = stateDescriptionProvider;
+        if (resultStateCh != null && stProvider != null) {
+            stProvider.setStateOptions(resultStateCh.getUID(), resultHandler.listStates());
         }
     }
 
@@ -229,13 +233,17 @@ public class FoxHandler extends BaseThingHandler {
         finishConnectionTask = false;
     }
 
+    private void justWait(int timeMsec) {
+        try {
+            Thread.sleep(timeMsec);
+        } catch (InterruptedException e) {
+        }
+    }
+
     private void waitForConnectionTaskFinish(int maxTimeSec) {
         for (int i = 0; i < maxTimeSec; i++) {
             if (checkIfFinishConnectionTaskRequest()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
+                justWait(1000);
             } else {
                 return;
             }
@@ -310,6 +318,7 @@ public class FoxHandler extends BaseThingHandler {
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             String.format("Cannot open connection: %s", status.toString()));
+                    justWait(250);
                 }
             }
         }

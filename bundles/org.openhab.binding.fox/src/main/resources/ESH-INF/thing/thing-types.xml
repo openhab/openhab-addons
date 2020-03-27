@@ -31,28 +31,28 @@
 	
 	<channel-type id="taskRequest">
 		<item-type>String</item-type>
-		<label>Task request</label>
+		<label>Task Request</label>
 		<description>Sending Task requests to the Fox System.</description>
 		<command>
 		</command>
 	</channel-type>
 	<channel-type id="taskExecuted">
 		<item-type>String</item-type>
-		<label>Task executed</label>
+		<label>Task Executed</label>
 		<description>Last Task executed in the Fox System.</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="resultNotice">
 		<kind>trigger</kind>
-		<label>Result notice</label>
+		<label>Result Notice</label>
 		<description>Receiving Results returned from the Fox System.</description>
 		<event>
 		</event>
 	</channel-type>
 	<channel-type id="resultAcquired">
 		<item-type>String</item-type>
-		<label>Result acquired</label>
+		<label>Result Acquired</label>
 		<description>Last Result returned by the Fox System.</description>
 		<state readOnly="true">
 		</state>

@@ -35,12 +35,11 @@ public class FoxMessengerTcpIp implements FoxMessenger {
     private int timeout = 250;
     private String password = "";
 
-    private @Nullable Socket socket;
+    private Socket socket = new Socket();
     private @Nullable PrintWriter toServer;
     private @Nullable BufferedReader fromServer;
 
     public FoxMessengerTcpIp() {
-        socket = null;
         toServer = null;
         fromServer = null;
     }
@@ -71,20 +70,20 @@ public class FoxMessengerTcpIp implements FoxMessenger {
     public void open() throws FoxException {
         close();
 
+        PrintWriter toServer = null;
+        BufferedReader fromServer = null;
+
         try {
             socket = new Socket(host, port);
             socket.setSoTimeout(timeout);
-            if (socket != null) {
-                toServer = new PrintWriter(socket.getOutputStream(), true);
-            }
-            if (socket != null) {
-                fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            }
+
+            toServer = new PrintWriter(socket.getOutputStream(), true);
+            fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             boolean promptOk = false;
             StringBuilder sb = new StringBuilder();
             for (;;) {
-                int value = fromServer != null ? fromServer.read() : -1;
+                int value = fromServer.read();
                 if (value < 0) {
                     break;
                 }
@@ -94,18 +93,14 @@ public class FoxMessengerTcpIp implements FoxMessenger {
 
                 if (prompt.equals("pass: ")) {
                     if (password.length() > 0) {
-                        if (toServer != null) {
-                            toServer.println(password);
-                        }
+                        toServer.println(password);
                         sb = new StringBuilder();
                     } else {
                         throw new FoxException("Password demand but no password set");
                     }
                 } else if (prompt.equals("> Fox terminal")) {
                     promptOk = true;
-                    if (fromServer != null) {
-                        fromServer.readLine();
-                    }
+                    fromServer.readLine();
                     break;
                 } else if (prompt.equals("ACCESS DENIED")) {
                     throw new FoxException("Password rejected, access denied");
@@ -115,6 +110,9 @@ public class FoxMessengerTcpIp implements FoxMessenger {
             if (!promptOk) {
                 throw new FoxException("Wrong prompt received");
             }
+
+            this.toServer = toServer;
+            this.fromServer = fromServer;
         } catch (FoxException | IOException e) {
             if (toServer != null) {
                 toServer.close();
@@ -126,11 +124,10 @@ public class FoxMessengerTcpIp implements FoxMessenger {
             } catch (IOException e1) {
             }
             try {
-                if (socket != null) {
-                    socket.close();
-                }
+                socket.close();
             } catch (IOException e1) {
             }
+            socket = new Socket();
             throw new FoxException(e.getMessage());
         }
     }
@@ -141,6 +138,7 @@ public class FoxMessengerTcpIp implements FoxMessenger {
     }
 
     public void write(String text, String echo) throws FoxException {
+        PrintWriter toServer = this.toServer;
         if (toServer != null) {
             toServer.println(text);
             if (echo.length() > 0) {
@@ -170,8 +168,14 @@ public class FoxMessengerTcpIp implements FoxMessenger {
 
     private String readLine() throws FoxException {
         try {
+            BufferedReader fromServer = this.fromServer;
             if (fromServer != null) {
-                return purify(fromServer.readLine());
+                String line = fromServer.readLine();
+                if (line != null) {
+                    return purify(line);
+                } else {
+                    throw new FoxException("Reading error: End of stream");
+                }
             } else {
                 throw new FoxException("Closed messenger");
             }
@@ -198,20 +202,20 @@ public class FoxMessengerTcpIp implements FoxMessenger {
     @Override
     public void close() {
         try {
+            PrintWriter toServer = this.toServer;
             if (toServer != null) {
                 toServer.close();
-                toServer = null;
+                this.toServer = null;
             }
+            BufferedReader fromServer = this.fromServer;
             if (fromServer != null) {
                 fromServer.close();
-                fromServer = null;
+                this.fromServer = null;
             }
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
+            socket.close();
         } catch (IOException e) {
         }
+        socket = new Socket();
     }
 
     @Override
