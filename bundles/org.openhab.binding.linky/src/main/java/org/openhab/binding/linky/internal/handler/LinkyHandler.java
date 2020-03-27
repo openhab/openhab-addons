@@ -335,7 +335,6 @@ public class LinkyHandler extends BaseThingHandler {
                     result = gson.fromJson(body, LinkyConsumptionData.class);
                 }
             }
-            response.close();
         } catch (IOException e) {
             logger.debug("Exception calling API : {} - {}", e.getClass().getCanonicalName(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
