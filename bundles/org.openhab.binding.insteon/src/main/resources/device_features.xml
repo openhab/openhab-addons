@@ -413,7 +413,7 @@
 	<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
-<feature name="WirelessMotionSensorLowbattery">
+<feature name="WirelessMotionSensorLowBattery">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="3">NoOpMsgHandler</message-handler>
 	<message-handler cmd="0x11" group="3">OpenedSleepingContactHandler</message-handler>
