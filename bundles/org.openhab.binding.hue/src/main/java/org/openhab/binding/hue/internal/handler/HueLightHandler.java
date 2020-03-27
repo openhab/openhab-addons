@@ -489,7 +489,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
 
         StringType stringType = LightStateConverter.toAlertStringType(fullLight.getState());
-        if (!stringType.toString().equals("NULL")) {
+        if (!"NULL".equals(stringType.toString())) {
             updateState(CHANNEL_ALERT, stringType);
             scheduleAlertStateRestore(stringType);
         }
