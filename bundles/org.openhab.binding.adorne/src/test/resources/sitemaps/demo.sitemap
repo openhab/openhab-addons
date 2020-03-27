@@ -1,0 +1,14 @@
+sitemap demo label="Adorne Binding Demo"
+{
+	Frame label="Adorne Switch" {
+		Switch item=LightBathroom label="Bathroom" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+	}
+	Frame label="Adorne Dimmer using Slider" {
+		Switch item=LightBedroomSwitch1 label="Bedroom 1" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+		Slider item=LightBedroomDimmer1 label="Bedroom 1" icon="light-on" minValue=1 maxValue=100 step=1 // Requires OpenHAB 2.5
+	}
+	Frame label="Adorne Dimmer using Setpoint" {
+		Switch item=LightBedroomSwitch2 label="Bedroom 2" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+		Setpoint item=LightBedroomDimmer2 label="Bedroom 2" icon="light-on" minValue=1 maxValue=100 step=5
+	}
+}
