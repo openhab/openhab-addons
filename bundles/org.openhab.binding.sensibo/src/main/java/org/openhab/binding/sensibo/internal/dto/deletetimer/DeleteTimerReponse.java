@@ -19,5 +19,4 @@ package org.openhab.binding.sensibo.internal.dto.deletetimer;
  * @author Arne Seime - Initial contribution.
  */
 public class DeleteTimerReponse {
-
 }

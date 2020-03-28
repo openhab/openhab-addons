@@ -137,9 +137,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            initializeInternal();
-        });
+        scheduler.execute(this::initializeInternal);
     }
 
     private void initializeInternal() {
@@ -223,7 +221,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new SensiboCommunicationException(
-                    String.format("Error sending request to Sensibo server: %s", e.getMessage()));
+                    String.format("Error sending request to Sensibo server: %s", e.getMessage()), e);
         }
     }
 

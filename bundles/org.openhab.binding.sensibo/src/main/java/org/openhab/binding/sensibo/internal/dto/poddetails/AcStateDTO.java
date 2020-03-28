@@ -27,11 +27,11 @@ import org.openhab.binding.sensibo.internal.model.AcState;
  */
 public class AcStateDTO {
     public boolean on;
-    public String fanLevel;
-    public String temperatureUnit;
-    public Integer targetTemperature;
-    public String mode;
-    public String swing;
+    public final String fanLevel;
+    public final String temperatureUnit;
+    public final Integer targetTemperature;
+    public final String mode;
+    public final String swing;
 
     public AcStateDTO(boolean on, String fanLevel, String temperatureUnit, Integer targetTemperature, String mode,
             String swing) {
@@ -41,9 +41,6 @@ public class AcStateDTO {
         this.targetTemperature = targetTemperature;
         this.mode = mode;
         this.swing = swing;
-    }
-
-    public AcStateDTO() {
     }
 
     public AcStateDTO(AcState acState) {

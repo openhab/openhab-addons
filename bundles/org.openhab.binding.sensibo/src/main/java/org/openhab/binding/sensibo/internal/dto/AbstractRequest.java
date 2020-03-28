@@ -20,7 +20,6 @@ import org.eclipse.jetty.http.HttpMethod;
  *
  * @author Arne Seime - Initial contribution.
  */
-
 public abstract class AbstractRequest {
     public abstract String getRequestUrl();
 

@@ -15,6 +15,8 @@ package org.openhab.binding.sensibo.internal;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 
@@ -23,8 +25,9 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
  *
  * @author Arne Seime - Initial contribution
  */
-public class SensiboTemperatureUnitParser {
-    public static Unit<Temperature> parse(String symbol) {
+@NonNullByDefault
+public final class SensiboTemperatureUnitParser {
+    public static Unit<Temperature> parse(@Nullable String symbol) {
         if (symbol == null) {
             symbol = "C";
         }

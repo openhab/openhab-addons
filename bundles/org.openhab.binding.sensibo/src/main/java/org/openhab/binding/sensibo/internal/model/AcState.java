@@ -19,7 +19,7 @@ import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 
 /**
- * Represents the state of the AC unit
+ * Represents the state of the AC unit.
  * 
  * @author Arne Seime - Initial contribution
  */

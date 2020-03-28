@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.dto.settimer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
@@ -22,11 +23,11 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
  *
  * @author Arne Seime - Initial contribution.
  */
-
+@NonNullByDefault
 public class SetTimerRequest extends AbstractRequest {
-    public transient String podId; // Transient fields are ignored by gson
-    public AcStateDTO acState;
-    public int minutesFromNow;
+    public final transient String podId; // Transient fields are ignored by gson
+    public final AcStateDTO acState;
+    public final int minutesFromNow;
 
     public SetTimerRequest(String podId, int minutesFromNow, AcStateDTO acState) {
         this.podId = podId;

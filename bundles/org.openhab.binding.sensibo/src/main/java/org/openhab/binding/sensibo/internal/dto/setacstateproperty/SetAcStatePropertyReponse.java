@@ -20,7 +20,6 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
  *
  * @author Arne Seime - Initial contribution.
  */
-
 public class SetAcStatePropertyReponse {
     public AcStateDTO acState;
 }
