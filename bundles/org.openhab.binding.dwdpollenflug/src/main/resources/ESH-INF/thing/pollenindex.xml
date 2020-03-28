@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dwdpollenflug"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="today">
+		<item-type>String</item-type>
+		<label>Today</label>
+		<state readOnly="true">
+			<options>
+				<option value="0"/>
+				<option value="0-1"/>
+				<option value="1"/>
+				<option value="1-2"/>
+				<option value="2"/>
+				<option value="2-3"/>
+				<option value="3"/>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tomorrow">
+		<item-type>String</item-type>
+		<label>Tomorrow</label>
+		<state readOnly="true">
+			<options>
+				<option value="0"/>
+				<option value="0-1"/>
+				<option value="1"/>
+				<option value="1-2"/>
+				<option value="2"/>
+				<option value="2-3"/>
+				<option value="3"/>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dayafter_to">
+		<item-type>String</item-type>
+		<label>Day after tomorrow</label>
+		<state readOnly="true">
+			<options>
+				<option value="0"/>
+				<option value="0-1"/>
+				<option value="1"/>
+				<option value="1-2"/>
+				<option value="2"/>
+				<option value="2-3"/>
+				<option value="3"/>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
