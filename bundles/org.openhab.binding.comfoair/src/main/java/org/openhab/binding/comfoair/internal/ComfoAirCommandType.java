@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Holger Hees - Initial Contribution
  * @author Hans Böhm - Refactoring
  */
+@NonNullByDefault
 public enum ComfoAirCommandType {
     /**
      * Below all valid commands to change or read parameters from ComfoAir
@@ -451,7 +454,7 @@ public enum ComfoAirCommandType {
     /*
      * Possible values
      */
-    private int[] possible_values;
+    private int @Nullable [] possible_values;
 
     /*
      * Cmd code to change properties on the comfoair.
@@ -469,7 +472,7 @@ public enum ComfoAirCommandType {
      * Affected commands which should be refreshed after a successful change
      * command call.
      */
-    private String[] change_affected;
+    private String @Nullable [] change_affected;
 
     /*
      * Command for reading properties.
@@ -484,7 +487,7 @@ public enum ComfoAirCommandType {
     /*
      * The byte position inside the response data.
      */
-    private int[] read_reply_data_pos;
+    private int @Nullable [] read_reply_data_pos;
 
     /*
      * Bit mask for boolean response properties to identify a true value.
@@ -639,7 +642,7 @@ public enum ComfoAirCommandType {
     /**
      * @return data type for this command key
      */
-    public ComfoAirDataType getDataType() {
+    public @Nullable ComfoAirDataType getDataType() {
         try {
             return data_type.newInstance();
         } catch (Exception e) {
@@ -651,7 +654,7 @@ public enum ComfoAirCommandType {
     /**
      * @return possible byte values
      */
-    public int[] getPossibleValues() {
+    public int @Nullable [] getPossibleValues() {
         return possible_values;
     }
 
@@ -676,7 +679,7 @@ public enum ComfoAirCommandType {
     /**
      * @return byte position inside the request byte value array
      */
-    public int[] getGetReplyDataPos() {
+    public int @Nullable [] getGetReplyDataPos() {
         return read_reply_data_pos;
     }
 
@@ -694,7 +697,7 @@ public enum ComfoAirCommandType {
      *
      * @return ComfoAirCommand identified by key
      */
-    public static ComfoAirCommand getReadCommand(String key) {
+    public static @Nullable ComfoAirCommand getReadCommand(String key) {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
@@ -715,22 +718,23 @@ public enum ComfoAirCommandType {
      *            new state
      * @return initialized ComfoAirCommand
      */
-    public static ComfoAirCommand getChangeCommand(String key, State value) {
+    public static @Nullable ComfoAirCommand getChangeCommand(String key, State value) {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
         DecimalType decimalValue = value.as(DecimalType.class);
 
         if (commandType != null && decimalValue != null) {
             ComfoAirDataType dataType = commandType.getDataType();
-            int[] data = dataType.convertFromState(value, commandType);
+            if (dataType != null) {
+                int[] data = dataType.convertFromState(value, commandType);
 
-            if (data != null) {
-                int dataPossition = commandType.getChangeDataPos();
-                int intValue = decimalValue.intValue();
+                if (data != null) {
+                    int dataPossition = commandType.getChangeDataPos();
+                    int intValue = decimalValue.intValue();
 
-                return new ComfoAirCommand(key, commandType.change_command, null, data, dataPossition, intValue);
+                    return new ComfoAirCommand(key, commandType.change_command, null, data, dataPossition, intValue);
+                }
             }
         }
-
         return null;
     }
 
@@ -744,41 +748,47 @@ public enum ComfoAirCommandType {
      * @return ComfoAirCommand's which should be updated after a modifying
      *         ComfoAirCommand named by key
      */
+    @SuppressWarnings("null")
     public static Collection<ComfoAirCommand> getAffectedReadCommands(String key, Set<String> usedKeys) {
 
         Map<Integer, ComfoAirCommand> commands = new HashMap<Integer, ComfoAirCommand>();
 
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
-        if (commandType.read_reply_command != 0) {
-            Integer getCmd = commandType.read_command == 0 ? null : Integer.valueOf(commandType.read_command);
-            Integer replyCmd = Integer.valueOf(commandType.read_reply_command);
+        if (commandType != null) {
+            if (commandType.read_reply_command != 0) {
+                Integer getCmd = commandType.read_command == 0 ? null : Integer.valueOf(commandType.read_command);
+                Integer replyCmd = Integer.valueOf(commandType.read_reply_command);
 
-            ComfoAirCommand command = new ComfoAirCommand(key, getCmd, replyCmd, new int[0], null, null);
-            commands.put(command.getReplyCmd(), command);
-        }
-
-        for (String affectedKey : commandType.change_affected) {
-            // refresh affected event keys only when they are used
-            if (!usedKeys.contains(affectedKey)) {
-                continue;
+                ComfoAirCommand command = new ComfoAirCommand(key, getCmd, replyCmd, new int[0], null, null);
+                commands.put(replyCmd, command);
             }
 
-            ComfoAirCommandType affectedCommandType = ComfoAirCommandType.getCommandTypeByKey(affectedKey);
+            if (commandType.change_affected != null) {
+                for (String affectedKey : commandType.change_affected) {
+                    // refresh affected event keys only when they are used
+                    if (!usedKeys.contains(affectedKey)) {
+                        continue;
+                    }
 
-            Integer getCmd = affectedCommandType.read_command == 0 ? null
-                    : Integer.valueOf(affectedCommandType.read_command);
-            Integer replyCmd = Integer.valueOf(affectedCommandType.read_reply_command);
+                    ComfoAirCommandType affectedCommandType = ComfoAirCommandType.getCommandTypeByKey(affectedKey);
 
-            ComfoAirCommand command = commands.get(replyCmd);
+                    if (affectedCommandType != null) {
+                        Integer getCmd = affectedCommandType.read_command == 0 ? null
+                                : Integer.valueOf(affectedCommandType.read_command);
+                        Integer replyCmd = Integer.valueOf(affectedCommandType.read_reply_command);
 
-            if (command == null) {
-                command = new ComfoAirCommand(affectedKey, getCmd, replyCmd, new int[0], null, null);
-                commands.put(command.getReplyCmd(), command);
-            } else {
-                command.addKey(affectedKey);
+                        ComfoAirCommand command = commands.get(replyCmd);
+
+                        if (command == null) {
+                            command = new ComfoAirCommand(affectedKey, getCmd, replyCmd, new int[0], null, null);
+                            commands.put(replyCmd, command);
+                        } else {
+                            command.addKey(affectedKey);
+                        }
+                    }
+                }
             }
         }
-
         return commands.values();
     }
 
@@ -787,6 +797,7 @@ public enum ComfoAirCommandType {
      *
      * @return all ComfoAirCommand's identified by keys
      */
+    @SuppressWarnings("null")
     public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(List<String> keys) {
 
         Map<Integer, ComfoAirCommand> commands = new HashMap<Integer, ComfoAirCommand>();
@@ -805,7 +816,7 @@ public enum ComfoAirCommandType {
 
             if (command == null) {
                 command = new ComfoAirCommand(entry.key, getCmd, replyCmd, new int[0], null, null);
-                commands.put(command.getReplyCmd(), command);
+                commands.put(replyCmd, command);
             } else {
                 command.addKey(entry.key);
             }
@@ -839,7 +850,7 @@ public enum ComfoAirCommandType {
      *            command key
      * @return ComfoAirCommandType identified by key
      */
-    public static ComfoAirCommandType getCommandTypeByKey(String key) {
+    public static @Nullable ComfoAirCommandType getCommandTypeByKey(String key) {
         for (ComfoAirCommandType entry : values()) {
             if (entry.key.equals(key)) {
                 return entry;

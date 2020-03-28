@@ -39,39 +39,43 @@ public class DataTypeMessage implements ComfoAirDataType {
             return UnDefType.NULL;
         } else {
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-            int errorAlo = data[get_reply_data_pos[0]];
-            int errorE = data[get_reply_data_pos[1]];
-            int errorEA = data[get_reply_data_pos[2]];
-            int errorAhi = data[get_reply_data_pos[3]];
+            if (get_reply_data_pos != null) {
+                int errorAlo = data[get_reply_data_pos[0]];
+                int errorE = data[get_reply_data_pos[1]];
+                int errorEA = data[get_reply_data_pos[2]];
+                int errorAhi = data[get_reply_data_pos[3]];
 
-            StringBuilder errorCode = new StringBuilder();
+                StringBuilder errorCode = new StringBuilder();
 
-            if (errorAlo > 0) {
-                errorCode.append("A");
-                errorCode.append(convertToCode(errorAlo));
-            } else if (errorAhi > 0) {
-                if (errorAhi == 0x80) {
-                    errorCode.append("A0");
-                } else {
+                if (errorAlo > 0) {
                     errorCode.append("A");
-                    errorCode.append(convertToCode(errorAhi) + 8);
+                    errorCode.append(convertToCode(errorAlo));
+                } else if (errorAhi > 0) {
+                    if (errorAhi == 0x80) {
+                        errorCode.append("A0");
+                    } else {
+                        errorCode.append("A");
+                        errorCode.append(convertToCode(errorAhi) + 8);
+                    }
                 }
-            }
 
-            if (errorE > 0) {
-                if (errorCode.length() > 0) {
-                    errorCode.append(" ");
+                if (errorE > 0) {
+                    if (errorCode.length() > 0) {
+                        errorCode.append(" ");
+                    }
+                    errorCode.append("E");
+                    errorCode.append(convertToCode(errorE));
+                } else if (errorEA > 0) {
+                    if (errorCode.length() > 0) {
+                        errorCode.append(" ");
+                    }
+                    errorCode.append("EA");
+                    errorCode.append(convertToCode(errorEA));
                 }
-                errorCode.append("E");
-                errorCode.append(convertToCode(errorE));
-            } else if (errorEA > 0) {
-                if (errorCode.length() > 0) {
-                    errorCode.append(" ");
-                }
-                errorCode.append("EA");
-                errorCode.append(convertToCode(errorEA));
+                return new StringType(errorCode.length() > 0 ? errorCode.toString() : "OK");
+            } else {
+                return UnDefType.UNDEF;
             }
-            return new StringType(errorCode.length() > 0 ? errorCode.toString() : "OK");
         }
     }
 

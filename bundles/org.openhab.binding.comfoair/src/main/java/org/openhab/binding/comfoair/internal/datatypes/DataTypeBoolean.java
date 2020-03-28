@@ -41,7 +41,7 @@ public class DataTypeBoolean implements ComfoAirDataType {
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
             int get_reply_data_bits = commandType.getGetReplyDataBits();
 
-            if (get_reply_data_pos[0] < data.length) {
+            if (get_reply_data_pos != null && get_reply_data_pos[0] < data.length) {
                 boolean result = (data[get_reply_data_pos[0]] & get_reply_data_bits) == get_reply_data_bits;
                 return OnOffType.from(result);
             } else {
@@ -57,13 +57,12 @@ public class DataTypeBoolean implements ComfoAirDataType {
             return null;
         } else {
             DecimalType decimalValue = value.as(DecimalType.class);
+            int[] possible_values = commandType.getPossibleValues();
 
-            if (decimalValue != null) {
+            if (possible_values != null && decimalValue != null) {
                 int[] template = commandType.getChangeDataTemplate();
 
-                template[commandType.getChangeDataPos()] = decimalValue.intValue() == 1
-                        ? commandType.getPossibleValues()[0]
-                        : 0x00;
+                template[commandType.getChangeDataPos()] = decimalValue.intValue() == 1 ? possible_values[0] : 0x00;
 
                 return template;
             } else {

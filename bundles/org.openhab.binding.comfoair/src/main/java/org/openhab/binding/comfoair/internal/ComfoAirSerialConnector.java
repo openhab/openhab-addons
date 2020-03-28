@@ -591,17 +591,23 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
     private int checkByteAndCalculateValue(ComfoAirCommand command, int requestValue, int preValue) {
         String key = command.getKeys().get(0);
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
-        int possibleValue = commandType.getPossibleValues()[0];
+        if (commandType != null) {
+            int[] get_possible_values = commandType.getPossibleValues();
+            if (get_possible_values != null) {
+                int possibleValue = get_possible_values[0];
 
-        boolean isActive = (preValue & possibleValue) == possibleValue;
-        int newValue;
+                boolean isActive = (preValue & possibleValue) == possibleValue;
+                int newValue;
 
-        if (isActive) {
-            newValue = requestValue == 1 ? 0 : -possibleValue;
-        } else {
-            newValue = requestValue == 1 ? possibleValue : 0;
+                if (isActive) {
+                    newValue = requestValue == 1 ? 0 : -possibleValue;
+                } else {
+                    newValue = requestValue == 1 ? possibleValue : 0;
+                }
+                return newValue;
+            }
         }
-        return newValue;
+        return 0;
     }
 
     /**

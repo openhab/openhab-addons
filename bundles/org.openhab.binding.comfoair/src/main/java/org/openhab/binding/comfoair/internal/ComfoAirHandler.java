@@ -83,45 +83,52 @@ public class ComfoAirHandler extends BaseThingHandler {
                 Set<ChannelUID> channelsLinked = getThing().getChannels().stream().map(Channel::getUID)
                         .filter(this::isLinked).collect(Collectors.toSet());
                 Set<String> keysToUpdate = channelsLinked.stream().map(ChannelUID::getId).collect(Collectors.toSet());
-
-                ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(channelId);
-                ComfoAirDataType dataType = comfoAirCommandType.getDataType();
                 State state = null;
 
-                if (dataType instanceof DataTypeBoolean) {
-                    state = (OnOffType) command;
-                } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
-                    state = (DecimalType) command;
-                } else if (dataType instanceof DataTypeTemperature) {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
-                        if (celsius != null) {
-                            state = new DecimalType(celsius.doubleValue());
+                ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(channelId);
+                if (comfoAirCommandType != null) {
+                    ComfoAirDataType dataType = comfoAirCommandType.getDataType();
+
+                    if (dataType != null) {
+                        if (dataType instanceof DataTypeBoolean) {
+                            state = (OnOffType) command;
+                        } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
+                            state = (DecimalType) command;
+                        } else if (dataType instanceof DataTypeTemperature) {
+                            if (command instanceof QuantityType<?>) {
+                                QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                                if (celsius != null) {
+                                    state = new DecimalType(celsius.doubleValue());
+                                }
+                            } else {
+                                state = (DecimalType) command;
+                            }
+                        } else if (dataType instanceof DataTypeVolt) {
+                            if (command instanceof QuantityType<?>) {
+                                QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
+                                if (volts != null) {
+                                    state = new DecimalType(volts.doubleValue());
+                                }
+                            } else {
+                                state = (DecimalType) command;
+                            }
                         }
-                    } else {
-                        state = (DecimalType) command;
-                    }
-                } else if (dataType instanceof DataTypeVolt) {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
-                        if (volts != null) {
-                            state = new DecimalType(volts.doubleValue());
-                        }
-                    } else {
-                        state = (DecimalType) command;
                     }
                 }
 
                 if (state != null) {
                     ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, state);
-                    sendCommand(changeCommand, channelId);
 
-                    Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
-                            .getAffectedReadCommands(channelId, keysToUpdate);
+                    if (changeCommand != null) {
+                        sendCommand(changeCommand, channelId);
 
-                    if (affectedReadCommands.size() > 0) {
-                        Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
-                        scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
+                                .getAffectedReadCommands(channelId, keysToUpdate);
+
+                        if (affectedReadCommands.size() > 0) {
+                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                            scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        }
                     }
                 } else {
                     logger.warn("Unhandled command type: {}", command.toString());
@@ -186,9 +193,11 @@ public class ComfoAirHandler extends BaseThingHandler {
             }
             String commandKey = channel.getUID().getId();
             ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
-            State state = sendCommand(readCommand, commandKey);
+            if (readCommand != null) {
+                State state = sendCommand(readCommand, commandKey);
 
-            updateState(channel.getUID(), state);
+                updateState(channel.getUID(), state);
+            }
         } catch (IllegalArgumentException e) {
             logger.warn("Unknown channel {}", channel.getUID().getId());
         }
@@ -253,10 +262,14 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                 if (response.length > 0) {
                     ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(commandKey);
+                    State value = UnDefType.UNDEF;
 
-                    ComfoAirDataType dataType = comfoAirCommandType.getDataType();
-                    State value = dataType.convertToState(response, comfoAirCommandType);
-
+                    if (comfoAirCommandType != null) {
+                        ComfoAirDataType dataType = comfoAirCommandType.getDataType();
+                        if (dataType != null) {
+                            value = dataType.convertToState(response, comfoAirCommandType);
+                        }
+                    }
                     if (value instanceof UnDefType) {
                         if (logger.isWarnEnabled()) {
                             logger.warn("unexpected value for DATA: {}", ComfoAirSerialConnector.dumpData(response));
