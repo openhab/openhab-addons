@@ -100,13 +100,13 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
 
             if (!controlInfo.power) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.name()));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.getValue()));
             } else if (controlInfo.mode == AirbaseMode.COLD) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.name()));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.getValue()));
             } else if (controlInfo.mode == AirbaseMode.HEAT) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.name()));
-            } else {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.name()));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.getValue()));
+            } else if (controlInfo.mode == AirbaseMode.AUTO) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
             }
         }
 
