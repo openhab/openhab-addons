@@ -24,7 +24,7 @@ import com.influxdb.query.dsl.functions.RangeFlux;
 import com.influxdb.query.dsl.functions.restriction.Restrictions;
 
 /**
- * Creates InfluxDB query sentence given a OpenHab persistence {@link FilterCriteria}
+ * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 2.0
  *
  * @author Joan Pujol Espinar - Initial contribution
  */

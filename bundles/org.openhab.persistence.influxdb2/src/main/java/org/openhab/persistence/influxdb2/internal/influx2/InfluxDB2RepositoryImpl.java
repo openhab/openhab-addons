@@ -43,7 +43,7 @@ import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxTable;
 
 /**
- * Manages InfluxDB server interaction maintaining client connection
+ * Implementation of {@link InfluxDB2Repository} for InfluxDB 2.0
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
