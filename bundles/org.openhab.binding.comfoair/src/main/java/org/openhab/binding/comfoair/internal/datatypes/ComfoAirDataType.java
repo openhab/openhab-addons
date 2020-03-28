@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.comfoair.internal.datatypes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 
@@ -21,6 +23,7 @@ import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
  *
  * @author Holger Hees - Initial Contribution
  */
+@NonNullByDefault
 public interface ComfoAirDataType {
 
     /**
@@ -39,7 +42,7 @@ public interface ComfoAirDataType {
      * @param commandType
      * @return converted byte array
      */
-    int[] convertFromState(State value, ComfoAirCommandType commandType);
+    int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType);
 
     default int calculateNumberValue(int[] data, ComfoAirCommandType commandType) {
         int[] get_reply_data_pos = commandType.getGetReplyDataPos();

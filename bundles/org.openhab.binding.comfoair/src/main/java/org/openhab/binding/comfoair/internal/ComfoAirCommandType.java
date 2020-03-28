@@ -722,10 +722,13 @@ public enum ComfoAirCommandType {
         if (commandType != null && decimalValue != null) {
             ComfoAirDataType dataType = commandType.getDataType();
             int[] data = dataType.convertFromState(value, commandType);
-            int dataPossition = commandType.getChangeDataPos();
-            int intValue = decimalValue.intValue();
 
-            return new ComfoAirCommand(key, commandType.change_command, null, data, dataPossition, intValue);
+            if (data != null) {
+                int dataPossition = commandType.getChangeDataPos();
+                int intValue = decimalValue.intValue();
+
+                return new ComfoAirCommand(key, commandType.change_command, null, data, dataPossition, intValue);
+            }
         }
 
         return null;

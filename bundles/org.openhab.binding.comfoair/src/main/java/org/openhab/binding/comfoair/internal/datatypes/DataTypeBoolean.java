@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.comfoair.internal.datatypes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
@@ -26,12 +28,13 @@ import org.slf4j.LoggerFactory;
  * @author Holger Hees - Initial Contribution
  * @author Hans Böhm - Refactoring
  */
+@NonNullByDefault
 public class DataTypeBoolean implements ComfoAirDataType {
     private Logger logger = LoggerFactory.getLogger(DataTypeBoolean.class);
 
     @Override
-    public State convertToState(int[] data, ComfoAirCommandType commandType) {
-        if (data == null || commandType == null) {
+    public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
+        if (data == null) {
             logger.trace("\"DataTypeBoolean\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
@@ -48,9 +51,9 @@ public class DataTypeBoolean implements ComfoAirDataType {
     }
 
     @Override
-    public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value == null || commandType == null) {
-            logger.trace("\"DataTypeBoolean\" class \"convertFromState\" method parameter: null");
+    public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
+        if (value instanceof UnDefType) {
+            logger.trace("\"DataTypeBoolean\" class \"convertFromState\" undefined state");
             return null;
         } else {
             DecimalType decimalValue = value.as(DecimalType.class);

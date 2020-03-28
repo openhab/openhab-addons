@@ -257,14 +257,12 @@ public class ComfoAirHandler extends BaseThingHandler {
                     ComfoAirDataType dataType = comfoAirCommandType.getDataType();
                     State value = dataType.convertToState(response, comfoAirCommandType);
 
-                    if (value == null) {
+                    if (value instanceof UnDefType) {
                         if (logger.isWarnEnabled()) {
                             logger.warn("unexpected value for DATA: {}", ComfoAirSerialConnector.dumpData(response));
                         }
-                        return UnDefType.UNDEF;
-                    } else {
-                        return value;
                     }
+                    return value;
                 }
             }
         }

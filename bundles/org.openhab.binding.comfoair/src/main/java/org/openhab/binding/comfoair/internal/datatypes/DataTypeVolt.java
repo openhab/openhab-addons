@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.comfoair.internal.datatypes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -27,13 +29,14 @@ import org.slf4j.LoggerFactory;
  * @author Grzegorz Miasko - Initial Contribution
  * @author Hans Böhm - QuantityTypes
  */
+@NonNullByDefault
 public class DataTypeVolt implements ComfoAirDataType {
 
     private Logger logger = LoggerFactory.getLogger(DataTypeVolt.class);
 
     @Override
-    public State convertToState(int[] data, ComfoAirCommandType commandType) {
-        if (data == null || commandType == null) {
+    public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
+        if (data == null) {
             logger.trace("\"DataTypeVolt\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
@@ -47,9 +50,9 @@ public class DataTypeVolt implements ComfoAirDataType {
     }
 
     @Override
-    public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value == null || commandType == null) {
-            logger.trace("\"DataTypeVolt\" class \"convertFromState\" method parameter: null");
+    public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
+        if (value instanceof UnDefType) {
+            logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");
             return null;
         } else {
             int[] template = commandType.getChangeDataTemplate();

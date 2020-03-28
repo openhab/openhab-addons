@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.comfoair.internal.datatypes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -25,12 +27,13 @@ import org.slf4j.LoggerFactory;
  * @author Grzegorz Miasko - Initial Contribution
  * @author Hans Böhm
  */
+@NonNullByDefault
 public class DataTypeRPM implements ComfoAirDataType {
     private Logger logger = LoggerFactory.getLogger(DataTypeRPM.class);
 
     @Override
-    public State convertToState(int[] data, ComfoAirCommandType commandType) {
-        if (data == null || commandType == null) {
+    public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
+        if (data == null) {
             logger.trace("\"DataTypeRPM\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
@@ -45,9 +48,9 @@ public class DataTypeRPM implements ComfoAirDataType {
     }
 
     @Override
-    public int[] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value == null || commandType == null) {
-            logger.trace("\"DataTypeRPM\" class \"convertFromState\" method parameter: null");
+    public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
+        if (value instanceof UnDefType) {
+            logger.trace("\"DataTypeRPM\" class \"convertFromState\" undefined state");
             return null;
         } else {
             int[] template = commandType.getChangeDataTemplate();
