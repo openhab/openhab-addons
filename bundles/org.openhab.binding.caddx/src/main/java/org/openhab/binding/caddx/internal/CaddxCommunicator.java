@@ -456,7 +456,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 int b = readAsciiByte(in);
                 message[messageBufferIndex] = (byte) b;
                 messageBufferIndex++;
-            } while (messageBufferIndex == messageBufferLength);
+            } while (messageBufferIndex < messageBufferLength);
             logger.trace("CaddxCommunicator.handleAsciiProtocol() Got message {}", message[0]);
         } catch (EOFException e) {
             return;
