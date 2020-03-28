@@ -16,16 +16,21 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import java.util.Dictionary;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -41,10 +46,27 @@ import org.osgi.service.component.annotations.Reference;
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     @Activate
-    public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService) {
+    public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService,
+            @Reference HttpClientFactory httpClientFactory) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        @Nullable
+        String username = (String) properties.get("username");
+        @Nullable
+        String password = (String) properties.get("password");
+        @Nullable
+        String country = (String) properties.get("country");
+        CloudConnector.getInstance().setHttpClient(httpClient);
+        CloudConnector.getInstance().setCredentials(username, password, country);
     }
 
     @Override

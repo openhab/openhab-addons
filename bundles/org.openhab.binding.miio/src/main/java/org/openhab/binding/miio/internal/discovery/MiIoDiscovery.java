@@ -35,9 +35,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.Utils;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * The {@link MiIoDiscovery} is responsible for discovering new Xiaomi Mi IO devices
@@ -132,6 +135,19 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
         String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+        String country = "";
+        boolean isOnline = false;
+        if (CloudConnector.getInstance().isConnected()) {
+            CloudConnector.getInstance().getDevicesList();
+            JsonObject cloudInfo = CloudConnector.getInstance().getDeviceInfo(id);
+            logger.debug("Cloud Response: {}", cloudInfo.toString());
+            if (cloudInfo.has("token")) {
+                token = cloudInfo.get("token").getAsString();
+                label = cloudInfo.get("name").getAsString() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+                country = cloudInfo.get("server").getAsString();
+                isOnline = cloudInfo.get("isOnline").getAsBoolean();
+            }
+        }
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
         logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
@@ -144,6 +160,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         } else {
             logger.debug("Discovered token for device {}: {}", id, token);
             dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id).withLabel(label + " with token");
+        }
+        if (!country.isEmpty() && isOnline) {
+            dr = dr.withProperty(PROPERTY_CLOUDSERVER, country);
         }
         thingDiscovered(dr.build());
     }

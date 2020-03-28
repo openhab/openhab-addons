@@ -1,0 +1,468 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.miio.internal.cloud;
+
+import java.io.IOException;
+import java.net.CookieStore;
+import java.net.HttpCookie;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.miio.internal.MiIoCrypto;
+import org.openhab.binding.miio.internal.MiIoCryptoException;
+import org.openhab.binding.miio.internal.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
+/**
+ * The {@link MiCloudConnector} class is used for connecting to the Xiaomi cloud access
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
+@NonNullByDefault
+public class MiCloudConnector {
+
+    private static final int REQUEST_TIMEOUT_SECONDS = 10;
+    private static final String UNEXPECTED = "Unexpected :";
+    private static final String AGENT_ID = (new Random().ints(65, 70).limit(13)
+            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString());
+    private static final String USERAGENT = "Android-7.1.1-1.0.0-ONEPLUS A3010-136-" + AGENT_ID
+            + " APP/xiaomi.smarthome APPV/62830";
+    private final JsonParser parser = new JsonParser();
+
+    // String
+    private String username;
+    private String password;
+
+    private final String clientId;
+    private String userId = "";
+    private String serviceToken = "";
+    private String ssecurity = "";
+    int loginFailedCounter = 0;
+
+    private HttpClient httpClient;
+
+    private final Logger logger = LoggerFactory.getLogger(MiCloudConnector.class);
+
+    public MiCloudConnector(String username, String password, HttpClient httpClient) throws MiCloudException {
+        this.username = username;
+        this.password = password;
+        this.httpClient = httpClient;
+        if (!checkCredentials()) {
+            throw new MiCloudException("username or password can't be empty");
+        }
+        clientId = (new Random().ints(97, 122 + 1).limit(6)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString());
+    }
+
+    void startClient() throws MiCloudException {
+        if (!httpClient.isStarted()) {
+            try {
+                httpClient.start();
+                // set default cookies
+                CookieStore cookieStore = httpClient.getCookieStore();
+                addCookie(cookieStore, "sdkVersion", "accountsdk-18.8.15", "mi.com");
+                addCookie(cookieStore, "sdkVersion", "accountsdk-18.8.15", "xiaomi.com");
+                addCookie(cookieStore, "deviceId", this.clientId, "mi.com");
+                addCookie(cookieStore, "deviceId", this.clientId, "xiaomi.com");
+            } catch (Exception e) {
+                throw new MiCloudException("No http client cannot be started: " + e.getMessage());
+            }
+        }
+    }
+
+    public void stopClient() {
+        try {
+            this.httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Error stopping httpclient :{}", e.getMessage());
+        }
+    }
+
+    private boolean checkCredentials() {
+        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+            logger.info("Xiaomi Cloud: username or password missing.");
+            return false;
+        }
+        return true;
+    }
+
+    private String getApiUrl(String country) {
+        return "https://" + (country.trim().equalsIgnoreCase("cn") ? "" : country.trim().toLowerCase() + ".")
+                + "api.io.mi.com/app";
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    String parseJson(String data) {
+        if (data.contains("&&&START&&&")) {
+            return data.replace("&&&START&&&", "");
+        } else {
+            return UNEXPECTED.concat(data);
+        }
+    }
+
+    public String getMapUrl(String vacuumMap, String country) throws MiCloudException {
+        String url = getApiUrl(country) + "/home/getmapfileurl";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
+        String mapResponse = request(url, map);
+        logger.trace("response: {}", mapResponse);
+        String errorMsg = "";
+        JsonElement response = parser.parse(mapResponse);
+        if (response.isJsonObject()) {
+            logger.debug("Received  JSON message {}", response.toString());
+            if (response.getAsJsonObject().has("result") && response.getAsJsonObject().get("result").isJsonObject()) {
+                JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
+                if (jo.has("url")) {
+                    return jo.get("url").getAsString();
+                } else {
+                    errorMsg = "Could not get url";
+                }
+            } else {
+                errorMsg = "Could not get result";
+            }
+        } else {
+            errorMsg = "Received message is invalid JSON";
+        }
+        logger.debug("{}: {}", errorMsg, mapResponse);
+        return "";
+    }
+
+    public String getDeviceStatus(String device, String country) throws MiCloudException {
+        String url = getApiUrl(country) + "/home/device_list";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", "{\"dids\":[\"" + device + "\"]}");
+        logger.debug("response: {}", request(url, map));
+        return "";
+    }
+
+    public String getLatest(String model, String country) {
+        String url = getApiUrl(country) + "/home/latest_version";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", "{\"model\":\"" + model + "\"}");
+        String resp;
+        try {
+            resp = request(url, map);
+            logger.debug("Response: {}", resp);
+            // CloudUtil.printDevices(resp, logger);
+            if (resp.length() > 2) {
+                // CloudUtil.saveFile(resp, country, logger);
+                return resp;
+            }
+        } catch (MiCloudException e) {
+            logger.debug("{}", e.getMessage());
+            return "";
+        }
+        return "";
+    }
+
+    public String getDevices(String country) {
+        String url = getApiUrl(country) + "/home/device_list";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
+        String resp;
+        try {
+            resp = request(url, map);
+            logger.trace("Get devices response: {}", resp);
+            CloudUtil.printDevices(resp, country, logger);
+            if (resp.length() > 2) {
+                CloudUtil.saveFile(resp, country, logger);
+                return resp;
+            }
+        } catch (MiCloudException e) {
+            logger.info("{}", e.getMessage());
+        }
+        return "";
+    }
+
+    public String request(String urlPart, String country, Map<String, String> params) throws MiCloudException {
+        String url = getApiUrl(country) + urlPart;
+        String response = request(url, params);
+        logger.debug("Request to {} server {}. Response: {}", country, urlPart, response);
+        return response;
+    }
+
+    public String request(String url, Map<String, String> params) throws MiCloudException {
+        if (this.serviceToken.isEmpty() || this.userId.isEmpty()) {
+            throw new MiCloudException("Cannot execute request. service token or userId missing");
+        }
+        try {
+            startClient();
+        } catch (Exception e) {
+            throw new MiCloudException("Cannot Execute request. service token or userId missing" + e.getMessage());
+        }
+        logger.debug("Send request: {} to {}", params.get("data"), url);
+        Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        request.agent(USERAGENT);
+        request.header("x-xiaomi-protocal-flag-cli", "PROTOCAL-HTTP2");
+        request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        request.cookie(new HttpCookie("userId", this.userId));
+        request.cookie(new HttpCookie("yetAnotherServiceToken", this.serviceToken));
+        request.cookie(new HttpCookie("serviceToken", this.serviceToken));
+        request.cookie(new HttpCookie("locale", "uk_GB"));
+        request.cookie(new HttpCookie("timezone", "GMT%2B01%3A00"));
+        request.cookie(new HttpCookie("is_daylight", "1"));
+        request.cookie(new HttpCookie("dst_offset", "3600000"));
+        request.cookie(new HttpCookie("channel", "MI_APP_STORE"));
+
+        for (HttpCookie cookie : request.getCookies()) {
+            logger.trace("Cookie set for request ({}) : {} --> {}     (path: {})", cookie.getDomain(), cookie.getName(),
+                    cookie.getValue(), cookie.getPath());
+        }
+        String method = "POST";
+        request.method(method);
+
+        try {
+            String nonce = CloudUtil.generateNonce(System.currentTimeMillis());
+            String signedNonce = CloudUtil.signedNonce(ssecurity, nonce);
+            String signature = CloudUtil.generateSignature(url.replace("/app", ""), signedNonce, nonce, params);
+
+            Fields fields = new Fields();
+            fields.put("signature", signature);
+            fields.put("_nonce", nonce);
+            fields.put("data", params.get("data"));
+            request.content(new FormContentProvider(fields));
+
+            logger.trace("fieldcontent: {}", fields.toString());
+            final ContentResponse response = request.send();
+            return response.getContentAsString();
+        } catch (HttpResponseException e) {
+            serviceToken = "";
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+        } catch (TimeoutException e) {
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+        } catch (ExecutionException e) {
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+        } catch (MiIoCryptoException e) {
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage(), e);
+        } catch (Exception e) {
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage(), e);
+        }
+        return "";
+    }
+
+    private void addCookie(CookieStore cookieStore, String name, String value, String domain) {
+        HttpCookie cookie = new HttpCookie(name, value);
+        cookie.setDomain("." + domain);
+        cookie.setPath("/");
+        cookieStore.add(URI.create("https://" + domain), cookie);
+    }
+
+    // TODO: better way instead of blocking ?
+    public synchronized boolean login() {
+        if (!checkCredentials()) {
+            return false;
+        }
+        if (!userId.isEmpty() && !serviceToken.isEmpty()) {
+            return true;
+        }
+        logger.debug("Xiaomi cloud login with userid {}", username);
+        try {
+            if (loginRequest()) {
+                loginFailedCounter = 0;
+            } else {
+                loginFailedCounter++;
+                logger.debug("Xiaomi cloud login attempt {}", loginFailedCounter);
+            }
+        } catch (MiCloudException e) {
+            logger.info("Error logging on to Xiaomi cloud ({}): {}", loginFailedCounter, e.getMessage());
+            loginFailedCounter++;
+            serviceToken = "";
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean loginRequest() throws MiCloudException {
+        try {
+            startClient();
+            String sign = loginStep1();
+            String location = loginStep2(sign);
+            final ContentResponse responseStep3 = loginStep3(location);
+
+            switch (responseStep3.getStatus()) {
+                case HttpStatus.FORBIDDEN_403:
+                    throw new MiCloudException("Access denied. Did you set the correct api-key and/or username?");
+                case HttpStatus.OK_200:
+                    return true;
+                default:
+                    logger.trace("request returned status '{}', reason: {}, content = {}", responseStep3.getStatus(),
+                            responseStep3.getReason(), responseStep3.getContentAsString());
+                    throw new MiCloudException(responseStep3.getStatus() + responseStep3.getReason());
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new MiCloudException("Cannot logon to Xiaomi cloud: " + e.getMessage());
+        } catch (MiIoCryptoException e) {
+            throw new MiCloudException("Error decrypting. Cannot logon to Xiaomi cloud: " + e.getMessage());
+        } catch (MalformedURLException e) {
+            throw new MiCloudException("Error getting logon URL. Cannot logon to Xiaomi cloud: " + e.getMessage());
+        }
+
+    }
+
+    private String loginStep1() throws InterruptedException, TimeoutException, ExecutionException, MiCloudException {
+        final ContentResponse responseStep1;
+
+        logger.trace("Xiaomi Login step 1");
+        String url = "https://account.xiaomi.com/pass/serviceLogin?sid=xiaomiio&_json=true";
+        Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        request.agent(USERAGENT);
+        request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        request.cookie(new HttpCookie("userId", this.userId.length() > 0 ? this.userId : this.username));
+
+        responseStep1 = request.send();
+        final String content = responseStep1.getContentAsString();
+        logger.trace("Xiaomi Login step 1 content response= {}", content);
+        logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
+        try {
+            JsonElement resp = new JsonParser().parse(parseJson(content));
+            String sign = resp.getAsJsonObject().get("_sign").getAsString();
+            logger.trace("Xiaomi Login step 1 sign = {}", sign);
+            return sign;
+        } catch (JsonSyntaxException e) {
+            throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage());
+        }
+    }
+
+    private String loginStep2(String sign)
+            throws MiIoCryptoException, InterruptedException, TimeoutException, ExecutionException, MiCloudException {
+        String passToken;
+        String cUserId;
+
+        logger.trace("Xiaomi Login step 2");
+        String url = "https://account.xiaomi.com/pass/serviceLoginAuth2";
+        Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        request.agent(USERAGENT);
+        request.method(HttpMethod.POST);
+        final ContentResponse responseStep2;
+
+        Fields fields = new Fields();
+        fields.put("sid", "xiaomiio");
+        // fields.put("hash", encodePassword(password));
+        fields.put("hash", Utils.getHex(MiIoCrypto.md5(password.getBytes())));
+        fields.put("callback", "https://sts.api.io.mi.com/sts");
+        fields.put("qs", "%3Fsid%3Dxiaomiio%26_json%3Dtrue");
+        fields.put("user", username);
+        fields.put("_sign", sign);
+        fields.put("_json", "true");
+
+        request.content(new FormContentProvider(fields));
+        responseStep2 = request.send();
+
+        final String content2 = responseStep2.getContentAsString();
+        logger.trace("Xiaomi login step 2 response = {}", responseStep2);
+        logger.trace("Xiaomi login step 2 content = {}", content2);
+
+        JsonElement resp2 = new JsonParser().parse(parseJson(content2));
+        ssecurity = CloudUtil.getElementString(resp2, "ssecurity", logger);
+        userId = CloudUtil.getElementString(resp2, "userId", logger);
+        cUserId = CloudUtil.getElementString(resp2, "cUserId", logger);
+        passToken = CloudUtil.getElementString(resp2, "passToken", logger);
+        String location = CloudUtil.getElementString(resp2, "location", logger);
+        String code = CloudUtil.getElementString(resp2, "code", logger);
+
+        logger.trace("Xiaomi login ssecurity = {}", ssecurity);
+        logger.trace("Xiaomi login userId = {}", userId);
+        logger.trace("Xiaomi login cUserId = {}", cUserId);
+        logger.trace("Xiaomi login passToken = {}", passToken);
+        logger.trace("Xiaomi login location = {}", location);
+        logger.trace("Xiaomi login code = {}", code);
+
+        dumpCookies(url);
+        if (!location.isEmpty()) {
+            return location;
+        } else {
+            throw new MiCloudException("Error getting logon location URL. Return code: " + code);
+        }
+    }
+
+    private ContentResponse loginStep3(String location)
+            throws MalformedURLException, InterruptedException, TimeoutException, ExecutionException {
+        final ContentResponse responseStep3;
+        Request request;
+        logger.trace("Xiaomi Login step 3 @ {}", (new URL(location)).getHost());
+        request = httpClient.newRequest(location).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        request.agent(USERAGENT);
+        request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        responseStep3 = request.send();
+        logger.trace("Xiaomi login step 3 content = {}", responseStep3.getContentAsString());
+        logger.trace("Xiaomi login step 3 response = {}", responseStep3);
+
+        dumpCookies(location);
+        URI uri = URI.create("http://sts.api.io.mi.com");
+        String serviceToken = extractServiceToken(uri);
+        if (!serviceToken.isEmpty()) {
+            this.serviceToken = serviceToken;
+        }
+        return responseStep3;
+    }
+
+    private void dumpCookies(String url) {
+        URI uri = URI.create(url);
+        logger.trace("Cookie dump for {}", url);
+        List<HttpCookie> cookies = httpClient.getCookieStore().get(uri);
+        for (HttpCookie cookie : cookies) {
+            logger.trace("Cookie ({}) : {} --> {}     (path: {})", cookie.getDomain(), cookie.getName(),
+                    cookie.getValue(), cookie.getPath());
+        }
+    }
+
+    private String extractServiceToken(URI uri) {
+        String serviceToken = "";
+        List<HttpCookie> cookies = httpClient.getCookieStore().get(uri);
+        for (HttpCookie cookie : cookies) {
+            logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
+            if (cookie.getName().contentEquals("serviceToken")) {
+                serviceToken = cookie.getValue();
+                logger.debug("Xiaomi cloud logon succesfull.");
+                logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
+
+            }
+        }
+        return serviceToken;
+    }
+
+    public boolean hasLoginToken() {
+        return !serviceToken.isEmpty();
+    }
+}
