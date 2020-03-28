@@ -50,6 +50,14 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import javax.xml.ws.Response;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -67,17 +75,9 @@ import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.openhab.binding.lgwebos.internal.handler.core.LaunchSession;
 import org.openhab.binding.lgwebos.internal.handler.core.LaunchSession.LaunchSessionType;
-import org.openhab.binding.lgwebos.internal.handler.core.Response;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.openhab.binding.lgwebos.internal.handler.core.TextInputStatusInfo;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * WebSocket to handle the communication with WebOS device.

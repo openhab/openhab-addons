@@ -24,36 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.cache.ExpiringCache;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
-import org.openhab.binding.miio.internal.MiIoCommand;
-import org.openhab.binding.miio.internal.MiIoCryptoException;
-import org.openhab.binding.miio.internal.MiIoSendCommand;
-import org.openhab.binding.miio.internal.Utils;
-import org.openhab.binding.miio.internal.basic.CommandParameterType;
-import org.openhab.binding.miio.internal.basic.Conversions;
-import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
-import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
-import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
-import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
-import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -61,6 +31,35 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.jcp.xml.dsig.internal.dom.Utils;
+import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
+import org.openhab.binding.miio.internal.MiIoCommand;
+import org.openhab.binding.miio.internal.MiIoCryptoException;
+import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.basic.CommandParameterType;
+import org.openhab.binding.miio.internal.basic.Conversions;
+import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
+import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
+import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
+import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
+import org.slf4j.LoggerFactory;
+
+import jdk.nashorn.internal.runtime.regexp.joni.constants.StringType;
 
 /**
  * The {@link MiIoBasicHandler} is responsible for handling commands, which are

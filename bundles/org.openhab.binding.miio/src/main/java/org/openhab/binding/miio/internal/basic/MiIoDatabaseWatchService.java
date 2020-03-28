@@ -13,7 +13,9 @@
 
 package org.openhab.binding.miio.internal.basic;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.io.File;
@@ -29,24 +31,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.ConfigConstants;
-import org.eclipse.smarthome.core.service.AbstractWatchService;
-import org.openhab.binding.miio.internal.MiIoBindingConstants;
-import org.openhab.binding.miio.internal.Utils;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.core.service.AbstractWatchService;
+import org.jcp.xml.dsig.internal.dom.Utils;
+import org.openhab.binding.miio.internal.MiIoBindingConstants;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MiIoDatabaseWatchService} creates a registry of database file per ModelId
