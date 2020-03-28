@@ -20,30 +20,30 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| Ip        | the ip-address of your Fronius Datalogger |
-| DeviceId  | The identifier of your device ( Default: 1) |
-| refresh   | Refresh interval in seconds |
+| Parameter       | Description                                           |
+|-----------------|------------------------------------------------------ |
+| hostname        | The ip-address of your Fronius Datalogger |
+| deviceId        | The identifier of your device (Default: 1) |
+| refreshInterval | Refresh interval in seconds |
 
 ## Channels
 
 | Channel ID | Item Type    | Description              |
 |------------|--------------|------------------------- |
-| day_energy | Number | Energy generated on current day |
-| pac | Number | AC powery |
-| total_energy | Number | Energy generated overall |
-| year_energy | Number | Energy generated in current year |
-| fac | Number | AC frequency |
-| iac | Number | AC current |
-| idc | Number | DC current |
-| uac | Number | AC voltage |
-| udc | Number | DC voltage |
-| pGrid | Number | Power + from grid, - to grid |
-| pLoad | Number | Power + generator, - consumer |
-| pAkku | Number | Power + charge, - discharge |
-| error_code | Number | Device error code |
-| status_code | Number | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
+| inverterdatachanneldayenergy | Number | Energy generated on current day |
+| inverterdatachannelpac | Number | AC powery |
+| inverterdatachanneltotal | Number | Energy generated overall |
+| inverterdatachannelyear | Number | Energy generated in current year |
+| inverterdatachannelfac | Number | AC frequency |
+| inverterdatachanneliac | Number | AC current |
+| inverterdatachannelidc | Number | DC current |
+| inverterdatachanneluac | Number | AC voltage |
+| inverterdatachanneludc | Number | DC voltage |
+| inverterdatadevicestatuserrorcode | Number | Device error code |
+| inverterdatadevicestatusstatuscode | Number | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
+| powerflowchannelpgrid | Number | Power + from grid, - to grid |
+| powerflowchannelpload | Number | Power + generator, - consumer |
+| powerflowchannelpakku | Number | Power + charge, - discharge |
 
 ## Full Example
 
