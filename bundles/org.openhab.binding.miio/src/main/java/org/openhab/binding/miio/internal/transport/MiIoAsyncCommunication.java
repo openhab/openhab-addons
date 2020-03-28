@@ -27,6 +27,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.miio.internal.Message;
@@ -50,6 +52,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoAsyncCommunication {
 
     private static final int MSG_BUFFER_SIZE = 2048;
@@ -59,7 +62,7 @@ public class MiIoAsyncCommunication {
     private final String ip;
     private final byte[] token;
     private byte[] deviceId;
-    private DatagramSocket socket;
+    private @Nullable DatagramSocket socket;
 
     private List<MiIoMessageListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -67,9 +70,9 @@ public class MiIoAsyncCommunication {
     private int timeDelta;
     private int timeStamp;
     private final JsonParser parser;
-    private MessageSenderThread senderThread;
+    private @Nullable MessageSenderThread senderThread;
     private boolean connected;
-    private ThingStatusDetail status;
+    private ThingStatusDetail status = ThingStatusDetail.NONE;
     private int errorCounter;
     private int timeout;
     private boolean needPing = true;
@@ -85,8 +88,7 @@ public class MiIoAsyncCommunication {
         this.timeout = timeout;
         setId(id);
         parser = new JsonParser();
-        senderThread = new MessageSenderThread();
-        senderThread.start();
+        startReceiver();
     }
 
     protected List<MiIoMessageListener> getListeners() {
@@ -191,12 +193,12 @@ public class MiIoAsyncCommunication {
     }
 
     public synchronized void startReceiver() {
-        if (senderThread == null) {
+        MessageSenderThread senderThread = this.senderThread;
+        if (senderThread == null || !senderThread.isAlive()) {
             senderThread = new MessageSenderThread();
-        }
-        if (!senderThread.isAlive()) {
             senderThread.start();
         }
+        this.senderThread = senderThread;
     }
 
     /**
@@ -279,7 +281,7 @@ public class MiIoAsyncCommunication {
         return decryptedResponse;
     }
 
-    public Message sendPing(String ip) throws IOException {
+    public @Nullable Message sendPing(String ip) throws IOException {
         for (int i = 0; i < 3; i++) {
             logger.debug("Sending Ping {} ({})", Utils.getHex(deviceId), ip);
             Message resp = sendData(MiIoBindingConstants.DISCOVER_STRING, ip);
@@ -326,7 +328,7 @@ public class MiIoAsyncCommunication {
         }
     }
 
-    private Message sendData(byte[] sendMsg, String ip) throws IOException {
+    private @Nullable Message sendData(byte[] sendMsg, String ip) throws IOException {
         byte[] response = comms(sendMsg, ip);
         if (response.length >= 32) {
             Message miIoResponse = new Message(response);
@@ -364,6 +366,8 @@ public class MiIoAsyncCommunication {
     }
 
     private DatagramSocket getSocket() throws SocketException {
+        @Nullable
+        DatagramSocket socket = this.socket;
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
@@ -375,10 +379,14 @@ public class MiIoAsyncCommunication {
 
     public void close() {
         try {
+            final DatagramSocket socket = this.socket;
             if (socket != null) {
                 socket.close();
             }
-            senderThread.interrupt();
+            final MessageSenderThread senderThread = this.senderThread;
+            if (senderThread != null) {
+                senderThread.interrupt();
+            }
         } catch (SecurityException e) {
             logger.debug("Error while closing: {} ", e.getMessage());
         }
