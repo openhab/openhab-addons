@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.caddx.internal;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,6 +48,7 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private final SerialPortManager portManager;
     private final ArrayList<CaddxPanelListener> listenerQueue = new ArrayList<>();
     private final LinkedBlockingDeque<CaddxMessage> messages = new LinkedBlockingDeque<>();
+    private final SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<CaddxMessage>();
 
     private Thread thread;
     private CaddxProtocol protocol;
@@ -55,11 +57,9 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
     private SerialPort serialPort;
     private InputStream in;
     private OutputStream out;
-    SynchronousQueue<CaddxMessage> exchanger = new SynchronousQueue<CaddxMessage>();
 
     // Receiver state variables
     private boolean inMessage = false;
-    private boolean haveMessageLength = false;
     private boolean haveFirstByte = false;
     private int messageBufferLength = 0;
     private byte[] message;
@@ -197,25 +197,19 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                     outgoingMessage = messages.poll();
                     if (outgoingMessage != null) {
                         logger.trace("CaddxCommunicator.run() Outgoing message: {}", outgoingMessage.getMessageType());
-                    }
 
-                    // Send the message
-                    if (outgoingMessage != null) {
-                        byte msg[] = outgoingMessage.getMessageFrameBytes(protocol);
+                        byte[] msg = outgoingMessage.getMessageFrameBytes(protocol);
                         out.write(msg);
                         out.flush();
-                    }
 
-                    // Log message
-                    if (outgoingMessage != null) {
+                        expectedMessageNumbers = outgoingMessage.getReplyMessageNumbers();
+
+                        // Log message
                         if (logger.isDebugEnabled()) {
                             logger.debug("->: {}", outgoingMessage.getName());
                             logger.debug("->: {}", HexUtils
                                     .bytesToHex(outgoingMessage.getMessageFrameBytes(CaddxProtocol.Binary), " "));
                         }
-                    }
-                    if (outgoingMessage != null) {
-                        expectedMessageNumbers = outgoingMessage.getReplyMessageNumbers();
                     }
                 } else {
                     logger.trace("CaddxCommunicator.run() skipTransmit: true");
@@ -292,15 +286,17 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 }
 
                 // Inform the listeners
-                if (incomingMessage != null && incomingMessage.isChecksumCorrect()) {
-                    for (CaddxPanelListener listener : listenerQueue) {
-                        listener.caddxMessage(this, incomingMessage);
+                if (incomingMessage != null) {
+                    if (incomingMessage.isChecksumCorrect()) {
+                        for (CaddxPanelListener listener : listenerQueue) {
+                            listener.caddxMessage(this, incomingMessage);
+                        }
+                    } else {
+                        logger.warn(
+                                "CaddxCommunicator.run() Received packet checksum does not match. in: {} {}, calc {} {}",
+                                incomingMessage.getChecksum1In(), incomingMessage.getChecksum2In(),
+                                incomingMessage.getChecksum1Calc(), incomingMessage.getChecksum2Calc());
                     }
-                } else {
-                    logger.warn(
-                            "CaddxCommunicator.run() Received packet checksum does not match. in: {} {}, calc {} {}",
-                            incomingMessage.getChecksum1In(), incomingMessage.getChecksum2In(),
-                            incomingMessage.getChecksum1Calc(), incomingMessage.getChecksum2Calc());
                 }
             }
         } catch (IOException e) {
@@ -332,69 +328,88 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         }
     }
 
-    private int readByte(InputStream stream) {
-        try {
-            return stream.read();
-        } catch (IOException e) {
-            return -1;
+    private int readByte(InputStream stream) throws IOException {
+        int b;
+        b = stream.read();
+        if (b == -1) {
+            throw new EOFException();
         }
+        return b;
+    }
+
+    private int readAsciiByte(InputStream stream) throws IOException {
+        if (!haveFirstByte) { // this is the 1st digit
+            int b = readByte(in);
+            tempAsciiByte = (b >= 0x30 && b <= 0x39) ? (b - 0x30) : (b - 0x37) * 0x10;
+            haveFirstByte = true;
+        }
+
+        if (haveFirstByte) { // this is the 2nd digit
+            int b = readByte(in);
+            tempAsciiByte = (b >= 0x30 && b <= 0x39) ? (b - 0x30) : (b - 0x37);
+            haveFirstByte = false;
+        }
+
+        return tempAsciiByte;
+    }
+
+    private void loopUntilByteIsRead(InputStream stream, int byteToRead) throws IOException {
+        int b = 0;
+        do {
+            b = readByte(in);
+        } while (b != byteToRead);
     }
 
     private void receiveInBinaryProtocol(SerialPortEvent serialPortEvent) {
-        int b = 0;
+        try {
+            // Read the start byte
+            if (!inMessage) // skip until 0x7E
+            {
+                loopUntilByteIsRead(in, 0x7e);
 
-        // Read the start byte
-        if (!inMessage) // skip until 0x7E
-        {
-            b = 0;
-            while (b != 0x7E && b != -1) {
-                b = readByte(in);
+                inMessage = true;
+                messageBufferLength = 0;
             }
-            if (b == -1) {
-                return;
-            }
+            logger.trace("CaddxCommunicator.handleBinaryProtocol() Got start byte");
 
-            inMessage = true;
+            // Read the message length
+            if (messageBufferLength == 0) {
+                int b = readByte(in);
+                messageBufferLength = b + 2; // add two bytes for the checksum
+                message = new byte[messageBufferLength];
+                messageBufferIndex = 0;
+            }
+            logger.trace("CaddxCommunicator.handleBinaryProtocol() Got message length {}", messageBufferLength);
+
+            // Read the message
+            do {
+                logger.trace("idx: {}, len: {}, message: {}", messageBufferIndex, messageBufferLength, message);
+                int b = readByte(in);
+                message[messageBufferIndex] = (byte) b;
+
+                if (message[messageBufferIndex] == 0x7D) {
+                    unStuff = true;
+                    continue;
+                }
+
+                if (unStuff) {
+                    message[messageBufferIndex] |= 0x20;
+                    unStuff = false;
+                }
+
+                messageBufferIndex++;
+            } while (messageBufferIndex < messageBufferLength);
+            logger.trace("CaddxCommunicator.handleBinaryProtocol() Got message {}", message[0]);
+        } catch (EOFException e) {
+            return;
+        } catch (IOException e) {
+            // Discard the bytes received so far to start reception of a new package
+            inMessage = false;
             messageBufferLength = 0;
+            messageBufferIndex = 0;
+            unStuff = false;
+            return;
         }
-        logger.trace("CaddxCommunicator.handleBinaryProtocol() Got start byte");
-
-        // Read the message length
-        if (messageBufferLength == 0) {
-            b = readByte(in);
-            if (b == -1) {
-                return;
-            }
-
-            messageBufferLength = b + 2; // add two bytes for the checksum
-            message = new byte[messageBufferLength];
-        }
-        logger.trace("CaddxCommunicator.handleBinaryProtocol() Got message length {}", b);
-
-        // Read the message
-        while (true) {
-            b = readByte(in);
-            if (b == -1) {
-                return;
-            }
-            message[messageBufferIndex] = (byte) b;
-
-            if (message[messageBufferIndex] == 0x7D) {
-                unStuff = true;
-                continue;
-            }
-
-            if (unStuff) {
-                message[messageBufferIndex] |= 0x20;
-                unStuff = false;
-            }
-
-            messageBufferIndex++;
-            if (messageBufferIndex == messageBufferLength) {
-                break;
-            }
-        }
-        logger.trace("CaddxCommunicator.handleBinaryProtocol() Got message {}", message[0]);
 
         // Received data
         CaddxMessage caddxMessage = new CaddxMessage(message, true);
@@ -412,91 +427,46 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Initialize state for next reception
         inMessage = false;
-        haveMessageLength = false;
-        haveFirstByte = false;
         messageBufferLength = 0;
-        message = new byte[0];
         messageBufferIndex = 0;
         unStuff = false;
     }
 
-    private int readAsciiByte(InputStream stream) {
-        if (!haveFirstByte) { // this is the 1st digit
-            int b = readByte(in);
-            if (b == -1) {
-                return -1;
-            }
-            tempAsciiByte = (b - 0x30) * 0x10;
-            haveFirstByte = true;
-        }
-
-        if (haveFirstByte) { // this is the 2nd digit
-            int b = readByte(in);
-            if (b == -1) {
-                return -1;
-            }
-            tempAsciiByte += (b - 0x30);
-            haveFirstByte = false;
-        }
-
-        return tempAsciiByte;
-    }
-
     private void receiveInAsciiProtocol(SerialPortEvent serialPortEvent) {
-        int b = 0;
+        try {
+            // Read the start byte
+            if (!inMessage) {
+                loopUntilByteIsRead(in, 0x0a);
 
-        // Read the start byte
-        if (!inMessage) // skip until 0x0A
-        {
-            while (b != 0x0A && b != -1) {
-                b = readByte(in);
+                inMessage = true;
+                haveFirstByte = false;
+                messageBufferLength = 0;
             }
-            if (b == -1) {
-                return;
-            }
+            logger.trace("CaddxCommunicator.handleAsciiProtocol() Got start byte");
 
-            inMessage = true;
-            haveMessageLength = false;
-            haveFirstByte = false;
-            messageBufferLength = 0;
-        }
-        logger.trace("CaddxCommunicator.handleAsciiProtocol() Got start byte");
-
-        // Read the message length
-        if (!haveMessageLength) {
-            while (!haveMessageLength) {
-                b = readAsciiByte(in);
-                if (b == -1) {
-                    return;
-                }
-
+            // Read the message length
+            if (messageBufferLength == 0) {
+                int b = readAsciiByte(in);
                 messageBufferLength = b + 2; // add 2 bytes for the checksum
-                haveMessageLength = true;
+                message = new byte[messageBufferLength];
             }
+            logger.trace("CaddxCommunicator.handleAsciiProtocol() Got message length {}", messageBufferLength);
 
-            message = new byte[messageBufferLength];
-        }
-        logger.trace("CaddxCommunicator.handleAsciiProtocol() Got message length {}", b);
-
-        // Read the message
-        while (true) {
-            // Read a byte
-            while (true) {
-                b = readAsciiByte(in);
-                if (b == -1) {
-                    return;
-                }
-
+            // Read the message
+            do {
+                int b = readAsciiByte(in);
                 message[messageBufferIndex] = (byte) b;
-                break;
-            }
-
-            messageBufferIndex++;
-            if (messageBufferIndex == messageBufferLength) {
-                break;
-            }
+                messageBufferIndex++;
+            } while (messageBufferIndex == messageBufferLength);
+            logger.trace("CaddxCommunicator.handleAsciiProtocol() Got message {}", message[0]);
+        } catch (EOFException e) {
+            return;
+        } catch (IOException e) {
+            // Discard the bytes received so far to start reception of a new package
+            inMessage = false;
+            messageBufferLength = 0;
+            messageBufferIndex = 0;
         }
-        logger.trace("CaddxCommunicator.handleAsciiProtocol() Got message {}", message[0]);
 
         // Received data
         CaddxMessage caddxMessage = new CaddxMessage(message, true);
@@ -514,7 +484,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
         // Initialize state for next reception
         inMessage = false;
-        haveMessageLength = false;
         messageBufferLength = 0;
         messageBufferIndex = 0;
     }
