@@ -403,6 +403,26 @@
 	<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
+<feature name="WirelessMotionSensorLightLevelAboveThreshold">
+	<message-dispatcher>DefaultDispatcher</message-dispatcher>
+	<message-handler cmd="0x03" group="2">NoOpMsgHandler</message-handler>
+	<message-handler cmd="0x11" group="2">OpenedSleepingContactHandler</message-handler>
+	<message-handler cmd="0x13" group="2">ClosedSleepingContactHandler</message-handler>
+	<message-handler cmd="0x19">NoOpMsgHandler</message-handler>
+	<message-handler cmd="0x2e">NoOpMsgHandler</message-handler>
+	<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	<poll-handler>NoPollHandler</poll-handler>
+</feature>
+<feature name="WirelessMotionSensorLowBattery">
+	<message-dispatcher>DefaultDispatcher</message-dispatcher>
+	<message-handler cmd="0x03" group="3">NoOpMsgHandler</message-handler>
+	<message-handler cmd="0x11" group="3">OpenedSleepingContactHandler</message-handler>
+	<message-handler cmd="0x13" group="3">ClosedSleepingContactHandler</message-handler>
+	<message-handler cmd="0x19">NoOpMsgHandler</message-handler>
+	<message-handler cmd="0x2e">NoOpMsgHandler</message-handler>
+	<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	<poll-handler>NoPollHandler</poll-handler>
+</feature>
 <feature name="MotionSensorData">
 	<message-dispatcher>SimpleDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
@@ -786,6 +806,19 @@
 	<command-handler default="true">NoOpCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtStatusGroup -->
 </feature>
+<feature name="LEDOnOff">
+	<message-dispatcher>DefaultDispatcher</message-dispatcher>
+	<message-handler cmd="0x2F" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x2F" mode="FAST">LightOffSwitchHandler</message-handler>
+	<command-handler command="OnOffType">LEDOnOffCommandHandler</command-handler>
+	<poll-handler>NoPollHandler</poll-handler>
+</feature>
+<feature name="Beep">
+	<message-dispatcher>DefaultDispatcher</message-dispatcher>
+	<message-handler cmd="0x19">SwitchRequestReplyHandler</message-handler>
+	<command-handler command="OnOffType" off="0x30" on="0x30">RampOnOffCommandHandler</command-handler>
+	<poll-handler>NoPollHandler</poll-handler>
+</feature>
 <feature name="RampRate">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<!-- handles direct extended message after query -->
@@ -808,5 +841,4 @@
 	<command-handler default="true">NoOpCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtStatusGroup -->
 </feature>
-
 </xml>
