@@ -7,6 +7,7 @@
 	<thing-type id="region">
 		<label>DWD Pollen count index</label>
 		<description>Pollen count index for a region or partregion</description>
+				
 		<channel-groups>
 			<channel-group id="alder" typeId="pollentype">
 				<label>Alder</label>
@@ -41,8 +42,14 @@
 				<description>Information for rye</description>
 			</channel-group>
 		</channel-groups>
-
-		<representation-property>regionName</representation-property>
+		
+		<properties>
+			<property name="region_id"/>
+			<property name="region_name"/>
+			<property name="partregion_id"/>
+			<property name="partregion_name"/>
+		</properties>
+		
 		<config-description>
 			<parameter name="regionId" type="integer" required="true">
 				<label>Region</label>
