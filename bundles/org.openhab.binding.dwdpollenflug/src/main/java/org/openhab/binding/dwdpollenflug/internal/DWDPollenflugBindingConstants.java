@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.dwdpollenflug.internal;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -33,4 +37,23 @@ public class DWDPollenflugBindingConstants {
     public static final String PROPERTY_REGION_NAME = "region_name";
     public static final String PROPERTY_PARTREGION_ID = "partregion_id";
     public static final String PROPERTY_PARTREGION_NAME = "partregion_name";
+
+    public static final String CHANNEL_TODAY = "today";
+    public static final String CHANNEL_TOMORROW = "tomorrow";
+    public static final String CHANNEL_DAYAFTER_TO = "dayafter_to";
+
+    public static final Map<String, String> CHANNELS_POLLEN_MAP = initChannelMap();
+
+    private static Map<String, String> initChannelMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("Ambrosia", "ambrosia");
+        map.put("Beifuss", "mugwort");
+        map.put("Birke", "birch");
+        map.put("Erle", "alder");
+        map.put("Esche", "ash");
+        map.put("Graesser", "grasses");
+        map.put("Hasel", "hazel");
+        map.put("Roggen", "rye");
+        return Collections.unmodifiableMap(map);
+    }
 }
