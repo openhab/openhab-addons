@@ -5,8 +5,8 @@ This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovol
 
 ## Supported Things
 
-Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. 
-You can add multiple inverters that depend on the same datalogger with different device ids. ( Default 1 ) 
+Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger.
+You can add multiple inverters that depend on the same datalogger with different device ids. ( Default 1 )
 
 ## Discovery
 
@@ -42,6 +42,8 @@ The thing has a few configuration parameters:
 | pGrid | Number | Power + from grid, - to grid |
 | pLoad | Number | Power + generator, - consumer |
 | pAkku | Number | Power + charge, - discharge |
+| error_code | Number | Device error code |
+| status_code | Number | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
 
 ## Full Example
 
@@ -65,6 +67,8 @@ Number IAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachan
 Number IDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelidc" }
 Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneluac" }
 Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
+Number ErrorCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatuserrorcode" }
+Number StatusCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatusstatuscode" }
 Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
 Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
