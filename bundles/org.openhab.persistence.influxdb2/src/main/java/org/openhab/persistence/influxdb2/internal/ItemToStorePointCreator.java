@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,10 +88,11 @@ public class ItemToStorePointCreator {
         final Class<? extends State> desiredConversion = calculateDesiredTypeConversionToStore(item);
         if (desiredConversion != null) {
             State convertedState = item.getStateAs(desiredConversion);
-            if (convertedState != null)
+            if (convertedState != null) {
                 state = convertedState;
-            else
+            } else {
                 state = item.getState();
+            }
         } else {
             state = item.getState();
         }

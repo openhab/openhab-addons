@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,12 @@
  */
 package org.openhab.persistence.influxdb2;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,12 +27,22 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.persistence.*;
+import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.PersistenceItemInfo;
+import org.openhab.core.persistence.PersistenceService;
+import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb2.internal.*;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +82,9 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
 
     @Activate
     public void activate(final @Nullable Map<String, @Nullable Object> config) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("InfluxDB persistence service is being activated");
+        }
 
         if (loadConfiguration(config)) {
             itemToStorePointCreator = new ItemToStorePointCreator(configuration, metadataRegistry);
@@ -116,10 +132,11 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
         if (config != null) {
             configuration = new InfluxDBConfiguration(config);
             configurationIsValid = configuration.isValid();
-            if (configurationIsValid)
+            if (configurationIsValid) {
                 logger.debug("Loaded configuration {}", config);
-            else
+            } else {
                 logger.warn("Some configuration properties are not valid {}", config);
+            }
         } else {
             configuration = InfluxDBConfiguration.NO_CONFIGURATION;
             configurationIsValid = false;
@@ -198,27 +215,31 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
-        if (logger.isTraceEnabled())
+        if (logger.isTraceEnabled()) {
             logger.trace("ItemRegistry has been set");
+        }
     }
 
     protected void unsetItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = null;
-        if (logger.isTraceEnabled())
+        if (logger.isTraceEnabled()) {
             logger.trace("ItemRegistry has been unset");
+        }
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     protected void setMetadataRegistry(MetadataRegistry metadataRegistry) {
         this.metadataRegistry = metadataRegistry;
-        if (logger.isTraceEnabled())
+        if (logger.isTraceEnabled()) {
             logger.trace("MetadataRegistry has been set");
+        }
     }
 
     protected void unsetMetadataRegistry(MetadataRegistry metadataRegistry) {
         this.metadataRegistry = null;
-        if (logger.isTraceEnabled())
+        if (logger.isTraceEnabled()) {
             logger.trace("MetadataRegistry has been unset");
+        }
     }
 
     @Override

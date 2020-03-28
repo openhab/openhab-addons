@@ -1,8 +1,19 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.persistence.influxdb2.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -19,6 +30,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 
+/**
+ * @author Joan Pujol Espinar - Initial contribution
+ */
 public class InfluxDBStateConvertUtilsTest {
 
     @Test
@@ -41,25 +55,25 @@ public class InfluxDBStateConvertUtilsTest {
     @Test
     public void convertDateTimeState() {
         ZonedDateTime now = ZonedDateTime.now();
-        var nowInMillis = now.toInstant().toEpochMilli();
-        var type = new DateTimeType(now);
+        long nowInMillis = now.toInstant().toEpochMilli();
+        DateTimeType type = new DateTimeType(now);
         assertThat(InfluxDBStateConvertUtils.stateToString(type), equalTo(String.valueOf(nowInMillis)));
         assertThat(InfluxDBStateConvertUtils.stateToObject(type), equalTo(nowInMillis));
     }
 
     @Test
     public void convertDecimalToState() {
-        var val = new BigDecimal("1.12");
-        var item = new NumberItem("name");
+        BigDecimal val = new BigDecimal("1.12");
+        NumberItem item = new NumberItem("name");
         assertThat(InfluxDBStateConvertUtils.objectToState(val, item), equalTo(new DecimalType(val)));
     }
 
     @Test
     public void convertOnOffToState() {
-        var val1 = true;
-        var val2 = 1;
-        var onOffItem = new SwitchItem("name");
-        var contactItem = new ContactItem("name");
+        boolean val1 = true;
+        int val2 = 1;
+        SwitchItem onOffItem = new SwitchItem("name");
+        ContactItem contactItem = new ContactItem("name");
         assertThat(InfluxDBStateConvertUtils.objectToState(val1, onOffItem), equalTo(OnOffType.ON));
         assertThat(InfluxDBStateConvertUtils.objectToState(val2, onOffItem), equalTo(OnOffType.ON));
         assertThat(InfluxDBStateConvertUtils.objectToState(val1, contactItem), equalTo(OpenClosedType.OPEN));
@@ -68,8 +82,8 @@ public class InfluxDBStateConvertUtilsTest {
 
     @Test
     public void convertDateTimeToState() {
-        var val = System.currentTimeMillis();
-        var item = new DateTimeItem("name");
+        long val = System.currentTimeMillis();
+        DateTimeItem item = new DateTimeItem("name");
 
         DateTimeType expected = new DateTimeType(
                 ZonedDateTime.ofInstant(Instant.ofEpochMilli(val), ZoneId.systemDefault()));

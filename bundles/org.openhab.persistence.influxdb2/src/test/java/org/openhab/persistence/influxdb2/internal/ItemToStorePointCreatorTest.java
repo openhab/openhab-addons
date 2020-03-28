@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.persistence.influxdb2.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,8 +27,13 @@ import org.mockito.MockitoAnnotations;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.items.NumberItem;
+
 import org.openhab.persistence.influxdb2.InfluxDB2PersistenceService;
 
+/**
+ * @author Joan Pujol Espinar - Initial contribution
+ */
 @SuppressWarnings("null") // In case of any NPE it will cause test fail that it's the expected result
 public class ItemToStorePointCreatorTest {
     @Mock
@@ -45,7 +62,7 @@ public class ItemToStorePointCreatorTest {
 
     @Test
     public void convertBasicItem() {
-        var item = ItemTestHelper.createNumberItem("myitem", 5);
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         InfluxPoint point = instance.convert(item, null);
 
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
@@ -55,14 +72,14 @@ public class ItemToStorePointCreatorTest {
 
     @Test
     public void shouldUseAliasAsMeasurementNameIfProvided() {
-        var item = ItemTestHelper.createNumberItem("myitem", 5);
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         InfluxPoint point = instance.convert(item, "aliasName");
         assertThat(point.getMeasurementName(), is("aliasName"));
     }
 
     @Test
     public void shouldStoreCategoryTagIfProvidedAndConfigured() {
-        var item = ItemTestHelper.createNumberItem("myitem", 5);
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setCategory("categoryValue");
 
         when(influxDBConfiguration.isAddCategoryTag()).thenReturn(true);
@@ -76,7 +93,7 @@ public class ItemToStorePointCreatorTest {
 
     @Test
     public void shouldStoreTypeTagIfProvidedAndConfigured() {
-        var item = ItemTestHelper.createNumberItem("myitem", 5);
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
 
         when(influxDBConfiguration.isAddTypeTag()).thenReturn(true);
         InfluxPoint point = instance.convert(item, null);
@@ -89,7 +106,7 @@ public class ItemToStorePointCreatorTest {
 
     @Test
     public void shouldStoreTypeLabelIfProvidedAndConfigured() {
-        var item = ItemTestHelper.createNumberItem("myitem", 5);
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setLabel("ItemLabel");
 
         when(influxDBConfiguration.isAddLabelTag()).thenReturn(true);
@@ -103,7 +120,7 @@ public class ItemToStorePointCreatorTest {
 
     @Test
     public void shouldStoreMetadataAsTagsIfProvided() {
-        var item = ItemTestHelper.createNumberItem("myitem", 5);
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         MetadataKey metadataKey = new MetadataKey(InfluxDB2PersistenceService.SERVICE_NAME, item.getName());
 
         when(metadataRegistry.get(metadataKey))
