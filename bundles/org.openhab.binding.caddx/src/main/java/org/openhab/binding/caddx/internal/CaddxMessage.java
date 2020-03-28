@@ -48,9 +48,11 @@ public class CaddxMessage {
      */
     public CaddxMessage(byte[] message, boolean withChecksum) {
         if (withChecksum && message.length < 3) {
+            logger.debug("CaddxMessage: The message should be at least 3 bytes long.");
             throw new IllegalArgumentException("The message should be at least 3 bytes long");
         }
         if (!withChecksum && message.length < 1) {
+            logger.debug("CaddxMessage: The message should be at least 1 byte long.");
             throw new IllegalArgumentException("The message should be at least 1 byte long");
         }
 
@@ -88,12 +90,13 @@ public class CaddxMessage {
     public CaddxMessage(CaddxMessageType type, String data) {
         int length = type.length;
         if (length > 4) {
+            logger.debug("CaddxMessage: message type not supported.");
             throw new IllegalArgumentException("CaddxMessage: message type not supported.");
         }
 
         String[] tokens = data.split("\\,");
         if (length != 1 && tokens.length != length - 1) {
-            logger.debug("msg.length={}, tokens.length={}", length, tokens.length);
+            logger.debug("Data has not the correct format. msg.length={}, tokens.length={}", length, tokens.length);
             throw new IllegalArgumentException("CaddxMessage: data has not the correct format.");
         }
 

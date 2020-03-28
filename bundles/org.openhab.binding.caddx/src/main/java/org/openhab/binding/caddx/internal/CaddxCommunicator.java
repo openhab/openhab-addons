@@ -383,7 +383,6 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
             // Read the message
             do {
-                logger.trace("idx: {}, len: {}, message: {}", messageBufferIndex, messageBufferLength, message);
                 int b = readByte(in);
                 message[messageBufferIndex] = (byte) b;
 
