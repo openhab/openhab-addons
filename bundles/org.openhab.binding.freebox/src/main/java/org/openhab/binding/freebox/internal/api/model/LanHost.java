@@ -58,8 +58,7 @@ public class LanHost {
     }
 
     public String getIpv4() {
-        Optional<LanHostL3Connectivity> match = getActiveConnections().filter(c -> c.getAf() == L3Af.IPV4)
-                .findFirst();
+        Optional<LanHostL3Connectivity> match = getActiveConnections().filter(c -> c.getAf() == L3Af.IPV4).findFirst();
         return match.isPresent() ? match.get().getAddr() : null;
     }
 

@@ -179,18 +179,18 @@
 	</channel-group-type>
 
 	<channel-group-type id="actions">
-		<label>Freebox server behaviour</label>
+		<label>Server settings</label>
 		<channels>
 			<channel id="wifi-status" typeId="wifi-status" />
 			<channel id="ftp-status" typeId="ftp-status" />
+			<channel id="upnpav-status" typeId="upnpav-status" />
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="player-actions">
-		<label>Freebox player behaviour</label>
+		<label>Player settings</label>
 		<channels>
 			<channel id="airmedia-status" typeId="airmedia-status" />
-			<channel id="upnpav-status" typeId="upnpav-status" />
 		</channels>
 	</channel-group-type>
 

@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link LanHostName} is the Java class used to map the "LanHostName"
  * structure used by the Lan Hosts Browser API
@@ -19,15 +23,28 @@ package org.openhab.binding.freebox.internal.api.model;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class LanHostName {
-    private String name;
-    private String source;
+    public static enum NameSource {
+        UNKNOWN,
+        @SerializedName("dhcp")
+        DHCP,
+        @SerializedName("netbios")
+        NETBIOS,
+        @SerializedName("mdns")
+        MDNS,
+        @SerializedName("upnp")
+        UPNP;
+    }
+
+    private String name = "";
+    private NameSource source = NameSource.UNKNOWN;
 
     public String getName() {
         return name;
     }
 
-    public String getSource() {
+    public NameSource getSource() {
         return source;
     }
 }

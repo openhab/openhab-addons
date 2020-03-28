@@ -21,7 +21,7 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = AirMediaConfigResponse.class, relativeUrl = "airmedia/config/", retryAuth = true, method = "PUT")
+@RequestAnnotation(responseClass = AirMediaConfigResponse.class, relativeUrl = "airmedia/config/", method = "PUT")
 public class AirMediaConfig {
     private Boolean enabled;
     private String password;

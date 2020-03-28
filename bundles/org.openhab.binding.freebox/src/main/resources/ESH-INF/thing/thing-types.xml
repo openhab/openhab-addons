@@ -4,26 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="player">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="revolution" />
-			<bridge-type-ref id="delta" />
-		</supported-bridge-type-refs>
-
-		<label>Freebox Player</label>
-		<description>The player is the device connected to your TV</description>
-		
-		<channel-groups>
-			<channel-group typeId="connectivity" id="connectivity" />
-			<channel-group typeId="player-actions" id="player-actions" />
-		</channel-groups>
-
-        	<representation-property>hostAddress</representation-property>
-
-		<config-description-ref uri="thing-type:freebox:player" />
-
-	</thing-type>
-
 	<thing-type id="phone">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="revolution" />
@@ -59,23 +39,30 @@
 			<channel-group typeId="connectivity" id="connectivity" />
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description-ref uri="thing-type:freebox:host" />
 
 	</thing-type>
 
-	<thing-type id="airplay">
+	<thing-type id="player">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="revolution" />
 			<bridge-type-ref id="delta" />
 		</supported-bridge-type-refs>
 
-		<label>AirPlay Receiver</label>
-		<description>Provides media control from one AirPlay device</description>
+		<label>Freebox Player</label>
+		<description>The player is the device connected to your TV</description>
+		
+		<channel-groups>
+			<channel-group typeId="connectivity" id="connectivity" />
+			<channel-group typeId="player-actions" id="player-actions" />
+		</channel-groups>
 
-		<channels>
-		</channels>
+        	<representation-property>macAddress</representation-property>
 
-		<config-description-ref uri="thing-type:freebox:airplay" />
+		<config-description-ref uri="thing-type:freebox:player" />
+
 	</thing-type>
 
 	<thing-type id="vm">
@@ -91,6 +78,8 @@
 			<channel-group typeId="connectivity" id="connectivity" />
 			<channel-group typeId="vmstatus" id="vmstatus" />
 		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freebox:vm" />
 	</thing-type>

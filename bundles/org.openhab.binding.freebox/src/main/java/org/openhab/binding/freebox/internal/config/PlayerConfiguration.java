@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.freebox.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PlayerConfiguration} is responsible for holding
  * configuration informations needed to access/poll the freebox server
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class PlayerConfiguration extends HostConfiguration {
-    public static final String HOST_ADDRESS = "hostAddress";
     public static final String PORT = "port";
 
-    public String hostAddress;
-    public Integer port;
+    public Integer port = -1;
+    public String password = "";
+    public Boolean acceptAllMp3 = true;
 }

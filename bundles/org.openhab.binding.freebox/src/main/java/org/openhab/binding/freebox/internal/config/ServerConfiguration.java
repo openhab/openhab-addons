@@ -30,10 +30,8 @@ public class ServerConfiguration {
     public String appToken = "";
     public boolean httpsAvailable = false;
     public long remoteHttpsPort = -1L;
-    public Boolean background = true;
     public Boolean discoverPhone = true;
     public Boolean discoverNetDevice = false;
-    public Boolean discoverAirPlayReceiver = true;
     public Boolean discoverVM = true;
     public Integer refreshInterval = 30;
 }

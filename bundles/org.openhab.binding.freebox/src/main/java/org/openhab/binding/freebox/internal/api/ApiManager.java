@@ -57,6 +57,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ApiManager {
     private final Logger logger = LoggerFactory.getLogger(ApiManager.class);
+    private static final String APP_ID = FrameworkUtil.getBundle(ApiManager.class).getSymbolicName();
 
     private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
 
@@ -70,65 +71,54 @@ public class ApiManager {
     private @NonNullByDefault({}) String appToken;
     private @Nullable String sessionToken;
 
-    private final String appId;
-    // private String appName;
-    // private String appVersion;
-    // private String deviceName;
+    public ApiManager(ServerConfiguration configuration/* String appName, String appVersion, String deviceName */)
+            throws FreeboxException {
 
-    public ApiManager(String appId/* String appName, String appVersion, String deviceName */) {
-        this.appId = appId;
-        // this.appName = appName;
-        // this.appVersion = appVersion;
-        // this.deviceName = deviceName;
-    }
-
-    public DiscoveryResponse authorize(ServerConfiguration configuration) throws FreeboxException {
         logger.debug("Authorize job...");
-        DiscoveryResponse result = null;
         String hostAddress = String.format("%s:%d", configuration.hostAddress, configuration.remoteHttpsPort);
         boolean httpsRequestOk = false;
+        DiscoveryResponse discovery = null;
         if (configuration.httpsAvailable) {
-            result = checkApi(hostAddress, true);
-            httpsRequestOk = (result != null);
+            discovery = checkApi(hostAddress, true);
+            httpsRequestOk = (discovery != null);
         }
         if (!httpsRequestOk) {
-            result = checkApi(hostAddress, false);
+            discovery = checkApi(hostAddress, false);
         }
         boolean useHttps = false;
-        if (result == null) {
+        if (discovery == null) {
             throw new FreeboxException("Can't connect to " + hostAddress);
-        } else if (result.getApiBaseUrl().isEmpty()) {
+        } else if (discovery.getApiBaseUrl().isEmpty()) {
             throw new FreeboxException(hostAddress + " does not deliver any API base URL");
-        } else if (result.getApiVersion().isEmpty()) {
+        } else if (discovery.getApiVersion().isEmpty()) {
             throw new FreeboxException(" does not deliver any API version");
-        } else if (result.isHttpsAvailable()) {
-            if (result.getHttpsPort() == -1 || result.getApiDomain().isEmpty()) {
+        } else if (discovery.isHttpsAvailable()) {
+            if (discovery.getHttpsPort() == -1 || discovery.getApiDomain().isEmpty()) {
                 if (httpsRequestOk) {
                     useHttps = true;
                 } else {
                     logger.debug("{} does not deliver API domain or HTTPS port; use HTTP API", hostAddress);
                 }
-            } else if (checkApi(String.format("%s:%d", result.getApiDomain(), result.getHttpsPort()), true) != null) {
+            } else if (checkApi(String.format("%s:%d", discovery.getApiDomain(), discovery.getHttpsPort()),
+                    true) != null) {
                 useHttps = true;
-                hostAddress = String.format("%s:%d", result.getApiDomain(), result.getHttpsPort());
+                hostAddress = String.format("%s:%d", discovery.getApiDomain(), discovery.getHttpsPort());
             }
         }
 
-        if (!authorize2(useHttps, hostAddress, result.getApiBaseUrl(), result.getApiVersion(),
+        if (!authorize2(useHttps, hostAddress, discovery.getApiBaseUrl(), discovery.getApiVersion(),
                 configuration.appToken)) {
             if (configuration.appToken.isEmpty()) {
                 throw new FreeboxException("App token not set in the thing configuration");
             } else {
                 throw new FreeboxException("Check your app token in the thing configuration; opening session with "
                         + hostAddress + " using " + (useHttps ? "HTTPS" : "HTTP") + " API version "
-                        + result.getApiVersion() + " failed");
+                        + discovery.getApiVersion() + " failed");
             }
         } else {
             logger.debug("Freebox bridge : session opened with {} using {} API version {}", hostAddress,
-                    (useHttps ? "HTTPS" : "HTTP"), result.getApiVersion());
+                    (useHttps ? "HTTPS" : "HTTP"), discovery.getApiVersion());
         }
-        return result;
-
     }
 
     public boolean authorize2(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion, String appToken) {
@@ -143,7 +133,7 @@ public class ApiManager {
         try {
             String token = appToken;
             if (token.isEmpty()) {
-                AuthorizeRequest request = new AuthorizeRequest(appId, FrameworkUtil.getBundle(getClass()));
+                AuthorizeRequest request = new AuthorizeRequest(APP_ID, FrameworkUtil.getBundle(getClass()));
                 AuthorizeResult response = executePost(AuthorizeResponse.class, null, request);
                 token = response.getAppToken();
 
@@ -188,7 +178,7 @@ public class ApiManager {
 
     private synchronized void openSession() throws FreeboxException {
         String challenge = executeGet(LoginResponse.class, null).getChallenge();
-        OpenSessionResult loginResult = execute(new OpenSessionRequest(appId, appToken, challenge), null);
+        OpenSessionResult loginResult = execute(new OpenSessionRequest(APP_ID, appToken, challenge), null);
         sessionToken = loginResult.getSessionToken();
     }
 
@@ -327,5 +317,4 @@ public class ApiManager {
         }
         return null;
     }
-
 }

@@ -13,10 +13,12 @@
 package org.openhab.binding.freebox.internal.discovery;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.FREEBOX_THING_TYPE_PLAYER;
-import static org.openhab.binding.freebox.internal.config.PlayerConfiguration.*;
+import static org.openhab.binding.freebox.internal.config.PlayerConfiguration.PORT;
 
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -26,9 +28,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Component;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.model.LanHost;
+import org.openhab.binding.freebox.internal.handler.ServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +46,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 @NonNullByDefault
-public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant {
+public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(PlayerDiscoveryParticipant.class);
+    private @NonNullByDefault({}) ServerHandler bridgeHandler;
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -59,16 +67,15 @@ public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * @param service a non-null service
      * @return the ip address of the service or null if none found.
      */
-    private @Nullable InetAddress getIpAddress(ServiceInfo service) {
-        InetAddress address = null;
+    private @Nullable String getIpAddress(ServiceInfo service) {
         for (InetAddress addr : service.getInet4Addresses()) {
-            return addr;
+            return addr.toString().substring(1);
         }
         // Fallback for Inet6addresses
         for (InetAddress addr : service.getInet6Addresses()) {
-            return addr;
+            return addr.toString().substring(1);
         }
-        return address;
+        return null;
     }
 
     @Override
@@ -80,20 +87,42 @@ public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return null;
     }
 
+    // Y'a un truc qui ne me plait pas ici, la dépendance potentiellement non
+    // satisfaite au bridgehandler qui peut être offline au moment de l'invocation
+    // de cette méthode.
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         logger.debug("createResult ServiceInfo: {}", service);
         ThingUID thingUID = getThingUID(service);
-        if (thingUID != null) {
-            InetAddress ip = getIpAddress(service);
-            if (ip != null) {
-                String id = ip.toString().substring(1);
-                logger.info("Created a DiscoveryResult for Freebox Player {} on address {}", thingUID, id);
-                return DiscoveryResultBuilder.create(thingUID).withLabel(service.getName())
-                        .withProperty(HOST_ADDRESS, id).withProperty(PORT, service.getPort())
-                        .withRepresentationProperty(HOST_ADDRESS).build();
+        String ip = getIpAddress(service);
+        if (thingUID != null && ip != null && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            try {
+                List<LanHost> hosts = bridgeHandler.getLanHosts();
+                Optional<LanHost> host = hosts.stream().filter(h -> ip.equals(h.getIpv4())).findFirst();
+                if (host.isPresent()) {
+                    logger.info("Created a DiscoveryResult for Freebox Player {} on address {} with MAC : {}", thingUID,
+                            ip, host.get().getMAC());
+                    return DiscoveryResultBuilder.create(thingUID).withLabel(service.getName())
+                            .withProperty(Thing.PROPERTY_MAC_ADDRESS, host.get().getMAC())
+                            .withProperty(PORT, service.getPort()).withBridge(bridgeHandler.getThing().getUID())
+                            .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+                }
+            } catch (FreeboxException e) {
+                logger.warn("Error searching MAC address of the Freebox Player");
             }
         }
         return null;
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof ServerHandler) {
+            bridgeHandler = (ServerHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 }

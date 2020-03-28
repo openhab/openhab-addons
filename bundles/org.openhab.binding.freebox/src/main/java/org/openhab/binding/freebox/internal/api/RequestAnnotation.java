@@ -35,7 +35,7 @@ public @interface RequestAnnotation {
 
     String relativeUrl();
 
-    boolean retryAuth();
+    boolean retryAuth() default true;
 
-    String method();
+    String method() default "GET";
 }

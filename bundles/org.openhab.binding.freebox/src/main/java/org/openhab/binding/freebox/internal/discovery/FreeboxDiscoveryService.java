@@ -14,7 +14,6 @@ package org.openhab.binding.freebox.internal.discovery;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,15 +37,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiver;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiversResponse;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
-import org.openhab.binding.freebox.internal.api.model.LanHostsResponse;
-import org.openhab.binding.freebox.internal.api.model.LanInterface;
-import org.openhab.binding.freebox.internal.api.model.LanInterfacesResponse;
 import org.openhab.binding.freebox.internal.api.model.VirtualMachine;
 import org.openhab.binding.freebox.internal.api.model.VirtualMachinesResponse;
-import org.openhab.binding.freebox.internal.config.AirPlayerConfiguration;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
 import org.openhab.binding.freebox.internal.config.VirtualMachineConfiguration;
 import org.openhab.binding.freebox.internal.handler.ServerHandler;
@@ -64,8 +57,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(FREEBOX_THING_TYPE_PHONE, FREEBOX_THING_TYPE_HOST, FREEBOX_THING_TYPE_AIRPLAY, FREEBOX_THING_TYPE_VM)
-            .collect(Collectors.toSet()));
+            .of(FREEBOX_THING_TYPE_PHONE, FREEBOX_THING_TYPE_HOST, FREEBOX_THING_TYPE_VM).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
     // The call to listDevices is fast
@@ -88,7 +80,8 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         if (configuration != null) {
             Map<String, @Nullable Object> properties = new HashMap<>();
-            properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, configuration.background);
+            properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                    configuration.discoverNetDevice || configuration.discoverPhone || configuration.discoverVM);
             super.activate(properties);
         }
     }
@@ -139,9 +132,6 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                 if (configuration.discoverVM) {
                     discoverVM();
                 }
-                if (configuration.discoverAirPlayReceiver) {
-                    discoverAirPlay();
-                }
                 if (configuration.discoverNetDevice) {
                     discoverHosts();
                 }
@@ -161,7 +151,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
 
     private void discoverHosts() throws FreeboxException {
         // List<VirtualMachine> vms = bridgeHandler.getApiManager().executeGet(VirtualMachinesResponse.class, null);
-        List<LanHost> lanHosts = getLanHosts();
+        List<LanHost> lanHosts = bridgeHandler.getLanHosts();
 
         /*
          * List<LanHost> foundMacs = lanHosts.stream()
@@ -189,25 +179,6 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
 
     }
 
-    private void discoverAirPlay() throws FreeboxException {
-        List<AirMediaReceiver> airPlayDevices = bridgeHandler.getApiManager()
-                .executeGet(AirMediaReceiversResponse.class, null);
-        // The Freebox API allows pushing media only to receivers with photo or video capabilities but not to receivers
-        // with only audio capability; so receivers without video capability are ignored by the discovery
-        airPlayDevices.stream().filter(AirMediaReceiver::hasName).filter(AirMediaReceiver::isVideoCapable)
-                .forEach(device -> {
-                    String name = device.getName();
-                    String uid = name.replaceAll("[^A-Za-z0-9_]", "_");
-                    ThingUID thingUID = new ThingUID(FREEBOX_THING_TYPE_AIRPLAY, bridgeUID, uid);
-                    logger.trace("Adding new Freebox AirPlay Device {} to inbox", thingUID);
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                            .withRepresentationProperty(AirPlayerConfiguration.NAME)
-                            .withProperty(AirPlayerConfiguration.NAME, name).withBridge(bridgeUID)
-                            .withLabel(name + " (AirPlay)").build();
-                    thingDiscovered(discoveryResult);
-                });
-    }
-
     private void discoverVM() throws FreeboxException {
         List<VirtualMachine> vms = bridgeHandler.getApiManager().executeGet(VirtualMachinesResponse.class, null);
         vms.forEach(vm -> {
@@ -220,21 +191,6 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                     .withRepresentationProperty(VirtualMachineConfiguration.VM_ID).build();
             thingDiscovered(discoveryResult);
         });
-    }
-
-    private List<LanHost> getLanHosts() throws FreeboxException {
-        List<LanHost> hosts = new ArrayList<>();
-        List<LanInterface> lans = bridgeHandler.getApiManager().executeGet(LanInterfacesResponse.class, null);
-        lans.stream().filter(LanInterface::hasHosts).forEach(lan -> {
-            try {
-                List<LanHost> lanHosts = bridgeHandler.getApiManager().executeGet(LanHostsResponse.class,
-                        lan.getName());
-                hosts.addAll(lanHosts);
-            } catch (FreeboxException e) {
-                logger.warn("Error getting hosts for interface {}", lan.getName());
-            }
-        });
-        return hosts;
     }
 
 }

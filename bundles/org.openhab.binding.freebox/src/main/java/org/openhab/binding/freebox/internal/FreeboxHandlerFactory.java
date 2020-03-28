@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.freebox.internal.handler.AirMediaHandler;
 import org.openhab.binding.freebox.internal.handler.DeltaHandler;
 import org.openhab.binding.freebox.internal.handler.HostHandler;
 import org.openhab.binding.freebox.internal.handler.PhoneHandler;
@@ -91,19 +90,17 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(FREEBOX_THING_TYPE_AIRPLAY) && callbackUrl != null) {
-            AirMediaHandler handler = new AirMediaHandler(thing, timeZoneProvider, audioHTTPServer, callbackUrl);
+        if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_REVOLUTION)) {
+            return new RevolutionHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_DELTA)) {
+            return new DeltaHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PLAYER)) {
+            PlayerHandler handler = new PlayerHandler(thing, timeZoneProvider, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID(), reg);
             return handler;
-        } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_REVOLUTION)) {
-            return new RevolutionHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_DELTA)) {
-            return new DeltaHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PLAYER)) {
-            return new PlayerHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_HOST)) {
             return new HostHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PHONE)) {
@@ -116,7 +113,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof AirMediaHandler) {
+        if (thingHandler instanceof PlayerHandler) {
             ServiceRegistration<AudioSink> reg = audioSinkRegistrations.remove(thingHandler.getThing().getUID());
             reg.unregister();
         }

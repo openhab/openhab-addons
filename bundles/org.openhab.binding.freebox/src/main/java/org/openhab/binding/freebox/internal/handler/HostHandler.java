@@ -16,6 +16,7 @@ import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -48,14 +49,16 @@ public class HostHandler extends APIConsumerHandler {
 
     @Override
     public void initialize() {
+        netAddress = getConfigAs(HostConfiguration.class).macAddress;
         super.initialize();
-        if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_HOST)
-                || getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_VM)) {
-            netAddress = getConfigAs(HostConfiguration.class).macAddress;
-        } else if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_PLAYER)) {
-            netAddress = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
-        }
-        netAddress = (netAddress == null) ? "" : netAddress;
+    }
+
+    @Override
+    protected Map<String, String> discoverAttributes() throws FreeboxException {
+        final Map<String, String> properties = super.discoverAttributes();
+        LanHost lanHost = getApiManager().executeGet(LanHostResponse.class, "ether-" + netAddress);
+        lanHost.getNames().forEach(name -> properties.put(name.getSource().name(), name.getName()));
+        return properties;
     }
 
     @Override

@@ -40,20 +40,23 @@ public class FreeboxBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID FREEBOX_THING_TYPE_PHONE = new ThingTypeUID(BINDING_ID, "phone");
     public static final ThingTypeUID FREEBOX_THING_TYPE_HOST = new ThingTypeUID(BINDING_ID, "host");
-    public static final ThingTypeUID FREEBOX_THING_TYPE_AIRPLAY = new ThingTypeUID(BINDING_ID, "airplay");
     public static final ThingTypeUID FREEBOX_THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
     public static final ThingTypeUID FREEBOX_THING_TYPE_VM = new ThingTypeUID(BINDING_ID, "vm");
 
     // All supported Thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(FREEBOX_BRIDGE_TYPE_REVOLUTION, FREEBOX_BRIDGE_TYPE_DELTA,
-                    FREEBOX_THING_TYPE_PHONE, FREEBOX_THING_TYPE_HOST, FREEBOX_THING_TYPE_AIRPLAY,
-                    FREEBOX_THING_TYPE_PLAYER, FREEBOX_THING_TYPE_VM).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(FREEBOX_BRIDGE_TYPE_REVOLUTION, FREEBOX_BRIDGE_TYPE_DELTA, FREEBOX_THING_TYPE_PHONE,
+                    FREEBOX_THING_TYPE_HOST, FREEBOX_THING_TYPE_PLAYER, FREEBOX_THING_TYPE_VM)
+            .collect(Collectors.toSet()));
 
     // List of properties
     public static final String PROPERTY_API_VERSION = "apiVersion";
     public static final String PROPERTY_MEDIA = "media";
     public static final String PROPERTY_INTERFACE = "interface";
+    public static final String PROPERTY_AUDIO = "audio";
+    public static final String PROPERTY_VIDEO = "video";
+    public static final String PROPERTY_PHOTO = "photo";
+    public static final String PROPERTY_SCREEN = "screen";
 
     // List of all Group Channel ids
     public static final String CONNECTION_STATUS = "connection-status";
