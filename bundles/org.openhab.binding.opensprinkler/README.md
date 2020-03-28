@@ -65,7 +65,7 @@ The following is supported by the `device` thing, but only when connected using 
 |-----------------|------------------------|----|---------------------------------------------------------------------------|
 | rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.     |
 | currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors |
-|                 |                        |    | for this metric, it'll always display 0 mA.                               |
+|                 |                        |    | for this metric, the channel will not be available.                       |
 
 ## Example
 

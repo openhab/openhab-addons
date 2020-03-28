@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensor;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 /**
@@ -91,13 +92,13 @@ public interface OpenSprinklerApi {
     public abstract boolean isRainDetected() throws CommunicationApiException;
 
     /**
-     * Returns the current draw of all connected zones of the OpenSprinkler device in milliamperes. Given the
-     * device does not have the possibility to measure this, the returning value will be 0.
+     * Returns the current draw of all connected zones of the OpenSprinkler device in milliamperes.
      *
      * @return current draw in milliamperes
      * @throws CommunicationApiException
+     * @throws
      */
-    public abstract int currentDraw() throws CommunicationApiException;
+    public abstract int currentDraw() throws CommunicationApiException, NoCurrentDrawSensor;
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler

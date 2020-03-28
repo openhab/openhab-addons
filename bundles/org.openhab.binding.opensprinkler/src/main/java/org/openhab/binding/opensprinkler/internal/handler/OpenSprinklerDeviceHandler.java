@@ -21,10 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +56,13 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     }
                     break;
                 case SENSOR_CURRENT_DRAW:
-                    updateState(channel, new QuantityType<ElectricCurrent>(getApi().currentDraw(),
-                            MILLI(SmartHomeUnits.AMPERE)));
+                    updateState(channel,
+                            new QuantityType<ElectricCurrent>(getApi().currentDraw(), MILLI(SmartHomeUnits.AMPERE)));
                     break;
                 default:
                     logger.debug("Not updating unknown channel {}", channel);
             }
-        } catch (CommunicationApiException e) {
+        } catch (CommunicationApiException | NoCurrentDrawSensor e) {
             logger.debug("Could not update {}", channel, e);
         }
     }
@@ -65,6 +70,31 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // nothing to do here
+    }
+
+    @Override
+    public void updateChannels() {
+        ChannelUID currentDraw = new ChannelUID(thing.getUID(), "currentDraw");
+        ThingBuilder thingBuilder = editThing();
+        Channel currentDrawChannel = ChannelBuilder.create(currentDraw, "Number:ElectricCurrent")
+                .withType(new ChannelTypeUID(BINDING_ID, SENSOR_CURRENT_DRAW)).withLabel("Current Draw")
+                .withDescription("Provides the current draw.").build();
+        try {
+            getApi().currentDraw();
+
+            if (thing.getChannel(currentDraw) == null) {
+                thingBuilder.withChannel(currentDrawChannel);
+            }
+            updateThing(thingBuilder.build());
+        } catch (NoCurrentDrawSensor e) {
+            if (thing.getChannel(currentDraw) != null) {
+                thingBuilder.withoutChannel(currentDraw);
+            }
+            updateThing(thingBuilder.build());
+        } catch (CommunicationApiException e) {
+            logger.debug("Could not query current draw. Not removing channel as it could be temporary.", e);
+        }
+        super.updateChannels();
     }
 
 }
