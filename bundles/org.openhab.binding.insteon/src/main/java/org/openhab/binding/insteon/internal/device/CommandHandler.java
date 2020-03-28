@@ -356,26 +356,6 @@ public abstract class CommandHandler {
         }
     }
 
-    /**
-     * This Handler was supposed to set the LEDs of the 2487S, but it doesn't work.
-     * The parameters were modeled after the 2486D, it may work for that one,
-     * leaving it in for now.
-     *
-     * From the HouseLinc PLM traffic log, the following commands (in the D2 data field)
-     * of the 2486D are supported:
-     *
-     * 0x02: LED follow mask may work or not
-     * 0x03: LED OFF mask
-     * 0x04: X10 addr setting
-     * 0x05: ramp rate
-     * 0x06: on Level for button
-     * 0x07: global LED brightness (could not see any effect during testing)
-     * 0x0B: set nontoggle on/off command
-     *
-     * crucially, the 0x09 command does not work (NACK from device)
-     *
-     * @author Bernd Pfrommer - openHAB 1 insteonplm binding
-     */
     @NonNullByDefault
     public static class LEDOnOffCommandHandler extends CommandHandler {
         LEDOnOffCommandHandler(DeviceFeature f) {
@@ -385,15 +365,14 @@ public abstract class CommandHandler {
         @Override
         public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
             try {
-                int button = this.getIntParameter("button", -1);
                 if (cmd == OnOffType.ON) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00,
-                            new byte[] { (byte) button, (byte) 0x09, (byte) 0x01 });
+                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x09,
+                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} on", nm(), dev.getAddress());
                 } else if (cmd == OnOffType.OFF) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00,
-                            new byte[] { (byte) button, (byte) 0x09, (byte) 0x00 });
+                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x08,
+                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} off", nm(), dev.getAddress());
                 }

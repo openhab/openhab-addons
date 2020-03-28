@@ -76,6 +76,8 @@ Example entry:
      <model>2842-222</model>
      <description>Motion Sensor</description>
      <feature name="contact">WirelessMotionSensorContact</feature>
+     <feature name="lightlevelabovethreshold">WirelessMotionSensorLightLevelAboveThreshold</feature>
+     <feature name="lowbattery">WirelessMotionSensorLowBattery</feature>
      <feature name="data">MotionSensorData</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
  </device>
@@ -155,12 +157,13 @@ Example entry:
      <feature name="manualchange">ManualChange</feature>
      <feature name="fastonoff">FastOnOff</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
      <feature_group name="ext_group" type="ExtStatusGroup">
-          <feature name="ledbrightness">LEDBrightness</feature>
-	  <feature name="ramprate">RampRate</feature>
-          <feature name="onlevel">OnLevel</feature>
+        <feature name="ledbrightness">LEDBrightness</feature>
+        <feature name="ramprate">RampRate</feature>
+        <feature name="onlevel">OnLevel</feature>
      </feature_group>
-
  </device>
 
  <device productKey="F00.00.02">
@@ -169,8 +172,10 @@ Example entry:
      <feature name="switch">GenericSwitch</feature>
      <feature name="fastonoff">FastOnOff</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
      <feature_group name="ext_group" type="ExtStatusGroup">
-          <feature name="ledbrightness">LEDBrightness</feature>
+        <feature name="ledbrightness">LEDBrightness</feature>
      </feature_group>
  </device>
 
@@ -322,7 +327,6 @@ Example entry:
         <feature name="manualchangebuttonc">ManualChangeButton5</feature>
         <feature name="manualchangebuttond">ManualChangeButton6</feature>
      </feature_group>
-     
      <feature name="lastheardfrom">GenericLastTime</feature>
  </device>
  
@@ -339,6 +343,12 @@ Example entry:
      	<feature name="keypadbuttonc">KeyPadButton5</feature>
      	<feature name="keypadbuttond">KeyPadButton6</feature>
      </feature_group>
+     <feature_group name="ext_group" type="ExtStatusGroup">
+        <feature name="ledbrightness">LEDBrightness</feature>
+        <feature name="ramprate">RampRate</feature>
+     </feature_group>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
  </device>
 
@@ -358,6 +368,12 @@ Example entry:
      	<feature name="keypadbuttong">KeyPadButton7</feature>
      	<feature name="keypadbuttonh">KeyPadButton8</feature>
      </feature_group>
+     <feature_group name="ext_group" type="ExtStatusGroup">
+        <feature name="ledbrightness">LEDBrightness</feature>
+        <feature name="ramprate">RampRate</feature>
+     </feature_group>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
  </device>
 
