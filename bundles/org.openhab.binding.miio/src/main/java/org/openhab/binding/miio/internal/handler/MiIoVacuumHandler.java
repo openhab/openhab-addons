@@ -39,6 +39,7 @@ import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
 import org.openhab.binding.miio.internal.robot.StatusType;
 import org.openhab.binding.miio.internal.robot.VacuumErrorType;
+import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,19 +52,63 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
-
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
     private ExpiringCache<String> dnd;
     private ExpiringCache<String> history;
-    private String lastHistoryId;
+    private String lastHistoryId = "";
+    private int inCleaning;
 
-    @NonNullByDefault
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        super(thing);
-        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+        super(thing, miIoDatabaseWatchService);
+        initializeData();
+        status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                int ret = sendCommand(MiIoCommand.GET_STATUS);
+                if (ret != 0) {
+                    return "id:" + ret;
+                }
+            } catch (Exception e) {
+                logger.debug("Error during status refresh: {}", e.getMessage(), e);
+            }
+            return null;
+        });
+        consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                int ret = sendCommand(MiIoCommand.CONSUMABLES_GET);
+                if (ret != 0) {
+                    return "id:" + ret;
+                }
+            } catch (Exception e) {
+                logger.debug("Error during consumables refresh: {}", e.getMessage(), e);
+            }
+            return null;
+        });
+        dnd = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                int ret = sendCommand(MiIoCommand.DND_GET);
+                if (ret != 0) {
+                    return "id:" + ret;
+                }
+            } catch (Exception e) {
+                logger.debug("Error during dnd refresh: {}", e.getMessage(), e);
+            }
+            return null;
+        });
+        history = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                int ret = sendCommand(MiIoCommand.CLEAN_SUMMARY_GET);
+                if (ret != 0) {
+                    return "id:" + ret;
+                }
+            } catch (Exception e) {
+                logger.debug("Error during cleaning data refresh: {}", e.getMessage(), e);
+            }
+            return null;
+        });
     }
 
     @Override
@@ -100,22 +145,19 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             } else {
                 logger.info("Command {} not recognised", command.toString());
             }
-            status.invalidateValue();
-            status.getValue();
+            forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
             sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
-            status.invalidateValue();
-            status.getValue();
+            forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
             if (Integer.valueOf(command.toString()) > 0) {
                 sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
             }
-            status.invalidateValue();
-            status.getValue();
+            forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
@@ -125,6 +167,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             cmds.put(sendCommand(command.toString()), command.toString());
         }
+    }
+
+    private void forceStatusUpdate() {
+        status.invalidateValue();
+        status.getValue();
     }
 
     private boolean updateVacuumStatus(JsonObject statusData) {
@@ -139,7 +186,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int fanLevel = statusData.get("fan_power").getAsInt();
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
         updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
-        updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
+        inCleaning = statusData.get("in_cleaning").getAsInt();
+        updateState(CHANNEL_IN_CLEANING, new DecimalType(inCleaning));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
@@ -279,9 +327,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             refreshNetwork();
             return true;
         }
-        if (miioCom.getQueueLength() > MAX_QUEUE) {
+        final MiIoAsyncCommunication mc = miioCom;
+        if (mc != null && mc.getQueueLength() > MAX_QUEUE) {
             logger.debug("Skipping periodic update for '{}'. {} elements in queue.", getThing().getUID().toString(),
-                    miioCom.getQueueLength());
+                    mc.getQueueLength());
             return true;
         }
         return false;
@@ -306,51 +355,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     @Override
     protected boolean initializeData() {
-        initalizeNetworkCache();
-        status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.GET_STATUS);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during status refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
-        consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.CONSUMABLES_GET);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during consumables refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
-        dnd = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.DND_GET);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during dnd refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
-        history = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.CLEAN_SUMMARY_GET);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during cleaning data refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
         updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         this.miioCom = getConnection();
         return true;
@@ -398,5 +402,4 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 break;
         }
     }
-
 }
