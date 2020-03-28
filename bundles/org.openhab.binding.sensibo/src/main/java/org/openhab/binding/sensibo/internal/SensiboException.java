@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.sensibo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SensiboException} class wraps exceptions raised when communicating with the API
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public abstract class SensiboException extends Exception {
 
     private static final long serialVersionUID = 1L;
