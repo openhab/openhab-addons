@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
-import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensor;
+import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 /**
@@ -98,7 +98,7 @@ public interface OpenSprinklerApi {
      * @throws CommunicationApiException
      * @throws
      */
-    public abstract int currentDraw() throws CommunicationApiException, NoCurrentDrawSensor;
+    public abstract int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException;
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler

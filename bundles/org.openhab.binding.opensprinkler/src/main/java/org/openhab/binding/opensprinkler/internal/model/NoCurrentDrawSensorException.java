@@ -17,6 +17,6 @@ package org.openhab.binding.opensprinkler.internal.model;
  *
  * @author Florian Schmidt - Initial contribution
  */
-public class NoCurrentDrawSensor extends Exception {
+public class NoCurrentDrawSensorException extends Exception {
     private static final long serialVersionUID = 2251925316743442346L;
 }

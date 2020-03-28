@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
-import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensor;
+import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 default:
                     logger.debug("Not updating unknown channel {}", channel);
             }
-        } catch (CommunicationApiException | NoCurrentDrawSensor e) {
+        } catch (CommunicationApiException | NoCurrentDrawSensorException e) {
             logger.debug("Could not update {}", channel, e);
         }
     }
@@ -86,7 +86,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 thingBuilder.withChannel(currentDrawChannel);
             }
             updateThing(thingBuilder.build());
-        } catch (NoCurrentDrawSensor e) {
+        } catch (NoCurrentDrawSensorException e) {
             if (thing.getChannel(currentDraw) != null) {
                 thingBuilder.withoutChannel(currentDraw);
             }
