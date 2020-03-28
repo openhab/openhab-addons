@@ -66,11 +66,8 @@ public class GroheOndusBlueHandler extends GroheOndusBaseHandler<Appliance, Appl
                 newState = new StringType(appliance.getName());
                 break;
             case CHANNEL_TAP:
-                if (command.getCommand().getTapType() == 0) {
-                    newState = OnOffType.OFF;
-                } else {
-                    newState = OnOffType.ON;
-                }
+                // always show the tap as "off", so that one can turn it on by clicking on the button
+                newState = OnOffType.OFF;
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
