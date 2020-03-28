@@ -44,6 +44,7 @@ import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
+import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
@@ -207,15 +208,15 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     private void changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if ("off".equals(homekitmode)) {
+        if (HomekitMode.OFF.name().equals(homekitmode)) {
            changePower(false);
         } else {
            changePower(true);
-           if ("on".equals(homekitmode)) {
+           if (HomekitMode.AUTO.name().equals(homekitmode)) {
                 changeMode("AUTO");
-           } else if ("heat".equals(homekitmode)) {
+           } else if (HomekitMode.HEAT.name().equals(homekitmode)) {
                 changeMode("HEAT");
-           } else if ("cool".equals(homekitmode)) {
+           } else if (HomekitMode.COOL.name().equals(homekitmode)) {
                 changeMode("COLD");
            }       
         }

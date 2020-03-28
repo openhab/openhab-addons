@@ -49,6 +49,7 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeatu
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
+import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
@@ -99,13 +100,13 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
 
             if (!controlInfo.power) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("off"));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.name()));
             } else if (controlInfo.mode == AirbaseMode.COLD) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("cool"));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.name()));
             } else if (controlInfo.mode == AirbaseMode.HEAT) {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("heat"));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.name()));
             } else {
-                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("auto"));
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.name()));
             }
         }
 
