@@ -116,19 +116,22 @@ public class SerialBridgeHandler extends ADBridgeHandler {
                 serialPort.disableReceiveThreshold();
                 reader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
                 writer = new BufferedWriter(new OutputStreamWriter(serialPort.getOutputStream()));
-                logger.info("connected to serial port: {}", serialDeviceName);
+                logger.debug("Connected to serial port: {}", serialDeviceName);
                 panelReadyReceived = false;
                 startMsgReader();
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.debug("device name not configured");
+                logger.debug("Serial device name not configured");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "device name not configured");
             }
         } catch (PortInUseException e) {
-            logger.warn("cannot open serial port: {}, it is already in use", serialDeviceName);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (UnsupportedCommOperationException | NoSuchPortException | IllegalStateException | IOException e) {
-            logger.debug("error connecting to serial port", e);
+            logger.debug("Cannot open serial port: {}, port already in use.", serialDeviceName);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port already in use");
+        } catch (NoSuchPortException e) {
+            logger.debug("Cannot open serial port: {}, no such port.", serialDeviceName);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No such port");
+        } catch (UnsupportedCommOperationException | IllegalStateException | IOException e) {
+            logger.warn("Error connecting to serial port", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

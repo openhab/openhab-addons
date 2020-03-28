@@ -49,14 +49,19 @@ public class LRRMessage extends ADMessage {
 
         List<String> parts = splitMsg(topLevel[1]);
 
-        // TODO: Docs say there should be 4 parts to LRR message, but old OH1 code looks for 3???
-        if (parts.size() != 4) {
+        // Apparently the 4th part of the LRR message may not be included depending on version
+        if (parts.size() < 3 || parts.size() > 4) {
             throw new IllegalArgumentException("Invalid number of parts in LRR message");
         }
 
         eventData = parts.get(0);
         cidMessage = parts.get(2);
-        reportCode = parts.get(3);
+
+        if (parts.size() == 4) {
+            reportCode = parts.get(3);
+        } else {
+            reportCode = "";
+        }
 
         try {
             int p = 0;
