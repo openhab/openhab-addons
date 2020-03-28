@@ -27,8 +27,8 @@ import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.persistence.influxdb2.InfluxDB2PersistenceService;
 
-import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 
 /**
@@ -47,7 +47,7 @@ public class ItemToStorePointCreator {
         this.metadataRegistry = metadataRegistry;
     }
 
-    public @Nullable Point convert(Item item, @Nullable String storeAlias) {
+    public @Nullable InfluxPoint convert(Item item, @Nullable String storeAlias) {
         if (item.getState() instanceof UnDefType) {
             return null;
         }
@@ -58,15 +58,12 @@ public class ItemToStorePointCreator {
 
         Object value = InfluxDBStateConvertUtils.stateToObject(state);
 
-        Point point = Point.measurement(measurementName).time(Instant.now(), WritePrecision.MS);
-
-        setPointValue(value, point);
-
-        point.addTag(TAG_ITEM_NAME, itemName);
+        InfluxPoint.Builder point = InfluxPoint.newBuilder(measurementName).withTime(Instant.now()).withValue(value)
+                .withTag(TAG_ITEM_NAME, itemName);
 
         addPointTags(item, point);
 
-        return point;
+        return point.build();
 
     }
 
@@ -111,30 +108,17 @@ public class ItemToStorePointCreator {
         return conversion;
     }
 
-    private void setPointValue(@Nullable Object value, Point point) {
-        if (value instanceof String)
-            point.addField(COLUMN_VALUE_NAME, (String) value);
-        else if (value instanceof Number)
-            point.addField(COLUMN_VALUE_NAME, (Number) value);
-        else if (value instanceof Boolean)
-            point.addField(COLUMN_VALUE_NAME, (Boolean) value);
-        else if (value == null)
-            point.addField(COLUMN_VALUE_NAME, (String) null);
-        else
-            throw new RuntimeException("Not expected value type");
-    }
-
-    private void addPointTags(Item item, Point point) {
+    private void addPointTags(Item item, InfluxPoint.Builder point) {
         if (configuration.isAddCategoryTag()) {
-            point.addTag(TAG_CATEGORY_NAME, Optional.ofNullable(item.getCategory()).orElse("n/a"));
+            point.withTag(TAG_CATEGORY_NAME, Optional.ofNullable(item.getCategory()).orElse("n/a"));
         }
 
         if (configuration.isAddTypeTag()) {
-            point.addTag(TAG_TYPE_NAME, item.getType());
+            point.withTag(TAG_TYPE_NAME, item.getType());
         }
 
         if (configuration.isAddLabelTag()) {
-            point.addTag(TAG_LABEL_NAME, Optional.ofNullable(item.getLabel()).orElse("n/a"));
+            point.withTag(TAG_LABEL_NAME, Optional.ofNullable(item.getLabel()).orElse("n/a"));
         }
 
         final MetadataRegistry currentMetadataRegistry = metadataRegistry;
@@ -143,7 +127,7 @@ public class ItemToStorePointCreator {
             Metadata metadata = currentMetadataRegistry.get(key);
             if (metadata != null) {
                 metadata.getConfiguration().forEach((tagName, tagValue) -> {
-                    point.addTag(tagName, tagValue.toString());
+                    point.withTag(tagName, tagValue.toString());
                 });
             }
         }

@@ -12,11 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openhab.persistence.influxdb2.InfluxDB2PersistenceService;
 
 public class InfluxDB2PersistenceServiceTest {
     private InfluxDB2PersistenceService instance;
     @Mock
-    private InfluxDBRepository influxDBRepository;
+    private InfluxDB2Repository influxDBRepository;
 
     private Map<String, @Nullable Object> validConfig;
     private Map<String, @Nullable Object> invalidConfig;
@@ -27,7 +28,7 @@ public class InfluxDB2PersistenceServiceTest {
 
         instance = new InfluxDB2PersistenceService() {
             @Override
-            protected @NotNull InfluxDBRepository createInfluxDBRepository() {
+            protected @NotNull InfluxDB2Repository createInfluxDBRepository() {
                 return influxDBRepository;
             }
         };

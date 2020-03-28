@@ -10,13 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb2.internal;
-
-import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.*;
+package org.openhab.persistence.influxdb2;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,13 +25,11 @@ import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.*;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.openhab.persistence.influxdb2.internal.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.influxdb.client.write.Point;
-import com.influxdb.query.FluxTable;
 
 /**
  * This is the implementation of the InfluxDB 2 {@link PersistenceService}. It persists item values
@@ -53,7 +48,7 @@ import com.influxdb.query.FluxTable;
                 ConfigurableService.SERVICE_PROPERTY_LABEL + "=InfluxDB 2 persistence layer",
                 ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=persistence" })
 public class InfluxDB2PersistenceService implements QueryablePersistenceService {
-    static final String SERVICE_NAME = "influxdb2";
+    public static final String SERVICE_NAME = "influxdb2";
 
     private final Logger logger = LoggerFactory.getLogger(InfluxDB2PersistenceService.class);
 
@@ -68,7 +63,7 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
     @NonNullByDefault({}) // Relax rules because can only be null if component is not active
     private ItemToStorePointCreator itemToStorePointCreator;
     @NonNullByDefault({}) // Relax rules because can only be null if component is not active
-    private InfluxDBRepository influxDBRepository;
+    private InfluxDB2Repository influxDBRepository;
 
     @Activate
     public void activate(final @Nullable Map<String, @Nullable Object> config) {
@@ -88,8 +83,8 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
 
     @NotNull
     // Visible for testing
-    protected InfluxDBRepository createInfluxDBRepository() {
-        return new InfluxDBRepository(configuration);
+    protected InfluxDB2Repository createInfluxDBRepository() {
+        return RepositoryFactory.createRepository(configuration);
     }
 
     @Deactivate
@@ -163,7 +158,7 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
     @Override
     public void store(Item item, @Nullable String alias) {
         if (influxDBRepository.isConnected()) {
-            Point point = itemToStorePointCreator.convert(item, alias);
+            InfluxPoint point = itemToStorePointCreator.convert(item, alias);
             if (point != null) {
                 logger.trace("Storing item {} in InfluxDB point {}", item, point);
                 influxDBRepository.write(point);
@@ -185,24 +180,19 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDateZoned(), filter.getEndDateZoned(), filter.getPageSize(), filter.getPageNumber());
 
-            String query = new FilterCriteriaQueryCreator().createQuery(filter, configuration.getBucket());
-            return influxDBRepository.query(query).stream().flatMap(this::mapRawResultToHistoric)
-                    .collect(Collectors.toList());
+            String query = RepositoryFactory.createQueryCreator(configuration).createQuery(filter,
+                    configuration.getBucket());
+            List<InfluxRow> results = influxDBRepository.query(query);
+            return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());
         } else {
             logger.warn("InfluxDB is not yet connected");
             return Collections.emptyList();
         }
     }
 
-    private Stream<InfluxDBHistoricItem> mapRawResultToHistoric(FluxTable rawRow) {
-        return rawRow.getRecords().stream().map(r -> {
-            String itemName = (String) r.getValueByKey(TAG_ITEM_NAME);
-            State state = InfluxDBStateConvertUtils.objectToState(r.getValueByKey(COLUMN_VALUE_NAME), itemName,
-                    itemRegistry);
-            Number time = (Number) r.getValueByKey(COLUMN_TIME_NAME);
-            InfluxDBHistoricItem item = new InfluxDBHistoricItem(itemName, state, new Date(time.longValue()));
-            return item;
-        });
+    private HistoricItem mapRow2HistoricItem(InfluxRow row) {
+        State state = InfluxDBStateConvertUtils.objectToState(row.getValue(), row.getItemName(), itemRegistry);
+        return new InfluxDBHistoricItem(row.getItemName(), state, Date.from(row.getTime()));
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)

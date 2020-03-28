@@ -10,22 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb2.internal;
+package org.openhab.persistence.influxdb2.internal.influx2;
 
-import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_ITEM_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.*;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.persistence.influxdb2.InfluxRow;
+import org.openhab.persistence.influxdb2.internal.InfluxDB2Repository;
+import org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration;
+import org.openhab.persistence.influxdb2.internal.InfluxDBConstants;
+import org.openhab.persistence.influxdb2.internal.InfluxPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.influxdb.client.*;
 import com.influxdb.client.domain.Ready;
+import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxTable;
 
@@ -35,8 +44,8 @@ import com.influxdb.query.FluxTable;
  * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
-public class InfluxDBRepository {
-    private final Logger logger = LoggerFactory.getLogger(InfluxDBRepository.class);
+public class InfluxDB2RepositoryImpl implements InfluxDB2Repository {
+    private final Logger logger = LoggerFactory.getLogger(InfluxDB2RepositoryImpl.class);
     private InfluxDBConfiguration configuration;
     @Nullable
     private InfluxDBClient client;
@@ -45,7 +54,7 @@ public class InfluxDBRepository {
     @Nullable
     private WriteApi writeAPI;
 
-    public InfluxDBRepository(InfluxDBConfiguration configuration) {
+    public InfluxDB2RepositoryImpl(InfluxDBConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -54,6 +63,7 @@ public class InfluxDBRepository {
      * 
      * @return True if it's connected, otherwise false
      */
+    @Override
     public boolean isConnected() {
         return client != null;
     }
@@ -63,6 +73,7 @@ public class InfluxDBRepository {
      * 
      * @return True if successful, otherwise false
      */
+    @Override
     public boolean connect() {
         InfluxDBClientOptions clientOptions = InfluxDBClientOptions.builder().url(configuration.getUrl())
                 .authenticateToken(configuration.getTokenAsCharArray()).org(configuration.getOrganization())
@@ -79,6 +90,7 @@ public class InfluxDBRepository {
     /**
      * Disconnect from InfluxDB server
      */
+    @Override
     public void disconnect() {
         final InfluxDBClient currentClient = this.client;
         if (currentClient != null)
@@ -91,6 +103,7 @@ public class InfluxDBRepository {
      * 
      * @return True if its ready, otherwise false
      */
+    @Override
     public boolean checkConnectionStatus() {
         final InfluxDBClient currentClient = client;
         if (currentClient != null) {
@@ -113,12 +126,21 @@ public class InfluxDBRepository {
      * 
      * @param point
      */
-    public void write(Point point) {
+    @Override
+    public void write(InfluxPoint point) {
         final WriteApi currentWriteAPI = writeAPI;
         if (currentWriteAPI != null)
-            currentWriteAPI.writePoint(point);
+            currentWriteAPI.writePoint(convertPointToClientFormat(point));
         else
             logger.error("Write point {} ignored due to writeAPI isn't present", point);
+    }
+
+    private Point convertPointToClientFormat(InfluxPoint point) {
+        Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
+
+        point.getTags().entrySet().forEach(e -> clientPoint.addTag(e.getKey(), e.getValue()));
+        point.getFields().entrySet().forEach(e -> clientPoint.addField(e.getKey(), e.getValue()));
+        return clientPoint;
     }
 
     /**
@@ -127,14 +149,29 @@ public class InfluxDBRepository {
      * @param query Query
      * @return Query results
      */
-    public List<FluxTable> query(String query) {
+    @Override
+    public List<InfluxRow> query(String query) {
         final QueryApi currentQueryAPI = queryAPI;
-        if (currentQueryAPI != null)
-            return currentQueryAPI.query(query);
-        else {
+        if (currentQueryAPI != null) {
+            List<FluxTable> clientResult = currentQueryAPI.query(query);
+            return convertClientResutToRepository(clientResult);
+        } else {
             logger.error("Returning empty list because queryAPI isn't present");
             return Collections.emptyList();
         }
+    }
+
+    private List<InfluxRow> convertClientResutToRepository(List<FluxTable> clientResult) {
+        return clientResult.stream().flatMap(this::mapRawResultToHistoric).collect(Collectors.toList());
+    }
+
+    private Stream<InfluxRow> mapRawResultToHistoric(FluxTable rawRow) {
+        return rawRow.getRecords().stream().map(r -> {
+            String itemName = (String) r.getValueByKey(InfluxDBConstants.TAG_ITEM_NAME);
+            Object value = r.getValueByKey(COLUMN_VALUE_NAME);
+            Number time = (Number) r.getValueByKey(COLUMN_TIME_NAME);
+            return new InfluxRow(Instant.ofEpochMilli(time.longValue()), itemName, value);
+        });
     }
 
     /**
@@ -142,6 +179,7 @@ public class InfluxDBRepository {
      * 
      * @return Map with <ItemName,ItemCount> entries
      */
+    @Override
     public Map<String, Integer> getStoredItemsCount() {
         final QueryApi currentQueryAPI = queryAPI;
 

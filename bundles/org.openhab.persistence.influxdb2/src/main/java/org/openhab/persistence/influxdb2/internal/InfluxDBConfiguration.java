@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.persistence.influxdb2.InfluxDBVersion;
 
 /**
  * Contains this addon configurable parameters
@@ -40,6 +41,7 @@ public class InfluxDBConfiguration {
     private String token;
     private String organization;
     private String bucket;
+    private InfluxDBVersion version;
 
     private boolean replaceUnderscore;
     private boolean addCategoryTag;
@@ -52,6 +54,7 @@ public class InfluxDBConfiguration {
         token = (String) config.getOrDefault(TOKEN_PARAM, "");
         organization = (String) config.getOrDefault(ORGANIZATION_PARAM, "openhab");
         bucket = (String) config.getOrDefault(BUCKET_PARAM, "default");
+        version = InfluxDBVersion.V2;
 
         replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);
         addCategoryTag = getConfigBooleanValue(config, ADD_CATEGORY_TAG_PARAM, false);
@@ -109,11 +112,16 @@ public class InfluxDBConfiguration {
         return addLabelTag;
     }
 
+    public InfluxDBVersion getVersion() {
+        return version;
+    }
+
     @Override
     public String toString() {
         return "Configuration{" + "url='" + url + '\'' + ", token='" + token + '\'' + ", organization='" + organization
                 + '\'' + ", bucket='" + bucket + '\'' + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag="
-                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + '}';
+                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + ", version="
+                + version + '}';
     }
 
     public int getTokenLength() {
