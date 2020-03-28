@@ -15,7 +15,11 @@ package org.openhab.binding.miio.internal.basic;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -25,38 +29,40 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoBasicChannel {
 
     @SerializedName("property")
     @Expose
-    private String property;
+    private @Nullable String property;
     @SerializedName("friendlyName")
     @Expose
-    private String friendlyName;
+    private @Nullable String friendlyName;
     @SerializedName("channel")
     @Expose
-    private String channel;
+    private @Nullable String channel;
     @SerializedName("channelType")
     @Expose
-    private String channelType;
+    private @Nullable String channelType;
     @SerializedName("type")
     @Expose
-    private String type;
+    private @Nullable String type;
     @SerializedName("refresh")
     @Expose
-    private Boolean refresh;
+    private @Nullable Boolean refresh;
     @SerializedName("transformation")
     @Expose
-    private String transfortmation;
+    private @Nullable String transfortmation;
     @SerializedName("ChannelGroup")
     @Expose
-    private String channelGroup;
+    private @Nullable String channelGroup;
     @SerializedName("actions")
     @Expose
-    private List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<MiIoDeviceAction>();
+    private @Nullable List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<MiIoDeviceAction>();
 
     public String getProperty() {
-        return property;
+        final String property = this.property;
+        return (property != null) ? property : "";
     }
 
     public void setProperty(String property) {
@@ -64,7 +70,8 @@ public class MiIoBasicChannel {
     }
 
     public String getFriendlyName() {
-        return type == null || friendlyName.isEmpty() ? channel : friendlyName;
+        final String fn = friendlyName;
+        return (fn == null || type == null || fn.isEmpty()) ? getChannel() : fn;
     }
 
     public void setFriendlyName(String friendlyName) {
@@ -72,7 +79,8 @@ public class MiIoBasicChannel {
     }
 
     public String getChannel() {
-        return channel;
+        final @Nullable String channel = this.channel;
+        return channel != null ? channel : "";
     }
 
     public void setChannel(String channel) {
@@ -80,8 +88,12 @@ public class MiIoBasicChannel {
     }
 
     public String getChannelType() {
-        return channelType == null || channelType.isEmpty() ? BINDING_ID + ":" + channel
-                : (channelType.startsWith("system") ? channelType : BINDING_ID + ":" + channelType);
+        final @Nullable String ct = channelType;
+        if (ct == null || ct.isEmpty()) {
+            return BINDING_ID + ":" + getChannel();
+        } else {
+            return (ct.startsWith("system") ? ct : BINDING_ID + ":" + ct);
+        }
     }
 
     public void setChannelType(String channelType) {
@@ -89,7 +101,8 @@ public class MiIoBasicChannel {
     }
 
     public String getType() {
-        return type == null ? "" : type;
+        final @Nullable String type = this.type;
+        return type != null ? type : "";
     }
 
     public void setType(String type) {
@@ -97,7 +110,8 @@ public class MiIoBasicChannel {
     }
 
     public Boolean getRefresh() {
-        return refresh && !property.isEmpty();
+        final @Nullable Boolean rf = refresh;
+        return rf != null && rf.booleanValue() && !getProperty().isEmpty();
     }
 
     public void setRefresh(Boolean refresh) {
@@ -105,7 +119,8 @@ public class MiIoBasicChannel {
     }
 
     public String getChannelGroup() {
-        return channelGroup;
+        final @Nullable String channelGroup = this.channelGroup;
+        return channelGroup != null ? channelGroup : "";
     }
 
     public void setChannelGroup(String channelGroup) {
@@ -113,14 +128,15 @@ public class MiIoBasicChannel {
     }
 
     public List<MiIoDeviceAction> getActions() {
-        return miIoDeviceActions;
+        final @Nullable List<MiIoDeviceAction> miIoDeviceActions = this.miIoDeviceActions;
+        return (miIoDeviceActions != null) ? miIoDeviceActions : Collections.emptyList();
     }
 
     public void setActions(List<MiIoDeviceAction> miIoDeviceActions) {
         this.miIoDeviceActions = miIoDeviceActions;
     }
 
-    public String getTransfortmation() {
+    public @Nullable String getTransfortmation() {
         return transfortmation;
     }
 
@@ -130,8 +146,8 @@ public class MiIoBasicChannel {
 
     @Override
     public String toString() {
-        return "[ Channel = " + channel + ", friendlyName = " + friendlyName + ", type = " + type + ", channelType = "
-                + getChannelType() + ", ChannelGroup = " + channelGroup + ", channel = " + channel + ", property = "
-                + property + ", refresh = " + refresh + "]";
+        return "[ Channel = " + getChannel() + ", friendlyName = " + getFriendlyName() + ", type = " + getType()
+                + ", channelType = " + getChannelType() + ", ChannelGroup = " + getChannelGroup() + ", channel = "
+                + getChannel() + ", property = " + getProperty() + ", refresh = " + getRefresh() + "]";
     }
 }

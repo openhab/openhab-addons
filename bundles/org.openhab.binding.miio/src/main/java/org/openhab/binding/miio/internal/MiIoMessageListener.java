@@ -15,10 +15,9 @@ package org.openhab.binding.miio.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 
 /**
- * Interface for a listener on the {@link MiIoAsyncCommunication}.
+ * Interface for a listener on the {@link org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication}.
  * Informs when a message is received.
  *
  * @author Marcel Verpaalen - Initial contribution

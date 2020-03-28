@@ -14,6 +14,8 @@ package org.openhab.binding.miio.internal;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -35,6 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcel Verpaalen - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.miio")
+@NonNullByDefault
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
@@ -50,7 +53,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
             return new MiIoGenericHandler(thing, miIoDatabaseWatchService);
