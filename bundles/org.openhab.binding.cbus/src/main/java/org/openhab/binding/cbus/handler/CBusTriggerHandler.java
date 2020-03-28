@@ -45,13 +45,13 @@ public class CBusTriggerHandler extends CBusGroupHandler {
         if (group == null)
             return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
-            logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            logger.debug("Channel Value command for {}: {}", channelUID, command);
             try {
                 if (command instanceof DecimalType) {
-                    group.TriggerEvent((int) ((DecimalType) command).intValue());
+                    group.TriggerEvent(((DecimalType) command).intValue());
                 }
             } catch (CGateException e) {
-                logger.warn("Failed to send trigger command {} to {}", command.toString(), group.toString(), e);
+                logger.warn("Failed to send trigger command {} to {}", command, group, e);
             }
         }
     }

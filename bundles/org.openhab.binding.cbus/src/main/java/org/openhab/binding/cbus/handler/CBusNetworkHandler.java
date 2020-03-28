@@ -73,6 +73,14 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> networkSync = this.networkSync;
+        if (networkSync != null) {
+            networkSync.cancel(false);
+        }
+        ScheduledFuture<?> initNetwork = this.initNetwork;
+        if (initNetwork != null) {
+            initNetwork.cancel(false);
+        }
         super.dispose();
     }
 
@@ -211,9 +219,10 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 if (networkSync == null || networkSync.isCancelled())
                     this.networkSync = scheduler.scheduleWithFixedDelay(() -> {
                         doNetworkSync();
-                    }, (int) (10 * Math.random()),
-                            Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()),
+                    }, 10, Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()),
                             TimeUnit.SECONDS);
+                logger.debug("Schedule networkSync to start in {} seconds",
+                        Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()));
             } else {
                 if (networkSync != null)
                     networkSync.cancel(false);

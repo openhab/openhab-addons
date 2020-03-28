@@ -58,18 +58,10 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     public void initialize() {
 
         cBusNetworkHandler = getCBusNetworkHandler();
-        /*
-         * try {
-         * this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
-         * if (this.group == null)
-         * logger.debug("cannot create group {} ",
-         * getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
-         * } catch (Exception e) {
-         * logger.warn("Cannot create group {} ", getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString(), e);
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-         * return;
-         * }
-         */
+        if (cBusNetworkHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
         updateStatus();
     }
 

@@ -47,7 +47,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
         if (group == null)
             return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
-            logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            logger.debug("Channel Level command for {}: {}", channelUID, command);
             try {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
@@ -59,10 +59,10 @@ public class CBusDaliHandler extends CBusGroupHandler {
                     PercentType value = (PercentType) command;
                     group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
+                    logger.warn("Increase/Decrease not implemented for {}", channelUID);
                 }
             } catch (CGateException e) {
-                logger.warn("Cannot send command {} to {}", command.toString(), group.toString(), e);
+                logger.warn("Cannot send command {} to {}", command, group, e);
             }
         }
     }

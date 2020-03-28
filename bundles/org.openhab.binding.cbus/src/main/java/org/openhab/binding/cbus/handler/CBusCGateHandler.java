@@ -251,7 +251,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 if (status == null)
                     return;
             }
-
             String contents[] = status.split("#");
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
             LinkedList<String> commentTokenizer = new LinkedList<String>(Arrays.asList(contents[1].split("\\s+")));
@@ -262,17 +261,17 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             }
             @Nullable
             String firstToken = tokenizer.peek();
-            if (firstToken.equals("lighting")) {
+            if ("lighting".equals(firstToken)) {
                 tokenizer.poll();
                 @Nullable
                 String state = tokenizer.poll();
                 @Nullable
                 String address = tokenizer.poll();
-                if (state.equals("ramp")) {
+                if ("ramp".equals("ramp")) {
                     state = tokenizer.poll();
                 }
                 updateGroup(address, state);
-            } else if (firstToken.equals("temperature")) {
+            } else if ("temperature".equals(firstToken)) {
                 tokenizer.poll();
                 tokenizer.poll();
                 @Nullable
@@ -280,22 +279,22 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 @Nullable
                 String temp = tokenizer.poll();
                 updateGroup(address, temp);
-            } else if (firstToken.equals("trigger")) {
+            } else if ("trigger".equals(firstToken)) {
                 tokenizer.poll();
                 @Nullable
                 String command = tokenizer.poll();
                 @Nullable
                 String address = tokenizer.poll();
-                if (command.equals("event")) {
+                if ("event".equals(command)) {
                     @Nullable
                     String level = tokenizer.poll();
                     updateGroup(address, level);
-                } else if (command.equals("indicatorkill")) {
+                } else if ("indicatorkill".equals(command)) {
                     updateGroup(address, "-1");
                 } else {
                     logger.warn("Unhandled trigger command {} - status {}", command, status);
                 }
-            } else if (firstToken.equals("clock")) {
+            } else if ("clock".equals(firstToken)) {
                 tokenizer.poll();
                 @Nullable
                 String address = "";
@@ -303,23 +302,23 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 String value = "";
                 @Nullable
                 String type = tokenizer.poll();
-                if (type.equals("date")) {
+                if ("date".equals(type)) {
                     address = tokenizer.poll() + "/1";
                     value = tokenizer.poll();
-                } else if (type.equals("time")) {
+                } else if ("time".equals(type)) {
                     address = tokenizer.poll() + "/0";
                     value = tokenizer.poll();
-                } else if (!type.equals("request_refresh")) {
+                } else if (!"request_refresh".equals(type)) {
                     logger.warn("Received unknown clock event: {}", status);
                 }
-                if (value != "") {
+                if (value != null && !value.isEmpty()) {
                     updateGroup(address, value);
                 }
             } else if (firstToken.equals("lighting")) {
                 commentTokenizer.poll();
                 @Nullable
                 String commentToken = commentTokenizer.peek();
-                if (commentToken.equals("SyncUpdate")) {
+                if ("SyncUpdate".equals(commentToken)) {
                     commentTokenizer.poll();
                     @Nullable
                     String address = commentTokenizer.poll();
@@ -350,15 +349,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             if (event == null)
                 return;
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
-            // List<String> tokenizer = Collections.synchronizedList(new LinkedList<String>());//
-            // Arrays.asList(event.trim().split("\\s+"))));
             if (eventCode == 701) {
                 @Nullable
                 String address = tokenizer.poll();
-                // String oid = tokenizer.poll();
+                @Nullable
+                String oid = tokenizer.poll();
                 @Nullable
                 String value = tokenizer.poll();
-                if (value.startsWith("level=")) {
+                if (value != null && value.startsWith("level=")) {
                     String level = value.replace("level=", "");
                     updateGroup(address, level);
                 }

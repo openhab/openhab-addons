@@ -52,7 +52,7 @@ public class CBusLightHandler extends CBusGroupHandler {
         if (group == null)
             return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
-            logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            logger.debug("Channel command {}: {} {}", channelUID.getAsString(), command, command.toString());
             if (command instanceof OnOffType) {
                 try {
                     if (command.equals(OnOffType.ON)) {
@@ -61,11 +61,11 @@ public class CBusLightHandler extends CBusGroupHandler {
                         group.off();
                     }
                 } catch (CGateException e) {
-                    logger.warn("Failed to send command {} to {}", command.toString(), group.toString(), e);
+                    logger.warn("Failed to send command {} to {}", command, group, e);
                 }
             }
         } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
-            logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
+            logger.debug("Channel Level command {}: {} {}", channelUID, command, command.toString());
             try {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
@@ -80,7 +80,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                     logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
                 }
             } catch (CGateException e) {
-                logger.warn("Failed to send command {} to {}", command.toString(), group.toString(), e);
+                logger.warn("Failed to send command {} to {}", command, group, e);
             }
         }
     }
