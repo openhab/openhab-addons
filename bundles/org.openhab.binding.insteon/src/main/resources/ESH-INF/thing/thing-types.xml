@@ -284,7 +284,7 @@
 	
 	<channel-type id="lightLevelAboveThreshold">
 		<item-type>Contact</item-type>
-		<label>Light Light Level Above Threshold</label>
+		<label>Light Level Above/Below Threshold</label>
 	</channel-type>
 
 	<channel-type id="loadDimmer">
@@ -309,7 +309,7 @@
 
 	<channel-type id="lowBattery">
 		<item-type>Contact</item-type>
-		<label>Low Battery Warning</label>
+		<label>Low Battery</label>
 	</channel-type>
 
 	<channel-type id="manualChange">
