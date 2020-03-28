@@ -12,12 +12,35 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DWDPollenflugConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
+@NonNullByDefault
 public class DWDPollenflugConfiguration {
-    public int regionId;
-    public int refresh;
+    private int regionId;
+    private int refresh;
+
+    public int getRegionId() {
+        return regionId;
+    }
+
+    public int getRefresh() {
+        return refresh;
+    }
+
+    public boolean isRegion() {
+        return regionId % 10 == 0;
+    }
+
+    public boolean isPartregion() {
+        return !isRegion();
+    }
+
+    public boolean isValid() {
+        return regionId > 0 && refresh >= 1;
+    }
 }

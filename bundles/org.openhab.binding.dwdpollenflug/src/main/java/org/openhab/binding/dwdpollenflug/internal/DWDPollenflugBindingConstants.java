@@ -29,6 +29,8 @@ public class DWDPollenflugBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_REGION = new ThingTypeUID(BINDING_ID, "region");
 
-    // Channels
-    public static final String CHANNEL_LAST_UPDATED = "lastUpdated";
+    public static final String PROPERTY_REGION_ID = "region_id";
+    public static final String PROPERTY_REGION_NAME = "region_name";
+    public static final String PROPERTY_PARTREGION_ID = "partregion_id";
+    public static final String PROPERTY_PARTREGION_NAME = "partregion_name";
 }
