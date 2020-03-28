@@ -58,6 +58,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     private static final String LOCAL_DATABASE_PATH = ConfigConstants.getConfigFolder() + File.separator + "misc"
             + File.separator + BINDING_ID;
     private static final String DATABASE_FILES = ".json";
+    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDatabaseWatchService.class);
     private Map<String, URL> databaseList = new HashMap<>();
@@ -87,9 +88,12 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     @Override
     protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
             @Nullable Path path) {
-        if (path != null && path.getFileName().toString().endsWith(DATABASE_FILES)) {
-            logger.debug("Local Databases file {} changed. Refreshing device database.", path.getFileName());
-            populateDatabase();
+        if (path != null) {
+            final Path p = path.getFileName();
+            if (p != null && p.toString().endsWith(DATABASE_FILES)) {
+                logger.debug("Local Databases file {} changed. Refreshing device database.", p.getFileName());
+                populateDatabase();
+            }
         }
     }
 
@@ -109,14 +113,10 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         for (URL db : urlEntries) {
             logger.trace("Adding devices for db file: {}", db);
             try {
-                @Nullable
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                if (deviceMapping != null) {
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    for (String id : devdb.getDevice().getId()) {
-                        workingDatabaseList.put(id, db);
-                    }
+                MiIoBasicDevice devdb = GSON.fromJson(deviceMapping, MiIoBasicDevice.class);
+                for (String id : devdb.getDevice().getId()) {
+                    workingDatabaseList.put(id, db);
                 }
             } catch (JsonIOException | JsonSyntaxException | IOException e) {
                 logger.debug("Error while processing database '{}': {}", db, e.getMessage());
