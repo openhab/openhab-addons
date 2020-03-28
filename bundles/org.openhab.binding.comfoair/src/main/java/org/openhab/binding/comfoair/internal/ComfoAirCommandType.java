@@ -201,7 +201,7 @@ public enum ComfoAirCommandType {
             Constants.REPLY_GET_TEMPS, new int[] { 7 }),
     COOKERHOOD_TEMPERATUR("temperatures#cookerhoodTemperature", DataTypeTemperature.class, Constants.REQUEST_GET_TEMPS,
             Constants.REPLY_GET_TEMPS, new int[] { 8 }),
-    IS_PREHEATER("options#isPreheater", DataTypeBoolean.class, Constants.REQUEST_SET_STATES, 8, 1,
+    IS_PREHEATER("options#isPreheater", DataTypeBoolean.class, Constants.REQUEST_SET_STATES, 8, 0,
             new String[] { "temperatures#outdoorTemperatureIn", "temperatures#indoorTemperatureIn",
                     "preheater#preheaterFrostProtect", "preheater#preheaterFrostTime", "preheater#preheaterHeating",
                     "menuP9#frostState", "preheater#preheaterSafety", "times#preheaterTime",

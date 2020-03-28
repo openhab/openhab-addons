@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Class to handle revolutions per minute values
  *
  * @author Grzegorz Miasko - Initial Contribution
- * @author Hans Böhm
+ * @author Hans Böhm - Refactoring
  */
 @NonNullByDefault
 public class DataTypeRPM implements ComfoAirDataType {
