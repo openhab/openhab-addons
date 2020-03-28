@@ -48,7 +48,6 @@ import org.openhab.binding.wizlighting.internal.entities.ColorRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.ColorTemperatureRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.DimmingRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.Param;
-import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.SceneRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.SpeedRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.StateRequestParam;
@@ -97,17 +96,12 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param thing the thing of the handler.
      * @throws MacAddressNotValidException if the mac address isn't valid.
      */
-    public WizLightingHandler(final Thing thing, final RegistrationRequestParam registrationPacket)
-            throws MacAddressNotValidException {
+    public WizLightingHandler(final Thing thing) throws MacAddressNotValidException {
         super(thing);
 
         savebulbMacAddressFromConfiguration(this.getConfig());
         savebulbIpAddressFromConfiguration(this.getConfig());
         saveUpdateIntervalFromConfiguration(this.getConfig());
-
-        logger.debug("Setting my host to {} and mac to {}", registrationPacket.getPhoneIp(),
-                registrationPacket.getPhoneMac());
-        // this.registrationInfo = registrationPacket;
     }
 
     @Override
@@ -151,8 +145,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 } else if (command instanceof OnOffType) {
                     handleOnOffCommand((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseCommand(
-                            command == IncreaseDecreaseType.INCREASE);
+                    handleIncreaseDecreaseCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
 

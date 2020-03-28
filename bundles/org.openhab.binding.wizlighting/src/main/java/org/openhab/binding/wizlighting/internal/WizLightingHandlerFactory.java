@@ -87,7 +87,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
             logger.debug("Creating a new WizLightingHandler...");
             try {
-                handler = new WizLightingHandler(thing, this.mediator.getRegistrationParams());
+                handler = new WizLightingHandler(thing);
                 logger.debug("WizLightingMediator will register the handler.");
 
                 WizLightingMediator mediator = this.mediator;

@@ -28,9 +28,9 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
@@ -53,8 +53,12 @@ import org.slf4j.LoggerFactory;
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);
+
     @NonNullByDefault({})
     private WizLightingMediator mediator;
+
+    @NonNullByDefault({})
+    private NetworkAddressService networkAddressService;
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
 
@@ -85,6 +89,27 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
+    public void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+        logger.trace("Network Address Service has been set in the mediator.");
+    }
+
+    public void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
+        logger.trace("Network Address Service has been unset from the mediator.");
+    }
+
+    private String getMyIpAddress() {
+        String myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        if (myIpAddress == null) {
+            logger.warn("Network interface did not return an IP address!");
+            return "OHIPAddress";
+        }
+        logger.info("IP of openHAB device is {}.", myIpAddress);
+        return myIpAddress;
+    }
+
     /**
      * Constructor of the discovery service.
      *
@@ -103,15 +128,11 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         DatagramSocket dsocket = null;
         try {
-            RegistrationRequestParam outParam = this.mediator.getRegistrationParams();
-            String outIpReal = outParam.getPhoneIp();
+            String outIpReal = getMyIpAddress();
             String broadcastIp = outIpReal.substring(0, outIpReal.lastIndexOf(".")) + "255";
             InetAddress address = InetAddress.getByName(broadcastIp);
-            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.registration,
-                    this.mediator.getRegistrationParams());
-            // Note: Can request system config without doing any registration. Could
-            // presumably use this to discover and support other bulb types.
-            // WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.getSystemConfig, null);
+            // Simply requesting the system configuration from any bulb that's listening
+            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.getSystemConfig, null);
             request.setId(0);
 
             byte[] message = this.converter.transformToByteMessage(request);
