@@ -15,22 +15,29 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class to hold Response of Http Request
  * 
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 public class DWDPollenflugindex {
-    private String sender;
-    private String name;
-    private String next_update;
-    private String last_update;
+    private @Nullable String sender;
+    private @Nullable String name;
+    private @Nullable String next_update;
+    private @Nullable String last_update;
 
-    private Map<String, String> legend;
+    private @Nullable Map<String, String> legend;
 
-    private Set<DWDRegion> content;
+    private @Nullable Set<DWDRegion> content;
 
     public DWDRegion getRegion(int id) {
+        if (content == null) {
+            return null;
+        }
+
         for (DWDRegion region : content) {
             if (region.getId() == id) {
                 return region;

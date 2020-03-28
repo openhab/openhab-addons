@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class to hold Response of Region
  * 
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 public class DWDPollen {
-    private String today;
-    private String tomorrow;
-    private String dayafter_to;
+    private @Nullable String today;
+    private @Nullable String tomorrow;
+    private @Nullable String dayafter_to;
 
     public String getToday() {
         return today;
@@ -32,5 +35,10 @@ public class DWDPollen {
 
     public String getDayAfterTomorrow() {
         return dayafter_to;
+    }
+
+    @Override
+    public String toString() {
+        return "DWDPollen [today=" + today + ", tomorrow=" + tomorrow + ", dayafter_to=" + dayafter_to + "]";
     }
 }

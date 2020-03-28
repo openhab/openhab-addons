@@ -14,6 +14,9 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 
 import java.util.Map;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -22,12 +25,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 public class DWDRegion {
-    private int region_id;
-    private String region_name;
-    private int partregion_id;
+    private @Nullable Integer region_id;
+    private @Nullable String region_name;
+    private @Nullable Integer partregion_id;
     private @Nullable String partregion_name;
 
-    private Map<String, DWDPollen> pollen;
+    @SerializedName("Pollen")
+    private @Nullable Map<String, DWDPollen> pollen;
 
     public int getId() {
         if (isPartRegion()) {

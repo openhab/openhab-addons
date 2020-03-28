@@ -35,6 +35,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -43,6 +44,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugConfiguration;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollen;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugindex;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDResponse;
@@ -131,8 +133,18 @@ public class DWDPollenflugHandler extends BaseThingHandler {
         polling = false;
     }
 
+    private @Nullable DWDPollenflugindex parseDWDResponse(DWDResponse r) {
+        if (r.getResponseCode() == 200) {
+            return gson.fromJson(r.getBody(), DWDPollenflugindex.class);
+        } else {
+            return null;
+        }
+    }
+
     private void updateData(DWDRegion region) {
         updateProperties(region);
+
+        updateChannels(region);
     }
 
     private void updateProperties(DWDRegion region) {
@@ -157,12 +169,29 @@ public class DWDPollenflugHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable DWDPollenflugindex parseDWDResponse(DWDResponse r) {
-        if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), DWDPollenflugindex.class);
-        } else {
-            return null;
+    private void updateChannels(DWDRegion region) {
+        for (Entry<String, DWDPollen> entry : region.getPollen().entrySet()) {
+            updatePollen(entry.getKey(), entry.getValue());
         }
+    }
+
+    private void updatePollen(String pollenType, DWDPollen pollenState) {
+        ChannelUID channelUID = createChannelUID(pollenType, CHANNEL_TODAY);
+        logger.debug("Update {} to {}", channelUID, pollenState.getToday());
+        updateState(channelUID, new StringType(pollenState.getToday()));
+
+        channelUID = createChannelUID(pollenType, CHANNEL_TOMORROW);
+        logger.debug("Update {} to {}", channelUID, pollenState.getTomorrow());
+        updateState(channelUID, new StringType(pollenState.getTomorrow()));
+
+        channelUID = createChannelUID(pollenType, CHANNEL_DAYAFTER_TO);
+        logger.debug("Update {} to {}", channelUID, pollenState.getDayAfterTomorrow());
+        updateState(channelUID, new StringType(pollenState.getDayAfterTomorrow()));
+    }
+
+    private ChannelUID createChannelUID(String pollenType, String subchannel) {
+        String mappedType = CHANNELS_POLLEN_MAP.get(pollenType);
+        return thing.getChannel(mappedType + "#" + subchannel).getUID();
     }
 
     @Override
