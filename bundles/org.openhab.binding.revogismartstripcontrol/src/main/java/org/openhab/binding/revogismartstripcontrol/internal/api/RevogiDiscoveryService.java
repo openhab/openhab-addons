@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link RevogiDiscoveryService} helps to discover smart strips within your network
@@ -43,16 +44,14 @@ public class RevogiDiscoveryService {
     public List<DiscoveryRawResponse> discoverSmartStrips() {
         List<UdpResponse> responses = udpSenderService.broadcastUpdDatagram(UDP_DISCOVERY_QUERY);
         responses.forEach(response -> logger.info("Received: {}", response));
-        return responses.stream()
-                .filter(response -> !response.getAnswer().isEmpty())
-                .map(this::deserializeString)
-                .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0)
-                .collect(Collectors.toList());
+        return responses.stream().filter(response -> !response.getAnswer().isEmpty()).map(this::deserializeString)
+                .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0).collect(Collectors.toList());
     }
 
     private DiscoveryRawResponse deserializeString(UdpResponse response) {
         try {
-            DiscoveryRawResponse discoveryRawResponse = objectMapper.readValue(response.getAnswer(), DiscoveryRawResponse.class);
+            DiscoveryRawResponse discoveryRawResponse = objectMapper.readValue(response.getAnswer(),
+                    DiscoveryRawResponse.class);
             discoveryRawResponse.setIpAddress(response.getIpAddress());
             return discoveryRawResponse;
         } catch (IOException e) {

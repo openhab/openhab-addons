@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -32,7 +30,9 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.stream.Collectors.toList;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UdpSenderService} is responsible for sending and receiving udp packets
@@ -67,9 +67,7 @@ public class UdpSenderService {
         } catch (SocketException e) {
             logger.warn("Could not find broadcast addresse, got socket error {}", e.getMessage(), e);
         }
-        return broadcastAddresses.stream()
-                .map( address -> sendMessage(content, address))
-                .flatMap(Collection::stream)
+        return broadcastAddresses.stream().map(address -> sendMessage(content, address)).flatMap(Collection::stream)
                 .collect(toList());
     }
 
@@ -120,7 +118,8 @@ public class UdpSenderService {
             }
 
             if (answer.getLength() > 0) {
-                list.add(new UdpResponse(new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress()));
+                list.add(new UdpResponse(new String(answer.getData(), 0, answer.getLength()),
+                        answer.getAddress().getHostAddress()));
             }
         }
 
@@ -136,12 +135,12 @@ public class UdpSenderService {
         return broadcastAdresses;
     }
 
-    private List<InetAddress> findInterfaceBroadcastAddresses(final Enumeration<NetworkInterface> networkInterfaces) throws SocketException {
+    private List<InetAddress> findInterfaceBroadcastAddresses(final Enumeration<NetworkInterface> networkInterfaces)
+            throws SocketException {
         NetworkInterface anInterface = networkInterfaces.nextElement();
         if (anInterface.isUp()) {
             List<InetAddress> addresses = anInterface.getInterfaceAddresses().stream()
-                    .filter(address -> address.getBroadcast() != null)
-                    .map(InterfaceAddress::getBroadcast)
+                    .filter(address -> address.getBroadcast() != null).map(InterfaceAddress::getBroadcast)
                     .collect(toList());
             if (!addresses.isEmpty()) {
                 return addresses;

@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Andi Bräu - Initial contribution
@@ -31,7 +31,8 @@ public class DiscoveryResponse {
     @JsonProperty("ver")
     private String version = "";
 
-    public DiscoveryResponse(String serialNumber, String regId, String sak, String name, String macAddress, String version) {
+    public DiscoveryResponse(String serialNumber, String regId, String sak, String name, String macAddress,
+            String version) {
         this.serialNumber = serialNumber;
         this.regId = regId;
         this.sak = sak;
@@ -69,15 +70,13 @@ public class DiscoveryResponse {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         DiscoveryResponse that = (DiscoveryResponse) o;
-        return serialNumber.equals(that.serialNumber) &&
-                regId.equals(that.regId) &&
-                sak.equals(that.sak) &&
-                name.equals(that.name) &&
-                macAddress.equals(that.macAddress) &&
-                version.equals(that.version);
+        return serialNumber.equals(that.serialNumber) && regId.equals(that.regId) && sak.equals(that.sak)
+                && name.equals(that.name) && macAddress.equals(that.macAddress) && version.equals(that.version);
     }
 
     @Override

@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -26,14 +31,9 @@ import java.net.SocketTimeoutException;
 import java.util.Enumeration;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Andi Bräu - Initial contribution
@@ -77,13 +77,12 @@ public class UdpSenderServiceTest {
     public void testOneAnswer() throws IOException {
         // given
         byte[] receivedBuf = "valid answer".getBytes();
-        doAnswer( invocation -> {
+        doAnswer(invocation -> {
             DatagramPacket argument = invocation.getArgument(0);
             argument.setData(receivedBuf);
             argument.setAddress(InetAddress.getLocalHost());
             return null;
         }).doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
-
 
         // when
         List<UdpResponse> list = udpSenderService.broadcastUpdDatagram("send something");
@@ -92,6 +91,5 @@ public class UdpSenderServiceTest {
         assertThat(list.get(0).getAnswer(), is("valid answer"));
         verify(datagramSocketWrapper, times(1 + 2 * numberOfInterfaces)).receiveAnswer(any());
     }
-
 
 }

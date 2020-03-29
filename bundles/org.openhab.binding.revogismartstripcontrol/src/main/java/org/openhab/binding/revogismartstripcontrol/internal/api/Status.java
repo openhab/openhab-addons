@@ -34,7 +34,8 @@ public class Status {
     public Status() {
     }
 
-    public Status(final boolean online, final int responseCode, List<Integer> switchValue, List<Integer> watt, List<Integer> amp) {
+    public Status(final boolean online, final int responseCode, List<Integer> switchValue, List<Integer> watt,
+            List<Integer> amp) {
         this.online = online;
         this.responseCode = responseCode;
         this.switchValue = switchValue;
@@ -71,11 +72,9 @@ public class Status {
             return false;
         }
         Status status = (Status) o;
-        return online == status.online &&
-                responseCode == status.responseCode &&
-                Objects.equals(switchValue, status.switchValue) &&
-                Objects.equals(watt, status.watt) &&
-                Objects.equals(amp, status.amp);
+        return online == status.online && responseCode == status.responseCode
+                && Objects.equals(switchValue, status.switchValue) && Objects.equals(watt, status.watt)
+                && Objects.equals(amp, status.amp);
     }
 
     @Override

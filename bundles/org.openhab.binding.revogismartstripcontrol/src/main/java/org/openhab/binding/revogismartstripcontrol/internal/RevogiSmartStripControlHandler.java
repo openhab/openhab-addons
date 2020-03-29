@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.ALL_PLUGS;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_2_SWITCH;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_3_SWITCH;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_4_SWITCH;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_5_SWITCH;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_6_SWITCH;
+
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -27,17 +38,6 @@ import org.openhab.binding.revogismartstripcontrol.internal.api.StatusService;
 import org.openhab.binding.revogismartstripcontrol.internal.api.SwitchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.ALL_PLUGS;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_2_SWITCH;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_3_SWITCH;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_4_SWITCH;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_5_SWITCH;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_6_SWITCH;
 
 /**
  * The {@link RevogiSmartStripControlHandler} is responsible for handling commands, which are
@@ -143,7 +143,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
             handleAllPlugsInformation(status);
             handleSinglePlugInformation(status);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Retrieved status code: " + status.getResponseCode());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                    "Retrieved status code: " + status.getResponseCode());
         }
     }
 
@@ -157,9 +158,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void handleAllPlugsInformation(Status status) {
-        long onCount = status.getSwitchValue().stream()
-                .filter(statusValue -> statusValue == 1)
-                .count();
+        long onCount = status.getSwitchValue().stream().filter(statusValue -> statusValue == 1).count();
         if (onCount == 6) {
             updateState(ALL_PLUGS, OnOffType.ON);
         } else {

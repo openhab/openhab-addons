@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link SwitchService} enables the binding to actually switch plugs on and of
@@ -53,20 +54,20 @@ public class SwitchService {
 
         List<UdpResponse> responses;
         if (ipAddress.trim().isEmpty()) {
-            responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
+            responses = udpSenderService
+                    .broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
         } else {
-            responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state), ipAddress);
+            responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state),
+                    ipAddress);
         }
 
         responses.forEach(response -> {
             logger.info("Reveived {}", response.getAnswer());
         });
-        return responses.stream()
-                .filter(response -> !response.getAnswer().isEmpty())
-                .map( response -> deserializeString(response.getAnswer()))
+        return responses.stream().filter(response -> !response.getAnswer().isEmpty())
+                .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
-                .findFirst()
-                .orElse(new SwitchResponse(0, 503));
+                .findFirst().orElse(new SwitchResponse(0, 503));
     }
 
     private SwitchResponse deserializeString(String response) {

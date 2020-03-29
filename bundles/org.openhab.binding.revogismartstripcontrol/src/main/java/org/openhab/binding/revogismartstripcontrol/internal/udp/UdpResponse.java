@@ -38,11 +38,12 @@ public class UdpResponse {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         UdpResponse that = (UdpResponse) o;
-        return answer.equals(that.answer) &&
-                ipAddress.equals(that.ipAddress);
+        return answer.equals(that.answer) && ipAddress.equals(that.ipAddress);
     }
 
     @Override

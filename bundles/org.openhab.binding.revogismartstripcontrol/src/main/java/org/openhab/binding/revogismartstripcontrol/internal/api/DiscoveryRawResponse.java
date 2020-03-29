@@ -49,12 +49,12 @@ public class DiscoveryRawResponse {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         DiscoveryRawResponse that = (DiscoveryRawResponse) o;
-        return response == that.response &&
-                data.equals(that.data) &&
-                Objects.equals(ipAddress, that.ipAddress);
+        return response == that.response && data.equals(that.data) && Objects.equals(ipAddress, that.ipAddress);
     }
 
     @Override

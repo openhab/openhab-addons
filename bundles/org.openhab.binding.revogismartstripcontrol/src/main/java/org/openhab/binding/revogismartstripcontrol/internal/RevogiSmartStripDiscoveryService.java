@@ -12,6 +12,16 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.SERIAL_NUMBER;
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -28,16 +38,6 @@ import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWr
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.SERIAL_NUMBER;
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE;
-
 /**
  * The {@link RevogiSmartStripDiscoveryService} helps to discover new smart strips
  *
@@ -46,7 +46,8 @@ import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartSt
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.revogismartstripcontrol")
 @NonNullByDefault
 public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Collections.singleton(SMART_STRIP_THING_TYPE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Collections.singleton(SMART_STRIP_THING_TYPE));
 
     private final RevogiDiscoveryService revogiDiscoveryService;
 
@@ -67,23 +68,19 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
         List<DiscoveryRawResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
         discoveryResponses.forEach(response -> {
             ThingUID thingUID = getThingUID(response.getData());
-                    if (thingUID != null) {
-                        Map<String, Object> properties = new HashMap<>();
-                        properties.put(Thing.PROPERTY_MODEL_ID, response.getData().getRegId());
-                        properties.put(Thing.PROPERTY_MAC_ADDRESS, response.getData().getMacAddress());
-                        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.getData().getVersion());
-                        properties.put(Thing.PROPERTY_SERIAL_NUMBER, response.getData().getSerialNumber());
-                        properties.put("ipAddress", response.getIpAddress());
-                        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                                .create(thingUID)
-                                .withThingType(SMART_STRIP_THING_TYPE)
-                                .withProperties(properties)
-                                .withRepresentationProperty(SERIAL_NUMBER)
-                                .build();
-                        thingDiscovered(discoveryResult);
-                    }
-                }
-        );
+            if (thingUID != null) {
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(Thing.PROPERTY_MODEL_ID, response.getData().getRegId());
+                properties.put(Thing.PROPERTY_MAC_ADDRESS, response.getData().getMacAddress());
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.getData().getVersion());
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, response.getData().getSerialNumber());
+                properties.put("ipAddress", response.getIpAddress());
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                        .withThingType(SMART_STRIP_THING_TYPE).withProperties(properties)
+                        .withRepresentationProperty(SERIAL_NUMBER).build();
+                thingDiscovered(discoveryResult);
+            }
+        });
     }
 
     private @Nullable ThingUID getThingUID(DiscoveryResponse response) {

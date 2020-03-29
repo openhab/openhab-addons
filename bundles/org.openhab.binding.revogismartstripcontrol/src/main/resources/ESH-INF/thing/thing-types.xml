@@ -11,7 +11,7 @@
 		<category>PowerOutlet</category>
 
 		<channel-groups>
-			<channel-group id="overallPlug" typeId="overallPlugActor"/>
+			<channel-group id="overallPlug" typeId="overallPlugActor" />
 			<channel-group id="plug1" typeId="plugActor">
 				<label>Plug 1</label>
 			</channel-group>
@@ -55,9 +55,9 @@
 		<label>Single Plug Actor</label>
 		<description>Switch a single plug and retrieve stats for it</description>
 		<channels>
-			<channel id="switch" typeId="single-plug"/>
-			<channel id="watt" typeId="watts"/>
-			<channel id="amp" typeId="amps"/>
+			<channel id="switch" typeId="single-plug" />
+			<channel id="watt" typeId="watts" />
+			<channel id="amp" typeId="amps" />
 		</channels>
 	</channel-group-type>
 
@@ -65,7 +65,7 @@
 		<label>Overall Plug Actor</label>
 		<description>Switch all plugs</description>
 		<channels>
-			<channel id="switch" typeId="single-plug"/>
+			<channel id="switch" typeId="single-plug" />
 		</channels>
 	</channel-group-type>
 

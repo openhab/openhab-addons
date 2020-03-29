@@ -19,7 +19,7 @@ package org.openhab.binding.revogismartstripcontrol.internal;
  */
 public class RevogiSmartStripControlConfiguration {
 
-    public  String serialNumber;
+    public String serialNumber;
 
     public int pollInterval;
 

@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
+import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -24,11 +29,6 @@ import org.openhab.binding.revogismartstripcontrol.internal.api.SwitchService;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.Collections;
-import java.util.Set;
-
-import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE;
 
 /**
  * The {@link RevogiSmartStripControlHandlerFactory} is responsible for creating things and thing

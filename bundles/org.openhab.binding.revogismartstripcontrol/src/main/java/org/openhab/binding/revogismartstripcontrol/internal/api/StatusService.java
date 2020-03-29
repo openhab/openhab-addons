@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
@@ -53,9 +54,9 @@ public class StatusService {
                 .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(statusRaw -> statusRaw.getCode() == 200 && statusRaw.getResponse() == 90)
-                .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(), statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
-                .findFirst()
-                .orElse(new Status(false, 503, null, null, null));
+                .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(),
+                        statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
+                .findFirst().orElse(new Status(false, 503, null, null, null));
     }
 
     private StatusRaw deserializeString(String response) {
