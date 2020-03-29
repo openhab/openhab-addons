@@ -81,6 +81,10 @@ import org.slf4j.LoggerFactory;
         QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j")
 public class RRD4jPersistenceService implements QueryablePersistenceService {
 
+    private static final String DEFAULT_OTHER = "default_other";
+    private static final String DEFAULT_NUMERIC = "default_numeric";
+    private static final String DEFAULT_QUANTIFIABLE = "default_quantifiable";
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
             new NamedThreadFactory("RRD4j"));
 
@@ -284,15 +288,20 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 try {
                     Item item = itemRegistry.getItem(itemName);
                     if (item instanceof NumberItem) {
-                        useRdc = rrdDefs.get("default_numeric");
+                        NumberItem numberItem = (NumberItem) item;
+                        if (numberItem.getDimension() != null) {
+                            useRdc = rrdDefs.get(DEFAULT_QUANTIFIABLE);
+                        } else {
+                            useRdc = rrdDefs.get(DEFAULT_NUMERIC);
+                        }
                     } else {
-                        useRdc = rrdDefs.get("default_other");
+                        useRdc = rrdDefs.get(DEFAULT_OTHER);
                     }
                 } catch (ItemNotFoundException e) {
                     logger.debug("Could not find item '{}' in registry", itemName);
                 }
             } else {
-                useRdc = rrdDefs.get("default_other");
+                useRdc = rrdDefs.get(DEFAULT_OTHER);
             }
         }
         return useRdc;
@@ -354,7 +363,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
      */
     public void activate(final Map<String, Object> config) {
         // add default configurations
-        RrdDefConfig defaultNumeric = new RrdDefConfig("default_numeric");
+
+        RrdDefConfig defaultNumeric = new RrdDefConfig(DEFAULT_NUMERIC);
         // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
         defaultNumeric.setDef("GAUGE,600,U,U,10");
         // define 5 different boxes:
@@ -364,9 +374,21 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 4. granularity of 1h for the last 5 years
         // 5. granularity of 1d for the last 10 years
         defaultNumeric.addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,8640,3650");
-        rrdDefs.put("default_numeric", defaultNumeric);
+        rrdDefs.put(DEFAULT_NUMERIC, defaultNumeric);
 
-        RrdDefConfig defaultOther = new RrdDefConfig("default_other");
+        RrdDefConfig defaultQuantifiable = new RrdDefConfig(DEFAULT_QUANTIFIABLE);
+        // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
+        defaultNumeric.setDef("GAUGE,600,U,U,10");
+        // define 5 different boxes:
+        // 1. granularity of 10s for the last hour
+        // 2. granularity of 1m for the last week
+        // 3. granularity of 15m for the last year
+        // 4. granularity of 1h for the last 5 years
+        // 5. granularity of 1d for the last 10 years
+        defaultNumeric.addArchives("AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:LAST,0.5,90,36500:AVERAGE,0.5,8640,3650");
+        rrdDefs.put(DEFAULT_QUANTIFIABLE, defaultQuantifiable);
+
+        RrdDefConfig defaultOther = new RrdDefConfig(DEFAULT_OTHER);
         // use 5 seconds as a step size for discrete values and allow a 1h silence between updates
         defaultOther.setDef("GAUGE,3600,U,U,5");
         // define 4 different boxes:
@@ -375,7 +397,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 3. granularity of 15m for the last year
         // 4. granularity of 4h for the last 10 years
         defaultOther.addArchives("LAST,0.5,1,1440:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,240,21900");
-        rrdDefs.put("default_other", defaultOther);
+        rrdDefs.put(DEFAULT_OTHER, defaultOther);
 
         if (config.isEmpty()) {
             logger.debug("using default configuration only");
