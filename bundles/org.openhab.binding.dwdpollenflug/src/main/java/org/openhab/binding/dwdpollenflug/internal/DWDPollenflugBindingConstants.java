@@ -28,6 +28,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DWDPollenflugBindingConstants {
 
+    public static final int INITIAL_DELAY = 1;
+    public static final int SECONDS_PER_MINUTE = 60;
+
     private static final String BINDING_ID = "dwdpollenflug";
 
     // List of all Thing Type UIDs
@@ -51,7 +54,7 @@ public class DWDPollenflugBindingConstants {
         map.put("Birke", "birch");
         map.put("Erle", "alder");
         map.put("Esche", "ash");
-        map.put("Graesser", "grasses");
+        map.put("Graeser", "grasses");
         map.put("Hasel", "hazel");
         map.put("Roggen", "rye");
         return Collections.unmodifiableMap(map);
