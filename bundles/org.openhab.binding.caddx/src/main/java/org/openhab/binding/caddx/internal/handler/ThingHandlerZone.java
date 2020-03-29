@@ -69,21 +69,21 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("handleCommand(): Command Received - {} {}.", channelUID, command);
 
-        String cmd = null;
+        String cmd1 = null;
+        String cmd2 = null;
         String data = null;
 
         if (command instanceof RefreshType) {
             if (channelUID.getId().equals(CaddxBindingConstants.ZONE_FAULTED)) {
-                cmd = CaddxBindingConstants.ZONE_STATUS_REQUEST;
-                data = String.format("%d", getZoneNumber() - 1);
-            } else if (channelUID.getId().equals(CaddxBindingConstants.ZONE_NAME)) {
-                cmd = CaddxBindingConstants.ZONE_NAME_REQUEST;
+                cmd1 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
+                cmd2 = CaddxBindingConstants.ZONE_NAME_REQUEST;
                 data = String.format("%d", getZoneNumber() - 1);
             } else {
                 return;
             }
-        } else if (channelUID.getId().equals(CaddxBindingConstants.ZONE_BYPASS_TOGGLE)) {
-            cmd = channelUID.getId();
+        } else if (channelUID.getId().equals(CaddxBindingConstants.ZONE_BYPASSED)) {
+            cmd1 = channelUID.getId();
+            cmd2 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
             data = String.format("%d", getZoneNumber() - 1);
         } else {
             logger.debug("Unknown command");
@@ -94,7 +94,8 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, data);
+        bridgeHandler.sendCommand(cmd1, data);
+        bridgeHandler.sendCommand(cmd2, data);
     }
 
     @Override

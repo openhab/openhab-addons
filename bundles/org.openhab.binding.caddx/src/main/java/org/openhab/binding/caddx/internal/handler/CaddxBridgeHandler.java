@@ -260,7 +260,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
         CaddxMessage msg = null;
 
-        if (CaddxBindingConstants.ZONE_BYPASS_TOGGLE.equals(command)) {
+        if (CaddxBindingConstants.ZONE_BYPASSED.equals(command)) {
             msg = new CaddxMessage(CaddxMessageType.Zone_Bypass_Toggle, data);
         } else if (CaddxBindingConstants.ZONE_STATUS_REQUEST.equals(command)) {
             msg = new CaddxMessage(CaddxMessageType.Zone_Status_Request, data);

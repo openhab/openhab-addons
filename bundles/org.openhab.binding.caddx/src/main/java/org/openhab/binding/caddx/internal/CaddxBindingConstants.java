@@ -85,7 +85,7 @@ public class CaddxBindingConstants {
     // Channels
     public static final String ZONE_NAME = "zone_name";
     public static final String ZONE_FAULTED = "zone_faulted";
-    public static final String ZONE_BYPASS_TOGGLE = "zone_bypass_toggle";
+    public static final String ZONE_BYPASSED = "zone_bypassed";
 
     // Keypad
 

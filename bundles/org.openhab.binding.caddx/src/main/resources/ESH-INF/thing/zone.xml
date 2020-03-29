@@ -165,7 +165,7 @@
 				<label>Trouble</label>
 				<description>Trouble</description>
 			</channel>
-			<channel id="zone_bypassed" typeId="zone_condition">
+			<channel id="zone_bypassed" typeId="zone_bypass">
 				<label>Bypassed</label>
 				<description>Bypassed</description>
 			</channel>
@@ -188,11 +188,6 @@
 			<channel id="zone_bypass_memory" typeId="zone_condition">
 				<label>Bypass Memory</label>
 				<description>Bypass memory</description>
-			</channel>
-
-			<channel id="zone_bypass_toggle" typeId="zone_bypass">
-				<label>Send Zone Bypass</label>
-				<description>Sends a Zone Bypass Command</description>
 			</channel>
 		</channels>
 
