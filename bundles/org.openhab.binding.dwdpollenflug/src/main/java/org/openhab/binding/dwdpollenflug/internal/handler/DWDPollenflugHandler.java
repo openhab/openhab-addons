@@ -14,27 +14,15 @@ package org.openhab.binding.dwdpollenflug.internal.handler;
 
 import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
 
-import java.net.SocketTimeoutException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -43,11 +31,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.dwdpollenflug.internal.DWDDataAccess;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugConfiguration;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollen;
-import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugindex;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
-import org.openhab.binding.dwdpollenflug.internal.dto.DWDResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,138 +47,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DWDPollenflugHandler extends BaseThingHandler {
 
-    private static final int INITIAL_DELAY = 1;
-
-    private static final int SECONDS_PER_MINUTE = 60;
-
-    private static final String DWD_URL = "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json";
-
     private final Logger logger = LoggerFactory.getLogger(DWDPollenflugHandler.class);
 
     private boolean initializing;
     private @Nullable DWDPollenflugConfiguration config;
 
+    private boolean ignoreConfigurationUpdate;
+
     private @Nullable ScheduledFuture<?> pollingJob;
     private boolean polling;
 
-    private final HttpClient httpClient;
-    private final Gson gson;
+    private final DWDDataAccess dataAccess;
 
-    public DWDPollenflugHandler(Thing thing, HttpClient httpClient, Gson gson) {
+    public DWDPollenflugHandler(final Thing thing, final HttpClient client) {
         super(thing);
-        this.httpClient = httpClient;
-        this.gson = gson;
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            scheduler.submit(this::poll);
-        }
-    }
-
-    private void poll() {
-        if (polling) {
-            logger.trace("Already polling. Ignoring refresh request.");
-            return;
-        }
-
-        if (initializing) {
-            logger.trace("Still initializing. Ignoring refresh request.");
-            return;
-        }
-
-        logger.debug("Polling");
-
-        polling = true;
-
-        requestData().thenApply(this::parseDWDResponse).exceptionally(e -> {
-            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
-                    || e instanceof CompletionException) {
-                logger.debug("Failed to request data");
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-
-            return null;
-        }).thenAccept(pollenflugindex -> {
-            if (pollenflugindex == null) {
-                return;
-            }
-
-            DWDRegion region = pollenflugindex.getRegion(config.getRegionId());
-            if (region == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Region not found!");
-                return;
-            }
-
-            updateStatus(ThingStatus.ONLINE);
-
-            updateData(region);
-        });
-
-        polling = false;
-    }
-
-    private @Nullable DWDPollenflugindex parseDWDResponse(DWDResponse r) {
-        if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), DWDPollenflugindex.class);
-        } else {
-            return null;
-        }
-    }
-
-    private void updateData(DWDRegion region) {
-        updateProperties(region);
-
-        updateChannels(region);
-    }
-
-    private void updateProperties(DWDRegion region) {
-        logger.debug("Region ({}): {}", region.getRegionId(), region.getRegionName());
-
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put(PROPERTY_REGION_ID, Integer.toString(region.getRegionId()));
-        properties.put(PROPERTY_REGION_NAME, region.getRegionName());
-
-        if (region.isPartRegion()) {
-            logger.debug("Partregion ({}): {}", region.getPartregionId(), region.getPartregionName());
-
-            properties.put(PROPERTY_PARTREGION_ID, Integer.toString(region.getPartregionId()));
-            properties.put(PROPERTY_PARTREGION_NAME, region.getPartregionName());
-        }
-
-        for (Entry<String, String> property : properties.entrySet()) {
-            String existing = thing.getProperties().get(property.getKey());
-            if (existing == null || !existing.equals(property.getValue())) {
-                thing.setProperty(property.getKey(), property.getValue());
-            }
-        }
-    }
-
-    private void updateChannels(DWDRegion region) {
-        for (Entry<String, DWDPollen> entry : region.getPollen().entrySet()) {
-            updatePollen(entry.getKey(), entry.getValue());
-        }
-    }
-
-    private void updatePollen(String pollenType, DWDPollen pollenState) {
-        ChannelUID channelUID = createChannelUID(pollenType, CHANNEL_TODAY);
-        logger.debug("Update {} to {}", channelUID, pollenState.getToday());
-        updateState(channelUID, new StringType(pollenState.getToday()));
-
-        channelUID = createChannelUID(pollenType, CHANNEL_TOMORROW);
-        logger.debug("Update {} to {}", channelUID, pollenState.getTomorrow());
-        updateState(channelUID, new StringType(pollenState.getTomorrow()));
-
-        channelUID = createChannelUID(pollenType, CHANNEL_DAYAFTER_TO);
-        logger.debug("Update {} to {}", channelUID, pollenState.getDayAfterTomorrow());
-        updateState(channelUID, new StringType(pollenState.getDayAfterTomorrow()));
-    }
-
-    private ChannelUID createChannelUID(String pollenType, String subchannel) {
-        String mappedType = CHANNELS_POLLEN_MAP.get(pollenType);
-        return thing.getChannel(mappedType + "#" + subchannel).getUID();
+        this.dataAccess = new DWDDataAccess(client);
     }
 
     @Override
@@ -215,9 +85,10 @@ public class DWDPollenflugHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-        logger.debug("Handler disposed.");
-        stopPolling();
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        if (!ignoreConfigurationUpdate) {
+            super.handleConfigurationUpdate(configurationParameters);
+        }
     }
 
     private void startPolling() {
@@ -228,6 +99,12 @@ public class DWDPollenflugHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void dispose() {
+        logger.debug("Handler disposed.");
+        stopPolling();
+    }
+
     private void stopPolling() {
         if (!(pollingJob == null || pollingJob.isCancelled())) {
             logger.debug("stop polling job");
@@ -236,24 +113,77 @@ public class DWDPollenflugHandler extends BaseThingHandler {
         }
     }
 
-    private CompletableFuture<DWDResponse> requestData() {
-        final CompletableFuture<DWDResponse> f = new CompletableFuture<>();
-        Request request = httpClient.newRequest(URI.create(DWD_URL));
+    @Override
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
+        if (!(command instanceof RefreshType)) {
+            return;
+        }
+    }
 
-        request.method(HttpMethod.GET).timeout(2000, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
+    private void poll() {
+        if (initializing) {
+            logger.trace("Still initializing. Ignoring refresh request.");
+            return;
+        }
 
-            @NonNullByDefault({})
-            @Override
-            public void onComplete(Result result) {
-                final HttpResponse response = (HttpResponse) result.getResponse();
-                if (result.getFailure() != null) {
-                    f.completeExceptionally(result.getFailure());
-                    return;
+        if (polling) {
+            logger.trace("Already polling. Ignoring refresh request.");
+            return;
+        }
+
+        logger.debug("Polling");
+        polling = true;
+
+        dataAccess.refresh(config.getRegionId()).handle((region, e) -> {
+            if (region == null) {
+                if (e == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-                f.complete(new DWDResponse(getContentAsString(), response.getStatus()));
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+                updateRegion(region);
             }
-        });
 
-        return f;
+            polling = false;
+            return null;
+        });
+    }
+
+    private void updateRegion(final DWDRegion region) {
+        updateProperties(region);
+        updateChannels(region);
+    }
+
+    private void updateProperties(final DWDRegion region) {
+        ignoreConfigurationUpdate = true;
+        updateProperties(region.getProperties());
+        ignoreConfigurationUpdate = false;
+    }
+
+    private void updateChannels(final DWDRegion region) {
+        for (final Entry<String, DWDPollen> entry : region.getPollen().entrySet()) {
+            updatePollen(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void updatePollen(final String pollenType, final DWDPollen pollenState) {
+        ChannelUID channelUID = createChannelUID(pollenType, CHANNEL_TODAY);
+        logger.debug("Update {} to {}", channelUID, pollenState.getToday());
+        updateState(channelUID, new StringType(pollenState.getToday()));
+
+        channelUID = createChannelUID(pollenType, CHANNEL_TOMORROW);
+        logger.debug("Update {} to {}", channelUID, pollenState.getTomorrow());
+        updateState(channelUID, new StringType(pollenState.getTomorrow()));
+
+        channelUID = createChannelUID(pollenType, CHANNEL_DAYAFTER_TO);
+        logger.debug("Update {} to {}", channelUID, pollenState.getDayAfterTomorrow());
+        updateState(channelUID, new StringType(pollenState.getDayAfterTomorrow()));
+    }
+
+    private ChannelUID createChannelUID(final String pollenType, final String subchannel) {
+        final String mappedType = CHANNELS_POLLEN_MAP.get(pollenType);
+        return thing.getChannel(mappedType + "#" + subchannel).getUID();
     }
 }

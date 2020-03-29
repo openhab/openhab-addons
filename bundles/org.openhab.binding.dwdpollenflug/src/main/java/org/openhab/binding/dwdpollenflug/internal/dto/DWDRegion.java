@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
+import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
+
+import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -25,40 +28,53 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 public class DWDRegion {
-    private @Nullable Integer region_id;
-    private @Nullable String region_name;
-    private @Nullable Integer partregion_id;
-    private @Nullable String partregion_name;
+    @SerializedName("region_id")
+    private @Nullable Integer regionID;
+
+    @SerializedName("region_name")
+    private @Nullable String regionName;
+
+    @SerializedName("partregion_id")
+    private @Nullable Integer partregionID;
+
+    @SerializedName("partregion_name")
+    private @Nullable String partregionName;
 
     @SerializedName("Pollen")
     private @Nullable Map<String, DWDPollen> pollen;
 
+    @Expose(serialize = false, deserialize = false)
+    private Map<String, String> properties;
+
     public int getId() {
         if (isPartRegion()) {
-            return partregion_id;
+            return partregionID;
         } else {
-            return region_id;
+            return regionID;
+        }
+    }
+
+    public void init() {
+        initProperties();
+    }
+
+    private void initProperties() {
+        final Map<String, String> map = new HashMap<String, String>();
+        map.put(PROPERTY_REGION_ID, Integer.toString(regionID));
+        map.put(PROPERTY_PARTREGION_NAME, regionName);
+
+        if (isPartRegion()) {
+            map.put(PROPERTY_PARTREGION_ID, Integer.toString(partregionID));
+            map.put(PROPERTY_PARTREGION_NAME, partregionName);
         }
     }
 
     public boolean isPartRegion() {
-        return partregion_id > 0;
+        return partregionID > 0;
     }
 
-    public int getRegionId() {
-        return region_id;
-    }
-
-    public String getRegionName() {
-        return region_name;
-    }
-
-    public int getPartregionId() {
-        return partregion_id;
-    }
-
-    public String getPartregionName() {
-        return partregion_name;
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     public Map<String, DWDPollen> getPollen() {

@@ -15,7 +15,8 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import com.google.gson.annotations.SerializedName;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -31,14 +32,21 @@ public class DWDPollenflugindex {
 
     private @Nullable Map<String, String> legend;
 
-    private @Nullable Set<DWDRegion> content;
+    @SerializedName("content")
+    private @Nullable Set<DWDRegion> regions;
+
+    public void init() {
+        for (DWDRegion region : regions) {
+            region.init();
+        }
+    }
 
     public DWDRegion getRegion(int id) {
-        if (content == null) {
+        if (regions == null) {
             return null;
         }
 
-        for (DWDRegion region : content) {
+        for (DWDRegion region : regions) {
             if (region.getId() == id) {
                 return region;
             }

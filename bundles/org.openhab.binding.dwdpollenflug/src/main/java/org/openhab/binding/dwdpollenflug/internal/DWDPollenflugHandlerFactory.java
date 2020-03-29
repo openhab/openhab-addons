@@ -46,8 +46,6 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
 
-    private final Gson gson = new Gson();
-
     @Activate
     public DWDPollenflugHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
@@ -63,7 +61,7 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_REGION.equals(thingTypeUID)) {
-            return new DWDPollenflugHandler(thing, httpClientFactory.getCommonHttpClient(), gson);
+            return new DWDPollenflugHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 
         return null;

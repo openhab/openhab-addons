@@ -10,31 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdpollenflug.internal.dto;
+package org.openhab.binding.dwdpollenflug.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Class to hold Response of Http Request
- * 
+ * The {@link DWDPollenflugBindingConstants} class defines common constants, which are
+ * used across the whole binding.
+ *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 @NonNullByDefault
-public class DWDResponse {
+public class DWDDataException extends Exception {
 
-    private final String body;
-    private final int responseCode;
+    private static final long serialVersionUID = 1L;
 
-    public DWDResponse(String body, int responseCode) {
-        this.body = body;
-        this.responseCode = responseCode;
+    public DWDDataException(String message) {
+        super(message);
     }
 
-    public String getBody() {
-        return body;
-    }
-
-    public int getResponseCode() {
-        return responseCode;
+    public DWDDataException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }
