@@ -481,6 +481,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                         logger.info("Got update for {}", update.deviceId);
 
                                         Bridge bridge = bridgeHandler.getThing();
+                                        boolean handled = false;
 
                                         List<Thing> things = bridge.getThings();
                                         for (Thing childThing : things) {
@@ -493,64 +494,50 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                                             if (handler != null) {
 
+                                                handled = true;
                                                 logger.debug("Registered device: {} - looking for {}",
                                                         handler.getBoschID(), update.deviceId);
 
                                                 if (update.deviceId.equals(handler.getBoschID())) {
 
                                                     logger.info("Found child: {} - sending {}", handler, update.state);
-                                                    handler.processUpdate(update.state);
+                                                    handler.processUpdate(update.id, update.state);
                                                 }
                                             }
 
                                         }
+
+                                        if (!handled) {
+                                            logger.info("Could not find a thing for device ID: {}", update.deviceId);
+                                        }
                                     }
                                 }
-                            }
-                            //
-                            // // TODO Probably should check if it is in fact, the correct handler. Depends a
-                            // // little one whether we add more of them or if we just have one Handler for
-                            // // all devices.
-                            // if (thing != null) {
-                            //
-                            // BoschSHCHandler thingHandler = (BoschSHCHandler) thing.getHandler();
-                            //
-                            // if (thingHandler != null) {
-                            // thingHandler.processUpdate(update);
-                            // } else {
-                            // logger.warn("Could not convert thing handler to BoschSHCHandler");
-                            // }
-                            // } else {
-                            // logger.info("Could not find a thing for device ID: {}", update.deviceId);
-                            // }
-                            // }
-                            // }
 
-                            // } else {
-                            //
-                            // logger.warn("Could not parse in onComplete: {}", content);
-                            //
-                            // // Check if we got a proper result from the SHC
-                            // LongPollError parsedError = gson.fromJson(content, LongPollError.class);
-                            //
-                            // if (parsedError.error != null) {
-                            //
-                            // logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
-                            //
-                            // if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                            //
-                            // bridgeHandler.subscriptionId = null;
-                            // logger.warn("Invalidating subscription ID!");
-                            // }
-                            // }
-                            //
-                            // // Timeout before retry
-                            // try {
-                            // Thread.sleep(10000);
-                            // } catch (InterruptedException sleepError) {
-                            // logger.warn("Failed to sleep in longRun()");
-                            // }
-                            // }
+                            } else {
+                                logger.warn("Could not parse in onComplete: {}", content);
+
+                                // Check if we got a proper result from the SHC
+                                LongPollError parsedError = gson.fromJson(content, LongPollError.class);
+
+                                if (parsedError.error != null) {
+
+                                    logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
+
+                                    if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+
+                                        bridgeHandler.subscriptionId = null;
+                                        logger.warn("Invalidating subscription ID!");
+                                    }
+                                }
+
+                                // Timeout before retry
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException sleepError) {
+                                    logger.warn("Failed to sleep in longRun()");
+                                }
+                            }
+
                         } else {
                             logger.warn("Failed in onComplete");
                         }
