@@ -44,6 +44,7 @@ import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
+import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
@@ -106,6 +107,12 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                 case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
                     if (command instanceof StringType) {
                         changeFanSpeed(((StringType) command).toString());
+                        return;
+                    }
+                    break;
+                case DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE:
+                    if (command instanceof StringType) {
+                        changeHomekitMode(command.toString());
                         return;
                     }
                     break;
@@ -198,4 +205,21 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
         changeSetPoint(newTemperature);
         return true;
     }
+
+    private void changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (HomekitMode.OFF.getValue().equals(homekitmode)) {
+           changePower(false);
+        } else {
+           changePower(true);
+           if (HomekitMode.AUTO.getValue().equals(homekitmode)) {
+                changeMode("AUTO");
+           } else if (HomekitMode.HEAT.getValue().equals(homekitmode)) {
+                changeMode("HEAT");
+           } else if (HomekitMode.COOL.getValue().equals(homekitmode)) {
+                changeMode("COLD");
+           }       
+        }
+    }
+
 }
