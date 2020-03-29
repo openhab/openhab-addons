@@ -16,7 +16,6 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -44,10 +42,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.wizlighting.internal.config.WizLightingDeviceConfiguration;
 import org.openhab.binding.wizlighting.internal.entities.ColorRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.ColorTemperatureRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.DimmingRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.Param;
+import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.SceneRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.SpeedRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.StateRequestParam;
@@ -57,7 +57,6 @@ import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingLightMode;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
-import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
@@ -74,10 +73,10 @@ public class WizLightingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandler.class);
 
-    private String bulbIpAddress = "bulbIpAddress";
-    private String bulbMacAddress = "bulbMacAddress";
+    private @NonNullByDefault({}) WizLightingDeviceConfiguration config;
+    private RegistrationRequestParam registrationInfo;
+
     private int homeId;
-    private Long updateInterval = DEFAULT_REFRESH_INTERVAL;
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
     private @Nullable ScheduledFuture<?> keepAliveJob;
@@ -94,14 +93,13 @@ public class WizLightingHandler extends BaseThingHandler {
      * Default constructor.
      *
      * @param thing the thing of the handler.
-     * @throws MacAddressNotValidException if the mac address isn't valid.
      */
-    public WizLightingHandler(final Thing thing) throws MacAddressNotValidException {
+    public WizLightingHandler(final Thing thing, final RegistrationRequestParam registrationPacket) {
         super(thing);
-
-        savebulbMacAddressFromConfiguration(this.getConfig());
-        savebulbIpAddressFromConfiguration(this.getConfig());
-        saveUpdateIntervalFromConfiguration(this.getConfig());
+        config = getConfigAs(WizLightingDeviceConfiguration.class);
+        this.registrationInfo = registrationPacket;
+        logger.trace("Created handler for WiZ bulb with IP {} and MAC address {}.", config.bulbIpAddress,
+                config.bulbMacAddress);
     }
 
     @Override
@@ -296,17 +294,17 @@ public class WizLightingHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
                 logger.debug(
                         "Begin socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
-                        bulbIpAddress, updateInterval);
+                        config.bulbIpAddress, config.updateInterval);
 
-                logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", bulbMacAddress,
+                logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.bulbMacAddress,
                         latestUpdate, now, timePassedFromLastUpdateInSeconds);
 
                 boolean considerThingOffline = (latestUpdate < 0)
-                        || (timePassedFromLastUpdateInSeconds > (updateInterval * INTERVALS_BEFORE_OFFLINE));
+                        || (timePassedFromLastUpdateInSeconds > (config.updateInterval * INTERVALS_BEFORE_OFFLINE));
                 if (considerThingOffline) {
                     logger.debug(
                             "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
-                            getBulbMacAddress());
+                            config.bulbMacAddress);
                     updateStatus(ThingStatus.OFFLINE);
                 } else {
                     // refresh the current state
@@ -314,22 +312,24 @@ public class WizLightingHandler extends BaseThingHandler {
                 }
             } else {
                 logger.debug("Bulb at {} - {} is offline.  Will not query for status until a firstBeat is received.",
-                        getBulbIpAddress(), getBulbMacAddress());
+                        config.bulbIpAddress, config.bulbMacAddress);
             }
         };
-        this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
+        this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, config.updateInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void initialize() {
-        logger.trace("Beginning initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
+        logger.trace("Beginning initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
 
         updateStatus(ThingStatus.UNKNOWN);
+        if (ValidationUtils.isMacNotValid(config.bulbMacAddress)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
+        }
         updateBulbProperties();
-        saveConfigurationsUsingCurrentStates();
-        // registerWithBulb();
+        registerWithBulb();
         initGetStatusAndKeepAliveThread();
-        logger.debug("Finished initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
+        logger.debug("Finished initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
     }
 
     private synchronized void getPilot() {
@@ -453,7 +453,7 @@ public class WizLightingHandler extends BaseThingHandler {
             final @Nullable Param param) {
         DatagramSocket dsocket = null;
         try {
-            InetAddress address = InetAddress.getByName(bulbIpAddress);
+            InetAddress address = InetAddress.getByName(config.bulbIpAddress);
             if (address != null) {
                 WizLightingRequest request = new WizLightingRequest(method, param);
                 request.setId(requestId++);
@@ -480,10 +480,10 @@ public class WizLightingHandler extends BaseThingHandler {
             }
         } catch (SocketTimeoutException e) {
             logger.trace("Socket timeout after sending command; no response from {} - {} within 500ms",
-                    getBulbIpAddress(), getBulbMacAddress());
+                    config.bulbIpAddress, config.bulbMacAddress);
         } catch (IOException exception) {
             logger.debug("Something wrong happened when sending the packet to address: {} and port {}... msg: {}",
-                    bulbIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
+                    config.bulbIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
                 dsocket.close();
@@ -520,7 +520,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * Asks the bulb for its current system configuration
      */
     private synchronized void updateBulbProperties() {
-        logger.trace("Updating metadata for bulb at {}", bulbIpAddress);
+        logger.trace("Updating metadata for bulb at {}", config.bulbIpAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.getSystemConfig, null);
         if (registrationResponse != null) {
             SystemConfigResult responseResult = registrationResponse.getSystemConfigResults();
@@ -543,12 +543,12 @@ public class WizLightingHandler extends BaseThingHandler {
             } else {
                 logger.debug(
                         "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information.",
-                        getBulbIpAddress(), getBulbMacAddress());
+                        config.bulbIpAddress, config.bulbMacAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
-            logger.debug("No response to registration request from bulb at {} - {}", getBulbIpAddress(),
-                    getBulbMacAddress());
+            logger.debug("No response to registration request from bulb at {} - {}", config.bulbIpAddress,
+                    config.bulbMacAddress);
             // Not calling it "gone" because it's probably just been powered off and will be
             // back any time
             updateStatus(ThingStatus.OFFLINE);
@@ -559,116 +559,36 @@ public class WizLightingHandler extends BaseThingHandler {
      * Registers with the bulb - this tells the bulb to begin sending 5-second
      * heartbeat (hb) status updates
      */
-    /*
-     * private void registerWithBulb() {
-     * logger.trace("Registering for updates with bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
-     * WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
-     * this.registrationInfo);
-     * if (registrationResponse != null) {
-     * if (registrationResponse.getResultSuccess()) {
-     * updateTimestamps();
-     * } else {
-     * logger.debug(
-     * "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information."
-     * ,
-     * getBulbIpAddress(), getBulbMacAddress());
-     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-     * }
-     * } else {
-     * logger.debug("No response to registration request from bulb at {} - {}", getBulbIpAddress(),
-     * getBulbMacAddress());
-     * // Not calling it "gone" because it's probably just been powered off and will be
-     * // back any time
-     * updateStatus(ThingStatus.OFFLINE);
-     * }
-     * }
-     */
 
-    @Override
-    protected void updateConfiguration(final Configuration configuration) {
-        try {
-            latestUpdate = -1;
-
-            // Save the new configuration parameters to the thing
-            savebulbMacAddressFromConfiguration(configuration);
-            savebulbIpAddressFromConfiguration(configuration);
-            saveUpdateIntervalFromConfiguration(configuration);
-
-            // Re-register to get heartbeats
-            // registerWithBulb();
-
-            // Check the bulb's system configuration
-            updateBulbProperties();
-            saveConfigurationsUsingCurrentStates();
-            initGetStatusAndKeepAliveThread();
-        } catch (MacAddressNotValidException e) {
-            logger.error("The Mac address passed is not valid! {}", e.getBulbMacAddress());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        }
-    }
-
-    /**
-     * Saves the bulb address from configuration in field.
-     *
-     * @param configuration The {@link Configuration}
-     */
-    private void savebulbIpAddressFromConfiguration(final Configuration configuration) {
-        bulbIpAddress = String.valueOf(configuration.get(CONFIG_IP_ADDRESS));
-        logger.info("Bulb IP Address set to '{}'", bulbIpAddress);
-    }
-
-    /**
-     * Saves the bulb address from configuration in field.
-     *
-     * @param configuration The {@link Configuration}
-     */
-    private void saveUpdateIntervalFromConfiguration(final Configuration configuration) {
-        updateInterval = DEFAULT_REFRESH_INTERVAL;
-        if ((configuration.get(CONFIG_UPDATE_INTERVAL) instanceof BigDecimal)
-                && (((BigDecimal) configuration.get(CONFIG_UPDATE_INTERVAL)).longValue() > 0)) {
-            updateInterval = ((BigDecimal) configuration.get(CONFIG_UPDATE_INTERVAL)).longValue();
-        }
-    }
-
-    /**
-     * Saves the bulb's mac address from configuration in field.
-     *
-     * @param configuration The {@link Configuration}
-     */
-    private void savebulbMacAddressFromConfiguration(final Configuration configuration)
-            throws MacAddressNotValidException {
-        String bulbMacAddress = String.valueOf(configuration.get(CONFIG_MAC_ADDRESS));
-
-        if (ValidationUtils.isMacNotValid(bulbMacAddress)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.UNINITIALIZED.NONE);
-            throw new MacAddressNotValidException("The given MAC address is not valid: {}", bulbMacAddress);
+    private void registerWithBulb() {
+        logger.trace("Registering for updates with bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
+        WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
+                this.registrationInfo);
+        if (registrationResponse != null) {
+            if (registrationResponse.getResultSuccess()) {
+                updateTimestamps();
+            } else {
+                logger.debug(
+                        "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information.",
+                        config.bulbIpAddress, config.bulbMacAddress);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         } else {
-            this.bulbMacAddress = bulbMacAddress.replaceAll(":", "").toUpperCase();
-            logger.info("Bulb Mac Address set to '{}'", bulbMacAddress);
+            logger.debug("No response to registration request from bulb at {} - {}", config.bulbIpAddress,
+                    config.bulbMacAddress);
+            // Not calling it "gone" because it's probably just been powered off and will be
+            // back any time
+            updateStatus(ThingStatus.OFFLINE);
         }
-    }
-
-    /**
-     * Save the current runtime configuration of the handler in configuration
-     * mechanism.
-     */
-    private void saveConfigurationsUsingCurrentStates() {
-        Map<String, Object> map = new HashMap<>();
-        map.put(CONFIG_MAC_ADDRESS, this.bulbMacAddress);
-        map.put(CONFIG_IP_ADDRESS, this.bulbIpAddress);
-        map.put(CONFIG_UPDATE_INTERVAL, this.updateInterval);
-
-        Configuration newConfiguration = new Configuration(map);
-        super.updateConfiguration(newConfiguration);
     }
 
     // SETTERS AND GETTERS
     public String getBulbIpAddress() {
-        return bulbIpAddress;
+        return config.bulbIpAddress;
     }
 
     public String getBulbMacAddress() {
-        return bulbMacAddress;
+        return config.bulbMacAddress;
     }
 
     public int getHomeId() {

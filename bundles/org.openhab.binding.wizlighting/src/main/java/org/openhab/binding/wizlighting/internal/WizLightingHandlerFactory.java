@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.osgi.service.component.ComponentContext;
@@ -86,22 +85,18 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
             WizLightingHandler handler;
 
             logger.debug("Creating a new WizLightingHandler...");
-            try {
-                handler = new WizLightingHandler(thing);
-                logger.debug("WizLightingMediator will register the handler.");
+            handler = new WizLightingHandler(thing, this.mediator.getRegistrationParams());
+            logger.debug("WizLightingMediator will register the handler.");
 
-                WizLightingMediator mediator = this.mediator;
-                if (mediator != null) {
-                    mediator.registerThingAndWizBulbHandler(thing, handler);
-                } else {
-                    logger.error(
-                            "The mediator is missing on Handler factory. Without one mediator the handler cannot work!");
-                    return null;
-                }
-                return handler;
-            } catch (MacAddressNotValidException e) {
-                logger.debug("The mac address passed by configurations is not valid.");
+            WizLightingMediator mediator = this.mediator;
+            if (mediator != null) {
+                mediator.registerThingAndWizBulbHandler(thing, handler);
+            } else {
+                logger.error(
+                        "The mediator is missing on Handler factory. Without one mediator the handler cannot work!");
+                return null;
             }
+            return handler;
         } else {
             logger.info("Thing type {} not supported.", thingTypeUID);
         }
