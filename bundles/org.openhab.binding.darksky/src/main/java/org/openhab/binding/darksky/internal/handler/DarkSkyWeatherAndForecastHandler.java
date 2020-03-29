@@ -716,10 +716,10 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
-            updateState(channelUID, state);
         } else {
             logger.debug("No data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
         }
+        updateState(channelUID, state);
     }
 
     private State getDateTimeTypeState(int value) {
