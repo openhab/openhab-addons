@@ -691,9 +691,10 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
     private void updateAlertsChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (weatherData != null && weatherData.getAlerts() != null && weatherData.getAlerts().size() > count) {
-            AlertsData alertsData = weatherData.getAlerts().get(count - 1);
-            State state = UnDefType.UNDEF;
+        List<AlertsData> alerts = weatherData != null ? weatherData.getAlerts() : null;
+        State state = UnDefType.UNDEF;
+        if (alerts != null && alerts.size() > count) {
+            AlertsData alertsData = alerts.get(count - 1);
             switch (channelId) {
                 case CHANNEL_ALERT_TITLE:
                     state = getStringTypeState(alertsData.title);
@@ -715,10 +716,10 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
-            updateState(channelUID, state);
         } else {
             logger.debug("No data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
         }
+        updateState(channelUID, state);
     }
 
     private State getDateTimeTypeState(int value) {
