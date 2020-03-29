@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchEvent.Kind;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,13 +59,12 @@ public class ExecTransformationWhitelistWatchService extends AbstractWatchServic
     }
 
     @Override
-    protected WatchEvent.Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
-        return new WatchEvent.Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
+    protected Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
+        return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
     }
 
     @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
-            @Nullable Path path) {
+    protected void processWatchEvent(@Nullable WatchEvent<?> event, @Nullable Kind<?> kind, @Nullable Path path) {
         if (path != null && path.endsWith(COMMAND_WHITELIST_FILE)) {
             commandWhitelist.clear();
             try {

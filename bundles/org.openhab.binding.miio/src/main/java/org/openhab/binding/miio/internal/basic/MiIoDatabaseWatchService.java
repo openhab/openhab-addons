@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,13 +82,12 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     }
 
     @Override
-    protected WatchEvent.Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
-        return new WatchEvent.Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
+    protected Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
+        return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
     }
 
     @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
-            @Nullable Path path) {
+    protected void processWatchEvent(@Nullable WatchEvent<?> event, @Nullable Kind<?> kind, @Nullable Path path) {
         if (path != null) {
             final Path p = path.getFileName();
             if (p != null && p.toString().endsWith(DATABASE_FILES)) {
