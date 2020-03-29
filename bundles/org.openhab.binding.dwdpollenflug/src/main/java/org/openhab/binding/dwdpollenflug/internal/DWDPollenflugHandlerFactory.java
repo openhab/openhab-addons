@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHandler;
+import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugRegionHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -64,6 +65,8 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new DWDPollenflugBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
+        } else if (THING_TYPE_REGION.equals(thingTypeUID)) {
+            return new DWDPollenflugRegionHandler(thing);
         }
 
         return null;

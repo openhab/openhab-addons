@@ -13,10 +13,10 @@
 package org.openhab.binding.dwdpollenflug.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHandler;
+import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugRegionHandler;
 
 /**
- * Configuration for the {@link DWDPollenflugBridgeHandler}
+ * Configuration for the {@link DWDPollenflugRegionHandler}
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */

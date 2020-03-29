@@ -54,7 +54,7 @@
 		</properties>
 		
 		<config-description>
-			<parameter name="regionId" type="integer" required="true">
+			<parameter name="regionID" type="integer" required="true">
 				<label>Region</label>
 				<description>The region that should be reported.</description>
 				<options>

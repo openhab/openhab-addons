@@ -101,9 +101,8 @@ public class DWDPollenflugPolling implements Runnable {
                     f.completeExceptionally(new DWDPollingException(getContentAsString()));
                 } else {
                     try {
-                        DWDPollenflugJSON pollenflugindex = gson.fromJson(getContentAsString(),
-                                DWDPollenflugJSON.class);
-                        f.complete(pollenflugindex);
+                        DWDPollenflugJSON pollenflugJSON = gson.fromJson(getContentAsString(), DWDPollenflugJSON.class);
+                        f.complete(new DWDPollenflug(pollenflugJSON));
                     } catch (JsonSyntaxException ex2) {
                         f.completeExceptionally(new DWDPollingException("Parsing of response failed"));
                     }

@@ -15,10 +15,14 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
+@NonNullByDefault
 public class DWDPollenflug {
 
     private final Map<Integer, DWDRegion> regions = new HashMap<>();
@@ -28,5 +32,9 @@ public class DWDPollenflug {
             DWDRegion region = new DWDRegion(regionJSON);
             regions.put(region.getRegionID(), region);
         }
+    }
+
+    public @Nullable DWDRegion getRegion(int regionID) {
+        return regions.get(regionID);
     }
 }
