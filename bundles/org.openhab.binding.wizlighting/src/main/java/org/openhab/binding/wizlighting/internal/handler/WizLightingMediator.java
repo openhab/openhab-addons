@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
+import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 
 /**
@@ -36,6 +37,13 @@ public interface WizLightingMediator {
      * @param receivedMessage the {@link WizLightingResponse} message.
      */
     void processReceivedPacket(final WizLightingResponse receivedMessage);
+
+    /**
+     * Returns a {@link RegistrationRequestParam} based on the current OpenHAB
+     * connection.
+     *
+     */
+    RegistrationRequestParam getRegistrationParams();
 
     /**
      * Registers a new {@link Thing} and the corresponding
