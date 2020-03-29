@@ -49,16 +49,20 @@ For the location parameter, the following syntax is allowed (comma separated lat
 
 The OpenUV Report thing that is retrieved has these channels:
 
-| Channel ID   | Item Type           | Description                                    |
-|--------------|---------------------|------------------------------------------------|
-| UVIndex      | Number              | UV Index                                       |
-| UVColor      | Color               | Color associated to given UV Index.            |
-| UVMax        | Number              | Max UV Index for the day (at solar noon)       |
-| UVMaxTime    | DateTime            | Max UV Index datetime (solar noon)             |
-| Ozone        | Number:ArealDensity | Ozone level in du (Dobson Units) from OMI data |
-| OzoneTime    | DateTime            | Latest OMI ozone update datetime               |
-| UVTime       | DateTime            | UV Index datetime                              |
-| SafeExposure | Number:Time         | Safe exposure time for Fitzpatrick Skin Types  |
+| Channel ID   | Item Type           | Description                                     |
+|--------------|---------------------|-------------------------------------------------|
+| UVIndex      | Number              | UV Index                                        |
+| UVColor      | Color               | Color associated to given UV Index.             |
+| UVMax        | Number              | Max UV Index for the day (at solar noon)        |
+| UVMaxTime    | DateTime            | Max UV Index datetime (solar noon)              |
+| Ozone        | Number:ArealDensity | Ozone level in du (Dobson Units) from OMI data  |
+| OzoneTime    | DateTime            | Latest OMI ozone update datetime                |
+| UVTime       | DateTime            | UV Index datetime                               |
+| SafeExposure | Number:Time         | Safe exposure time for Fitzpatrick Skin Types.  |
+| elevation    | Number:Angle        | Current Sun elevation.                          |
+
+The elevation channel will be used as an input in order to limit API queries to OpenUV. If not used, 
+the binding will not consider it. When value is provided queries will only be issued if the elevation is > 0°.
 
 ## Examples
 
@@ -82,8 +86,17 @@ Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
 demo.items:
 
 ```xtend
-Number 			UVIndex	"UV Index"	{ channel = "openuv:uvreport:local:city1:UVIndex" }
-Number 			UVMax	"UV Max"	{ channel = "openuv:uvreport:local:city1:UVMaxEvent" }
-Number:ArealDensity 	Ozone	"Ozone"		{ channel = "openuv:uvreport:local:city1:Ozone" }
+Number              UVIndex   "UV Index"  {channel="openuv:uvreport:local:city1:UVIndex" }
+Number              UVMax     "UV Max"    {channel="openuv:uvreport:local:city1:UVMaxEvent" }
+Number:ArealDensity Ozone     "Ozone"     {channel="openuv:uvreport:local:city1:Ozone" }
+```
+
+astro.items:
+
+```xtend
+
+Number:Angle        Elevation "Elevation" {channel="astro:sun:home:position#elevation",
+                                           channel="openuv:uvreport:local:city1:elevation" [profile="follow"] }
+
 ```
 
