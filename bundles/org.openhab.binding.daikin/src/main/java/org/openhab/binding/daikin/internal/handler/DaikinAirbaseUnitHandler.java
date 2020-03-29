@@ -49,6 +49,7 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeatu
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
+import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
@@ -97,6 +98,16 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
             updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
+
+            if (!controlInfo.power) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.getValue()));
+            } else if (controlInfo.mode == AirbaseMode.COLD) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.getValue()));
+            } else if (controlInfo.mode == AirbaseMode.HEAT) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.getValue()));
+            } else if (controlInfo.mode == AirbaseMode.AUTO) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
+            }
         }
 
         SensorInfo sensorInfo = webTargets.getAirbaseSensorInfo();
