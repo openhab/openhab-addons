@@ -65,6 +65,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     @Override
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
-    public abstract void processUpdate(JsonElement state);
+    public abstract void processUpdate(String id, JsonElement state);
 
 }

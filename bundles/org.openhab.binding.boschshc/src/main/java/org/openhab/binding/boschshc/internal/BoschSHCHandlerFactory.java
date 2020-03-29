@@ -56,29 +56,28 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
 
-        logger.warn("Thing createHandler for thing: {} - 2.5.1", thing.getLabel());
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        logger.warn("Thing createHandler for thing: {} - {}", thing.getLabel(), thingTypeUID);
+
+        // XXX Make the names in here consistent - remove the stupid Bosch prefixes.
 
         if (THING_TYPE_SHC.equals(thingTypeUID)) {
-
-            bridge = new BoschSHCBridgeHandler((Bridge) thing);
-            return bridge;
+            return new BoschSHCBridgeHandler((Bridge) thing);
         }
 
         else if (THING_TYPE_INWALL_SWITCH.equals(thingTypeUID)) {
-            BoschInWallSwitchHandler handler = new BoschInWallSwitchHandler(thing);
-            return handler;
+            return new BoschInWallSwitchHandler(thing);
         }
 
         else if (THING_TYPE_TWINGUARD.equals(thingTypeUID)) {
+            return new BoschTwinguardHandler(thing);
+        }
 
-            BoschTwinguardHandler handler = new BoschTwinguardHandler(thing);
-            return handler;
+        else if (THING_TYPE_WINDOW_CONTACT.equals(thingTypeUID)) {
+            return new WindowContactHandler(thing);
         }
 
         else {
-
             logger.warn("Failed to find handler for device: {}", thingTypeUID);
         }
 

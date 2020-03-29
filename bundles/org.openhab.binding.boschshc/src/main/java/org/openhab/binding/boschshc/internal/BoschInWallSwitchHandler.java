@@ -1,7 +1,8 @@
 package org.openhab.binding.boschshc.internal;
 
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_POWER_SWITCH;
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -69,18 +70,32 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void processUpdate(JsonElement state) {
-        logger.warn("in-wall switch: received update: {}", state);
+    public void processUpdate(String id, JsonElement state) {
+        logger.warn("in-wall switch: received update: ID {} state {}", id, state);
 
         Gson gson = new Gson();
 
         try {
-            PowerSwitchState parsed = gson.fromJson(state, PowerSwitchState.class);
 
-            // Update power switch
-            logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed.switchState);
-            State powerState = OnOffType.from(parsed.switchState);
-            updateState(CHANNEL_POWER_SWITCH, powerState);
+            if (id.equals("PowerMeter")) {
+
+                PowerMeterState parsed = gson.fromJson(state, PowerMeterState.class);
+
+                logger.warn("Parsed power meter state of {}: energy {} - power {}", this.getBoschID(),
+                        parsed.energyConsumption, parsed.energyConsumption);
+
+                updateState(CHANNEL_POWER_CONSUMPTION, new DecimalType(parsed.powerConsumption));
+                updateState(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(parsed.energyConsumption));
+
+            } else {
+
+                PowerSwitchState parsed = gson.fromJson(state, PowerSwitchState.class);
+
+                // Update power switch
+                logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed.switchState);
+                State powerState = OnOffType.from(parsed.switchState);
+                updateState(CHANNEL_POWER_SWITCH, powerState);
+            }
 
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in in-wall switch: {}", state);

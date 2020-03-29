@@ -12,19 +12,17 @@
  */
 package org.openhab.binding.boschshc.internal;
 
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_CONTACT;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,18 +31,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link BoschSHCHandler} is responsible for handling commands for the TwinGuard handler.
+ * The {@link BoschSHCHandler} is responsible for handling Bosch window/door contacts.
  *
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class BoschTwinguardHandler extends BoschSHCHandler {
+public class WindowContactHandler extends BoschSHCHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
-    public BoschTwinguardHandler(Thing thing) {
+    public WindowContactHandler(Thing thing) {
         super(thing);
-        logger.warn("Creating Twinguard: {}", thing.getLabel());
+        logger.warn("Creating window contact handler: {}", thing.getLabel());
     }
 
     @Override
@@ -60,15 +58,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
 
             if (bridgeHandler != null) {
 
-                if (CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
-                    if (command instanceof RefreshType) {
-
-                        // Refresh the temperature from the Bosch Twinguard device.
-                        // Might not be necessary, can just wait until we get one
-                        logger.warn("Refreshing the temperature is not yet supported.");
-                    }
-                    // Otherwise: not action supported here.
-                }
+                // XXX - Add refresh command.
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge or config is NUL");
@@ -76,24 +66,19 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void processUpdate(String id, @NonNull JsonElement state) {
+    public void processUpdate(String id, JsonElement state) {
         logger.warn("Twinguard: received update: {} {}", id, state);
 
         Gson gson = new Gson();
 
         try {
-            TwinguardState parsed = gson.fromJson(state, TwinguardState.class);
+            ShutterContactState parsed = gson.fromJson(state, ShutterContactState.class);
 
-            logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed);
+            State contact = parsed.value.equals("CLOSED") ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            updateState(CHANNEL_CONTACT, contact);
 
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(parsed.temperature));
-            updateState(CHANNEL_TEMPERATURE_RATING, new StringType(parsed.temperatureRating));
-            updateState(CHANNEL_HUMIDITY, new DecimalType(parsed.humidity));
-            updateState(CHANNEL_HUMIDITY_RATING, new StringType(parsed.humidityRating));
-            updateState(CHANNEL_PURITY, new DecimalType(parsed.purity));
-            updateState(CHANNEL_AIR_DESCRIPTION, new StringType(parsed.description));
-            updateState(CHANNEL_PURITY_RATING, new StringType(parsed.purityRating));
-            updateState(CHANNEL_COMBINED_RATING, new StringType(parsed.combinedRating));
+            // Update power switch
+            logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed.value);
 
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in in-wall switch: {}", state);

@@ -31,8 +31,21 @@ public class BoschSHCBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_INWALL_SWITCH = new ThingTypeUID(BINDING_ID, "in-wall-switch");
     public static final ThingTypeUID THING_TYPE_TWINGUARD = new ThingTypeUID(BINDING_ID, "twinguard");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT = new ThingTypeUID(BINDING_ID, "window-contact");
 
-    // List of all Channel ids
+    // List of all Channel IDs
+    // Auto-generated from thing-types.xml via script, don't modify
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_TEMPERATURE_RATING = "temperature-rating";
+    public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_HUMIDITY_RATING = "humidity-rating";
+    public static final String CHANNEL_ENERGY_CONSUMPTION = "energy-consumption";
+    public static final String CHANNEL_POWER_CONSUMPTION = "power-consumption";
+    public static final String CHANNEL_PURITY = "purity";
+    public static final String CHANNEL_AIR_DESCRIPTION = "air-description";
+    public static final String CHANNEL_PURITY_RATING = "purity-rating";
+    public static final String CHANNEL_COMBINED_RATING = "combined-rating";
+    public static final String CHANNEL_CONTACT = "contact";
+
 }
