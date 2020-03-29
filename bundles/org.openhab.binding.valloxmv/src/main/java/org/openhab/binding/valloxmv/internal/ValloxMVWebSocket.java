@@ -477,7 +477,7 @@ public class ValloxMVWebSocket {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_ATHOME);
                 }
 
-                OnOffType ooOnOff = (bytes[217] == 5) ? OnOffType.OFF : OnOffType.ON;
+                OnOffType ooOnOff = OnOffType.from(bytes[217] != 5);
 
                 // Update channels with read values
                 updateChannel(ValloxMVBindingConstants.CHANNEL_ONOFF, ooOnOff);

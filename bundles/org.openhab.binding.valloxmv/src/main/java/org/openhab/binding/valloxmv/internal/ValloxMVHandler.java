@@ -54,7 +54,6 @@ public class ValloxMVHandler extends BaseThingHandler {
      * Refresh interval in seconds.
      */
     private int readDataInterval;
-    private long nextReadDataTime;
 
     /**
      * IP of vallox ventilation unit web interface.
@@ -71,12 +70,16 @@ public class ValloxMVHandler extends BaseThingHandler {
             return;
         }
         if (command instanceof RefreshType) {
-            if (nextReadDataTime > System.currentTimeMillis() + 5000) {
-                // Next read is more than 5 seconds away, re-schedule
-                // Cancel read data job
-                cancelReadDataJob();
-                // Schedule read data job with 2 seconds initial delay
-                scheduleReadDataJob(2);
+            // We don't have Vallox device values in memory - we cannot update channel with value
+            // We can re-schedule readDataJob in case next read is more than 5 seconds away
+            if (readDataJob != null) {
+                if ((!readDataJob.isDone()) && (readDataJob.getDelay(TimeUnit.MILLISECONDS) > 5000)) {
+                    // Next read is more than 5 seconds away, re-schedule
+                    // Cancel read data job
+                    cancelReadDataJob();
+                    // Schedule read data job with 2 seconds initial delay
+                    scheduleReadDataJob(2);
+                }
             }
         } else {
             String strUpdateValue = "";
@@ -123,18 +126,19 @@ public class ValloxMVHandler extends BaseThingHandler {
                 return;
             }
             if (strUpdateValue != "") {
-                long timeToRead = nextReadDataTime - System.currentTimeMillis();
-                // Avoid canceling job several times in case of subsequent data writes
-                if ((timeToRead > 0) && ((timeToRead < 2000) || (timeToRead > 5000))) {
-                    // Next read is not within the next 2 to 5 seconds, cancel read data job
-                    cancelReadDataJob();
+                if (readDataJob != null) {
+                    // Re-schedule readDataJob to read device values after data write
+                    // Avoid re-scheduling job several times in case of subsequent data writes
+                    long timeToRead = readDataJob.getDelay(TimeUnit.MILLISECONDS);
+                    if ((!readDataJob.isDone()) && ((timeToRead < 2000) || (timeToRead > 5000))) {
+                        // Next read is not within the next 2 to 5 seconds, cancel read data job
+                        cancelReadDataJob();
+                        // Schedule read data job with 5 seconds initial delay
+                        scheduleReadDataJob(5);
+                    }
                 }
                 // Send command and process response
                 valloxSocket.request(channelUID, strUpdateValue);
-                if (nextReadDataTime == 0) {
-                    // Schedule read data job with 5 seconds initial delay
-                    scheduleReadDataJob(5);
-                }
             }
         }
     }
@@ -149,7 +153,7 @@ public class ValloxMVHandler extends BaseThingHandler {
         valloxSocket = new ValloxMVWebSocket(webSocketClient, ValloxMVHandler.this, ip);
 
         logger.debug("Vallox MV IP address : {}", ip);
-
+        // Schedule read data job with 2 seconds initial delay
         scheduleReadDataJob(2);
 
         logger.debug("Thing {} initialized", getThing().getUID());
@@ -162,12 +166,10 @@ public class ValloxMVHandler extends BaseThingHandler {
         if (readDataInterval < 15) readDataInterval = 60;
 
         logger.debug("Data table request interval {} seconds, Request in {} seconds", readDataInterval, initialDelay);
-        nextReadDataTime = System.currentTimeMillis() + (1000 * initialDelay);
 
         readDataJob = scheduler.scheduleWithFixedDelay(() -> {
             // Read all device values
             valloxSocket.request(null, null);
-            nextReadDataTime = System.currentTimeMillis() + (1000 * readDataInterval);
         }, initialDelay, readDataInterval, TimeUnit.SECONDS);
     }
 
@@ -175,7 +177,6 @@ public class ValloxMVHandler extends BaseThingHandler {
         if (readDataJob != null) {
             if (!readDataJob.isDone()) {
                 readDataJob.cancel(true);
-                nextReadDataTime = 0;
                 logger.debug("Scheduled data table requests cancelled");
             }    
         }
