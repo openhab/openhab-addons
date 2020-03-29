@@ -10,16 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdpollenflug.internal;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import com.google.gson.Gson;
+package org.openhab.binding.dwdpollenflug.internal.handler;
 
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
+
+import com.google.gson.Gson;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponse;
@@ -27,32 +28,63 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugindex;
-import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
+import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DWDPollenflugBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link DWDPollenflugPolling} polls data from DWD
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 @NonNullByDefault
-public class DWDDataAccess {
+public class DWDPollenflugPolling implements Runnable {
     private static final String DWD_URL = "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json";
 
+    private final Logger logger = LoggerFactory.getLogger(DWDPollenflugPolling.class);
+
+    private final DWDPollenflugBridgeHandler bridgeHandler;
+
     private final HttpClient client;
+
     private final Gson gson;
 
-    public DWDDataAccess(HttpClient client) {
+    private ReentrantLock pollingLock = new ReentrantLock();
+
+    public DWDPollenflugPolling(DWDPollenflugBridgeHandler bridgeHandler, HttpClient client) {
+        this.bridgeHandler = bridgeHandler;
         this.client = client;
         this.gson = new Gson();
     }
 
-    public CompletableFuture<DWDRegion> refresh(int regionID) {
-        final CompletableFuture<DWDRegion> f = new CompletableFuture<>();
+    @Override
+    public void run() {
+        pollingLock.lock();
+        logger.debug("Polling.");
+        requestRefresh().handle((pollenflugindex, e) -> {
+            if (pollenflugindex == null) {
+                if (e == null) {
+                    bridgeHandler.onBridgeCommunicationError();
+                } else {
+                    bridgeHandler.onBridgeCommunicationError((DWDPollingException) e);
+                }
+            } else {
+                bridgeHandler.onBridgeOnline();
+                bridgeHandler.notifyRegionListeners(pollenflugindex);
+            }
+
+            pollingLock.unlock();
+            return null;
+        });
+    }
+
+    private CompletableFuture<DWDPollenflugindex> requestRefresh() {
+        CompletableFuture<DWDPollenflugindex> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(DWD_URL));
 
-        request.method(HttpMethod.GET).timeout(2000, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
+        request.method(HttpMethod.GET).timeout(2000, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
             @Override
             public void onComplete(Result result) {
@@ -60,19 +92,19 @@ public class DWDDataAccess {
                 if (result.getFailure() != null) {
                     Throwable e = result.getFailure();
                     if (e instanceof SocketTimeoutException || e instanceof TimeoutException) {
-                        f.completeExceptionally(new DWDDataException("Request timeout", e));
+                        f.completeExceptionally(new DWDPollingException("Request timeout", e));
                     } else {
-                        f.completeExceptionally(new DWDDataException("Request failed", e));
+                        f.completeExceptionally(new DWDPollingException("Request failed", e));
                     }
                 } else if (response.getStatus() != 200) {
-                    f.completeExceptionally(new DWDDataException(getContentAsString()));
+                    f.completeExceptionally(new DWDPollingException(getContentAsString()));
                 } else {
                     DWDPollenflugindex pollenflugindex = gson.fromJson(getContentAsString(), DWDPollenflugindex.class);
                     if (pollenflugindex == null) {
-                        f.completeExceptionally(new DWDDataException("Parsing failed"));
+                        f.completeExceptionally(new DWDPollingException("Parsing failed"));
                     } else {
                         pollenflugindex.init();
-                        f.complete(pollenflugindex.getRegion(regionID));
+                        f.complete(pollenflugindex);
                     }
                 }
             }

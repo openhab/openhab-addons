@@ -13,34 +13,22 @@
 package org.openhab.binding.dwdpollenflug.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHandler;
 
 /**
- * The {@link DWDPollenflugConfiguration} class contains fields mapping thing configuration parameters.
+ * Configuration for the {@link DWDPollenflugBridgeHandler}
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 @NonNullByDefault
-public class DWDPollenflugConfiguration {
-    private int regionId;
+public class DWDPollenflugBridgeConfiguration {
     private int refresh;
-
-    public int getRegionId() {
-        return regionId;
-    }
 
     public int getRefresh() {
         return refresh;
     }
 
-    public boolean isRegion() {
-        return regionId % 10 == 0;
-    }
-
-    public boolean isPartregion() {
-        return !isRegion();
-    }
-
     public boolean isValid() {
-        return regionId > 0 && refresh >= 1;
+        return refresh >= 15;
     }
 }

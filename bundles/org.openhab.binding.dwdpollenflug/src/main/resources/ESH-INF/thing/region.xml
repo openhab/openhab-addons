@@ -5,7 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="region">
-		<label>DWD Pollen count index</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		
+		<label>DWD Pollen count index - Region</label>
 		<description>Pollen count index for a region or partregion</description>
 				
 		<channel-groups>
@@ -83,11 +87,6 @@
 					<option value="123">Bayern n. der Donau, o. Bayr. Wald, o. Mainfranken</option>
 					<option value="124">Mainfranken</option>
 				</options>
-			</parameter>
-			<parameter name="refresh" type="integer" unit="min" min="15">
-				<default>30</default>
-				<label>Refresh in Minutes</label>
-				<description>Time between to API requests in minutes. Minimum 15 minutes.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
