@@ -15,6 +15,7 @@ package org.openhab.binding.dwdpollenflug.internal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,23 +29,19 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DWDPollenflugBindingConstants {
 
-    public static final int INITIAL_DELAY = 1;
-    public static final int SECONDS_PER_MINUTE = 60;
+    public static final long INITIAL_DELAY = TimeUnit.SECONDS.toSeconds(1);
+
+    public static final long SECONDS_PER_MINUTE = 60;
 
     private static final String BINDING_ID = "dwdpollenflug";
+
+    // bridge
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_REGION = new ThingTypeUID(BINDING_ID, "region");
 
-    public static final String PROPERTY_REGION_ID = "region_id";
-    public static final String PROPERTY_REGION_NAME = "region_name";
-    public static final String PROPERTY_PARTREGION_ID = "partregion_id";
-    public static final String PROPERTY_PARTREGION_NAME = "partregion_name";
-
-    public static final String CHANNEL_TODAY = "today";
-    public static final String CHANNEL_TOMORROW = "tomorrow";
-    public static final String CHANNEL_DAYAFTER_TO = "dayafter_to";
-
+    // Region channels Mapping
     public static final Map<String, String> CHANNELS_POLLEN_MAP = initChannelMap();
 
     private static Map<String, String> initChannelMap() {
@@ -59,4 +56,21 @@ public class DWDPollenflugBindingConstants {
         map.put("Roggen", "rye");
         return Collections.unmodifiableMap(map);
     }
+
+    // Channels of Pollen groups
+    public static final String CHANNEL_TODAY = "today";
+    public static final String CHANNEL_TOMORROW = "tomorrow";
+    public static final String CHANNEL_DAYAFTER_TO = "dayafter_to";
+
+    // Bridge config properties
+    public static final String REFRESH = "refresh";
+
+    // Region config properties
+    public static final String REGION_ID = "regionID";
+
+    // Region properties
+    public static final String PROPERTY_REGION_ID = "region_id";
+    public static final String PROPERTY_REGION_NAME = "region_name";
+    public static final String PROPERTY_PARTREGION_ID = "partregion_id";
+    public static final String PROPERTY_PARTREGION_NAME = "partregion_name";
 }

@@ -16,18 +16,21 @@ import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingCon
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugHandler;
+import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,7 +45,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.dwdpollenflug", service = ThingHandlerFactory.class)
 public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_REGION);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_BRIDGE, THING_TYPE_REGION).collect(Collectors.toSet()));
 
     private final HttpClientFactory httpClientFactory;
 
@@ -60,8 +64,8 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_REGION.equals(thingTypeUID)) {
-            return new DWDPollenflugHandler(thing, httpClientFactory.getCommonHttpClient());
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+            return new DWDPollenflugBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
         }
 
         return null;
