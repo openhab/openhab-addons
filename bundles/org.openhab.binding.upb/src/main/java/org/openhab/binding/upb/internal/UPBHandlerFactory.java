@@ -15,7 +15,6 @@ package org.openhab.binding.upb.internal;
 import java.math.BigDecimal;
 import java.util.Dictionary;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -30,6 +29,7 @@ import org.openhab.binding.upb.handler.SerialPIMHandler;
 import org.openhab.binding.upb.handler.UPBThingHandler;
 import org.openhab.binding.upb.handler.VirtualThingHandler;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -44,11 +44,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UPBHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(UPBHandlerFactory.class);
+    private final SerialPortManager serialPortManager;
 
-    @Nullable
-    private SerialPortManager serialPortManager;
-    @Nullable
-    private Byte networkId;
+    private @Nullable Byte networkId;
+
+    @Activate
+    public UPBHandlerFactory(@Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     protected void activate(final ComponentContext componentContext) {
@@ -75,20 +78,11 @@ public class UPBHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(Constants.PIM_UID)) {
             assert serialPortManager != null;
-            return new SerialPIMHandler((Bridge) thing, (@NonNull SerialPortManager) serialPortManager);
+            return new SerialPIMHandler((Bridge) thing, serialPortManager);
         } else if (thingTypeUID.equals(Constants.VIRTUAL_DEVICE_UID)) {
             return new VirtualThingHandler(thing, networkId);
         } else {
             return new UPBThingHandler(thing, networkId);
         }
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }

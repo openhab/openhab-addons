@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.NamedThreadFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
@@ -50,18 +51,18 @@ import org.slf4j.LoggerFactory;
 public class SerialIoThread extends Thread implements SerialPortEventListener {
     private static final int WRITE_QUEUE_LENGTH = 128;
     private static final int ACK_TIMEOUT_MS = 500;
+    private static final byte[] ENABLE_MESSAGE_MODE_CMD = { 0x17, 0x70, 0x02, (byte) 0x8e, 0x0d };
 
     private final Logger logger = LoggerFactory.getLogger(SerialIoThread.class);
-    private final byte[] ENABLE_MESSAGE_MODE_CMD = { 0x17, 0x70, 0x02, (byte) 0x8e, 0x0d };
     private final byte[] buffer = new byte[512];
     private final MessageListener listener;
+    // Single-threaded executor for writes that serves to serialize writes.
     private final ExecutorService writeExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH));
+            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial", true));
+    private final SerialPort serialPort;
 
     private int bufferLength = 0;
-    @Nullable
-    private volatile WriteRunnable currentWrite;
-    private volatile SerialPort serialPort;
+    private volatile @Nullable WriteRunnable currentWrite;
     private volatile boolean done;
 
     public SerialIoThread(final SerialPort serialPort, final MessageListener listener) {
@@ -123,7 +124,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
         interpretBuffer();
     }
 
-    private int findMessageLength(final byte[] buffer, final int bufferLength) {
+    private int findMessageLength(final byte[] buffer) {
         for (int i = 0; i < bufferLength; i++) {
             if (buffer[i] == 13) {
                 return i;
@@ -136,7 +137,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
      * Attempts to interpret any messages that may be contained in the buffer.
      */
     private void interpretBuffer() {
-        int messageLength = findMessageLength(buffer, bufferLength);
+        int messageLength = findMessageLength(buffer);
 
         while (messageLength != -1) {
             final String message = new String(Arrays.copyOfRange(buffer, 0, messageLength), US_ASCII);
@@ -148,20 +149,21 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
             }
             bufferLength = remainingBuffer;
             handleMessage(UPBMessage.fromString(message));
-            messageLength = findMessageLength(buffer, bufferLength);
+            messageLength = findMessageLength(buffer);
         }
     }
 
     private void handleMessage(final UPBMessage msg) {
+        final WriteRunnable writeRunnable = currentWrite;
         switch (msg.getType()) {
             case ACK:
-                if (currentWrite != null) {
-                    currentWrite.ackReceived(true);
+                if (writeRunnable != null) {
+                    writeRunnable.ackReceived(true);
                 }
                 break;
             case NAK:
-                if (currentWrite != null) {
-                    currentWrite.ackReceived(false);
+                if (writeRunnable != null) {
+                    writeRunnable.ackReceived(false);
                 }
                 break;
             case ACCEPT:
@@ -225,11 +227,9 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
 
         private final String msg;
         private final CompletableFuture<CmdStatus> completion;
+        private final CountDownLatch ackLatch = new CountDownLatch(1);
 
-        @Nullable
-        private Boolean ack;
-        @Nullable
-        private volatile CountDownLatch ackLatch;
+        private @Nullable Boolean ack;
 
         public WriteRunnable(final String msg, final CompletableFuture<CmdStatus> completion) {
             this.msg = msg;
@@ -256,7 +256,6 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
                 logger.debug("Writing bytes: {}", msg);
                 final OutputStream out = serialPort.getOutputStream();
                 for (int tries = 0; tries < MAX_RETRIES && ack == null; tries++) {
-                    ackLatch = new CountDownLatch(1);
                     out.write(0x14);
                     out.write(msg.getBytes(US_ASCII));
                     out.write(0x0d);

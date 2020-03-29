@@ -56,6 +56,7 @@ public class VirtualThingHandler extends UPBThingHandler {
         }
 
         if (cmd == RefreshType.REFRESH) {
+            // there is no way to read the currently active scene
             return;
         } else if (!(cmd instanceof DecimalType)) {
             logger.info("channel {}: unsupported cmd {}", channelUID, cmd);

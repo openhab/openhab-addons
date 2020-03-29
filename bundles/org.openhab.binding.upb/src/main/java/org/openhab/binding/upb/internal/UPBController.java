@@ -101,6 +101,6 @@ public class UPBController {
 
     // forms a device lookup key from a network and unit ID
     private static int mkAddr(final byte networkId, final byte srcId) {
-        return networkId << 8 | srcId;
+        return (networkId & 0xff) << 8 | (srcId & 0xff);
     }
 }

@@ -13,7 +13,6 @@
 package org.openhab.binding.upb.internal.message;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,40 +35,57 @@ public class UPBMessage {
      *
      */
     public enum Type {
-        ACCEPT,
-        BUSY,
-        ERROR,
-        ACK,
-        NAK,
-        MESSAGE_REPORT,
-        NONE;
+        ACCEPT("PA"),
+        BUSY("PB"),
+        ERROR("PE"),
+        ACK("PK"),
+        NAK("PN"),
+        MESSAGE_REPORT("PU"),
+        NONE("");
+
+        private final String prefix;
+
+        Type(final String prefix) {
+            this.prefix = prefix;
+        }
+
+        /**
+         * @return the message prefix string for this type
+         */
+        public String prefix() {
+            return prefix;
+        }
+
+        /**
+         * Returns the message type for a protocol string prefix.
+         *
+         * @param value the prefix string
+         * @return the message type for the given string
+         */
+        public static Type forPrefix(final String value) {
+            for (final Type t : values()) {
+                if (t.prefix().equals(value)) {
+                    return t;
+                }
+            }
+            return NONE;
+        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UPBMessage.class);
 
-    static HashMap<Integer, Command> commandMap = new HashMap<>();
+    private final Type type;
 
-    static {
-        commandMap.put(0x20, Command.ACTIVATE);
-        commandMap.put(0x21, Command.DEACTIVATE);
-        commandMap.put(0x22, Command.GOTO);
-        commandMap.put(0x23, Command.START_FADE);
-        commandMap.put(0x24, Command.STOP_FADE);
-        commandMap.put(0x25, Command.BLINK);
-        commandMap.put(0x30, Command.REPORT_STATE);
-        commandMap.put(0x31, Command.STORE_STATE);
-        commandMap.put(0x86, Command.DEVICE_STATE);
-    }
+    private ControlWord controlWord = new ControlWord();
+    private byte network;
+    private byte destination;
+    private byte source;
 
-    private static HashMap<String, Type> typeMap = new HashMap<>();
+    private Command command = Command.NONE;
+    private byte @Nullable [] arguments;
 
-    static {
-        typeMap.put("PA", Type.ACCEPT);
-        typeMap.put("PB", Type.BUSY);
-        typeMap.put("PE", Type.ERROR);
-        typeMap.put("PK", Type.ACK);
-        typeMap.put("PN", Type.NAK);
-        typeMap.put("PU", Type.MESSAGE_REPORT);
+    private UPBMessage(final Type type) {
+        this.type = type;
     }
 
     /**
@@ -80,68 +96,37 @@ public class UPBMessage {
      * @return a new UPBMessage.
      */
     public static UPBMessage fromString(String commandString) {
-        UPBMessage command = new UPBMessage();
-
-        String typeString = commandString.substring(0, 2);
-        Type type = Type.NONE;
-
-        if (typeMap.containsKey(typeString)) {
-            type = typeMap.get(typeString);
-        }
-
-        command.setType(type);
+        final String prefix = commandString.substring(0, 2);
+        final UPBMessage msg = new UPBMessage(Type.forPrefix(prefix));
 
         try {
             if (commandString.length() > 2) {
                 byte[] data = HexUtils.hexToBytes(commandString.substring(2));
-                command.getControlWord().setBytes(data[1], data[0]);
+                msg.getControlWord().setBytes(data[1], data[0]);
                 int index = 2;
-                command.setNetwork(data[index++]);
-                command.setDestination(data[index++]);
-                command.setSource(data[index++]);
+                msg.setNetwork(data[index++]);
+                msg.setDestination(data[index++]);
+                msg.setSource(data[index++]);
 
-                int commandCode = data[index++] & 0xFF;
-
-                if (commandMap.containsKey(commandCode)) {
-                    command.setCommand(commandMap.get(commandCode));
-                } else {
-                    command.setCommand(Command.NONE);
-                }
+                byte commandCode = data[index++];
+                msg.setCommand(Command.valueOf(commandCode));
 
                 if (index <= data.length - 1) {
-                    command.setArguments(Arrays.copyOfRange(data, index, data.length - 1));
+                    msg.setArguments(Arrays.copyOfRange(data, index, data.length - 1));
                 }
             }
         } catch (Exception e) {
             logger.warn("Attempted to parse invalid message: {}", commandString, e);
         }
 
-        return command;
+        return msg;
     }
-
-    @Nullable
-    private Type type;
-    private ControlWord controlWord = new ControlWord();
-    private byte network;
-    private byte destination;
-    private byte source;
-
-    private Command command = Command.NONE;
-    private byte @Nullable [] arguments;
 
     /**
      * @return the type
      */
-    public @Nullable Type getType() {
+    public Type getType() {
         return type;
-    }
-
-    /**
-     * @param type
-     *                 the type to set
-     */
-    public void setType(Type type) {
-        this.type = type;
     }
 
     /**

@@ -12,48 +12,48 @@
  */
 package org.openhab.binding.upb.internal.message;
 
-import java.util.Map.Entry;
-
 /**
  * An enum of possible commands.
  *
  * @author cvanorman - Initial contribution
  */
 public enum Command {
-    ACTIVATE,
-    DEACTIVATE,
-    GOTO,
-    START_FADE,
-    STOP_FADE,
-    BLINK,
-    REPORT_STATE,
-    STORE_STATE,
-    DEVICE_STATE,
-    NONE;
+    ACTIVATE(0x20),
+    DEACTIVATE(0x21),
+    GOTO(0x22),
+    START_FADE(0x23),
+    STOP_FADE(0x24),
+    BLINK(0x25),
+    REPORT_STATE(0x30),
+    STORE_STATE(0x31),
+    DEVICE_STATE(0x86),
+    NONE(0);
 
-    /**
-     * Gets the protocol byte code for this Command.
-     *
-     * @return
-     */
-    public byte toByte() {
-        for (Entry<Integer, Command> e : UPBMessage.commandMap.entrySet()) {
-            if (e.getValue() == this) {
-                return e.getKey().byteValue();
-            }
-        }
+    private final byte mdid;
 
-        return 0;
+    Command(final int mdid) {
+        this.mdid = (byte) mdid;
     }
 
     /**
-     * Converts a byte value into a Command.
-     *
-     * @param value
-     *                  the byte value.
-     * @return the Command that is represented by the given byte value.
+     * @return the protocol Message Data ID (MDID) for this Command
      */
-    public static Command valueOf(byte value) {
-        return UPBMessage.commandMap.get(value);
+    public byte toByte() {
+        return mdid;
+    }
+
+    /**
+     * Returns the Command for a given Message Data ID byte.
+     *
+     * @param value the MDID byte
+     * @return the Command for the given MDID
+     */
+    public static Command valueOf(final byte value) {
+        for (final Command cmd : values()) {
+            if (cmd.toByte() == value) {
+                return cmd;
+            }
+        }
+        return NONE;
     }
 }

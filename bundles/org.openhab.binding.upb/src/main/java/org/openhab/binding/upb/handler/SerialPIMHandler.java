@@ -48,10 +48,8 @@ public class SerialPIMHandler extends PIMHandler {
     private final Logger logger = LoggerFactory.getLogger(SerialPIMHandler.class);
 
     private SerialPortManager serialPortManager;
-    @Nullable
-    private volatile SerialIoThread receiveThread;
-    @Nullable
-    private volatile ScheduledFuture<?> futSerialPortInit;
+    private volatile @Nullable SerialIoThread receiveThread;
+    private volatile @Nullable ScheduledFuture<?> futSerialPortInit;
 
     public SerialPIMHandler(final Bridge thing, final SerialPortManager serialPortManager) {
         super(thing);
