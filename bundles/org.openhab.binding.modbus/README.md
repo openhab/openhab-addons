@@ -33,12 +33,12 @@ Reader of the documentation should understand the basics of Modbus protocol.
 Good sources for further information:
 
 * [Wikipedia article](https://en.wikipedia.org/wiki/Modbus): good read on modbus basics and addressing.
-* [Simplymodbus.ca](http://www.simplymodbus.ca/): good reference as well as excellent tutorial like explanation of the protocol
+* [Simplymodbus.ca](https://www.simplymodbus.ca/): good reference as well as excellent tutorial like explanation of the protocol
 
 Useful tools
 
-* [binaryconvert.com](http://www.binaryconvert.com/): tool to convert numbers between different binary presentations
-* [rapidscada.net Modbus parser](http://modbus.rapidscada.net/): tool to parse Modbus requests and responses. Useful for debugging purposes when you want to understand the message sent / received.
+* [binaryconvert.com](https://www.binaryconvert.com/): tool to convert numbers between different binary presentations
+* [rapidscada.net Modbus parser](https://modbus.rapidscada.net/): tool to parse Modbus requests and responses. Useful for debugging purposes when you want to understand the message sent / received.
 * [JSFiddle tool](https://jsfiddle.net/rgypuuxq/) to test JavaScript (JS) transformations interactively
 
 ## Supported Things
@@ -114,7 +114,8 @@ Advanced parameters
 **Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
 The advanced parameters have conservative defaults, meaning that they should work for most users.
-In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`. Similarly, with some slower devices on might need to increase the values.
+In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`.
+Similarly, with some slower devices on might need to increase the values.
 
 ### `serial` Thing
 
@@ -125,7 +126,7 @@ Basic parameters
 | Parameter | Type    | Required | Default if omitted | Description                                                                                                                                                                                               |     |
 | --------- | ------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
 | port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                |     |
-| id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](http://www.simplymodbus.ca/index.html) articles for more information |     |
+| id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](https://www.simplymodbus.ca/index.html) articles for more information |     |
 | baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                        |     |
 | stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                       |     |
 | parity    | text    | ✓        |                    | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                    |     |
@@ -535,7 +536,7 @@ There are three different format to specify the configuration:
 1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the extracted number as input. This is useful for example scaling (divide by x) the polled data before it is used in openHAB. See examples for more details.
 1. Any other value is interpreted as static text, in which case the actual content of the polled value is ignored. Transformation result is always the same. The transformation output is converted to best-effort-basis to the states accepted by the item.
 
-Consult [background documentation on items](http://docs.openhab.org/concepts/items.html) to understand accepted data types (state) by each item.
+Consult [background documentation on items](https://www.openhab.org/docs/concepts/items.html) to understand accepted data types (state) by each item.
 
 #### Transform On Write
 
@@ -544,8 +545,8 @@ Consult [background documentation on items](http://docs.openhab.org/concepts/ite
 There are three different format to specify the configuration:
 
 1. String `"default"`, in which case the default transformation is used. The default is to do no conversion to the command.
-2. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the command as input. This is useful for example scaling ("multiply by x") commands before the data is written to Modbus. See examples for more details.
-3. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
+1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the command as input. This is useful for example scaling ("multiply by x") commands before the data is written to Modbus. See examples for more details.
+1. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
 
 #### Transformation Example: Scaling
 
@@ -556,7 +557,7 @@ The data in Modbus slaves is quite commonly encoded as integers, and thus scalin
 
 ```javascript
 // Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openhab
+// variable "input" contains data passed by openHAB
 (function(inputData) {
     // on read: the polled number as string
     // on write: openHAB command as string
@@ -569,7 +570,7 @@ The data in Modbus slaves is quite commonly encoded as integers, and thus scalin
 
 ```javascript
 // Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openhab
+// variable "input" contains data passed by openHAB
 (function(inputData) {
     // on read: the polled number as string
     // on write: openHAB command as string
@@ -587,7 +588,7 @@ In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF
 
 ```javascript
 // function to invert Modbus binary states
-// variable "input" contains data passed by OpenHAB binding
+// variable "input" contains data passed by openHAB
 (function(inputData) {
     var out = inputData ;      // allow UNDEF to pass through
     if (inputData == '1' || inputData == 'ON' || inputData == 'OPEN') {
@@ -980,8 +981,8 @@ Please be aware that `REFRESH` commands are "throttled" (to be exact, responses 
 
 ## Changes From Modbus 1.x Binding
 
-The older Modbus binding is quite different to the new binding.
-Major difference is the thing structure introduced in new openHAB2 binding which allows configuration uisng the PaperUI.
+The openHAB 1 Modbus binding is quite different from the openHAB 2 binding.
+The biggest difference is that the openHAB 2 binding uses things which can be configured using Paper UI.
 
 Unfortunately there is no conversion tool to convert old configurations to new thing structure.
 
@@ -1033,7 +1034,7 @@ The new binding supports 32 and 64 bit values types when writing.
 
 ### How to manually migrate
 
-Here is a step by step example for a migration from a 1.x configuration to a equivalent 2.x configuration. 
+Here is a step by step example for a migration from a 1.x configuration to an equivalent 2.x configuration. 
 It does not cover all features the 1.x configuration offers, but it should serve as an example on how to get it done.
 Please note that although you can do all this stuff also using PaperUI, the file based approach is strongly recommended if you need to migrate more than only a handful of Items.
 
@@ -1069,7 +1070,7 @@ The 1.x modbus configuration to be updated defined 4 slaves:
     tcp.slave4.updateunchangeditems=false
 ```
 
-As you can see, all the slaves poll the same modbus device (actually a Wago 750-841 controller). 
+As you can see, all the slaves poll the same modbus device (actually a Wago 750-841 controller).
 We now have to create `Things` for this slaves.
 
 The 2.x modbus binding uses a three-level definition. 
@@ -1233,7 +1234,7 @@ Enable `DEBUG` or `TRACE` (even more verbose) logging for the loggers named:
 * `org.openhab.io.transport.modbus`
 * `net.wimpi.modbus`
 
-Consult [openHAB2 logging documentation](http://docs.openhab.org/administration/logging.html#defining-what-to-log) for more information.
+Consult [openHAB logging documentation](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for more information.
 
 ## For Developers
 

@@ -7,14 +7,14 @@
 
 	<config-description uri="mqtt:mqttembeddedbroker">
 		<parameter name="port" type="integer" required="false">
-			<label>Embedded broker port</label>
+			<label>Embedded Broker Port</label>
 			<description>A custom broker connection port. Leave empty to use the
 				default MQTT ports 1883 and 8883 (SSL) for secure or non-secure
 				connections.</description>
 			<default></default>
 		</parameter>
 		<parameter name="secure" type="boolean" required="true">
-			<label>Secure connection?</label>
+			<label>Secure Connection?</label>
 			<description>If set, hosts a secure SSL connection on port 8883 or
 				otherwise a non secure connection on port 1883 (if not overwritten
 				by the port parameter)</description>
@@ -22,20 +22,20 @@
 		</parameter>
 
 		<parameter name="username" type="text" required="false">
-			<label>Embedded broker username</label>
+			<label>Embedded Broker Username</label>
 			<description>Connections need to provide this username to access the
 				broker.</description>
 			<default></default>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>Embedded broker password</label>
+			<label>Embedded Broker Password</label>
 			<description>Connections need to provide this password to access the
 				broker. Should only be used if it is a secure connection, because
 				the password is transferred plain over the wire.</description>
 			<default></default>
 		</parameter>
 		<parameter name="persistenceFile" type="text" required="false">
-			<label>Persistence file</label>
+			<label>Persistence File</label>
 			<description>An optional persistence file. Retained messages are
 				stored in this file. Can be empty to not store anything. If it
 				starts with "/" on Linux/MacOS or with a drive letter and colon (eg

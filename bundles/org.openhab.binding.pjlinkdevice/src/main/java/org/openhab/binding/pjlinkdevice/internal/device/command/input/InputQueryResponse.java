@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The response part of {@link InputQueryCommand}
@@ -24,12 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputQueryResponse extends PrefixedResponse<Input> {
-  public InputQueryResponse(String response) throws ResponseException {
-    super("INPT=", response);
-  }
+    public InputQueryResponse(String response) throws ResponseException {
+        super("INPT=", response);
+    }
 
-  @Override
-  protected Input parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-    return new Input(responseWithoutPrefix);
-  }
+    @Override
+    protected Input parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+        return new Input(responseWithoutPrefix);
+    }
 }

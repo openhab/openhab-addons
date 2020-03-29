@@ -1,11 +1,38 @@
 # For Developers
 
+## Debugging an addon
+
+Please follow IDE setup guide at https://www.openhab.org/docs/developer/ide/eclipse.html.
+
+When configuring dependencies in `openhab-distro/launch/app/pom.xml`, add all dependencies, including the transitive dependencies:
+
+```xml
+<dependency>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.binding.modbus</artifactId>
+    <version>${project.version}</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.io.transport.modbus</artifactId>
+    <version>${project.version}</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>org.openhab.osgiify</groupId>
+    <artifactId>net.wimpi.jamod</artifactId>
+    <version>1.2.3.OH</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
 ## Testing Serial Implementation
 
-You can use test serial slaves without any hardware on linux using these steps:
+You can use test serial slaves without any hardware on Linux using these steps:
 
 1. Set-up virtual null modem emulator using [tty0tty](https://github.com/freemed/tty0tty)
-2. Download [diagslave](http://www.modbusdriver.com/diagslave.html) and start modbus serial slave up using this command:
+2. Download [diagslave](https://www.modbusdriver.com/diagslave.html) and start modbus serial slave up using this command:
 
 ```
 ./diagslave -m rtu -a 1 -b 38400 -d 8 -s 1 -p none -4 10 /dev/pts/7
@@ -23,7 +50,7 @@ Naturally this is not the same thing as the real thing but helps to identify sim
 
 ## Testing TCP Implementation
 
-1. Download [diagslave](http://www.modbusdriver.com/diagslave.html) and start modbus tcp server (slave) using this command:
+1. Download [diagslave](https://www.modbusdriver.com/diagslave.html) and start modbus tcp server (slave) using this command:
 
 ```
 ./diagslave -m tcp -a 1 -p 55502
@@ -50,9 +77,14 @@ You can also use `modpoll` to write data:
 
 ## Extending Modbus binding
 
-This Modbus binding can be extended by other OSGi bundles to add more specific support for Modbus enabled devices. To do so to you have to create a new OSGi bundle which has the same binding id as this binding. The best way is to use the `ModbusBindingConstants.BINDING_ID` constant.
+This Modbus binding can be extended by other OSGi bundles to add more specific support for Modbus enabled devices.
+To do so to you have to create a new OSGi bundle which has the same binding id as this binding.
+The best way is to use the `ModbusBindingConstants.BINDING_ID` constant.
 
-You'll have to create one or more handler classes for the devices you want to support. For the modbus connection setup and handling you can use the Modbus TCP Slave or Modbus Serial Slave handlers. Your handler should use these handlers as bridges and you can set up your regular or one shot modbus requests to read from the slave. This is done by by creating a `BasicPollTaskImpl` and submitting it using the `ModbusManager` `submitOneTimePoll` and `registerRegularPoll` methods.
+You will have to create one or more handler classes for the devices you want to support.
+For the modbus connection setup and handling you can use the Modbus TCP Slave or Modbus Serial Slave handlers.
+Your handler should use these handlers as bridges and you can set up your regular or one shot modbus requests to read from the slave.
+This is done by by creating a `BasicPollTaskImpl` and submitting it using the `ModbusManager` `submitOneTimePoll` and `registerRegularPoll` methods.
 
 Please keep in mind that these reads are asynchronous and they will call your callback once the read is done.
 
@@ -60,7 +92,8 @@ Once you have your data read from the modbus device you can parse and transform 
 
 ### Discovery
 
-If you write a device specific handler then adding discovery for this device is very welcome. You will have to write a discovery participant class which implements the `ModbusDiscoveryParticipant` interface and registers itself as a component. Example:
+If you write a device specific handler then adding discovery for this device is very welcome.
+You will have to write a discovery participant class which implements the `ModbusDiscoveryParticipant` interface and registers itself as a component. Example:
 
 ```java
 
@@ -83,9 +116,12 @@ There are two methods you have to implement:
     
 Please try to avoid write requests to the endpoint because it could be some unknown device that write requests could misconfigure.
 
-When a known device is found a `DiscoveryResult` object has to be created then the `thingDiscovered` method has to be called. The `DiscoveryResult` supports properties, and you should use this to store any data that will be useful when the actual thing will be created. For example you could store the start Modbus address of the device or vendor/model informations.
+When a known device is found a `DiscoveryResult` object has to be created then the `thingDiscovered` method has to be called.
+The `DiscoveryResult` supports properties, and you should use this to store any data that will be useful when the actual thing will be created.
+For example you could store the start Modbus address of the device or vendor/model informations.
 
-When the discovery process is finished either by detecting a device or by realizing it is not supported you should call the `discoveryFinished` method. This will tear down any resources allocated for the discovery process.
+When the discovery process is finished either by detecting a device or by realizing it is not supported you should call the `discoveryFinished` method.
+This will tear down any resources allocated for the discovery process.
 
 
 ### Discovery Architecture
@@ -94,12 +130,16 @@ The following diagram shows the concept how discovery is implemented in this bin
 
 ![Discovery architecture](doc/images/ModbusExtensibleDiscovery.png)
 
-As stated above the discovery process can be extended by OSGi bundles. For this they have to define their own `ModbusDisvoceryParticipant` that gets registered at the `ModbusDiscoveryService`. This object also keeps track of any of the Modbus handlers. Handler level discovery logic is implemented in the `ModbusEndpointDiscoveryService` which gets instantiated for each Modbus `BridgeHandler`.
+As stated above the discovery process can be extended by OSGi bundles.
+For this they have to define their own `ModbusDisvoceryParticipant` that gets registered at the `ModbusDiscoveryService`.
+This object also keeps track of any of the Modbus handlers.
+Handler level discovery logic is implemented in the `ModbusEndpointDiscoveryService` which gets instantiated for each Modbus `BridgeHandler`.
 
 The communication flow is detailed in the diagram below:
 
 ![Discovery process](doc/images/DiscoveryProcess.png)
 
-As can be seen the process is initiated by the `ModbusDiscoveryService` which calls each of the `ModbusEndpointDiscoveryService` instances to start the discovery on the available participants. Then a reference to the `ThingHandler` is passed to each of the participants who can use this to do the actual discovery.
+As can be seen the process is initiated by the `ModbusDiscoveryService` which calls each of the `ModbusEndpointDiscoveryService` instances to start the discovery on the available participants.
+Then a reference to the `ThingHandler` is passed to each of the participants who can use this to do the actual discovery.
 
 Any things discovered are reported back in this chain and ultimately sent to openHAB core.

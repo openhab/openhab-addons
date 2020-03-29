@@ -45,49 +45,49 @@
 					"description": "The url that the http request should be done on. Can be a relative one, starting with '/'. For example '/api/foo/bar'",
 					"required": true
 				},
-                {
-                    "name": "body",
-                    "type": "TEXT",
-                    "context": "body",
-                    "label": "Data",
-                    "description": "For post and put request you can send data with the request",
-                    "required": false
-                },
-                {
-                    "name": "mimetype",
-                    "type": "TEXT",
-                    "context": "body",
-                    "label": "Mimetype",
-                    "description": "For post and put request you can send data with the request. Set the mimetype of that date here.",
-                    "required": false,
-                    "limitToOptions": false,
-                    "options": [
-                        {
-                            "label": "Text",
-                            "value": "text/plain"
-                        },
-                        {
-                            "label": "Json",
-                            "value": "application/json"
-                        },
-                        {
-                            "label": "XML",
-                            "value": "application/xml"
-                        },
-                        {
-                            "label": "Binary",
-                            "value": "application/octet-stream"
-                        }
-                    ]
-                },
-                {
-                    "name": "timeout",
-                    "type": "INTEGER",
-                    "label": "Timeout in sec",
-                    "description": "The timeout of this request in seconds.",
-                    "required": false,
-                    "default": "5"
-                }
+				{
+					"name": "body",
+					"type": "TEXT",
+					"context": "body",
+					"label": "Data",
+					"description": "For post and put request you can send data with the request",
+					"required": false
+				},
+				{
+					"name": "mimetype",
+					"type": "TEXT",
+					"context": "body",
+					"label": "Mimetype",
+					"description": "For post and put request you can send data with the request. Set the mimetype of that date here.",
+					"required": false,
+					"limitToOptions": false,
+					"options": [
+						{
+							"label": "Text",
+							"value": "text/plain"
+						},
+						{
+							"label": "Json",
+							"value": "application/json"
+						},
+						{
+							"label": "XML",
+							"value": "application/xml"
+						},
+						{
+							"label": "Binary",
+							"value": "application/octet-stream"
+						}
+					]
+				},
+				{
+					"name": "timeout",
+					"type": "INTEGER",
+					"label": "Timeout in sec",
+					"description": "The timeout of this request in seconds.",
+					"required": false,
+					"default": "5"
+				}
 			]
 		}
 	]

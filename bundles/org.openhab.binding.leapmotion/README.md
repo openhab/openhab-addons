@@ -2,7 +2,7 @@
 
 The [Leap Motion](https://www.leapmotion.com/) controller is a gesture sensoring device that uses stereoscopic cameras and is connected through USB.
 As all processing is done in software, it requires quite some powerful computer, such that it unfortunately does not work on single-board computers such as the Raspberry Pi.
-In fact, the binding is currently only working on MacOS computers with Intel x86 processors.
+In fact, the binding is currently only working on macOS computers with Intel x86 processors.
 
 ## Supported Things
 

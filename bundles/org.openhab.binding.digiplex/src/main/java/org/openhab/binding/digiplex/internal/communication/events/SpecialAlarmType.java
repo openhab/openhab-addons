@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,15 @@ package org.openhab.binding.digiplex.internal.communication.events;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type of special alarm.
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public enum SpecialAlarmType {
     EMERGENCY_PANIC(0),
     MEDICAL_PANIC(1),

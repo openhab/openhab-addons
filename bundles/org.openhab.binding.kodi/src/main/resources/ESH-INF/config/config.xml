@@ -22,13 +22,13 @@
 			<description>The IP or host name of the Kodi</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="port" type="integer" required="true" min="1" max="65335" groupName="network">
-			<label>Web socket service port</label>
+		<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="network">
+			<label>Web Socket Service Port</label>
 			<description>Port for the web socket service</description>
 			<default>9090</default>
 		</parameter>
-		<parameter name="httpPort" type="integer" required="true" min="1" max="65335" groupName="network">
-			<label>HTTP service port</label>
+		<parameter name="httpPort" type="integer" required="true" min="1" max="65535" groupName="network">
+			<label>HTTP Service Port</label>
 			<description>Port for the HTTP service.</description>
 			<default>8080</default>
 			<advanced>true</advanced>
@@ -65,9 +65,26 @@
 
 	<config-description uri="channel-type:kodi:pvr-channel">
 		<parameter name="group" type="text" required="true">
-			<label>PVR channel group</label>
+			<label>PVR Channel Group</label>
 			<description>The PVR channel group name used to identify the channel id.</description>
 			<default>All channels</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:kodi:shownotification">
+		<parameter name="title" type="text" required="false">
+			<label>Notification Title</label>
+			<description>Title to show for the notification.</description>
+			<default>openHAB</default>
+		</parameter>
+		<parameter name="displayTime" type="integer" required="false" min="100" unit="ms">
+			<label>Display Time</label>
+			<description>Time the notification is displayed.</description>
+			<default>5000</default>
+		</parameter>
+		<parameter name="icon" type="text" required="false">
+			<label>Icon</label>
+			<description>Icon name to show with the notification.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

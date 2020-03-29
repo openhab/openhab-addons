@@ -22,7 +22,7 @@
 				<description>The URL of the printer</description>
 			</parameter>
 			<parameter name="refresh" type="integer">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>60</default>
 			</parameter>
@@ -31,19 +31,19 @@
 
 	<channel-type id="jobs" advanced="true">
 		<item-type>Number</item-type>
-		<label>total jobs</label>
+		<label>Total Jobs</label>
 		<description>Total number of print jobs on the printer</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="waitingJobs">
 		<item-type>Number</item-type>
-		<label>waiting jobs</label>
+		<label>Waiting Jobs</label>
 		<description>Number of waiting print jobs on the printer</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="doneJobs" advanced="true">
 		<item-type>Number</item-type>
-		<label>done jobs</label>
+		<label>Done Jobs</label>
 		<description>Number of completed print jobs on the printer</description>
 		<state readOnly="true"></state>
 	</channel-type>

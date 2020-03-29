@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ public class A5_12_02 extends A5_12 {
 
     @Override
     protected State calcCurrentValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.LITRE);
+        // value is given in litre/second, hence multiply by 60
+        return new QuantityType<>(value * 60, SmartHomeUnits.LITRE_PER_MINUTE);
     }
 }

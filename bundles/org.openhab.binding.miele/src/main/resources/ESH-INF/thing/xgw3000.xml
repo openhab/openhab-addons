@@ -21,7 +21,7 @@
 			</parameter>
 			<parameter name="interface" type="text">
 				<context>network-address</context>
-				<label>Network Address of the Multicast interface</label>
+				<label>Network Address of the Multicast Interface</label>
 				<description>Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway</description>
 				<required>true</required>
 			</parameter>

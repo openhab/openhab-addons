@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
         this.factory = factory;
-        client = new HarmonyClient();
+        client = new HarmonyClient(factory.getHttpClient());
         client.addListener(this);
     }
 
@@ -103,8 +103,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command '{}' for {}", command, channelUID);
 
-        if (!client.isConnected()) {
-            logger.warn("Cannot send command '{}' on {} because HarmonyClient is not connected", command, channelUID);
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Hub is offline, ignoring command {} for channel {}", command, channelUID);
             return;
         }
 
@@ -314,7 +314,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         }
     }
 
-    private void updateActivityStatus(@Nullable Activity activity, Activity.@Nullable Status status) {
+    private void updateActivityStatus(@Nullable Activity activity, @Nullable Status status) {
         if (activity == null) {
             logger.debug("Cannot update activity status of {} with activity that is null", getThing().getUID());
             return;

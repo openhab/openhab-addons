@@ -147,7 +147,7 @@
 
 	<channel-type id="sensorBinary">
 		<item-type>Switch</item-type>
-		<label>Sensor binary</label>
+		<label>Sensor Binary</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<category>Switch</category>
 		<state readOnly="true" />
@@ -155,14 +155,14 @@
 
 	<channel-type id="sensorMultilevel">
 		<item-type>Number</item-type>
-		<label>Sensor multilevel</label>
+		<label>Sensor Multilevel</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="switchBinary">
 		<item-type>Switch</item-type>
-		<label>Switch binary</label>
+		<label>Switch Binary</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<category>Switch</category>
 		<state readOnly="false" />
@@ -170,21 +170,21 @@
 
 	<channel-type id="switchMultilevel">
 		<item-type>Dimmer</item-type>
-		<label>Switch multilevel</label>
+		<label>Switch Multilevel</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<state readOnly="false" />
 	</channel-type>
 
 	<channel-type id="switchColor">
 		<item-type>Color</item-type>
-		<label>Switch color</label>
+		<label>Switch Color</label>
 		<description>This channel represents the rgbw switch device type from Z-Way.</description>
 		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="thermostatMode">
 		<item-type>Switch</item-type>
-		<label>Thermostat mode</label>
+		<label>Thermostat Mode</label>
 		<description>The channel allows the control or display of a thermostat (mode). A thermostat can have up to three states (modes): off, heating and cooling. The state of heating and cooling is alternately set at the state on.</description>
 		<category>Temperature</category>
 		<state readOnly="false" />
@@ -192,14 +192,14 @@
 
 	<channel-type id="thermostatSetPoint">
 		<item-type>Number</item-type>
-		<label>Thermostat set point</label>
+		<label>Thermostat Set Point</label>
 		<category>Temperature</category>
 		<state readOnly="false" />
 	</channel-type>
 
 	<channel-type id="switchControl">
 		<item-type>Switch</item-type>
-		<label>Switch control</label>
+		<label>Switch Control</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<category>Switch</category>
 		<state readOnly="false" />
@@ -207,14 +207,14 @@
 
 	<channel-type id="sensorDiscrete">
 		<item-type>Number</item-type>
-		<label>Sensor discrete</label>
+		<label>Sensor Discrete</label>
 		<description>This channel represents a two-digit value. The first digit is the button/scene number and the second digit points to action/keyAttribute (have a look at http://z-wave.sigmadesigns.com/wp-content/uploads/2016/08/SDS12657-12-Z-Wave-Command-Class-Specification-A-M.pdf, p. 153).</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="thermostatModeCC">
 		<item-type>Number</item-type>
-		<label>Thermostat mode (Command Class)</label>
+		<label>Thermostat Mode (Command Class)</label>
 		<description>The channel allows the control or display of a thermostat (mode) from command class. The modes differ from device to device.</description>
 		<category>Temperature</category>
 		<state readOnly="false" />
@@ -235,7 +235,7 @@
 
 	<channel-type id="secureInclusion">
 		<item-type>Switch</item-type>
-		<label>Secure inclusion</label>
+		<label>Secure Inclusion</label>
 		<description>Change inclusion type for further inclusions.</description>
 		<category>Switch</category>
 		<state readOnly="false" />

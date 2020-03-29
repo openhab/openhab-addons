@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import com.google.gson.JsonElement;
  * which are sent to one of the channels
  *
  * @author Stephan Esch - Initial contribution
+ * @author Martin Lepsy - fixed handling of empty JSON results
  */
 public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineChannelSelector> {
 
@@ -68,7 +69,7 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                 }
             }
             // process result
-            if (result != null) {
+            if (isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

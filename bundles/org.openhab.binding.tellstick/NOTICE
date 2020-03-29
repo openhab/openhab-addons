@@ -10,7 +10,7 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 == Source Code
 
-https://github.com/openhab/openhab2-addons
+https://github.com/openhab/openhab-addons
 
 == Third-party Content
 
@@ -33,3 +33,9 @@ reactive-streams
 * License: CC0 1.0 License
 * Project: https://www.reactive-streams.org
 * Source:  https://github.com/reactive-streams/reactive-streams-jvm
+
+jna
+* License: Apache 2.0 License
+* Project: https://github.com/java-native-access/jna
+* Source:  https://github.com/java-native-access/jna
+

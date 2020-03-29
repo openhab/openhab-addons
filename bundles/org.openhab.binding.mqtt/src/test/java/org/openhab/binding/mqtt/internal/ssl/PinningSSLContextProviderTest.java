@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,15 +28,9 @@ import java.security.cert.X509Certificate;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
-import org.openhab.binding.mqtt.internal.ssl.Pin;
-import org.openhab.binding.mqtt.internal.ssl.PinMessageDigest;
-import org.openhab.binding.mqtt.internal.ssl.PinTrustManager;
-import org.openhab.binding.mqtt.internal.ssl.PinType;
-import org.openhab.binding.mqtt.internal.ssl.PinnedCallback;
-import org.openhab.binding.mqtt.internal.ssl.PinningSSLContextProvider;
 
 /**
- * Tests cases for {@link PinningSSLContextProvider}.
+ * Tests cases for {@link PinTrustManager}.
  *
  * @author David Graeff - Initial contribution
  */

@@ -16,7 +16,7 @@
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">
-				<label>Smarwi IP address</label>
+				<label>Smarwi IP Address</label>
 				<context>network-address</context>
 				<description>IP address of the Smarwi thing on the local network.</description>
 			</parameter>
@@ -27,7 +27,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="useWebSockets" type="boolean">
-				<label>Use WebSockets feature for faster state update.</label>
+				<label>Use WebSockets Feature for Faster State Update.</label>
 				<description>Enable web sockets technology. FW 203.2.4+ required</description>
 				<default>false</default>
 				<advanced>true</advanced>

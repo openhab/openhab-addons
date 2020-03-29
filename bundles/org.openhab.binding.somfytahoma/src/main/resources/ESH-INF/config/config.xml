@@ -5,7 +5,7 @@
 
 	<config-description uri="thing-type:somfytahoma:device">
 		<parameter name="url" type="text">
-			<label>Somfy Tahoma device URL</label>
+			<label>Somfy Tahoma Device URL</label>
 			<description>The identifier of this Somfy device</description>
 			<required>true</required>
 		</parameter>
@@ -13,7 +13,7 @@
 
 	<config-description uri="thing-type:somfytahoma:gateway">
 		<parameter name="id" type="text">
-			<label>Somfy Tahoma gateway ID</label>
+			<label>Somfy Tahoma Gateway ID</label>
 			<description>The identifier of this Somfy gateway</description>
 			<required>true</required>
 		</parameter>
@@ -40,7 +40,7 @@
 		</parameter>
 
 		<parameter name="statusTimeout" type="integer" required="false" min="60">
-			<label>Status timeout</label>
+			<label>Status Timeout</label>
 			<description>Specifies the timeout in seconds after which the status is got from Tahoma cloud</description>
 			<default>300</default>
 		</parameter>

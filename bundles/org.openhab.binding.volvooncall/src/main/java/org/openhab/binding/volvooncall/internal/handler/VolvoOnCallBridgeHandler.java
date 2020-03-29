@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,9 +67,11 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         super(bridge);
 
         httpHeader.put("cache-control", "no-cache");
-        httpHeader.put("X-OS-Type", "Android");
-        httpHeader.put("X-Originator-Type", "App");
-        httpHeader.put("Content-Type", JSON_CONTENT_TYPE);
+        httpHeader.put("content-type", JSON_CONTENT_TYPE);
+        httpHeader.put("x-device-id", "Device");
+        httpHeader.put("x-originator-type", "App");
+        httpHeader.put("x-os-type", "Android");
+        httpHeader.put("x-os-version", "22");
 
         gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class,
@@ -130,7 +132,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     public class ActionResultControler implements Runnable {
         PostResponse postResponse;
 
-        public ActionResultControler(PostResponse postResponse) {
+        ActionResultControler(PostResponse postResponse) {
             this.postResponse = postResponse;
         }
 
@@ -156,9 +158,10 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
+    void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
         InputStream inputStream = body != null ? new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)) : null;
         String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
+        logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
         PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
         if (postResponse.errorLabel == null) {
             pendingActions
@@ -166,7 +169,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         } else {
             logger.warn("URL {} returned {}", URL, postResponse.errorDescription);
         }
-        pendingActions.removeIf(ScheduledFuture<?>::isDone);
+        pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
     @Override

@@ -24,7 +24,7 @@
 			</parameter>
 			<parameter name="baudrateChangeDelay" type="integer">
 				<advanced>true</advanced>
-				<label>Delay of baudrate change</label>
+				<label>Delay of Baudrate Change</label>
 				<unitLabel>ms</unitLabel>
 				<default>0</default>
 				<description>USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate</description>
@@ -38,13 +38,13 @@
 			</parameter>
 			<parameter name="mode" type="text">
 				<advanced>true</advanced>
-				<label>The protocol mode to use</label>
+				<label>The Protocol Mode to Use</label>
 				<default>SML</default>
 				<description>Can be SML (PUSH mode), Mode A,B,C (PULL)or D (PUSH)</description>
 			</parameter>
 			<parameter name="conformity" type="text">
 				<advanced>true</advanced>
-				<label>Conform to specific standard semantics</label>
+				<label>Conform to Specific Standard Semantics</label>
 				<default>NONE</default>
 				<description>Reserved to conform to special semantics specified in specific standards. EDL_FNN: Currently applies the energy direction to WATT channels (which are absolute values) (see fnn lastenheft edl)</description>
 				<limitToOptions>true</limitToOptions>

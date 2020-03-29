@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Serializable class to parse json response received from the Apple server.
  *
@@ -19,6 +21,7 @@ package org.openhab.binding.icloud.internal.json.response;
  *
  */
 public class ICloudServerContext {
+    @Nullable
     private String authToken;
 
     private int callbackIntervalInMS;

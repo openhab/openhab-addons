@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,38 +12,41 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents color palette in the write command
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Palette {
 
-    private Integer hue;
-    private Integer saturation;
-    private Integer brightness;
+    private int hue;
+    private int saturation;
+    private int brightness;
 
-    public Integer getHue() {
+    public int getHue() {
         return hue;
     }
 
-    public void setHue(Integer hue) {
+    public void setHue(int hue) {
         this.hue = hue;
     }
 
-    public Integer getSaturation() {
+    public int getSaturation() {
         return saturation;
     }
 
-    public void setSaturation(Integer saturation) {
+    public void setSaturation(int saturation) {
         this.saturation = saturation;
     }
 
-    public Integer getBrightness() {
+    public int getBrightness() {
         return brightness;
     }
 
-    public void setBrightness(Integer brightness) {
+    public void setBrightness(int brightness) {
         this.brightness = brightness;
     }
 

@@ -1,13 +1,19 @@
 
 # KNX Binding
 
-The openHAB KNX binding allows to connect to [KNX Home Automation](http://www.knx.org/) installations. Switching lights on and off, activating your roller shutters or changing room temperatures are only some examples.
+The openHAB KNX binding allows to connect to [KNX Home Automation](https://www.knx.org/) installations. 
+Switching lights on and off, activating your roller shutters or changing room temperatures are only some examples.
 
-To access your KNX bus you either need a gateway device which is connected to the KNX bus and allows computers to access the bus communication. This can be either an Ethernet (as a Router or a Tunnel type) or a serial gateway. The KNX binding then can communicate directly with this gateway. Alternatively a PC running [KNXD](https://github.com/knxd/knxd) (free open source component sofware) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway. Since the protocol is identical, the KNX binding can also communicate with it transparently.
+To access your KNX bus you either need a gateway device which is connected to the KNX bus and allows computers to access the bus communication.
+This can be either an Ethernet (as a Router or a Tunnel type) or a serial gateway.
+The KNX binding then can communicate directly with this gateway.
+Alternatively a PC running [KNXD](https://github.com/knxd/knxd) (free open source component sofware) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway.
+Since the protocol is identical, the KNX binding can also communicate with it transparently.
 
 ## Supported Things
 
-The KNX binding supports two types of bridges, and one type of things to access the KNX bus. There is an *ip* bridge to connect to KNX IP Gateways, and a *serial* bridge for connection over a serial port to a host-attached gateway.
+The KNX binding supports two types of bridges, and one type of things to access the KNX bus.
+There is an *ip* bridge to connect to KNX IP Gateways, and a *serial* bridge for connection over a serial port to a host-attached gateway.
 
 ## Binding Configuration
 
@@ -24,7 +30,7 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL` or `ROUTER`)                                  | -                                                    |
-| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.  | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
+| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.       | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
 | localSourceAddr     | No           | The (virtual) individual address for identification of this KNX/IP gateway within the KNX bus <br/><br/>Note: Use a free adress, not the one of the interface. Or leave it at `0.0.0` and let openHAB decide which address to use.                | 0.0.0                                                |
@@ -51,7 +57,11 @@ The *serial* bridge accepts the following configuration parameters:
 
 ### *device* Things
 
-*basic* Things are wrappers around an arbitrary group addresses on the KNX bus. They have no specific function in the KNX binding, except that if the *address* is defined the binding will actively poll the Individual Address on the KNX bus to detect that the KNX actuator is reachable. Under normal real world circumstances, either all devices on a bus are reachable, or the entire bus is down. When *fetch* is set to true, the binding will read-out the memory of the KNX actuator in order to detect configuration data and so forth. This is however an experimental feature very prone to the actual on the KNX bus. 
+*basic* Things are wrappers around an arbitrary group addresses on the KNX bus.
+They have no specific function in the KNX binding, except that if the *address* is defined the binding will actively poll the Individual Address on the KNX bus to detect that the KNX actuator is reachable.
+Under normal real world circumstances, either all devices on a bus are reachable, or the entire bus is down.
+When *fetch* is set to true, the binding will read-out the memory of the KNX actuator in order to detect configuration data and so forth.
+This is however an experimental feature very prone to the actual on the KNX bus.
 
 | Name         | Required | Description                                                                                                              | Default value                                                               |
 |--------------|----------|--------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
@@ -60,11 +70,14 @@ The *serial* bridge accepts the following configuration parameters:
 | pingInterval | N        | Interval (in seconds) to contact the device and set the thing status based on the result (requires the address)          | 600                                                                         |
 | readInterval | N        | Interval (in seconds) to actively request reading of values from the bus (0 if they should only be read once at startup) | 0                                                                           |
 
-Different kinds of channels are defined and can be used to group together Group Addresses. All channel types share two configuration parameters: *read*, an optional parameter to indicate if the 'readable' group addresses of that Channel should be read at startup (default: false), and *interval*, an optional parameter that defines an interval between attempts to read the status group address on the bus, in seconds. When defined and set to 0, the interval is ignored (default: 0)
+Different kinds of channels are defined and can be used to group together Group Addresses.
+All channel types share two configuration parameters: *read*, an optional parameter to indicate if the 'readable' group addresses of that Channel should be read at startup (default: false), and *interval*, an optional parameter that defines an interval between attempts to read the status group address on the bus, in seconds.
+When defined and set to 0, the interval is ignored (default: 0)
 
 #### Standard Channel Types
 
-Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
+Standard channels are used most of the time.
+They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
 
 Note: After changing the DPT of already existing Channels, openHAB needs to be restarted for the changes to become effective.
 
@@ -118,7 +131,9 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 
 #### Control Channel Types
 
-In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch. If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
+In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device.
+This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
+If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
 
 ##### Channel Type "switch-control"
 
@@ -185,9 +200,14 @@ The `dpt` element is optional. If ommitted, the corresponding default value will
 
 
 ## Examples
-The following two templates are sufficient for almost all purposes. Only add parameters to the Bridge and Thing configuration if you know exactly what functionality it is needed for.
+
+The following two templates are sufficient for almost all purposes.
+Only add parameters to the Bridge and Thing configuration if you know exactly what functionality it is needed for.
+
 ### Type ROUTER mode configuration Template
+
 knx.things:
+
 ```xtend
 Bridge knx:ip:bridge [ 
     type="ROUTER",
@@ -200,8 +220,11 @@ Bridge knx:ip:bridge [
     }
 }
 ```
+
 ### Type TUNNEL mode configuration Template
+
 knx.things:
+
 ```xtend
 Bridge knx:ip:bridge [ 
     type="TUNNEL",
@@ -215,7 +238,9 @@ Bridge knx:ip:bridge [
     }
 }
 ```
+
 ### Full Example
+
 ```xtend
 //TUNNEL
 Bridge knx:ip:bridge [  
@@ -289,7 +314,6 @@ sitemap knx label="KNX Demo Sitemap" {
 ```
 
 ### Control Example
-
 
 control.things:
 

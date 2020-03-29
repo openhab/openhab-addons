@@ -78,31 +78,31 @@
 
 	<channel-type id="enableSound">
 		<item-type>Switch</item-type>
-		<label>Switch to turn sound off when playing</label>
+		<label>Switch to Turn Sound Off When Playing</label>
 	</channel-type>
 
 	<channel-type id="rotationAngle">
 		<item-type>Number:Angle</item-type>
-		<label>Cube rotation angle</label>
+		<label>Cube Rotation Angle</label>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="rotationTime">
 		<item-type>Number:Time</item-type>
-		<label>Cube rotation time</label>
+		<label>Cube Rotation Time</label>
 		<state readOnly="false" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="gas_alarm">
 		<item-type>Switch</item-type>
-		<label>Gas detected</label>
+		<label>Gas Detected</label>
 		<category>Gas</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="leak">
 		<item-type>Switch</item-type>
-		<label>Leak detected</label>
+		<label>Leak Detected</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -229,7 +229,7 @@
 
 	<channel-type id="smoke_alarm">
 		<item-type>Switch</item-type>
-		<label>Smoke detected</label>
+		<label>Smoke Detected</label>
 		<category>Smoke</category>
 		<state readOnly="true"></state>
 	</channel-type>

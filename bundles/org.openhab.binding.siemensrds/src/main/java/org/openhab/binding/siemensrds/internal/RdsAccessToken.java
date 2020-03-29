@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ class RdsAccessToken {
             String json = httpGetTokenJson(apiKey, user, password);
             return GSON.fromJson(json, RdsAccessToken.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("token creation error \"{}\"", e.getMessage(), e);
+            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return null;
         }
     }

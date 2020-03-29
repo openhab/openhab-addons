@@ -13,7 +13,7 @@
 				<description>Zone 6 Sensor</description>
 			</channel>
 			<channel id="Out" typeId="actuator">
-				<label>The Out Pin</label>
+				<label>The out Pin</label>
 			</channel>
 		</channels>
 		<config-description-ref uri="thing-type:konnected:module" />

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
-		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:hpprinter:config">
 		<parameter name="ipAddress" type="text" required="true">
@@ -11,13 +11,13 @@
 			<description>The IP or host name of the HP Printer</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="usageInterval" type="integer" min="4" required="true">
+		<parameter name="usageInterval" type="integer" min="4">
 			<label>Usage Interval</label>
 			<description>The refresh interval in seconds for polling the printer usage information</description>
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="statusInterval" type="integer" min="4" required="true">
+		<parameter name="statusInterval" type="integer" min="4">
 			<label>Status Interval</label>
 			<description>The refresh interval in seconds for polling the printer status</description>
 			<default>4</default>

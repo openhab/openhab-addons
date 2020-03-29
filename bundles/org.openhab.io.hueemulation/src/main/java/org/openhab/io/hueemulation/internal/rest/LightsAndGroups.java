@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -99,6 +98,7 @@ import io.swagger.annotations.ApiResponses;
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
 public class LightsAndGroups implements RegistryChangeListener<Item> {
+    public static final String EXPOSE_AS_DEVICE_TAG = "huelight";
     private final Logger logger = LoggerFactory.getLogger(LightsAndGroups.class);
     private static final String ITEM_TYPE_GROUP = "Group";
     private static final Set<String> ALLOWED_ITEM_TYPES = Stream.of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER,
@@ -154,7 +154,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         String hueID = cs.mapItemUIDtoHueID(element);
 
-        if (element instanceof GroupItem) {
+        if (element instanceof GroupItem && !element.hasTag(EXPOSE_AS_DEVICE_TAG)) {
             GroupItem g = (GroupItem) element;
             HueGroupEntry group = new HueGroupEntry(g.getName(), g, deviceType);
 
@@ -380,6 +380,8 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }
+            hueDevice.lastCommand = command;
+            hueDevice.lastHueChange = newState;
         }
 
         return Response.ok(cs.gson.toJson(responses, new TypeToken<List<?>>() {

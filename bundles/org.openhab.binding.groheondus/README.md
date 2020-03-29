@@ -24,7 +24,7 @@ This binding does not require any configuration outside of things.
 
 ## Thing Configuration
 
-There's only one thing and one bridge that needs to be configured together to get this binding to work, see the full example section for a self-explaining example.
+There is only one thing and one bridge that needs to be configured together to get this binding to work, see the full example section for a self-explaining example.
 
 ### Account Bridge
 
@@ -103,7 +103,7 @@ Number Humidity_Sense "Humidity [%.1f %unit%]" {channel="groheondus:sense:groheo
 
 Actually obtaining a `refresh token` from the GROHE ONDUS Api requires some manual steps.
 In order to more deeply understand what is happening during the process, you can read more information about the OAuth2/OIDC (OpenID Connect) login flow by searching for these terms in your favorite search engine.
-Here's a short step-by-step guide on how to obtain a refresh token:
+Here is a short step-by-step guide on how to obtain a refresh token:
 
 1. Open a new tab in your Internet browser
 2. Open the developer console of your browser (mostly possible by pressing F12)

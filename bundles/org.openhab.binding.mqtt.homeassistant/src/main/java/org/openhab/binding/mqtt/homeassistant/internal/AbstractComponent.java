@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
@@ -30,12 +28,12 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.CFactory.ComponentConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 
 /**
  * A HomeAssistant component is comparable to an ESH channel group.
@@ -61,7 +59,6 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     protected final C channelConfiguration;
 
     protected boolean configSeen;
-    protected @Nullable CChannel availablityChannel;
 
     /**
      * Provide a thingUID and HomeAssistant topic ID to determine the ESH channel group UID and type.
@@ -87,36 +84,21 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
 
         this.configSeen = false;
 
-        if (StringUtils.isNotBlank(this.channelConfiguration.availability_topic)) {
-            OnOffValue value = new OnOffValue(this.channelConfiguration.payload_available,
-                    this.channelConfiguration.payload_not_available);
-
-            availablityChannel = buildChannel(HomeAssistantThingHandler.AVAILABILITY_CHANNEL, value,
-                    channelConfiguration.name + " availability").listener(componentConfiguration.getUpdateListener())//
-                            .stateTopic(channelConfiguration.availability_topic)//
-                            .build(false);
+        String availability_topic = this.channelConfiguration.availability_topic;
+        if (availability_topic != null) {
+            componentConfiguration.getTracker().addAvailabilityTopic(availability_topic,
+                    this.channelConfiguration.payload_available, this.channelConfiguration.payload_not_available);
         }
     }
 
-    protected CChannel.Builder buildChannel(String channelID, Value valueState, String label) {
-        return new CChannel.Builder(this, componentConfiguration, channelID, valueState, label);
+    protected CChannel.Builder buildChannel(String channelID, Value valueState, String label,
+            ChannelStateUpdateListener channelStateUpdateListener) {
+        return new CChannel.Builder(this, componentConfiguration, channelID, valueState, label,
+                channelStateUpdateListener);
     }
 
     public void setConfigSeen() {
         this.configSeen = true;
-    }
-
-    private @Nullable OnOffType getAvailability() {
-        CChannel channel = this.availablityChannel;
-
-        if (channel == null) {
-            return OnOffType.ON;
-        }
-        return channel.getState().getCache().getChannelState().as(OnOffType.class);
-    }
-
-    public boolean isActive() {
-        return this.configSeen && getAvailability() == OnOffType.ON;
     }
 
     /**
@@ -129,16 +111,8 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        CompletableFuture<@Nullable Void> all = CompletableFuture.completedFuture(null);
-
-        all = channels.values().stream().map(v -> v.start(connection, scheduler, timeout)).reduce(all,
-                (f, v) -> f.thenCompose(b -> v));
-
-        if (availablityChannel != null) {
-            all = all.thenCompose(v -> availablityChannel.start(connection, scheduler, timeout));
-        }
-
-        return all;
+        return channels.values().parallelStream().map(v -> v.start(connection, scheduler, timeout))
+                .collect(FutureCollector.allOf());
     }
 
     /**
@@ -148,14 +122,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        CompletableFuture<@Nullable Void> all = CompletableFuture.completedFuture(null);
-
-        all = channels.values().stream().map(v -> v.stop()).reduce(all, (f, v) -> f.thenCompose(b -> v));
-
-        if (availablityChannel != null) {
-            all = all.thenCompose(v -> availablityChannel.stop());
-        }
-        return all;
+        return channels.values().parallelStream().map(CChannel::stop).collect(FutureCollector.allOf());
     }
 
     /**
@@ -230,7 +197,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * Return the channel group type.
      */
     public ChannelGroupType type() {
-        final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(c -> c.type())
+        final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(CChannel::type)
                 .collect(Collectors.toList());
         return ChannelGroupTypeBuilder.instance(channelGroupTypeUID, name()).withChannelDefinitions(channelDefinitions)
                 .build();
@@ -241,10 +208,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * to the MQTT broker got lost.
      */
     public void resetState() {
-        if (availablityChannel != null) {
-            availablityChannel.resetState();
-        }
-        channels.values().forEach(c -> c.resetState());
+        channels.values().forEach(CChannel::resetState);
     }
 
     /**

@@ -26,12 +26,13 @@
 				<label>Device Id</label>
 				<description>Unit Id. Example 1000</description>
 			</parameter>
-			<parameter name="subType" type="text" required="true" default="FALMEC">
+			<parameter name="subType" type="text">
 				<label>Sub Type</label>
 				<description>Specifies device sub type.</description>
 				<options>
 					<option value="FALMEC">Falmec</option>
 				</options>
+				<default>FALMEC</default>
 			</parameter>
 		</config-description>
 	</thing-type>

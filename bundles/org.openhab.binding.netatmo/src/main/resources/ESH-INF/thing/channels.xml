@@ -81,7 +81,7 @@
 
 	<channel-type id="ThermRelayCmd" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Heating status</label>
+		<label>Heating Status</label>
 		<description>Indicates whether the furnace is heating or not</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -143,7 +143,7 @@
 
 	<channel-type id="setpointEndTime" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Setpoint end</label>
+		<label>Setpoint End</label>
 		<description>Thermostat goes back to schedule after that timestamp.</description>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM" />
 	</channel-type>
@@ -334,7 +334,7 @@
 
 	<channel-type id="homeEvent">
 		<kind>trigger</kind>
-		<label>Home event</label>
+		<label>Home Event</label>
 		<description>Home event</description>
 		<event>
 			<options>

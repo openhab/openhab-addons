@@ -150,7 +150,7 @@
 				</options>
 			</parameter>
 			<parameter name="refresh" type="integer" min="5" required="false" unit="min">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
 				<default>30</default>
 			</parameter>
@@ -446,13 +446,13 @@
 
 	<channel-type id="icon" advanced="true">
 		<item-type>Image</item-type>
-		<label>Weather icon</label>
+		<label>Weather Icon</label>
 		<description>Icon representing the weather conditions</description>
 	</channel-type>
 
 	<channel-type id="iconKey" advanced="true">
 		<item-type>String</item-type>
-		<label>Weather icon key</label>
+		<label>Weather Icon Key</label>
 		<description>Key used in the icon URL</description>
 	</channel-type>
 

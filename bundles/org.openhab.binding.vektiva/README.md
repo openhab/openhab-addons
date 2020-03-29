@@ -1,22 +1,18 @@
 # Vektiva Binding
 
-This binding allows control of Vektiva products. (http://vektiva.com)
+This binding allows control of [Vektiva](https://vektiva.com) products.
 
 ## Supported Things
 
-The currently supported thing is Smarwi (https://vektiva.com/smarwi)
+The only supported thing is the [SMARWI](https://vektiva.com/en/about-smarwi/how-it-works).
 
 ## Discovery
 
-The automatic discovery is not currently supported by thing's API.
+Automatic discovery is currently not supported by the Vektiva API.
 
-## Binding Configuration
+## SMARWI Configuration
 
-This binding does not require specific configuration.
-
-## Smarwi Configuration
-
-To manually add a Smarwi thing just enter the local network IP address of the device. 
+To manually add a SMARWI thing just enter the local network IP address of the device. 
 If you want to change the polling frequency of thing availability and status, please change the advanced parameter _refreshInterval_. 
 If you are running 203.2.4 or newer firmware you can enable the websockets support for better user experience by setting the _useWebSockets_ parameter.
 
@@ -24,10 +20,10 @@ If you are running 203.2.4 or newer firmware you can enable the websockets suppo
 
 The exposed channels are :
 
-| name | type | descripton |
-| --- |:---:|:-----:|
-| control |  Rollershutter | It reacts to standard roller shutter commands _UP/DOWN/STOP_. The percentual closure (dimmer) is also supported - you can partially open window, but thing state is only open/close. |
-| status | String | Shows the window status (Stopped, Moving, Not ready, Blocked) |
+| Name    | Type           | Description |
+| ------- |:--------------:|:-----------:|
+| control | Rollershutter  | It reacts to standard roller shutter commands _UP/DOWN/STOP_. The percentual closure (dimmer) is also supported - you can partially open window, but thing state is only open/close. |
+| status  | String         | Shows the window status (Stopped, Moving, Not ready, Blocked) |
 
 ## Full Example
 

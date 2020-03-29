@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="pentair">
 		<label>Pentair Pool Controller</label>
-		<description>A Pentair pool control thing represents a Autelis pool controller for Pentair systems</description>
+		<description>A Pentair pool control thing represents an Autelis pool controller for Pentair systems</description>
 		<channels>
 			<channel id="system-runstate" typeId="system-runstate" />
 			<channel id="system-model" typeId="system-model" />
@@ -127,6 +127,7 @@
 			<channel id="temp-pooltemp" typeId="temp-pooltemp" />
 			<channel id="temp-spatemp" typeId="temp-spatemp" />
 			<channel id="temp-airtemp" typeId="temp-airtemp" />
+			<channel id="temp-soltemp" typeId="temp-soltemp" />
 			<channel id="temp-tempunits" typeId="temp-tempunits" />
 			<channel id="temp-htpump" typeId="temp-htpump" />
 			<channel id="pumps-pump1" typeId="pumps-pump1" />
@@ -179,7 +180,7 @@
 				<label>Host or IP</label>
 				<description>The host name or IP address of the Autelis Controller.</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65335" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<context>network-address</context>
 				<label>Port</label>
 				<description>The port the Autelis Controller is listening on.</description>
@@ -194,7 +195,7 @@
 				<description>The password to use when connecting to a Autelis Controller.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>5</default>
 			</parameter>
@@ -335,7 +336,15 @@
 	<channel-type id="temp-airtemp">
 		<item-type>Number</item-type>
 		<label>Air Temperature</label>
-		<description>The current air temperature</description>
+		<description>The current temperature measured by the air sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="temp-soltemp">
+		<item-type>Number</item-type>
+		<label>Solar Temperature</label>
+		<description>The current temperature measured by the solar sensor</description>
 		<category>Temperature</category>
 		<state readOnly="true">
 		</state>

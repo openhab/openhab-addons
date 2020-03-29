@@ -18,7 +18,8 @@ If there is need for another architecture/platform, please open a [ticket on Git
 ## Supported Things
 
 All AllPlay compatible speakers are supported by this binding.
-This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html). All AllPlay speakers are registered as an audio sink in the framework.
+This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html).
+All AllPlay speakers are registered as an audio sink in the framework.
 
 ## Discovery
 

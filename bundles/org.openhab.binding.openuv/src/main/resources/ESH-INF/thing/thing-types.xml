@@ -41,13 +41,14 @@
 			<channel id="OzoneTime" typeId="OzoneTime" />
 			<channel id="UVTime" typeId="UVTime" />
 			<channel id="SafeExposure" typeId="SafeExposure" />
+			<channel id="elevation" typeId="elevation" />
 		</channels>
 		
 		<representation-property>location</representation-property>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="3">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
 				<default>10</default>
 			</parameter>
@@ -128,6 +129,13 @@
 				<default>2</default>
 			</parameter>
 		</config-description>
+	</channel-type>
+
+	<channel-type id="elevation">
+		<item-type>Number:Angle</item-type>
+		<label>Elevation</label>
+		<description>The elevation of the sun</description>
+		<state pattern="%.2f %unit%" />
 	</channel-type>
 	
 	<!-- UV Max Event Channel Type -->

@@ -9,7 +9,7 @@ Feel free to delete any comment sections in the template (starting with "<!--").
 
 <!--
 Please provide a PR summary in the *Title* above, according to the following schema:
-- If related to one specific addon: Mention the addon shortname in square brackets
+- If related to one specific add-on: Mention the add-on shortname in square brackets
   e.g. "[exec]", "[netatmo]" or "[tesla]"
 - If the PR is work in progress: Add "[WIP]"
 - Give a short meaningful description in imperative mood
@@ -34,7 +34,7 @@ Please keep the following in mind:
 - Did you provide a link to any prior discussion, e.g. an issue or community forum thread?
 - Did you describe new features for the end user?
 - Did you describe any noteworthy changes in usage for the end user?
-- Was the documentation updated accordingly, e.g. the addon README?
+- Was the documentation updated accordingly, e.g. the add-on README?
 - Does your contribution follow the coding guidelines:
   https://www.openhab.org/docs/developer/development/guidelines.html
 - Did you check for any (relevant) issues from the static code analysis:
@@ -49,10 +49,10 @@ Please keep the following in mind:
 Your Pull Request will automatically be built and available under the following folder:
 https://openhab.jfrog.io/openhab/libs-pullrequest-local/org/openhab/
 
-It's a good practice to add an URL to your built JAR in this Pull Request description,
-so it's easier for the community to test your Add-on.
+It is a good practice to add a URL to your built JAR in this Pull Request description,
+so it is easier for the community to test your Add-on.
 If your Pull Request contains a new binding, it will likely take some time
-before it's reviewed and processed by maintainers.
+before it is reviewed and processed by maintainers.
 That said, consider submitting your Add-on in the Eclipse IoT Marketplace
 See this thread for more info:
 https://community.openhab.org/t/24491

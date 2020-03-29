@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaOccupancySensorHandler} is responsible for handling commands,
@@ -26,13 +24,12 @@ import java.util.HashMap;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaContactSensorHandler {
+public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaOccupancySensorHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(CONTACT, "core:OccupancyState");
-        }};
+        stateNames.put(CONTACT, "core:OccupancyState");
+        stateNames.put(SENSOR_DEFECT, SENSOR_DEFECT_STATE);
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,24 @@
  */
 package org.openhab.binding.mqtt.generic;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,7 +40,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.core.util.UIDUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
+import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +75,16 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractMQTTThingHandler extends BaseThingHandler implements ChannelStateUpdateListener {
+public abstract class AbstractMQTTThingHandler extends BaseThingHandler
+        implements ChannelStateUpdateListener, AvailabilityTracker {
     private final Logger logger = LoggerFactory.getLogger(AbstractMQTTThingHandler.class);
     // Timeout for the entire tree parsing and subscription
     private final int subscribeTimeout;
 
     protected @Nullable MqttBrokerConnection connection;
+
+    private AtomicBoolean messageReceived = new AtomicBoolean(false);
+    private Map<String, @Nullable ChannelState> availabilityStates = new ConcurrentHashMap<>();
 
     public AbstractMQTTThingHandler(Thing thing, int subscribeTimeout) {
         super(thing);
@@ -79,7 +97,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param channelUID The channelUID
      * @return A channel state. May be null.
      */
-    abstract public @Nullable ChannelState getChannelState(ChannelUID channelUID);
+    public abstract @Nullable ChannelState getChannelState(ChannelUID channelUID);
 
     /**
      * Start the topic discovery and subscribe to all channel state topics on all {@link ChannelState}s.
@@ -88,13 +106,20 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    abstract protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
 
     /**
      * Called when the MQTT connection disappeared.
      * You should clean up all resources that depend on a working connection.
      */
     protected void stop() {
+        availabilityStates.values().stream().map(s -> {
+            if (s != null) {
+                return s.stop();
+            }
+            return CompletableFuture.allOf();
+        }).collect(FutureCollector.allOf()).join();
+        resetMessageReceived();
     }
 
     @Override
@@ -106,23 +131,36 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         final @Nullable ChannelState data = getChannelState(channelUID);
 
         if (data == null) {
-            logger.warn("Channel {} not supported", channelUID.getId());
-            if (command instanceof RefreshType) {
-                updateState(channelUID.getId(), UnDefType.UNDEF);
+            logger.warn("Channel {} not supported!", channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            State state = data.getCache().getChannelState();
+            if (state instanceof UnDefType) {
+                logger.debug("Channel {} received REFRESH but no value cached, ignoring", channelUID);
+            } else {
+                updateState(channelUID, state);
             }
             return;
         }
 
-        if (command instanceof RefreshType || data.isReadOnly()) {
-            updateState(channelUID.getId(), data.getCache().getChannelState());
+        if (data.isReadOnly()) {
+            logger.trace("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 
         final CompletableFuture<Boolean> future = data.publishValue(command);
-        future.exceptionally(e -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            return false;
-        }).thenRun(() -> logger.debug("Successfully published value {} to topic {}", command, data.getCommandTopic()));
+        future.handle((v, ex) -> {
+            if (ex != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getLocalizedMessage());
+                logger.debug("Failed publishing value {} to topic {}: {}", command, data.getCommandTopic(),
+                        ex.getMessage());
+            } else {
+                logger.debug("Successfully published value {} to topic {}", command, data.getCommandTopic());
+            }
+            return null;
+        });
     }
 
     @Override
@@ -141,6 +179,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
 
         AbstractBrokerHandler h = getBridgeHandler();
         if (h == null) {
+            resetMessageReceived();
             logger.warn("Bridge handler not found!");
             return;
         }
@@ -149,6 +188,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         try {
             connection = h.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+            resetMessageReceived();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Bridge handler has no valid broker connection!");
             return;
@@ -159,7 +199,16 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         // We do not set the thing to ONLINE here in the AbstractBase, that is the responsibility of a derived
         // class.
         try {
-            start(connection).thenApply(e -> true).exceptionally(e -> {
+            Collection<CompletableFuture<@Nullable Void>> futures = availabilityStates.values().stream().map(s -> {
+                if (s != null) {
+                    return s.start(connection, scheduler, 0);
+                }
+                return CompletableFuture.allOf();
+            }).collect(Collectors.toList());
+
+            futures.add(start(connection));
+
+            futures.stream().collect(FutureCollector.allOf()).exceptionally(e -> {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 return null;
             }).get(subscribeTimeout, TimeUnit.MILLISECONDS);
@@ -209,7 +258,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         try {
             unsubscribeAll().get(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.warn("unsubcription on disposal failed for {}: ", thing.getUID(), e);
+            logger.warn("unsubscription on disposal failed for {}: ", thing.getUID(), e);
         }
         connection = null;
         super.dispose();
@@ -224,11 +273,17 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
 
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
+        if (messageReceived.compareAndSet(false, true)) {
+            calculateThingStatus();
+        }
         super.updateState(channelUID, value);
     }
 
     @Override
     public void triggerChannel(ChannelUID channelUID, String event) {
+        if (messageReceived.compareAndSet(false, true)) {
+            calculateThingStatus();
+        }
         super.triggerChannel(channelUID, event);
     }
 
@@ -249,4 +304,72 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
     public void setConnection(MqttBrokerConnection connection) {
         this.connection = connection;
     }
+
+    @Override
+    public void addAvailabilityTopic(String availability_topic, String payload_available,
+            String payload_not_available) {
+        availabilityStates.computeIfAbsent(availability_topic, topic -> {
+            Value value = new OnOffValue(payload_available, payload_not_available);
+            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availablility");
+            ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
+            ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),
+                    channelUID, value, new ChannelStateUpdateListener() {
+                        @Override
+                        public void updateChannelState(ChannelUID channelUID, State value) {
+                            calculateThingStatus();
+                        }
+
+                        @Override
+                        public void triggerChannel(ChannelUID channelUID, String eventPayload) {
+                        }
+
+                        @Override
+                        public void postChannelCommand(ChannelUID channelUID, Command value) {
+                        }
+                    });
+            MqttBrokerConnection connection = getConnection();
+            if (connection != null) {
+                state.start(connection, scheduler, 0);
+            }
+
+            return state;
+        });
+    }
+
+    @Override
+    public void removeAvailabilityTopic(@NonNull String availability_topic) {
+        availabilityStates.computeIfPresent(availability_topic, (topic, state) -> {
+            if (connection != null && state != null) {
+                state.stop();
+            }
+            return null;
+        });
+    }
+
+    @Override
+    public void clearAllAvailabilityTopics() {
+        Set<String> topics = new HashSet<>(availabilityStates.keySet());
+        topics.forEach(this::removeAvailabilityTopic);
+    }
+
+    @Override
+    public void resetMessageReceived() {
+        if (messageReceived.compareAndSet(true, false)) {
+            calculateThingStatus();
+        }
+    }
+
+    protected void calculateThingStatus() {
+        final boolean availabilityTopicsSeen;
+
+        if (availabilityStates.isEmpty()) {
+            availabilityTopicsSeen = true;
+        } else {
+            availabilityTopicsSeen = availabilityStates.values().stream().allMatch(
+                    c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class)));
+        }
+        updateThingStatus(messageReceived.get(), availabilityTopicsSeen);
+    }
+
+    protected abstract void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen);
 }

@@ -1,15 +1,15 @@
 # Vitotronic Binding
 
-Viessmann heating systems with Vitotronic has a optolink Interface for maintenance.
+Viessmann heating systems with Vitotronic has an optolink Interface for maintenance.
 This interface can use for get/set data in the heating system. [see on openv](https://github.com/openv/openv/wiki/)
 
-The Vitotronic binding is a solution to bind this interface into openHAB2.
-It supports the separation of the heating adaption from the integration in [openHAB2](http://www.openhab.org/).
+The Vitotronic binding is a solution to bind this interface into openHAB.
+It supports the separation of the heating adaption from the integration in [openHAB](https://www.openhab.org/).
 
-![Architectur](doc/architecture_vitotronic.jpg)
+![Architecture](doc/architecture_vitotronic.jpg)
 
-The adapter transform the address oriented raw interface of the Vitotronic to a abstract format.
-The adapter itself is not a part of the openhab2 binding.
+The adapter transforms the address oriented raw interface of the Vitotronic to an abstract format.
+The adapter itself is not a part of the binding.
 [A alpha version is available here](https://github.com/steand/optolink)
 [More Information about the adapter](https://github.com/steand/optolink/wiki)
 
@@ -35,9 +35,13 @@ Note: The mapping of things and channels to the heating system addresses must be
 
 ## Discovery
 
-The binding discovers the adapter with broadcast and put the found `vitotronic:bridge` into the inbox. For automatic detection the adapter and **openHAB** must be on the same LAN. The discovery itself must be start in the Paper-UI.
-If the bridge isn't on the same LAN the bridge can also add manually. In this case the `IP-Address` and the `adapterID` is required.
-Íf the `vitotronic:bridge` added a second discovery will be start. It discovers all things, define in the adapter and put found things into the inbox.
+The binding discovers the adapter with broadcast and put the found `vitotronic:bridge` into the inbox.
+For automatic detection the adapter and **openHAB** must be on the same LAN.
+The discovery itself must be start in the Paper UI.
+If the bridge isn't on the same LAN the bridge can also add manually.
+In this case the `IP-Address` and the `adapterID` is required.
+Íf the `vitotronic:bridge` added a second discovery will be start.
+It discovers all things, define in the adapter and put found things into the inbox.
 
 ## Binding Configuration
 
@@ -49,13 +53,16 @@ Binding itself has 4 configuration parameters:
 *   refreshInterval (Refresh time for data in seconds. Default: 600 seconds)
 
 If the adapter is automatic discovered the ipAddress, and adapterID will be set by discovery.
-The rereshInterval can be set between 60 and 600 seconds. The minimal setting is dependent of the performance of the adapter.
+The rereshInterval can be set between 60 and 600 seconds.
+The minimal setting is dependent of the performance of the adapter.
 
 
 
 ## Thing Configuration
 
-There is no configuration of Things necessary. Only some channels are set active by default. If this channels are defined in the adapter and will be used in **openHAB**  it must set active manually.
+There is no configuration of Things necessary.
+Only some channels are set active by default.
+If this channels are defined in the adapter and will be used in **openHAB**  it must set active manually.
 Don't change the Thing Name. It is the reference to the name in the adapter.
 
 ## Channels
@@ -124,6 +131,3 @@ The follow channels are implemented:
 | temperature            | Number    | Generic temperature sensor                            |
 | valve                  | Number    | Value of a generic valve                              |
 
-## Example
-
-t.b.d

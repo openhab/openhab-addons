@@ -19,11 +19,11 @@
 		</parameter-group>
 		<parameter name="ipAddress" type="text" required="true" groupName="network">
 			<context>network-address</context>
-			<label>IP address</label>
+			<label>IP Address</label>
 			<description>The local IP address or hostname of the FRITZ!Box.</description>
 			<default>fritz.box</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335" groupName="network">
+		<parameter name="port" type="integer" required="false" min="1" max="65535" groupName="network">
 			<label>Port</label>
 			<description>Port of the FRITZ!Box.</description>
 		</parameter>
@@ -85,11 +85,11 @@
 		</parameter>
 		<parameter name="ipAddress" type="text" required="true" groupName="network">
 			<context>network-address</context>
-			<label>IP address</label>
+			<label>IP Address</label>
 			<description>The localIP address or hostname of the FRITZ!Powerline.</description>
 			<default>fritz.powerline</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335" groupName="network">
+		<parameter name="port" type="integer" required="false" min="1" max="65535" groupName="network">
 			<label>Port</label>
 			<description>Port of the FRITZ!Powerline.</description>
 		</parameter>
@@ -143,7 +143,7 @@
 
 	<config-description uri="channel-type:avmfritz:temperature">
 		<parameter name="offset" type="decimal" required="false" readOnly="true" unit="Cel">
-			<label>Temperature offset</label>
+			<label>Temperature Offset</label>
 			<description>Current temperature offset (in °C).</description>
 			<default>0</default>
 		</parameter>

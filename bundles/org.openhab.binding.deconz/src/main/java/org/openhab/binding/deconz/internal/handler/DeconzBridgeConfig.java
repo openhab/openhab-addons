@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,16 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class DeconzBridgeConfig {
     public String host = "";
+    public int httpPort = 80;
+    public int port = 0;
     public @Nullable String apikey;
     int timeout = 2000;
+
+    public String getHostWithoutPort() {
+        String hostWithoutPort = host;
+        if (hostWithoutPort.indexOf(':') > 0) {
+            hostWithoutPort = hostWithoutPort.substring(0, hostWithoutPort.indexOf(':'));
+        }
+        return hostWithoutPort;
+    }
 }

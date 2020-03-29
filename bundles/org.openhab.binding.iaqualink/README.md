@@ -3,13 +3,13 @@
 This binding supports:
 
 * Any iAquaLink based pool system
-* Reading auxiliary, temperature, pump, chemistry and system values  
+* Reading auxiliary, temperature, pump, chemistry and system values
 * Controlling system, auxiliary, lighting, and temperature settings
 
 ## Binding Configuration
 
-The binding requires the iAquaLink user name and password.  
-If you have more then one pool system registered to an account, you may optionally specify the pool serial ID/Number to use, otherwise the first pool controller will be used. 
+The binding requires the iAquaLink user name and password.
+If you have more then one pool system registered to an account, you may optionally specify the pool serial ID/Number to use, otherwise the first pool controller will be used.
 
 
 ## Manual Thing Configuration
@@ -21,12 +21,14 @@ Thing iaqualink:controller:pool [ userName="user@domain.com", password="somepass
 ## Channels
 
 
-The following is a list of supported channels.  
+The following is a list of supported channels.
 Auxiliary and OneTouch channels will be dynamically added depending on what a system reports as being supported.
 
-Auxiliary channels that are of a number type represent lighting modes (typically 0-15), Auxiliary channels that are dimmer types can set the light value in increments of 25 (0,25,50,750,100).  The Auxiliary channel type will be dynamically assigned based on the controller configuration. 
+Auxiliary channels that are of a number type represent lighting modes (typically 0-15).
+Auxiliary channels that are dimmer types can set the light value in increments of 25 (0,25,50,750,100).
+The Auxiliary channel type will be dynamically assigned based on the controller configuration. 
 
-Heater status can be OFF (0), Enabled/ON (3), or Heating (1).  
+Heater status can be OFF (0), Enabled/ON (3), or Heating (1).
 
 | Channel Type ID     | Item Type                  |
 |---------------------|----------------------------|
@@ -60,11 +62,11 @@ Heater status can be OFF (0), Enabled/ON (3), or Heating (1).
 ### Color/Mood Auxiliary Channels
 
 String auxiliary channels can control a variety of lighting moods/colors depending on what type of lighting system is installed.
-The following is a table of aux_n channel values (String) to lighting set descriptions values. 
+The following is a table of aux_n channel values (String) to lighting set descriptions values.
 The binding will automatically detect which color system is enabled and add the appropriate channel type with the following option labels.
 Colors can be set, but only On or Off is reported back as the current state of the channel.
 
-| String Value | jandy Color    | Jandy Led Water Colors | Pentair SAm/SAL | Hayward Universal | Pentair intelliBrite |
+| String Value | jandy Color    | Jandy LED Water Colors | Pentair SAm/SAL | Hayward Universal | Pentair intelliBrite |
 |--------------|----------------|------------------------|-----------------|-------------------|----------------------|
 | "off"        | Off            | Off                    | Off             | Off               | Off                  |
 | "on"         | On             | On                     | On              | On                | On                   |

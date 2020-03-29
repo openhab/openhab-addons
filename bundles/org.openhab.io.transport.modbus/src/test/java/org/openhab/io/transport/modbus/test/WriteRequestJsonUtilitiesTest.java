@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,9 @@ import org.junit.Test;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 public class WriteRequestJsonUtilitiesTest {
 
     @Test

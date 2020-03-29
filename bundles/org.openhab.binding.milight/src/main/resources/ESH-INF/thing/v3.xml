@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridgeV3">
-		<label>Milight Bridge (first edition)</label>
+		<label>Milight Bridge (first Edition)</label>
 		<description>A Milight/Easybulb bridge. This bridge cannot handle newer light bulbs (2016+) of the aforementioned
 			manufacturers.</description>
 
@@ -16,7 +16,7 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="repeat" type="integer" required="false" min="0" max="5">
-				<label>Repeat commands</label>
+				<label>Repeat Commands</label>
 				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out
 					of bridge radio range and it sometimes helps to send commands multiple times.
 				</description>
@@ -24,7 +24,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="delayTime" type="integer" required="false" min="0" max="400">
-				<label>Wait between commands (ms)</label>
+				<label>Wait Between Commands (ms)</label>
 				<description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but
 					usually sufficient to just wait 50ms. If the value is too high, commands queue up.
 				</description>
@@ -32,7 +32,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
-				<label>Custom port</label>
+				<label>Custom Port</label>
 				<description>You can set a custom port that will take precedence over the default port which is selected depending
 					on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
 				</description>
@@ -49,7 +49,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshTime" type="integer" min="5" max="300">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Interval in seconds to check for device presence. The Bridge ID is used to check if the IP is still the
 					right one.
 				</description>
@@ -63,7 +63,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridgeV3" />
 		</supported-bridge-type-refs>
-		<label>Color bulb (first edition)</label>
+		<label>Color Bulb (first Edition)</label>
 		<description>RGB bulb with white channel. No saturation control. If the set saturation is below a threshold of 50%,
 			the bulb turns into white mode.</description>
 		<category>Lightbulb</category>
@@ -91,7 +91,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridgeV3" />
 		</supported-bridge-type-refs>
-		<label>Cold/warm white bulb (first edition)</label>
+		<label>Cold/warm White Bulb (first Edition)</label>
 		<description>White bulb for the older bridge (up to 2016)</description>
 		<category>Lightbulb</category>
 

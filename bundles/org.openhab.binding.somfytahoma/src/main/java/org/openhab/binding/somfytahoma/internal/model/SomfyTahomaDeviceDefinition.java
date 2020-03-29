@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyTahomaDeviceDefinition} holds information about a device definition.
@@ -24,20 +25,29 @@ import java.util.ArrayList;
 @NonNullByDefault
 public class SomfyTahomaDeviceDefinition {
 
-    private ArrayList<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
+    private List<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
+    private List<SomfyTahomaDeviceDefinitionState> states = new ArrayList<>();
 
-    public ArrayList<SomfyTahomaDeviceDefinitionCommand> getCommands() {
+    public List<SomfyTahomaDeviceDefinitionCommand> getCommands() {
         return commands;
+    }
+
+    public List<SomfyTahomaDeviceDefinitionState> getStates() {
+        return states;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{ ");
-        for( SomfyTahomaDeviceDefinitionCommand cmd: commands) {
+        sb.append("Commands: { ");
+        for (SomfyTahomaDeviceDefinitionCommand cmd : commands) {
             sb.append(cmd.toString()).append("; ");
         }
 
+        sb.append("}\nStates: {");
+        for (SomfyTahomaDeviceDefinitionState state : states) {
+            sb.append(state.toString()).append("; ");
+        }
         sb.append("}");
         return sb.toString();
     }

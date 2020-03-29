@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_OPENCLOSE_SENSOR = new ThingTypeUID(BINDING_ID, "openclosesensor");
     public static final ThingTypeUID THING_TYPE_WATERLEAKAGE_SENSOR = new ThingTypeUID(BINDING_ID,
             "waterleakagesensor");
+    public static final ThingTypeUID THING_TYPE_FIRE_SENSOR = new ThingTypeUID(BINDING_ID, "firesensor");
     public static final ThingTypeUID THING_TYPE_ALARM_SENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
     public static final ThingTypeUID THING_TYPE_VIBRATION_SENSOR = new ThingTypeUID(BINDING_ID, "vibrationsensor");
 
@@ -62,8 +63,11 @@ public class BindingConstants {
     public static final String CHANNEL_DAYLIGHT = "daylight";
     public static final String CHANNEL_BUTTON = "button";
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
+    public static final String CHANNEL_GESTURE = "gesture";
+    public static final String CHANNEL_GESTUREEVENT = "gestureevent";
     public static final String CHANNEL_OPENCLOSE = "open";
     public static final String CHANNEL_WATERLEAKAGE = "waterleakage";
+    public static final String CHANNEL_FIRE = "fire";
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_TAMPERED = "tampered";
     public static final String CHANNEL_VIBRATION = "vibration";
@@ -72,15 +76,16 @@ public class BindingConstants {
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_HTTP_PORT = "httpPort";
     public static final String CONFIG_APIKEY = "apikey";
 
     public static final String UNIQUE_ID = "uid";
 
-    public static String url(String host, @Nullable String apikey, @Nullable String endpointType,
+    public static String url(String host, int port, @Nullable String apikey, @Nullable String endpointType,
             @Nullable String endpointID) {
         StringBuilder url = new StringBuilder();
         url.append("http://");
-        url.append(host);
+        url.append(host).append(":").append(port);
         url.append("/api/");
         if (apikey != null) {
             url.append(apikey);

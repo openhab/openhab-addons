@@ -63,7 +63,7 @@
 
 	<channel-type id="uvIntensityLastReported" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>UV intensity Measurement Time</label>
+		<label>UV Intensity Measurement Time</label>
 		<description>Timestamp when data was measured</description>
 		<state readOnly="true"/>
 	</channel-type>

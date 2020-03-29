@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,9 @@ import java.util.Collections;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.junit.Test;
 
+/**
+ * @author Jochen Klein - Initial contribution
+ */
 public class HaIDTests {
 
     @Test

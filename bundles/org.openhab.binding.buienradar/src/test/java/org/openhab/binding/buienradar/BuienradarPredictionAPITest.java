@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,11 @@ import org.openhab.binding.buienradar.internal.buienradarapi.BuienradarParseExce
 import org.openhab.binding.buienradar.internal.buienradarapi.BuienradarPredictionAPI;
 import org.openhab.binding.buienradar.internal.buienradarapi.Prediction;
 
+/**
+ * Tests {@link BuienradarPredictionAPI}.
+ *
+ * @author Edwin de Jong - Initial contribution
+ */
 public class BuienradarPredictionAPITest {
     private static final ZonedDateTime NOW = ZonedDateTime.of(2019, 3, 10, 20, 37, 0, 0, ZoneId.of("Europe/Amsterdam"));
 

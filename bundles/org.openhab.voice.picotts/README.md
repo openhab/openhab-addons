@@ -17,7 +17,7 @@ https://aur.archlinux.org/packages/svox-pico-bin/
 ## Voices
 
 The following list are the only supported languages (as these are the languages supported by
-pico2wave, see also [the documentation of the debian package](https://packages.debian.org/de/wheezy/libttspico-utils)):
+pico2wave, see also [the documentation of the Debian package](https://packages.debian.org/de/wheezy/libttspico-utils)):
 
 ```
 German (de-DE)

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="f1x45-udp">
-		<label>UDP connected Nibe F1145 and F1245 Heat Pumps</label>
+		<label>UDP Connected Nibe F1145 and F1245 Heat Pumps</label>
 		<description></description>
 
 		<channel-groups>
@@ -24,12 +24,12 @@
 				<default>9999</default>
 			</parameter>
 			<parameter name="readCommandsPort" type="integer">
-				<label>UDP Port For Read Commands</label>
+				<label>UDP Port for Read Commands</label>
 				<description>UDP port to send read commands to the NibeGW.</description>
 				<default>9999</default>
 			</parameter>
 			<parameter name="writeCommandsPort" type="integer">
-				<label>UDP Port For Write Commands</label>
+				<label>UDP Port for Write Commands</label>
 				<description>UDP port to send write commands to the NibeGW.</description>
 				<default>10000</default>
 			</parameter>
@@ -51,7 +51,7 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
-				<label>Registers List For Write Commands</label>
+				<label>Registers List for Write Commands</label>
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 44266, 47004</description>
 				<default></default>
 			</parameter>
@@ -65,7 +65,7 @@
 	</thing-type>
 
 	<thing-type id="f1x45-serial">
-		<label>Serial port connected F1145 and F1245 Heat Pumps</label>
+		<label>Serial Port Connected F1145 and F1245 Heat Pumps</label>
 		<description></description>
 
 		<channel-groups>
@@ -96,22 +96,22 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
-				<label>Register List For Write Commands</label>
+				<label>Register List for Write Commands</label>
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 44266, 47004</description>
 				<default></default>
 			</parameter>
 			<parameter name="sendAckToMODBUS40" type="boolean">
-				<label>Enable Acknowledges To MODBUS40 Messages</label>
+				<label>Enable Acknowledges to MODBUS40 Messages</label>
 				<description>Binding emulates MODBUS40 device and send protocol acknowledges to heat pump.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="sendAckToRMU40" type="boolean">
-				<label>Enable Acknowledges To RMU40 Messages</label>
+				<label>Enable Acknowledges to RMU40 Messages</label>
 				<description>Binding emulates RMU40 device and send protocol acknowledges to heat pump.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="sendAckToSMS40" type="boolean">
-				<label>Enable Acknowledges To SMS40 Messages</label>
+				<label>Enable Acknowledges to SMS40 Messages</label>
 				<description>Binding emulates SMS40 device and send protocol acknowledges to heat pump.</description>
 				<default>false</default>
 			</parameter>
@@ -151,7 +151,7 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
-				<label>Register List For Write Commands</label>
+				<label>Register List for Write Commands</label>
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 44266, 47004</description>
 				<default></default>
 			</parameter>

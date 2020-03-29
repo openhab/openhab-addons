@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,9 +60,7 @@ import net.wimpi.modbus.util.AtomicCounter;
 import net.wimpi.modbus.util.SerialParameters;
 
 /**
- *
- * @author Sami Salonen
- *
+ * @author Sami Salonen - Initial contribution
  */
 public class IntegrationTestSupport extends JavaTest {
 

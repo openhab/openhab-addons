@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,9 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
+import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +46,15 @@ public class WebSocketConnection {
 
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
-    private final Map<String, ValueUpdateListener> valueListener = new HashMap<>();
-    private final Gson gson = new Gson();
+    private final Map<String, WebSocketValueUpdateListener> valueListener = new HashMap<>();
+    private final Gson gson;
     private boolean connected = false;
 
-    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client) {
+    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
         this.connectionListener = listener;
         this.client = client;
+        this.client.setMaxIdleTimeout(0);
+        this.gson = gson;
     }
 
     public void start(String ip) {
@@ -74,12 +78,12 @@ public class WebSocketConnection {
             connected = false;
             client.stop();
         } catch (Exception e) {
-            logger.debug("Error while closing connection: {}", e);
+            logger.debug("Error while closing connection", e);
         }
         client.destroy();
     }
 
-    public void registerValueListener(String sensorID, ValueUpdateListener listener) {
+    public void registerValueListener(String sensorID, WebSocketValueUpdateListener listener) {
         valueListener.put(sensorID, listener);
     }
 
@@ -98,9 +102,16 @@ public class WebSocketConnection {
     @OnWebSocketMessage
     public void onMessage(String message) {
         SensorMessage changedMessage = gson.fromJson(message, SensorMessage.class);
-        ValueUpdateListener listener = valueListener.get(changedMessage.id);
+        WebSocketValueUpdateListener listener = valueListener.get(changedMessage.id);
         if (listener != null) {
-            listener.websocketUpdate(changedMessage.id, changedMessage.state);
+            SensorConfig sensorConfig = changedMessage.config;
+            if (sensorConfig != null) {
+                listener.websocketConfigUpdate(changedMessage.id, sensorConfig);
+            }
+            SensorState sensorState = changedMessage.state;
+            if (sensorState != null) {
+                listener.websocketStateUpdate(changedMessage.id, sensorState);
+            }
         }
     }
 

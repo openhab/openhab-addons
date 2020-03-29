@@ -9,13 +9,13 @@
 
 	<config-description uri="thing-type:systeminfo:computerConfig">
 		<parameter name="interval_high" type="integer">
-			<label>Interval for high priority tasks</label>
+			<label>Interval for High Priority Tasks</label>
 			<description>Refresh interval in seconds.</description>
 			<default>1</default>
 		</parameter>
 
 		<parameter name="interval_medium" type="integer">
-			<label>Interval for medium priority tasks</label>
+			<label>Interval for Medium Priority Tasks</label>
 			<description>Refresh interval in seconds.</description>
 			<default>60</default>
 		</parameter>

@@ -1,6 +1,6 @@
 # Ruuvi Tag
 
-This extension adds support for [Ruuvi Tag](http://www.ruuvitag.com/) Sensor Beacons. 
+This extension adds support for [Ruuvi Tag](https://ruuvi.com/) Sensor Beacons. 
 
 ## Supported Things
 

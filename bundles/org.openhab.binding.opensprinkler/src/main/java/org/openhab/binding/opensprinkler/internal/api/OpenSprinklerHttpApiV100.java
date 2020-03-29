@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OpenSprinklerHttpApiV100} class is used for communicating with
@@ -126,14 +128,14 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public void openStation(int station) throws Exception {
+    public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
         if (station < 0 || station >= numberOfStations) {
             throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
                     + " but station " + station + " was requested to be opened.");
         }
 
         try {
-            http.sendHttpGet(getBaseUrl() + "sn" + station + "=1", null);
+            http.sendHttpGet(getBaseUrl() + "sn" + station + "=1&t=" + duration, null);
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
@@ -141,17 +143,13 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public void closeStation(int station) throws Exception {
+    public void closeStation(int station) throws CommunicationApiException, GeneralApiException {
         if (station < 0 || station >= numberOfStations) {
             throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
                     + " but station " + station + " was requested to be closed.");
         }
-        try {
-            http.sendHttpGet(getBaseUrl() + "sn" + station + "=0", null);
-        } catch (Exception exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
+
+        http.sendHttpGet(getBaseUrl() + "sn" + station + "=0", null);
     }
 
     @Override
@@ -259,6 +257,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     private static class JcResponse {
         public List<List<Integer>> ps;
+        @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
     }
 

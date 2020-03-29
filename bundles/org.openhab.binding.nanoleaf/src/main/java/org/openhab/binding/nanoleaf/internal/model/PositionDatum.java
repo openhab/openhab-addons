@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,45 +21,46 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class PositionDatum {
 
-    private Integer panelId;
+    private int panelId;
     @SerializedName("x")
-    private Integer posX;
+    private int posX;
     @SerializedName("y")
-    private Integer posY;
+    private int posY;
     @SerializedName("o")
-    private Integer orientation;
+    private int orientation;
 
-    public Integer getPanelId() {
+    public int getPanelId() {
         return panelId;
     }
 
-    public void setPanelId(Integer panelId) {
+    public void setPanelId(int panelId) {
         this.panelId = panelId;
     }
 
-    public Integer getPosX() {
+    public int getPosX() {
         return posX;
     }
 
-    public void setPosX(Integer x) {
+    public void setPosX(int x) {
         this.posX = x;
     }
 
-    public Integer getPosY() {
+    public int getPosY() {
         return posY;
     }
 
-    public void setPosY(Integer y) {
+    public void setPosY(int y) {
         this.posY = y;
     }
 
-    public Integer getOrientation() {
+    public int getOrientation() {
         return orientation;
     }
 
-    public void setOrientation(Integer o) {
+    public void setOrientation(int o) {
         this.orientation = o;
     }
 

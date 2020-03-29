@@ -35,7 +35,7 @@
 				<description>Partition In Exit Delay Mode</description>
 			</channel>
 			<channel id="partition_in_alarm" typeId="status">
-				<label>Partition In Alarm</label>
+				<label>Partition in Alarm</label>
 				<description>Partition In Alarm</description>
 			</channel>
 			<channel id="partition_opening_closing_mode" typeId="message">

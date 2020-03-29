@@ -1,6 +1,6 @@
 # Blukii
 
-This extension adds support for [Blukii](http://www.blukii.com/) Sensor Beacons. 
+This extension adds support for [Blukii](https://www.blukii.com/) Sensor Beacons. 
 
 ## Supported Things
 

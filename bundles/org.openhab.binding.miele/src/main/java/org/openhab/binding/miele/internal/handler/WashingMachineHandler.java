@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
+ * @author Martin Lepsy - fixed handling of empty JSON results
  */
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector> {
 
@@ -70,7 +71,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
                 }
             }
             // process result
-            if (result != null) {
+            if (isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

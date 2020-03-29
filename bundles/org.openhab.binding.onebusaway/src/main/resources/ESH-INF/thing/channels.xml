@@ -22,7 +22,7 @@
 
 	<channel-type id="routeEvent">
 		<kind>trigger</kind>
-		<label>Route event</label>
+		<label>Route Event</label>
 		<description>Route event</description>
 		<event>
 			<options>

@@ -2,8 +2,6 @@
     <feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <feature prerequisite="true">wrap</feature>
-        <bundle dependency="true">wrap:mvn:org.sputnikdev/bluetooth-manager-tinyb/1.3.3$Bundle-Name=Tinyb&amp;Bundle-SymbolicName=org.sputnikdev.bluetooth-manager-tinyb&amp;Bundle-Version=1.3.3</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>

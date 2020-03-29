@@ -1,7 +1,7 @@
 # Zoneminder Binding
 
 This binding offers integration to a ZoneMinder Server. It currently only offers to integrate to monitors (eg. cameras in ZoneMinder).
-It also only offers access to a limited set of values, as well as a even more limited option to update values in ZoneMinder.
+It also only offers access to a limited set of values, as well as an even more limited option to update values in ZoneMinder.
 It requires at least ZoneMinder 1.29 with API enabled (option 'OPT_USE_API' in ZoneMinder must be enabled).
 The option 'OPT_TRIGGERS' must be anabled to allow openHAB to trip the ForceAlarm in ZoneMinder.
 
@@ -22,7 +22,7 @@ ZoneMinder things can be configured either through the online configuration util
 The Bridge will not be autodiscovered, this behavior is by design.
 That is because the ZoneMinder API can be configured to communicate on custom ports, you can even change the url from the default /zm/ to something userdefined.
 That makes it meaningless to scan for a ZoneMinder Server.
-The Bridge must therefore be added manually, this can be done from PaperUI.
+The Bridge must therefore be added manually, this can be done from Paper UI.
 After adding the Bridge it will go ONLINE, and after a short while and the discovery process for monitors will start.
 When a new monitor is discovered it will appear in the Inbox.
 

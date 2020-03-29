@@ -15,16 +15,16 @@
 
 		<config-description>
 			<parameter name="macAddress" type="text" required="true">
-				<label>MAC address</label>
+				<label>MAC Address</label>
 				<description>The socket MAC address.</description>
 			</parameter>
 			<parameter name="hostAddress" type="text">
-				<label>Host address</label>
+				<label>Host Address</label>
 				<context>network-address</context>
 				<description>The socket Host address. The binding is able to discover the host address.</description>
 			</parameter>
 			<parameter name="updateInterval" type="integer" min="5">
-				<label>Update interval</label>
+				<label>Update Interval</label>
 				<description>Update time interval in seconds to request the status of the socket.</description>
 			</parameter>
 			<parameter name="vendor" type="text" required="true">

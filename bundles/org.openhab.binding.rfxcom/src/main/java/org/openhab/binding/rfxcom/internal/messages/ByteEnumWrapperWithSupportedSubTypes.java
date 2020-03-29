@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * An interface for all enums wrapping / mapping bytes
  *
- * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
+ * @author Martin van Wingerden - Initial contribution
  */
 interface ByteEnumWrapperWithSupportedSubTypes<T extends ByteEnumWrapper> extends ByteEnumWrapper {
     List<T> supportedBySubTypes();

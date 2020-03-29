@@ -45,28 +45,28 @@
 
 	<channel-type id="orientationX">
 		<item-type>Number</item-type>
-		<label>X Orientation of the device</label>
+		<label>X Orientation of the Device</label>
 		<state step="1" pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="orientationY">
 		<item-type>Number</item-type>
-		<label>Y Orientation of the device</label>
+		<label>Y Orientation of the Device</label>
 		<state step="1" pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="orientationZ">
 		<item-type>Number</item-type>
-		<label>Z Orientation of the device</label>
+		<label>Z Orientation of the Device</label>
 		<state step="1" pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="bedActivity">
 		<item-type>Number</item-type>
-		<label>Bed activity index</label>
+		<label>Bed Activity Index</label>
 		<state step="1" pattern="%d" readOnly="true">
 		</state>
 	</channel-type>

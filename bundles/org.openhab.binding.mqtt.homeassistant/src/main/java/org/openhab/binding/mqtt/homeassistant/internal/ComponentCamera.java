@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,8 +42,7 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelCo
 
         ImageValue value = new ImageValue();
 
-        buildChannel(cameraChannelID, value, channelConfiguration.name)
-                .listener(componentConfiguration.getUpdateListener())//
+        buildChannel(cameraChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.topic)//
                 .build();
     }

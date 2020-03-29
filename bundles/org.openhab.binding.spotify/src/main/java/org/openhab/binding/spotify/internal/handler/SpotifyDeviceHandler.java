@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -154,14 +154,16 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      */
     private boolean setOnlineStatus(boolean restricted) {
         updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.from(restricted));
+        final boolean statusUnknown = thing.getStatus() == ThingStatus.UNKNOWN;
+
         if (restricted) {
             // Only change status if device is currently online
-            if (thing.getStatus() == ThingStatus.ONLINE) {
+            if (thing.getStatus() == ThingStatus.ONLINE || statusUnknown) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "Restricted. No Web API commands will be accepted by this device.");
             }
             return false;
-        } else if (thing.getStatus() != ThingStatus.ONLINE) {
+        } else if (statusUnknown || thing.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
         return true;

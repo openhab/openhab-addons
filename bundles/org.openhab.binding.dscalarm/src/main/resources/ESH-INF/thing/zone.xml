@@ -27,7 +27,7 @@
 				<description>Zone Bypass Mode (OFF=Armed, ON=Bypassed)</description>
 			</channel>
 			<channel id="zone_in_alarm" typeId="status">
-				<label>Zone In Alarm</label>
+				<label>Zone in Alarm</label>
 				<description>Zone In Alarm</description>
 			</channel>
 			<channel id="zone_tamper" typeId="status">

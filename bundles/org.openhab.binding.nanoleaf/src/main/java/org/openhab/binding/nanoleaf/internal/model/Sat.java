@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,28 +12,32 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Represents saturation setting of the light panels
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Sat implements IntegerState {
 
-    private Integer value;
-    private Integer max;
-    private Integer min;
+    private int value;
+    private @Nullable Integer max;
+    private @Nullable Integer min;
 
     @Override
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
     @Override
-    public void setValue(Integer value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public Integer getMax() {
+    public @Nullable Integer getMax() {
         return max;
     }
 
@@ -41,7 +45,7 @@ public class Sat implements IntegerState {
         this.max = max;
     }
 
-    public Integer getMin() {
+    public @Nullable Integer getMin() {
         return min;
     }
 

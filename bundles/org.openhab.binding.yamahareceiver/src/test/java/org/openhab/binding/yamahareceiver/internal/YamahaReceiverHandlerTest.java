@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
         subject.setCallback(callback);
 
         doAnswer(a -> {
-            ((ConnectionStateListener) a.getArgument(1)).connectionEstablished(ctx.getConnection());
+            ((ConnectionStateListener) a.getArgument(1)).onConnectionCreated(ctx.getConnection());
             return null;
         }).when(protocolFactory).createConnection(anyString(), same(subject));
     }

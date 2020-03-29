@@ -99,7 +99,7 @@ Message format is as follows:
 
 `<pin>` is your PIN as entered on a keypad.
 
-**Note**: For security reasons please consider not storing your PIN in openhab configuration files.
+**Note**: For security reasons please consider not storing your PIN in openHAB configuration files.
 
 **Note2**: Please consult your alarm system manual how to enable `Quick Arm` feature. It is not enabled by default.
 

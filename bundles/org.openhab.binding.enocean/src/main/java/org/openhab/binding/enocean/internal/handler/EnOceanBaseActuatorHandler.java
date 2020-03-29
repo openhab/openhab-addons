@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,14 @@ package org.openhab.binding.enocean.internal.handler;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -35,7 +39,7 @@ import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 
 /**
  *
@@ -91,12 +95,39 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     }
 
     @Override
-    boolean validateConfig() {
-        if (super.validateConfig()) {
+    Collection<EEPType> getEEPTypes() {
+        Collection<EEPType> r = super.getEEPTypes();
+        if (sendingEEPType == null) {
+            return r;
+        }
 
+        return Collections.unmodifiableCollection(Stream
+                .concat(r.stream(), Collections.singletonList(sendingEEPType).stream()).collect(Collectors.toList()));
+    }
+
+    @Override
+    boolean validateConfig() {
+
+        EnOceanActuatorConfig config = getConfiguration();
+        if (config == null) {
+            configurationErrorDescription = "Configuration is not valid";
+            return false;
+        }
+
+        if (config.sendingEEPId == null || config.sendingEEPId.isEmpty()) {
+            configurationErrorDescription = "Sending EEP must be provided";
+            return false;
+        }
+
+        try {
+            sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
+        } catch (IllegalArgumentException e) {
+            configurationErrorDescription = "Sending EEP is not supported";
+            return false;
+        }
+
+        if (super.validateConfig()) {
             try {
-                sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
-                updateChannels(sendingEEPType, false);
 
                 if (sendingEEPType.getSupportsRefresh()) {
                     if (getConfiguration().pollingInterval > 0) {
@@ -117,7 +148,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 }
 
             } catch (Exception e) {
-                configurationErrorDescription = "Sending EEP is not supported";
+                configurationErrorDescription = "Configuration is not valid";
                 return false;
             }
 
@@ -217,11 +248,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
             if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
-                   .hasData()) {
-                ESP3Packet msg = eep.setSenderId(senderId)
-                                    .setDestinationId(destinationId)
-                                    .setSuppressRepeating(getConfiguration().suppressRepeating)
-                                    .getERP1Message();
+                    .hasData()) {
+                BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
+                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
             }

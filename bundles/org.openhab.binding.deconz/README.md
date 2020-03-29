@@ -1,12 +1,11 @@
 # Dresden Elektronik deCONZ Binding
 
 The Zigbee binding currently does not support the Dresden Elektronik Raspbee and Conbee Zigbee dongles.
-The manufacturer provides a companion app called deCONZ together with the mentioned hardware. deCONZ
-offers a documented real-time channel that this binding makes use of to bring support for all
-paired Zigbee sensors and switches.
+The manufacturer provides a companion app called deCONZ together with the mentioned hardware.
+deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee sensors and switches.
 
-deCONZ also acts as a HUE bridge. This binding is meant to be used together with the HUE binding
-which makes the lights and plugs available.
+deCONZ also acts as a HUE bridge.
+This binding is meant to be used together with the HUE binding which makes the lights and plugs available.
 
 ## Supported Things
 
@@ -26,6 +25,7 @@ These things are supported:
 | Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
 | Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
 | Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`        |
+| Fire Sensor                       | ZHAFire                           | `firesensor`         |
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 
@@ -38,14 +38,22 @@ Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online
 
 These configuration parameters are available:
 
-| Parameter | Description                                                   | Type      | Default   |
-| :-------- | :------------------------------------------------------------ | :-------: | :-------: |
-| host      | Host address (hostname/ip:port) of deCONZ interface           | string    | n/a       |
-| apikey    | Authorization API key (optional, can be filled automatically) | string    | n/a       |
+| Parameter | Description                                                                     | Type    | Default |
+|-----------|---------------------------------------------------------------------------------|---------|---------|
+| host      | Host address (hostname / ip) of deCONZ interface                                | string  | n/a     |
+| httpPort  | Port of deCONZ HTTP interface                                                   | string  | 80      |
+| port      | Port of deCONZ Websocket (optional, can be filled automatically) **(Advanced)** | string  | n/a     |
+| apikey    | Authorization API key (optional, can be filled automatically)                   | string  | n/a     |
+| timeout   | Timeout for asynchronous HTTP requests (in milliseconds)                        | integer | 2000    |
 
 The deCONZ bridge requires the IP address or hostname as a configuration value in order for the binding to know where to access it.
+If needed you can specify an optional port for the HTTP interface or the Websocket.
+The Websocket port can be filled automatically by requesting it via the HTTP interface - you only need to specify it if your deCONZ instance is running containerized.
 
-The API key is an optional value. If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value. Otherwise the field can be left empty and the binding will generate the key automatically. For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register. [See deCONZ documentation](http://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)
+The API key is an optional value.
+If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value.
+Otherwise the field can be left empty and the binding will generate the key automatically.
+For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register ([see deCONZ documentation](https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)).
 
 ### Textual Thing Configuration - Retrieving an API Key
 
@@ -55,14 +63,16 @@ If you use the textual configuration, the thing file without an API key will loo
 Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
 ```
 
-In this case, the API key is generated automatically as described above (the deCONZ bridge has to be unlocked). Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
-The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
+In this case, the API key is generated automatically as described above (the deCONZ bridge has to be unlocked).
+Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
+The generated key can be queried from the configuration using the openHAB console.
+To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
 
 ```
 things show deconz:deconz:homeserver
 ```
 
-Afterwards the displayed API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
+Afterwards the API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
 
 ```
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
@@ -81,19 +91,21 @@ The devices support some of the following channels:
 | voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
 | current         | Number:ElectricCurrent   |      R      | Current current in mA                                                                     | some powersensors                            |
 | button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch                                       |
+| gesture         | Number                   |      R      | A gesture that was performed with the switch                                              | switch                                       |
 | lightlux        | Number:Illuminance       |      R      | Current light illuminance in Lux                                                          | lightsensor                                  |
 | light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
-| dark            | Switch                   |      R      | Light level is below the darkness threshold.                                              | lightsensor, sometimes for presencesensor    |
-| daylight        | Switch                   |      R      | Light level is above the daylight threshold.                                              | lightsensor                                  |
+| dark            | Switch                   |      R      | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor    |
+| daylight        | Switch                   |      R      | Light level is above the daylight threshold                                               | lightsensor                                  |
 | temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors       |
 | humidity        | Number:Dimensionless     |      R      | Current humidity in %                                                                     | humiditysensor                               |
 | pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
 | open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
 | waterleakage    | Switch                   |      R      | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                           |
+| fire            | Switch                   |      R      | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                   |
 | alarm           | Switch                   |      R      | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                  |
 | tampered        | Switch                   |      R      | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                               |
 | vibration       | Switch                   |      R      | Status of vibration: `ON` = vibration was detected; `OFF` = no vibration                  | alarmsensor                                  |
-| light           | String                   |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                                   | daylightsensor                               |
+| light           | String                   |      R      | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                               |
 | value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
 | battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
@@ -104,11 +116,28 @@ Have a detailed look for [supported devices](https://github.com/dresden-elektron
 
 ### Trigger Channels
 
-The dimmer switch additionally supports a trigger channel.
+The dimmer switch additionally supports trigger channels.
 
-| Channel Type ID | Description               | Thing types |
-|-----------------|---------------------------|-------------|
-| buttonevent     | Event for switch pressed. | switch      |
+| Channel Type ID | Description              | Thing types |
+|-----------------|--------------------------|-------------|
+| buttonevent     | Event for switch pressed | switch      |
+| gestureevent    | Event for gestures       | switch      |
+
+**NOTE:** The `gestureevent` trigger channel is only available if the optional channel `gesture` is present.
+Both will be added during runtime if supported by the switch.
+`gestureevent` can trigger one of the following events:
+
+| Gesture                          | Event |
+|----------------------------------|-------|
+| GESTURE_NONE                     | 0     |
+| GESTURE_SHAKE                    | 1     |
+| GESTURE_DROP                     | 2     |
+| GESTURE_FLIP_90                  | 3     |
+| GESTURE_FLIP_180                 | 4     |
+| GESTURE_PUSH                     | 5     |
+| GESTURE_DOUBLE_TAP               | 6     |
+| GESTURE_ROTATE_CLOCKWISE         | 7     |
+| GESTURE_ROTATE_COUNTER_CLOCKWISE | 8     |
 
 ## Full Example
 

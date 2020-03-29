@@ -19,7 +19,7 @@ You might want to keep that in mind during product selection or task assignment.
 The Binding uses [Pcap4J](https://www.pcap4j.org/) in order to capture `ARP` and `BOOTP` requests send by the Amazon Dash Button.
 Buttons will hence only be usable within the same network as your openHAB instance.
 
-Start with installing libpcap (for Mac/Linux/UNIX) or WinPcap (for Windows) on your computer.
+Start with installing libpcap (for Mac/Linux/Unix) or WinPcap (for Windows) on your computer.
 They are native libraries that power the core functionalities of Pcap4J.
 
 **Note:**
@@ -28,7 +28,7 @@ Instructions for Debian/Ubuntu are given below.
 
 ### Installing libpcap on Debian/Ubuntu
 
-Installing [libpcap](http://www.tcpdump.org/) should be as simple as:
+Installing [libpcap](https://www.tcpdump.org/) should be as simple as:
 
 ```shell
 sudo apt-get install libpcap-dev

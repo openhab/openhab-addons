@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,6 +65,9 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
+            cloud.getToken();
+        }
         if (cloud.getThing().getStatus() == ThingStatus.ONLINE) {
             discoverPlants();
         }
@@ -72,8 +75,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        String msg = "start background discovery..";
-        logger.info(msg);
+        logger.debug("start background discovery..");
 
         if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
             discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, 
@@ -83,8 +85,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        String msg = "stop background discovery..";
-        logger.info(msg);
+        logger.debug("stop background discovery..");
 
         if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) {
             discoveryScheduler.cancel(true);

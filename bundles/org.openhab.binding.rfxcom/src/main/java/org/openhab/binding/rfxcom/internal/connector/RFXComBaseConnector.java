@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * RFXCOM connector for serial port communication.
  *
- * @author James Hewitt-Thomas
+ * @author James Hewitt-Thomas - Initial contribution
  */
 public abstract class RFXComBaseConnector implements RFXComConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(RFXComBaseConnector.class);

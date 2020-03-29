@@ -18,7 +18,7 @@ The binding will then create things for each module discovered which can be adde
 
 The binding attempts to discover The Konnected Alarm Panels via the UPnP service.
 The auto-discovery service of the binding will detect the ip address and port of the Konnected Alarm Panel.
-The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGI framework.
+The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGi framework.
 However, if it is unable to determine the ip address it will also attempt to use the network address service to obtain the ip address and port.
 In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to UPnP requests as documented.
 https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery
@@ -55,7 +55,7 @@ These parameters will tell the module to pulse the actuator for certain time per
 A momentary switch actuates a switch for a specified time (in milliseconds) and then reverts it back to the off state.
 This is commonly used with a relay module to actuate a garage door opener, or with a door bell to send a momentary trigger to sound the door bell.
 A beep/blink switch is like a momentary switch that repeats either a specified number of times or indefinitely.
-This is commonly used with a a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning.
+This is commonly used with a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning.
 It can also be used to blink lights.
 
 DSB1820 temperature probes.

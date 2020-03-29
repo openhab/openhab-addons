@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +45,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
@@ -76,6 +76,9 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     ChannelStateUpdateListener channelStateUpdateListener;
 
     @Mock
+    AvailabilityTracker availabilityTracker;
+
+    @Mock
     TransformationServiceProvider transformationServiceProvider;
 
     /**
@@ -94,14 +97,9 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
 
         // Wait for the EmbeddedBrokerService internal connection to be connected
         embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
-        embeddedConnection.setRetain(true);
-        embeddedConnection.setQos(1);
 
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "ha_mqtt");
-        connection.setQos(1);
-        connection.setRetain(true);
-        connection.setPersistencePath(Paths.get("subconn"));
         connection.start().get(1000, TimeUnit.MILLISECONDS);
         assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
 
@@ -110,7 +108,8 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
 
         // Create topic string and config for one example HA component (a Switch)
         testObjectTopic = "homeassistant/switch/node/" + ThingChannelConstants.testHomeAssistantThing.getId();
-        final String config = "{'name':'testname','state_topic':'" + testObjectTopic + "/state','command_topic':'" + testObjectTopic + "/set'}";
+        final String config = "{'name':'testname','state_topic':'" + testObjectTopic + "/state','command_topic':'"
+                + testObjectTopic + "/set'}";
 
         // Publish component configurations and component states to MQTT
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
@@ -159,9 +158,8 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
-        DiscoverComponents discover = spy(
-                new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing, scheduler,
-                        channelStateUpdateListener, gson, transformationServiceProvider));
+        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map
@@ -174,16 +172,16 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
             latch.countDown();
         };
 
-        // Start the discovery for 100ms. Forced timeout after 300ms.
+        // Start the discovery for 500ms. Forced timeout after 1500ms.
         HaID haID = new HaID(testObjectTopic + "/config");
-        CompletableFuture<Void> future = discover.startDiscovery(connection, 500, Collections.singleton(haID), cd)
+        CompletableFuture<Void> future = discover.startDiscovery(connection, 1000, Collections.singleton(haID), cd)
                 .thenRun(() -> {
                 }).exceptionally(e -> {
                     failure = e;
                     return null;
                 });
 
-        assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(1500, TimeUnit.MILLISECONDS));
         future.get(800, TimeUnit.MILLISECONDS);
 
         // No failure expected and one discovered result
@@ -204,9 +202,9 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
 
         haComponents.values().stream().map(e -> e.start(connection, scheduler, 100))
                 .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)).exceptionally(e -> {
-            failure = e;
-            return null;
-        }).get();
+                    failure = e;
+                    return null;
+                }).get();
 
         // We should have received the retained value, while subscribing to the channels MQTT state topic.
         verify(channelStateUpdateListener, timeout(1000).times(1)).updateChannelState(any(), any());

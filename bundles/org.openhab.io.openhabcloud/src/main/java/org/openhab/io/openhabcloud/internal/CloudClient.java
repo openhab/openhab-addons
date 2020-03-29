@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,7 +202,7 @@ public class CloudClient {
         }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                logger.debug("Socket.IO error: {}", args[0]);
+                logger.error("Error connecting to the openHAB Cloud instance: {}", args[0]);
             }
         }).on("request", new Emitter.Listener() {
             @Override

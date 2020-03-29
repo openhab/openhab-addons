@@ -7,7 +7,7 @@ feels wrong or incomplete.
 ## Build Environment
 
 For instructions on setting up your development environment, please
-see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/development/ide.html).
+see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/).
 
 ## Contribution guidelines
 
@@ -37,7 +37,7 @@ else is working on the same thing.
 ### Create issues...
 
 Any significant improvement should be documented as [a GitHub
-issue](https://github.com/openhab/openhab2-addons/issues?labels=enhancement&page=1&state=open) before anybody
+issue](https://github.com/openhab/openhab-addons/issues?labels=enhancement&page=1&state=open) before anybody
 starts working on it.
 
 ### ...but check for existing issues first!
@@ -86,7 +86,7 @@ The sign-off is a simple line at the end of the explanation for the
 patch, which certifies that you wrote it or otherwise have the right to
 pass it on as an open-source patch.  The rules are pretty simple: if you
 can certify the below (from
-[developercertificate.org](http://developercertificate.org/)):
+[developercertificate.org](https://developercertificate.org/)):
 
 ```
 Developer Certificate of Origin
@@ -142,7 +142,7 @@ On the command line you can use `git commit -s` to sign off the commit.
 
 * Step 1: learn the component inside out
 * Step 2: make yourself useful by contributing code, bugfixes, support etc.
-* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab2-addons/issues?labels=question&page=1&state=open)
+* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab-addons/issues?labels=question&page=1&state=open)
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!
@@ -150,7 +150,7 @@ You don't have to be a maintainer to make a difference on the project!
 ## Community Guidelines
 
 We want to keep the openHAB community awesome, growing and collaborative. We
-need your help to keep it that way. To help with this we've come up with some
+need your help to keep it that way. To help with this we have come up with some
 general guidelines for the community as a whole:
 
 * Be nice: Be courteous, respectful and polite to fellow community members: no

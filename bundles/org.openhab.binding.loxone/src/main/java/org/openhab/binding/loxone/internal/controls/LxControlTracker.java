@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -55,6 +55,6 @@ class LxControlTracker extends LxControl {
         super.initialize(config);
         ChannelUID id = addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
                 defaultChannelLabel, "Tracker", tags, null, () -> getStateStringValue(STATE_ENTRIES));
-        addChannelStateDescription(id, new StateDescription(null, null, null, null, true, null));
+        addChannelStateDescriptionFragment(id, StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
     }
 }

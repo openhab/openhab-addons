@@ -4,7 +4,7 @@ This binding allows you to integrate feeds in the openHAB environment.
 The Feed binding downloads the content, tracks for changes, and displays information like feed author, feed title and description, number of entries, last update date.
 
 It can be used in combination with openHAB rules to trigger events on feed change.
-It uses the [ROME library](http://rometools.github.io/rome/index.html) for parsing
+It uses the [ROME library](https://rometools.github.io/rome/index.html) for parsing
 and supports a wide range of popular feed formats - RSS 2.00, RSS 1.00, RSS 0.94, RSS 0.93, RSS 0.92, RSS 0.91 UserLand,
 RSS 0.91 Netscape, RSS 0.90, Atom 1.0, Atom 0.3.
 

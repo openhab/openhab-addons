@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class AccountsServlet extends HttpServlet {
         try {
             httpService.registerServlet(SERVLET_URL, this, null, httpService.createDefaultHttpContext());
         } catch (ServletException | NamespaceException e) {
-            logger.warn("Register servlet fails {}", e);
+            logger.warn("Register servlet fails", e);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxTags;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -75,7 +76,7 @@ class LxControlDimmer extends LxControl {
         super.initialize(config);
         LxCategory category = getCategory();
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
-            tags.add("Lighting");
+            tags.addAll(LxTags.LIGHTING);
         }
         addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER), defaultChannelLabel,
                 "Dimmer", tags, this::handleCommands, this::getChannelState);

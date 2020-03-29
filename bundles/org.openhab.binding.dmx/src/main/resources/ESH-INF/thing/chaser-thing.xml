@@ -15,18 +15,18 @@
 		</channels>
 		<config-description>
 			<parameter name="dmxid" type="text">
-				<label>DMX channel configuration</label>
+				<label>DMX Channel Configuration</label>
 				<description>Format is channel[,channel, ...] or channel[/width]</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="resumeafter" type="boolean">
-				<label>Resume after finish</label>
+				<label>Resume After Finish</label>
 				<description>resume old actions after this completes</description>
 				<default>false</default>
 				<required>false</required>
 			</parameter>
 			<parameter name="steps" type="text">
-				<label>Step configuration</label>
+				<label>Step Configuration</label>
 				<description>fadeTime:value[, ...]:holdTime </description>
 				<required>true</required>
 			</parameter>

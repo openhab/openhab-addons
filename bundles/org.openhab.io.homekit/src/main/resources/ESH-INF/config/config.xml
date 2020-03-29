@@ -7,18 +7,18 @@
 	<config-description uri="io:homekit">
 
 		<parameter-group name="core">
-			<label>Core configuration</label>
+			<label>Core Configuration</label>
 		</parameter-group>
 		<parameter-group name="thermostat">
-			<label>Thermostat settings</label>
+			<label>Thermostat Settings</label>
 			<description>General thermostat settings</description>
 		</parameter-group>
 		<parameter-group name="thermostatTargetHeatingCooling">
-			<label>Thermostat targetHeatingCooling mapping</label>
+			<label>Thermostat Target Heating/Cooling Mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
 		<parameter-group name="thermostatCurrentHeatingCooling">
-			<label>Thermostat currentHeatingCooling mapping</label>
+			<label>Thermostat Current Heating/Cooling Mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
 

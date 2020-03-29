@@ -2,35 +2,34 @@
 <thing:thing-descriptions bindingId="vitotronic"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Bridge Vitotronic Optolink adapter</label>
+		<label>Bridge Vitotronic Optolink Adapter</label>
 		<description>This bridge represents the Vitotronic Optolink adapter 
 		</description>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
-				<label>IP Address of the Optolink Adapter </label>
-				<description>The IP address of the Optolink adapter 
-				</description>
+				<label>IP Address</label>
+				<description>The IP address of the Optolink adapter</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1024"
 				max="49151">
 				<context>network-address</context>
-				<label>Optolink adapter port</label>
+				<label>Adapter Port</label>
 				<description>Port of the LAN gateway</description>
 				<default>31113</default>
 			</parameter>
 			<parameter name="adapterID" type="text" required="true">
-				<label>adapterID</label>
+				<label>Adapter ID</label>
 				<description>The ID of the adapter.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" min="60"
 				max="600">
 				<context>refresh</context>
-				<label>refreshInterval</label>
+				<label>Refresh Interval</label>
 				<description>Refreshtime in seconds.</description>
 				<default>300</default>
 			</parameter>

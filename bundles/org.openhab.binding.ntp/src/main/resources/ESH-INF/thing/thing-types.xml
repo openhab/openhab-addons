@@ -19,21 +19,21 @@
 				<default>0.pool.ntp.org</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="true" unit="s">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>
 					Interval that new time updates are posted to the event bus in seconds.
 				</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="refreshNtp" type="integer" required="true">
-				<label>NTP refresh frequency</label>
+				<label>NTP Refresh Frequency</label>
 				<description>
 					Number of updates before querying the NTP server.
 				</description>
 				<default>30</default>
 			</parameter>
 			<parameter name="serverPort" type="integer">
-				<label>Server port</label>
+				<label>Server Port</label>
 				<description>The port that the NTP server could use.</description>
 				<default>123</default>
 			</parameter>

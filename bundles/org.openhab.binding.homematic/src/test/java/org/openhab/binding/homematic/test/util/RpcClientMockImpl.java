@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,9 @@ import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 
+/**
+ * @author Florian Stolte - Initial contribution
+ */
 public class RpcClientMockImpl extends RpcClient<String> {
 
     public static final String GET_PARAMSET_DESCRIPTION_NAME = "getParamsetDescription";

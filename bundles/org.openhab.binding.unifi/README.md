@@ -63,7 +63,7 @@ The priority essentially means the binding attempts to lookup by MAC address, th
 
 The `site` parameter is optional. If you leave it blank, the client will appear `ONLINE` if found in *any* site defined on the controller.
 
-You may use the `site` parameter as a filter if you only want the client to appear home if it's found in the site defined in the `site` parameter.
+You may use the `site` parameter as a filter if you only want the client to appear home if it is found in the site defined in the `site` parameter.
 
 Additionally, you may use friendly site names as they appear in the controller UI.
 

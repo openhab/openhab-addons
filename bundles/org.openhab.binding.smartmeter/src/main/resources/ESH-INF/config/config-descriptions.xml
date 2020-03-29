@@ -9,7 +9,7 @@
 
 		<parameter name="negate" type="text">
 			<advanced>true</advanced>
-			<label>Negate property</label>
+			<label>Negate Property</label>
 			<description>e.g. 1-0_1-8-0:5:1:status //negate if status(1-0_1-8-0) and 2^5 = 1</description>
 		</parameter>
 

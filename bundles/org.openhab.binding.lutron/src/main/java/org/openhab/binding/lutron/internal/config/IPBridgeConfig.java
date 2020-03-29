@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,10 +27,11 @@ public class IPBridgeConfig {
     public String discoveryFile;
     public int reconnect;
     public int heartbeat;
+    public int delay = 0;
 
     public boolean sameConnectionParameters(IPBridgeConfig config) {
         return StringUtils.equals(ipAddress, config.ipAddress) && StringUtils.equals(user, config.user)
                 && StringUtils.equals(password, config.password) && (reconnect == config.reconnect)
-                && (heartbeat == config.heartbeat);
+                && (heartbeat == config.heartbeat) && (delay == config.delay);
     }
 }

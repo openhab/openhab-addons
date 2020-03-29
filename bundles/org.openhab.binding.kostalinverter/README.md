@@ -155,7 +155,9 @@ All third generation inverters require to define 3 mandatory configuration param
 | refreshInternalInSeconds | Defines how often the device is polled for new values  | Integer | Seconds | 30            | 30            |
 
 If you are using the hostname instead of the IP address, please make sure your DNS is configuration correctly!
-The refresh interval should be chosen wisely. To small interval may led to high workload for the inverter. From my testing I recommend a interval of 30 seconds.
+The refresh interval should be chosen wisely.
+To small interval may led to high workload for the inverter.
+It is recommended to use an interval of 30 seconds.
 
 Full sample of thing configuration:
 

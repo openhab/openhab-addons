@@ -24,7 +24,7 @@
 			</parameter>
 
 			<parameter name="refresh" type="integer">
-				<label>Refresh frequency</label>
+				<label>Refresh Frequency</label>
 				<description>Frequency to poll the controller for updates, in seconds. Defaults to every 5 seconds.</description>
 				<default>5</default>
 				<required>false</required>

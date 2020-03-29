@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,13 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.eclipse.smarthome.core.util.HexUtils;
-
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
 /**
  * Tests cases for {@link ModbusDataReadOutMessage}.
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public class ModbusDataReadOutMessageTest {
 

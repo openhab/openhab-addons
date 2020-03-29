@@ -10,13 +10,13 @@
 			<description />
 		</parameter-group>
 		<parameter name="blink" type="boolean">
-			<label>blink</label>
+			<label>Blink</label>
 			<description> When set to false the Led on the device won't blink during transmission.</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="discovery" type="boolean">
-			<label>discovery</label>
+			<label>Discovery</label>
 			<description>If set to false the device will not respond to discovery requests via UPnP.  Make sure you have statically assigned an IP address to the module before turning this setting off. See https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery</description>
 			<default>true</default>
 			<advanced>true</advanced>

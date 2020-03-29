@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,27 +34,25 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
+import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
+import org.openhab.binding.lgwebos.internal.LGWebOSStateDescriptionOptionProvider;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
 import org.openhab.binding.lgwebos.internal.MediaControlStop;
 import org.openhab.binding.lgwebos.internal.PowerControlPower;
+import org.openhab.binding.lgwebos.internal.RCButtonControl;
 import org.openhab.binding.lgwebos.internal.TVControlChannel;
-import org.openhab.binding.lgwebos.internal.TVControlChannelName;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.WebOSTVSocketListener;
+import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
+import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.device.ConnectableDeviceListener;
-import com.connectsdk.discovery.DiscoveryManager;
-import com.connectsdk.discovery.DiscoveryManagerListener;
-import com.connectsdk.service.DeviceService;
-import com.connectsdk.service.DeviceService.PairingType;
-import com.connectsdk.service.command.ServiceCommandError;
 
 /**
  * The {@link LGWebOSHandler} is responsible for handling commands, which are
@@ -58,31 +60,156 @@ import com.connectsdk.service.command.ServiceCommandError;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class LGWebOSHandler extends BaseThingHandler implements ConnectableDeviceListener, DiscoveryManagerListener {
+@NonNullByDefault
+public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.ConfigProvider, WebOSTVSocketListener {
+
+    /*
+     * constants for device polling
+     */
+    private static final int RECONNECT_INTERVAL_SECONDS = 10;
+    private static final int RECONNECT_START_UP_DELAY_SECONDS = 0;
+
+    private static final String APP_ID_LIVETV = "com.webos.app.livetv";
+
+    /*
+     * error messages
+     */
+    private static final String MSG_MISSING_PARAM = "Missing parameter \"host\"";
 
     private final Logger logger = LoggerFactory.getLogger(LGWebOSHandler.class);
-    private final DiscoveryManager discoveryManager;
 
     // ChannelID to CommandHandler Map
     private final Map<String, ChannelHandler> channelHandlers;
-    private String deviceId;
 
-    private LauncherApplication appLauncher = new LauncherApplication();
+    private final LauncherApplication appLauncher = new LauncherApplication();
 
-    public LGWebOSHandler(@NonNull Thing thing, DiscoveryManager discoveryManager) {
+    private @Nullable LGWebOSTVSocket socket;
+    private final WebSocketClient webSocketClient;
+
+    private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
+
+    private @Nullable ScheduledFuture<?> reconnectJob;
+    private @Nullable ScheduledFuture<?> keepAliveJob;
+
+    private @Nullable LGWebOSConfiguration config;
+
+    public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient,
+            LGWebOSStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
-        this.discoveryManager = discoveryManager;
+        this.webSocketClient = webSocketClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+
         Map<String, ChannelHandler> handlers = new HashMap<>();
         handlers.put(CHANNEL_VOLUME, new VolumeControlVolume());
         handlers.put(CHANNEL_POWER, new PowerControlPower());
         handlers.put(CHANNEL_MUTE, new VolumeControlMute());
         handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
-        handlers.put(CHANNEL_CHANNEL_NAME, new TVControlChannelName());
         handlers.put(CHANNEL_APP_LAUNCHER, appLauncher);
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
         handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
+        handlers.put(CHANNEL_RCBUTTON, new RCButtonControl());
         channelHandlers = Collections.unmodifiableMap(handlers);
+    }
+
+    private LGWebOSConfiguration getLGWebOSConfig() {
+        LGWebOSConfiguration c = config;
+        if (c == null) {
+            c = getConfigAs(LGWebOSConfiguration.class);
+            config = c;
+        }
+        return c;
+    }
+
+    @Override
+    public void initialize() {
+        LGWebOSConfiguration c = getLGWebOSConfig();
+        logger.trace("Handler initialized with config {}", c);
+        String host = c.getHost();
+        if (host.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_MISSING_PARAM);
+            return;
+        }
+
+        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort());
+        s.setListener(this);
+        socket = s;
+
+        startReconnectJob();
+    }
+
+    @Override
+    public void dispose() {
+        stopKeepAliveJob();
+        stopReconnectJob();
+
+        LGWebOSTVSocket s = socket;
+        if (s != null) {
+            s.setListener(null);
+            scheduler.execute(() -> s.disconnect()); // dispose should be none-blocking
+        }
+        socket = null;
+        super.dispose();
+    }
+
+    private void startReconnectJob() {
+        ScheduledFuture<?> job = reconnectJob;
+        if (job == null || job.isCancelled()) {
+            reconnectJob = scheduler.scheduleWithFixedDelay(() -> getSocket().connect(),
+                    RECONNECT_START_UP_DELAY_SECONDS, RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopReconnectJob() {
+        ScheduledFuture<?> job = reconnectJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+        }
+        reconnectJob = null;
+    }
+
+    /**
+     * Keep alive ensures that the web socket connection is used and does not time out.
+     */
+    private void startKeepAliveJob() {
+        ScheduledFuture<?> job = keepAliveJob;
+        if (job == null || job.isCancelled()) {
+            // half of idle time out setting
+            long keepAliveInterval = this.webSocketClient.getMaxIdleTimeout() / 2;
+
+            // it is irrelevant which service is queried. Only need to send some packets over the wire
+
+            keepAliveJob = scheduler
+                    .scheduleWithFixedDelay(() -> getSocket().getRunningApp(new ResponseListener<AppInfo>() {
+
+                        @Override
+                        public void onSuccess(AppInfo responseObject) {
+                            // ignore - actual response is not relevant here
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            // ignore
+                        }
+                    }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
+
+        }
+    }
+
+    private void stopKeepAliveJob() {
+        ScheduledFuture<?> job = keepAliveJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+        }
+        keepAliveJob = null;
+    }
+
+    public LGWebOSTVSocket getSocket() {
+        LGWebOSTVSocket s = this.socket;
+        if (s == null) {
+            throw new IllegalStateException("Component called before it was initialized or already disposed.");
+        }
+        return s;
     }
 
     public LauncherApplication getLauncherApplication() {
@@ -91,7 +218,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand({},{}) is called", channelUID, command);
+        logger.debug("handleCommand({},{})", channelUID, command);
         ChannelHandler handler = channelHandlers.get(channelUID.getId());
         if (handler == null) {
             logger.warn(
@@ -99,160 +226,99 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
                     command, channelUID);
             return;
         }
-        Optional<ConnectableDevice> device = getDevice();
-        if (!device.isPresent()) {
-            logger.debug("Device {} not found - most likely is is currently offline. Details: Channel {}, Command {}.",
-                    deviceId, channelUID.getId(), command);
+
+        handler.onReceiveCommand(channelUID.getId(), this, command);
+    }
+
+    @Override
+    public String getKey() {
+        return getLGWebOSConfig().getKey();
+    }
+
+    @Override
+    public void storeKey(@Nullable String key) {
+        // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
+        getLGWebOSConfig().key = key;
+
+        // persist the configuration change
+        Configuration configuration = editConfiguration();
+        configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
+        updateConfiguration(configuration);
+    }
+
+    @Override
+    public void storeProperties(Map<String, String> properties) {
+        Map<String, String> map = editProperties();
+        map.putAll(properties);
+        updateProperties(map);
+    }
+
+    @Override
+    public void onStateChanged(LGWebOSTVSocket.State state) {
+        switch (state) {
+            case DISCONNECTED:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
+                channelHandlers.forEach((k, v) -> {
+                    v.onDeviceRemoved(k, this);
+                    v.removeAnySubscription(this);
+                });
+
+                stopKeepAliveJob();
+                startReconnectJob();
+                break;
+
+            case REGISTERING:
+                stopReconnectJob();
+                startKeepAliveJob();
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        "Registering - You may need to confirm pairing on TV.");
+                break;
+            case REGISTERED:
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
+
+                channelHandlers.forEach((k, v) -> {
+                    // refresh subscriptions except on channel, which can only be subscribe in livetv app. see
+                    // postUpdate method
+                    if (!CHANNEL_CHANNEL.equals(k)) {
+                        v.refreshSubscription(k, this);
+                    }
+                    v.onDeviceReady(k, this);
+                });
+
+                break;
+
         }
-        handler.onReceiveCommand(device.orElse(null), channelUID.getId(), this, command);
-    }
 
-    public Optional<ConnectableDevice> getDevice() {
-        return discoveryManager.getCompatibleDevices().values().stream()
-                .filter(device -> deviceId.equals(device.getId())).findFirst();
     }
 
     @Override
-    public void initialize() {
-        discoveryManager.addListener(this);
-        deviceId = getConfig().get(PROPERTY_DEVICE_ID).toString();
+    public void onError(String error) {
+        logger.debug("Connection failed - error: {}", error);
 
-        Optional<ConnectableDevice> deviceOpt = getDevice();
-        if (deviceOpt.isPresent()) {
-            ConnectableDevice device = deviceOpt.get();
-            device.addListener(this);
-            if (device.isConnected()) {
-                onDeviceReady(device);
-            } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting ...");
-                device.connect();
-                // on success onDeviceReady will be called,
-                // if pairing is required onPairingRequired,
-                // otherwise onConnectionFailed
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
+        switch (getSocket().getState()) {
+            case DISCONNECTED:
+                break;
+            case REGISTERING:
+            case REGISTERED:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
+                break;
         }
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        getDevice().ifPresent(device -> device.removeListener(this));
-        discoveryManager.removeListener(this);
-    }
-    // Connectable Device Listener
-
-    @Override
-    public void onDeviceReady(ConnectableDevice device) { // this gets called on connection success
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
-        refreshAllChannelSubscriptions(device);
-        channelHandlers.forEach((k, v) -> v.onDeviceReady(device, k, this));
+    public void setOptions(String channelId, List<StateOption> options) {
+        logger.debug("setOptions channelId={} options.size()={}", channelId, options.size());
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
     }
 
-    @Override
-    public void onDeviceDisconnected(ConnectableDevice device) {
-        logger.debug("Device disconnected: {}", device);
-        for (Map.Entry<String, ChannelHandler> e : channelHandlers.entrySet()) {
-            e.getValue().onDeviceRemoved(device, e.getKey(), this);
-            e.getValue().removeAnySubscription(device);
-        }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
-    }
-
-    @Override
-    public void onPairingRequired(ConnectableDevice device, DeviceService service, PairingType pairingType) {
-        updateStatus(thing.getStatus(), ThingStatusDetail.CONFIGURATION_PENDING, "Pairing Required");
-    }
-
-    @Override
-    public void onCapabilityUpdated(ConnectableDevice device, List<String> added, List<String> removed) {
-        logger.debug("Capabilities updated: {} - added: {} - removed: {}", device, added, removed);
-        refreshAllChannelSubscriptions(device);
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectableDevice device, ServiceCommandError error) {
-        logger.debug("Connection failed: {} - error: {}", device, error.getMessage());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "Connection Failed: " + error.getMessage());
-    }
-
-    // callback methods for commandHandlers
     public void postUpdate(String channelId, State state) {
-        updateState(channelId, state);
-    }
-
-    public boolean isChannelInUse(String channelId) {
-        return isLinked(channelId);
-    }
-
-    // channel linking modifications
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        refreshChannelSubscription(channelUID);
-    }
-
-    // private helpers
-
-    /**
-     * Refresh channel subscription for one specific channel.
-     *
-     * @param channelUID must not be <code>null</code>
-     */
-    private void refreshChannelSubscription(ChannelUID channelUID) {
-        String channelId = channelUID.getId();
-
-        getDevice().ifPresent(device -> {
-            // may be called even if the device is not currently connected
-            if (device.isConnected()) {
-                channelHandlers.get(channelId).refreshSubscription(device, channelId, this);
-            }
-        });
-    }
-
-    /**
-     * Refresh channel subscriptions on all handlers.
-     *
-     * @param device must not be <code>null</code>
-     */
-    private void refreshAllChannelSubscriptions(ConnectableDevice device) {
-        channelHandlers.forEach((k, v) -> v.refreshSubscription(device, k, this));
-    }
-
-    // just to make sure, this device is registered, if it was powered off during initialization
-    @Override
-    public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
-        if (device.getId().equals(deviceId)) {
-            device.removeListener(this);
-            device.addListener(this);
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device Ready");
-            device.connect();
+        if (isLinked(channelId)) {
+            updateState(channelId, state);
         }
-    }
 
-    @Override
-    public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
-        if (device.getId().equals(deviceId)) {
-            device.removeListener(this);
-            device.addListener(this);
+        // channel subscription only works when on livetv app.
+        if (CHANNEL_APP_LAUNCHER.equals(channelId) && APP_ID_LIVETV.equals(state.toString())) {
+            channelHandlers.get(CHANNEL_CHANNEL).refreshSubscription(CHANNEL_CHANNEL, this);
         }
-    }
-
-    @Override
-    public void onDeviceRemoved(DiscoveryManager manager, ConnectableDevice device) {
-        // NOP
-    }
-
-    @Override
-    public void onDiscoveryFailed(DiscoveryManager manager, ServiceCommandError error) {
-        // NOP
     }
 
     @Override

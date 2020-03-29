@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,8 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BasicMultisensorThingHandler extends OwBaseThingHandler {
     public Logger logger = LoggerFactory.getLogger(BasicMultisensorThingHandler.class);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_MS_TX, THING_TYPE_MS_TH, THING_TYPE_MS_TV).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MS_TX);
     public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
             .unmodifiableSet(Stream.of(OwSensorType.MS_TH, OwSensorType.MS_TC, OwSensorType.MS_TL, OwSensorType.MS_TV,
                     OwSensorType.DS1923, OwSensorType.DS2438).collect(Collectors.toSet()));
@@ -57,11 +56,6 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: remove after 2.5.0 release
-        if (!thing.getThingTypeUID().equals(THING_TYPE_MS_TX)) {
-            changeThingType(THING_TYPE_MS_TX, getConfig());
-        }
-
         if (!super.configureThingHandler()) {
             return;
         }

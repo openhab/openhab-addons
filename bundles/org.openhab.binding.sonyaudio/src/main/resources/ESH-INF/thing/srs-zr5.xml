@@ -42,8 +42,8 @@
 
 	<!-- SRS-ZR5 Thing Type -->
 	<thing-type id="SRS-ZR5">
-		<label>SONY wirelesspeaker SRS-ZR5</label>
-		<description>SONY wirelesspeaker SRS-ZR5</description>
+		<label>SONY Wireless Speaker SRS-ZR5</label>
+		<description>SONY wireless Speaker SRS-ZR5</description>
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="input" typeId="input-zr5" />

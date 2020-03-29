@@ -1,6 +1,7 @@
 ---
 name: "\U0001F41B Bug report"
-about: Something isn't working correctly with a binding. This is the wrong place for user-interfaces or openhab core issues.
+about: Something isn't working correctly with an add-on. This is the wrong place for user-interfaces or openHAB Core issues.
+labels: bug
 
 ---
 
@@ -19,8 +20,9 @@ about: Something isn't working correctly with a binding. This is the wrong place
 
 ## Current Behavior
 <!-- If describing a bug, tell us what happens instead of the expected behavior -->
-<!-- Include related log information (preferably debug level) and related configs. -->
-<!-- Use file attachment for log and config information longer than a few lines -->
+<!-- Include related log information (preferably debug level) and related configs -->
+<!-- Use a file attachment for log and config information longer than a few lines -->
+<!-- Enclose multi-line log/code snippets with ``` on new lines for proper formatting -->
 <!-- If suggesting a change/improvement, explain the difference from current behavior -->
 <!-- For improvements, discuss at community.openhab.org first and include link to topic -->
 
@@ -40,6 +42,6 @@ about: Something isn't working correctly with a binding. This is the wrong place
 
 ## Your Environment
 <!-- Include as many relevant details about the environment you experienced the bug in -->
-* Version used: (e.g., openhab and addon versions)
-* Environment name and version (e.g. Chrome 39, node.js 5.4, Java 8, ...):
-* Operating System and version (desktop or mobile, Windows 10, Raspbian Jessie, ...):
+* Version used: (e.g., openHAB and add-on versions)
+* Environment name and version (e.g. Chrome 76, Java 8, Node.js 12.9, ...):
+* Operating System and version (desktop or mobile, Windows 10, Raspbian Buster, ...):

@@ -39,6 +39,8 @@ At the moment only the following models are supported:
 -   TX-NR727
 -   TX-NR737
 -   TX-NR747
+-   TX-NR757
+-   TX-NR809
 -   TX-NR818
 -   TX-NR828
 -   TX-NR838
@@ -65,7 +67,7 @@ The binding has the following configuration options, which can be set for "bindi
 
 When an Onkyo receiver is used as an audio sink, the receiver connects to openHAB to get the audio stream.
 By default, the binding sends the URL for getting the audio stream based on the Primary Address (Network Settings configuration) and the openHAB HTTP port.
-Sometimes it's necessary to use the Callback URL to override the default, such as when using a reverse proxy or with some docker implementations.
+Sometimes it is necessary to use the Callback URL to override the default, such as when using a reverse proxy or with some Docker implementations.
 
 ## Thing Configuration
 

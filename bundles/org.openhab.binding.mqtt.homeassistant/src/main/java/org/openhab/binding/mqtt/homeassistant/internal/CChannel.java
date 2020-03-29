@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelDefinitionBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
@@ -63,15 +64,17 @@ public class CChannel {
     private final Channel channel; // ESH Channel
     private final ChannelType type;
     private final ChannelTypeUID channelTypeUID;
+    private final ChannelStateUpdateListener channelStateUpdateListener;
 
     private CChannel(ChannelUID channelUID, ChannelState channelState, Channel channel, ChannelType type,
-            ChannelTypeUID channelTypeUID) {
+            ChannelTypeUID channelTypeUID, ChannelStateUpdateListener channelStateUpdateListener) {
         super();
         this.channelUID = channelUID;
         this.channelState = channelState;
         this.channel = channel;
         this.type = type;
         this.channelTypeUID = channelTypeUID;
+        this.channelStateUpdateListener = channelStateUpdateListener;
     }
 
     public ChannelUID getChannelUID() {
@@ -92,6 +95,9 @@ public class CChannel {
 
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
+        // Make sure we set the callback again which might have been nulled during an stop
+        channelState.setChannelStateUpdateListener(this.channelStateUpdateListener);
+
         return channelState.start(connection, scheduler, timeout);
     }
 
@@ -120,23 +126,19 @@ public class CChannel {
         private @Nullable String state_topic;
         private @Nullable String command_topic;
         private boolean retain;
-        private String unit = "";
-        private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
+        private @Nullable Integer qos;
+        private ChannelStateUpdateListener channelStateUpdateListener;
 
         private @Nullable String templateIn;
 
         public Builder(AbstractComponent<?> component, ComponentConfiguration componentConfiguration, String channelID,
-                Value valueState, String label) {
+                Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
             this.component = component;
             this.componentConfiguration = componentConfiguration;
             this.channelID = channelID;
             this.valueState = valueState;
             this.label = label;
-        }
-
-        public Builder listener(@Nullable ChannelStateUpdateListener channelStateUpdateListener) {
             this.channelStateUpdateListener = channelStateUpdateListener;
-            return this;
         }
 
         public Builder stateTopic(@Nullable String state_topic) {
@@ -157,14 +159,23 @@ public class CChannel {
             return this;
         }
 
-        public Builder unit(String unit) {
-            this.unit = unit;
-            return this;
-        }
-
+        /**
+         * @deprecated use commandTopic(String, boolean, int)
+         * @param command_topic
+         * @param retain
+         * @return
+         */
+        @Deprecated
         public Builder commandTopic(@Nullable String command_topic, boolean retain) {
             this.command_topic = command_topic;
             this.retain = retain;
+            return this;
+        }
+
+        public Builder commandTopic(@Nullable String command_topic, boolean retain, int qos) {
+            this.command_topic = command_topic;
+            this.retain = retain;
+            this.qos = qos;
             return this;
         }
 
@@ -183,7 +194,7 @@ public class CChannel {
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new ChannelState(
-                    ChannelConfigBuilder.create().withRetain(retain).withStateTopic(state_topic)
+                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(state_topic)
                             .withCommandTopic(command_topic).build(),
                     channelUID, valueState, channelStateUpdateListener);
 
@@ -191,9 +202,11 @@ public class CChannel {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
             } else {
+                StateDescription description = valueState.createStateDescription(command_topic == null).build()
+                        .toStateDescription();
                 type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescription(valueState.createStateDescription(unit, command_topic == null)).build();
+                        .withStateDescription(description).build();
             }
 
             Configuration configuration = new Configuration();
@@ -203,7 +216,8 @@ public class CChannel {
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                     .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
 
-            CChannel result = new CChannel(channelUID, channelState, channel, type, channelTypeUID);
+            CChannel result = new CChannel(channelUID, channelState, channel, type, channelTypeUID,
+                    channelStateUpdateListener);
 
             @Nullable
             TransformationServiceProvider transformationProvider = componentConfiguration

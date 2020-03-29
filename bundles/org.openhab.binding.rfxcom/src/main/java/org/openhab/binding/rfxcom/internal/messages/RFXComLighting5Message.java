@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for lighting5 message.
@@ -105,7 +106,16 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         SET_LEVEL(0x10, LIGHTWAVERF, IT),
         COLOUR_PALETTE(0x11, LIGHTWAVERF),
         COLOUR_TONE(0x12, LIGHTWAVERF),
-        COLOUR_CYCLE(0x13, LIGHTWAVERF);
+        COLOUR_CYCLE(0x13, LIGHTWAVERF),
+        TOGGLE_1(0x01, LIVOLO_APPLIANCE),
+        TOGGLE_2(0x02, LIVOLO_APPLIANCE),
+        TOGGLE_3(0x03, LIVOLO_APPLIANCE),
+        TOGGLE_4(0x04, LIVOLO_APPLIANCE),
+        TOGGLE_5(0x07, LIVOLO_APPLIANCE),
+        TOGGLE_6(0x0B, LIVOLO_APPLIANCE),
+        TOGGLE_7(0x06, LIVOLO_APPLIANCE),
+        TOGGLE_8(0x0A, LIVOLO_APPLIANCE),
+        TOGGLE_9(0x05, LIVOLO_APPLIANCE);
 
         private final int command;
         private final List<SubType> supportedBySubTypes;
@@ -175,7 +185,6 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[11];
 
         data[0] = 0x0A;
@@ -202,8 +211,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
     /**
      * Convert a 0-31 scale value to a percent type.
      *
-     * @param pt
-     *               percent type to convert
+     * @param pt percent type to convert
      * @return converted value 0-31
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
@@ -214,8 +222,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
     /**
      * Convert a 0-31 scale value to a percent type.
      *
-     * @param value
-     *                  percent type to convert
+     * @param value percent type to convert
      * @return converted value 0-31
      */
     public static PercentType getPercentTypeFromDimLevel(int value) {
@@ -226,8 +233,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_MOOD:
                 switch (command) {
@@ -285,7 +291,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -307,7 +313,6 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {

@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="PLENTICOREPLUS85WITHBATTERY">
-		<label>KOSTAL PLENTICORE plus 8.5 (with Battery)</label>
+		<label>KOSTAL PLENTICORE Plus 8.5 (with Battery)</label>
 		<description>Bindings for the KOSTAL PIKO PLENTICORE plus 8.5 solar inverter (with battery attached on PV string 3)</description>
 		<category>Inverter</category>
 		<channels>

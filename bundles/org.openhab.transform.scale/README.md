@@ -1,6 +1,6 @@
 # Scale Transformation Service
 
-The Scale Transformation Service is a an easy to handle tool that can help you with the discretization of number inputs.
+The Scale Transformation Service is an easy to handle tool that can help you with the discretization of number inputs.
 It transforms a given input by matching it to specified ranges.
 The input string must be in numerical format.
 
@@ -60,7 +60,7 @@ Referenced scale file `uvindex.scale` in the `transform` folder:
 ]3..6]=2
 ]6..8]=3
 ]8..10]=4
-[10..100]=5
+]10..100]=5
 ```
 
 Each value the item receives, will be categorized to one of the five given ranges.

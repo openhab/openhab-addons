@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,12 +81,11 @@ public class ChildMap<T> {
     public CompletableFuture<@Nullable Void> apply(String[] childIDs,
             final Function<T, CompletableFuture<Void>> addedAction, final Function<String, T> supplyNewChild,
             final Consumer<T> removedCallback) {
-
         Set<String> arrayValues = Stream.of(childIDs).collect(Collectors.toSet());
 
         // Add all entries to the map, that are not in there yet.
         final Map<String, T> newSubnodes = arrayValues.stream().filter(entry -> !this.map.containsKey(entry))
-                .collect(Collectors.toMap(k -> k, k -> supplyNewChild.apply(k)));
+                .collect(Collectors.toMap(k -> k, supplyNewChild));
         this.map.putAll(newSubnodes);
 
         // Remove any entries that are not listed in the 'childIDs'.
@@ -100,7 +99,7 @@ public class ChildMap<T> {
 
         // Apply the 'addedAction' function for all new entries.
         return CompletableFuture
-                .allOf(newSubnodes.values().stream().map(v -> addedAction.apply(v)).toArray(CompletableFuture[]::new));
+                .allOf(newSubnodes.values().stream().map(addedAction).toArray(CompletableFuture[]::new));
     }
 
     /**

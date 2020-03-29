@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.UIDUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
@@ -158,11 +159,15 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     @SuppressWarnings({ "null", "unused" })
     public @Nullable Property getProperty(ChannelUID channelUID) {
-        Node node = nodes.get(channelUID.getGroupId());
+        final String groupId = channelUID.getGroupId();
+        if (groupId == null) {
+            return null;
+        }
+        Node node = nodes.get(UIDUtils.decode(groupId));
         if (node == null) {
             return null;
         }
-        return node.properties.get(channelUID.getIdWithoutGroup());
+        return node.properties.get(UIDUtils.decode(channelUID.getIdWithoutGroup()));
     }
 
     /**
@@ -170,7 +175,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> stop() {
         return attributes.unsubscribe().thenCompose(
-                b -> CompletableFuture.allOf(nodes.stream().map(n -> n.stop()).toArray(CompletableFuture[]::new)));
+                b -> CompletableFuture.allOf(nodes.stream().map(Node::stop).toArray(CompletableFuture[]::new)));
     }
 
     /**
@@ -198,6 +203,11 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         this.deviceID = deviceID;
         nodes.clear();
         for (Channel channel : channels) {
+            final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
+            if (!channelConfig.commandTopic.isEmpty() && channelConfig.retained != true) {
+                logger.warn("Channel {} in device {} is missing the 'retained' flag. Check your configuration.",
+                        channel.getUID(), deviceID);
+            }
             final String channelGroupId = channel.getUID().getGroupId();
             if (channelGroupId == null) {
                 continue;

@@ -24,19 +24,19 @@
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="256" required="true">
-				<label>Output number</label>
+				<label>Output Number</label>
 				<description>Number that identifies the output in the alarm system</description>
 			</parameter>
 			<parameter name="invertState" type="boolean" required="false">
-				<label>Invert state</label>
+				<label>Invert State</label>
 				<description>Changes active (ON) state to 0</description>
 			</parameter>
 			<parameter name="commandOnly" type="boolean" required="false">
-				<label>Command only</label>
+				<label>Command Only</label>
 				<description>Accepts commands only, does not update state of the thing</description>
 			</parameter>
 			<parameter name="wireless" type="boolean" required="false">
-				<label>Wireless output</label>
+				<label>Wireless Output</label>
 				<description>This output controls a wireless device like ASP-100 R, ASW-100 E, etc.</description>
 			</parameter>
 		</config-description>
@@ -45,7 +45,7 @@
 
 	<channel-type id="output_state">
 		<item-type>Switch</item-type>
-		<label>Output state</label>
+		<label>Output State</label>
 		<description>Represents state of the output</description>
 	</channel-type>
 

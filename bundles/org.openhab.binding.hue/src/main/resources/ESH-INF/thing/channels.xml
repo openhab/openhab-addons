@@ -199,4 +199,18 @@
 		<description>The effect channel allows putting the bulb in a color looping mode.</description>
 		<category>ColorLight</category>
 	</channel-type>
+	
+	<!-- CLIP Sensor -->
+	<channel-type id="status">
+		<item-type>Number</item-type>
+		<label>Status</label>
+		<description>Status of CLIP sensor.</description>
+	</channel-type>
+
+	<channel-type id="flag">
+		<item-type>Switch</item-type>
+		<label>Flag</label>
+		<description>Flag of CLIP sensor.</description>
+	</channel-type>
+	
 </thing:thing-descriptions>

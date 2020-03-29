@@ -89,6 +89,6 @@ DimmerA2  "Porch lights"   <slider> (someGroup)  { channel="cm11a:dimmer:MyCm11a
 
 ## References
 
-1. [CM11A (X10) Protocol Document](http://wanderingsamurai.net/electronics/cm11a-x10-protocol-document)
-2. [Heyu - control software for the cm11a](http://www.heyu.org/)
+1. [CM11A (X10) Protocol Document](https://wanderingsamurai.net/electronics/cm11a-x10-protocol-document)
+2. [Heyu - control software for the cm11a](https://www.heyu.org/)
 3. cm11a Controllers are available for purchase from several sites on the internet

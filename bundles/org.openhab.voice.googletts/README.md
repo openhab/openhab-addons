@@ -1,10 +1,9 @@
 # Google Cloud Text-to-Speech
 
-Google Cloud TTS Service uses the none-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
-(SSML) input into audio data of natural human speech. 
-It provides 30 voices, available in multiple languages and variants and applies DeepMind’s groundbreaking research in 
-WaveNet and Google’s powerful neural networks. 
+Google Cloud TTS Service uses the none-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language (SSML) input into audio data of natural human speech.
+It provides 30 voices, available in multiple languages and variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks.
 The implementation caches the converted texts to reduce the load on the API and make the conversion faster.
+You can find them in the `$OPENHAB_USERDATA/cache/org.openhab.voice.googletts` folder.
 Be aware, that using this service may incur cost on your Google Cloud account.
 You can find pricing information on the [documentation page](https://cloud.google.com/text-to-speech/#pricing-summary).
 
@@ -35,7 +34,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 
 ## Service Configuration
 
-Using your favourite configuration UI (e.g. PaperUI) edit **Services/Voice/Google Cloud Text-to-Speech** settings and set 
+Using your favourite configuration UI (e.g. Paper UI) edit **Services/Voice/Google Cloud Text-to-Speech** settings and set 
 
 * **Service Account Key** - Copy-paste the content of the downloaded key file.
 * **Pitch** - The pitch of selected voice, up to 20 semitones

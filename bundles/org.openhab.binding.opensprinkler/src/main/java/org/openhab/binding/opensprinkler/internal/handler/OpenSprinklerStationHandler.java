@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,22 +14,26 @@ package org.openhab.binding.opensprinkler.internal.handler;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
+import java.math.BigDecimal;
+
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +49,8 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     @Nullable
     private OpenSprinklerStationConfig config;
+    @Nullable
+    private BigDecimal nextDurationTime;
 
     public OpenSprinklerStationHandler(Thing thing) {
         super(thing);
@@ -57,48 +63,70 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
-            if (command == RefreshType.REFRESH) {
-                updateChannels();
-            } else {
-                handleStationCommand(this.getStationIndex(), command);
-            }
-        } catch (Exception exp) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the OpenSprinkler.");
-            logger.debug("Error controlling and OpenSprinkler station. Exception received: {}", exp.toString());
-        }
-    }
-
-    /**
-     * Handles control of an OpenSprnkler station based on commanded
-     * received by a channel call.
-     *
-     * @param stationId Int of the station to control. Starts at 0.
-     * @param command Command being issues to the channel.
-     */
-    protected void handleStationCommand(int stationId, Command command) {
         OpenSprinklerApi api = getApi();
         if (api == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
             return;
         }
+
+        if (command != RefreshType.REFRESH) {
+            switch (channelUID.getIdWithoutGroup()) {
+                case NEXT_DURATION:
+                    handleNextDurationCommand(channelUID, command);
+                    break;
+                case STATION_STATE:
+                    handleStationStateCommand(api, command);
+                    break;
+                case STATION_QUEUED:
+                    handleQueuedCommand(api, command);
+                    break;
+            }
+        }
+        updateChannels();
+    }
+
+    private void handleNextDurationCommand(ChannelUID channelUID, Command command) {
+        if (!(command instanceof QuantityType<?>)) {
+            logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
+            return;
+        }
+        QuantityType<?> quantity = (QuantityType<?>) command;
+        this.nextDurationTime = quantity.toBigDecimal();
+        updateState(channelUID, quantity);
+    }
+
+    private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
+        if (!(command instanceof OnOffType)) {
+            logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
+            return;
+        }
         try {
             if (command == OnOffType.ON) {
-                api.openStation(stationId);
-            } else if (command == OnOffType.OFF) {
-                api.closeStation(stationId);
+                api.openStation(this.getStationIndex(), nextStationDuration());
             } else {
-                logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
+                api.closeStation(this.getStationIndex());
             }
-            updateChannels();
-        } catch (Exception exp) {
+        } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the station channel " + (stationId + 1) + " for the OpenSprinkler.");
-            logger.debug(
-                    "Could not control the station channel {} for the OpenSprinkler device. Exception received: {}",
-                    (stationId + 1), exp.toString());
+                    "Could not control the station channel " + (this.getStationIndex() + 1)
+                            + " for the OpenSprinkler. Error: " + exp.getMessage());
         }
+    }
+
+    private void handleQueuedCommand(OpenSprinklerApi api, Command command) {
+        if (command == OnOffType.ON) {
+            return;
+        }
+        handleStationStateCommand(api, command);
+    }
+
+    private BigDecimal nextStationDuration() {
+        BigDecimal nextDurationItemValue = nextDurationValue();
+        Channel nextDuration = getThing().getChannel(NEXT_DURATION);
+        if (nextDuration != null && isLinked(nextDuration.getUID()) && nextDurationItemValue != null) {
+            return nextDurationItemValue;
+        }
+        return new BigDecimal(64800);
     }
 
     /**
@@ -108,7 +136,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
      * @return State representation for the channel.
      */
     @Nullable
-    protected State getStationState(int stationId) {
+    private OnOffType getStationState(int stationId) {
         boolean stationOn = false;
         OpenSprinklerApi api = getApi();
         if (api == null) {
@@ -119,12 +147,10 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
         try {
             stationOn = api.isStationOpen(stationId);
-        } catch (Exception exp) {
+        } catch (GeneralApiException | CommunicationApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not get the station channel " + stationId + " current state from the OpenSprinkler thing.");
-            logger.debug(
-                    "Could not get current state of station channel {} for the OpenSprinkler device. Exception received: {}",
-                    (stationId + 1), exp.toString());
+                    "Could not get the station channel " + stationId
+                            + " current state from the OpenSprinkler thing. Error: " + exp.getMessage());
         }
 
         if (stationOn) {
@@ -140,8 +166,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
      * @param stationId Int of the station to control. Starts at 0.
      * @return State representation for the channel.
      */
-    @Nullable
-    protected State getRemainingWaterTime(int stationId) {
+    private @Nullable QuantityType<Time> getRemainingWaterTime(int stationId) {
         long remainingWaterTime = 0;
         OpenSprinklerApi api = getApi();
         if (api == null) {
@@ -163,20 +188,40 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     @Override
     protected void updateChannel(@NonNull ChannelUID channel) {
+        OnOffType currentDeviceState = getStationState(this.getStationIndex());
+        QuantityType<Time> remainingWaterTime = getRemainingWaterTime(config.stationIndex);
         switch (channel.getIdWithoutGroup()) {
             case STATION_STATE:
-                State currentDeviceState = getStationState(this.getStationIndex());
                 if (currentDeviceState != null) {
                     updateState(channel, currentDeviceState);
                 }
+                break;
             case REMAINING_WATER_TIME:
-                State remainingWaterTime = getRemainingWaterTime(config.stationIndex);
                 if (remainingWaterTime != null) {
                     updateState(channel, remainingWaterTime);
                 }
+                break;
+            case NEXT_DURATION:
+                BigDecimal duration = nextDurationValue();
+                if (duration != null) {
+                    updateState(channel, new DecimalType(duration));
+                }
+                break;
+            case STATION_QUEUED:
+                if (remainingWaterTime != null && currentDeviceState != null && currentDeviceState == OnOffType.OFF
+                        && remainingWaterTime.intValue() != 0) {
+                    updateState(channel, OnOffType.ON);
+                } else {
+                    updateState(channel, OnOffType.OFF);
+                }
+                break;
             default:
                 logger.debug("Not updating unknown channel {}", channel);
         }
+    }
+
+    private @Nullable BigDecimal nextDurationValue() {
+        return nextDurationTime;
     }
 
     private int getStationIndex() {

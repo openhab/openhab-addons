@@ -3,7 +3,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="genericweb-live">
-		<label>Live data</label>
+		<label>Live Data</label>
 		<channels>
 			<channel id="production" typeId="live-type-production" />
 			<channel id="pv_status" typeId="live-type-pv_status" />
@@ -22,7 +22,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="genericweb-aggregate-day">
-		<label>Aggregate day data</label>
+		<label>Aggregate Day Data</label>
 		<description>Aggregate data (by day)</description>
 		<channels>
 			<channel id="production" typeId="aggregate-type-production" />
@@ -36,7 +36,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="genericweb-aggregate-week">
-		<label>Aggregate week data</label>
+		<label>Aggregate Week Data</label>
 		<description>Aggregate data (by week)</description>
 		<channels>
 			<channel id="production" typeId="aggregate-type-production" />
@@ -50,7 +50,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="genericweb-aggregate-month">
-		<label>Aggregate month data</label>
+		<label>Aggregate Month Data</label>
 		<description>Aggregate data (by month)</description>
 		<channels>
 			<channel id="production" typeId="aggregate-type-production" />
@@ -64,7 +64,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="genericweb-aggregate-year">
-		<label>Aggregate year data</label>
+		<label>Aggregate Year Data</label>
 		<description>Aggregate data (by year)</description>
 		<channels>
 			<channel id="production" typeId="aggregate-type-production" />

@@ -1,6 +1,6 @@
 # Gardena Binding
 
-This is the binding for [Gardena Smart Home](http://www.gardena.com/de/rasenpflege/smartsystem/).
+This is the binding for [Gardena Smart Home](https://www.gardena.com/de/rasenpflege/smartsystem/).
 This binding allows you to integrate, view and control Gardena Smart Home devices in the openHAB environment.
 
 ## Supported Things
@@ -154,4 +154,4 @@ This is not a binding issue, it must be fixed by Gardena.
 
 When the binding sends a command to a device, it communicates only with the Gardena online service.
 It has not control over, whether the command is sent from the online service via your gateway to the device.
-It's the same as if you send the command in the Gardena App.
+It is the same as if you send the command in the Gardena App.

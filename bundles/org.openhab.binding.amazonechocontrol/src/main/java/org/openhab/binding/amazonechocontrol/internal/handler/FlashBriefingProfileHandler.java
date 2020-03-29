@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                 }
             }
         } catch (IOException | URISyntaxException e) {
-            logger.warn("Handle command failed {}", e);
+            logger.warn("Handle command failed", e);
         }
         if (waitForUpdate >= 0) {
             this.updateStateJob = scheduler.schedule(() -> accountHandler.updateFlashBriefingHandlers(), waitForUpdate,

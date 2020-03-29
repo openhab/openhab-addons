@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="volvooncall"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Volvo Vehicle -->
 	<thing-type id="vehicle">
@@ -13,13 +13,15 @@
 		<label>Volvo Vehicle</label>
 
 		<channel-groups>
-			<channel-group typeId="doors" id="doors" />
-			<channel-group typeId="windows" id="windows" />
-			<channel-group typeId="odometer" id="odometer" />
-			<channel-group typeId="tank" id="tank" />
-			<channel-group typeId="position" id="position" />
-			<channel-group typeId="other" id="other" />
-			<channel-group typeId="lasttrip" id="lasttrip" />
+			<channel-group id="doors" typeId="doors" />
+			<channel-group id="windows" typeId="windows" />
+			<channel-group id="odometer" typeId="odometer" />
+			<channel-group id="tank" typeId="tank" />
+			<channel-group id="position" typeId="position" />
+			<channel-group id="tyrePressure" typeId="tyrePressure" />
+			<channel-group id="battery" typeId="battery" />
+			<channel-group id="other" typeId="other" />
+			<channel-group id="lasttrip" typeId="lasttrip" />
 		</channel-groups>
 
 		<representation-property>vin</representation-property>
@@ -41,8 +43,11 @@
 	<channel-group-type id="other">
 		<label>Other</label>
 		<channels>
+			<channel id="averageSpeed" typeId="averageSpeed" />
 			<channel id="engineRunning" typeId="engineRunning" />
 			<channel id="remoteHeater" typeId="remoteHeater" />
+			<channel id="preclimatization" typeId="preclimatization" />
+			<channel id="brakeFluidLevel" typeId="brakeFluidLevel" />
 			<channel id="washerFluidLevel" typeId="washerFluidLevel" />
 			<channel id="serviceWarningStatus" typeId="serviceWarningStatus" />
 		</channels>
@@ -67,7 +72,7 @@
 				<label>End Time</label>
 				<description>Trip end time</description>
 			</channel>
-			<channel id="tripDuration" typeId="tripDuration"/>
+			<channel id="tripDuration" typeId="tripDuration" />
 			<channel id="tripStartOdometer" typeId="odometer">
 				<label>Start Odometer</label>
 			</channel>
@@ -75,12 +80,12 @@
 				<label>Stop Odometer</label>
 			</channel>
 			<channel id="startPosition" typeId="location">
-				 <label>From</label>
-				 <description>Starting location of the car</description>
+				<label>From</label>
+				<description>Starting location of the car</description>
 			</channel>
 			<channel id="endPosition" typeId="location">
-				 <label>To</label>
-				 <description>Stopping location of the car</description>
+				<label>To</label>
+				<description>Stopping location of the car</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -88,23 +93,23 @@
 	<channel-group-type id="doors">
 		<label>Doors Opening Status</label>
 		<channels>
-			<channel id="tailgate" typeId="door" >
-				<label>Tailgate</label>
+			<channel id="frontLeft" typeId="door">
+				<label>Front Left</label>
 			</channel>
-			<channel id="rearRight" typeId="door" >
-				<label>Rear right</label>
+			<channel id="frontRight" typeId="door">
+				<label>Front Right</label>
 			</channel>
-			<channel id="rearLeft" typeId="door" >
-				<label>Rear left</label>
+			<channel id="rearLeft" typeId="door">
+				<label>Rear Left</label>
 			</channel>
-			<channel id="frontRight" typeId="door" >
-				<label>Front right</label>
+			<channel id="rearRight" typeId="door">
+				<label>Rear Right</label>
 			</channel>
-			<channel id="frontLeft" typeId="door" >
-				<label>Front left</label>
-			</channel>
-			<channel id="hood" typeId="door" >
+			<channel id="hood" typeId="door">
 				<label>Hood</label>
+			</channel>
+			<channel id="tailgate" typeId="door">
+				<label>Tailgate</label>
 			</channel>
 			<channel id="carLocked" typeId="carLocked" />
 		</channels>
@@ -113,17 +118,35 @@
 	<channel-group-type id="windows">
 		<label>Windows Opening Status</label>
 		<channels>
+			<channel id="frontLeftWnd" typeId="window">
+				<label>Front Left</label>
+			</channel>
+			<channel id="frontRightWnd" typeId="window">
+				<label>Front Right</label>
+			</channel>
+			<channel id="rearLeftWnd" typeId="window">
+				<label>Rear Left</label>
+			</channel>
 			<channel id="rearRightWnd" typeId="window">
 				<label>Rear Right</label>
 			</channel>
-			<channel id="rearLeftWnd" typeId="window" >
-				<label>Rear Left</label>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tyrePressure">
+		<label>Tyre pressure status</label>
+		<channels>
+			<channel id="frontLeftTyre" typeId="tyrePressure">
+				<label>Front Left</label>
 			</channel>
-			<channel id="frontRightWnd" typeId="window" >
+			<channel id="frontRightTyre" typeId="tyrePressure">
 				<label>Front Right</label>
 			</channel>
-			<channel id="frontLeftWnd" typeId="window" >
-				<label>Front Left</label>
+			<channel id="rearLeftTyre" typeId="tyrePressure">
+				<label>Rear Left</label>
+			</channel>
+			<channel id="rearRightTyre" typeId="tyrePressure">
+				<label>Rear Right</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -142,7 +165,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="tank">
-		<label>Tank info</label>
+		<label>Tank Info</label>
 		<channels>
 			<channel id="fuelAmount" typeId="fuelQuantity">
 				<label>Fuel Amount</label>
@@ -162,14 +185,29 @@
 		<label>Location Info</label>
 		<channels>
 			<channel id="location" typeId="location">
-				 <label>Location</label>
-				 <description>The position of the vehicle</description>
-			</channel>	 
+				<label>Location</label>
+				<description>The position of the vehicle</description>
+			</channel>
 			<channel id="calculatedLocation" typeId="calculatedLocation" />
 			<channel id="heading" typeId="heading" />
 			<channel id="locationTimestamp" typeId="timestamp">
 				<label>Location Timestamp</label>
 				<description>Timestamp of location value update</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery">
+		<label>Plugin Hybrid / Twin Engine info</label>
+		<channels>
+			<channel id="batteryLevel" typeId="batteryLevel" />
+			<channel id="batteryDistanceToEmpty" typeId="odometer">
+				<label>Distance to battery empty</label>
+			</channel>
+			<channel id="chargeStatus" typeId="chargeStatus" />
+			<channel id="timeToHVBatteryFullyCharged" typeId="timeToHVBatteryFullyCharged" />
+			<channel id="chargingEnd" typeId="timestamp">
+				<label>Charging end</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -200,6 +238,13 @@
 		<label>Odometer</label>
 		<description>Odometer of the vehicle</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="averageSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>Average speed</label>
+		<description>Average speed of the vehicle</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="fuelQuantity">
@@ -246,7 +291,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Data timestamp</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="engineStart">
@@ -276,28 +321,63 @@
 	<channel-type id="remoteHeater">
 		<item-type>Switch</item-type>
 		<label>Remote Heater</label>
-	<description>(De)Activates remote heater</description>
+		<description>(De)Activates remote heater</description>
 	</channel-type>
-	
-    <channel-type id="washerFluidLevel">
-        <item-type>String</item-type>
-        <label>Washer Fluid</label>
-        <description>“VeryLow”,"Low", "Normal"</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="serviceWarningStatus">
-        <item-type>String</item-type>
-        <label>Service Warning</label>
-        <description>Is car service needed ?</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="fuelAlert">
-        <item-type>Switch</item-type>
-        <label>Fuel Alarm</label>
-        <description>set to 'ON' when the tank level is low</description>
-        <state readOnly="true" />
-    </channel-type>	
+
+	<channel-type id="brakeFluidLevel">
+		<item-type>String</item-type>
+		<label>Brake Fluid</label>
+		<description>“VeryLow”,"Low", "Normal"</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="washerFluidLevel">
+		<item-type>String</item-type>
+		<label>Washer Fluid</label>
+		<description>“VeryLow”,"Low", "Normal"</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="tyrePressure">
+		<item-type>String</item-type>
+		<label>Tyre pressure</label>
+		<description>“LowSoft”, "Normal"</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="serviceWarningStatus">
+		<item-type>String</item-type>
+		<label>Service Warning</label>
+		<description>Is car service needed ?</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batteryLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>Indicates the level of power in the battery (in case of PHEV / Twin Engine)</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatus">
+		<item-type>String</item-type>
+		<label>Charging status</label>
+		<description>Status of charging (in case of PHEV / Twin Engine)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="timeToHVBatteryFullyCharged">
+		<item-type>Number:Time</item-type>
+		<label>Time to battery fully charged</label>
+		<description>Time in seconds until the battery is fully charged (in case of PHEV / Twin Engine)</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelAlert">
+		<item-type>Switch</item-type>
+		<label>Fuel Alarm</label>
+		<description>set to 'ON' when the tank level is low</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>

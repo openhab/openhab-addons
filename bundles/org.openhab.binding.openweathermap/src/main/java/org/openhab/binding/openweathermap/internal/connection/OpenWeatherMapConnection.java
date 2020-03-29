@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -328,9 +329,12 @@ public class OpenWeatherMapConnection {
     }
 
     private String getErrorMessage(String response) {
-        JsonObject jsonResponse = parser.parse(response).getAsJsonObject();
-        if (jsonResponse.has(PROPERTY_MESSAGE)) {
-            return jsonResponse.get(PROPERTY_MESSAGE).getAsString();
+        JsonElement jsonResponse = parser.parse(response);
+        if (jsonResponse.isJsonObject()) {
+            JsonObject json = jsonResponse.getAsJsonObject();
+            if (json.has(PROPERTY_MESSAGE)) {
+                return json.get(PROPERTY_MESSAGE).getAsString();
+            }
         }
         return response;
     }

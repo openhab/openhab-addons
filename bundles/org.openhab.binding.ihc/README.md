@@ -67,7 +67,7 @@ Channel parameters:
 | direction             | Text         | no       | ReadWrite     | Direction of the channel (ReadWrite, WriteOnly, ReadOnly).                                               |
 | commandToReact        | String       | no       |               | Command to react. If not defined, channel react to all commands.                                         |
 | pulseWidth            | Integer      | no       |               | Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller. |
-| inverted              | Boolean      | no       | false         | OpenHAB state is inverted compared to IHC output/input signal.                                           |
+| inverted              | Boolean      | no       | false         | openHAB state is inverted compared to IHC output/input signal.                                           |
 | serialNumber          | Integer      | yes      |               | Serial number of RF device in decimal format.                                                            |
 | longPressTime         | Integer      | yes      | 1000          | Long press time in milliseconds.                                                                         |
 

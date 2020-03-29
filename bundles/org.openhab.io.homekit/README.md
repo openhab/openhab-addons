@@ -17,7 +17,7 @@ This will be used in iOS when pairing. The pin code is in the form "###-##-###".
 Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
 If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
-Check for typos in the pin-code if you encounter "Bad Client Credential" errors during pairing.  
+Check for typos in the pin-code if you encounter "Bad Client Credential" errors during pairing.
 
 Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in Paper UI standard mode) are also illustrated in the following sample:
 
@@ -44,7 +44,7 @@ org.openhab.homekit:maximumTemperature=100
 
 | Setting                   | Description                                                                                                                                                                                                                               | Default value     |
 |-------------------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |---------------    |
-| networkInterface          | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the addon uses the first network adapter address.                                                                  | (none)            |
+| networkInterface          | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address.                                                                                    | (none)            |
 | port                      | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                       | 9123              |
 | pin                       | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.   | 031-45-154        |
 | useFahrenheitTemperature  | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                   | false             |
@@ -80,6 +80,7 @@ A full list of supported accessory types can be found in the table below.
 |                       | homekit:CurrentHeatingCoolingMode | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | homekit:TargetTemperature         | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"             |
 | WindowCovering        |                                   | Rollershutter             | A window covering                                                                                                                                                                                                                             |
+| Lock                  |                                   | Switch                    | A Lock Mechanism                                                                                                                                                                                                                              |
 
 **Please note:** `TargetTemperature` has been renamed to `homekit:TargetTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
 
@@ -91,7 +92,7 @@ Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
 Number BedroomTemperature "Bedroom Temperature" (gBedroom) [ "CurrentTemperature" ]
 Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "Thermostat" ]
 Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "CurrentTemperature" ]
-Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "TargetTemperature" ]
+Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "homekit:TargetTemperature" ]
 String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:TargetHeatingCoolingMode" ]
 ```
 
@@ -107,7 +108,7 @@ If you register an IP address that isn't reachable from your phone (such as `loc
 
 HomeKit allows only a single pairing to be established with the bridge.
 This pairing is normally shared across devices via iCloud.
-If you need to establish a new pairing, you'll need to clear the existing pairings.
+If you need to establish a new pairing, you will need to clear the existing pairings.
 To do this, you can issue the command `smarthome:homekit clearPairings` from the [OSGi console](https://www.openhab.org/docs/administration/console.html).
 After doing this, you may need to remove the file `$OPENHAB_USERDATA/jsondb/homekit.json` and restart openHAB.
 

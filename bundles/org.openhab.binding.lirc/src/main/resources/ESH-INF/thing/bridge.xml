@@ -16,7 +16,7 @@
 				<description>The host of the LIRC server</description>
 				<default>localhost</default>
 			</parameter>
-			<parameter name="portNumber" type="integer" min="0" max="65536" step="1">
+			<parameter name="portNumber" type="integer" min="1" max="65535">
 				<label>Port</label>
 				<description>The port number the LIRC server is listening to.</description>
 				<default>8765</default>

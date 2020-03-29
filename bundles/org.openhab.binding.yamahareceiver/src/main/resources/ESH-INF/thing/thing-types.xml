@@ -37,7 +37,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds.</description>
 				<default>60</default>
 				<advanced>true</advanced>
@@ -54,7 +54,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="inputMapping" type="text" required="false">
-				<label>Input mapping</label>
+				<label>Input Mapping</label>
 				<description>
 					Some Yamaha models return different input values on status update than required in the change input
 					commands. For example: HDMI1 command may be reported as HDMI_1 after status update.
@@ -91,29 +91,31 @@
 				<description>The zone can be Main_Zone, ZONE_2, ZONE_3, ZONE_4 depending on your device.</description>
 			</parameter>
 			<parameter name="volumeRelativeChangeFactor" type="decimal" required="false">
-				<label>Relative volume change</label>
+				<label>Relative Volume Change</label>
 				<description>Relative volume change in percent.</description>
 				<default>2.0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="volumeDbMin" type="decimal" required="false">
-				<label>Minimum volume in dB</label>
+				<label>Minimum Volume</label>
 				<description>Lowest volume in dB.</description>
 				<default>-80</default>
 				<advanced>true</advanced>
+				<unitLabel>dB</unitLabel>
 			</parameter>
 			<parameter name="volumeDbMax" type="decimal" required="false">
-				<label>Maximum volume in dB</label>
+				<label>Maximum Volume</label>
 				<description>Highest volume in dB.</description>
 				<default>12</default>
 				<advanced>true</advanced>
+				<unitLabel>dB</unitLabel>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
 	<channel-group-type id="zone_channels">
-		<label>Zone control</label>
+		<label>Zone Control</label>
 		<description>Control the zone</description>
 		<channels>
 			<channel id="power" typeId="power" />
@@ -139,28 +141,28 @@
 
 	<channel-type id="party_mode">
 		<item-type>Switch</item-type>
-		<label>Party mode</label>
+		<label>Party Mode</label>
 		<description>Party mode ON/OFF</description>
 		<category>switch</category>
 	</channel-type>
 
 	<channel-type id="party_mode_volume">
 		<item-type>Dimmer</item-type>
-		<label>Party mode volume Up/Down</label>
+		<label>Party Mode Volume Up/Down</label>
 		<description>Increase or decrease of party mode volume</description>
 		<category>SoundVolume</category>
 	</channel-type>
 
 	<channel-type id="party_mode_mute">
 		<item-type>Switch</item-type>
-		<label>Party mode mute</label>
+		<label>Party Mode Mute</label>
 		<description>Mute when party mode</description>
 		<category>SoundVolume</category>
 	</channel-type>
 
 	<channel-type id="surroundProgram">
 		<item-type>String</item-type>
-		<label>Surround program</label>
+		<label>Surround Program</label>
 		<description>Select the surround program of the AVR</description>
 		<state pattern="%s">
 			<options>
@@ -220,7 +222,7 @@
 
 	<channel-type id="dialogueLevel">
 		<item-type>Number</item-type>
-		<label>Dialogue level</label>
+		<label>Dialogue Level</label>
 		<description>Set the dialogue level</description>
 		<category>SoundVolume</category>
 		<state min="0" max="2" step="1" pattern="%d" />
@@ -242,7 +244,7 @@
 	</channel-type>
 
 	<channel-group-type id="playback_channels">
-		<label>Playback control</label>
+		<label>Playback Control</label>
 		<description>Control the playback for the current zone and allow to select preset channels</description>
 		<channels>
 			<channel id="preset" typeId="defaultpreset" />
@@ -286,7 +288,7 @@
 
 	<channel-type id="playback_song_image_url">
 		<item-type>String</item-type>
-		<label>Track picture URL</label>
+		<label>Track Picture URL</label>
 		<description>Track picture URL</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -356,7 +358,7 @@
 
 	<channel-type id="playback">
 		<item-type>String</item-type>
-		<label>Playback control</label>
+		<label>Playback Control</label>
 		<description>Control the playback of the current input. Can also be used as Play/Pause and Next/Previous Type
 		</description>
 		<state pattern="%s">
@@ -373,7 +375,7 @@
 	</channel-type>
 
 	<channel-group-type id="navigation_channels">
-		<label>Navigation control</label>
+		<label>Navigation Control</label>
 		<description>Allow to navigate for inputs like USB, iPOD, NET_RADIO</description>
 		<channels>
 			<channel id="navigation_menu" typeId="navigation_menu" />
@@ -417,7 +419,7 @@
 
 	<channel-type id="navigation_level">
 		<item-type>Number</item-type>
-		<label>Menu depth</label>
+		<label>Menu Depth</label>
 		<description>Hierarchical level</description>
 		<category>Navigation</category>
 		<state readOnly="true" />
@@ -453,7 +455,7 @@
 
 	<channel-type id="navigation_backtoroot">
 		<kind>trigger</kind>
-		<label>Back to root</label>
+		<label>Back to Root</label>
 		<description>Go back to the root menu</description>
 		<category>Navigation</category>
 	</channel-type>

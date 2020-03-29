@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,6 +79,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             return null;
         }
         ThingUID accountThingId = thing.getBridgeUID();
+        if (accountThingId == null) {
+            return null;
+        }
         Thing accountThing = thingRegistry.get(accountThingId);
         if (accountThing == null) {
             return null;

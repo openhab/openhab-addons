@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstan
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -26,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -38,6 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstants;
+import org.openhab.binding.onewiregpio.internal.OneWireGpioConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Anatol Ogorek - Initial contribution
+ * @author Konstantin Polihronov - Changed configuration handling and added new parameter - precision
  */
 public class OneWireGPIOHandler extends BaseThingHandler {
 
@@ -53,6 +55,8 @@ public class OneWireGPIOHandler extends BaseThingHandler {
 
     private String gpioBusFile;
     private Integer refreshTime;
+    private Integer precision;
+
     private ScheduledFuture<?> sensorRefreshJob;
 
     public OneWireGPIOHandler(Thing thing) {
@@ -73,6 +77,12 @@ public class OneWireGPIOHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        OneWireGpioConfiguration configuration = getConfigAs(OneWireGpioConfiguration.class);
+        gpioBusFile = configuration.gpio_bus_file;
+        refreshTime = configuration.refresh_time;
+        precision = configuration.precision.intValue();
+        logger.debug("GPIO Busfile={}, RefreshTime={}, precision={}", gpioBusFile, refreshTime, precision);
+
         if (checkConfiguration()) {
             startAutomaticRefresh();
             updateStatus(ThingStatus.ONLINE);
@@ -84,8 +94,6 @@ public class OneWireGPIOHandler extends BaseThingHandler {
      * When invalid parameter is found, default value is assigned.
      */
     private boolean checkConfiguration() {
-        Configuration configuration = getConfig();
-        gpioBusFile = (String) configuration.get(GPIO_BUS_FILE);
         if (StringUtils.isEmpty(gpioBusFile)) {
             logger.debug("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -93,12 +101,19 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             return false;
         }
 
-        refreshTime = ((Number) configuration.get(REFRESH_TIME)).intValue();
-        if (refreshTime.intValue() <= 0) {
-            logger.warn("Refresh time [{}] is not valid. Falling back to default value: {}.", refreshTime,
+        if (refreshTime <= 0) {
+            logger.debug("Refresh time [{}] is not valid. Falling back to default value: {}.", refreshTime,
                     DEFAULT_REFRESH_TIME);
             refreshTime = DEFAULT_REFRESH_TIME;
         }
+
+        if (precision < 0 || precision > MAX_PRECISION_VALUE) {
+            logger.debug(
+                    "Precision value {} is outside allowed values [0 - {}]. Falling back to maximum precision value.",
+                    precision, MAX_PRECISION_VALUE);
+            precision = MAX_PRECISION_VALUE;
+        }
+
         return true;
     }
 
@@ -147,7 +162,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-                return BigDecimal.valueOf(intTemp).movePointLeft(3);
+                return calculateValue(intTemp);
             } else {
                 logger.debug(
                         "GPIO file didn't contain line with 't=' where temperature value should be available. Check if configuration points to the proper file");
@@ -159,6 +174,15 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             return null;
         }
 
+    }
+
+    private BigDecimal calculateValue(Integer intTemp) {
+        BigDecimal result = BigDecimal.valueOf(intTemp).movePointLeft(3);
+        if (precision != MAX_PRECISION_VALUE) {
+            result = result.setScale(precision, RoundingMode.HALF_UP);
+        }
+        logger.debug("Thing = {}, temperature value = {}.", getThing().getUID(), result);
+        return result;
     }
 
     @Override

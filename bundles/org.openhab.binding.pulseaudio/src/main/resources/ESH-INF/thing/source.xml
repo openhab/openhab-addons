@@ -7,7 +7,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>A Pulseaudio source</label>
+		<label>A Pulseaudio Source</label>
 		<description>represents a pulseaudio source</description>
 
 		<channels>

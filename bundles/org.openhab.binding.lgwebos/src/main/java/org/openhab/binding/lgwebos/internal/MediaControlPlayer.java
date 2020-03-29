@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,71 +13,42 @@
 package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.MediaControl;
-import com.connectsdk.service.capability.MediaControl.PlayStateListener;
-import com.connectsdk.service.capability.PlaylistControl;
 
 /**
  * Handles commands of a Player Item.
  *
  *
- * @author Sebastian Prehn - initial contribution
+ * @author Sebastian Prehn - Initial contribution
  */
 @NonNullByDefault
-public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener, Object> {
+public class MediaControlPlayer extends BaseChannelHandler<CommandConfirmation> {
     private final Logger logger = LoggerFactory.getLogger(MediaControlPlayer.class);
 
-    private MediaControl getMediaControl(ConnectableDevice device) {
-        return device.getCapability(MediaControl.class);
-    }
-
-    private PlaylistControl getPlayListControl(ConnectableDevice device) {
-        return device.getCapability(PlaylistControl.class);
-    }
-
     @Override
-    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
-            Command command) {
-        if (device == null) {
-            return;
-        }
-        if (NextPreviousType.NEXT == command) {
-            if (hasCapability(device, PlaylistControl.Next)) {
-                getPlayListControl(device).next(getDefaultResponseListener());
-            }
-        } else if (NextPreviousType.PREVIOUS == command) {
-            if (hasCapability(device, PlaylistControl.Previous)) {
-                getPlayListControl(device).previous(getDefaultResponseListener());
-            }
+    public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        if (RefreshType.REFRESH == command) {
+            // nothing to do
         } else if (PlayPauseType.PLAY == command) {
-            if (hasCapability(device, MediaControl.Play)) {
-                getMediaControl(device).play(getDefaultResponseListener());
-            }
+            handler.getSocket().play(getDefaultResponseListener());
         } else if (PlayPauseType.PAUSE == command) {
-            if (hasCapability(device, MediaControl.Pause)) {
-                getMediaControl(device).pause(getDefaultResponseListener());
-            }
+            handler.getSocket().pause(getDefaultResponseListener());
         } else if (RewindFastforwardType.FASTFORWARD == command) {
-            if (hasCapability(device, MediaControl.FastForward)) {
-                getMediaControl(device).fastForward(getDefaultResponseListener());
-            }
+            handler.getSocket().fastForward(getDefaultResponseListener());
         } else if (RewindFastforwardType.REWIND == command) {
-            if (hasCapability(device, MediaControl.Rewind)) {
-                getMediaControl(device).rewind(getDefaultResponseListener());
-            }
+            handler.getSocket().rewind(getDefaultResponseListener());
         } else {
-            logger.warn("Only accept NextPreviousType, PlayPauseType, RewindFastforwardType. Type was {}.",
+            logger.info("Only accept PlayPauseType, RewindFastforwardType, RefreshType. Type was {}.",
                     command.getClass());
         }
     }
+
+    // TODO: playstatesubscription
 }

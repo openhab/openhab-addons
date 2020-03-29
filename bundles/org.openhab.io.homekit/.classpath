@@ -29,5 +29,4 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
-	<classpathentry exported="true" kind="lib" path="lib/hap-1.1.5-SNAPSHOT.jar" sourcepath="lib/hap-1.1.5-SNAPSHOT-sources.jar"/>
 </classpath>

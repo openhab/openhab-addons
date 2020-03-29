@@ -18,9 +18,9 @@ Likewise, starting a Recipe/Scenario in openHAB will change the status on the Br
 This binding has been designed to compliment the NEEO Transport (which will expose openHAB Devices to the Brain[s] and expose each Brains Device to the other Brains).
 
 The Room/Scenario/Recipe/Device information is read at startup time.
-If you make changes to any Room/Scenario/Recipe/Device, you'll need to delete the item in question and re-discover the item (see discovery section below).
+If you make changes to any Room/Scenario/Recipe/Device, you will need to delete the item in question and re-discover the item (see discovery section below).
 
-Since this binding allows you to trigger actions on NEEO Devices, this allows you to use the NEEO Brain as a IR solution to openHAB.
+Since this binding allows you to trigger actions on NEEO Devices, this allows you to use the NEEO Brain as an IR solution to openHAB.
 In other words, if the NEEO Brain supports a Device over IR - then openHAB can use the NEEO Brain to control that Device regardless if there is an openHAB binding for it or not.
 
 ## openHAB Primary Address
@@ -60,7 +60,7 @@ Represents a Device within the NEEO Room.
 
 ## Discover
 
-NEEO Brains will be automatically discovered if MDNS/bonjour/zeroconf is installed on the local machine:
+NEEO Brains will be automatically discovered if mDNS/bonjour/zeroconf is installed on the local machine:
 
 1. On Windows - installing iTunes will install bonjour.
 2. On Linux - please install zeroconf (see vendor documentation on how to do that).
@@ -71,20 +71,20 @@ When you add a Room, all Devices should be auto discovered and placed in the inb
 If you remove any discovered thing either from the inbox or from the added things, simply re-trigger a NEEO binding scan to rediscover it.
 
 If you have the Brain both wired and wireless, the Brain will NOT be discovered twice (only once) and which interface is discovered depends on the timing of the beacon discover message (first one wins).
-If you discovered the wired first but want to use the wireless (or in the reverse), add the Brain and then modify it's configuration to the IP address you want to use.
+If you discovered the wired first but want to use the wireless (or in the reverse), add the Brain and then modify its configuration to the IP address you want to use.
 
 If the Brain is not discovered, here is list of the most common issues:
 
 1.  You can generally trigger discovery by starting up the NEEO APP on your mobile device, press MENU->NEEO Brain->Change Brain.
-This will generally send out the necessary MDNS broadcast messages to discovery the Brain.
-2.  You didn't wait long enough.
-I've noticed that it will take up to 5 minutes for the discovery to find the Brain.
-3.  Local firewall is blocking the MDNS broadcast messages.
-Modify the firewall to allow MDNS packets - typically port 5353 and/or IP address 224.0.0.251
+This will generally send out the necessary mDNS broadcast messages to discovery the Brain.
+2.  You did not wait long enough.
+I have noticed that it will take up to 5 minutes for the discovery to find the Brain.
+3.  Local firewall is blocking the mDNS broadcast messages.
+Modify the firewall to allow mDNS packets - typically port 5353 and/or IP address 224.0.0.251
 4.  The Brain is on a different subnet.
 Unless you have special routing rules, having the Brain on a different subnet than the openHAB instance will prevent discovery.
 Either add routing rules or move one of them to the same subnet.
-5.  Bug in the MDNS library.
+5.  Bug in the mDNS library.
 Occasionally a broadcast will be missed and a simple openHAB restart will fix the issue.
 6.  Brain isn't reachable.
 
@@ -93,8 +93,8 @@ Ping the Brain's address from the openHAB machine and see if it responds.
 If none of the above work, there are a few more things you can try:
 
 1.  Use your local dns-sd command to see if you find the instance ("dns-sd -B _neeo._tcp").
-2.  Manually configure the Brain and specify it's IP address.
-3.  Look in the issues forum on the NEEO SDK Github - specifically the [Brain Discovery not working](https://github.com/NEEOInc/neeo-sdk/issues/36).
+2.  Manually configure the Brain and specify its IP address.
+3.  Look in the issues forum on the NEEO SDK GitHub - specifically the [Brain Discovery not working](https://github.com/NEEOInc/neeo-sdk/issues/36).
 
 ## Forward Actions
 
@@ -191,7 +191,7 @@ The following properties are available at the time of this writing:
 |---------------|---------------------------------------------------------------------------------------------------------------------|
 | AirKey        | Unknown (hints at a future airplay feature)                                                                         |
 | Version       | The software (not firmware) version of the NEEO Brain                                                               |
-| Is Configured | Whether the Brain has gone through it's initial setup (true) or not (false)                                         |
+| Is Configured | Whether the Brain has gone through its initial setup (true) or not (false)                                          |
 | Label         | Internal label assigned to the Brain                                                                                |
 | Last Change   | The time (in milliseconds) that the Brain was last updated (Recipe/Devices/etc change - again not firmware)         |
 | Key           | The unique identifier of the Brain                                                                                  |

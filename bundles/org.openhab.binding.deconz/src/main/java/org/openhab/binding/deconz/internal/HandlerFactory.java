@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,8 +32,11 @@ import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link HandlerFactory} is responsible for creating things and thing
@@ -44,37 +47,27 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.deconz")
 @NonNullByDefault
 public class HandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR,
-                    THING_TYPE_POWER_SENSOR, THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-                    THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR,
-                    THING_TYPE_SWITCH, THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+                    THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
+                    THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
+                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
                     THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR).collect(Collectors.toSet()));
 
-    private @NonNullByDefault({}) WebSocketFactory webSocketFactory;
-    private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+    private final Gson gson = new Gson();
+    private final WebSocketFactory webSocketFactory;
+    private final HttpClientFactory httpClientFactory;
+
+    @Activate
+    public HandlerFactory(final @Reference WebSocketFactory webSocketFactory,
+            final @Reference HttpClientFactory httpClientFactory) {
+        this.webSocketFactory = webSocketFactory;
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    @Reference
-    public void setWebSocketFactory(WebSocketFactory factory) {
-        webSocketFactory = factory;
-    }
-
-    @Reference
-    public void setHttpClientFactory(HttpClientFactory factory) {
-        httpClientFactory = factory;
-    }
-
-    public void unsetWebSocketFactory(WebSocketFactory factory) {
-        webSocketFactory = null;
-    }
-
-    public void unsetHttpClientFactory(HttpClientFactory factory) {
-        httpClientFactory = null;
     }
 
     @Override
@@ -83,9 +76,9 @@ public class HandlerFactory extends BaseThingHandlerFactory {
 
         if (BRIDGE_TYPE.equals(thingTypeUID)) {
             return new DeconzBridgeHandler((Bridge) thing, webSocketFactory,
-                    new AsyncHttpClient(httpClientFactory.getCommonHttpClient()));
+                    new AsyncHttpClient(httpClientFactory.getCommonHttpClient()), gson);
         } else {
-            return new SensorThingHandler(thing);
+            return new SensorThingHandler(thing, gson);
         }
     }
 }

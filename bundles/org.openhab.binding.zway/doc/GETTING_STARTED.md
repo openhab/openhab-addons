@@ -13,7 +13,7 @@
 
     ```shell
     cd /opt/openhab2/addons
-    sudo wget https://github.com/openhab/openhab2-addons/files/636686/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
+    sudo wget https://github.com/openhab/openhab-addons/files/636686/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     sudo unzip org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     sudo rm org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     ```
@@ -25,7 +25,7 @@
 
 ## Create and configure a Z-Way Bridge
 
-Open the *PaperUI*
+Open the *Paper UI*
 
 ![openHAB Home](images/getting-started/01-openHAB-Home.png)
 

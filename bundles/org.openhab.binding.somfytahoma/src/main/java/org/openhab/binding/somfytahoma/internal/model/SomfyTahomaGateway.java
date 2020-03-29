@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link SomfyTahomaGateway} holds information about a gateway bound
  * to TahomaLink account.
+ *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
 public class SomfyTahomaGateway {
 
     private String gatewayId = "";
+    private int type;
 
     public String getGatewayId() {
         return gatewayId;
+    }
+
+    public int getType() {
+        return type;
     }
 }

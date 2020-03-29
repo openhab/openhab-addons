@@ -56,43 +56,43 @@
 			<channel id="title" typeId="title" />
 			<channel id="control" typeId="netControl" />
 			<channel id="item0" typeId="menuItem">
-				<label>Menu item 0</label>
+				<label>Menu Item 0</label>
 				<description>Net/USB menu item at position 0</description>
 			</channel>
 			<channel id="item1" typeId="menuItem">
-				<label>Menu item 1</label>
+				<label>Menu Item 1</label>
 				<description>Net/USB menu item at position 1</description>
 			</channel>
 			<channel id="item2" typeId="menuItem">
-				<label>Menu item 2</label>
+				<label>Menu Item 2</label>
 				<description>Net/USB menu item at position 2</description>
 			</channel>
 			<channel id="item3" typeId="menuItem">
-				<label>Menu item 3</label>
+				<label>Menu Item 3</label>
 				<description>Net/USB menu item at position 3</description>
 			</channel>
 			<channel id="item4" typeId="menuItem">
-				<label>Menu item 4</label>
+				<label>Menu Item 4</label>
 				<description>Net/USB menu item at position 4</description>
 			</channel>
 			<channel id="item5" typeId="menuItem">
-				<label>Menu item 5</label>
+				<label>Menu Item 5</label>
 				<description>Net/USB menu item at position 5</description>
 			</channel>
 			<channel id="item6" typeId="menuItem">
-				<label>Menu item 6</label>
+				<label>Menu Item 6</label>
 				<description>Net/USB menu item at position 6</description>
 			</channel>
 			<channel id="item7" typeId="menuItem">
-				<label>Menu item 7</label>
+				<label>Menu Item 7</label>
 				<description>Net/USB menu item at position 7</description>
 			</channel>
 			<channel id="item8" typeId="menuItem">
-				<label>Menu item 8</label>
+				<label>Menu Item 8</label>
 				<description>Net/USB menu item at position 8</description>
 			</channel>
 			<channel id="item9" typeId="menuItem">
-				<label>Menu item 9</label>
+				<label>Menu Item 9</label>
 				<description>Net/USB menu item at position 9</description>
 			</channel>
 			<channel id="selection" typeId="menuSelection" />

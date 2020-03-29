@@ -16,6 +16,12 @@ before_cache:
   # remove resolver-status.properties, they change with each run and invalidate the cache
   - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
 
+before_script:
+  # enable IPv6, see: https://github.com/travis-ci/travis-ci/issues/8361
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+      sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
+    fi
+
 notifications:
     webhooks: https://www.travisbuddy.com/
 

@@ -41,7 +41,7 @@ binding can unfortunately not provide any auto-discovery means.
 
 If you use an open source IoT device, the chances are high,
 that it has the MQTT convention Homie or HomeAssistant implemented. Those conventions specify the topic
-topology and allow auto discovery. Please have a look at the specific openHAB bindings.  
+topology and allow auto discovery. Please have a look at the specific openHAB bindings.
  
 ## Supported Things
 
@@ -59,8 +59,8 @@ You can add the following channels:
 * **string**: This channel can show the received text on the given topic and can send text to a given topic.
 * **number**: This channel can show the received number on the given topic and can send a number to a given topic. It can have a min, max and step values.
 * **dimmer**: This channel handles numeric values as percentages. It can have min, max and step values.
-* **contact**: This channel represents a open/close state of a given topic.
-* **switch**: This channel represents a on/off state of a given topic and can send an on/off value to a given topic.
+* **contact**: This channel represents an open/close state of a given topic.
+* **switch**: This channel represents an on/off state of a given topic and can send an on/off value to a given topic.
 * **colorRGB**: This channel handles color values in RGB format.
 * **colorHSB**: This channel handles color values in HSB format.
 * **location**: This channel handles a location.
@@ -74,11 +74,12 @@ You can add the following channels:
 * __transformationPattern__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 * __transformationPatternOut__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
 * __commandTopic__: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
-* __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". If you want to adjust the precision of a number to for example 4 digits, you would use "%.4f".
+* __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported.
 * __postCommand__: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
 * __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+* __qos__: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
 * __trigger__: If `true`, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
@@ -92,6 +93,7 @@ You can connect this channel to a String item.
 * __min__: An optional minimum value.
 * __max__: An optional maximum value.
 * __step__: For decrease, increase commands the step needs to be known
+* __unit__: Unit of measurement (optional). For supported units see [OpenHAB: List of Units](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units). Examples: "°C", "°F"
 
 A decimal value (like 0.2) is send to the MQTT topic if the number has a fractional part.
 If you always require an integer, please use the formatter.
@@ -100,8 +102,8 @@ You can connect this channel to a Number item.
 
 ### Channel Type "dimmer"
  
-* __on__: A optional string (like "ON"/"Open") that is recognized as minimum.
-* __off__: A optional string (like "OFF"/"Close") that is recognized as maximum.
+* __on__: An optional string (like "ON"/"Open") that is recognized as minimum.
+* __off__: An optional string (like "OFF"/"Close") that is recognized as maximum.
 * __min__: A required minimum value.
 * __max__: A required maximum value.
 * __step__: For decrease, increase commands the step needs to be known
@@ -114,8 +116,8 @@ You can connect this channel to a Rollershutter or Dimmer item.
 
 ### Channel Type "contact", "switch"
 
-* __on__: A optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
-* __off__: A optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
+* __on__: An optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
+* __off__: An optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
 
 The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
 The switch channel by default recognizes `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
@@ -167,15 +169,19 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 ### Channel Type "rollershutter"
 
-* __on__: An optional string (like "Open") that is recognized as UP state.
-* __off__: An optional string (like "Close") that is recognized as DOWN state.
-* __stop__: An optional string (like "Stop") that is recognized as STOP state.
+* __on__: An optional string (like "Open") that is recognized as `UP` state.
+* __off__: An optional string (like "Close") that is recognized as `DOWN` state.
+* __stop__: An optional string (like "Stop") that is recognized as `STOP` state.
+
+Internally `UP` is converted to 0%, `DOWN` to 100%.
+If strings are defined for these values, they are used for sending commands to the broker, too.
 
 You can connect this channel to a Rollershutter or Dimmer item.
 
+
 ## Rule Actions
 
-This binding includes a rule action, which allows to publish MQTT messages from within rules.
+This binding includes a rule action, which allows one to publish MQTT messages from within rules.
 There is a separate instance for each MQTT broker (i.e. bridge), which can be retrieved through
 
 ```
@@ -183,11 +189,13 @@ val mqttActions = getActions("mqtt","mqtt:systemBroker:embedded-mqtt-broker")
 ```
 
 where the first parameter always has to be `mqtt` and the second (`mqtt:systemBroker:embedded-mqtt-broker`) is the Thing UID of the broker that should be used.
-Once this action instance is retrieved, you can invoke the `publishMQTT(String topic, String value)` method on it:
+Once this action instance is retrieved, you can invoke the `publishMQTT(String topic, String value, Boolean retained)` method on it:
 
 ```
-mqttActions.publishMQTT("mytopic","myvalue")
+mqttActions.publishMQTT("mytopic","myvalue", true)
 ```
+
+The retained argument is optional and if not supplied defaults to `false`.
 
 ## Limitations
 
@@ -211,17 +219,19 @@ Here are a few examples to unwrap a value from a complex response:
 | `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
 
 Transformations can be chained by separating them with the mathematical intersection character "∩".
+Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).
 
 ## Outgoing Value Transformation
 
 All mentioned channels allow an optional transformation for outgoing values.
 Please prefer formatting as described in the next section whenever possible.
+Please note that value will be discarded and not sent if one transformation fails (e.g. REGEX did not match).
 
 ## Format before Publish
 
 This feature is quite powerful in transforming an item state before it is published to the MQTT broker.
 It has the syntax: `%[flags][width]conversion`.
-Find the full documentation on the [Java](https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html) web page.
+Find the full documentation on the [Java](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) web page.
 
 The default is "%s" which means: Output the item state as string.
 
@@ -236,10 +246,25 @@ Here are a few examples:
   - For an output of *May 23, 1995* use "%1$**tb** %1$**te**,%1$**tY**".
   - For an output of *23.05.1995* use "%1$**td**.%1$**tm**.%1$**tY**".
   - For an output of *23:15* use "%1$**tH**:%1$**tM**".
+  
+Default pattern applied for each type:
+| Type             | Parameter                         | Pattern             | Comment |
+| ---------------- | --------------------------------- | ------------------- | ------- |
+| __string__       | String                            | "%s"                | 
+| __number__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
+| __dimmer__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
+| __contact__      | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __switch__       | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __colorRGB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **red**, **green** and **blue** components.
+| __colorHSB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **hue**, **saturation** and **brightness** components.
+| __location__     | BigDecimal, BigDecimal            | "%2$f,%3$f,%1$f"    | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'.
+| __image__        | --                                | --                  | No publishing supported. 
+| __datetime__     | ZonedDateTime                     | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.
+| __rollershutter__| String                            | "%s"                | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.
+
+Any outgoing value transformation will **always** result in a __string__ value.
 
 ## Troubleshooting
 
 * If you get the error "No MQTT client": Please update your installation.
-* If you use the Mosquitto broker: Please be aware that there is a relatively low setting 
-for retained messages. At some point messages will just not being delivered anymore: 
-Change the setting 
+* If you use the Mosquitto broker: Please be aware that there is a relatively low setting for retained messages. At some point messages will just not being delivered anymore: Change the setting. 

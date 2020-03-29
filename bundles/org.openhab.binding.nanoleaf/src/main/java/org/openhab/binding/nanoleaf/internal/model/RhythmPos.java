@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,36 +21,37 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class RhythmPos {
 
     @SerializedName("x")
-    private Integer posX;
+    private float posX;
     @SerializedName("y")
-    private Integer posY;
+    private float posY;
     @SerializedName("o")
-    private Integer orientation;
+    private float orientation;
 
-    public Integer getPosX() {
+    public float getPosX() {
         return posX;
     }
 
-    public void setPosX(Integer x) {
+    public void setPosX(float x) {
         this.posX = x;
     }
 
-    public Integer getPosY() {
+    public float getPosY() {
         return posY;
     }
 
-    public void setPosY(Integer y) {
+    public void setPosY(float y) {
         this.posY = y;
     }
 
-    public Integer getOrientation() {
+    public float getOrientation() {
         return orientation;
     }
 
-    public void setOrientation(Integer o) {
+    public void setOrientation(float o) {
         this.orientation = o;
     }
 

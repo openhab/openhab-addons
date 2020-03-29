@@ -3,7 +3,8 @@
 This binding allows your openHAB to communicate with the Xiaomi Smart Home Suite.
 It consists of devices communicating over a ZigBee network with a ZigBee - WiFi gateway. 
 
-The devices are very affordable and you can get them from your favourite chinese marktes like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com). The sensors run on a coincell battery for over a year. 
+The devices are very affordable and you can get them from your favourite chinese marktes like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com).
+The sensors run on a coincell battery for over a year. 
 
 After setup, you can disconnect the gateway from the internet to keep your sensor information private.
 
@@ -67,27 +68,29 @@ There are three ways of connecting supported devices to the gateway:
     1.  Click 3 times on the Gateway's button
     2.  Gateway will flash in blue and you will hear female voice in Chinese, you have 30 seconds to include your new device
     3.  Place the needle into the sensor and hold it for at least 3 seconds
-    4.  You'll hear confirmation message in Chinese
+    4.  You will hear confirmation message in Chinese
     5.  The device appears in openHAB thing Inbox
 
 * With the binding
 
-    1.  after adding the gateway make sure you have entered the right developer key
-    2.  in PaperUI, go to your Inbox and trigger a discovery for the binding
-    3.  the gateway flashes in blue and you hear a female voice in Chinese, you have 30 seconds to include your new device
-    4.  follow the instructions for your device to pair it to the gateway
-    5.  you'll hear a confirmation message in Chinese
+    1.  After adding the gateway make sure you have entered the right developer key
+    2.  In Paper UI, go to your Inbox and trigger a discovery for the binding
+    3.  The gateway flashes in blue and you hear a female voice in Chinese, you have 30 seconds to include your new device
+    4.  Follow the instructions for your device to pair it to the gateway
+    5.  You will hear a confirmation message in Chinese
     6.  The device appears in openHAB thing Inbox
 
 __Hints:__
 
 * If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)
 
-* The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc. This will ensure that your smart home data stays only with you!
+* The devices don't need an Internet connection to be working after you have set up the developer mode BUT you will not be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc. This will ensure that your smart home data stays only with you!
 
 ## Removing devices from the gateway
 
-If you remove a Thing in PapaerUI it will also trigger the gateway to unpair the device. It will only reappear in your Inbox, if you connect it to the gateway again. Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
+If you remove a Thing in PapaerUI it will also trigger the gateway to unpair the device.
+It will only reappear in your Inbox, if you connect it to the gateway again.
+Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
 
 ## Network configuration
 
@@ -414,14 +417,17 @@ sitemap xiaomi label="Xiaomi" {
 
 ## Handling unsupported devices
 
-The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in the future even more devices get added to the suite. This section describes, how to get the necessary information to support new device types. While a device is not supported yet, it is still possible to access it's informations.
+The Xiaomi ecosystem grows at a steady rate.
+So there is a good chance that in the future even more devices get added to the suite.
+This section describes, how to get the necessary information to support new device types.
+While a device is not supported yet, it is still possible to access its information.
 
 Make sure you have connected your gateway to openHAB and the communication is working.
 
 ### Connect the new device
 
 - Go through the normal procedure to add a device to the gateway
-- The device will show up in your inbox as a new unsupported device and it's model name
+- The device will show up in your inbox as a new unsupported device and its model name
 - Add the device as a new thing of type "basic device", now you have different channels to receive and send messages from/to the device
     - raw messages from the device
     - the data from the four different type of messages (see their details in the next chapter)
@@ -440,7 +446,7 @@ You have to capture as many of them as possible, so that the device is fully sup
 ### Open a new issue or get your hands dirty
 
 Every little help is welcome, be part of the community! 
-Post an issue in the Github repository with as much information as possible about the new device:
+Post an issue in the GitHub repository with as much information as possible about the new device:
 - brand and link to device description
 - model name
 - content of all the different message types
@@ -449,7 +455,8 @@ Or implement the support by youself and submit a pull request.
 
 ### Handle the message contents of a basic device thing with items
 
-You can access the whole message contents of the basic device thing with String items. That way you can make use of your device, even if it is not supported yet!
+You can access the whole message contents of the basic device thing with String items.
+That way you can make use of your device, even if it is not supported yet!
 The following examples are a demonstration, where a basic device thing for the gateway was manually added.
 
 ```
@@ -500,7 +507,8 @@ Make sure to write numbers without quotes and strings with quotes. Also, quotes 
 
 ## Debugging
 
-If you experience any unexpected behaviour or just want to know what is going on behind the scenes, you can enable debug logging. This makes possible following the communication between the binding and the gateway.
+If you experience any unexpected behaviour or just want to know what is going on behind the scenes, you can enable debug logging.
+This makes possible following the communication between the binding and the gateway.
 
 ### Enable debug logging for the binding
 
@@ -513,12 +521,13 @@ If you experience any unexpected behaviour or just want to know what is going on
 
 ## Troubleshooting
 
-For the binding to function properly it is very important, that your network config allows the machine running openHAB to receive multicast traffic. In case you want to check if the communication between the machine and the gateway is working, you can find some hints here.
+For the binding to function properly it is very important, that your network config allows the machine running openHAB to receive multicast traffic.
+In case you want to check if the communication between the machine and the gateway is working, you can find some hints here.
 - Set up the developer communication as described in the Setup section
 
-### Check if your linux machine receives multicast traffic
+### Check if your Linux machine receives multicast traffic
 
-- Login to the linux console
+- Login to the Linux console
 - make sure you have __netcat__ installed
 - Enter ```netcat -ukl 9898```
 - At least every 10 seconds you should see a message coming in from the gateway which looks like
@@ -549,4 +558,7 @@ __I have connected my gateway to the network but it doesn't show up in openHAB:_
 - Contact Xiaomi support - get your gateway replaced
 
 __Nothing works, I'm frustrated and have thrown my gateway into the bin. Now I don't know what to do with all the sensors:__
-Check out the Zigbee2Mqtt project on Github. It allows you to use the sensors without the gateway and get their values through MQTT. You will need some hardware to act as a gateway which is not expensive. You can find more information and a list of supported Xiaomi devices in the Github repository.
+Check out the Zigbee2Mqtt project on GitHub.
+It allows you to use the sensors without the gateway and get their values through MQTT.
+You will need some hardware to act as a gateway which is not expensive.
+You can find more information and a list of supported Xiaomi devices in the GitHub repository.

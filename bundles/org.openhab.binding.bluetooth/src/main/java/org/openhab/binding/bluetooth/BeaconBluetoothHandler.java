@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.bluetooth.discovery.internal.BluetoothAddressLocker;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -80,9 +81,11 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
         try {
             deviceLock.lock();
+            BluetoothAddressLocker.lock(address);
             device = adapter.getDevice(address);
             device.addListener(this);
         } finally {
+            BluetoothAddressLocker.unlock(address);
             deviceLock.unlock();
         }
 

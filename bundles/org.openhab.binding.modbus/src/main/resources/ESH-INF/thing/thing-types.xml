@@ -40,25 +40,25 @@
 	</channel-type>
 	<channel-type id="last-successful-read-type">
 		<item-type>DateTime</item-type>
-		<label>Last successful read</label>
+		<label>Last Successful Read</label>
 		<description>Date of last read</description>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-erroring-read-type">
 		<item-type>DateTime</item-type>
-		<label>Last erroring read</label>
+		<label>Last Erroring Read</label>
 		<description>Date of last read error</description>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-successful-write-type">
 		<item-type>DateTime</item-type>
-		<label>Last successful write</label>
+		<label>Last Successful Write</label>
 		<description>Date of last write</description>
 		<config-description></config-description>
 	</channel-type>
 	<channel-type id="last-erroring-write-type">
 		<item-type>DateTime</item-type>
-		<label>Last erroring write</label>
+		<label>Last Erroring Write</label>
 		<description>Date of last write error</description>
 		<config-description></config-description>
 	</channel-type>

@@ -31,7 +31,7 @@ For authentication `username` and `password` need to be supplied.
 
 The `refresh`, `security`, `port`, `username` and `password` parameters are optional.
 
-The `refresh` parameter is the time in seconds between two refreshes of the thing`s channels.
+The `refresh` parameter is the time in seconds between two refreshes of the thing's channels.
 If omitted, the default of 60s is used.
 The `security` parameter defines the transport security and can be set to `PLAIN` (default), `SSL` or `TLS`.
 The `port` parameter is used to change the default ports for the SMTP server.
@@ -98,6 +98,8 @@ Six different actions available:
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).
 
+`recipient` can be a single address (`mail@example.com`) or a list of addresses, concatenated by a comma (`mail@example.com, mail2@example.com`).
+
 Since there is a separate rule action instance for each `smtp` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
 The first parameter always has to be `mail` and the second is the full Thing UID of the SMTP server that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
@@ -108,8 +110,10 @@ Using different character sets may produce unwanted results.
 Examples:
 
 ```
-val mailActions = getActions("mail","mail:smtp:sampleserver")
+val mailActions = getActions("mail","mail:smtp:samplesmtp")
 mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
+mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
+
 ```
 
 ```

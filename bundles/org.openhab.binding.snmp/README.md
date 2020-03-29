@@ -92,6 +92,7 @@ Alternatively `INT32` (signed integer with 32 bit length), `COUNTER64` (unsigned
 Floating point numbers have to be supplied (and will be send) as strings.
 For `string` channels the default `datatype` is `STRING` (i.e. the item's will be sent as a string).
 If it is set to `IPADDRESS`, an SNMP IP address object is constructed from the item's value.
+The `HEXSTRING` datatype converts a hexadecimal string (e.g. `aa bb 11`) to the respective octet string before sending data to the target (and vice versa for receiving data).
 
 `switch`-type channels send a pre-defined value if they receive `ON` or `OFF` command in `WRITE` or `READ_WRITE` mode.
 In `READ`, `READ_WRITE` or `TRAP` mode they change to either `ON` or `OFF` on these values.
@@ -124,11 +125,12 @@ demo.things:
 ```
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
-      Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
-      Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
-      Type number : if4Status [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="TRAP" ]
-      Type switch : if4Command [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="READ_WRITE", datatype="UINT32", onvalue="2", offvalue="0" ]
-      Type switch : devicePresent [ oid="1.3.6.1.2.1.2.2.1.221.4.192.168.0.1", mode="READ", datatype="UINT32", onValue="1", doNotLogException="true", exceptionValue="OFF" ]
+        Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
+        Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
+        Type number : if4Status [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="TRAP" ]
+        Type switch : if4Command [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="READ_WRITE", datatype="UINT32", onvalue="2", offvalue="0" ]
+        Type switch : devicePresent [ oid="1.3.6.1.2.1.2.2.1.221.4.192.168.0.1", mode="READ", datatype="UINT32", onValue="1", doNotLogException="true", exceptionValue="OFF" ]
+        Type switch : valueReceived [ oid="1.3.6.1.2.1.2.2.1.221.17.5", mode="READ", datatype="HEXSTRING", onValue="00 AA 11", offValue="00 00 00" ]
 }
 ```
 
@@ -140,6 +142,7 @@ Number outBytes "Router bytes out [%d]" { channel="snmp:target:router:outBytes" 
 Number if4Status "Router interface 4 status [%d]" { channel="snmp:target:router:if4Status" }
 Switch if4Command "Router interface 4 switch [%s]" { channel="snmp:target:router:if4Command" }
 Switch devicePresent "Phone connected [%s]" { channel="snmp:target:router:devicePresent" }
+Switch receivedValue "Received 00 AA 11 [%s]" { channel="snmp:target:router:valueReceived" }
 ```
 
 demo.sitemap:
@@ -153,6 +156,7 @@ sitemap demo label="Main Menu"
         Text item=if4Status
         Switch item=if4Command
         Text item=devicePresent
+        Text item=receivedValue
     }
 }
 ```

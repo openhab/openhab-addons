@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,6 +191,17 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
                         state.setZone3Volume(fromDenonValue(value));
                     } else {
                         state.setZone3Input(value);
+                    }
+                    break;
+                case "Z4": // Zone 4
+                    if (value.equals("ON") || value.equals("OFF")) {
+                        state.setZone4Power(value.equals("ON"));
+                    } else if (value.equals("MUON") || value.equals("MUOFF")) {
+                        state.setZone4Mute(value.equals("MUON"));
+                    } else if (StringUtils.isNumeric(value)) {
+                        state.setZone4Volume(fromDenonValue(value));
+                    } else {
+                        state.setZone4Input(value);
                     }
                     break;
                 case "ZM": // Main zone

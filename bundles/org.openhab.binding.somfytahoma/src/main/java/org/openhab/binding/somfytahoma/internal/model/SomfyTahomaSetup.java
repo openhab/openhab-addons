@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyTahomaSetup} holds information about devices bound
@@ -25,15 +26,15 @@ import java.util.ArrayList;
 @NonNullByDefault
 public class SomfyTahomaSetup {
 
-    private ArrayList<SomfyTahomaDevice> devices = new ArrayList<>();
+    private List<SomfyTahomaDevice> devices = new ArrayList<>();
 
-    private ArrayList<SomfyTahomaGateway> gateways = new ArrayList<>();
+    private List<SomfyTahomaGateway> gateways = new ArrayList<>();
 
-    public ArrayList<SomfyTahomaDevice> getDevices() {
+    public List<SomfyTahomaDevice> getDevices() {
         return devices;
     }
 
-    public ArrayList<SomfyTahomaGateway> getGateways() {
+    public List<SomfyTahomaGateway> getGateways() {
         return gateways;
     }
 }

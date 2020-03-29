@@ -11,9 +11,9 @@ Some websites provides updated XMLTV files than can be directly downloaded.
 Here is a sample for France : https://www.xmltv.fr/
 
 This binding takes an XMLTV file as input and creates a thing for each channel contained in it.
-XmlTV channels are called Media Channels in this binding in order to avoid messing with ESH Channels.
+XmlTV channels are called Media Channels in this binding in order to avoid messing with openHAB Channels.
 
-For each thing, you'll be able to get information regarding the current program and the next to come.
+For each thing, you will be able to get information regarding the current program and the next to come.
 
 ## Supported Things
 
@@ -27,6 +27,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 |-------------------------|----------|-----------------------------------------------------|---------|
 | filePath                | X        | Full path (including filename) to an Xml TV file    |         |
 | refresh                 | X        | XMLTV file reload interval in hours                 | 24h     |
+| encoding                | X        | XMLTV file encoding                                 | UTF8    |
 
 ## Thing Configuration
 

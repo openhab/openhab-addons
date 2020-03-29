@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.freebox.internal.api.model;
+
+import java.util.List;
 
 /**
  * The {@link FreeboxSystemConfig} is the Java class used to map the "SystemConfig"
@@ -34,6 +36,8 @@ public class FreeboxSystemConfig {
     private String diskStatus;
     private String boxFlavor;
     private String userMainStorage;
+    private List<FreeboxSensor> fans;
+    private List<FreeboxSensor> sensors;
 
     public String getFirmwareVersion() {
         return firmwareVersion;
@@ -60,18 +64,46 @@ public class FreeboxSystemConfig {
     }
 
     public int getTempCpum() {
+        if (sensors != null) {
+            for (FreeboxSensor sensor : sensors) {
+                if ("temp_cpum".equals(sensor.getId())) {
+                    return sensor.getValue();
+                }
+            }
+        }
         return tempCpum;
     }
 
     public int getTempSw() {
+        if (sensors != null) {
+            for (FreeboxSensor sensor : sensors) {
+                if ("temp_sw".equals(sensor.getId())) {
+                    return sensor.getValue();
+                }
+            }
+        }
         return tempSw;
     }
 
     public int getTempCpub() {
+        if (sensors != null) {
+            for (FreeboxSensor sensor : sensors) {
+                if ("temp_cpub".equals(sensor.getId())) {
+                    return sensor.getValue();
+                }
+            }
+        }
         return tempCpub;
     }
 
     public int getFanRpm() {
+        if (fans != null) {
+            for (FreeboxSensor fan : fans) {
+                if ("fan0_speed".equals(fan.getId())) {
+                    return fan.getValue();
+                }
+            }
+        }
         return fanRpm;
     }
 

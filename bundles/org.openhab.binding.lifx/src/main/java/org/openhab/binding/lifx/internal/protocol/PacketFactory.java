@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,6 +64,7 @@ public class PacketFactory {
         register(GetServiceRequest.class);
         register(GetTagLabelsRequest.class);
         register(GetTagsRequest.class);
+        register(GetTileEffectRequest.class);
         register(GetVersionRequest.class);
         register(GetWifiFirmwareRequest.class);
         register(GetWifiInfoRequest.class);
@@ -87,6 +88,7 @@ public class PacketFactory {
         register(StatePowerResponse.class);
         register(StateResponse.class);
         register(StateServiceResponse.class);
+        register(StateTileEffectResponse.class);
         register(StateVersionResponse.class);
         register(StateWifiFirmwareResponse.class);
         register(StateWifiInfoResponse.class);

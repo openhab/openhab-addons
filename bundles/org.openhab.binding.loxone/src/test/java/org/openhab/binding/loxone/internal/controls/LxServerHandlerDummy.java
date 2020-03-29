@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     void loadConfiguration() {
         InputStream stream = LxServerHandlerDummy.class.getResourceAsStream("LoxAPP3.json");
         assertNotNull(stream);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
         assertNotNull(reader);
         String msg = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         assertNotNull(msg);

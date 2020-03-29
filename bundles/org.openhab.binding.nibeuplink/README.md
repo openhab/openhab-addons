@@ -23,23 +23,23 @@ Auto-Discovery is not supported, as credentials are necessary to login into Nibe
 The syntax for a heat pump thing is:
 
 ```
-nibeuplink:<MODEL>:<NAME>
+nibeuplink:<THING TYPE>:<NAME>
 ```
 
 - **nibeuplink** the binding id, fixed
-- **model** the heatpump model (Binding Model)
+- **thing type** the heatpump thing type
 - **name** the name of the heatpump (choose any name)
 
 Following models (indoor / main units) are currently supported:
 
-| Nibe Model(s)     | Openhab Model     | Description                                           |
-|-------------------|-------------------|-------------------------------------------------------|
-| VVM310 / 500      | vvm310            | reduced set of channels based on NibeUplink website   |
-| VVM320 / 325      | vvm320            | reduced set of channels based on NibeUplink website   |
-| F730              | f730              | reduced set of channels based on NibeUplink website   |
-| F750              | f750              | reduced set of channels based on NibeUplink website   |
-| F1145 / 1245      | f1145             | reduced set of channels based on NibeUplink website   |
-| F1155 / 1255      | f1155             | reduced set of channels based on NibeUplink website   |
+| Nibe Model(s)     | Thing Type | Description                                         |
+|-------------------|------------|-----------------------------------------------------|
+| VVM310 / 500      | vvm310     | reduced set of channels based on NibeUplink website |
+| VVM320 / 325      | vvm320     | reduced set of channels based on NibeUplink website |
+| F730              | f730       | reduced set of channels based on NibeUplink website |
+| F750              | f750       | reduced set of channels based on NibeUplink website |
+| F1145 / 1245      | f1145      | reduced set of channels based on NibeUplink website |
+| F1155 / 1255      | f1155      | reduced set of channels based on NibeUplink website |
 
 The following configuration parameters are available for this thing:
 

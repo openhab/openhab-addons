@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,15 +80,5 @@ public class OpenSprinklerApiFactory {
 
             return lowestSupportedApi;
         }
-    }
-
-    /**
-     * Factory method returns an OpenSprnkler PI GPIO class for control.
-     *
-     * @param numberOfStations The number of stations to control on the OpenSprinkler PI device.
-     * @return OpenSprinkler GPIO class for control of the device.
-     */
-    public OpenSprinklerApi getGpioApi(int numberOfStations) {
-        return new OpenSprinklerGpioApi(numberOfStations);
     }
 }

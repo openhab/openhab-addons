@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,7 +218,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void sendMessage(RFXComMessage msg) throws RFXComException {
+    public void sendMessage(RFXComMessage msg) {
         try {
             RFXComBaseMessage baseMsg = (RFXComBaseMessage) msg;
             transmitQueue.enqueue(baseMsg);
@@ -240,7 +240,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     RFXComInterfaceMessage msg = (RFXComInterfaceMessage) message;
                     if (msg.subType == SubType.RESPONSE) {
                         if (msg.command == Commands.GET_STATUS) {
-                            logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
+                            logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                     msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
                                     msg.firmwareVersion);
                             thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,
@@ -330,8 +330,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.contains(deviceStatusListener) ? false
-                : deviceStatusListeners.add(deviceStatusListener);
+        return !deviceStatusListeners.contains(deviceStatusListener) && deviceStatusListeners.add(deviceStatusListener);
     }
 
     public boolean unregisterDeviceStatusListener(DeviceMessageListener deviceStatusListener) {

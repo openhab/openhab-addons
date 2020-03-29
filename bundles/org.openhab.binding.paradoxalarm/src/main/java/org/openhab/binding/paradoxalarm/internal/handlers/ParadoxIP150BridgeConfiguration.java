@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,9 @@ public class ParadoxIP150BridgeConfiguration {
     private String ipAddress;
     private int port;
     private String panelType;
+    private int reconnectWaitTime;
+    private Integer maxZones;
+    private Integer maxPartitions;
 
     public int getRefresh() {
         return refresh;
@@ -72,6 +75,30 @@ public class ParadoxIP150BridgeConfiguration {
 
     public void setPanelType(String panelType) {
         this.panelType = panelType;
+    }
+
+    public int getReconnectWaitTime() {
+        return reconnectWaitTime;
+    }
+
+    public void setReconnectWaitTime(int reconnectWaitTime) {
+        this.reconnectWaitTime = reconnectWaitTime;
+    }
+
+    public Integer getMaxZones() {
+        return maxZones;
+    }
+
+    public void setMaxZones(Integer maxZones) {
+        this.maxZones = maxZones;
+    }
+
+    public Integer getMaxPartitions() {
+        return maxPartitions;
+    }
+
+    public void setMaxPartitions(Integer maxPartitions) {
+        this.maxPartitions = maxPartitions;
     }
 
 }

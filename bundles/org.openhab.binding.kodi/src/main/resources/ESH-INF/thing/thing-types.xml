@@ -34,7 +34,7 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
-            <channel id="profile" typeId="profile" />
+			<channel id="profile" typeId="profile" />
 			<channel id="audio-name" typeId="name">
 				<label>Audio Name</label>
 			</channel>
@@ -45,7 +45,7 @@
 				<label>Audio Index</label>
 			</channel>
 			<channel id="audio-language" typeId="language">
-				<label>Audio language</label>
+				<label>Audio Language</label>
 			</channel>
 			<channel id="audio-codec" typeId="codec">
 				<label>Audio Codec</label>
@@ -133,19 +133,19 @@
 	</channel-type>
 	<channel-type id="playfavorite">
 		<item-type>String</item-type>
-		<label>Play or open a Favorite</label>
+		<label>Play or Open a Favorite</label>
 		<description>Play or open the given favorite by sending a command with the favorite's title</description>
 	</channel-type>
 	<channel-type id="pvr-open-tv" advanced="true">
 		<item-type>String</item-type>
-		<label>Play PVR tv</label>
+		<label>Play PVR TV</label>
 		<description>Play the given PVR TV channel by sending a command with the channel's name</description>
 		<state pattern="%s" />
 		<config-description-ref uri="channel-type:kodi:pvr-channel" />
 	</channel-type>
 	<channel-type id="pvr-open-radio" advanced="true">
 		<item-type>String</item-type>
-		<label>Play PVR radio</label>
+		<label>Play PVR Radio</label>
 		<description>Play the given PVR Radio channel by sending a command with the channel's name</description>
 		<state pattern="%s" />
 		<config-description-ref uri="channel-type:kodi:pvr-channel" />
@@ -154,23 +154,7 @@
 		<item-type>String</item-type>
 		<label>Show Notification</label>
 		<description>Shows a notification on the UI</description>
-		<config-description>
-			<parameter name="title" type="text" required="false">
-				<label>Notification Title</label>
-				<description>Title to show for the notification</description>
-				<default>openHAB</default>
-			</parameter>
-			<parameter name="displayTime" type="integer" required="false" min="100">
-				<label>Display Time</label>
-				<description>Time the notification is displayed in milliseconds.</description>
-				<default>5000</default>
-				<unitLabel>ms</unitLabel>
-			</parameter>
-			<parameter name="icon" type="text" required="false">
-				<label>Icon</label>
-				<description>Icon name to show with the notification</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="channel-type:kodi:shownotification" />
 	</channel-type>
 	<channel-type id="playnotification" advanced="true">
 		<item-type>String</item-type>
@@ -179,7 +163,7 @@
 	</channel-type>
 	<channel-type id="input" advanced="true">
 		<item-type>String</item-type>
-		<label>Send a key</label>
+		<label>Send a Key</label>
 		<description>Sends a key stroke to Kodi to navigate in the UI</description>
 		<state>
 			<options>
@@ -200,12 +184,12 @@
 	</channel-type>
 	<channel-type id="inputtext" advanced="true">
 		<item-type>String</item-type>
-		<label>Sends text as input</label>
+		<label>Sends Text as Input</label>
 		<description>Sends a generic input (unicode) text to Kodi</description>
 	</channel-type>
 	<channel-type id="inputaction" advanced="true">
 		<item-type>String</item-type>
-		<label>Execute an action</label>
+		<label>Execute an Action</label>
 		<description>Sends a predefined action to Kodi to control the UI and/or perform other tasks</description>
 		<state>
 			<options>
@@ -413,7 +397,7 @@
 	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
-		<label>Send system command</label>
+		<label>Send System Command</label>
 		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot/quit Kodi</description>
 		<state>
 			<options>
@@ -429,7 +413,7 @@
 	<!-- Kodi variables -->
 	<channel-type id="pvr-channel" advanced="true">
 		<item-type>String</item-type>
-		<label>PVR channel title</label>
+		<label>PVR Channel Title</label>
 		<description>Title of the current PVR channel</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -483,7 +467,7 @@
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Current Time in percent</label>
+		<label>Current Time in Percent</label>
 		<description>Current time of currently playing media</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
 	</channel-type>
@@ -556,7 +540,7 @@
 		<item-type>Number</item-type>
 		<label>Rating</label>
 		<description>Rating</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%.1f" />
 	</channel-type>
 	<channel-type id="mpaa" advanced="true">
 		<item-type>String</item-type>

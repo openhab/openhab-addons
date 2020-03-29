@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,16 +22,14 @@ public interface RFXComEventListener {
     /**
      * Procedure for receive raw data from RFXCOM controller.
      *
-     * @param data
-     *                 Received raw data.
+     * @param data Received raw data.
      */
     void packetReceived(byte[] data);
 
     /**
      * Procedure for receiving information fatal error.
      *
-     * @param error
-     *                  Error occurred.
+     * @param error Error occurred.
      */
     void errorOccurred(String error);
 

@@ -52,20 +52,20 @@
 	<!-- Commands -->
 	<channel-type id="radioBroadcastFreq">
 		<item-type>Number</item-type>
-		<label>Broadcast frequency</label>
+		<label>Broadcast Frequency</label>
 		<description>The broadcast frequency</description>
 		<state pattern="%.2f MHz" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="radioBroadcastStation">
 		<item-type>Number</item-type>
-		<label>Broadcast station</label>
+		<label>Broadcast Station</label>
 		<description>Select preset broadcast station</description>
 	</channel-type>
 
 	<channel-type id="radioSeekBroadcastStation">
 		<item-type>String</item-type>
-		<label>Change broadcast station</label>
+		<label>Change Broadcast Station</label>
 		<description>Change broadcast station</description>
 		<state>
 			<options>
@@ -151,7 +151,7 @@
 
 	<!-- STR-DN1080 Thing Type -->
 	<thing-type id="STR-DN1080">
-		<label>SONY receiver STR-DN1080</label>
+		<label>SONY Receiver STR-DN1080</label>
 		<description>SONY receiver STR-DN1080</description>
 
 		<channel-groups>

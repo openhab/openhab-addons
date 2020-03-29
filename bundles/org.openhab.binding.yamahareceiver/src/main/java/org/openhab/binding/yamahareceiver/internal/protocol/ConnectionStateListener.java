@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,5 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
  * @author David Graeff - Initial contribution
  */
 public interface ConnectionStateListener {
-    void connectionFailed(String host, Throwable throwable);
-
-    void connectionEstablished(AbstractConnection connection);
+    void onConnectionCreated(AbstractConnection connection);
 }

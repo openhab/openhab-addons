@@ -10,7 +10,7 @@ The binding supports the Limex IQ and Limex Pro water softeners and require the 
 
 ## Thing Configuration
 
-The **serial** Thing configuration requires the name of the serial port that is used to connect the ESH host with the Oceanic unit, and the interval period in seconds to poll the Oceanic unit
+The **serial** Thing configuration requires the name of the serial port that is used to connect openHAB with the Oceanic unit, and the interval period in seconds to poll the Oceanic unit
 
 The **network** Thing configuration requires the hostname or ip address of the proxy, the TCP port number to connect to, and the interval period in seconds to poll the Oceanic unit
 
@@ -18,30 +18,30 @@ The **network** Thing configuration requires the hostname or ip address of the p
 
 All things support the following channels (non-exhaustive):
 
-| Channel Type ID                      | Item Type | Description                                                     |   |   |
-|--------------------------------------|-----------|-----------------------------------------------------------------|---|---|
-| alarm                                | String    | Current alarm description, if any                               |   |   |
-| alert                                | String    | Current alert description, if any, to notify a shortage of salt |   |   |
-| totalflow                            | Number    | Current flow in l/min                                           |   |   |
-| maxflow                              | Number    | Maximum flow recorded, in l/min                                 |   |   |
-| reserve                              | Number    | Water reserve in l before regeneration has to start             |   |   |
-| cycle                                | String    | Indicates the stage of the regeneration cycle                   |   |   |
-| endofcycle                           | String    | Indicates the time to the end of the current cycle              |   |   |
-| endofgeneration                      | String    | Indicates the time to the end of the current generation         |   |   |
-| inlethardness                        | Number    | Water hardness at the inlet                                     |   |   |
-| outlethardness                       | Number    | Water hardness at the outlet                                    |   |   |
-| salt                                 | String    | Volume of salt remaining, in kg                                 |   |   |
-| consumption(today)(currentweek)(...) | String    | Water consumption, in l, for that period                        |   |   |
-| regeneratenow                        | Switch    | Start an immediate regeneration                                 |   |   |
-| regeneratelater                      | Switch    | Start a delayed regeneration                                    |   |   |
-| lastgeneration                       | DateTime  | Date and Time of the last regeneration cycle                    |   |   |
-| pressure                             | Number    | Water pressure, in bar                                          |   |   |
-| minpressure                          | Number    | Minimum water pressure recorded, in bar                         |   |   |
-| maxpressure                          | Number    | Maximum water pressure recorded, in bar                         |   |   |
-| normalregenerations                  | Number    | Number of regenerations completed                               |   |   |
-| serviceregenerations                 | Number    | Number of service regenerations completed                       |   |   |
-| incompleteregenerations              | Number    | Number of incomplete regenerations                              |   |   |
-| allregenerations                     | Number    | Number of all regenerations                                     |   |   |
+| Channel Type ID                      | Item Type | Description                                                     |
+|--------------------------------------|-----------|-----------------------------------------------------------------|
+| alarm                                | String    | Current alarm description, if any                               |
+| alert                                | String    | Current alert description, if any, to notify a shortage of salt |
+| totalflow                            | Number    | Current flow in l/min                                           |
+| maxflow                              | Number    | Maximum flow recorded, in l/min                                 |
+| reserve                              | Number    | Water reserve in l before regeneration has to start             |
+| cycle                                | String    | Indicates the stage of the regeneration cycle                   |
+| endofcycle                           | String    | Indicates the time to the end of the current cycle              |
+| endofgeneration                      | String    | Indicates the time to the end of the current generation         |
+| inlethardness                        | Number    | Water hardness at the inlet                                     |
+| outlethardness                       | Number    | Water hardness at the outlet                                    |
+| salt                                 | String    | Volume of salt remaining, in kg                                 |
+| consumption(today)(currentweek)(...) | String    | Water consumption, in l, for that period                        |
+| regeneratenow                        | Switch    | Start an immediate regeneration                                 |
+| regeneratelater                      | Switch    | Start a delayed regeneration                                    |
+| lastgeneration                       | DateTime  | Date and Time of the last regeneration cycle                    |
+| pressure                             | Number    | Water pressure, in bar                                          |
+| minpressure                          | Number    | Minimum water pressure recorded, in bar                         |
+| maxpressure                          | Number    | Maximum water pressure recorded, in bar                         |
+| normalregenerations                  | Number    | Number of regenerations completed                               |
+| serviceregenerations                 | Number    | Number of service regenerations completed                       |
+| incompleteregenerations              | Number    | Number of incomplete regenerations                              |
+| allregenerations                     | Number    | Number of all regenerations                                     |
 
 ## Full Example
 

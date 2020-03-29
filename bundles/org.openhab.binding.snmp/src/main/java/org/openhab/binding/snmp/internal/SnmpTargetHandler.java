@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,6 +51,7 @@ import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
+import org.snmp4j.PDUv1;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
@@ -70,6 +73,9 @@ import org.snmp4j.smi.VariableBinding;
  */
 @NonNullByDefault
 public class SnmpTargetHandler extends BaseThingHandler implements ResponseListener, CommandResponder {
+    private static final Pattern HEXSTRING_VALIDITY = Pattern.compile("([a-f0-9]{2}[ :-]?)+");
+    private static final Pattern HEXSTRING_EXTRACTOR = Pattern.compile("[^a-f0-9]");
+
     private final Logger logger = LoggerFactory.getLogger(SnmpTargetHandler.class);
 
     private @NonNullByDefault({}) SnmpTargetConfiguration config;
@@ -91,6 +97,11 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (target.getAddress() == null && !renewTargetAddress()) {
+            logger.info("failed to renew target address, can't process '{}' to '{}'.", command, channelUID);
+            return;
+        }
+
         try {
             if (command instanceof RefreshType) {
                 SnmpInternalChannelConfiguration channel = readChannelSet.stream()
@@ -199,6 +210,16 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         final String address = ((UdpAddress) event.getPeerAddress()).getInetAddress().getHostAddress();
         final String community = new String(event.getSecurityName());
 
+        if ((pdu.getType() == PDU.V1TRAP) && config.community.equals(community) && (pdu instanceof PDUv1)) {
+            logger.trace("{} received trap is PDUv1.", thing.getUID());
+            PDUv1 pduv1 = (PDUv1) pdu;
+            OID oidEnterprise = pduv1.getEnterprise();
+            int trapValue = pduv1.getGenericTrap();
+            if (trapValue == PDUv1.ENTERPRISE_SPECIFIC) {
+                trapValue = pduv1.getSpecificTrap();
+            }
+            updateChannels(oidEnterprise, new UnsignedInteger32(trapValue), trapChannelSet);
+        }
         if ((pdu.getType() == PDU.TRAP || pdu.getType() == PDU.V1TRAP) && config.community.equals(community)
                 && targetAddressString.equals(address)) {
             pdu.getVariableBindings().forEach(variable -> {
@@ -231,7 +252,8 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
             if (config.datatype == null) {
                 datatype = SnmpDatatype.STRING;
-            } else if (config.datatype != SnmpDatatype.IPADDRESS && config.datatype != SnmpDatatype.STRING) {
+            } else if (config.datatype != SnmpDatatype.IPADDRESS && config.datatype != SnmpDatatype.STRING
+                    && config.datatype != SnmpDatatype.HEXSTRING) {
                 return null;
             } else {
                 datatype = config.datatype;
@@ -310,7 +332,12 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                         return;
                     }
                 } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
-                    state = new StringType(value.toString());
+                    if (channelConfig.datatype == SnmpDatatype.HEXSTRING) {
+                        String rawString = ((OctetString) value).toHexString(' ');
+                        state = new StringType(rawString.toLowerCase());
+                    } else {
+                        state = new StringType(value.toString());
+                    }
                 } else if (CHANNEL_TYPE_UID_SWITCH.equals(channel.getChannelTypeUID())) {
                     if (value.equals(channelConfig.onValue)) {
                         state = OnOffType.ON;
@@ -362,6 +389,16 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     return new OctetString(((StringType) command).toString());
                 }
                 break;
+            case HEXSTRING:
+                if (command instanceof StringType) {
+                    String commandString = ((StringType) command).toString().toLowerCase();
+                    Matcher commandMatcher = HEXSTRING_VALIDITY.matcher(commandString);
+                    if (commandMatcher.matches()) {
+                        commandString = HEXSTRING_EXTRACTOR.matcher(commandString).replaceAll("");
+                        return OctetString.fromHexStringPairs(commandString);
+                    }
+                }
+                break;
             case IPADDRESS:
                 if (command instanceof StringType) {
                     return new IpAddress(((StringType) command).toString());
@@ -398,7 +435,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             try {
                 snmpService.send(pdu, target, null, this);
             } catch (IOException e) {
-                logger.info("Could not send PDU: {}", e);
+                logger.info("Could not send PDU", e);
             }
         }
     }

@@ -15,19 +15,92 @@ Once a VocApi Bridge has been created with according credential, vehicles connec
 
 The binding has no configuration options itself, all configuration is done at 'Things' level.
 
-## Thing Configuration
+## Bridge Configuration
 
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 This is the same email address and password as used in the VolvoOnCall smartphone app, that allows to remotely control your car(s).
 
-Once the bridge created, you'll be able to launch discovery of the vehicles attached to it.
+| Parameter | Description                                                              | Required |
+|-----------|------------------------------------------------------------------------- |--------- |
+| username  | Username from the VolvoOnCall app (email address)                        | yes      |
+| password  | Password from the VolvoOnCall app                                        | yes      |
+
+Once the bridge created, you will be able to launch discovery of the vehicles attached to it.
+
+## Thing Configuration
+
+The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
+
+
+| Parameter       | Name             | Description                                             | Required |
+|-----------------|------------------|---------------------------------------------------------|----------|
+| vin             | Vin              | Vehicle Identification Number of the car                | yes      |
+| refreshinterval | Refresh interval | Interval in minutes to refresh the data (default=10)    | no       |
+
+
 
 ## Channels
+All numeric channels use the [UoM feature](https://www.eclipse.org/smarthome/blog/2018/02/22/units-of-measurement.html).
+This means you can easily change the desired unit e.g. miles/h instead of km/h just in your item definition.
+
+#####Thing properties
+Some of the channels are only available for specific cars and models.
+Availability of specific action can be found in PaperUI -> Configuration -> Things -> <your car thing> -> SHOW PROPERTIES
+
+Following channels are currently available:
+
+| Channel Type ID                               | Item Type            | Description                                      | Remark                                           |
+|-----------------------------------------------|----------------------|--------------------------------------------------|--------------------------------------------------|
+| doors#frontLeft                               | Contact              | Door front left                                  |                                                  |
+| doors#frontRight                              | Contact              | Door front right                                 |                                                  |
+| doors#rearLeft                                | Contact              | Door rear left                                   |                                                  |
+| doors#rearRight                               | Contact              | Door rear right                                  |                                                  |
+| doors#hood                                    | Contact              | Hood                                             |                                                  |
+| doors#tailgate                                | Contact              | Tailgate                                         |                                                  |
+| doors#carLocked                               | Switch               | Is the car locked                                | Can also be used to lock / unlock the car  (see thing properties above)      |
+| windows#frontLeftWnd                          | Contact              | Window front left                                |                                                  |
+| windows#frontRightWnd                         | Contact              | Window front right                               |                                                  |
+| windows#rearLeftWnd                           | Contact              | Window rear left                                 |                                                  |
+| windows#rearRightWnd                          | Contact              | Window rear right                                |                                                  |
+| odometer#odometer                             | Number:Length        | Odometer value                                   |                                                  |
+| odometer#tripmeter1                           | Number:Length        | Trip meter 1 value                               |                                                  |
+| odometer#tripmeter2                           | Number:Length        | Trip meter 2 value                               |                                                  |
+| tank#fuelAmount                               | Number:Volume        | Amount of fuel left in the tank                  |                                                  |
+| tank#fuelLevel                                | Number:Dimensionless | Percentage of fuel left in the tank              |                                                  |
+| tank#fuelAlert                                | Switch               | Alert if the amount of fuel is running low       | ON when distancy to empty < 100                  |
+| tank#distanceToEmpty                          | Number:Length        | Distance till tank is empty                      |                                                  |
+| position#location                             | Location             | Location of the car                              |                                                  |
+| position#locationTimestamp                    | DateTime             | Timestamp of the latest confirmed location       |                                                  |
+| tyrePressure#frontLeftTyre                    | String               | Tyrepressure front left tyre                     | Normal / LowSoft                                 |
+| tyrePressure#frontRightTyr                    | String               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
+| tyrePressure#rearLeftTyre                     | String               | Tyrepressure rear left tyre                      | Normal / LowSoft                                 |
+| tyrePressure#rearRightTyre                    | String               | Tyrepressure rear right tyre                     | Normal / LowSoft                                 |
+| other#averageSpeed                            | Number:Speed         | Average speed                                    |                                                  |
+| other#engineRunning                           | Switch               | Is the car engine running                        |                                                  |
+| other#remoteHeater                            | Switch               | Start the car remote heater                      | Only if property 'remoteHeater' is true (see thing properties above)                                                 |
+| other#preclimatization                        | Switch               | Start the car preclimatization                   | Only if property 'preclimatization' is true (see thing properties above)                                                 |
+| other#brakeFluidLevel                         | String               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
+| other#washerFluidLevel                        | String               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
+| other#serviceWarning                          | String               | Warning if service is needed                     |                                                 |
+| battery#batteryLevel                          | Number:Dimensionless | Battery level                                    | Only for Plugin hybrid / Twin Engine models     |
+| battery#batteryDistanceToEmpty                | Number:Length        | Distance until battery is empty                  | Only for Plugin hybrid / Twin Engine models     |
+| battery#chargeStatus                          | String               | Charging status                                  | Only for Plugin hybrid / Twin Engine models     |
+| battery#timeToHVBatteryFullyCharged           | Number:Time          | Time in minutes until the battery is fully charged| Only for Plugin hybrid / Twin Engine models     |
+| battery#chargingEnd                           | DateTime             | Calculated time when the battery is fully charged| Only for Plugin hybrid / Twin Engine models     |
+| lasttrip#tripConsumption                      | Number:Volume        | Last trip fuel consumption                       |                                                 |
+| lasttrip#tripDistance                         | Number:Length        | Last trip distance                               |                                                 |
+| lasttrip#tripStartTime                        | DateTime             | Last trip start time                             |                                                 |
+| lasttrip#tripEndTime                          | DateTime             | Last trip end time                               |                                                 |
+| lasttrip#tripDuration                         | Number:Time          | Last trip duration                               |                                                 |
+| lasttrip#tripStartOdometer                    | Number:Length        | Last trip start odometer                         |                                                 |
+| lasttrip#tripStopOdometer                     | Number:Length        | Last trip stop odometer                          |                                                 |
+| lasttrip#startPosition                        | Location             | Last trip start location                         |                                                 |
+| lasttrip#endPosition                          | Location             | Last trip end location                           |                                                 |
 
 
 ## Full Example
 
-demo.Things:
+demo.things:
 
 ```
 Bridge volvooncall:vocapi:glh "VoC Gaël" @ "System" [username="mail@address.org", password="mypassword"]
@@ -94,15 +167,28 @@ sitemap voc label="Volvo On Call" {
 
 ## Rule Actions
 
-Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
 
-Example
+Example 1a: If Thing has been created using autodiscovery
 
 ```
- val actions = getActions("volvooncall","volvooncall:vehicle:myVinNumber")
+ val actions = getActions("volvooncall","volvooncall:vehicle:thingId")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
         return
+ } else {
+        actions.openCarCommand()
+ }
+```
+Example 1b: If Thing has been created using script
+
+```
+ val actions = getActions("volvooncall","volvooncall:vehicle:bridgeId:thingId")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ } else {
+        actions.openCarCommand()
  }
 ```
 
@@ -126,11 +212,19 @@ Sends the command to start the engine for a given runtime. Default 5 minutes.
 
  ### heaterStartCommand()
 
-Sends the command to start the car heater.
+Sends the command to start the car heater (if remoteHeaterSupported).
 
  ### heaterStopCommand()
 
-Sends the command to stop the car heater.
+Sends the command to stop the car heater (if remoteHeaterSupported).
+
+ ### preclimatizationStartCommand()
+
+Sends the command to start the car heater (if preclimatizationSupported).
+
+ ### preclimatizationStopCommand()
+
+Sends the command to stop the car heater (if preclimatizationSupported).
 
  ### honkBlinkCommand(honk, blink)
 

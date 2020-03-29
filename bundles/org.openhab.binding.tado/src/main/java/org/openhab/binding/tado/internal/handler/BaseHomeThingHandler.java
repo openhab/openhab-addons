@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,8 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
     }
 
     public Long getHomeId() {
-        return getHomeHandler().getHomeId();
+        TadoHomeHandler handler = getHomeHandler();
+        return handler != null ? handler.getHomeId() : new Long(0);
     }
 
     protected TadoHomeHandler getHomeHandler() {
@@ -39,7 +40,8 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
     }
 
     protected HomeApi getApi() {
-        return getHomeHandler().getApi();
+        TadoHomeHandler handler = getHomeHandler();
+        return handler != null ? handler.getApi() : null;
     }
 
     protected void onSuccessfulOperation() {

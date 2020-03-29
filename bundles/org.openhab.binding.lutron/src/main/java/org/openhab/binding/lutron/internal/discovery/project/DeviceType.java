@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,9 +23,11 @@ public enum DeviceType {
     INTERNATIONAL_SEETOUCH_KEYPAD,
     MAIN_REPEATER,
     MOTION_SENSOR,
+    PALLADIOM_KEYPAD,
     PICO_KEYPAD,
     QS_IO_INTERFACE,
     SEETOUCH_KEYPAD,
     SEETOUCH_TABLETOP_KEYPAD,
-    VISOR_CONTROL_RECEIVER
+    VISOR_CONTROL_RECEIVER,
+    WCI
 }

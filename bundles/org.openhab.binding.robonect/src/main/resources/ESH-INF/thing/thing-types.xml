@@ -69,13 +69,13 @@
 				<description>The password if authentication has been enabled on the mower</description>
 			</parameter>
 			<parameter name="pollInterval" type="integer" required="false" unit="s">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<default>30</default>
 				<description>The interval for the binding to poll the mowers status information.
 				</description>
 			</parameter>
 			<parameter name="offlineTimeout" type="integer" required="false" unit="m">
-				<label>Offline timeout</label>
+				<label>Offline Timeout</label>
 				<default>30</default>
 				<description>The maximum time the mower may be offline before the offline trigger is triggered.
 				</description>
@@ -85,45 +85,45 @@
 
 	<channel-type id="serialType">
 		<item-type>String</item-type>
-		<label>Robonect serial number</label>
+		<label>Robonect Serial Number</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="versionType">
 		<item-type>String</item-type>
-		<label>Robonect version</label>
+		<label>Robonect Version</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="compiledType">
 		<item-type>String</item-type>
-		<label>Robonect version</label>
+		<label>Robonect Version</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="commentType">
 		<item-type>String</item-type>
-		<label>Robonect firmware comment</label>
+		<label>Robonect Firmware Comment</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nameType">
 		<item-type>String</item-type>
-		<label>Mower name</label>
+		<label>Mower Name</label>
 		<description>The name of the mower</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="durationType">
 		<item-type>Number:Time</item-type>
-		<label>Status duration</label>
+		<label>Status Duration</label>
 		<description>The number of seconds the mower is in the current status.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="hoursType">
 		<item-type>Number:Time</item-type>
-		<label>Total mowing hours</label>
+		<label>Total Mowing Hours</label>
 		<description>The number of total mowing hours</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -144,7 +144,7 @@
 
 	<channel-type id="modeType">
 		<item-type>String</item-type>
-		<label>Mower mode</label>
+		<label>Mower Mode</label>
 		<description>The mower mode</description>
 		<state readOnly="false">
 			<options>
@@ -216,28 +216,28 @@
 
 	<channel-type id="nextTimerType">
 		<item-type>DateTime</item-type>
-		<label>Next timer date</label>
+		<label>Next Timer Date</label>
 		<description>The next date the timer starts</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCodeType">
 		<item-type>Number</item-type>
-		<label>Error code</label>
+		<label>Error Code</label>
 		<description>Error code defined by the mower manufacturer</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorMessageType">
 		<item-type>String</item-type>
-		<label>Error message</label>
+		<label>Error Message</label>
 		<description>The error message</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorDateType">
 		<item-type>DateTime</item-type>
-		<label>Error date</label>
+		<label>Error Date</label>
 		<description>The date and time the error occurred</description>
 		<state readOnly="true"/>
 	</channel-type>

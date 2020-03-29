@@ -6,7 +6,7 @@ It provides cheap sensors for temperature, humidity, digital I/O and more.
 
 ## Getting Started
 
-The OneWire File System (OWFS, http://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
+The OneWire File System (OWFS, https://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
 It is assumed that you already have a working OWFS installation.
 Besides your sensors, you need a busmaster device (e.g. DS9490R). 
 
@@ -21,16 +21,9 @@ The `owserver` is the bridge that connects to an existing OWFS installation.
 
 There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`), Embedded Data System (www.embeddeddatasystems.com)(`edsenv`) and Brain4Home (www.brain4home.eu) (`bae091x`). 
 
-** Important: Breaking Change with next release **
+** Important: Breaking Change **
  
-The thing types `ms-th` and `ms-tv` have been marked deprecated and will be updated to `ms-tx` automatically. 
-The thing types `counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature` have been marked deprecated and will be updated to `basic` automatically. 
-Please note that auto-upgraded things keep their thing UID _including the deprecated thing type_.
-
-Manually (via textual configuration) defined things need to be changed to `ms-tx` or `basic` respectively.
-The thing UID changes and the item links need to be adjusted to the new UID.
-
-Deprecated thing types will will be removed with the next official release.
+The thing types `ms-th`, `ms-tv`, `counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature` have been removed.
 
 ## Discovery
 
@@ -206,6 +199,7 @@ Some sensors (e.g. DS18x20) report 85 °C as Power-On-Reset value.
 In some installations this leads to errorneous temperature readings.
 If the `ignorepor` parameter is set to `true` 85 °C values will be filtered.
 The default is `false` as correct reading of 85 °C will otherwise be filtered, too.
+Please note that the parameter value must not be set in quotation marks (see example below).
 
 A channel of type `temperature-por-res` has one parameter: `resolution`.
 OneWire temperature sensors are capable of different resolutions: `9`, `10`, `11` and `12` bits.
@@ -261,6 +255,7 @@ Bridge onewire:owserver:mybridge [
         ] {
             Channels:
                 Type temperature-por-res : temperature [
+                    ignorepor=true,
                     resolution="11"
                 ]
         } 
@@ -273,6 +268,7 @@ Bridge onewire:owserver:mybridge [
         ] {
             Channels:
                 Type temperature-por-res : temperature [
+                    ignorepor=false,
                     resolution="9"
                 ]
         } 

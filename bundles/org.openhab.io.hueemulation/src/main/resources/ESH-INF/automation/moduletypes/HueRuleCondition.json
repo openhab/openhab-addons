@@ -26,22 +26,22 @@
 							"label": "Lower than",
 							"value": "lt"
 						},
-                        {
-                            "label": "On item state change",
-                            "value": "dx"
-                        },
-                        {
-                            "label": "On item state change, delayed",
-                            "value": "ddx"
-                        },
-                        {
-                            "label": "Item has been updated but did not change",
-                            "value": "stable"
-                        },
-                        {
-                            "label": "Item has been updated and has changed",
-                            "value": "not_stable"
-                        },
+						{
+							"label": "On item state change",
+							"value": "dx"
+						},
+						{
+							"label": "On item state change, delayed",
+							"value": "ddx"
+						},
+						{
+							"label": "Item has been updated but did not change",
+							"value": "stable"
+						},
+						{
+							"label": "Item has been updated and has changed",
+							"value": "not_stable"
+						},
 						{
 							"label": "The current time is in range of the given time",
 							"value": "in"

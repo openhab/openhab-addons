@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Common -->
 	<channel-type id="LastConnection" advanced="true">
@@ -430,7 +430,7 @@
 
 	<channel-type id="TimeToTarget">
 		<item-type>Number:Time</item-type>
-		<label>Time To Target</label>
+		<label>Time to Target</label>
 		<description>Time left to the target temperature approximately</description>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.RamRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.model.EntityType;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
@@ -49,15 +50,20 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     private MemoryMap memoryMap;
 
-    // Map of EntityTypes (Key:EntityType (Zone, Partition), Value: Map<entity IDs, Label>
     private Map<EntityType, Map<Integer, String>> entityLabelsMap = new HashMap<>();
 
     private PanelType panelType = PanelType.UNKNOWN;
+    private Integer maxPartitions;
+    private Integer maxZones;
 
-    public EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
-            ScheduledExecutorService scheduler, PanelType panelType) throws UnknownHostException, IOException {
+    private EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
+            ScheduledExecutorService scheduler, PanelType panelType, Integer maxPartitions, Integer maxZones)
+            throws UnknownHostException, IOException {
         super(ipAddress, tcpPort, ip150Password, pcPassword, scheduler);
         this.panelType = panelType;
+        this.maxPartitions = maxPartitions;
+        this.maxZones = maxZones;
+        logger.debug("PanelType={}, max partitions={}, max Zones={}", panelType, maxPartitions, maxZones);
         initializeMemoryMap();
     }
 
@@ -77,15 +83,16 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         int ramBlockNumber = request.getRamBlockNumber();
 
         byte[] parsedResult = parsePacket(response);
-        if (parsedResult != null) {
+        if (parsedResult != null && parsedResult.length == RAM_BLOCK_SIZE) {
             memoryMap.updateElement(ramBlockNumber, parsedResult);
             logger.trace("Result for ramBlock={} is [{}]", ramBlockNumber, parsedResult);
         } else {
             logger.debug("Wrong parsed result. Probably wrong data received in response");
+            return;
         }
 
         // Trigger listeners update when last memory page update is received
-        if (ramBlockNumber == panelType.getRamPagesNumber() && listeners != null && !listeners.isEmpty()) {
+        if (ramBlockNumber == panelType.getRamPagesNumber()) {
             updateListeners();
         }
     }
@@ -221,7 +228,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     private void readRAM(int blockNo) {
         try {
-            logger.debug("Creating RAM page {} read request", blockNo);
+            logger.trace("Creating RAM page {} read request", blockNo);
             IPPacketPayload payload = new RamRequestPayload(blockNo, RAM_BLOCK_SIZE);
             ParadoxIPPacket ipPacket = createParadoxIpPacket(payload);
             IRequest ramRequest = new RamRequest(blockNo, ipPacket);
@@ -283,11 +290,109 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     }
 
     private void initializeEpromData() {
-        for (int i = 0; i < panelType.getPartitions(); i++) {
+        for (int i = 0; i < maxPartitions; i++) {
             retrievePartitionLabel(i);
         }
-        for (int i = 0; i < panelType.getZones(); i++) {
+        for (int i = 0; i < maxZones; i++) {
             retrieveZoneLabel(i);
+        }
+    }
+
+    public static class EvoCommunicatorBuilder implements ICommunicatorBuilder {
+
+        private final Logger logger = LoggerFactory.getLogger(EvoCommunicatorBuilder.class);
+
+        // Mandatory parameters
+        private PanelType panelType;
+        private String ipAddress;
+        private String ip150Password;
+        private ScheduledExecutorService scheduler;
+
+        // Non mandatory or with predefined values
+        private Integer maxPartitions;
+        private Integer maxZones;
+        private int tcpPort = 10000;
+        private String pcPassword = "0000";
+
+        EvoCommunicatorBuilder(PanelType panelType) {
+            this.panelType = panelType;
+        }
+
+        @Override
+        public IParadoxCommunicator build() {
+            if (panelType != PanelType.EVO48 && panelType != PanelType.EVO96 && panelType != PanelType.EVO192) {
+                throw new ParadoxRuntimeException("Unknown or unsupported panel type. Type=" + panelType);
+            }
+
+            if (ipAddress == null || ipAddress.isEmpty()) {
+                throw new ParadoxRuntimeException("IP address cannot be empty !");
+            }
+
+            if (ip150Password == null || ip150Password.isEmpty()) {
+                throw new ParadoxRuntimeException("Password for IP150 cannot be empty !");
+            }
+
+            if (scheduler == null) {
+                throw new ParadoxRuntimeException("Scheduler is mandatory parameter !");
+            }
+
+            if (maxPartitions == null || maxPartitions < 1) {
+                this.maxPartitions = panelType.getPartitions();
+            }
+
+            if (maxZones == null || maxZones < 1) {
+                this.maxZones = panelType.getZones();
+            }
+
+            try {
+                return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword, scheduler, panelType,
+                        maxPartitions, maxZones);
+            } catch (IOException e) {
+                logger.warn("Unable to create communicator for Panel={}. Message={}", panelType, e.getMessage());
+                throw new ParadoxRuntimeException(e);
+            }
+        }
+
+        @Override
+        public ICommunicatorBuilder withMaxZones(Integer maxZones) {
+            this.maxZones = maxZones;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withMaxPartitions(Integer maxPartitions) {
+            this.maxPartitions = maxPartitions;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withIp150Password(String ip150Password) {
+            this.ip150Password = ip150Password;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withPcPassword(String pcPassword) {
+            this.pcPassword = pcPassword;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withIpAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withTcpPort(Integer tcpPort) {
+            this.tcpPort = tcpPort;
+            return this;
+        }
+
+        @Override
+        public ICommunicatorBuilder withScheduler(ScheduledExecutorService scheduler) {
+            this.scheduler = scheduler;
+            return this;
         }
     }
 }

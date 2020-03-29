@@ -1,6 +1,6 @@
 # LaMetric Binding
 
-The LaMetric binding allows to connect openHab to LaMetric Time connected clock devices, providing following features:
+The LaMetric binding allows to connect openHAB to LaMetric Time connected clock devices, providing following features:
 
 * Control the LaMetric Time Device
     * Control Display Brightness
@@ -16,13 +16,13 @@ The device acts as a bridge and is exposed as "LaMetric Time" Thing.
 The "LaMetric Time" Thing is directly responsible for device operations which include the display, audio, bluetooth, and notifications.
 All apps are implemented as separate things under the bridge.
 
-| App               | Thing Type   | Description                                                   |
-|-------------------|--------------|---------------------------------------------------------------|
-| Clock             | clockApp     | Clock that dispays time and date                              |
-| Timer             | countdownApp | A countdown timer that counts by seconds                       |
-| Radio             | radioApp     | Streaming radio player                                        |
-| Stopwatch         | stopwatchApp | Stopwatch that counts up by seconds                           |
-| Weather           | weatherApp   | Current weather conditions as well as a forecast              |
+| App               | Thing Type   | Description                                      |
+|-------------------|--------------|--------------------------------------------------|
+| Clock             | clockApp     | Clock that dispays time and date                 |
+| Timer             | countdownApp | A countdown timer that counts by seconds         |
+| Radio             | radioApp     | Streaming radio player                           |
+| Stopwatch         | stopwatchApp | Stopwatch that counts up by seconds              |
+| Weather           | weatherApp   | Current weather conditions as well as a forecast |
 
 ## Discovery
 
@@ -125,7 +125,7 @@ They exist as one-way communication only.
 ## How Tos
 
 The following configuration examples assume the device was added with the thing id `lametrictime:device:demo`.
-Replace the thing id in all the configurations with your real thing id which can be looked up via paper UI.
+Replace the thing id in all the configurations with your real thing id which can be looked up via Paper UI.
 
 ### Notifications
 

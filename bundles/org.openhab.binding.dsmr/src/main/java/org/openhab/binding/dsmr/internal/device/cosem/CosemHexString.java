@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ class CosemHexString extends CosemValueDescriptor<StringType> {
      */
     @Override
     protected StringType getStateValue(String cosemValue) throws ParseException {
-        final String cosemHexValue = cosemValue.replaceAll("\\r\\n", "");
+        final String cosemHexValue = cosemValue.replaceAll("\\r\\n", "").trim();
 
         if (cosemHexValue.length() % 2 != 0) {
             throw new ParseException(cosemHexValue + " is not a valid hexadecimal string", 0);
@@ -50,7 +50,11 @@ class CosemHexString extends CosemValueDescriptor<StringType> {
                 final String hexValue = cosemHexValue.substring(i, i + 2);
 
                 if (!NO_VALUE.equals(hexValue)) {
-                    sb.append((char) Integer.parseInt(hexValue, 16));
+                    try {
+                        sb.append((char) Integer.parseInt(hexValue, 16));
+                    } catch (NumberFormatException e) {
+                        throw new ParseException("Failed to parse hex value from '" + cosemValue + "' as char", i);
+                    }
                 }
             }
             return new StringType(sb.toString());

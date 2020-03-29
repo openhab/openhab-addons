@@ -1,4 +1,4 @@
-# Usefull commands to create files used by the binding from Nibe ModbusManager CSV files
+# Useful commands to create files used by the binding from Nibe ModbusManager CSV files
 
 Command to convert Nibe CSV file character set to UTF-8:
  ```iconv -f iso-8859-1 -t utf-8 F1X45.csv > F1X45_utf8.csv```

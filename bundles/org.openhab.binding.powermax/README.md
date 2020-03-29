@@ -1,18 +1,24 @@
 # Powermax Binding
 
-Visonic produces the Powermax alarm panel series (PowerMax, PowerMax+, PowerMaxExpress, PowerMaxPro and PowerMaxComplete) and the Powermaster alarm series (PowerMaster 10 and PowerMaster 30). This binding allows you to control the alarm panel (arm/disarm) and allows you to use the Visonic sensors (movement, door contact, ...) within openHAB.
+Visonic produces the Powermax alarm panel series (PowerMax, PowerMax+, PowerMaxExpress, PowerMaxPro and PowerMaxComplete) and the Powermaster alarm series (PowerMaster 10 and PowerMaster 30).
+This binding allows you to control the alarm panel (arm/disarm) and allows you to use the Visonic sensors (movement, door contact, ...) within openHAB.
 
-The PowerMax provides support for a serial interface. This serial interface is not installed by default but can be ordered from any PowerMax vendor (called the Visonic RS-232 Adaptor Kit).
+The PowerMax provides support for a serial interface.
+This serial interface is not installed by default but can be ordered from any PowerMax vendor (called the Visonic RS-232 Adaptor Kit).
 
 In case your alarm panel is directly connected to a serial port of your openHAB server (or to an USB port through a serial to USB converter), you must setup a serial connection thing type in openHAB.
 
-But you even don't need to have your alarm panel directly connected to your openHAB server. You can connect it for example to a Raspberry PI and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP). In this case, you must setup an IP connection thing type in openHAB. Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444:
+But you even don't need to have your alarm panel directly connected to your openHAB server.
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+In this case, you must setup an IP connection thing type in openHAB.
+
+Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444:
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT
 ```
 
-Visonic does not provide a specification of the RS232 protocol and, thus, the binding uses the available protocol specification given at the [​domoticaforum](http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581).
+Visonic does not provide a specification of the RS232 protocol and, thus, the binding uses the available protocol specification given at the [​domoticaforum](https://www.domoticaforum.eu/viewtopic.php?f=68&t=6581).
 
 The binding implemntation of this protocol is largely inspired by the [Vera plugin](http://code.mios.com/trac/mios_visonic-powermax).
 
@@ -29,11 +35,14 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The alarm system is not discovered automatically. First you have to create manually a bridge thing, either of type ip or serial depending on how your openHAB server is connected to the alarm system. Then the binding will automatically discover all zones and X10 devices that are setup in your alarm system.
+The alarm system is not discovered automatically.
+First you have to create manually a bridge thing, either of type ip or serial depending on how your openHAB server is connected to the alarm system.
+Then the binding will automatically discover all zones and X10 devices that are setup in your alarm system.
 
 ## Binding configuration
 
-There are no overall binding configuration settings that need to be set. All settings are through thing configuration parameters.
+There are no overall binding configuration settings that need to be set.
+All settings are through thing configuration parameters.
 
 ## Thing Configuration
 
@@ -70,8 +79,10 @@ The serial bridge thing requires the following configuration parameters:
 
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Powermax binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Powermax and RFXcom. See the wiki page for more on symlinking the USB ports [](https://github.com/openhab/openhab1-addons/wiki/symlinks).
+-   On Linux, you may get an error stating the serial port cannot be opened when the Powermax binding tries to load.
+You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+-   Also on Linux you may have issues with the USB if using two serial USB devices e.g. Powermax and RFXcom.
+See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ### X10 device
 
@@ -117,7 +128,8 @@ The following channels are available:
 
 ## Console Commands
 
-The binding provides few specific commands you can use in the console. Enter the command `smarthome:powermax` to get the usage of each available command.
+The binding provides few specific commands you can use in the console.
+Enter the command `smarthome:powermax` to get the usage of each available command.
 
 ```
 openhab> smarthome:powermax
@@ -125,17 +137,24 @@ Usage: smarthome:powermax <bridgeUID> info_setup - information on setup
 Usage: smarthome:powermax <bridgeUID> download_setup - download setup
 ```
 
-The command `info_setup` displays in the console informations about your current panel setup. The command `download_setup` will trigger a new download of the panel setup.
+The command `info_setup` displays in the console informations about your current panel setup.
+The command `download_setup` will trigger a new download of the panel setup.
 
 Here is an example of command you can run: `smarthome:powermax powermax:serial:home info_setup`.
 
 ## Notes & Limitations
 
-* For Powerlink mode to work, the enrollment procedure has to be followed. If you don't enroll the Powerlink on the PowerMax the binding will operate in Standard mode, and if enrolled in Powerlink mode. On the newer software versions of the PowerMax the Powerlink enrollment is automatic, and the binding should only operate in 'Powerlink' mode (if enrollment is successful).
-* In Powerlink mode, the binding is downloading the panel setup at startup. When openHAB is starting, unfortunately this download is often failing on a RPI for an unclear reason (maybe too many things running at the same time). A retry mechanism is implemented in the binding to retry until 3 times with a delay of 1 minute between each try. My experience is that the download finally succeeds. In case it fails after all the retries, you still have the option to later trigger the download either by using the channel `download_setup` or the appropriate console command.
-* Visonic does not provide a specification of the RS232 protocol and, thus, use this binding at your own risk.
-* The binding is not able to arm/disarm a particular partition.
-* The compatibility of the binding with the Powermaster alarm panel series is probably only partial.
+-   For Powerlink mode to work, the enrollment procedure has to be followed.
+If you don't enroll the Powerlink on the PowerMax the binding will operate in Standard mode, and if enrolled in Powerlink mode.
+On the newer software versions of the PowerMax the Powerlink enrollment is automatic, and the binding should only operate in 'Powerlink' mode (if enrollment is successful).
+-   In Powerlink mode, the binding is downloading the panel setup at startup.
+When openHAB is starting, unfortunately this download is often failing on a Raspberry Pi for an unclear reason (maybe too many things running at the same time).
+A retry mechanism is implemented in the binding to retry until 3 times with a delay of 1 minute between each try.
+My experience is that the download finally succeeds.
+In case it fails after all the retries, you still have the option to later trigger the download either by using the channel `download_setup` or the appropriate console command.
+-   Visonic does not provide a specification of the RS232 protocol and, thus, use this binding at your own risk.
+-   The binding is not able to arm/disarm a particular partition.
+-   The compatibility of the binding with the Powermaster alarm panel series is probably only partial.
 
 ## Full Example
 

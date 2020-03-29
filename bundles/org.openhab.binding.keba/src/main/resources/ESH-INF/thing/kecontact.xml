@@ -63,7 +63,7 @@
 				<description>Network address of the wallbox</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>15</default>
 			</parameter>
@@ -218,13 +218,13 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="authreq" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Authentication Required</label>
 		<description>Authentication required</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="authon" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Authentication Enabled</label>
 		<description>Authentication enabled</description>
 		<state readOnly="true"></state>
@@ -237,7 +237,7 @@
 	</channel-type>
 	<channel-type id="sessionrfidclass" advanced="true">
 		<item-type>String</item-type>
-		<label>RFID Tag class</label>
+		<label>RFID Tag Class</label>
 		<description>RFID Tag class used for the last charging session</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -249,7 +249,7 @@
 	</channel-type>
 	<channel-type id="setenergylimit">
 		<item-type>Number</item-type>
-		<label>Energy limit</label>
+		<label>Energy Limit</label>
 		<description>An energy limit for an already running or the next charging session.</description>
 		<state pattern="%d Wh" readOnly="false"></state>
 	</channel-type>

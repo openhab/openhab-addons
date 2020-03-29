@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Weather information</label>
+		<label>Weather Information</label>
 		<description>Weather data from the meteoblue service</description>
 
 		<channel-groups>
@@ -65,7 +65,7 @@
 				<description>Time Zone of this location (e.g. America/Louisville). See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="5" unit="min">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval (in minutes)</description>
 				<default>240</default>
 			</parameter>
@@ -201,7 +201,7 @@
 
 	<channel-type id="windDirection" advanced="true">
 		<item-type>Number</item-type>
-		<label>Wind direction</label>
+		<label>Wind Direction</label>
 		<description>Wind direction (in degrees)</description>
 		<category>Wind</category>
 		<state readOnly="true" min="0" max="360" pattern="%.0f °">
@@ -338,7 +338,7 @@
 
 	<channel-type id="humidityGreater90Hours">
 		<item-type>Number</item-type>
-		<label>Humidity Greater than 90 Hours</label>
+		<label>Humidity Greater Than 90 Hours</label>
 		<description>The predicted number of hours having humidity greater than 90%</description>
 		<state readOnly="true" min="0" max="24" pattern="%d">
 		</state>
@@ -381,7 +381,7 @@
 
 	<channel-type id="icon" advanced="true">
 		<item-type>Image</item-type>
-		<label>Weather icon</label>
+		<label>Weather Icon</label>
 		<description>Icon representing the weather conditions</description>
 	</channel-type>
 

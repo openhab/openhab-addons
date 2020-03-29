@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,15 +22,13 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
+import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
+import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.VolumeControl;
-import com.connectsdk.service.capability.VolumeControl.VolumeListener;
-import com.connectsdk.service.command.ServiceCommandError;
-import com.connectsdk.service.command.ServiceSubscription;
 
 /**
  * Handles TV Control Volume Commands. Allows to set a volume to an absolute number or increment and decrement the
@@ -39,68 +37,62 @@ import com.connectsdk.service.command.ServiceSubscription;
  * @author Sebastian Prehn - initial contribution
  */
 @NonNullByDefault
-public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Object> {
+public class VolumeControlVolume extends BaseChannelHandler<Float> {
     private final Logger logger = LoggerFactory.getLogger(VolumeControlVolume.class);
 
-    private VolumeControl getControl(ConnectableDevice device) {
-        return device.getCapability(VolumeControl.class);
-    }
+    private final ResponseListener<CommandConfirmation> objResponseListener = createResponseListener();
 
     @Override
-    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
-            Command command) {
-        if (device == null) {
+    public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        final PercentType percent;
+        if (RefreshType.REFRESH == command) {
+            handler.getSocket().getVolume(createResponseListener(channelId, handler));
             return;
         }
-        PercentType percent = null;
         if (command instanceof PercentType) {
             percent = (PercentType) command;
         } else if (command instanceof DecimalType) {
             percent = new PercentType(((DecimalType) command).toBigDecimal());
         } else if (command instanceof StringType) {
             percent = new PercentType(((StringType) command).toString());
-        }
-        if (percent != null) {
-            if (hasCapability(device, VolumeControl.Volume_Set)) {
-                getControl(device).setVolume(percent.floatValue() / 100.0f, getDefaultResponseListener());
-            }
-        } else if (IncreaseDecreaseType.INCREASE == command) {
-            if (hasCapability(device, VolumeControl.Volume_Up_Down)) {
-                getControl(device).volumeUp(getDefaultResponseListener());
-            }
-        } else if (IncreaseDecreaseType.DECREASE == command) {
-            if (hasCapability(device, VolumeControl.Volume_Up_Down)) {
-                getControl(device).volumeDown(getDefaultResponseListener());
-            }
-        } else if (OnOffType.OFF == command || OnOffType.ON == command) {
-            if (hasCapability(device, VolumeControl.Mute_Set)) {
-                getControl(device).setMute(OnOffType.OFF == command, getDefaultResponseListener());
-            }
         } else {
-            logger.warn("Only accept PercentType, DecimalType, StringType command. Type was {}.", command.getClass());
+            percent = null;
+        }
+
+        if (percent != null) {
+            handler.getSocket().setVolume(percent.floatValue() / 100.0f, objResponseListener);
+        } else if (IncreaseDecreaseType.INCREASE == command) {
+            handler.getSocket().volumeUp(objResponseListener);
+        } else if (IncreaseDecreaseType.DECREASE == command) {
+            handler.getSocket().volumeDown(objResponseListener);
+        } else if (OnOffType.OFF == command || OnOffType.ON == command) {
+            handler.getSocket().setMute(OnOffType.OFF == command, objResponseListener);
+        } else {
+            logger.info("Only accept PercentType, DecimalType, StringType, RefreshType. Type was {}.",
+                    command.getClass());
         }
     }
 
     @Override
-    protected Optional<ServiceSubscription<VolumeListener>> getSubscription(ConnectableDevice device, String channelUID,
-            LGWebOSHandler handler) {
-        if (hasCapability(device, VolumeControl.Volume_Subscribe)) {
-            return Optional.of(getControl(device).subscribeVolume(new VolumeListener() {
-
-                @Override
-                public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("Error in listening to volume changes: {}.", error == null ? "" : error.getMessage());
-                }
-
-                @Override
-                public void onSuccess(@Nullable Float value) {
-                    if (value != null) {
-                        handler.postUpdate(channelUID, new PercentType(Math.round(value * 100)));
-                    }
-                }
-            }));
-        } else {
-            return Optional.empty();
-        }
+    protected Optional<ServiceSubscription<Float>> getSubscription(String channelUID, LGWebOSHandler handler) {
+        return Optional.of(handler.getSocket().subscribeVolume(createResponseListener(channelUID, handler)));
     }
+
+    private ResponseListener<Float> createResponseListener(String channelUID, LGWebOSHandler handler) {
+        return new ResponseListener<Float>() {
+
+            @Override
+            public void onError(@Nullable String error) {
+                logger.debug("Error in retrieving volume: {}.", error);
+            }
+
+            @Override
+            public void onSuccess(@Nullable Float value) {
+                if (value != null && !Float.isNaN(value)) {
+                    handler.postUpdate(channelUID, new PercentType(Math.round(value * 100)));
+                }
+            }
+        };
+    }
+
 }

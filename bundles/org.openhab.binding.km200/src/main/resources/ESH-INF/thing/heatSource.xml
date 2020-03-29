@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="kmdevice" />
 		</supported-bridge-type-refs>
-		<label>Heat source</label>
+		<label>Heat Source</label>
 		<description>This thing is representing the heat source.</description>
 		<properties>
 			<property name="root">#heatSources</property>

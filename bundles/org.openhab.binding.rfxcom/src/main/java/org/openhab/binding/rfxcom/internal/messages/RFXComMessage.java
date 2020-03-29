@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,7 @@ public interface RFXComMessage {
     /**
      * Procedure for encode raw data.
      *
-     * @param data
-     *                 Raw data.
+     * @param data Raw data.
      */
     void encodeMessage(byte[] data) throws RFXComException;
 
@@ -41,7 +40,6 @@ public interface RFXComMessage {
 
     /**
      * Procedure for converting openHAB state to RFXCOM object.
-     *
      */
     void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException;
 

@@ -5,6 +5,11 @@ The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest 
 Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information.
 The binding uses HTTPS to connect to the Nest API using ports 443 and 9553. Make sure outbound connections to these ports are not blocked by a firewall.
 
+> Note: This binding can only be used with Nest devices if you have an existing Nest developer account signed up for the Works with Nest (WWN) program.
+New integrations using the WWN program are no longer accepted because WWN is being retired.
+To keep using this binding do **NOT** migrate your Nest Account to a Google Account.
+For more information see [What's happening at Nest?](https://nest.com/whats-happening/).
+
 ## Supported Things
 
 The table below lists the Nest binding thing types:
@@ -20,7 +25,7 @@ The table below lists the Nest binding thing types:
 ## Authorization
 
 The Nest API uses OAuth for authorization.
-Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
+Therefore the binding needs some authorization parameters before it can access your Nest account via the Nest API.
 
 To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant).
 
@@ -117,7 +122,7 @@ Information about the last camera event (requires Nest Aware subscription).
 | rush_hour_rewards_enrollment | Switch    | If rush hour rewards system is enabled or not                                                          |      R     |
 | security_state               | String    | Security state of the structure (OK, DETER)                                                            |      R     |
 | smoke_alarm_state            | String    | Smoke alarm state (OK, EMERGENCY, WARNING)                                                             |      R     |
-| time_zone                    | String    | The time zone for the structure ([IANA time zone format](http://www.iana.org/time-zones))              |      R     |
+| time_zone                    | String    | The time zone for the structure ([IANA time zone format](https://www.iana.org/time-zones))             |      R     |
 
 ### Thermostat Channels
 

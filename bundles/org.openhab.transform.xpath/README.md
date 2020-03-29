@@ -115,5 +115,5 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 ## Further Reading
 
 * An [introduction](https://www.w3schools.com/xml/xpath_intro.asp) to XPath at W3School
-* A informative explanation of [common mistakes](https://qxf2.com/blog/common-xpath-mistakes/).
+* An informative explanation of [common mistakes](https://qxf2.com/blog/common-xpath-mistakes/).
 * Online validation tools like [this](https://www.freeformatter.com/xpath-tester.html) to check the syntax.

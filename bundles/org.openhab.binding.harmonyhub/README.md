@@ -1,11 +1,11 @@
 # Logitech Harmony Hub Binding
 
-The Harmony Hub binding is used to enable communication between openHAB2 and multiple Logitech Harmony Hub devices.
+The Harmony Hub binding is used to enable communication between openHAB and multiple Logitech Harmony Hub devices.
 The API exposed by the Harmony Hub is relatively limited, but it does allow for reading the current activity as well as setting the activity and sending device commands.
 
 ## Overview
 
-The Harmony binding represents a "Hub" as a bridge thing type and "Devices" as things connected to the bridge.  
+The Harmony binding represents a "Hub" as a bridge thing type and "Devices" as things connected to the bridge.
 
 ### Hub
 
@@ -72,8 +72,8 @@ String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { 
 
 Hubs can also send a button press to a device associated with the current activity.
 A String item can be used to send any button name/label or a Player item can be used to send Play/Pause/FastForward/Rewind/SkipForward/SkipBackward. 
-This mimics the physical remote where buttons are mapped differently depending on which activity is running.  
-For example the play button may be sent to a DVD player when running a "Watch DVD" activity, or it may be sent to a AppleTV when running a "Watch Movie" activity. 
+This mimics the physical remote where buttons are mapped differently depending on which activity is running.
+For example the play button may be sent to a DVD player when running a "Watch DVD" activity, or it may be sent to an Apple TV when running a "Watch Movie" activity. 
 
 
 ```java

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,9 +116,12 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
         logger.debug("About to start Homie device {}", device.attributes.name);
-        // We have mostly retained messages for Homie. QoS 1 is required.
-        connection.setRetain(true);
-        connection.setQos(1);
+        if (connection.getQos() != 1) {
+            // QoS 1 is required.
+            logger.warn(
+                    "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
+            connection.setQos(1);
+        }
         return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
             return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
         }).thenRun(() -> {
@@ -212,8 +215,8 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (!device.isInitialized()) {
             return;
         }
-        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream())
-                .map(prop -> prop.getChannel()).collect(Collectors.toList());
+        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream()).map(Property::getChannel)
+                .collect(Collectors.toList());
         updateThing(editThing().withChannels(channels).build());
         updateProperty(MqttBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
         final MqttBrokerConnection connection = this.connection;
@@ -236,5 +239,10 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         device.getRetainedTopics().stream().map(d -> {
             return String.format("%s/%s", config.basetopic, d);
         }).collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
+    }
+
+    @Override
+    protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
+        // not used here
     }
 }

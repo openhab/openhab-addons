@@ -172,7 +172,7 @@
 
 	<channel-type id="rain-lasthour">
 		<item-type>Number:Length</item-type>
-		<label>Rainfall (previous hour)</label>
+		<label>Rainfall (previous Hour)</label>
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%">
@@ -181,7 +181,7 @@
 
 	<channel-type id="rain-currenthour">
 		<item-type>Number:Length</item-type>
-		<label>Rainfall (60 minutes)</label>
+		<label>Rainfall (60 Minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%">
