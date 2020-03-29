@@ -34,4 +34,9 @@ public class BoschSHCBridgeConfiguration {
      * Home Controller.
      */
     public String keystorePath;
+
+    /**
+     * Password to be used for the Java keystore.
+     */
+    public String keystorePassword;
 }

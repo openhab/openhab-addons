@@ -43,8 +43,10 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandlerFactory.class);
     private @Nullable BoschSHCBridgeHandler bridge;
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_INWALL_SWITCH,
-            THING_TYPE_SHC);
+
+    // List of all supported Bosch devices.
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
+            THING_TYPE_INWALL_SWITCH, THING_TYPE_TWINGUARD);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,7 +67,13 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
         }
 
         else if (THING_TYPE_INWALL_SWITCH.equals(thingTypeUID)) {
-            BoschSHCHandler handler = new BoschSHCHandler(thing);
+            BoschInWallSwitchHandler handler = new BoschInWallSwitchHandler(thing);
+            return handler;
+        }
+
+        else if (THING_TYPE_TWINGUARD.equals(thingTypeUID)) {
+
+            BoschTwinguardHandler handler = new BoschTwinguardHandler(thing);
             return handler;
         }
 

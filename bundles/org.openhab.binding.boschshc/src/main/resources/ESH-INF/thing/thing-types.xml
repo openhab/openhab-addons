@@ -23,7 +23,12 @@
             </parameter>
             <parameter name="keystorePath" type="text">
                 <label>Java KeyStore path.</label>
-                <description>Path at which the keystore with SHC acceess keys is stored.</description>
+                <description>Path at which the keystore with SHC access keys is stored.</description>
+                <required>true</required>
+            </parameter>          
+            <parameter name="keystorePassword" type="text">
+                <label>Java KeyStore password.</label>
+                <description>Password that should be used for the Java keystore.</description>
                 <required>true</required>
             </parameter>                        
         </config-description>
@@ -47,12 +52,37 @@
 		</config-description>
 
 	</thing-type>
+	
+    <!--Bosch in-wall switch-->
+    <thing-type id="twinguard">
+        <label>Bosch TwinGuard</label>
+        <description>TwinGuard environmental sensor</description>
 
-	<!-- Sample Channel Type: ["PowerMeter","PowerSwitch","PowerSwitchProgram","Routing"] -->
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+        </channels>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>Device ID</label>
+                <description>Device ID of the Twinguard</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+
+    </thing-type>	
+
 	<channel-type id="power-switch">
 		<item-type>Switch</item-type>
 		<label>Bosch Power Switch</label>
 		<description>In-Wall Bosch Power Switch</description>
 	</channel-type>
+	
+    <channel-type id="temperature">
+       <item-type>Number:Temperature</item-type>
+       <label>Current Temperature</label>
+       <description>Current measured temperature.</description>
+    </channel-type>
+	
 
 </thing:thing-descriptions>
