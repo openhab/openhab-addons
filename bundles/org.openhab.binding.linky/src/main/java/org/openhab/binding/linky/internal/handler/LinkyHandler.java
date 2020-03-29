@@ -71,10 +71,6 @@ public class LinkyHandler extends BaseThingHandler {
     private static final String LOGIN_BASE_URI = "https://espace-client-connexion.enedis.fr/auth/UI/Login";
     private static final String API_BASE_URI = "https://espace-client-particuliers.enedis.fr/group/espace-particuliers/suivi-de-consommation";
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final Builder LOGIN_BODY_BUILDER = new FormBody.Builder().add("encoded", "true")
-            .add("gx_charset", "UTF-8").add("SunQueryParamsString",
-                    Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
-
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 5;
     private static final int REFRESH_INTERVAL_IN_MIN = 360;
 
@@ -123,12 +119,17 @@ public class LinkyHandler extends BaseThingHandler {
                 REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
     }
 
+    private static Builder getLoginBodyBuilder() {
+        return new FormBody.Builder().add("encoded", "true").add("gx_charset", "UTF-8").add("SunQueryParamsString",
+                Base64.getEncoder().encodeToString("realm=particuliers".getBytes(StandardCharsets.UTF_8)));
+    }
+
     private synchronized boolean login() {
         logger.debug("login");
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         Request requestLogin = new Request.Builder().url(LOGIN_BASE_URI)
-                .post(LOGIN_BODY_BUILDER.add("IDToken1", config.username).add("IDToken2", config.password).build())
+                .post(getLoginBodyBuilder().add("IDToken1", config.username).add("IDToken2", config.password).build())
                 .build();
         try (Response response = client.newCall(requestLogin).execute()) {
             if (response.isRedirect()) {
@@ -165,9 +166,9 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        Double lastWeek = Double.NaN;
-        Double thisWeek = Double.NaN;
-        Double yesterday = Double.NaN;
+        double lastWeek = Double.NaN;
+        double thisWeek = Double.NaN;
+        double yesterday = Double.NaN;
         LinkyConsumptionData result = cachedDaylyData.getValue();
         if (result != null && result.success()) {
             LocalDate rangeStart = LocalDate.now().minusDays(13);
@@ -213,8 +214,8 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        Double lastMonth = Double.NaN;
-        Double thisMonth = Double.NaN;
+        double lastMonth = Double.NaN;
+        double thisMonth = Double.NaN;
         LinkyConsumptionData result = cachedMonthlyData.getValue();
         if (result != null && result.success()) {
             int jump = result.getDecalage();
@@ -238,8 +239,8 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        Double thisYear = Double.NaN;
-        Double lastYear = Double.NaN;
+        double thisYear = Double.NaN;
+        double lastYear = Double.NaN;
         LinkyConsumptionData result = cachedYearlyData.getValue();
         if (result != null && result.success()) {
             int elementQuantity = result.getData().size();
@@ -252,7 +253,7 @@ public class LinkyHandler extends BaseThingHandler {
         updateKwhChannel(THIS_YEAR, thisYear);
     }
 
-    private void updateKwhChannel(String channelId, Double consumption) {
+    private void updateKwhChannel(String channelId, double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
         updateState(channelId,
                 !Double.isNaN(consumption) ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR)
