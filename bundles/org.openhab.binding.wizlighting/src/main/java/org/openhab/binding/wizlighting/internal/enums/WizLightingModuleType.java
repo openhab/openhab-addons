@@ -48,15 +48,15 @@ public enum WizLightingModuleType {
         return moduleName;
     }
 
-    private static final Map<String, ThingTypeUID> moduleNameMap;
+    private static final Map<String, ThingTypeUID> ModuleNameMap;
     static {
-        moduleNameMap = new HashMap<String, ThingTypeUID>();
+        ModuleNameMap = new HashMap<String, ThingTypeUID>();
         for (WizLightingModuleType v : WizLightingModuleType.values()) {
-            moduleNameMap.put(v.moduleName, v.thingTypeUID);
+            ModuleNameMap.put(v.moduleName, v.thingTypeUID);
         }
     }
 
     public static ThingTypeUID getThingTypeUIDFromModuleName(String moduleName) {
-        return moduleNameMap.get(moduleName);
+        return ModuleNameMap.get(moduleName);
     }
 }

@@ -65,14 +65,14 @@ public class WizColorConverter {
         // Since we're going to use the white lights to control saturation, recalculate what
         // the HSBvalue would be if the color was at full brightness and saturation
         Double hue = hsb.getHue().doubleValue();
-        Double sat_255 = ((hsb.getSaturation().doubleValue()) / 100) * 255;
+        Double sat255 = ((hsb.getSaturation().doubleValue()) / 100) * 255;
 
-        if (sat_255 > 0) {
+        if (sat255 > 0) {
             int i = (int) (hue / 60); // color quadrant 0..2555
             double f = hue % 60; // 0..59
-            double q = 255 - ((f / 60) * sat_255);
-            // double p = 255 - sat_255;
-            // double t = 255 - (((60 - f) / 60) * sat_255);
+            double q = 255 - ((f / 60) * sat255);
+            // double p = 255 - sat255;
+            // double t = 255 - (((60 - f) / 60) * sat255);
             double p = 0;
             double t = 255 - (((60 - f) / 60) * 255);
 

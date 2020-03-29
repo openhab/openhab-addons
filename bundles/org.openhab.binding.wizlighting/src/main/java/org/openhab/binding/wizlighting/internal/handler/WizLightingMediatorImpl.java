@@ -180,7 +180,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 this.receiverThread = newThread;
                 logger.trace("A new receiver thread has been started.");
             } catch (SocketException e) {
-                logger.debug("Cannot start the socket with default port {}...", e);
+                logger.debug("Cannot start the socket with default port {}...", e.getMessage());
             }
         }
     }
