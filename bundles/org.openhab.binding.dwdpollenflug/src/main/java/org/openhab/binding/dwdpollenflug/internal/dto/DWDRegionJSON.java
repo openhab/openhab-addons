@@ -33,7 +33,7 @@ public class DWDRegionJSON {
     public @Nullable String regionName;
 
     @SerializedName("partregion_id")
-    public @Nullable Integer partregionID;
+    public @Nullable Integer partRegionID;
 
     @SerializedName("partregion_name")
     public @Nullable String partRegionName;

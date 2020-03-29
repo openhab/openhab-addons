@@ -13,6 +13,7 @@
 package org.openhab.binding.dwdpollenflug.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
 
 /**
  * The {@link DWDPollenflugRegionListener}
@@ -21,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface DWDPollenflugRegionListener {
-
+    public void notifyOnUpdate(DWDPollenflug pollenflug);
 }
