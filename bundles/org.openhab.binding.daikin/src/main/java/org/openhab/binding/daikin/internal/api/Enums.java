@@ -119,7 +119,7 @@ public class Enums {
     }
 
     public enum HomekitMode {
-        AUTO            ("on"),
+        AUTO            ("auto"),
         COOL            ("cool"),
         HEAT            ("heat"),
         OFF             ("off");
