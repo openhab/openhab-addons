@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import java.util.List;
-
 import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link LanInterfacesResponse} is the Java class used to map the
- * response of Lan Interface Browser API
- * https://dev.freebox.fr/sdk/os/lan/#lan-browser
+ * The {@link CallEntriesRequest} is the Java class used to map the
+ * response of the call API
+ * https://dev.freebox.fr/sdk/os/call/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "lan/browser/interfaces/", retryAuth = true)
-public class LanInterfacesResponse extends FreeboxResponse<List<LanInterface>> {
+@RequestAnnotation(relativeUrl = "call/log/?", retryAuth = true, responseClass = CallEntriesResponse.class)
+public class CallEntriesRequest extends APIAction {
+    public CallEntriesRequest(long lastCallTimestamp) {
+        super(String.format("_dc=%d", lastCallTimestamp));
+    }
 }

@@ -372,7 +372,7 @@ public abstract class ServerHandler extends BaseBridgeHandler {
 
     public void reboot() {
         try {
-            apiManager.executePost(RebootResponse.class, null, null);
+            apiManager.execute(new RebootResponse());
         } catch (FreeboxException e) {
             logger.debug("Thing {}: error rebooting server", getThing().getUID());
         }

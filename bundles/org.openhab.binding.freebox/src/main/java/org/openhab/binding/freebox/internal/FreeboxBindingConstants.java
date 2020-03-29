@@ -50,7 +50,6 @@ public class FreeboxBindingConstants {
             .collect(Collectors.toSet()));
 
     // List of properties
-    public static final String PROPERTY_API_VERSION = "apiVersion";
     public static final String PROPERTY_MEDIA = "media";
     public static final String PROPERTY_INTERFACE = "interface";
     public static final String PROPERTY_AUDIO = "audio";

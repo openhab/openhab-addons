@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import java.util.List;
-
 import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link LanInterfacesResponse} is the Java class used to map the
- * response of Lan Interface Browser API
- * https://dev.freebox.fr/sdk/os/lan/#lan-browser
+ * The {@link VirtualMachineRequest} is the Java class used to map the
+ * response of Virtual Machine API
+ * https://dev.freebox.fr/sdk/os/vm/#
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "lan/browser/interfaces/", retryAuth = true)
-public class LanInterfacesResponse extends FreeboxResponse<List<LanInterface>> {
+@RequestAnnotation(relativeUrl = "vm/", retryAuth = true, responseClass = VirtualMachineResponse.class)
+public class VirtualMachineRequest extends APIAction {
+
+    public VirtualMachineRequest(String vmId) {
+        super(vmId);
+    }
 }

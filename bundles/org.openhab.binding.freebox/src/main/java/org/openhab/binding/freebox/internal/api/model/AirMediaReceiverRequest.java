@@ -41,11 +41,11 @@ public class AirMediaReceiverRequest {
         PHOTO;
     }
 
-    private MediaAction action = MediaAction.UNKNOWN;
-    private MediaType mediaType = MediaType.UNKNOWN;
-    private String password;
-    private Integer position;
-    private String media;
+    protected MediaAction action = MediaAction.UNKNOWN;
+    protected MediaType mediaType = MediaType.UNKNOWN;
+    protected String password;
+    protected Integer position;
+    protected String media;
 
     public void setAction(MediaAction action) {
         this.action = action;

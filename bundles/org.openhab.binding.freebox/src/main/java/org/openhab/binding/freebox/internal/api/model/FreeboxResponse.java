@@ -22,6 +22,7 @@ import org.openhab.binding.freebox.internal.api.FreeboxException;
  * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxResponse<T> {
+
     private static final String AUTHORIZATION_REQUIRED = "auth_required";
     private static final String INSUFFICIENT_RIGHTS = "insufficient_rights";
 

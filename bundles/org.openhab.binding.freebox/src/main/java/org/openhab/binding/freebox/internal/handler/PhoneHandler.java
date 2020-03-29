@@ -25,10 +25,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.model.CallEntriesRequest;
 import org.openhab.binding.freebox.internal.api.model.CallEntry;
 import org.openhab.binding.freebox.internal.api.model.CallEntry.CallType;
-import org.openhab.binding.freebox.internal.api.model.CallEntryResponse;
-import org.openhab.binding.freebox.internal.api.model.PhoneActionResponse;
+import org.openhab.binding.freebox.internal.api.model.PhoneAction;
 import org.openhab.binding.freebox.internal.api.model.PhoneStatus;
 import org.openhab.binding.freebox.internal.api.model.PhoneStatusResponse;
 import org.slf4j.Logger;
@@ -63,8 +63,7 @@ public class PhoneHandler extends APIConsumerHandler {
         updateChannelOnOff(STATE, RINGING, phoneStatus.isRinging());
 
         logger.debug("Polling phone calls since last...");
-        List<CallEntry> callEntries = getApiManager().executeGet(CallEntryResponse.class,
-                "_dc=" + lastCallTimestamp.toString());
+        List<CallEntry> callEntries = getApiManager().execute(new CallEntriesRequest(lastCallTimestamp));
         if (callEntries != null) {
             callEntries = callEntries.stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
                     .filter(c -> c.getDatetime() > lastCallTimestamp).collect(Collectors.toList());
@@ -97,8 +96,7 @@ public class PhoneHandler extends APIConsumerHandler {
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         if (RINGING.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            String request = "fxs_ring_" + (((OnOffType) command) == OnOffType.ON ? "start" : "stop");
-            getApiManager().executePost(PhoneActionResponse.class, request, null);
+            getApiManager().execute(new PhoneAction((OnOffType) command == OnOffType.ON));
             return true;
         }
         return false;

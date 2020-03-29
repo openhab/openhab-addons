@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import java.util.List;
-
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link CallEntryResponse} is the Java class used to map the
- * response of the call API
- * https://dev.freebox.fr/sdk/os/call/#
+ * The {@link PhoneAction} is the Java class used to map the
+ * response of the login API
+ * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "call/log/?", retryAuth = true)
-public class CallEntryResponse extends FreeboxResponse<List<CallEntry>> {
+@RequestAnnotation(relativeUrl = "phone/", retryAuth = true, method = "POST")
+public class PhoneAction extends APIAction {
+    public PhoneAction(boolean startIt) {
+        super(String.format("fxs_ring_%s", (startIt ? "start" : "stop")));
+    }
 }

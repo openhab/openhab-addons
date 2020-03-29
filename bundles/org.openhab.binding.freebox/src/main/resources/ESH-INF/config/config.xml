@@ -58,7 +58,7 @@
 	</config-description>
 
 	<config-description uri="thing-type:freebox:player">
-		<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
+		<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
 			<label>MAC Address</label>
 			<description>The MAC address of the network device</description>
 		</parameter>

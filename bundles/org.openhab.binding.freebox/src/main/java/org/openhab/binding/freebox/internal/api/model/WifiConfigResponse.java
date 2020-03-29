@@ -13,7 +13,8 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.model.WifiConfig.FilterState;
 
 /**
  * The {@link WifiConfigResponse} is the Java class used to map the
@@ -22,7 +23,7 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "wifi/config/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "wifi/config/", retryAuth = true)
 public class WifiConfigResponse extends FreeboxResponse<WifiConfig> {
     @Override
     public void evaluate() throws FreeboxException {
@@ -30,7 +31,7 @@ public class WifiConfigResponse extends FreeboxResponse<WifiConfig> {
         if (getResult() == null) {
             throw new FreeboxException("Missing result data in Wifi global configuration API response", this);
         }
-        if (getResult().isEnabled() == null) {
+        if (getResult().getMacFilterState() == FilterState.UNKNOWN) {
             throw new FreeboxException("No Wifi status in response", this);
         }
     }

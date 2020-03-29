@@ -23,12 +23,11 @@ import org.osgi.framework.Bundle;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("unused")
 public class AuthorizeRequest {
-    private String appId;
-    private String appName;
-    private String appVersion;
-    private String deviceName;
+    protected String appId;
+    protected String appName;
+    protected String appVersion;
+    protected String deviceName;
 
     public AuthorizeRequest(String appId, Bundle bundle) {
         this.appId = appId;

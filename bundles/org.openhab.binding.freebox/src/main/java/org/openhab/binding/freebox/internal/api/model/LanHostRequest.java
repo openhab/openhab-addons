@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link VirtualMachineActionResponse} is the Java class used to map the
- * response of the login API
- * https://dev.freebox.fr/sdk/os/login/#
+ * The {@link LanHostRequest} is the Java class used to map the
+ * response of the lan browser API
+ * https://dev.freebox.fr/sdk/os/lcd/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@RelativePath(relativeUrl = "vm/", retryAuth = true)
-public class VirtualMachineActionResponse extends EmptyResponse {
+@RequestAnnotation(relativeUrl = "lan/browser/pub/", retryAuth = true, responseClass = LanHostResponse.class)
+public class LanHostRequest extends APIAction {
+    public LanHostRequest(String mac) {
+        super(String.format("ether-%s", mac));
+    }
 }

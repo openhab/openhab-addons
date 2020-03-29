@@ -32,7 +32,7 @@ public class LcdConfig {
     }
 
     public void setBrightness(int brightness) {
-        this.brightness = brightness;
+        this.brightness = Math.max(0, Math.min(100, brightness));
     }
 
     public boolean isOrientationForced() {
@@ -48,6 +48,9 @@ public class LcdConfig {
     }
 
     public void setOrientation(int orientation) {
-        this.orientation = orientation;
+        int newValue = Math.min(360, orientation);
+        newValue = Math.max(newValue, 0);
+        this.orientation = newValue;
+        this.orientationForced = true;
     }
 }

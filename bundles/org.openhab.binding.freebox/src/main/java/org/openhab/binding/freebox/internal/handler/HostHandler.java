@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.freebox.internal.action.HostActions;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
-import org.openhab.binding.freebox.internal.api.model.LanHostResponse;
+import org.openhab.binding.freebox.internal.api.model.LanHostRequest;
 import org.openhab.binding.freebox.internal.api.model.LanHostWOLConfig;
 import org.openhab.binding.freebox.internal.config.HostConfiguration;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HostHandler extends APIConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
-    private @NonNullByDefault({}) String netAddress;
+    private @NonNullByDefault({}) HostConfiguration config;
 
     public HostHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -49,27 +49,27 @@ public class HostHandler extends APIConsumerHandler {
 
     @Override
     public void initialize() {
-        netAddress = getConfigAs(HostConfiguration.class).macAddress;
+        config = getConfigAs(HostConfiguration.class);
         super.initialize();
     }
 
     @Override
     protected Map<String, String> discoverAttributes() throws FreeboxException {
         final Map<String, String> properties = super.discoverAttributes();
-        LanHost lanHost = getApiManager().executeGet(LanHostResponse.class, "ether-" + netAddress);
+        LanHost lanHost = getApiManager().execute(new LanHostRequest(config.macAddress));
         lanHost.getNames().forEach(name -> properties.put(name.getSource().name(), name.getName()));
         return properties;
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
-        LanHost lanHost = getApiManager().executeGet(LanHostResponse.class, "ether-" + netAddress);
+        LanHost lanHost = getApiManager().execute(new LanHostRequest(config.macAddress));
         updateChannelOnOff(CONNECTIVITY, REACHABLE, lanHost.isReachable());
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, lanHost.getLastSeen());
     }
 
     public void wol() {
-        LanHostWOLConfig wol = new LanHostWOLConfig(netAddress);
+        LanHostWOLConfig wol = new LanHostWOLConfig(config.macAddress);
         try {
             getApiManager().execute(wol, null);
         } catch (FreeboxException e) {

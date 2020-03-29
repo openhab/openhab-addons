@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link PhoneConfigResponse} is the Java class used to map the
@@ -21,6 +21,6 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@RelativePath(relativeUrl = "phone/config/?_dc=1415032391207", retryAuth = true)
+@RequestAnnotation(relativeUrl = "phone/config/?_dc=1415032391207", retryAuth = true)
 public class PhoneConfigResponse extends FreeboxResponse<PhoneConfig> {
 }

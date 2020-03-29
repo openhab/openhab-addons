@@ -27,12 +27,12 @@ public class LanHostWOLConfig {
     protected final String mac;
     protected final String password;
 
+    public LanHostWOLConfig(String mac) {
+        this(mac, "");
+    }
+
     public LanHostWOLConfig(String mac, String password) {
         this.mac = mac;
         this.password = password;
-    }
-
-    public LanHostWOLConfig(String mac) {
-        this(mac, "");
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link AirMediaActionResponse} is the Java class used to map the
@@ -20,6 +20,6 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@RelativePath(relativeUrl = "airmedia/receivers/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "airmedia/receivers/")
 public class AirMediaActionResponse extends EmptyResponse {
 }

@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link PhoneActionResponse} is the Java class used to map the
+ * The {@link LoginRequest} is the Java class used to map the
  * response of the login API
  * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "phone/", retryAuth = true)
-public class PhoneActionResponse extends EmptyResponse {
+@RequestAnnotation(relativeUrl = "login/", retryAuth = false, responseClass = LoginResponse.class)
+public class LoginRequest extends APIAction {
 }

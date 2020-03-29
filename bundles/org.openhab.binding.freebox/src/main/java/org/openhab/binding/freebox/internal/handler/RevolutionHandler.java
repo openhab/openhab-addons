@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RevolutionHandler extends ServerHandler {
-
     private final Logger logger = LoggerFactory.getLogger(RevolutionHandler.class);
 
     public RevolutionHandler(Bridge bridge) {
@@ -62,23 +61,14 @@ public class RevolutionHandler extends ServerHandler {
                     super.handleCommand(channelUID, command);
             }
         } catch (FreeboxException e) {
-            logCommandException(e, channelUID, command);
+            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+                    channelUID.getId(), e);
             try {
                 internalPoll();
             } catch (FreeboxException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+                        channelUID.getId(), e);
             }
-        }
-    }
-
-    public void logCommandException(FreeboxException e, ChannelUID channelUID, Command command) {
-        if (e.isMissingRights()) {
-            logger.debug("Thing {}: missing right {} while handling command {} from channel {}", getThing().getUID(),
-                    e.getResponse().getMissingRight(), command, channelUID.getId());
-        } else {
-            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
-                    channelUID.getId(), e);
         }
     }
 
@@ -89,11 +79,8 @@ public class RevolutionHandler extends ServerHandler {
 
         LcdConfig config = getLcdConfig();
         updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.getBrightness(), PERCENT);
-        updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_ORIENTATION),
-                new DecimalType(config.getOrientation()));
-        updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_FORCED),
-                OnOffType.from(config.isOrientationForced()));
-
+        updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.getOrientation());
+        updateChannelOnOff(DISPLAY, LCD_FORCED, config.isOrientationForced());
     }
 
     private void setBrightness(Command command) throws FreeboxException {
@@ -113,10 +100,8 @@ public class RevolutionHandler extends ServerHandler {
     private void setOrientation(Command command) throws FreeboxException {
         if (command instanceof DecimalType) {
             LcdConfig config = setLcdOrientation(((DecimalType) command).intValue());
-            updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_ORIENTATION),
-                    new DecimalType(config.getOrientation()));
-            updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_FORCED),
-                    OnOffType.from(config.isOrientationForced()));
+            updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.getOrientation());
+            updateChannelOnOff(DISPLAY, LCD_FORCED, config.isOrientationForced());
         } else {
             logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCD_ORIENTATION);
         }
@@ -124,9 +109,8 @@ public class RevolutionHandler extends ServerHandler {
 
     private void setForced(Command command) throws FreeboxException {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            updateState(new ChannelUID(getThing().getUID(), DISPLAY, LCD_FORCED),
-                    OnOffType.from(setLcdOrientationForced(command.equals(OnOffType.ON))
-                            || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)));
+            updateChannelOnOff(DISPLAY, LCD_FORCED, setLcdOrientationForced(command.equals(OnOffType.ON))
+                    || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN));
 
         } else {
             logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command, LCD_FORCED);
@@ -135,13 +119,8 @@ public class RevolutionHandler extends ServerHandler {
 
     public LcdConfig setLcdOrientation(int orientation) throws FreeboxException {
         LcdConfig config = getLcdConfig();
-        int newValue = Math.min(360, orientation);
-        newValue = Math.max(newValue, 0);
-        config.setOrientation(newValue);
-        config.setOrientationForced(true);
-        LcdConfig result = apiManager.execute(config, null);
-        // FreeboxLcdConfig result = bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config);
-        return result;
+        config.setOrientation(orientation);
+        return apiManager.execute(config, null);
     }
 
     public LcdConfig getLcdConfig() throws FreeboxException {
@@ -152,31 +131,22 @@ public class RevolutionHandler extends ServerHandler {
     public boolean setLcdOrientationForced(boolean forced) throws FreeboxException {
         LcdConfig config = getLcdConfig();
         config.setOrientationForced(forced);
-        LcdConfig result = apiManager.execute(config, null);
-        return result.isOrientationForced();
-        // return bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config).isOrientationForced();
+        config = apiManager.execute(config, null);
+        return config.isOrientationForced();
     }
 
     public int shiftLcdBrightness(IncreaseDecreaseType direction) throws FreeboxException {
         LcdConfig config = getLcdConfig();
-        if (direction == IncreaseDecreaseType.INCREASE) {
-            config.setBrightness(Math.min(100, config.getBrightness() + 1));
-        } else {
-            config.setBrightness(Math.max(0, config.getBrightness() - 1));
-        }
-        LcdConfig result = apiManager.execute(config, null);
-        return result.getBrightness();
-        // return bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config).getBrightness();
+        config.setBrightness(config.getBrightness() + (direction == IncreaseDecreaseType.INCREASE ? 1 : -1));
+        config = apiManager.execute(config, null);
+        return config.getBrightness();
     }
 
     public int setLcdBrightness(int brightness) throws FreeboxException {
         LcdConfig config = getLcdConfig();
-        int newValue = Math.min(100, brightness);
-        newValue = Math.max(newValue, 0);
-        config.setBrightness(newValue);
-        LcdConfig result = apiManager.execute(config, null);
-        return result.getBrightness();
-        // return bridgeHandler.executePut(FreeboxLcdConfigResponse.class, config).getBrightness();
+        config.setBrightness(brightness);
+        config = apiManager.execute(config, null);
+        return config.getBrightness();
     }
 
 }

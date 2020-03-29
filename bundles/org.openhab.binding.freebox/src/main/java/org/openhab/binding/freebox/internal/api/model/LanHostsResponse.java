@@ -14,7 +14,7 @@ package org.openhab.binding.freebox.internal.api.model;
 
 import java.util.List;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link LanHostsResponse} is the Java class used to map the
@@ -23,6 +23,6 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "lan/browser/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "lan/browser/", retryAuth = true)
 public class LanHostsResponse extends FreeboxResponse<List<LanHost>> {
 }

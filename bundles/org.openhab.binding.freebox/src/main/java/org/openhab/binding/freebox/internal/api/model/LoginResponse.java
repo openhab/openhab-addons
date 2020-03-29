@@ -13,7 +13,6 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RelativePath;
 
 /**
  * The {@link LoginResponse} is the Java class used to map the
@@ -22,7 +21,6 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "login/", retryAuth = false)
 public class LoginResponse extends FreeboxResponse<LoginResult> {
     @Override
     public void evaluate() throws FreeboxException {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.freebox.internal.api.model.APIAction;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatusResponse;
@@ -34,8 +35,9 @@ import org.openhab.binding.freebox.internal.api.model.AuthorizeResult;
 import org.openhab.binding.freebox.internal.api.model.DiscoveryResponse;
 import org.openhab.binding.freebox.internal.api.model.EmptyResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
-import org.openhab.binding.freebox.internal.api.model.LoginResponse;
-import org.openhab.binding.freebox.internal.api.model.LogoutResponse;
+import org.openhab.binding.freebox.internal.api.model.LoginRequest;
+import org.openhab.binding.freebox.internal.api.model.LoginResult;
+import org.openhab.binding.freebox.internal.api.model.LogoutAction;
 import org.openhab.binding.freebox.internal.api.model.OpenSessionRequest;
 import org.openhab.binding.freebox.internal.api.model.OpenSessionResult;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
@@ -134,7 +136,7 @@ public class ApiManager {
             String token = appToken;
             if (token.isEmpty()) {
                 AuthorizeRequest request = new AuthorizeRequest(APP_ID, FrameworkUtil.getBundle(getClass()));
-                AuthorizeResult response = executePost(AuthorizeResponse.class, null, request);
+                AuthorizeResult response = executeURL(AuthorizeResponse.class, null, "POST", request);
                 token = response.getAppToken();
 
                 logger.info("####################################################################");
@@ -146,7 +148,7 @@ public class ApiManager {
                 AuthorizationStatus result;
                 do {
                     Thread.sleep(2000);
-                    result = executeGet(AuthorizationStatusResponse.class, response.getTrackId().toString());
+                    result = execute(AuthorizationStatusResponse.class, response.getTrackId().toString());
                 } while (result.getStatus() == Status.PENDING);
                 granted = result.getStatus() == Status.GRANTED;
             } else {
@@ -177,15 +179,16 @@ public class ApiManager {
     }
 
     private synchronized void openSession() throws FreeboxException {
-        String challenge = executeGet(LoginResponse.class, null).getChallenge();
-        OpenSessionResult loginResult = execute(new OpenSessionRequest(APP_ID, appToken, challenge), null);
-        sessionToken = loginResult.getSessionToken();
+        LoginResult loginResult = execute(new LoginRequest());
+        OpenSessionResult openSession = execute(new OpenSessionRequest(APP_ID, appToken, loginResult.getChallenge()),
+                null);
+        sessionToken = openSession.getSessionToken();
     }
 
     public synchronized void closeSession() {
         if (sessionToken != null) {
             try {
-                executePost(LogoutResponse.class, null, null);
+                execute(new LogoutAction());
             } catch (FreeboxException e) {
                 logger.warn("Error closing session : {}", e.getMessage());
             }
@@ -266,18 +269,39 @@ public class ApiManager {
         }
     }
 
-    public <T extends FreeboxResponse<F>, F> F executeGet(Class<T> responseClass, @Nullable String request)
-            throws FreeboxException {
+    private <T> @Nullable RequestAnnotation getAnnotation(Class<T> responseClass) {
         Annotation[] annotations = responseClass.getAnnotations();
         for (Annotation annotation : annotations) {
-            if (annotation instanceof RelativePath) {
-                RelativePath myAnnotation = (RelativePath) annotation;
-                String relativeUrl = myAnnotation.relativeUrl();
-                if (request != null) {
-                    relativeUrl += encodeUrl(request) + "/";
-                }
-                return executeUrl("GET", relativeUrl, null, responseClass, myAnnotation.retryAuth(), false, false);
+            if (annotation instanceof RequestAnnotation) {
+                return (RequestAnnotation) annotation;
             }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends FreeboxResponse<F>, F> F execute(APIAction action) throws FreeboxException {
+        return executeUrl(action.getMethod(), action.getUrl(), null, (Class<T>) action.getResponseClass(),
+                action.getRetryAuth(), false, false);
+    }
+
+    // private <T extends FreeboxResponse<F>, F> F executePost(Class<T> responseClass, @Nullable String requestUrl,
+    // @Nullable Object content) throws FreeboxException {
+    // return executeURL(responseClass, requestUrl, "POST", content);
+    // }
+
+    public <T extends FreeboxResponse<F>, F> F executeGet(Class<T> responseClass, @Nullable String requestUrl)
+            throws FreeboxException {
+        return executeURL(responseClass, requestUrl, "GET", null);
+    }
+
+    public <T extends FreeboxResponse<F>, F> F executeURL(Class<T> responseClass, @Nullable String requestUrl,
+            String method, @Nullable Object content) throws FreeboxException {
+        RequestAnnotation myAnnotation = getAnnotation(responseClass);
+        if (myAnnotation != null) {
+            String relativeUrl = myAnnotation.relativeUrl() + (requestUrl != null ? encodeUrl(requestUrl) + "/" : "");
+            return executeUrl(method, relativeUrl, content != null ? gson.toJson(content) : null, responseClass,
+                    myAnnotation.retryAuth(), false, false);
         }
         return null;
     }
@@ -285,36 +309,13 @@ public class ApiManager {
     @SuppressWarnings("unchecked")
     public <T extends FreeboxResponse<F>, F> F execute(Object request, @Nullable String requestUrl)
             throws FreeboxException {
-        Annotation[] annotations = request.getClass().getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof RequestAnnotation) {
-                RequestAnnotation myAnnotation = (RequestAnnotation) annotation;
-                Class<T> answerClass = (Class<T>) myAnnotation.responseClass();
-                String relativeUrl = myAnnotation.relativeUrl();
-                if (requestUrl != null) {
-                    relativeUrl += encodeUrl(requestUrl) + "/";
-                }
-                return executeUrl(myAnnotation.method(), relativeUrl, gson.toJson(request), answerClass,
-                        myAnnotation.retryAuth(), false, false);
-            }
+        RequestAnnotation myAnnotation = getAnnotation(request.getClass());
+        if (myAnnotation != null) {
+            String relativeUrl = myAnnotation.relativeUrl() + (requestUrl != null ? encodeUrl(requestUrl) + "/" : "");
+            return executeUrl(myAnnotation.method(), relativeUrl, gson.toJson(request),
+                    (Class<T>) myAnnotation.responseClass(), myAnnotation.retryAuth(), false, false);
         }
         return null;
     }
 
-    public <T extends FreeboxResponse<F>, F> F executePost(Class<T> responseClass, @Nullable String request,
-            @Nullable Object content) throws FreeboxException {
-        Annotation[] annotations = responseClass.getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof RelativePath) {
-                RelativePath myAnnotation = (RelativePath) annotation;
-                String relativeUrl = myAnnotation.relativeUrl();
-                if (request != null) {
-                    relativeUrl += encodeUrl(request) + "/";
-                }
-                return executeUrl("POST", relativeUrl, content != null ? gson.toJson(content) : null, responseClass,
-                        myAnnotation.retryAuth(), false, false);
-            }
-        }
-        return null;
-    }
 }

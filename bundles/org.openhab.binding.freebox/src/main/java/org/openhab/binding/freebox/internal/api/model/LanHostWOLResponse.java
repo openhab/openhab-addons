@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link LanHostWOLResponse} is the Java class used to send
@@ -20,6 +20,6 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@RelativePath(relativeUrl = "lan/wol/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "lan/wol/", retryAuth = true)
 public class LanHostWOLResponse extends EmptyResponse {
 }

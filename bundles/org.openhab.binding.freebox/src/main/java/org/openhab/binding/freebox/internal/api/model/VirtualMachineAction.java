@@ -15,16 +15,18 @@ package org.openhab.binding.freebox.internal.api.model;
 import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link RebootResponse} is the Java class used to map the
+ * The {@link VirtualMachineAction} is the Java class used to map the
  * response of the login API
- * https://dev.freebox.fr/sdk/os/login/#
+ * https://dev.freebox.fr/sdk/os/vm/#
+ * Here I used safe on/off to start and gentle stop the VM but note there also
+ * exists the hard "stop" action.
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "system/reboot/", retryAuth = true, method = "POST")
-public class RebootResponse extends APIAction {
+@RequestAnnotation(relativeUrl = "vm/", retryAuth = true, method = "POST")
+public class VirtualMachineAction extends APIAction {
 
-    public RebootResponse() {
-        super(null);
+    public VirtualMachineAction(String vmId, boolean startIt) {
+        super(String.format("%s/%s", vmId, startIt ? "start" : "powerbutton"));
     }
 }

@@ -23,18 +23,20 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  */
 @RequestAnnotation(responseClass = AirMediaConfigResponse.class, relativeUrl = "airmedia/config/", method = "PUT")
 public class AirMediaConfig {
-    private Boolean enabled;
-    private String password;
+    protected Boolean enabled;
+    protected String password;
+
+    public AirMediaConfig(boolean enabled) {
+        this(enabled, "");
+    }
+
+    public AirMediaConfig(boolean enabled, String password) {
+        this.enabled = enabled;
+        this.password = password;
+    }
 
     public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

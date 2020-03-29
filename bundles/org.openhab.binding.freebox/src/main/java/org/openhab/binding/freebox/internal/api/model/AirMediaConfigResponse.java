@@ -13,7 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link AirMediaConfigResponse} is the Java class used to map the
@@ -22,7 +22,7 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "airmedia/config/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "airmedia/config/", retryAuth = true)
 public class AirMediaConfigResponse extends FreeboxResponse<AirMediaConfig> {
     @Override
     public void evaluate() throws FreeboxException {

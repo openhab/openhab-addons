@@ -23,12 +23,12 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  */
 @RequestAnnotation(responseClass = SambaConfigResponse.class, relativeUrl = "netshare/samba/", retryAuth = true, method = "PUT")
 public class SambaConfig {
-    private Boolean fileShareEnabled;
-    private Boolean printShareEnabled;
-    private Boolean logonEnabled;
-    private String logonUser;
-    private String logonPassword;
-    private String workgroup;
+    protected Boolean fileShareEnabled;
+    protected Boolean printShareEnabled;
+    protected Boolean logonEnabled;
+    protected String logonUser;
+    protected String logonPassword;
+    protected String workgroup;
 
     public Boolean isFileShareEnabled() {
         return fileShareEnabled;

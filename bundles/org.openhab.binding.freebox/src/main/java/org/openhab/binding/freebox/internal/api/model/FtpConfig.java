@@ -23,15 +23,15 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  */
 @RequestAnnotation(responseClass = FtpConfigResponse.class, relativeUrl = "ftp/config/", retryAuth = true, method = "PUT")
 public class FtpConfig {
-    private Boolean enabled;
-    private Boolean allowAnonymous;
-    private Boolean allowAnonymousWrite;
-    private String password;
-    private Boolean allowRemoteAccess;
-    private Boolean weakPassword;
-    private Integer portCtrl;
-    private Integer portData;
-    private String remoteDomain;
+    protected Boolean enabled;
+    protected Boolean allowAnonymous;
+    protected Boolean allowAnonymousWrite;
+    protected String password;
+    protected Boolean allowRemoteAccess;
+    protected Boolean weakPassword;
+    protected Integer portCtrl;
+    protected Integer portData;
+    protected String remoteDomain;
 
     public Boolean isEnabled() {
         return enabled;

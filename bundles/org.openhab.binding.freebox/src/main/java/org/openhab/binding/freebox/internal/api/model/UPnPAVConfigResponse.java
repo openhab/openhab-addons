@@ -13,7 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link UPnPAVConfigResponse} is the Java class used to map the
@@ -22,7 +22,7 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "upnpav/config/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "upnpav/config/", retryAuth = true)
 public class UPnPAVConfigResponse extends FreeboxResponse<UPnPAVConfig> {
     @Override
     public void evaluate() throws FreeboxException {

@@ -13,7 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
  * The {@link FtthStatusResponse} is the Java class used to map the
@@ -22,7 +22,7 @@ import org.openhab.binding.freebox.internal.api.RelativePath;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@RelativePath(relativeUrl = "connection/ftth/", retryAuth = true)
+@RequestAnnotation(relativeUrl = "connection/ftth/", retryAuth = true)
 public class FtthStatusResponse extends FreeboxResponse<FtthStatus> {
     @Override
     public void evaluate() throws FreeboxException {

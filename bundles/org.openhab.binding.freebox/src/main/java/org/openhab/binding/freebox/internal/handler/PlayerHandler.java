@@ -72,8 +72,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PlayerHandler extends HostHandler implements AudioSink {
-    private final Logger logger = LoggerFactory.getLogger(PlayerHandler.class);
-
     private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Collections.singleton(AudioStream.class);
     private static final Set<AudioFormat> BASIC_FORMATS = Collections
             .unmodifiableSet(Stream.of(WAV, OGG).collect(Collectors.toSet()));
@@ -89,6 +87,7 @@ public class PlayerHandler extends HostHandler implements AudioSink {
                             new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 320000, null))
                     .collect(Collectors.toSet()));
 
+    private final Logger logger = LoggerFactory.getLogger(PlayerHandler.class);
     private final AudioHTTPServer audioHTTPServer;
     private final @Nullable String callbackUrl;
     private final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
@@ -196,11 +195,9 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     }
 
     public boolean enableAirMedia(boolean enable) throws FreeboxException {
-        AirMediaConfig config = new AirMediaConfig();
-        config.setEnabled(enable);
+        AirMediaConfig config = new AirMediaConfig(enable);
         config = getApiManager().execute(config, null);
         return config.isEnabled();
-        // return bridgeHandler.executePut(FreeboxAirMediaConfigResponse.class, config).isEnabled();
     }
 
     @Override
@@ -248,6 +245,8 @@ public class PlayerHandler extends HostHandler implements AudioSink {
         if (bridgeHandler.getNetworkMode() != NetworkMode.BRIDGE) {
             AirMediaConfig response = bridgeHandler.getApiManager().executeGet(AirMediaConfigResponse.class, null);
             updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, response.isEnabled());
+        } else {
+            updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, false);
         }
     }
 

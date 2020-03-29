@@ -23,8 +23,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.VirtualMachine;
 import org.openhab.binding.freebox.internal.api.model.VirtualMachine.Status;
-import org.openhab.binding.freebox.internal.api.model.VirtualMachineActionResponse;
-import org.openhab.binding.freebox.internal.api.model.VirtualMachineResponse;
+import org.openhab.binding.freebox.internal.api.model.VirtualMachineAction;
+import org.openhab.binding.freebox.internal.api.model.VirtualMachineRequest;
 import org.openhab.binding.freebox.internal.config.VirtualMachineConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VirtualMachineHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(PhoneHandler.class);
-    private @NonNullByDefault({}) VirtualMachineConfiguration vmConfig;
+    private @NonNullByDefault({}) String vmId;
 
     public VirtualMachineHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -46,29 +46,23 @@ public class VirtualMachineHandler extends HostHandler {
 
     @Override
     public void initialize() {
+        vmId = getConfigAs(VirtualMachineConfiguration.class).vmId.toString();
         super.initialize();
-        vmConfig = getConfigAs(VirtualMachineConfiguration.class);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         logger.debug("Polling Virtual machine status");
         super.internalPoll();
-        VirtualMachine vm = getApiManager().executeGet(VirtualMachineResponse.class, vmConfig.vmId.toString());
-        if (vm != null) {
-            updateState(new ChannelUID(getThing().getUID(), VM_STATUS, STATUS),
-                    OnOffType.from(vm.getStatus() == Status.RUNNING));
-        }
+        VirtualMachine vm = getApiManager().execute(new VirtualMachineRequest(vmId));
+        updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
     }
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            boolean startIt = ((OnOffType) command) == OnOffType.ON;
-            String request = vmConfig.vmId.toString() + "/" + (startIt ? "start" : "powerbutton");
-            getApiManager().executePost(VirtualMachineActionResponse.class, request, null);
+            getApiManager().execute(new VirtualMachineAction(vmId, (OnOffType) command == OnOffType.ON));
             return true;
-
         }
         return false;
     }

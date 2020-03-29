@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(PlayerDiscoveryParticipant.class);
-    private @NonNullByDefault({}) ServerHandler bridgeHandler;
+    private @Nullable ServerHandler bridgeHandler;
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -95,7 +95,8 @@ public class PlayerDiscoveryParticipant implements MDNSDiscoveryParticipant, Thi
         logger.debug("createResult ServiceInfo: {}", service);
         ThingUID thingUID = getThingUID(service);
         String ip = getIpAddress(service);
-        if (thingUID != null && ip != null && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingUID != null && ip != null && bridgeHandler != null
+                && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 List<LanHost> hosts = bridgeHandler.getLanHosts();
                 Optional<LanHost> host = hosts.stream().filter(h -> ip.equals(h.getIpv4())).findFirst();

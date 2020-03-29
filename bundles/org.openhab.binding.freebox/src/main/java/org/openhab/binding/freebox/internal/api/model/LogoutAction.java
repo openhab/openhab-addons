@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RelativePath;
+import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 /**
- * The {@link LogoutResponse} is the Java class used to map the
+ * The {@link LogoutAction} is the Java class used to map the
  * response of the login API
  * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RelativePath(relativeUrl = "login/logout/", retryAuth = false)
-public class LogoutResponse extends EmptyResponse {
+@RequestAnnotation(relativeUrl = "login/logout/", retryAuth = false, method = "POST")
+public class LogoutAction extends APIAction {
+
+    public LogoutAction() {
+        super("");
+    }
 }
