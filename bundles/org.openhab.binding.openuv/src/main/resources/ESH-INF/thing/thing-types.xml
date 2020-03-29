@@ -135,7 +135,7 @@
 		<item-type>Number:Angle</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the sun</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state pattern="%.2f %unit%" />
 	</channel-type>
 	
 	<!-- UV Max Event Channel Type -->
