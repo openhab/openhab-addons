@@ -73,7 +73,7 @@ public class DWDPollenflugPolling implements Runnable {
                 }
             } else {
                 bridgeHandler.onBridgeOnline();
-                bridgeHandler.notifyRegionListeners(pollenflug);
+                bridgeHandler.notifyOnUpdate(pollenflug);
             }
 
             pollingLock.unlock();

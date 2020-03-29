@@ -49,6 +49,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     private final DWDPollenflugPolling pollingJobRunnable;
     private @Nullable ScheduledFuture<?> pollingJob;
 
+    private @Nullable DWDPollenflug pollenflug;
+
     private final List<DWDPollenflugRegionListener> regionListeners = new CopyOnWriteArrayList<>();
 
     public DWDPollenflugBridgeHandler(Bridge bridge, HttpClient client) {
@@ -88,6 +90,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
             logger.debug("Start polling.");
             pollingJob = scheduler.scheduleWithFixedDelay(pollingJobRunnable, INITIAL_DELAY,
                     bridgeConfig.getRefresh() * SECONDS_PER_MINUTE, TimeUnit.SECONDS);
+        } else if (pollenflug != null) {
+            notifyOnUpdate(pollenflug);
         }
     }
 
@@ -129,10 +133,20 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
-    public synchronized void notifyRegionListeners(DWDPollenflug pollenflug) {
+    public synchronized void notifyOnUpdate(@Nullable DWDPollenflug newState) {
+        pollenflug = newState;
+        if (newState != null) {
+            for (DWDPollenflugRegionListener regionListener : regionListeners) {
+                regionListener.notifyOnUpdate(newState);
+            }
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    public @Nullable DWDPollenflug getPollenflug() {
+        return pollenflug;
     }
 }

@@ -32,22 +32,38 @@ public class DWDRegion {
 
     private int regionID;
 
-    private @Nullable final String regionName;
+    private final Map<String, String> properties;
 
-    private @Nullable String partRegionName;
-
-    private final Map<String, @Nullable String> channels = new HashMap<>();
+    private final Map<String, String> channels = new HashMap<>();
 
     public DWDRegion(final DWDRegionJSON json) {
         regionID = json.regionID;
-        regionName = json.regionName;
 
-        if (json.partregionID != null) {
-            regionID = json.partregionID;
-            partRegionName = json.partRegionName;
+        Integer partRegionID = json.partRegionID;
+        if (partRegionID > 0) {
+            regionID = partRegionID;
         }
 
+        properties = initProperties(json);
+
         parseChannels(json.pollen);
+    }
+
+    private Map<String, String> initProperties(DWDRegionJSON json) {
+        Map<String, String> map = new HashMap<>();
+        map.put(PROPERTY_REGION_ID, Integer.toString(regionID));
+
+        String regionName = json.regionName;
+        if (regionName != null) {
+            map.put(PROPERTY_REGION_NAME, regionName);
+        }
+
+        String partRegionName = json.partRegionName;
+        if (partRegionName != null) {
+            map.put(PROPERTY_PARTREGION_NAME, partRegionName);
+        }
+
+        return Collections.unmodifiableMap(map);
     }
 
     private void parseChannels(@Nullable final Map<String, DWDPollentypeJSON> pollen) {
@@ -64,8 +80,11 @@ public class DWDRegion {
         }
     }
 
-    private void createChannel(final String pollentype, final String subchannel, @Nullable final String value) {
+    private void createChannel(final String pollentype, final String subchannel, @Nullable String value) {
         final String channelName = pollentype + "#" + subchannel;
+        if (value == null) {
+            value = "-1";
+        }
         channels.put(channelName, value);
     }
 
@@ -73,19 +92,11 @@ public class DWDRegion {
         return regionID;
     }
 
-    public Map<String, @Nullable String> getProperties() {
-        final Map<String, @Nullable String> map = new HashMap<>();
-        map.put(PROPERTY_REGION_ID, Integer.toString(regionID));
-        map.put(PROPERTY_REGION_NAME, regionName);
-
-        if (partRegionName == null) {
-            map.put(PROPERTY_PARTREGION_NAME, partRegionName);
-        }
-
-        return Collections.unmodifiableMap(map);
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
-    public Map<String, @Nullable String> getChannels() {
+    public Map<String, String> getChannels() {
         return Collections.unmodifiableMap(channels);
     }
 }

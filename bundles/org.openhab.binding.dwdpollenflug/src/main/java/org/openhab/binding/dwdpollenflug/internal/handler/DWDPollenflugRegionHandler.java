@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.handler;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -23,6 +28,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugRegionConfiguration;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +46,8 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     private @NonNullByDefault({}) DWDPollenflugRegionConfiguration thingConfig = null;
 
     private @Nullable DWDPollenflugBridgeHandler bridgeHandler;
+
+    private boolean ignoreConfigurationUpdate;
 
     public DWDPollenflugRegionHandler(Thing thing) {
         super(thing);
@@ -90,6 +99,53 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     }
 
     @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        if (!ignoreConfigurationUpdate) {
+            super.handleConfigurationUpdate(configurationParameters);
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        DWDPollenflugBridgeHandler handler = syncToBridge();
+        if (handler != null) {
+            DWDPollenflug pollenflug = handler.getPollenflug();
+            if (pollenflug != null) {
+                notifyOnUpdate(pollenflug);
+            }
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    @Override
+    public void notifyOnUpdate(DWDPollenflug pollenflug) {
+        DWDRegion region = pollenflug.getRegion(thingConfig.getRegionID());
+        if (region == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Region not found");
+            return;
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+
+        ignoreConfigurationUpdate = true;
+        updateProperties(region.getProperties());
+        ignoreConfigurationUpdate = false;
+
+        updateChannels(region.getChannels());
+    }
+
+    private void updateChannels(Map<String, String> channels) {
+        for (Entry<String, String> entry : channels.entrySet()) {
+            String channelID = entry.getKey();
+            if (isLinked(channelID)) {
+                logger.debug("Updating channel {} to {}", channelID, entry.getValue());
+                updateState(channelID, new StringType(entry.getValue()));
+            } else {
+                logger.debug("Channel {} not linked to an item", channelID);
+            }
+        }
     }
 }
