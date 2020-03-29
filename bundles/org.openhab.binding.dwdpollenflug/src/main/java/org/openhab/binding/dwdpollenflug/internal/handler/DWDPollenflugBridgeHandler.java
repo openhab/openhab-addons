@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DWDPollenflugBridgeHandler}
+ * The {@link DWDPollenflugRegionHandler}
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
@@ -46,7 +46,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     private @NonNullByDefault({}) DWDPollenflugBridgeConfiguration bridgeConfig = null;
 
-    private DWDPollenflugPolling pollingJobRunnable;
+    private final DWDPollenflugPolling pollingJobRunnable;
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private final List<DWDPollenflugRegionListener> regionListeners = new CopyOnWriteArrayList<>();
@@ -112,6 +112,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean registerRegionListener(DWDPollenflugRegionListener regionListener) {
+        logger.debug("Register region listener");
         boolean result = regionListeners.add(regionListener);
         if (result) {
             startPolling();
@@ -120,6 +121,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean unregisterRegionListener(DWDPollenflugRegionListener regionListener) {
+        logger.debug("Unregister region listener");
         boolean result = regionListeners.remove(regionListener);
         if (result && regionListeners.isEmpty()) {
             stopPolling();
@@ -127,7 +129,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
-    public void notifyRegionListeners(DWDPollenflug pollenflug) {
+    public synchronized void notifyRegionListeners(DWDPollenflug pollenflug) {
     }
 
     @Override

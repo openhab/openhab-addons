@@ -10,26 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdpollenflug.internal;
+package org.openhab.binding.dwdpollenflug.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugRegionHandler;
 
 /**
- * The {@link DWDPollenflugBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * Configuration for the {@link DWDPollenflugRegionHandler}
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 @NonNullByDefault
-public class DWDPollingException extends RuntimeException {
+public class DWDPollenflugRegionConfiguration {
+    private int regionID;
 
-    private static final long serialVersionUID = 1L;
-
-    public DWDPollingException(String message) {
-        super(message);
+    public int getRegionID() {
+        return regionID;
     }
 
-    public DWDPollingException(String message, Throwable throwable) {
-        super(message, throwable);
+    public boolean isValid() {
+        return regionID > 0;
     }
 }
