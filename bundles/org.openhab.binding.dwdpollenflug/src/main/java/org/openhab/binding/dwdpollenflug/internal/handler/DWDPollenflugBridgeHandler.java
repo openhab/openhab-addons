@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugBridgeConfiguration;
-import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugindex;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     }
 
     public void stopPolling() {
-        if (!(pollingJob == null || pollingJob.isCancelled())) {
+        if (pollingJob != null && !pollingJob.isCancelled()) {
             logger.debug("Stop polling.");
             pollingJob.cancel(true);
             pollingJob = null;
@@ -127,7 +127,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
-    public void notifyRegionListeners(DWDPollenflugindex pollenflugindex) {
+    public void notifyRegionListeners(DWDPollenflug pollenflug) {
     }
 
     @Override

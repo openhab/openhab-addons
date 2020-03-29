@@ -71,6 +71,5 @@ public class DWDPollenflugBindingConstants {
     // Region properties
     public static final String PROPERTY_REGION_ID = "region_id";
     public static final String PROPERTY_REGION_NAME = "region_name";
-    public static final String PROPERTY_PARTREGION_ID = "partregion_id";
     public static final String PROPERTY_PARTREGION_NAME = "partregion_name";
 }

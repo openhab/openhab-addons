@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
+import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -20,25 +24,20 @@ import org.eclipse.jdt.annotation.Nullable;
  * 
  * @author Johannes DerOetzi Ott - Initial contribution
  */
-public class DWDPollen {
-    private @Nullable String today;
-    private @Nullable String tomorrow;
-    private @Nullable String dayafter_to;
+@NonNullByDefault
+public class DWDRegionJSON {
+    @SerializedName("region_id")
+    public @Nullable Integer regionID;
 
-    public String getToday() {
-        return today;
-    }
+    @SerializedName("region_name")
+    public @Nullable String regionName;
 
-    public String getTomorrow() {
-        return tomorrow;
-    }
+    @SerializedName("partregion_id")
+    public @Nullable Integer partregionID;
 
-    public String getDayAfterTomorrow() {
-        return dayafter_to;
-    }
+    @SerializedName("partregion_name")
+    public @Nullable String partRegionName;
 
-    @Override
-    public String toString() {
-        return "DWDPollen [today=" + today + ", tomorrow=" + tomorrow + ", dayafter_to=" + dayafter_to + "]";
-    }
+    @SerializedName("Pollen")
+    public @Nullable Map<String, DWDPollentypeJSON> pollen;
 }

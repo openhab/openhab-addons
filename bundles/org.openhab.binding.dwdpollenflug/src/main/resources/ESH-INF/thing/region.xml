@@ -50,7 +50,6 @@
 		<properties>
 			<property name="region_id"/>
 			<property name="region_name"/>
-			<property name="partregion_id"/>
 			<property name="partregion_name"/>
 		</properties>
 		
