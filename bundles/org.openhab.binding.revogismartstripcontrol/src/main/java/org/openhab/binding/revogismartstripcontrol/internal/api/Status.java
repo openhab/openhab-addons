@@ -15,7 +15,7 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 import java.util.List;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * {@link Status} is the internal data model used to control Revogi's SmartStrip
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Status {
     private boolean online;
     private int responseCode;
-    @JsonProperty("switch")
+    @SerializedName("switch")
     private List<Integer> switchValue;
     private List<Integer> watt;
     private List<Integer> amp;

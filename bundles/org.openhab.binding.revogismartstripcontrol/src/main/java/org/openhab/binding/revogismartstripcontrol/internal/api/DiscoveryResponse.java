@@ -14,21 +14,21 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Andi Bräu - Initial contribution
  */
 public class DiscoveryResponse {
-    @JsonProperty("sn")
+    @SerializedName("sn")
     private String serialNumber = "";
-    @JsonProperty("regid")
+    @SerializedName("regid")
     private String regId = "";
     private String sak = "";
     private String name = "";
-    @JsonProperty("mac")
+    @SerializedName("mac")
     private String macAddress = "";
-    @JsonProperty("ver")
+    @SerializedName("ver")
     private String version = "";
 
     public DiscoveryResponse(String serialNumber, String regId, String sak, String name, String macAddress,

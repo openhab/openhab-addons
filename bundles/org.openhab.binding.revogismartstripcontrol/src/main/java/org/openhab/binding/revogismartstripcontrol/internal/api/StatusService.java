@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,7 +20,9 @@ import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link StatusService} contains methods to get a status of a Revogi SmartStrip
@@ -35,7 +36,7 @@ public class StatusService {
     public static final String VERSION_STRING = "V3";
     private final Logger logger = LoggerFactory.getLogger(StatusService.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Gson gson = new GsonBuilder().create();
     private final UdpSenderService udpSenderService;
 
     public StatusService(UdpSenderService udpSenderService) {
@@ -62,8 +63,8 @@ public class StatusService {
     private StatusRaw deserializeString(String response) {
         String extractedJsonResponse = response.substring(response.lastIndexOf(VERSION_STRING) + 2);
         try {
-            return objectMapper.readValue(extractedJsonResponse, StatusRaw.class);
-        } catch (IOException e) {
+            return gson.fromJson(extractedJsonResponse, StatusRaw.class);
+        } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to StatusRaw", response, e);
             return new StatusRaw(503, 0, new Status(false, 503, null, null, null));
         }

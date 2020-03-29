@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,9 @@ import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RevogiDiscoveryService} helps to discover smart strips within your network
@@ -34,7 +35,7 @@ public class RevogiDiscoveryService {
     private static final String UDP_DISCOVERY_QUERY = "00sw=all,,,;";
     private final Logger logger = LoggerFactory.getLogger(RevogiDiscoveryService.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Gson gson = new GsonBuilder().create();
     private final UdpSenderService udpSenderService;
 
     public RevogiDiscoveryService(UdpSenderService udpSenderService) {
@@ -50,11 +51,10 @@ public class RevogiDiscoveryService {
 
     private DiscoveryRawResponse deserializeString(UdpResponse response) {
         try {
-            DiscoveryRawResponse discoveryRawResponse = objectMapper.readValue(response.getAnswer(),
-                    DiscoveryRawResponse.class);
+            DiscoveryRawResponse discoveryRawResponse = gson.fromJson(response.getAnswer(), DiscoveryRawResponse.class);
             discoveryRawResponse.setIpAddress(response.getIpAddress());
             return discoveryRawResponse;
-        } catch (IOException e) {
+        } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to DiscoveryRawResponse", response, e);
             return new DiscoveryRawResponse(503, new DiscoveryResponse());
         }

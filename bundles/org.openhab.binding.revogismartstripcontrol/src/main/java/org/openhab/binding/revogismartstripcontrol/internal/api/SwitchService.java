@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,7 +20,9 @@ import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SwitchService} enables the binding to actually switch plugs on and of
@@ -35,7 +36,7 @@ public class SwitchService {
     private static final String VERSION_STRING = "V3";
     private final Logger logger = LoggerFactory.getLogger(SwitchService.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Gson gson = new GsonBuilder().create();
     private final UdpSenderService udpSenderService;
 
     public SwitchService(UdpSenderService udpSenderService) {
@@ -73,8 +74,8 @@ public class SwitchService {
     private SwitchResponse deserializeString(String response) {
         String extractedJsonResponse = response.substring(response.lastIndexOf(VERSION_STRING) + 2);
         try {
-            return objectMapper.readValue(extractedJsonResponse, SwitchResponse.class);
-        } catch (IOException e) {
+            return gson.fromJson(extractedJsonResponse, SwitchResponse.class);
+        } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to SwitchResponse", response);
             return new SwitchResponse(0, 503);
         }
