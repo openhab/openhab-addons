@@ -20,6 +20,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Angle;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -59,6 +61,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
     private @NonNullByDefault({}) OpenUVBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) ScheduledFuture<?> uvMaxJob;
+    private boolean suspendUpdates = false;
 
     public OpenUVReportHandler(Thing thing) {
         super(thing);
@@ -97,9 +100,9 @@ public class OpenUVReportHandler extends BaseThingHandler {
                 ZonedDateTime uvMaxZdt = ((DateTimeType) uvMaxTime).getZonedDateTime();
                 long timeDiff = ChronoUnit.MINUTES.between(ZonedDateTime.now(ZoneId.systemDefault()), uvMaxZdt);
                 if (timeDiff > 0) {
-                    logger.debug("Scheduling {} in {} minutes", UVMAXEVENT, timeDiff);
+                    logger.debug("Scheduling {} in {} minutes", UV_MAX_EVENT, timeDiff);
                     uvMaxJob = scheduler.schedule(() -> {
-                        triggerChannel(UVMAXEVENT);
+                        triggerChannel(UV_MAX_EVENT);
                         uvMaxJob = null;
                     }, timeDiff, TimeUnit.MINUTES);
                 }
@@ -115,7 +118,9 @@ public class OpenUVReportHandler extends BaseThingHandler {
             ReportConfiguration config = getConfigAs(ReportConfiguration.class);
             int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                updateChannels(config);
+                if (!suspendUpdates) {
+                    updateChannels(config);
+                }
             }, 0, delay, TimeUnit.MINUTES);
         }
     }
@@ -153,6 +158,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -160,8 +166,15 @@ public class OpenUVReportHandler extends BaseThingHandler {
                 ReportConfiguration config = getConfigAs(ReportConfiguration.class);
                 updateChannels(config);
             });
+        } else if (ELEVATION.equals(channelUID.getId()) && command instanceof QuantityType) {
+            QuantityType<?> qtty = (QuantityType<?>) command;
+            if ("°".equals(qtty.getUnit().toString())) {
+                suspendUpdates = ((QuantityType<Angle>) qtty).doubleValue() < 0;
+            } else {
+                logger.info("The OpenUV Report handles Sun Elevation of Number:Angle type, {} does not fit.", command);
+            }
         } else {
-            logger.debug("The OpenUV Report Thing only handles Refresh command and not '{}'", command);
+            logger.info("The OpenUV Report Thing handles Refresh or Sun Elevation command and not '{}'", command);
         }
     }
 
@@ -174,32 +187,32 @@ public class OpenUVReportHandler extends BaseThingHandler {
      */
     private void updateChannel(ChannelUID channelUID, OpenUVResult openUVData) {
         Channel channel = getThing().getChannel(channelUID.getId());
-        if (channel != null) {
+        if (channel != null && isLinked(channelUID)) {
             ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
             if (channelTypeUID != null) {
                 switch (channelTypeUID.getId()) {
-                    case UVINDEX:
+                    case UV_INDEX:
                         updateState(channelUID, openUVData.getUv());
                         break;
-                    case UVCOLOR:
+                    case UV_COLOR:
                         updateState(channelUID, getAsHSB(openUVData.getUv().intValue()));
                         break;
-                    case UVMAX:
+                    case UV_MAX:
                         updateState(channelUID, openUVData.getUvMax());
                         break;
                     case OZONE:
                         updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
                         break;
-                    case OZONETIME:
+                    case OZONE_TIME:
                         updateState(channelUID, openUVData.getOzoneTime());
                         break;
-                    case UVMAXTIME:
+                    case UV_MAX_TIME:
                         updateState(channelUID, openUVData.getUVMaxTime());
                         break;
-                    case UVTIME:
+                    case UV_TIME:
                         updateState(channelUID, openUVData.getUVTime());
                         break;
-                    case SAFEEXPOSURE:
+                    case SAFE_EXPOSURE:
                         SafeExposureConfiguration configuration = channel.getConfiguration()
                                 .as(SafeExposureConfiguration.class);
                         if (configuration.index != -1) {
