@@ -131,8 +131,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
             String outIpReal = getMyIpAddress();
             String broadcastIp = outIpReal.substring(0, outIpReal.lastIndexOf(".")) + "255";
             InetAddress address = InetAddress.getByName(broadcastIp);
-            // Simply requesting the system configuration from any bulb that's listening
-            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.getSystemConfig, null);
+            // Simply requesting the current state from any bulb that's listening
+            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.getPilot, null);
             request.setId(0);
 
             byte[] message = this.converter.transformToByteMessage(request);
