@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -44,13 +45,13 @@ public class DeviceStatusUpdate {
 
     String id;
 
-    DeviceState state;
+    JsonElement state;
 
     String deviceId;
 
     @Override
     public String toString() {
 
-        return this.deviceId + "state: " + this.state.type + "/" + this.state.switchState;
+        return this.deviceId + "state: " + this.type;
     }
 }

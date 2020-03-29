@@ -12,11 +12,12 @@
 
   <name>openHAB Add-ons :: Bundles :: BoschSHC Binding</name>
   
-  <dependencies>
-       <dependency>
-         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
-         <version>1.64</version>
-       </dependency>
-  </dependencies>
+<!--   <dependencies> -->
+<!--        <dependency> -->
+<!--          <groupId>org.bouncycastle</groupId> -->
+<!--         <artifactId>bcpkix-jdk15on</artifactId>  Verified that this is correct -->
+<!--          <version>2.0</version> -->
+<!--        </dependency> -->
+<!--   </dependencies> -->
+  
 </project>

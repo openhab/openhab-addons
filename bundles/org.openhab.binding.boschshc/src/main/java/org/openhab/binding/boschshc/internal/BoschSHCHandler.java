@@ -12,35 +12,27 @@
  */
 package org.openhab.binding.boschshc.internal;
 
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_POWER_SWITCH;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+
 /**
- * The {@link BoschSHCHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link BoschSHCHandler} represents Bosch Things. Each type of device inherits from this abstract thing handler.
  *
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class BoschSHCHandler extends BaseThingHandler {
-
-    // TODO: Might want to have something that inherits from BaseBridgeHandler too
+public abstract class BoschSHCHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
-
     private @Nullable BoschSHCConfiguration config;
 
     public BoschSHCHandler(Thing thing) {
@@ -56,78 +48,23 @@ public class BoschSHCHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-
-        logger.info("Handle command for: {} - {}", config.id, command);
-
-        Bridge bridge = this.getBridge();
-        if (bridge != null) {
-
-            BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
-
-            if (bridgeHandler != null) {
-
-                if (CHANNEL_POWER_SWITCH.equals(channelUID.getId())) {
-                    if (command instanceof RefreshType) {
-                        DeviceState state = bridgeHandler.refreshSwitchState(getThing());
-
-                        if (state != null) {
-
-                            State powerState = OnOffType.from(state.switchState);
-                            updateState(channelUID, powerState);
-                        }
-                    }
-
-                    else {
-                        bridgeHandler.updateSwitchState(getThing(), command.toFullString());
-                    }
-                }
-
-                /*
-                 * Response complete:
-                 * {"result":[{"path":"/devices/hdm:HomeMaticIP:3014F711A000009A185B02DE/services/ShutterContact",
-                 * "@type":"DeviceServiceData","id":"ShutterContact","state":{"@type":"shutterContactState","value":
-                 * "CLOSED"},"deviceId":"hdm:HomeMaticIP:3014F711A000009A185B02DE"}],"jsonrpc":"2.0"}
-                 */
-            }
-        }
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information:
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-
+    public @Nullable BoschSHCConfiguration getBoschConfig() {
+        return this.config;
     }
 
     @Override
     public void initialize() {
 
-        config = getConfigAs(BoschSHCConfiguration.class);
-        logger.warn("Initializing thing: {}", config.id);
+        this.config = getConfigAs(BoschSHCConfiguration.class);
+        logger.warn("Initializing thing: {}", this.config.id);
 
         // Mark immediately as online - if the bridge is online, the thing is too.
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void processUpdate(DeviceStatusUpdate update) {
+    @Override
+    public abstract void handleCommand(ChannelUID channelUID, Command command);
 
-        String channel = null;
-        State state = null;
-
-        logger.warn("Processing update in BoschSHCHandler: {}", update);
-
-        // TODO Make this work for other kind of updates too!
-        if (update.state.type.equals("powerSwitchState")) {
-            channel = CHANNEL_POWER_SWITCH;
-            state = OnOffType.from(update.state.switchState);
-        }
-
-        if (channel != null && state != null) {
-            this.updateState(channel, state);
-        } else {
-            logger.warn("Could not process update: {}", update);
-        }
-    }
+    public abstract void processUpdate(JsonElement state);
 
 }

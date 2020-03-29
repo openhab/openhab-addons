@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Stefan Kästle
  *
  */
-public class DeviceState {
+public class PowerSwitchState {
 
     /**
      * ...."state":{
@@ -31,17 +31,6 @@ public class DeviceState {
      * ....},
      *
      */
-
-    public DeviceState() {
-
-    }
-
-    public DeviceState(String type, String switchState, int autoPowerOff) {
-
-        this.type = type;
-        this.switchState = switchState;
-        this.automaticPowerOffTime = autoPowerOff;
-    }
 
     @SerializedName("@type")
     String type;
