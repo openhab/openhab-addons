@@ -80,7 +80,13 @@ public class WizLightingBindingConstants {
     /**
      * Default Wifi socket refresh interval.
      */
-    public static final long DEFAULT_REFRESH_INTERVAL = 60;
+    public static final long DEFAULT_REFRESH_INTERVAL_SEC = 60;
+
+    /**
+     * The number of refresh intervals without a response before a bulb is marked
+     * offline
+     */
+    public static final int MARK_OFFLINE_AFTER_SEC = 5 * 60;
 
     /**
      * Default Wifi socket default UDP port.
@@ -96,12 +102,6 @@ public class WizLightingBindingConstants {
      * How long before active discovery times out.
      */
     public static final int DISCOVERY_TIMEOUT_SECONDS = 2;
-
-    /**
-     * The number of refresh intervals without a response before a bulb is marked
-     * offline
-     */
-    public static final int INTERVALS_BEFORE_OFFLINE = 4;
 
     // -------------- Constants Used ----------------
 

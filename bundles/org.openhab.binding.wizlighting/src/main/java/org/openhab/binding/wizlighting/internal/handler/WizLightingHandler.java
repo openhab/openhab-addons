@@ -292,22 +292,24 @@ public class WizLightingHandler extends BaseThingHandler {
             long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
 
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                logger.debug(
-                        "Begin socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
+                logger.debug("Polling for status from bulb at {}. Current configuration update interval: {} seconds.",
                         config.bulbIpAddress, config.updateInterval);
 
                 logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.bulbMacAddress,
                         latestUpdate, now, timePassedFromLastUpdateInSeconds);
 
                 boolean considerThingOffline = (latestUpdate < 0)
-                        || (timePassedFromLastUpdateInSeconds > (config.updateInterval * INTERVALS_BEFORE_OFFLINE));
+                        || (timePassedFromLastUpdateInSeconds > MARK_OFFLINE_AFTER_SEC);
                 if (considerThingOffline) {
                     logger.debug(
-                            "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
-                            config.bulbMacAddress);
+                            "Since no updates have been received from mac address {} in {} seconds, setting its status to OFFLINE and discontinuing polling.",
+                            config.bulbMacAddress, MARK_OFFLINE_AFTER_SEC);
                     updateStatus(ThingStatus.OFFLINE);
+                } else if (config.useHeartBeats) {
+                    // If we're using 5s heart-beats, we must re-register every 30s to maintain connection
+                    registerWithBulb();
                 } else {
-                    // refresh the current state
+                    // If we're not using heart-beats, just request the current status
                     getPilot();
                 }
             } else {
@@ -315,7 +317,8 @@ public class WizLightingHandler extends BaseThingHandler {
                         config.bulbIpAddress, config.bulbMacAddress);
             }
         };
-        this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, config.updateInterval, TimeUnit.SECONDS);
+        long update_interval_in_use = config.useHeartBeats ? 30 : config.updateInterval;
+        this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, update_interval_in_use, TimeUnit.SECONDS);
     }
 
     @Override
@@ -327,7 +330,6 @@ public class WizLightingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
         }
         updateBulbProperties();
-        registerWithBulb();
         initGetStatusAndKeepAliveThread();
         logger.debug("Finished initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
     }

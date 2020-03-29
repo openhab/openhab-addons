@@ -30,5 +30,6 @@ public class WizLightingDeviceConfiguration {
      */
     public String bulbMacAddress = "bulbMacAddress";
     public String bulbIpAddress = "bulbIpAddress";
-    public long updateInterval = DEFAULT_REFRESH_INTERVAL;
+    public long updateInterval = DEFAULT_REFRESH_INTERVAL_SEC;
+    public boolean useHeartBeats = false; // true: register to get 5s heart-beats
 }

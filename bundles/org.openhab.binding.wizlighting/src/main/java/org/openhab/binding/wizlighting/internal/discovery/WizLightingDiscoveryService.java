@@ -135,8 +135,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Method called by mediator, when receive one packet from one unknown Wifi
-     * Socket.
+     * Method called by mediator, after receiving a packet from an unknown WiZ bulb
      *
      * @param bulbMacAddress the mac address from the device.
      * @param bulbIpAddress the host address from the device.
