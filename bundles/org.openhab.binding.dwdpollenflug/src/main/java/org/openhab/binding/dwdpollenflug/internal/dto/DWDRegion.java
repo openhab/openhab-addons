@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
 
 /**
  * The {@link DWDRegion} class holds the internal data representation of each Region
@@ -92,19 +91,11 @@ public class DWDRegion {
         return regionID;
     }
 
-    public Map<String, @Nullable String> getProperties() {
-        final Map<String, @Nullable String> map = new HashMap<>();
-        map.put(PROPERTY_REGION_ID, Integer.toString(regionID));
-        map.put(PROPERTY_REGION_NAME, regionName);
-
-        if (partRegionName == null) {
-            map.put(PROPERTY_PARTREGION_NAME, partRegionName);
-        }
-
-        return Collections.unmodifiableMap(map);
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
-    public Map<String, @Nullable String> getChannels() {
+    public Map<String, String> getChannels() {
         return Collections.unmodifiableMap(channels);
     }
 }
