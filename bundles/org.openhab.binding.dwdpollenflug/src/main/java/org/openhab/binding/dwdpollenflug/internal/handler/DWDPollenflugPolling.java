@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -29,8 +30,8 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
-import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugindex;
-import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHandler;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
+import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,8 @@ public class DWDPollenflugPolling implements Runnable {
     public void run() {
         pollingLock.lock();
         logger.debug("Polling.");
-        requestRefresh().handle((pollenflugindex, e) -> {
-            if (pollenflugindex == null) {
+        requestRefresh().handle((pollenflug, e) -> {
+            if (pollenflug == null) {
                 if (e == null) {
                     bridgeHandler.onBridgeCommunicationError();
                 } else {
@@ -72,7 +73,7 @@ public class DWDPollenflugPolling implements Runnable {
                 }
             } else {
                 bridgeHandler.onBridgeOnline();
-                bridgeHandler.notifyRegionListeners(pollenflugindex);
+                bridgeHandler.notifyRegionListeners(pollenflug);
             }
 
             pollingLock.unlock();
@@ -80,8 +81,8 @@ public class DWDPollenflugPolling implements Runnable {
         });
     }
 
-    private CompletableFuture<DWDPollenflugindex> requestRefresh() {
-        CompletableFuture<DWDPollenflugindex> f = new CompletableFuture<>();
+    private CompletableFuture<DWDPollenflug> requestRefresh() {
+        CompletableFuture<DWDPollenflug> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(DWD_URL));
 
         request.method(HttpMethod.GET).timeout(2000, TimeUnit.SECONDS).send(new BufferingResponseListener() {
@@ -99,12 +100,12 @@ public class DWDPollenflugPolling implements Runnable {
                 } else if (response.getStatus() != 200) {
                     f.completeExceptionally(new DWDPollingException(getContentAsString()));
                 } else {
-                    DWDPollenflugindex pollenflugindex = gson.fromJson(getContentAsString(), DWDPollenflugindex.class);
-                    if (pollenflugindex == null) {
-                        f.completeExceptionally(new DWDPollingException("Parsing failed"));
-                    } else {
-                        pollenflugindex.init();
+                    try {
+                        DWDPollenflugJSON pollenflugindex = gson.fromJson(getContentAsString(),
+                                DWDPollenflugJSON.class);
                         f.complete(pollenflugindex);
+                    } catch (JsonSyntaxException ex2) {
+                        f.completeExceptionally(new DWDPollingException("Parsing of response failed"));
                     }
                 }
             }
