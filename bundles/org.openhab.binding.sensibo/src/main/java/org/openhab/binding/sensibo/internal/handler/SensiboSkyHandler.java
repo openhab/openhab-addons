@@ -248,10 +248,16 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     private void handleTargetTemperatureCommand(ChannelUID channelUID, Command command, SensiboSky sensiboSky) {
         if (command instanceof RefreshType) {
-            if (sensiboSky.getAcState().isPresent() && sensiboSky.getAcState().get().getTargetTemperature() != null) {
-                updateState(channelUID, new QuantityType<>(sensiboSky.getAcState().get().getTargetTemperature(),
-                        sensiboSky.getTemperatureUnit()));
-            } else {
+            sensiboSky.getAcState().ifPresent(acState -> {
+                @Nullable
+                Integer targetTemperature = acState.getTargetTemperature();
+                if (targetTemperature != null) {
+                    updateState(channelUID, new QuantityType<>(targetTemperature, sensiboSky.getTemperatureUnit()));
+                } else {
+                    updateState(channelUID, UnDefType.UNDEF);
+                }
+            });
+            if (!sensiboSky.getAcState().isPresent()) {
                 updateState(channelUID, UnDefType.UNDEF);
             }
         } else if (command instanceof QuantityType<?>) {
@@ -278,8 +284,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     private void handleMasterSwitchCommand(ChannelUID channelUID, Command command, SensiboSky sensiboSky) {
         if (command instanceof RefreshType) {
-            sensiboSky.getAcState()
-                    .ifPresent(e -> updateState(channelUID, OnOffType.from(sensiboSky.getAcState().get().isOn())));
+            sensiboSky.getAcState().ifPresent(e -> updateState(channelUID, OnOffType.from(e.isOn())));
         } else if (command instanceof OnOffType) {
             updateAcState(sensiboSky, MASTER_SWITCH_PROPERTY, command == OnOffType.ON);
         }
@@ -467,6 +472,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         return stateChange;
     }
 
+    @NonNullByDefault
     public class StateChange {
         Object value;
 

@@ -52,9 +52,9 @@ public class AcStateDTO {
 
         Unit<Temperature> unit = acState.getTemperatureUnit();
 
-        if (unit.equals(SIUnits.CELSIUS)) {
+        if (SIUnits.CELSIUS.equals(unit)) {
             this.temperatureUnit = "C";
-        } else if (unit.equals(ImperialUnits.FAHRENHEIT)) {
+        } else if (ImperialUnits.FAHRENHEIT.equals(unit)) {
             this.temperatureUnit = "F";
         } else {
             throw new IllegalArgumentException("Unexpected temperature unit " + unit);

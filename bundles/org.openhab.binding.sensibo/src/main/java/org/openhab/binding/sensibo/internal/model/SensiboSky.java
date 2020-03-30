@@ -54,7 +54,7 @@ public class SensiboSky extends Pod {
     private Optional<Timer> timer = Optional.empty();
 
     public SensiboSky(final PodDetailsDTO dto) {
-        this.id = dto.id;
+        super(dto.id);
         this.macAddress = StringUtils.remove(dto.macAddress, ':');
         this.firmwareVersion = dto.firmwareVersion;
         this.firmwareType = dto.firmwareType;

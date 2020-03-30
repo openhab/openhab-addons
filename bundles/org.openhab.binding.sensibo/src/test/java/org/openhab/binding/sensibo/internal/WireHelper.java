@@ -34,7 +34,7 @@ import com.google.gson.stream.JsonWriter;
  */
 public class WireHelper {
 
-    private Gson gson;
+    private final Gson gson;
 
     public WireHelper() {
         gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new TypeAdapter<ZonedDateTime>() {

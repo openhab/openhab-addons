@@ -12,15 +12,22 @@
  */
 package org.openhab.binding.sensibo.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents a generic Sensibo controllable thing
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public abstract class Pod {
     protected String id;
 
     public String getId() {
         return id;
+    }
+
+    protected Pod(String id) {
+        this.id = id;
     }
 }

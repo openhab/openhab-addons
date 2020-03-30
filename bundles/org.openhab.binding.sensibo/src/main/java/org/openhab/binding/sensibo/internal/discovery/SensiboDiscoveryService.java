@@ -15,12 +15,12 @@ package org.openhab.binding.sensibo.internal.discovery;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -37,13 +37,14 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class SensiboDiscoveryService extends AbstractDiscoveryService {
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(SensiboBindingConstants.THING_TYPE_SENSIBOSKY).collect(Collectors.toSet()));
+            .singleton(SensiboBindingConstants.THING_TYPE_SENSIBOSKY);
     private static final long REFRESH_INTERVAL_MINUTES = 60;
     private final Logger logger = LoggerFactory.getLogger(SensiboDiscoveryService.class);
     private final SensiboAccountHandler accountHandler;
-    private ScheduledFuture<?> discoveryJob;
+    private Optional<ScheduledFuture<?>> discoveryJob = Optional.empty();
 
     public SensiboDiscoveryService(final SensiboAccountHandler accountHandler) {
         super(DISCOVERABLE_THING_TYPES_UIDS, 10);
@@ -52,7 +53,8 @@ public class SensiboDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH_INTERVAL_MINUTES, TimeUnit.MINUTES);
+        discoveryJob = Optional
+                .of(scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH_INTERVAL_MINUTES, TimeUnit.MINUTES));
     }
 
     @Override
@@ -84,10 +86,12 @@ public class SensiboDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         stopScan();
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            discoveryJob.cancel(true);
-            discoveryJob = null;
-        }
+        discoveryJob.ifPresent(job -> {
+            if (!job.isCancelled()) {
+                job.cancel(true);
+            }
+            discoveryJob = Optional.empty();
+        });
     }
 
     @Override

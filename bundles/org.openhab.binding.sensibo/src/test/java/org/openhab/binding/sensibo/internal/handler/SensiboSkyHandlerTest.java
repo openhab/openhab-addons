@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -49,7 +48,7 @@ import org.openhab.binding.sensibo.internal.model.SensiboSky;
  */
 public class SensiboSkyHandlerTest {
 
-    private WireHelper wireHelper = new WireHelper();
+    private final WireHelper wireHelper = new WireHelper();
 
     @Test
     public void testStateChangeValidation() throws IOException, SensiboCommunicationException {
@@ -136,7 +135,7 @@ public class SensiboSkyHandlerTest {
         Thing thing = Mockito.mock(Thing.class);
         Mockito.when(thing.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
         SensiboSkyHandler handler = Mockito.spy(new SensiboSkyHandler(thing));
-        List<@NonNull Channel> dynamicChannels = handler.createDynamicChannels(sky);
+        List<Channel> dynamicChannels = handler.createDynamicChannels(sky);
         assertTrue(dynamicChannels.size() > 0);
     }
 }

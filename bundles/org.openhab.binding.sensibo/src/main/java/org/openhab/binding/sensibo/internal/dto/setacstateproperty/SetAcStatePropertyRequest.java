@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sensibo.internal.dto.setacstateproperty;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
 
 /**
@@ -21,7 +20,6 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
  *
  * @author Arne Seime - Initial contribution.
  */
-@NonNullByDefault
 public class SetAcStatePropertyRequest extends AbstractRequest {
     public transient String podId; // Transient fields are ignored by gson
     public transient String property;

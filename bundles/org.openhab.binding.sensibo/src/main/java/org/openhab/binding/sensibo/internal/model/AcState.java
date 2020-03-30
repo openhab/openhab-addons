@@ -15,6 +15,8 @@ package org.openhab.binding.sensibo.internal.model;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 
@@ -23,12 +25,18 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
  * 
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class AcState {
     private final boolean on;
+    @Nullable
     private final String fanLevel;
+    @Nullable
     private final Unit<Temperature> temperatureUnit;
+    @Nullable
     private final Integer targetTemperature;
+    @Nullable
     private final String mode;
+    @Nullable
     private final String swing;
 
     public AcState(final AcStateDTO dto) {
@@ -44,22 +52,27 @@ public class AcState {
         return on;
     }
 
+    @Nullable
     public String getFanLevel() {
         return fanLevel;
     }
 
+    @Nullable
     public Unit<Temperature> getTemperatureUnit() {
         return temperatureUnit;
     }
 
+    @Nullable
     public Integer getTargetTemperature() {
         return targetTemperature;
     }
 
+    @Nullable
     public String getMode() {
         return mode;
     }
 
+    @Nullable
     public String getSwing() {
         return swing;
     }

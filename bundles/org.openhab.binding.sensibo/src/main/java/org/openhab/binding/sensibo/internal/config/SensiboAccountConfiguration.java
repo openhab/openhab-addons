@@ -12,15 +12,20 @@
  */
 package org.openhab.binding.sensibo.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SensiboAccountConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class SensiboAccountConfiguration {
     /**
      * API key from https://home.sensibo.com/me/api
      */
+    @Nullable
     public String apiKey;
     public int refreshInterval = 120;
 

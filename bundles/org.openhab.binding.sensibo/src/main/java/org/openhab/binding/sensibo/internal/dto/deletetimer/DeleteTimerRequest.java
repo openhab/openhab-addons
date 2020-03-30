@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sensibo.internal.dto.deletetimer;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
 
@@ -22,7 +21,6 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
  *
  * @author Arne Seime - Initial contribution.
  */
-@NonNullByDefault
 public class DeleteTimerRequest extends AbstractRequest {
     public final transient String podId; // Transient fields are ignored by gson
 

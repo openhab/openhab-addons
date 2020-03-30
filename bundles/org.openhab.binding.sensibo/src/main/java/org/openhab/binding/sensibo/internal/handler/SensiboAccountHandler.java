@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +89,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private final RequestLogger requestLogger;
     private final Gson gson;
     private SensiboModel model = new SensiboModel(0);
-    private @Nullable ScheduledFuture<?> statusFuture;
+    private Optional<ScheduledFuture<?>> statusFuture = Optional.empty();
     private @NonNullByDefault({}) SensiboAccountConfiguration config;
 
     public SensiboAccountHandler(final Bridge bridge, final HttpClient httpClient) {
@@ -174,8 +175,8 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
      */
     private void initPolling() {
         stopPolling();
-        statusFuture = scheduler.scheduleWithFixedDelay(this::updateModelFromServerAndUpdateThingStatus,
-                config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS);
+        statusFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::updateModelFromServerAndUpdateThingStatus,
+                config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS));
     }
 
     protected SensiboModel refreshModel() throws SensiboException {
@@ -229,10 +230,12 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
      * Stops this thing's polling future
      */
     private void stopPolling() {
-        if (statusFuture != null && !statusFuture.isCancelled()) {
-            statusFuture.cancel(true);
-            statusFuture = null;
-        }
+        statusFuture.ifPresent(future -> {
+            if (!future.isCancelled()) {
+                future.cancel(true);
+            }
+            statusFuture = Optional.empty();
+        });
     }
 
     public void updateModelFromServerAndUpdateThingStatus() {
