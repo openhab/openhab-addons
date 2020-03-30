@@ -481,7 +481,7 @@ public class WizLightingHandler extends BaseThingHandler {
     /**
      * Sends a setPilot request and checks for success
      */
-    private boolean setPilotCommand(final @Nullable Param param) {
+    private synchronized boolean setPilotCommand(final @Nullable Param param) {
         WizLightingResponse response = sendRequestPacket(WizLightingMethodType.setPilot, param);
         if (response != null) {
             boolean setSucceeded = response.getResultSuccess();
@@ -546,7 +546,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * heartbeat (hb) status updates
      */
 
-    private void registerWithBulb() {
+    private synchronized void registerWithBulb() {
         logger.trace("Registering for updates with bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
                 this.registrationInfo);
