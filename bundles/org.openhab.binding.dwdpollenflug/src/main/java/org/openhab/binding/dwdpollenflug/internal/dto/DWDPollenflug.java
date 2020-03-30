@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The {@link DWDPollenflug} class is internal DWD data structure.
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */

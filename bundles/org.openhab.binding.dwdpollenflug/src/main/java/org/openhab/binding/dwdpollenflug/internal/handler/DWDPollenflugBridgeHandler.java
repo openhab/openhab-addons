@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DWDPollenflugRegionHandler}
+ * The {@link DWDPollenflugBridgeHandler} is the handler for bridge thing
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */

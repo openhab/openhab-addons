@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
 
 /**
- * The {@link DWDPollenflugRegionListener}
+ * The {@link DWDPollenflugRegionListener} is the interface for communication
+ * from bridge to region handler
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */
