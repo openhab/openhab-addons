@@ -292,9 +292,7 @@ public class WizLightingHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE);
                 } else if (config.useHeartBeats) {
                     // If we're using 5s heart-beats, we must re-register every 30s to maintain connection
-                    logger.debug(
-                            "Re-registering for heart-beats from bulb at {}.",
-                            config.bulbIpAddress, config.updateInterval);
+                    logger.debug("Re-registering for heart-beats from bulb at {}.", config.bulbIpAddress);
                     registerWithBulb();
                 } else {
                     // If we're not using heart-beats, just request the current status
