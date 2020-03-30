@@ -76,15 +76,15 @@ public enum WizLightingLightMode {
         return sceneId;
     }
 
-    private static final Map<Integer, WizLightingLightMode> LightModeMap;
+    private static final Map<Integer, WizLightingLightMode> LIGHT_MODE_MAP;
     static {
-        LightModeMap = new HashMap<Integer, WizLightingLightMode>();
+        LIGHT_MODE_MAP = new HashMap<Integer, WizLightingLightMode>();
         for (WizLightingLightMode v : WizLightingLightMode.values()) {
-            LightModeMap.put(v.sceneId, v);
+            LIGHT_MODE_MAP.put(v.sceneId, v);
         }
     }
 
     public static WizLightingLightMode getNameFromModeId(int id) {
-        return LightModeMap.get(id);
+        return LIGHT_MODE_MAP.get(id);
     }
 }
