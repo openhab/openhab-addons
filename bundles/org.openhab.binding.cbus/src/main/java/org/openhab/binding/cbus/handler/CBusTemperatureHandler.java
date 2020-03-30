@@ -12,11 +12,17 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CBusTemperatureHandler} is responsible for handling commands, which are
@@ -27,6 +33,8 @@ import org.openhab.binding.cbus.CBusBindingConstants;
 @NonNullByDefault
 public class CBusTemperatureHandler extends CBusGroupHandler {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public CBusTemperatureHandler(Thing thing) {
         super(thing, CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE);
     }
@@ -34,5 +42,21 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Read only thing - no commands to handle
+    }
+
+    public void updateGroup(int updateApplicationId, int updateGroupId, String value) {
+        if (updateGroupId == groupId && updateApplicationId == applicationId) {
+            Thing thing = getThing();
+            Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP);
+
+            if (channel != null) {
+                ChannelUID channelUID = channel.getUID();
+                updateState(channelUID, new QuantityType<>(Double.parseDouble(value), CELSIUS));
+                logger.trace("Updating CBus Temperature Group {} with value {}", thing.getUID(), value);
+            } else {
+                logger.trace("Failed to Update CBus Temperature Group {} with value {}: No Channel", thing.getUID(),
+                        value);
+            }
+        }
     }
 }

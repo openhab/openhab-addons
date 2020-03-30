@@ -61,14 +61,21 @@ public class CBusBindingConstants {
     public static final Set<ThingTypeUID> NETWORK_DISCOVERY_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(BRIDGE_TYPE_NETWORK));
 
-    public static final String PROPERTY_ID = "id";
-    public static final String PROPERTY_NAME = "name";
-    public static final String PROPERTY_PROJECT = "project";
-    public static final String PROPERTY_NETWORK_SYNC = "syncInterval";
+    public static final String CONFIG_NETWORK_ID = "id";
+    public static final String CONFIG_NETWORK_PROJECT = "project";
+    public static final String CONFIG_NETWORK_SYNC = "syncInterval";
+    public static final String PROPERTY_NETWORK_NAME = "name";
 
-    public static final String PROPERTY_REFRESH_INTERVAL = "refresh";
-    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
+    public static final String CONFIG_CGATE_IP_ADDRESS = "ipAddress";
 
+    public static final String PROPERTY_NETWORK_ID = "CBUS Network Id";
+    public static final String PROPERTY_APPLICATION_ID = "CBUS Application Id";
+    public static final String PROPERTY_GROUP_ID = "CBUS Group Id";
+    public static final String PROPERTY_GROUP_NAME = "CBUS Group Name";
+
+    /* Legacy only used to update from config to properties */
+
+    public static final String CONFIG_NAME = "name";
     public static final String CONFIG_GROUP_ID = "group";
 
     public static final int CBUS_APPLICATION_LIGHTING = 56;

@@ -97,8 +97,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     private void cgateOnline() {
         ThingStatus lastStatus = getThing().getStatus();
         logger.debug("cgateOnline {}", lastStatus);
-        String networkID = getConfig().get(CBusBindingConstants.PROPERTY_ID).toString();
-        String project = getConfig().get(CBusBindingConstants.PROPERTY_PROJECT).toString();
+        String networkID = getConfig().get(CBusBindingConstants.CONFIG_NETWORK_ID).toString();
+        String project = getConfig().get(CBusBindingConstants.CONFIG_NETWORK_PROJECT).toString();
         logger.debug("cgateOnline netid {} project {}", networkID, project);
         Project projectObject = getProjectObject();
         Network network = getNetwork();
@@ -219,10 +219,10 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 if (networkSync == null || networkSync.isCancelled())
                     this.networkSync = scheduler.scheduleWithFixedDelay(() -> {
                         doNetworkSync();
-                    }, 10, Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()),
+                    }, 10, Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()),
                             TimeUnit.SECONDS);
                 logger.debug("Schedule networkSync to start in {} seconds",
-                        Integer.parseInt(getConfig().get(CBusBindingConstants.PROPERTY_NETWORK_SYNC).toString()));
+                        Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()));
             } else {
                 if (networkSync != null)
                     networkSync.cancel(false);

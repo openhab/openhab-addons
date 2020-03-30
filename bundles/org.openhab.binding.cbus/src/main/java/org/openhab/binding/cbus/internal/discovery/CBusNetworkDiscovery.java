@@ -56,9 +56,9 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
                 for (Network network : networks) {
                     logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
                     Map<String, Object> properties = new HashMap<>(3);
-                    properties.put(CBusBindingConstants.PROPERTY_ID, network.getNetworkID());
-                    properties.put(CBusBindingConstants.PROPERTY_NAME, network.getName());
-                    properties.put(CBusBindingConstants.PROPERTY_PROJECT, network.getProjectName());
+                    properties.put(CBusBindingConstants.CONFIG_NETWORK_ID, network.getNetworkID());
+                    properties.put(CBusBindingConstants.PROPERTY_NETWORK_NAME, network.getName());
+                    properties.put(CBusBindingConstants.CONFIG_NETWORK_PROJECT, network.getProjectName());
                     ThingUID uid = new ThingUID(CBusBindingConstants.BRIDGE_TYPE_NETWORK,
                             network.getProjectName().toLowerCase().replace(" ", "_") + network.getNetworkID(),
                             cBusCGateHandler.getThing().getUID().getId());

@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -63,6 +64,37 @@ public class CBusDaliHandler extends CBusGroupHandler {
                 }
             } catch (CGateException e) {
                 logger.warn("Cannot send command {} to {}", command, group, e);
+            }
+        }
+    }
+
+    public void updateGroup(int updateApplicationId, int updateGroupId, String value) {
+        if (updateGroupId == groupId && updateApplicationId == applicationId) {
+            Thing thing = getThing();
+            Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
+            if (channel != null) {
+                ChannelUID channelUID = channel.getUID();
+
+                if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
+                    updateState(channelUID, OnOffType.ON);
+                    updateState(channelUID, new PercentType(100));
+                } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
+                    updateState(channelUID, OnOffType.OFF);
+                    updateState(channelUID, new PercentType(0));
+                } else {
+                    try {
+                        int v = Integer.parseInt(value);
+                        PercentType perc = new PercentType(Math.round(v * 100 / 255));
+                        updateState(channelUID, perc);
+                    } catch (NumberFormatException e) {
+                        logger.warn(
+                                "Invalid value presented to channel {}. Received {}, expected On/Off or decimal value",
+                                channelUID, value);
+                    }
+                }
+                logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
+            } else {
+                logger.debug("Failed to Updat CBus Lighting Group {} with value {}: No Channel", thing.getUID(), value);
             }
         }
     }

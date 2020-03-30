@@ -15,16 +15,12 @@
 			<channel id="state" typeId="light-channel" />
 			<channel id="level" typeId="level-channel" />
 		</channels>
-		<config-description>
-			<parameter name="group" type="integer" required="true">
-				<label>Group Number</label>
-				<description>Group Number</description>
-			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Group Name</label>
-				<description>Group Name</description>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="CBUS Network Id" />
+			<property name="CBUS Application Id" />
+			<property name="CBUS Group Id" />
+			<property name="CBUS Group Name" />
+		</properties>
 	</thing-type>
 
 	<thing-type id="temperature">
@@ -37,16 +33,12 @@
 		<channels>
 			<channel id="temp" typeId="temp-channel" />
 		</channels>
-		<config-description>
-			<parameter name="group" type="integer" required="true">
-				<label>Group Number</label>
-				<description>Group Number</description>
-			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Group Name</label>
-				<description>Group Name</description>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="CBUS Network Id" />
+			<property name="CBUS Application Id" />
+			<property name="CBUS Group Id" />
+			<property name="CBUS Group Name" />
+		</properties>
 	</thing-type>
 
 	<thing-type id="trigger">
@@ -59,16 +51,12 @@
 		<channels>
 			<channel id="value" typeId="trigger-channel" />
 		</channels>
-		<config-description>
-			<parameter name="group" type="integer" required="true">
-				<label>Group Number</label>
-				<description>Group Number</description>
-			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Group Name</label>
-				<description>Group Name</description>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="CBUS Network Id" />
+			<property name="CBUS Application Id" />
+			<property name="CBUS Group Id" />
+			<property name="CBUS Group Name" />
+		</properties>
 	</thing-type>
 
 	<thing-type id="dali">
@@ -81,16 +69,12 @@
 		<channels>
 			<channel id="level" typeId="dali-channel" />
 		</channels>
-		<config-description>
-			<parameter name="group" type="integer" required="true">
-				<label>Group Number</label>
-				<description>Group Number</description>
-			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Group Name</label>
-				<description>Group Name</description>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="CBUS Network Id" />
+			<property name="CBUS Application Id" />
+			<property name="CBUS Group Id" />
+			<property name="CBUS Group Name" />
+		</properties>
 	</thing-type>
 
 	<!-- Lighting Group Channel Type -->

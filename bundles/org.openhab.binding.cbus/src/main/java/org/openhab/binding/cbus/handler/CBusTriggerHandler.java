@@ -14,6 +14,7 @@ package org.openhab.binding.cbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -52,6 +53,19 @@ public class CBusTriggerHandler extends CBusGroupHandler {
                 }
             } catch (CGateException e) {
                 logger.warn("Failed to send trigger command {} to {}", command, group, e);
+            }
+        }
+    }
+
+    public void updateGroup(int updateApplicationId, int updateGroupId, String value) {
+        if (updateGroupId == groupId && updateApplicationId == applicationId) {
+            Thing thing = getThing();
+            Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
+            if (channel != null) {
+                ChannelUID channelUID = channel.getUID();
+                DecimalType val = new DecimalType(value);
+                updateState(channelUID, val);
+                logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
             }
         }
     }

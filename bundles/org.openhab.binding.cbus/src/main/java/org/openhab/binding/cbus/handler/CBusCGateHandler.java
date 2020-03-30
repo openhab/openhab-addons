@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.cbus.handler;
 
-import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -22,19 +20,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -114,7 +108,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     public @Nullable CGateSession cGateSession = null;
 
-    private @Nullable Future<?> keepAliveFuture = null;
+    private @Nullable ScheduledFuture<?> keepAliveFuture = null;
 
     private final ExecutorService threadPool = ThreadPoolManager.getPool("CBusCGateHandler-Helper");
 
@@ -132,7 +126,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.OFFLINE);
         logger.debug("Initializing CGate Bridge handler.");
         Configuration config = getThing().getConfiguration();
-        String ipAddress = (String) config.get(CBusBindingConstants.PROPERTY_IP_ADDRESS);
+        String ipAddress = (String) config.get(CBusBindingConstants.CONFIG_CGATE_IP_ADDRESS);
 
         if ("127.0.0.1".equals(ipAddress) || "localhost".equals(ipAddress)) {
             this.ipAddress = InetAddress.getLoopbackAddress();
@@ -149,27 +143,18 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         if (address != null)
             logger.debug("CGate IP         {}.", address.getHostAddress());
 
-        keepAliveFuture = threadPool.submit(new KeepAlive());
+        keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
+            keepAlive();
+        }, 0, 100, TimeUnit.SECONDS);
     }
 
-    @NonNullByDefault
-    private class KeepAlive implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    CGateSession session = cGateSession;
-                    if (session == null || !session.isConnected()) {
-                        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                            connect();
-                        } else {
-                            updateStatus();
-                        }
-                    }
-                    Thread.sleep(10000l);
-                }
-            } catch (InterruptedException e) {
+    private void keepAlive() {
+        CGateSession session = cGateSession;
+        if (session == null || !session.isConnected()) {
+            if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                connect();
+            } else {
+                updateStatus();
             }
         }
     }
@@ -240,11 +225,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             return true;
         }
 
+        @SuppressWarnings({ "null" })
         @Override
         public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
-            if (cGateSession == null)
-                return;
-            if (status == null)
+            if (cGateSession == null || status = null)
                 return;
             if (status.startsWith("# ")) {
                 status = status.substring(2);
@@ -261,75 +245,91 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             }
             @Nullable
             String firstToken = tokenizer.peek();
-            if ("lighting".equals(firstToken)) {
-                tokenizer.poll();
-                @Nullable
-                String state = tokenizer.poll();
-                @Nullable
-                String address = tokenizer.poll();
-                if ("ramp".equals("ramp")) {
-                    state = tokenizer.poll();
-                }
-                updateGroup(address, state);
-            } else if ("temperature".equals(firstToken)) {
-                tokenizer.poll();
-                tokenizer.poll();
-                @Nullable
-                String address = tokenizer.poll();
-                @Nullable
-                String temp = tokenizer.poll();
-                updateGroup(address, temp);
-            } else if ("trigger".equals(firstToken)) {
-                tokenizer.poll();
-                @Nullable
-                String command = tokenizer.poll();
-                @Nullable
-                String address = tokenizer.poll();
-                if ("event".equals(command)) {
+            if (firstToken == null) {
+                logger.debug("ProcessStateChange: Cant tokenize status {}", status);
+                return;
+            }
+            switch (firstToken) {
+                case "lighting": {
+                    tokenizer.poll();
                     @Nullable
-                    String level = tokenizer.poll();
-                    updateGroup(address, level);
-                } else if ("indicatorkill".equals(command)) {
-                    updateGroup(address, "-1");
-                } else {
-                    logger.warn("Unhandled trigger command {} - status {}", command, status);
-                }
-            } else if ("clock".equals(firstToken)) {
-                tokenizer.poll();
-                @Nullable
-                String address = "";
-                @Nullable
-                String value = "";
-                @Nullable
-                String type = tokenizer.poll();
-                if ("date".equals(type)) {
-                    address = tokenizer.poll() + "/1";
-                    value = tokenizer.poll();
-                } else if ("time".equals(type)) {
-                    address = tokenizer.poll() + "/0";
-                    value = tokenizer.poll();
-                } else if (!"request_refresh".equals(type)) {
-                    logger.warn("Received unknown clock event: {}", status);
-                }
-                if (value != null && !value.isEmpty()) {
-                    updateGroup(address, value);
-                }
-            } else if (firstToken.equals("lighting")) {
-                commentTokenizer.poll();
-                @Nullable
-                String commentToken = commentTokenizer.peek();
-                if ("SyncUpdate".equals(commentToken)) {
-                    commentTokenizer.poll();
+                    String state = tokenizer.poll();
                     @Nullable
-                    String address = commentTokenizer.poll();
+                    String address = tokenizer.poll();
+                    if ("ramp".equals("ramp")) {
+                        state = tokenizer.poll();
+                    }
+                    updateGroup(address, state);
+                    break;
+                }
+                case "temperature": {
+                    tokenizer.poll();
+                    tokenizer.poll();
+                    @Nullable
+                    String address = tokenizer.poll();
+                    @Nullable
+                    String temp = tokenizer.poll();
+                    updateGroup(address, temp);
+                    break;
+                }
+                case "trigger": {
+                    tokenizer.poll();
+                    @Nullable
+                    String command = tokenizer.poll();
+                    @Nullable
+                    String address = tokenizer.poll();
+                    if ("event".equals(command)) {
+                        @Nullable
+                        String level = tokenizer.poll();
+                        updateGroup(address, level);
+                    } else if ("indicatorkill".equals(command)) {
+                        updateGroup(address, "-1");
+                    } else {
+                        logger.warn("Unhandled trigger command {} - status {}", command, status);
+                    }
+                    break;
+                }
+                case "clock": {
+                    tokenizer.poll();
+                    @Nullable
+                    String address = "";
+                    @Nullable
+                    String value = "";
+                    @Nullable
+                    String type = tokenizer.poll();
+                    if ("date".equals(type)) {
+                        address = tokenizer.poll() + "/1";
+                        value = tokenizer.poll();
+                    } else if ("time".equals(type)) {
+                        address = tokenizer.poll() + "/0";
+                        value = tokenizer.poll();
+                    } else if (!"request_refresh".equals(type)) {
+                        logger.warn("Received unknown clock event: {}", status);
+                    }
+                    if (value != null && !value.isEmpty()) {
+                        updateGroup(address, value);
+                    }
+                    break;
+                }
+                default:
+                    if ("lighting".equals(commentTokenizer.peek())) {
+                        commentTokenizer.poll();
+                        @Nullable
+                        String commentToken = commentTokenizer.peek();
+                        if ("SyncUpdate".equals(commentToken)) {
+                            commentTokenizer.poll();
+                            @Nullable
+                            String address = commentTokenizer.poll();
 
-                    @Nullable
-                    String level = commentTokenizer.poll();
-                    level.replace("level=", "");
-                    updateGroup(address, level);
-                }
-            } else {
-                logger.warn("Received unparsed event: '{}'", status);
+                            @Nullable
+                            String level = commentTokenizer.poll();
+                            level.replace("level=", "");
+                            updateGroup(address, level);
+                        }
+                    } else {
+                        logger.warn("Received unparsed event: '{}'", status);
+                    }
+                    break;
             }
         }
 
@@ -343,17 +343,18 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             return true;
         }
 
+        @SuppressWarnings({ "null" })
         @Override
         public void processEvent(@Nullable CGateSession cgate_session, int eventCode,
                 @Nullable GregorianCalendar event_time, @Nullable String event) {
             if (event == null)
                 return;
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
+
             if (eventCode == 701) {
                 @Nullable
                 String address = tokenizer.poll();
-                @Nullable
-                String oid = tokenizer.poll();
+                tokenizer.poll();
                 @Nullable
                 String value = tokenizer.poll();
                 if (value != null && value.startsWith("level=")) {
@@ -370,114 +371,28 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             return;
         String[] addressParts = address.trim().replace("//", "").split("/");
         int application = Integer.parseInt(addressParts[2]);
-        updateGroup(addressParts[1], application, addressParts[3], value);
+        int group = Integer.parseInt(addressParts[3]);
+        updateGroup(addressParts[1], application, 3, value);
     }
 
-    private void updateGroup(String network, int application, String group, String value) {
+    private void updateGroup(String network, int application, int group, String value) {
         for (Thing networkThing : getThing().getThings()) {
             // Is this networkThing from the network we are looking for...
             if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
-                    .getConfiguration().get(CBusBindingConstants.PROPERTY_ID).toString().equals(network)) {
-                ThingHandler thingHandler = networkThing.getHandler();
-                if (thingHandler == null) {
+                    .getConfiguration().get(CBusBindingConstants.CONFIG_NETWORK_ID).toString().equals(network)) {
+                ThingHandler netThingHandler = networkThing.getHandler();
+                if (netThingHandler == null) {
                     continue;
                 }
                 // Loop through all the things on this network and see if they match the application / group
-                for (Thing thing : ((CBusNetworkHandler) thingHandler).getThing().getThings()) {
-                    // Handle Lighting Application messages
-                    if (application == CBusBindingConstants.CBUS_APPLICATION_LIGHTING
-                            && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_LIGHT)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
-                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_STATE);
-                        Channel channelLevel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
-                        if (channel != null && channelLevel != null) {
-                            ChannelUID channelUID = channel.getUID();
-                            ChannelUID channelLevelUID = channelLevel.getUID();
-
-                            if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
-                                updateState(channelUID, OnOffType.ON);
-                                updateState(channelLevelUID, new PercentType(100));
-                            } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
-                                updateState(channelUID, OnOffType.OFF);
-                                updateState(channelLevelUID, new PercentType(0));
-                            } else {
-                                try {
-                                    int v = Integer.parseInt(value);
-                                    updateState(channelUID, v > 0 ? OnOffType.ON : OnOffType.OFF);
-                                    updateState(channelLevelUID, new PercentType((int) (v * 100 / 255.0)));
-                                } catch (NumberFormatException e) {
-                                    logger.warn("Invalid value presented to channel {}. Received {}, expected On/Off",
-                                            channelUID, value);
-                                }
-                            }
-                            logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
-                        } else {
-                            logger.debug("Failed to Update CBus Lighting Group {} with value {}: No Channel",
-                                    thing.getUID(), value);
-                        }
-
+                for (Thing thing : ((CBusNetworkHandler) netThingHandler).getThing().getThings()) {
+                    ThingHandler thingThingHandler = thing.getHandler();
+                    if (thingThingHandler == null) {
+                        continue;
                     }
-                    // DALI Application
-                    else if (application == CBusBindingConstants.CBUS_APPLICATION_DALI
-                            && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_DALI)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
-                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
-                        if (channel != null) {
-                            ChannelUID channelUID = channel.getUID();
 
-                            if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
-                                updateState(channelUID, OnOffType.ON);
-                                updateState(channelUID, new PercentType(100));
-                            } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
-                                updateState(channelUID, OnOffType.OFF);
-                                updateState(channelUID, new PercentType(0));
-                            } else {
-                                try {
-                                    int v = Integer.parseInt(value);
-                                    PercentType perc = new PercentType(Math.round(v * 100 / 255));
-                                    updateState(channelUID, perc);
-                                } catch (NumberFormatException e) {
-                                    logger.warn(
-                                            "Invalid value presented to channel {}. Received {}, expected On/Off or decimal value",
-                                            channelUID, value);
-                                }
-                            }
-                            logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
-                        } else {
-                            logger.debug("Failed to Updat CBus Lighting Group {} with value {}: No Channel",
-                                    thing.getUID(), value);
-                        }
-                    }
-                    // Temperature Application
-                    else if (application == CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE
-                            && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
-                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP);
-
-                        if (channel != null) {
-                            ChannelUID channelUID = channel.getUID();
-                            updateState(channelUID, new QuantityType<>(Double.parseDouble(value), CELSIUS));
-                            logger.trace("Updating CBus Temperature Group {} with value {}", thing.getUID(), value);
-                        } else {
-                            logger.trace("Failed to Update CBus Temperature Group {} with value {}: No Channel",
-                                    thing.getUID(), value);
-                        }
-                    }
-                    // Trigger Application
-                    else if (application == CBusBindingConstants.CBUS_APPLICATION_TRIGGER
-                            && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
-                            && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
-                                    .equals(group)) {
-                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
-                        if (channel != null) {
-                            ChannelUID channelUID = channel.getUID();
-                            DecimalType val = new DecimalType(value);
-                            updateState(channelUID, val);
-                            logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
-                        }
+                    if (thingThingHandler instanceof CBusGroupHandler) {
+                        ((CBusGroupHandler) thingThingHandler).updateGroup(application, group, value);
                     }
                 }
             }
@@ -492,7 +407,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        Future<?> keepAliveFuture = this.keepAliveFuture;
+        ScheduledFuture<?> keepAliveFuture = this.keepAliveFuture;
         if (keepAliveFuture != null)
             keepAliveFuture.cancel(true);
         CGateSession cGateSession = this.cGateSession;

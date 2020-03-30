@@ -45,6 +45,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
     protected @Nullable Group group = null;
     protected int applicationId = -1;
+    protected int groupId = -1;
 
     public CBusGroupHandler(Thing thing, int applicationId) {
         super(thing);
@@ -54,9 +55,27 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     @Override
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public void initialize() {
-
+        logger.debug("Initialise property group {} config group {}",
+                getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID),
+                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+        /*
+         * Group Id has moved from config to property. Copy for backward compatibility
+         */
+        if (getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID) == null) {
+            updateProperty(CBusBindingConstants.PROPERTY_GROUP_ID,
+                    getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+        }
+        if (getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_NAME) == null) {
+            updateProperty(CBusBindingConstants.PROPERTY_GROUP_NAME,
+                    getConfig().get(CBusBindingConstants.CONFIG_NAME).toString());
+        }
+        logger.debug("FixUp property group {} config group {}",
+                getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID),
+                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+        groupId = Integer.parseInt(getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID));
         cBusNetworkHandler = getCBusNetworkHandler();
         if (cBusNetworkHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -65,17 +84,22 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         updateStatus();
     }
 
+    @SuppressWarnings({ "null" })
     public void updateStatus() {
         try {
+            logger.debug("updateStatus {}", getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID));
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
                 Group group = this.group;
                 if (group == null) {
-                    this.group = getGroup(
-                            Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
-                    group = this.group;
+                    @Nullable
+                    Object groupId = getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID);
+                    if (groupId != null) {
+                        group = getGroup(Integer.parseInt(groupId.toString()));
+                        this.group = group;
+                    }
                 }
                 if (group == null) {
                     logger.debug("Set state to configuration error -no group");
@@ -93,7 +117,10 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         }
     }
 
-    protected @Nullable Group getGroup(int groupID) {
+    public void updateGroup(int application, int group, String value) {
+    }
+
+    private @Nullable Group getGroup(int groupID) {
         try {
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null)
@@ -101,10 +128,11 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
             Network network = networkHandler.getNetwork();
             if (network != null) {
                 Application application = network.getApplication(applicationId);
+                logger.debug("GetGroup for id {}", groupID);
                 return application.getGroup(groupID);
             }
         } catch (CGateException e) {
-            /* If anything threw an exception we just need to return null */
+            logger.debug("GetGroup for id {} faile {}", groupID, e.getMessage());
         }
         return null;
     }
