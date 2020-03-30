@@ -279,8 +279,6 @@ public class WizLightingHandler extends BaseThingHandler {
             long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
 
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                logger.debug("Polling for status from bulb at {}. Current configuration update interval: {} seconds.",
-                        config.bulbIpAddress, config.updateInterval);
 
                 logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.bulbMacAddress,
                         latestUpdate, now, timePassedFromLastUpdateInSeconds);
@@ -294,9 +292,15 @@ public class WizLightingHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE);
                 } else if (config.useHeartBeats) {
                     // If we're using 5s heart-beats, we must re-register every 30s to maintain connection
+                    logger.debug(
+                            "Re-registering for heart-beats from bulb at {}.",
+                            config.bulbIpAddress, config.updateInterval);
                     registerWithBulb();
                 } else {
                     // If we're not using heart-beats, just request the current status
+                    logger.debug(
+                            "Polling for status from bulb at {}. Current configuration update interval: {} seconds.",
+                            config.bulbIpAddress, config.updateInterval);
                     getPilot();
                 }
             } else {
@@ -366,16 +370,16 @@ public class WizLightingHandler extends BaseThingHandler {
         this.mostRecentState = receivedParam;
 
         if (!receivedParam.state) {
-            logger.debug("Light is off");
+            logger.trace("Light is off");
             updateState(CHANNEL_COLOR, HSBType.BLACK);
             updateState(CHANNEL_DIMMING, PercentType.ZERO);
             updateState(CHANNEL_SWITCH_STATE, OnOffType.OFF);
         } else {
             switch (receivedParam.getColorMode()) {
                 case RGBMode:
-                    logger.debug("Received color values - R: {} G: {} B: {} W: {} C: {} Dimming: {}", receivedParam.r,
+                    logger.trace("Received color values - R: {} G: {} B: {} W: {} C: {} Dimming: {}", receivedParam.r,
                             receivedParam.g, receivedParam.b, receivedParam.w, receivedParam.c, receivedParam.dimming);
-                    logger.debug("Translated to HSBValues {}", receivedParam.getHSBColor());
+                    logger.trace("Translated to HSBValues {}", receivedParam.getHSBColor());
                     updateState(CHANNEL_COLOR, receivedParam.getHSBColor());
                     updateState(CHANNEL_TEMPERATURE, new PercentType(50));
                     updateState(CHANNEL_DIMMING, new PercentType(receivedParam.dimming));
@@ -383,7 +387,7 @@ public class WizLightingHandler extends BaseThingHandler {
                     break;
                 case CTMode:
                     // update color temperature channel
-                    logger.debug("Received color temperature: {} ({}%)", receivedParam.temp,
+                    logger.trace("Received color temperature: {} ({}%)", receivedParam.temp,
                             receivedParam.getTemperaturePercent());
                     updateState(CHANNEL_COLOR, new HSBType(new DecimalType(0), new PercentType(0),
                             new PercentType(receivedParam.getDimming())));
@@ -401,13 +405,13 @@ public class WizLightingHandler extends BaseThingHandler {
 
         // update scene channel
         if (receivedParam.sceneId > 0) {
-            logger.debug("Received scene: {} ({})", receivedParam.sceneId,
+            logger.trace("Received scene: {} ({})", receivedParam.sceneId,
                     WizLightingLightMode.getNameFromModeId(receivedParam.sceneId));
             updateState(CHANNEL_LIGHT_MODE, new StringType(String.valueOf(receivedParam.sceneId)));
         }
 
         // update speed channel
-        logger.debug("Received scene speed: {}", receivedParam.speed);
+        logger.trace("Received scene speed: {}", receivedParam.speed);
         updateState(CHANNEL_DYNAMIC_SPEED, new PercentType(receivedParam.speed));
 
         // update signal strength
@@ -424,7 +428,7 @@ public class WizLightingHandler extends BaseThingHandler {
             } else {
                 strength = 4;
             }
-            logger.debug("Received RSSI: {}, Signal Strength: {}", receivedParam.rssi, strength);
+            logger.trace("Received RSSI: {}, Signal Strength: {}", receivedParam.rssi, strength);
             updateState(CHANNEL_RSSI, new DecimalType(strength));
         }
     }
