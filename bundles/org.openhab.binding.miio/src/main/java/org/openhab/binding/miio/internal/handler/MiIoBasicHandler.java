@@ -425,17 +425,17 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         try {
             switch (basicChannel.getType().toLowerCase()) {
-                case "Number":
+                case "number":
                     updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
                     break;
-                case "String":
+                case "string":
                     updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
                     break;
-                case "Switch":
+                case "switch":
                     updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
                             || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
                     break;
-                case "Color":
+                case "color":
                     Color rgb = new Color(val.getAsInt());
                     HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
                     updateState(basicChannel.getChannel(), hsb);
