@@ -14,9 +14,9 @@
 			<channel id="temperature" typeId="system.color-temperature" />
 			<channel id="dimming" typeId="system.brightness" />
 			<!-- NOTE: Keeping brightness in two places, color and brightness -->
-			<!-- NOTE: Having it in both places allows the brighness to be changed while in color temperature mode -->
+			<!-- NOTE: Having it in both places is necessary to allow the brighness to be changed while in color temperature mode -->
 			<channel id="state" typeId="system.power" />
-			<!-- NOTE: Keeping state also multiply available, because I want it -->
+			<!-- NOTE: Yes, state can be controlled by 3 channels -->
 			<channel id="lightMode" typeId="lightMode" />
 			<channel id="speed" typeId="speed" />
 			<channel id="signalstrength" typeId="system.signal-strength" />

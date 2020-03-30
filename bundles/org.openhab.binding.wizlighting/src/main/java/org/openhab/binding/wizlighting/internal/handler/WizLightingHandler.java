@@ -81,7 +81,6 @@ public class WizLightingHandler extends BaseThingHandler {
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
-    // private RegistrationRequestParam registrationInfo;
     private int requestId = 0;
 
     /**
@@ -555,9 +554,10 @@ public class WizLightingHandler extends BaseThingHandler {
 
     /**
      * Registers with the bulb - this tells the bulb to begin sending 5-second
-     * heartbeat (hb) status updates
+     * heartbeat (hb) status updates. Status updates are sent by the bulb every 5
+     * sec and on any state change for 30s after registration. For continuous
+     * heart-beats the registration must be re-sent after 30s.
      */
-
     private synchronized void registerWithBulb() {
         logger.trace("Registering for updates with bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
