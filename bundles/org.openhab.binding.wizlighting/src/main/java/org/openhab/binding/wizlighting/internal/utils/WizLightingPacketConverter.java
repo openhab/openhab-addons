@@ -75,7 +75,7 @@ public class WizLightingPacketConverter {
      */
     public @Nullable WizLightingResponse transformResponsePacket(final DatagramPacket packet) {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
-        logger.debug("Incoming packet from {} -> {}", packet.getAddress().getHostAddress(), responseJson);
+        logger.debug("Incoming packet from {} to convert -> {}", packet.getAddress().getHostAddress(), responseJson);
 
         @Nullable
         WizLightingResponse response = null;

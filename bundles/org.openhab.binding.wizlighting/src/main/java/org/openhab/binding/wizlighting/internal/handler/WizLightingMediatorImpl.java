@@ -87,8 +87,8 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void processReceivedPacket(final WizLightingResponse receivedMessage) {
-        logger.debug("Received packet from: {} with method: [{}]", receivedMessage.getWizResponseIpAddress(),
-                receivedMessage.getMethod());
+        logger.debug("Received packet from: {} - {} with method: [{}]", receivedMessage.getWizResponseIpAddress(),
+                receivedMessage.getWizResponseMacAddress(), receivedMessage.getMethod());
 
         String bulbIp = receivedMessage.getWizResponseIpAddress();
         String bulbMac = receivedMessage.getWizResponseMacAddress();

@@ -91,15 +91,13 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
             try {
                 datagramSocket.receive(packet);
 
-                logger.trace("Received packet from: {}. Will process the packet...",
+                logger.trace("Runnable received packet from: {}. Will process the packet...",
                         packet.getAddress().getHostAddress());
 
                 // Redirect packet to the mediator
                 WizLightingResponse response = this.packetConverter.transformResponsePacket(packet);
                 if (response != null) {
                     this.mediator.processReceivedPacket(response);
-                    logger.trace("Message from {} delivered from runnable to mediator.",
-                            response.getWizResponseIpAddress());
                 } else {
                     logger.debug("No WizLightingResponse was parsed from returned packet");
                 }
