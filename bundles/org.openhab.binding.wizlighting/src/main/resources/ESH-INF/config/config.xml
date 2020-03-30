@@ -24,7 +24,7 @@
 		</parameter>
 		<parameter name="useHeartBeats" type="boolean" required="false">
 			<label>Use heartbeats to synchronize with bulb</label>
-			<description>True to request conginuous 5s heartbeats from bulb. Update interval is ignored when using heartbeats</description>
+			<description>True to request continuous 5s heartbeats from bulb. Update interval is ignored when using heartbeats</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>

@@ -311,7 +311,7 @@ public class WizLightingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.trace("Beginning initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
-
+        this.config = getConfigAs(WizLightingDeviceConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         if (ValidationUtils.isMacNotValid(config.bulbMacAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
