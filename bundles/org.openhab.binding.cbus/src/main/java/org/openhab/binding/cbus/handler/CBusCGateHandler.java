@@ -228,7 +228,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         @SuppressWarnings({ "null" })
         @Override
         public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
-            if (cGateSession == null || status = null)
+            if (cGateSession == null || status == null)
                 return;
             if (status.startsWith("# ")) {
                 status = status.substring(2);
