@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.dto.poddetails;
 
-import javax.measure.Unit;
-import javax.measure.quantity.Temperature;
-
-import org.eclipse.smarthome.core.library.unit.ImperialUnits;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitConverter;
 import org.openhab.binding.sensibo.internal.model.AcState;
 
 /**
@@ -49,15 +45,6 @@ public class AcStateDTO {
         this.targetTemperature = acState.getTargetTemperature();
         this.mode = acState.getMode();
         this.swing = acState.getSwing();
-
-        Unit<Temperature> unit = acState.getTemperatureUnit();
-
-        if (SIUnits.CELSIUS.equals(unit)) {
-            this.temperatureUnit = "C";
-        } else if (ImperialUnits.FAHRENHEIT.equals(unit)) {
-            this.temperatureUnit = "F";
-        } else {
-            throw new IllegalArgumentException("Unexpected temperature unit " + unit);
-        }
+        this.temperatureUnit = SensiboTemperatureUnitConverter.toSensiboFormat(acState.getTemperatureUnit());
     }
 }

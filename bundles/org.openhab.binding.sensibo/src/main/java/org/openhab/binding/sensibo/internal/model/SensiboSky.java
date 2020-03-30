@@ -25,7 +25,7 @@ import javax.measure.quantity.Temperature;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
+import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitConverter;
 import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapabilityDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.TemperatureDTO;
@@ -60,7 +60,7 @@ public class SensiboSky extends Pod {
         this.firmwareType = dto.firmwareType;
         this.serialNumber = dto.serialNumber;
         this.originalTemperatureUnit = dto.temperatureUnit;
-        this.temperatureUnit = SensiboTemperatureUnitParser.parse(dto.temperatureUnit);
+        this.temperatureUnit = SensiboTemperatureUnitConverter.parseFromSensiboFormat(dto.temperatureUnit);
         this.productModel = dto.productModel;
 
         if (dto.acState != null) {

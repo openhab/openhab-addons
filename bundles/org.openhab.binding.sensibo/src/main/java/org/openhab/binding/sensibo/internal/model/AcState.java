@@ -17,7 +17,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitParser;
+import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitConverter;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 
 /**
@@ -28,16 +28,11 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 @NonNullByDefault
 public class AcState {
     private final boolean on;
-    @Nullable
-    private final String fanLevel;
-    @Nullable
-    private final Unit<Temperature> temperatureUnit;
-    @Nullable
-    private final Integer targetTemperature;
-    @Nullable
-    private final String mode;
-    @Nullable
-    private final String swing;
+    private final @Nullable String fanLevel;
+    private final @Nullable Unit<Temperature> temperatureUnit;
+    private final @Nullable Integer targetTemperature;
+    private final @Nullable String mode;
+    private final @Nullable String swing;
 
     public AcState(final AcStateDTO dto) {
         this.on = dto.on;
@@ -45,7 +40,7 @@ public class AcState {
         this.targetTemperature = dto.targetTemperature;
         this.mode = dto.mode;
         this.swing = dto.swing;
-        this.temperatureUnit = SensiboTemperatureUnitParser.parse(dto.temperatureUnit);
+        this.temperatureUnit = SensiboTemperatureUnitConverter.parseFromSensiboFormat(dto.temperatureUnit);
     }
 
     public boolean isOn() {

@@ -21,13 +21,13 @@ import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 
 /**
- * The {@link SensiboTemperatureUnitParser} parses from Sensibo temperature symbols to Unit<Temperature>
+ * The {@link SensiboTemperatureUnitConverter} converts to/from Sensibo temperature symbols to Unit<Temperature>
  *
  * @author Arne Seime - Initial contribution
  */
 @NonNullByDefault
-public final class SensiboTemperatureUnitParser {
-    public static Unit<Temperature> parse(@Nullable String symbol) {
+public final class SensiboTemperatureUnitConverter {
+    public static Unit<Temperature> parseFromSensiboFormat(@Nullable String symbol) {
         if (symbol == null) {
             symbol = "C";
         }
@@ -38,6 +38,16 @@ public final class SensiboTemperatureUnitParser {
                 return ImperialUnits.FAHRENHEIT;
             default:
                 throw new IllegalArgumentException("Do not understand temperature unit " + symbol);
+        }
+    }
+
+    public static String toSensiboFormat(@Nullable Unit<Temperature> unit) {
+        if (SIUnits.CELSIUS.equals(unit)) {
+            return "C";
+        } else if (ImperialUnits.FAHRENHEIT.equals(unit)) {
+            return "F";
+        } else {
+            throw new IllegalArgumentException("Do not understand temperature unit " + unit);
         }
     }
 }
