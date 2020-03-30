@@ -192,6 +192,7 @@
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.sensibo</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
