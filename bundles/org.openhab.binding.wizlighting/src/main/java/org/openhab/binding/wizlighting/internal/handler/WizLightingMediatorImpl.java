@@ -100,8 +100,8 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
             if (handler != null) {
                 // deliver message to handler.
                 handler.newReceivedResponseMessage(receivedMessage);
-                logger.debug("Received message delivered with success to handler of mac {}",
-                        receivedMessage.getWizResponseIpAddress());
+                logger.trace("Received message from {} delivered with success to handler of mac {}",
+                        receivedMessage.getWizResponseIpAddress(), receivedMessage.getWizResponseMacAddress());
             } else if (bulbIp != "bulbIpAddress" && bulbMac != "bulbMacAddress") {
                 logger.debug("There is no handler registered for mac address: {}",
                         receivedMessage.getWizResponseMacAddress());

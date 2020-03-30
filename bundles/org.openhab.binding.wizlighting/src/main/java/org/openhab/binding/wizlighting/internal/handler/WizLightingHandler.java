@@ -323,6 +323,11 @@ public class WizLightingHandler extends BaseThingHandler {
         logger.debug("Finished initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
     }
 
+    @Override
+    public void dispose() {
+        keepAliveJob.cancel(true);
+    }
+
     private synchronized void getPilot() {
         logger.trace("Requesting current state from bulb.");
         WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
