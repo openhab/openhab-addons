@@ -12,7 +12,7 @@
 			<parameter name="refresh" type="integer" unit="min" min="15">
 				<default>30</default>
 				<label>Refresh in Minutes</label>
-				<description>Time between to API requests in minutes. Minimum 15 minutes.</description>
+				<description>Time between two API requests in minutes. Minimum 15 minutes.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
