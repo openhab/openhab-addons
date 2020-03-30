@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.entities.ErrorResponseResult;
-import org.openhab.binding.wizlighting.internal.entities.SyncResponseParam;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncState;
 import org.openhab.binding.wizlighting.internal.entities.SystemConfigResult;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
@@ -145,8 +145,8 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     // {"method": "getPilot", "id": 22, "env": "pro", "result": {"mac":
                     // "a8bb508f570a", "rssi":-76, "state": true, "sceneId": 0, "temp": 2700,
                     // "dimming": 42, "schdPsetId": 5}}
-                    SyncResponseParam parsedPResult = context.deserialize(jobject.getAsJsonObject("result"),
-                            SyncResponseParam.class);
+                    WizLightingSyncState parsedPResult = context.deserialize(jobject.getAsJsonObject("result"),
+                            WizLightingSyncState.class);
                     deserializedResponse.setResultSucess(true);
                     deserializedResponse.setWizResponseMacAddress(parsedPResult.mac);
                     deserializedResponse.setSyncParams(parsedPResult);
@@ -158,8 +158,8 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     // {"method": "syncPilot", "id": 219, "env": "pro", "params": { "mac":
                     // "bulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true, "sceneId":
                     // 0, "temp": 3362, "dimming": 69, "schdPsetId": 5}}
-                    SyncResponseParam parsedPParam = context.deserialize(jobject.getAsJsonObject("params"),
-                            SyncResponseParam.class);
+                    WizLightingSyncState parsedPParam = context.deserialize(jobject.getAsJsonObject("params"),
+                            WizLightingSyncState.class);
                     deserializedResponse.setResultSucess(true);
                     deserializedResponse.setWizResponseMacAddress(parsedPParam.mac);
                     deserializedResponse.setSyncParams(parsedPParam);

@@ -23,14 +23,14 @@ import org.openhab.binding.wizlighting.internal.utils.WizColorConverter;
 import com.google.gson.annotations.Expose;
 
 /**
- * This POJO represents the "params" of one WiZ Lighting Response "params" are
- * returned for sync and heartbeat packets
+ * This POJO represents the "params" of the current state of a WiZ bulb.
+ * These are retruned as the "params" in getPilot, sync, and heartbeat packets
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
-public class SyncResponseParam {
+public class WizLightingSyncState {
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
     public String mac = "bulbMacAddress";

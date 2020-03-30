@@ -67,7 +67,7 @@ public class WizLightingResponse {
     // from a get method is generally identical to the params returned in the
     // heartbeat.
     @Expose(serialize = true, deserialize = true)
-    private @Nullable SyncResponseParam params;
+    private @Nullable WizLightingSyncState params;
 
     /**
      * Setters and Getters
@@ -89,11 +89,11 @@ public class WizLightingResponse {
         this.success = success;
     }
 
-    public @Nullable SyncResponseParam getSyncParams() {
+    public @Nullable WizLightingSyncState getSyncState() {
         return this.params;
     }
 
-    public void setSyncParams(final SyncResponseParam params) {
+    public void setSyncParams(final WizLightingSyncState params) {
         this.params = params;
     }
 

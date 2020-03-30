@@ -51,7 +51,7 @@ import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestPara
 import org.openhab.binding.wizlighting.internal.entities.SceneRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.SpeedRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.StateRequestParam;
-import org.openhab.binding.wizlighting.internal.entities.SyncResponseParam;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncState;
 import org.openhab.binding.wizlighting.internal.entities.SystemConfigResult;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
@@ -338,7 +338,7 @@ public class WizLightingHandler extends BaseThingHandler {
         logger.trace("Requesting current state from bulb.");
         WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
         if (response != null) {
-            SyncResponseParam rParam = response.getSyncParams();
+            WizLightingSyncState rParam = response.getSyncState();
             if (rParam != null) {
                 updateTimestamps();
                 updateStatesFromParams(rParam);
@@ -363,7 +363,7 @@ public class WizLightingHandler extends BaseThingHandler {
         updateTimestamps();
 
         // Update the state from the parameters, if possible
-        SyncResponseParam params = receivedMessage.getSyncParams();
+        WizLightingSyncState params = receivedMessage.getSyncState();
         if (params != null) {
             updateStatesFromParams(params);
         }
@@ -372,9 +372,9 @@ public class WizLightingHandler extends BaseThingHandler {
     /**
      * Updates the channel states based on incoming parameters
      *
-     * @param receivedParam The received {@link SyncResponseParam}
+     * @param receivedParam The received {@link WizLightingSyncState}
      */
-    private synchronized void updateStatesFromParams(final SyncResponseParam receivedParam) {
+    private synchronized void updateStatesFromParams(final WizLightingSyncState receivedParam) {
         if (!receivedParam.state) {
             logger.debug("Light is off");
             updateState(CHANNEL_COLOR, HSBType.BLACK);
