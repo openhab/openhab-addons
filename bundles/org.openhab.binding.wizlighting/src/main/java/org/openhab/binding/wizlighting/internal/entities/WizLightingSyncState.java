@@ -117,6 +117,16 @@ public class WizLightingSyncState {
         }
     }
 
+    public void setHSBColor(HSBType hsb) {
+        this.dimming = hsb.getBrightness().intValue();
+        int rgbw[] = colorConverter.hsbToRgbw(hsb);
+        this.r = rgbw[0];
+        this.g = rgbw[1];
+        this.b = rgbw[2];
+        this.w = rgbw[3];
+        this.c = 0;
+    }
+
     public PercentType getTemperaturePercent() {
         if (getColorMode() == WizLightingColorMode.CTMode) {
             return new PercentType((temp - MIN_COLOR_TEMPERATURE) / COLOR_TEMPERATURE_RANGE * 100);
