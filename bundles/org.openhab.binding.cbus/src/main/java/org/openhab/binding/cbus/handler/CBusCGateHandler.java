@@ -235,6 +235,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 if (status == null)
                     return;
             }
+            logger.debug("ProcessStatusChange {}", status);
             String contents[] = status.split("#");
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
             LinkedList<String> commentTokenizer = new LinkedList<String>(Arrays.asList(contents[1].split("\\s+")));
@@ -372,7 +373,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         String[] addressParts = address.trim().replace("//", "").split("/");
         int application = Integer.parseInt(addressParts[2]);
         int group = Integer.parseInt(addressParts[3]);
-        updateGroup(addressParts[1], application, 3, value);
+        updateGroup(addressParts[1], application, group, value);
     }
 
     private void updateGroup(String network, int application, int group, String value) {
