@@ -20,7 +20,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -51,10 +50,10 @@ import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestPara
 import org.openhab.binding.wizlighting.internal.entities.SceneRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.SpeedRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.StateRequestParam;
-import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncState;
 import org.openhab.binding.wizlighting.internal.entities.SystemConfigResult;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncState;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingLightMode;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
@@ -92,8 +91,9 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     public WizLightingHandler(final Thing thing, final RegistrationRequestParam registrationPacket) {
         super(thing);
-        config = getConfigAs(WizLightingDeviceConfiguration.class);
+        this.config = getConfigAs(WizLightingDeviceConfiguration.class);
         this.registrationInfo = registrationPacket;
+        this.mostRecentState = new WizLightingSyncState();
         logger.trace("Created handler for WiZ bulb with IP {} and MAC address {}.", config.bulbIpAddress,
                 config.bulbMacAddress);
     }
@@ -104,6 +104,9 @@ public class WizLightingHandler extends BaseThingHandler {
 
         // Be patient...
         if (command instanceof RefreshType) {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                getPilot();
+            }
             return;
         }
 
@@ -224,20 +227,20 @@ public class WizLightingHandler extends BaseThingHandler {
 
     private void handleTemperatureCommand(PercentType temperature) {
         logger.trace("Setting bulb color temperature to {}%.", temperature.toString());
-        mostRecentState.temp =  temperature.intValue();
         setPilotCommand(new ColorTemperatureRequestParam(temperature));
+        mostRecentState.setTemperaturePercent(temperature);
     }
 
     private void handleIncreaseDecreaseTemperatureCommand(boolean isIncrease) {
-        int oldTemp = mostRecentState.temp;
-        int newTemp = 50;
+        int oldTempPct = mostRecentState.getTemperaturePercent().intValue();
+        int newTempPct = 50;
         if (isIncrease) {
-            newTemp = Math.min(100, oldTemp + 5);
+            newTempPct = Math.min(100, oldTempPct + 5);
         } else {
-            newTemp = Math.max(0, oldTemp - 5);
+            newTempPct = Math.max(0, oldTempPct - 5);
         }
-        logger.trace("Changing color temperature from {}% to {}%.", oldTemp, newTemp);
-        handleTemperatureCommand(new PercentType(newTemp));
+        logger.trace("Changing color temperature from {}% to {}%.", oldTempPct, newTempPct);
+        handleTemperatureCommand(new PercentType(newTempPct));
     }
 
     private void handleSpeedCommand(PercentType speed) {
@@ -301,8 +304,8 @@ public class WizLightingHandler extends BaseThingHandler {
                         config.bulbIpAddress, config.bulbMacAddress);
             }
         };
-        long update_interval_in_use = config.useHeartBeats ? 30 : config.updateInterval;
-        this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, update_interval_in_use, TimeUnit.SECONDS);
+        long updateIntervalInUse = config.useHeartBeats ? 30 : config.updateInterval;
+        this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateIntervalInUse, TimeUnit.SECONDS);
     }
 
     @Override

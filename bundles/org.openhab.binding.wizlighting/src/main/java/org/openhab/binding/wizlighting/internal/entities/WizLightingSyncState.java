@@ -137,6 +137,11 @@ public class WizLightingSyncState {
         }
     }
 
+    public void setTemperaturePercent(PercentType colorPercent) {
+        // NOTE: 0% is cold (highest K) and 100% is warm (lowest K)
+        this.temp = MAX_COLOR_TEMPERATURE - Math.round((COLOR_TEMPERATURE_RANGE * colorPercent.floatValue()) / 100);
+    }
+
     public int getDimming() {
         return this.dimming;
     }
