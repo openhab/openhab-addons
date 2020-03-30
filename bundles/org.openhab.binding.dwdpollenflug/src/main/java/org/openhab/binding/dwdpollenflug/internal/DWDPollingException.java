@@ -15,8 +15,7 @@ package org.openhab.binding.dwdpollenflug.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DWDPollenflugBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link DWDPollingException} class is the exception for all polling errors.
  *
  * @author Johannes DerOetzi Ott - Initial contribution
  */

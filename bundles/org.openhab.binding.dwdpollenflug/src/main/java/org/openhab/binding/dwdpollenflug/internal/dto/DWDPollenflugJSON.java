@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Class to hold Response of Http Request
+ * DTO for response of DWD request
  * 
  * @author Johannes DerOetzi Ott - Initial contribution
  */

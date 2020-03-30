@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Class to hold Response of Region
+ * DTO for data per region
  * 
  * @author Johannes DerOetzi Ott - Initial contribution
  */

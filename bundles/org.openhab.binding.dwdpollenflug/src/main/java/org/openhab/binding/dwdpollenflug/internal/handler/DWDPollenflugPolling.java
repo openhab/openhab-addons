@@ -17,7 +17,6 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -52,8 +51,6 @@ public class DWDPollenflugPolling implements Runnable {
 
     private final Gson gson;
 
-    private ReentrantLock pollingLock = new ReentrantLock();
-
     public DWDPollenflugPolling(DWDPollenflugBridgeHandler bridgeHandler, HttpClient client) {
         this.bridgeHandler = bridgeHandler;
         this.client = client;
@@ -62,8 +59,7 @@ public class DWDPollenflugPolling implements Runnable {
 
     @Override
     public void run() {
-        pollingLock.lock();
-        logger.debug("Polling.");
+        logger.debug("Polling");
         requestRefresh().handle((pollenflug, e) -> {
             if (pollenflug == null) {
                 if (e == null) {
@@ -76,7 +72,6 @@ public class DWDPollenflugPolling implements Runnable {
                 bridgeHandler.notifyOnUpdate(pollenflug);
             }
 
-            pollingLock.unlock();
             return null;
         });
     }
