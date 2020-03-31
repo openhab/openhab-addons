@@ -28,10 +28,13 @@ import com.google.gson.annotations.Expose;
 public class WizLightingRequest {
     @Expose(serialize = true, deserialize = true)
     private int id;
+
     @Expose(serialize = true, deserialize = true)
     private WizLightingMethodType method;
-    @Expose(serialize = false, deserialize = true)
+
+    @Expose(serialize = false, deserialize = false)
     private String methodName;
+
     @Expose(serialize = true, deserialize = false)
     private @Nullable Param params;
 
