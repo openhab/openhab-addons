@@ -49,7 +49,7 @@ public class WizLightingResponse {
     // The method being used - see the enum for details
     // We're setting this to "unknown"
     @Expose(serialize = true, deserialize = true)
-    private WizLightingMethodType method = WizLightingMethodType.unknownMethod;
+    private WizLightingMethodType method = WizLightingMethodType.UnknownMethod;
 
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)

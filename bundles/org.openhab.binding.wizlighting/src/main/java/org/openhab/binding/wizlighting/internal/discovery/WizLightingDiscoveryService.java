@@ -108,7 +108,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
             String outIpReal = outParam.getPhoneIp();
             String broadcastIp = outIpReal.substring(0, outIpReal.lastIndexOf(".")) + "255";
             InetAddress address = InetAddress.getByName(broadcastIp);
-            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.registration,
+            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.Registration,
                     this.mediator.getRegistrationParams());
             request.setId(0);
 

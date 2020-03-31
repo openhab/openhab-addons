@@ -31,7 +31,7 @@ public enum WizLightingMethodType {
      * {"method": "registration", "id": 1, "env": "pro", "result":
      * {"mac": "macOfopenHAB", "success": true}}
      */
-    registration("registration"),
+    Registration("registration"),
     /**
      * Pulse - tells the bulb to briely change brightness (by delta % for duration ms)
      * Example Request:
@@ -39,7 +39,7 @@ public enum WizLightingMethodType {
      * Example Response:
      * {"method": "pulse", "id": 22, "env": "pro", "result": {"success": true}}
      */
-    pulse("pulse"),
+    Pulse("pulse"),
     /**
      * setPilot - used to tell the bulb to change color/temp/state
      * Example Request:
@@ -47,7 +47,7 @@ public enum WizLightingMethodType {
      * Example Response:
      * {"method": "setPilot", "id": 24, "env": "pro", "result": {"success": true}}
      */
-    setPilot("setPilot"),
+    SetPilot("setPilot"),
     /**
      * getPilot - gets the current bulb state - no paramters need to be included
      * Example Request:
@@ -57,19 +57,19 @@ public enum WizLightingMethodType {
      * "a8bb508f570a", "rssi":-76, "state": true, "sceneId": 0, "temp": 2700,
      * "dimming": 42, "schdPsetId": 5}}
      */
-    getPilot("getPilot"),
+    GetPilot("getPilot"),
     /**
      * syncPilot - sent by the bulb as heart-beats
      * Example:
      * {"method": "syncPilot", "id": 218, "env": "pro", "params":
-     * { "mac": "bulbMacAddress", "rssi": -72, "src": "udp", "state": true, "sceneId": 0,
+     * { "mac": "theBulbMacAddress", "rssi": -72, "src": "udp", "state": true, "sceneId": 0,
      * "temp": 3362, "dimming": 69, "schdPsetId": 5}}
      * Another Example:
      * {"method": "syncPilot", "id": 219, "env": "pro", "params":
-     * { "mac": "bulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true,
+     * { "mac": "theBulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true,
      * "sceneId": 0, "temp": 3362, "dimming": 69, "schdPsetId": 5}}
      */
-    syncPilot("syncPilot"),
+    SyncPilot("syncPilot"),
     /**
      * getSystemConfig - gets the current system configuration - no paramters need
      * to be included
@@ -77,16 +77,16 @@ public enum WizLightingMethodType {
      * {"method": "getSystemConfig", "id": 24}
      * Example Response:
      * {"method": "getSystemConfig", "id": 22, "env": "pro",
-     * "result": {"mac": "bulbMacAddress", "homeId": xxxxxx, "roomId": xxxxxx,
+     * "result": {"mac": "theBulbMacAddress", "homeId": xxxxxx, "roomId": xxxxxx,
      * "homeLock": false, "pairingLock": false, "typeId": 0, "moduleName":
      * "ESP01_SHRGB1C_31", "fwVersion": "1.15.2", "groupId": 0, "drvConf":[33,1]}}
      */
-    getSystemConfig("getSystemConfig"),
+    GetSystemConfig("getSystemConfig"),
     /**
      * setSystemConfig - presumably sets up the system
      * I have NOT attempted to call this method
      */
-    setSystemConfig("setSystemConfig"),
+    SetSystemConfig("setSystemConfig"),
     /**
      * getWifiConfig - gets the current wifi configuration - no paramters need to be
      * included
@@ -96,22 +96,22 @@ public enum WizLightingMethodType {
      * {"method": "getWifiConfig", "id": 22, "env": "pro", "result":
      * {:["encryptedString"]}
      */
-    getWifiConfig("getWifiConfig"),
+    GetWifiConfig("getWifiConfig"),
     /**
      * setWifiConfig - presumably sets up the system I have NOT attempted to use this method
      */
-    setWifiConfig("setWifiConfig"),
+    SetWifiConfig("setWifiConfig"),
     /**
      * firstBeat - set by a bulb upon power up
      * Example:
      * {"method": "firstBeat", "id": 0, "env": "pro", "params":
-     * {"mac": "bulbMacAddress", "homeId": xxxxxx, "fwVersion": "1.15.2"}}
+     * {"mac": "theBulbMacAddress", "homeId": xxxxxx, "fwVersion": "1.15.2"}}
      */
-    firstBeat("firstBeat"),
+    FirstBeat("firstBeat"),
     /**
      * Unknown - using as a default for inproperly received responses
      */
-    unknownMethod("unknownMethod");
+    UnknownMethod("unknownMethod");
 
     private String method;
 

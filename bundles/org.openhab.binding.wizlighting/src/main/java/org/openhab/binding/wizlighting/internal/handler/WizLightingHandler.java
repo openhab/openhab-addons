@@ -331,7 +331,7 @@ public class WizLightingHandler extends BaseThingHandler {
 
     private synchronized void getPilot() {
         logger.trace("Requesting current state from bulb.");
-        WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
+        WizLightingResponse response = sendRequestPacket(WizLightingMethodType.GetPilot, null);
         if (response != null) {
             WizLightingSyncState rParam = response.getSyncState();
             if (rParam != null) {
@@ -490,7 +490,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * Sends a setPilot request and checks for success
      */
     private synchronized boolean setPilotCommand(final @Nullable Param param) {
-        WizLightingResponse response = sendRequestPacket(WizLightingMethodType.setPilot, param);
+        WizLightingResponse response = sendRequestPacket(WizLightingMethodType.SetPilot, param);
         if (response != null) {
             boolean setSucceeded = response.getResultSuccess();
             if (setSucceeded) {
@@ -515,7 +515,7 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private synchronized void updateBulbProperties() {
         logger.trace("Updating metadata for bulb at {}", config.bulbIpAddress);
-        WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.getSystemConfig, null);
+        WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.GetSystemConfig, null);
         if (registrationResponse != null) {
             SystemConfigResult responseResult = registrationResponse.getSystemConfigResults();
             if (responseResult != null) {
@@ -557,7 +557,7 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private synchronized void registerWithBulb() {
         logger.trace("Registering for updates with bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
-        WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
+        WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.Registration,
                 this.registrationInfo);
         if (registrationResponse != null) {
             if (registrationResponse.getResultSuccess()) {
