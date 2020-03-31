@@ -134,7 +134,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private void updateStripInformation() {
         if (config == null) {
-            logger.error("No config available, config object was null");
+            logger.warn("No config available, config object was null");
             return;
         }
         Status status = statusService.queryStatus(config.getSerialNumber(), config.getIpAddress());
