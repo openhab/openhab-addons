@@ -18,12 +18,9 @@ package org.openhab.binding.revogismartstripcontrol.internal.api;
  * @author Andi Bräu - Initial contribution
  */
 public class StatusRaw {
-    private int response;
-    private int code;
-    private Status data;
-
-    public StatusRaw() {
-    }
+    private final int response;
+    private final int code;
+    private final Status data;
 
     public StatusRaw(int response, int code, Status data) {
         this.response = response;

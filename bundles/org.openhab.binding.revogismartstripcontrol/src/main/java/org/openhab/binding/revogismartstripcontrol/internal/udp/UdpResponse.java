@@ -20,8 +20,8 @@ import java.util.Objects;
  * @author Andi Bräu - Initial contribution
  */
 public class UdpResponse {
-    private String answer;
-    private String ipAddress;
+    private final String answer;
+    private final String ipAddress;
 
     public UdpResponse(String answer, String ipAddress) {
         this.answer = answer;

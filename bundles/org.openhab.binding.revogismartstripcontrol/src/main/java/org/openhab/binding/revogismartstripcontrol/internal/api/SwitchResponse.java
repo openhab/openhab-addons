@@ -20,11 +20,8 @@ import java.util.Objects;
  * @author Andi Bräu - Initial contribution
  */
 public class SwitchResponse {
-    private int response;
-    private int code;
-
-    public SwitchResponse() {
-    }
+    private final int response;
+    private final int code;
 
     public SwitchResponse(int response, int code) {
         this.response = response;

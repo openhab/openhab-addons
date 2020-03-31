@@ -24,17 +24,22 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 public class Status {
-    private boolean online;
-    private int responseCode;
+    private final boolean online;
+    private final int responseCode;
     @SerializedName("switch")
-    private List<Integer> switchValue;
-    private List<Integer> watt;
-    private List<Integer> amp;
+    private final List<Integer> switchValue;
+    private final List<Integer> watt;
+    private final List<Integer> amp;
 
     public Status() {
+        online = false;
+        responseCode = 0;
+        switchValue = null;
+        watt = null;
+        amp = null;
     }
 
-    public Status(final boolean online, final int responseCode, List<Integer> switchValue, List<Integer> watt,
+    public Status(boolean online, int responseCode, List<Integer> switchValue, List<Integer> watt,
             List<Integer> amp) {
         this.online = online;
         this.responseCode = responseCode;

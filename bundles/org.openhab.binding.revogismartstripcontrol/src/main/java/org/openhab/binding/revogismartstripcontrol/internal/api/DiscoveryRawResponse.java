@@ -19,12 +19,9 @@ import java.util.Objects;
  */
 public class DiscoveryRawResponse {
 
-    private int response;
-    private DiscoveryResponse data;
+    private final int response;
+    private final DiscoveryResponse data;
     private String ipAddress;
-
-    public DiscoveryRawResponse() {
-    }
 
     public DiscoveryRawResponse(int response, DiscoveryResponse data) {
         this.response = response;

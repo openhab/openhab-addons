@@ -21,15 +21,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public class DiscoveryResponse {
     @SerializedName("sn")
-    private String serialNumber = "";
+    private final String serialNumber;
     @SerializedName("regid")
-    private String regId = "";
-    private String sak = "";
-    private String name = "";
+    private final String regId;
+    private final String sak;
+    private final String name;
     @SerializedName("mac")
-    private String macAddress = "";
+    private final String macAddress;
     @SerializedName("ver")
-    private String version = "";
+    private final String version;
 
     public DiscoveryResponse(String serialNumber, String regId, String sak, String name, String macAddress,
             String version) {
@@ -42,6 +42,12 @@ public class DiscoveryResponse {
     }
 
     public DiscoveryResponse() {
+        serialNumber = "";
+        regId = "";
+        sak = "";
+        name = "";
+        macAddress = "";
+        version = "";
     }
 
     public String getSerialNumber() {
