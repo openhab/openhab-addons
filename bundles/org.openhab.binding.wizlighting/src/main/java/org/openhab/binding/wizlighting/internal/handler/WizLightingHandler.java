@@ -38,6 +38,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -83,6 +84,9 @@ public class WizLightingHandler extends BaseThingHandler {
     private long latestUpdate = -1;
     private int requestId = 0;
 
+    private volatile boolean disposed;
+    private volatile boolean fullyInitialized;
+
     /**
      * Default constructor.
      *
@@ -92,18 +96,21 @@ public class WizLightingHandler extends BaseThingHandler {
         super(thing);
         this.registrationInfo = registrationPacket;
         this.mostRecentState = new WizLightingSyncState();
+        fullyInitialized = false;
         logger.trace("Created handler for WiZ bulb.");
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        if (hasConfigurationError() || disposed || !fullyInitialized) {
+            return;
+        }
+
         logger.trace("Received command on channel {}: {}", channelUID, command.toFullString());
 
         // Be patient...
         if (command instanceof RefreshType) {
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                getPilot();
-            }
+            getPilot();
             return;
         }
 
@@ -168,6 +175,8 @@ public class WizLightingHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
+        disposed = true;
+        fullyInitialized = false;
         // stop update thread
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
@@ -306,19 +315,25 @@ public class WizLightingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Beginning initialization for bulb");
+        logger.trace("Beginning initialization for WiZ bulb");
         this.config = getConfigAs(WizLightingDeviceConfiguration.class);
+        fullyInitialized = false;
+        disposed = false;
+
+        // set the thing status to UNKNOWN temporarily
         updateStatus(ThingStatus.UNKNOWN);
         if (ValidationUtils.isMacNotValid(config.bulbMacAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
         }
         updateBulbProperties();
         initGetStatusAndKeepAliveThread();
+        fullyInitialized = true;
         logger.debug("Finished initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
     }
 
     @Override
     public void dispose() {
+        disposed = true;
         // stop update thread
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
@@ -371,6 +386,10 @@ public class WizLightingHandler extends BaseThingHandler {
     private synchronized void updateStatesFromParams(final WizLightingSyncState receivedParam) {
         // Save the current state
         this.mostRecentState = receivedParam;
+
+        if (hasConfigurationError() || disposed) {
+            return;
+        }
 
         if (!receivedParam.state) {
             logger.trace("Light is off");
@@ -504,6 +523,9 @@ public class WizLightingHandler extends BaseThingHandler {
      * Makes note of the latest timestamps
      */
     private synchronized void updateTimestamps() {
+        if (hasConfigurationError() || disposed) {
+            return;
+        }
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
@@ -513,6 +535,9 @@ public class WizLightingHandler extends BaseThingHandler {
      * Asks the bulb for its current system configuration
      */
     private synchronized void updateBulbProperties() {
+        if (hasConfigurationError() || disposed) {
+            return;
+        }
         logger.trace("Updating metadata for bulb at {}", config.bulbIpAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.GetSystemConfig, null);
         if (registrationResponse != null) {
@@ -574,6 +599,12 @@ public class WizLightingHandler extends BaseThingHandler {
             // back any time
             updateStatus(ThingStatus.OFFLINE);
         }
+    }
+
+    private boolean hasConfigurationError() {
+        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        return statusInfo.getStatus() == ThingStatus.OFFLINE
+                && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
     }
 
     // SETTERS AND GETTERS
