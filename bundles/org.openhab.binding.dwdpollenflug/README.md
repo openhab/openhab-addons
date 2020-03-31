@@ -1,56 +1,194 @@
 # DWDPollenflug Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The "Deutsche Wetterdienst" reports on a daily base the current pollen count index for Germany and a forecast for tomorrow and day after tomorrow. This binding allows you to retrieve this data for your region or partregion. You can find a map of the data here: 
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.html
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+This binding supports a bridge thing, which polls the dataset for Germany in an adjustable interval. And it supports a region thing, representing the data for all pollen types of a region or partregion.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+### Bridge
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| Property | Default | Required | Description                                                                       |
+| -------- | :-----: | :------: | --------------------------------------------------------------------------------- |
+| refresh  |   30    |   yes    | Define the interval for polling the data from DWD in minutes. Minimum 15 minutes. |
+
+### Region
+
+| Property | Default | Required | Description                                                                                              |
+| -------- | :-----: | :------: | -------------------------------------------------------------------------------------------------------- |
+| regionID |    -    |   yes    | In PaperUI just select the region you want to display data for. For files-configuration see table below. |
+
+#### Manual region or partregion selection ####
+
+The region ID is the partregion_id or if there is no partregion the region_id from this [json](https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json) of the DWD. You can refer to following table.
+
+| regionID | Region                         | Partregion                                         |
+| -------- | ------------------------------ | -------------------------------------------------- |
+| 11       | Schleswig-Holstein und Hamburg | Inseln und Marschen                                |
+| 12       | Schleswig-Holstein und Hamburg | Geest, Schleswig-Holstein und Hamburg              |
+| 20       | Mecklenburg-Vorpommern         | -                                                  |
+| 31       | Niedersachsen und Bremen       | Westl. Niedersachsen/Bremen                        |
+| 32       | Niedersachsen und Bremen       | Östl. Niedersachsen                                |
+| 41       | Nordrhein-Westfalen            | Rhein.-Westfäl. Tiefland                           |
+| 42       | Nordrhein-Westfalen            | Ostwestfalen                                       |
+| 43       | Nordrhein-Westfalen            | Mittelgebirge NRW                                  |
+| 50       | Brandenburg und Berlin         | -                                                  |
+| 61       | Sachsen-Anhalt                 | Tiefland Sachsen-Anhalt                            |
+| 62       | Sachsen-Anhalt                 | Harz                                               |
+| 71       | Thüringen                      | Tiefland Thüringen                                 |
+| 72       | Thüringen                      | Mittelgebirge Thüringen                            |
+| 81       | Sachsen                        | Tiefland Sachsen                                   |
+| 82       | Sachsen                        | Mittelgebirge Sachsen                              |
+| 91       | Hessen                         | Nordhessen und hess. Mittelgebirge                 |
+| 92       | Hessen                         | Rhein-Main                                         |
+| 101      | Rheinland-Pfalz und Saarland   | Rhein, Pfalz, Nahe und Mosel                       |
+| 102      | Rheinland-Pfalz und Saarland   | Mittelgebirgsbereich Rheinland-Pfalz               |
+| 103      | Rheinland-Pfalz und Saarland   | Saarland                                           |
+| 111      | Baden-Württemberg              | Oberrhein und unteres Neckartal                    |
+| 112      | Baden-Württemberg              | Hohenlohe/mittlerer Neckar/Oberschwaben            |
+| 113      | Baden-Württemberg              | Mittelgebirge Baden-Württemberg                    |
+| 121      | Bayern                         | Allgäu/Oberbayern/Bay. Wald                        |
+| 122      | Bayern                         | Donauniederungen                                   |
+| 123      | Bayern                         | Bayern n. der Donau, o. Bayr. Wald, o. Mainfranken |
+| 124      | Bayern                         | Mainfranken                                        |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+For each of the eight pollen types reported by the DWD the region thing has three channels for today, tomorrow and day after tomorrow.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| channels             | pollen type | german name |
+| -------------------- | ----------- | ----------- |
+| alder#today          | alder       | Erle        |
+| alder#tomorrow       |             |             |
+| alder#dayafter_to    |             |             |
+| ambrosia#today       | ambrosia    | Ambrosia    |
+| ambrosia#tomorrow    |             |             |
+| ambrosia#dayafter_to |             |             |
+| ash#today            | ash-tree    | Esche       |
+| ash#tomorrow         |             |             |
+| ash#dayafter_to      |             |             |
+| birch#today          | birch       | Birke       |
+| birch#tomorrow       |             |             |
+| birch#dayafter_to    |             |             |
+| grasses#today        | grasses     | Gräser      |
+| grasses#tomorrow     |             |             |
+| grasses#dayafter_to  |             |             |
+| hazel#today          | hazel       | Hasel       |
+| hazel#tomorrow       |             |             |
+| hazel#dayafter_to    |             |             |
+| mugwort#today        | mugwort     | Beifuß      |
+| mugwort#tomorrow     |             |             |
+| mugwort#dayafter_to  |             |             |
+| rye#today            | rye         | Roggen      |
+| rye#tomorrow         |             |             |
+| rye#dayafter_to      |             |             |
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+There are following possible string values:
+
+| value | description                 |
+| ----- | --------------------------- |
+| -1    | not specified               |
+| 0     | no pollen pollution         |
+| 0-1   | no to low pollen count      |
+| 1     | low pollen count            |
+| 1-2   | low to medium pollen count  |
+| 2     | medium pollen count         |
+| 2-3   | medium to high pollen count |
+| 3     | high pollen count           |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### Things file for region "Brandenburg und Berlin" and partregion "Bayern - Mainfranken" ###
 
-## Any custom content here!
+```
+Bridge dwdpollenflug:bridge:dwd "DWD pollen count Bridge" [refresh="15"] {
+    Thing region region50 "DWD pollen count region" @ "APIS" [regionID="50"]
+    Thing region partregion124 "DWD pollen count partregion" @ "APIS" [regionID="124"]
+}
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### Items example for region "Brandenburg und Berlin" and pollen type ash ###
+
+```
+...
+
+String pollenTodayEsche
+    "Esche [MAP(pollen.map):%s]"
+    {channel="dwdpollenflug:region:dwd:region50:ash#today"}
+
+String pollenTomorrowEsche
+    "Esche morgen [MAP(pollen.map):%s]"
+    {channel="dwdpollenflug:region:dwd:region50:ash#tomorrow"}
+
+String pollenDayAfterTomorrowEsche
+    "Esche übermorgen [MAP(pollen.map):%s]"
+    {channel="dwdpollenflug:region:dwd:region50:ash#dayafter_to"}
+
+...
+```
+
+### Transform map file pollen.map ###
+
+```
+0=keine (0)
+0-1=keine bis gering (0-1)
+1=gering (1)
+1-2=gering bis mittel (1-2)
+2=mittel (2)
+2-3=mittel bis hoch (2-3)
+3=hoch (3)
+-1=keine Daten
+-=keine Daten
+NULL=keine Daten
+```
+
+### Sitemap example for region "Brandenburg und Berlin" and pollen type ash ###
+
+```
+Text label="Pollenflugindex" {
+    ...
+ 
+    Frame {
+        Text item=pollenTodayEsche
+            valuecolor=[=="3"="#f00014",
+                        =="2-3"="#f00014",
+                        =="2"="#ff9900",
+                        =="1-2"="#ff9900",
+                        =="1"="#ffff00",
+                        =="0-1"="#00c83c"] {
+            Frame {
+                Text item=pollenTodayEsche
+                    valuecolor=[=="3"="#f00014",
+                                =="2-3"="#f00014",
+                                =="2"="#ff9900",
+                                =="1-2"="#ff9900",
+                                =="1"="#ffff00",
+                                =="0-1"="#00c83c"] 
+
+                Text item=pollenTomorrowEsche
+                    valuecolor=[=="3"="#f00014",
+                                =="2-3"="#f00014",
+                                =="2"="#ff9900",
+                                =="1-2"="#ff9900",
+                                =="1"="#ffff00",
+                                =="0-1"="#00c83c"]
+
+                Text item=pollenDayAfterTomorrowEsche
+                    valuecolor=[=="3"="#f00014",
+                                =="2-3"="#f00014",
+                                =="2"="#ff9900",
+                                =="1-2"="#ff9900",
+                                =="1"="#ffff00",
+                                =="0-1"="#00c83c"]
+            }
+        }
+    }
+
+    ...
+}
+```
