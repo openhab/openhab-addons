@@ -448,15 +448,8 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
         ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                // "scenario" in the response determines whether "volume" is absolute or a delta value.
-                // it only makes sense to subscribe to changes in absolute volume
-                // accept: "mastervolume_tv_speaker" or "mastervolume_tv_speaker_ext" or
-                // "mastervolume_ext_speaker_lg_optical"
-                // ignore external amp/receiver: "mastervolume_ext_speaker_arc" or "mastervolume_ext_speaker_urcu_oss"
-                jsonObj -> jsonObj.get("scenario").getAsString().startsWith("mastervolume_tv_speaker")
-                        || "mastervolume_ext_speaker_lg_optical".equals(jsonObj.get("scenario").getAsString())
-                                ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
-                                : Float.NaN,
+                jsonObj -> jsonObj.get("volume").getAsInt() >= 0 ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                        : Float.NaN,
                 listener);
         sendCommand(request);
         return request;
@@ -464,15 +457,8 @@ public class LGWebOSTVSocket {
 
     public ServiceCommand<Float> getVolume(ResponseListener<Float> listener) {
         ServiceCommand<Float> request = new ServiceCommand<>(VOLUME, null,
-                // "scenario" in the response determines whether "volume" is absolute or a delta value.
-                // it only makes sense to subscribe to changes in absolute volume
-                // accept: "mastervolume_tv_speaker" or "mastervolume_tv_speaker_ext" or
-                // "mastervolume_ext_speaker_lg_optical"
-                // ignore external amp/receiver: "mastervolume_ext_speaker_arc" or "mastervolume_ext_speaker_urcu_oss"
-                jsonObj -> jsonObj.get("scenario").getAsString().startsWith("mastervolume_tv_speaker")
-                        || "mastervolume_ext_speaker_lg_optical".equals(jsonObj.get("scenario").getAsString())
-                                ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
-                                : Float.NaN,
+                jsonObj -> jsonObj.get("volume").getAsInt() >= 0 ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                        : Float.NaN,
                 listener);
         sendCommand(request);
         return request;
