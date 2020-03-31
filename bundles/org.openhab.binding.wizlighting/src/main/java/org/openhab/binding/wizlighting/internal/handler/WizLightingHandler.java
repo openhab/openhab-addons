@@ -325,7 +325,7 @@ public class WizLightingHandler extends BaseThingHandler {
             keepAliveJob.cancel(true);
             this.keepAliveJob = null;
         }
-        logger.debug("Handler for bulb at {} - {} disposed.", config.bulbIpAddress, config.bulbMacAddress);
+        logger.trace("Handler for bulb disposed.");
     }
 
     private synchronized void getPilot() {
