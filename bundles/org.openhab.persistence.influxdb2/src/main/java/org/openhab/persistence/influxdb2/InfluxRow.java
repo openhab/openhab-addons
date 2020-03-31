@@ -14,11 +14,14 @@ package org.openhab.persistence.influxdb2;
 
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Row data returned from database query
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault
 public class InfluxRow {
     private final String itemName;
     private final Instant time;

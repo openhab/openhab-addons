@@ -12,13 +12,15 @@
  */
 package org.openhab.persistence.influxdb2.internal;
 
-import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.*;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_CATEGORY_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_ITEM_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_LABEL_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_TYPE_NAME;
 
 import java.time.Instant;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -29,10 +31,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.influxdb2.InfluxDB2PersistenceService;
 
-import com.influxdb.client.write.Point;
-
 /**
- * Logic to create an InfluxDB {@link Point} from an openHAB {@link Item}
+ * Logic to create an InfluxDB {@link InfluxPoint} from an openHAB {@link Item}
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
@@ -64,7 +64,6 @@ public class ItemToStorePointCreator {
         addPointTags(item, point);
 
         return point.build();
-
     }
 
     @SuppressWarnings("null")
@@ -84,7 +83,7 @@ public class ItemToStorePointCreator {
     }
 
     private State getItemState(Item item) {
-        final @NonNull State state;
+        final State state;
         final Class<? extends State> desiredConversion = calculateDesiredTypeConversionToStore(item);
         if (desiredConversion != null) {
             State convertedState = item.getStateAs(desiredConversion);
@@ -133,5 +132,4 @@ public class ItemToStorePointCreator {
             }
         }
     }
-
 }

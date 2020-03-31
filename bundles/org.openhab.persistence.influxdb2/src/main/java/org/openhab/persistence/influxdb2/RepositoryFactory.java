@@ -12,9 +12,11 @@
  */
 package org.openhab.persistence.influxdb2;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.persistence.influxdb2.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb2.internal.InfluxDB2Repository;
 import org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration;
+import org.openhab.persistence.influxdb2.internal.UnnexpectedConditionException;
 import org.openhab.persistence.influxdb2.internal.influx1.Influx1FilterCriteriaQueryCreatorImpl;
 import org.openhab.persistence.influxdb2.internal.influx1.InfluxDB1RepositoryImpl;
 import org.openhab.persistence.influxdb2.internal.influx2.Influx2FilterCriteriaQueryCreatorImpl;
@@ -26,6 +28,7 @@ import org.openhab.persistence.influxdb2.internal.influx2.InfluxDB2RepositoryImp
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault
 public class RepositoryFactory {
 
     public static InfluxDB2Repository createRepository(InfluxDBConfiguration influxDBConfiguration) {
@@ -35,7 +38,7 @@ public class RepositoryFactory {
             case V2:
                 return new InfluxDB2RepositoryImpl(influxDBConfiguration);
             default:
-                throw new RuntimeException("Not expected version " + influxDBConfiguration.getVersion());
+                throw new UnnexpectedConditionException("Not expected version " + influxDBConfiguration.getVersion());
         }
     }
 
@@ -46,7 +49,7 @@ public class RepositoryFactory {
             case V2:
                 return new Influx2FilterCriteriaQueryCreatorImpl();
             default:
-                throw new RuntimeException("Not expected version " + influxDBConfiguration.getVersion());
+                throw new UnnexpectedConditionException("Not expected version " + influxDBConfiguration.getVersion());
         }
     }
 }

@@ -12,7 +12,12 @@
  */
 package org.openhab.persistence.influxdb2;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,12 +27,28 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.persistence.*;
+import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.PersistenceItemInfo;
+import org.openhab.core.persistence.PersistenceService;
+import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
-import org.openhab.persistence.influxdb2.internal.*;
+import org.openhab.persistence.influxdb2.internal.InfluxDB2Repository;
+import org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration;
+import org.openhab.persistence.influxdb2.internal.InfluxDBHistoricItem;
+import org.openhab.persistence.influxdb2.internal.InfluxDBPersistentItemInfo;
+import org.openhab.persistence.influxdb2.internal.InfluxDBStateConvertUtils;
+import org.openhab.persistence.influxdb2.internal.InfluxPoint;
+import org.openhab.persistence.influxdb2.internal.ItemToStorePointCreator;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,5 +252,4 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE);
     }
-
 }

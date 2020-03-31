@@ -16,7 +16,9 @@
 
 	<properties>
 		<!--Don't need to import is wrapped inside package-->
-		<bnd.importpackage>!javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*</bnd.importpackage>
+		<bnd.importpackage>
+			!javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*
+		</bnd.importpackage>
 	</properties>
 
 	<dependencies>

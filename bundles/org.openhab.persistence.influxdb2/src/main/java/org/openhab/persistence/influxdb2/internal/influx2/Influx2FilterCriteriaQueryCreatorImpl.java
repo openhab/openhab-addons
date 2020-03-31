@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.persistence.influxdb2.internal.influx2;
 
-import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.*;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.COLUMN_TIME_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.COLUMN_VALUE_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_ITEM_NAME;
 import static org.openhab.persistence.influxdb2.internal.InfluxDBStateConvertUtils.stateToString;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,5 +65,4 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         return flux.toString();
     }
-
 }

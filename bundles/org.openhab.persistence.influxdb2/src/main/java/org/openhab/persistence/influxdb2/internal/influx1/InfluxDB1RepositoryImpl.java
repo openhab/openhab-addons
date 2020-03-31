@@ -34,6 +34,7 @@ import org.openhab.persistence.influxdb2.InfluxRow;
 import org.openhab.persistence.influxdb2.internal.InfluxDB2Repository;
 import org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb2.internal.InfluxPoint;
+import org.openhab.persistence.influxdb2.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,9 +96,8 @@ public class InfluxDB1RepositoryImpl implements InfluxDB2Repository {
     @Override
     public boolean checkConnectionStatus() {
         boolean dbStatus = false;
-        if (client == null) {
-            logger.error("checkConnection: database is not connected");
-        } else {
+        final InfluxDB currentClient = client;
+        if (currentClient != null) {
             try {
                 Pong pong = client.ping();
                 String version = pong.getVersion();
@@ -115,6 +115,8 @@ public class InfluxDB1RepositoryImpl implements InfluxDB2Repository {
                 logger.error("database connection failed", e);
                 handleDatabaseException(e);
             }
+        } else {
+            logger.error("checkConnection: database is not connected");
         }
         return dbStatus;
     }
@@ -164,7 +166,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDB2Repository {
         else if (value == null)
             point.addField(COLUMN_VALUE_NAME, (String) null);
         else
-            throw new RuntimeException("Not expected value type");
+            throw new UnnexpectedConditionException("Not expected value type");
     }
 
     /**
@@ -206,25 +208,27 @@ public class InfluxDB1RepositoryImpl implements InfluxDB2Repository {
                     } else {
                         List<String> columns = series.getColumns();
                         logger.trace("columns {}", columns);
-                        Integer timestampColumn = null;
-                        Integer valueColumn = null;
-                        for (int i = 0; i < columns.size(); i++) {
-                            String columnName = columns.get(i);
-                            if (columnName.equals(COLUMN_TIME_NAME)) {
-                                timestampColumn = i;
-                            } else if (columnName.equals(COLUMN_VALUE_NAME)) {
-                                valueColumn = i;
+                        if (columns != null) {
+                            Integer timestampColumn = null;
+                            Integer valueColumn = null;
+                            for (int i = 0; i < columns.size(); i++) {
+                                String columnName = columns.get(i);
+                                if (columnName.equals(COLUMN_TIME_NAME)) {
+                                    timestampColumn = i;
+                                } else if (columnName.equals(COLUMN_VALUE_NAME)) {
+                                    valueColumn = i;
+                                }
                             }
-                        }
-                        if (valueColumn == null || timestampColumn == null) {
-                            throw new IllegalStateException("missing column");
-                        }
-                        for (int i = 0; i < valuess.size(); i++) {
-                            Double rawTime = (Double) valuess.get(i).get(timestampColumn);
-                            Instant time = Instant.ofEpochMilli(rawTime.longValue());
-                            Object value = valuess.get(i).get(valueColumn);
-                            logger.trace("adding historic item {}: time {} value {}", itemName, time, value);
-                            rows.add(new InfluxRow(time, itemName, value));
+                            if (valueColumn == null || timestampColumn == null) {
+                                throw new IllegalStateException("missing column");
+                            }
+                            for (int i = 0; i < valuess.size(); i++) {
+                                Double rawTime = (Double) valuess.get(i).get(timestampColumn);
+                                Instant time = Instant.ofEpochMilli(rawTime.longValue());
+                                Object value = valuess.get(i).get(valueColumn);
+                                logger.trace("adding historic item {}: time {} value {}", itemName, time, value);
+                                rows.add(new InfluxRow(time, itemName, value));
+                            }
                         }
                     }
                 }
@@ -242,5 +246,4 @@ public class InfluxDB1RepositoryImpl implements InfluxDB2Repository {
     public Map<String, Integer> getStoredItemsCount() {
         return Collections.emptyMap();
     }
-
 }

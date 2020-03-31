@@ -12,7 +12,9 @@
  */
 package org.openhab.persistence.influxdb2.internal.influx2;
 
-import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.*;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.COLUMN_TIME_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.COLUMN_VALUE_NAME;
+import static org.openhab.persistence.influxdb2.internal.InfluxDBConstants.TAG_ITEM_NAME;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import org.openhab.persistence.influxdb2.internal.InfluxDB2Repository;
 import org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb2.internal.InfluxDBConstants;
 import org.openhab.persistence.influxdb2.internal.InfluxPoint;
+import org.openhab.persistence.influxdb2.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +168,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDB2Repository {
         else if (value == null)
             point.addField(COLUMN_VALUE_NAME, (String) null);
         else
-            throw new RuntimeException("Not expected value type");
+            throw new UnnexpectedConditionException("Not expected value type");
     }
 
     /**

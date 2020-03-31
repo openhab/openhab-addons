@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.influxdb2.internal.influx1;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb2.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault
 public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
     private final Logger logger = LoggerFactory.getLogger(Influx1FilterCriteriaQueryCreatorImpl.class);
     private final InfluxDBConfiguration configuration;
@@ -50,26 +52,24 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         logger.trace(
                 "Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                 filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
-                filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
+                filter.getBeginDateZoned(), filter.getEndDateZoned(), filter.getPageSize(), filter.getPageNumber());
 
-        if ((filter.getState() != null && filter.getOperator() != null) || filter.getBeginDate() != null
-                || filter.getEndDate() != null) {
+        if ((filter.getState() != null && filter.getOperator() != null) || filter.getBeginDateZoned() != null
+                || filter.getEndDateZoned() != null) {
             query.append(" where ");
             boolean foundState = false;
             boolean foundBeginDate = false;
             if (filter.getState() != null && filter.getOperator() != null) {
                 String value = InfluxDBStateConvertUtils.stateToString(filter.getState());
-                if (value != null) {
-                    foundState = true;
-                    query.append(InfluxDBConstants.COLUMN_VALUE_NAME);
-                    query.append(" ");
-                    query.append(filter.getOperator().toString());
-                    query.append(" ");
-                    query.append(value);
-                }
+                foundState = true;
+                query.append(InfluxDBConstants.COLUMN_VALUE_NAME);
+                query.append(" ");
+                query.append(filter.getOperator().toString());
+                query.append(" ");
+                query.append(value);
             }
 
-            if (filter.getBeginDate() != null) {
+            if (filter.getBeginDateZoned() != null) {
                 foundBeginDate = true;
                 if (foundState) {
                     query.append(" and");
@@ -77,18 +77,18 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
                 query.append(" ");
                 query.append(InfluxDBConstants.COLUMN_TIME_NAME);
                 query.append(" > ");
-                query.append(getTimeFilter(filter.getBeginDate()));
+                query.append(getTimeFilter(filter.getBeginDateZoned()));
                 query.append(" ");
             }
 
-            if (filter.getEndDate() != null) {
+            if (filter.getEndDateZoned() != null) {
                 if (foundState || foundBeginDate) {
                     query.append(" and");
                 }
                 query.append(" ");
                 query.append(InfluxDBConstants.COLUMN_TIME_NAME);
                 query.append(" < ");
-                query.append(getTimeFilter(filter.getEndDate()));
+                query.append(getTimeFilter(filter.getEndDateZoned()));
                 query.append(" ");
             }
         }
@@ -113,10 +113,10 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         return queryString;
     }
 
-    private String getTimeFilter(Date time) {
+    private String getTimeFilter(ZonedDateTime time) {
         // for some reason we need to query using 'seconds' only
         // passing milli seconds causes no results to be returned
-        long milliSeconds = time.getTime();
+        long milliSeconds = time.toInstant().toEpochMilli();
         long seconds = milliSeconds / 1000;
         return seconds + "s";
     }

@@ -13,18 +13,21 @@
 package org.openhab.persistence.influxdb2.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.types.DecimalType;
 
 /**
+ * Throw to indicate an unnexpected condition that should not have happened (a bug)
+ *
  * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
-public class ItemTestHelper {
+public class UnnexpectedConditionException extends RuntimeException {
+    private static final long serialVersionUID = 1128380327167959556L;
 
-    public static NumberItem createNumberItem(String name, int value) {
-        NumberItem numberItem = new NumberItem(name);
-        numberItem.setState(new DecimalType(value));
-        return numberItem;
+    public UnnexpectedConditionException(String message) {
+        super(message);
+    }
+
+    public UnnexpectedConditionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

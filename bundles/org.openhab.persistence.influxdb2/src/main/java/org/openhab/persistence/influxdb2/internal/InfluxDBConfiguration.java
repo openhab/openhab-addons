@@ -110,7 +110,7 @@ public class InfluxDBConfiguration {
         if (valid) {
             return true;
         } else {
-            String msg = "InfluxDB configuration isn't valid. Addon wont' work: ";
+            String msg = "InfluxDB configuration isn't valid. Addon won't work: ";
             StringJoiner reason = new StringJoiner(",");
             if (!hasVersion) {
                 reason.add("Unknown version");
@@ -122,7 +122,7 @@ public class InfluxDBConfiguration {
                 if (!hasRetentionPolicy)
                     reason.add("No retention policy / bucket defined");
             }
-            logger.warn(msg + reason.toString());
+            logger.warn("{} {}", msg, reason.toString());
             return false;
         }
     }

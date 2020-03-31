@@ -13,12 +13,18 @@
 package org.openhab.persistence.influxdb2.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.DefaultLocation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +41,7 @@ import org.openhab.persistence.influxdb2.InfluxDB2PersistenceService;
  * @author Joan Pujol Espinar - Initial contribution
  */
 @SuppressWarnings("null") // In case of any NPE it will cause test fail that it's the expected result
+@NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
 public class ItemToStorePointCreatorTest {
     @Mock
     private InfluxDBConfiguration influxDBConfiguration;
@@ -130,5 +137,4 @@ public class ItemToStorePointCreatorTest {
         assertThat(point.getTags(), hasEntry("key1", "val1"));
         assertThat(point.getTags(), hasEntry("key2", "val2"));
     }
-
 }

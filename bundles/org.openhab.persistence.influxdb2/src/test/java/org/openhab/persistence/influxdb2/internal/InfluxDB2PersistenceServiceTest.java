@@ -13,10 +13,14 @@
 package org.openhab.persistence.influxdb2.internal;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.DefaultLocation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
@@ -29,6 +33,7 @@ import org.openhab.persistence.influxdb2.InfluxDB2PersistenceService;
 /**
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
 public class InfluxDB2PersistenceServiceTest {
     private InfluxDB2PersistenceService instance;
     @Mock

@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
@@ -34,6 +35,7 @@ import org.openhab.core.library.types.OpenClosedType;
 /**
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault
 public class InfluxDBStateConvertUtilsTest {
 
     @Test

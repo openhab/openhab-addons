@@ -17,11 +17,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Point data to be stored in InfluxDB
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault({}) // To avoid warnings and be able to use .orElse setting tag values
 public class InfluxPoint {
     private String measurementName;
     private Instant time;
@@ -61,6 +64,7 @@ public class InfluxPoint {
         return Collections.unmodifiableMap(fields);
     }
 
+    @NonNullByDefault({})
     public static final class Builder {
         private String measurementName;
         private Instant time;
