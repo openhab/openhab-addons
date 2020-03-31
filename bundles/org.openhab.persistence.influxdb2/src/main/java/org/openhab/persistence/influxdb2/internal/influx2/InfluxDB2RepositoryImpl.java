@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.influxdb2.InfluxRow;
@@ -79,9 +80,14 @@ public class InfluxDB2RepositoryImpl implements InfluxDB2Repository {
      */
     @Override
     public boolean connect() {
-        InfluxDBClientOptions clientOptions = InfluxDBClientOptions.builder().url(configuration.getUrl())
-                .authenticateToken(configuration.getTokenAsCharArray()).org(configuration.getOrganization())
-                .bucket(configuration.getBucket()).build();
+        InfluxDBClientOptions.Builder optionsBuilder = InfluxDBClientOptions.builder().url(configuration.getUrl())
+                .org(configuration.getDatabaseName()).bucket(configuration.getRetentionPolicy());
+        if (StringUtils.isNotBlank("token")) {
+            optionsBuilder.authenticateToken(configuration.getTokenAsCharArray());
+        } else {
+            optionsBuilder.authenticate(configuration.getUser(), configuration.getPassword().toCharArray());
+        }
+        InfluxDBClientOptions clientOptions = optionsBuilder.build();
 
         final InfluxDBClient createdClient = InfluxDBClientFactory.create(clientOptions);
         this.client = createdClient;
@@ -143,10 +149,23 @@ public class InfluxDB2RepositoryImpl implements InfluxDB2Repository {
 
     private Point convertPointToClientFormat(InfluxPoint point) {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
-
+        setPointValue(point.getValue(), clientPoint);
         point.getTags().entrySet().forEach(e -> clientPoint.addTag(e.getKey(), e.getValue()));
         point.getFields().entrySet().forEach(e -> clientPoint.addField(e.getKey(), e.getValue()));
         return clientPoint;
+    }
+
+    private void setPointValue(@Nullable Object value, Point point) {
+        if (value instanceof String)
+            point.addField(COLUMN_VALUE_NAME, (String) value);
+        else if (value instanceof Number)
+            point.addField(COLUMN_VALUE_NAME, (Number) value);
+        else if (value instanceof Boolean)
+            point.addField(COLUMN_VALUE_NAME, (Boolean) value);
+        else if (value == null)
+            point.addField(COLUMN_VALUE_NAME, (String) null);
+        else
+            throw new RuntimeException("Not expected value type");
     }
 
     /**
@@ -192,9 +211,10 @@ public class InfluxDB2RepositoryImpl implements InfluxDB2Repository {
         if (currentQueryAPI != null) {
             Map<String, Integer> result = new LinkedHashMap<>();
             // Query wrote by hand https://github.com/influxdata/influxdb-client-java/issues/75
-            String query = "from(bucket: \"" + configuration.getBucket() + "\")\n" + "  |> range(start:-365d)\n"
-                    + "  |> filter(fn: (r) => exists r." + TAG_ITEM_NAME + " )\n" + "  |> group(columns: [\""
-                    + TAG_ITEM_NAME + "\"], mode:\"by\")\n" + "  |> count()\n" + "  |> group()";
+            String query = "from(bucket: \"" + configuration.getRetentionPolicy() + "\")\n"
+                    + "  |> range(start:-365d)\n" + "  |> filter(fn: (r) => exists r." + TAG_ITEM_NAME + " )\n"
+                    + "  |> group(columns: [\"" + TAG_ITEM_NAME + "\"], mode:\"by\")\n" + "  |> count()\n"
+                    + "  |> group()";
 
             List<FluxTable> queryResult = currentQueryAPI.query(query);
             queryResult.stream().findFirst().orElse(new FluxTable()).getRecords().forEach(row -> {

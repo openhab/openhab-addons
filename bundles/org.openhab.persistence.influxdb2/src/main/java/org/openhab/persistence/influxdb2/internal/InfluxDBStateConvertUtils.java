@@ -24,23 +24,8 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.ColorItem;
-import org.openhab.core.library.items.ContactItem;
-import org.openhab.core.library.items.DateTimeItem;
-import org.openhab.core.library.items.DimmerItem;
-import org.openhab.core.library.items.LocationItem;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.RollershutterItem;
-import org.openhab.core.library.items.SwitchItem;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PointType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.items.*;
+import org.openhab.core.library.types.*;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +100,7 @@ public class InfluxDBStateConvertUtils {
      * Converts a value to a {@link State} which is suitable for the given {@link Item}. This is
      * needed for querying a {@link InfluxDBHistoricItem}.
      *
-     * @param value to be converted to a {@link State}
+     * @param value    to be converted to a {@link State}
      * @param itemName name of the {@link Item} to get the {@link State} for
      * @return the state of the item represented by the itemName parameter, else the string value of
      *         the Object parameter

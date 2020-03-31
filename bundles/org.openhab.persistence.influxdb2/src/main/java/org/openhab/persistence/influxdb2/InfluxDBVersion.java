@@ -19,5 +19,6 @@ package org.openhab.persistence.influxdb2;
  */
 public enum InfluxDBVersion {
     V1,
-    V2
+    V2,
+    UNKNOWN
 }

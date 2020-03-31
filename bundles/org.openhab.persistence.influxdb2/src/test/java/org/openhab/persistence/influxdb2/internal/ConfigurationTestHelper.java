@@ -17,6 +17,8 @@ import static org.openhab.persistence.influxdb2.internal.InfluxDBConfiguration.*
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openhab.persistence.influxdb2.InfluxDBVersion;
+
 /**
  * @author Joan Pujol Espinar - Initial contribution
  */
@@ -25,9 +27,10 @@ public class ConfigurationTestHelper {
     public static Map<String, Object> createValidConfigurationParameters() {
         Map<String, Object> config = new HashMap<>();
         config.put(URL_PARAM, "http://localhost:9999");
+        config.put(VERSION_PARAM, InfluxDBVersion.V2.name());
         config.put(TOKEN_PARAM, "sampletoken");
-        config.put(ORGANIZATION_PARAM, "openhab");
-        config.put(BUCKET_PARAM, "default");
+        config.put(DATABASE_PARAM, "openhab");
+        config.put(RETENTION_POLICY_PARAM, "default");
         return config;
     }
 

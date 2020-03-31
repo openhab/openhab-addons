@@ -12,12 +12,7 @@
  */
 package org.openhab.persistence.influxdb2;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,22 +22,12 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.persistence.FilterCriteria;
-import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.persistence.PersistenceItemInfo;
-import org.openhab.core.persistence.PersistenceService;
-import org.openhab.core.persistence.QueryablePersistenceService;
+import org.openhab.core.persistence.*;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb2.internal.*;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +76,7 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
             influxDBRepository = createInfluxDBRepository();
             influxDBRepository.connect();
         } else {
-            logger.error("Cannot load configuration, persistence service won't work");
+            logger.error("Cannot load configuration, persistence service wont work");
         }
 
         logger.debug("InfluxDB persistence service is now activated");
@@ -157,7 +142,7 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
-        if (influxDBRepository.isConnected()) {
+        if (influxDBRepository != null && influxDBRepository.isConnected()) {
             return influxDBRepository.getStoredItemsCount().entrySet().stream()
                     .map(entry -> new InfluxDBPersistentItemInfo(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toSet());
@@ -174,7 +159,7 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        if (influxDBRepository.isConnected()) {
+        if (influxDBRepository != null && influxDBRepository.isConnected()) {
             InfluxPoint point = itemToStorePointCreator.convert(item, alias);
             if (point != null) {
                 logger.trace("Storing item {} in InfluxDB point {}", item, point);
@@ -191,14 +176,14 @@ public class InfluxDB2PersistenceService implements QueryablePersistenceService 
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         logger.debug("Got a query for historic points!");
 
-        if (influxDBRepository.isConnected()) {
+        if (influxDBRepository != null && influxDBRepository.isConnected()) {
             logger.trace(
                     "Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDateZoned(), filter.getEndDateZoned(), filter.getPageSize(), filter.getPageNumber());
 
             String query = RepositoryFactory.createQueryCreator(configuration).createQuery(filter,
-                    configuration.getBucket());
+                    configuration.getRetentionPolicy());
             List<InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());
         } else {

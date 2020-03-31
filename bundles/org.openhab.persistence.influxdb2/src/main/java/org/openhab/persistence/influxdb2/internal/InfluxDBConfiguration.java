@@ -14,11 +14,14 @@ package org.openhab.persistence.influxdb2.internal;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.influxdb2.InfluxDBVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains this addon configurable parameters
@@ -29,18 +32,23 @@ import org.openhab.persistence.influxdb2.InfluxDBVersion;
 public class InfluxDBConfiguration {
     public static final String URL_PARAM = "url";
     public static final String TOKEN_PARAM = "token";
-    public static final String ORGANIZATION_PARAM = "organization";
-    public static final String BUCKET_PARAM = "bucket";
+    public static final String USER_PARAM = "user";
+    public static final String PASSWORD_PARAM = "password";
+    public static final String DATABASE_PARAM = "db";
+    public static final String RETENTION_POLICY_PARAM = "retentionPolicy";
+    public static final String VERSION_PARAM = "version";
     public static final String REPLACE_UNDERSCORE_PARAM = "replaceUnderscore";
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
-
     public static InfluxDBConfiguration NO_CONFIGURATION = new InfluxDBConfiguration(Collections.emptyMap());
+    private final Logger logger = LoggerFactory.getLogger(InfluxDBConfiguration.class);
     private String url;
+    private String user;
+    private String password;
     private String token;
-    private String organization;
-    private String bucket;
+    private String databaseName;
+    private String retentionPolicy;
     private InfluxDBVersion version;
 
     private boolean replaceUnderscore;
@@ -51,10 +59,12 @@ public class InfluxDBConfiguration {
     @SuppressWarnings("null")
     public InfluxDBConfiguration(Map<String, @Nullable Object> config) {
         url = (String) config.getOrDefault(URL_PARAM, "http://127.0.0.1:9999");
+        user = (String) config.getOrDefault(USER_PARAM, "");
+        password = (String) config.getOrDefault(PASSWORD_PARAM, "");
         token = (String) config.getOrDefault(TOKEN_PARAM, "");
-        organization = (String) config.getOrDefault(ORGANIZATION_PARAM, "openhab");
-        bucket = (String) config.getOrDefault(BUCKET_PARAM, "default");
-        version = InfluxDBVersion.V2;
+        databaseName = (String) config.getOrDefault(DATABASE_PARAM, "openhab");
+        retentionPolicy = (String) config.getOrDefault(RETENTION_POLICY_PARAM, "default");
+        version = parseInfluxVersion(config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
 
         replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);
         addCategoryTag = getConfigBooleanValue(config, ADD_CATEGORY_TAG_PARAM, false);
@@ -75,9 +85,46 @@ public class InfluxDBConfiguration {
         }
     }
 
+    private InfluxDBVersion parseInfluxVersion(@Nullable Object value) {
+        try {
+            return InfluxDBVersion.valueOf((String) value);
+        } catch (RuntimeException e) {
+            logger.warn("Invalid version {}", value);
+            return InfluxDBVersion.UNKNOWN;
+        }
+    }
+
     public boolean isValid() {
-        return StringUtils.isNotBlank(url) && StringUtils.isNotBlank(token) && StringUtils.isNotBlank(organization)
-                && StringUtils.isNotBlank(bucket);
+        boolean hasVersion = version != InfluxDBVersion.UNKNOWN;
+        boolean hasCredentials = false;
+        if (version == InfluxDBVersion.V1) {
+            hasCredentials = StringUtils.isNotBlank(user) && StringUtils.isNotBlank(password);
+        } else if (version == InfluxDBVersion.V2) {
+            hasCredentials = StringUtils.isNotBlank(token)
+                    || (StringUtils.isNotBlank(user) && StringUtils.isNotBlank(password));
+        }
+        boolean hasDatabase = StringUtils.isNotBlank(databaseName);
+        boolean hasRetentionPolicy = StringUtils.isNotBlank(retentionPolicy);
+
+        boolean valid = hasVersion && hasCredentials && hasDatabase && hasRetentionPolicy;
+        if (valid) {
+            return true;
+        } else {
+            String msg = "InfluxDB configuration isn't valid. Addon wont' work: ";
+            StringJoiner reason = new StringJoiner(",");
+            if (!hasVersion) {
+                reason.add("Unknown version");
+            } else {
+                if (!hasCredentials)
+                    reason.add("No credentials");
+                if (!hasDatabase)
+                    reason.add("No database name / organization defined");
+                if (!hasRetentionPolicy)
+                    reason.add("No retention policy / bucket defined");
+            }
+            logger.warn(msg + reason.toString());
+            return false;
+        }
     }
 
     public String getUrl() {
@@ -88,12 +135,12 @@ public class InfluxDBConfiguration {
         return token;
     }
 
-    public String getOrganization() {
-        return organization;
+    public String getDatabaseName() {
+        return databaseName;
     }
 
-    public String getBucket() {
-        return bucket;
+    public String getRetentionPolicy() {
+        return retentionPolicy;
     }
 
     public boolean isReplaceUnderscore() {
@@ -112,16 +159,26 @@ public class InfluxDBConfiguration {
         return addLabelTag;
     }
 
+    public String getUser() {
+        return user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public InfluxDBVersion getVersion() {
         return version;
     }
 
     @Override
     public String toString() {
-        return "Configuration{" + "url='" + url + '\'' + ", token='" + token + '\'' + ", organization='" + organization
-                + '\'' + ", bucket='" + bucket + '\'' + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag="
-                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + ", version="
-                + version + '}';
+        String sb = "InfluxDBConfiguration{" + "url='" + url + '\'' + ", user='" + user + '\'' + ", password='"
+                + password.length() + " chars" + '\'' + ", token='" + token.length() + " chars" + '\''
+                + ", databaseName='" + databaseName + '\'' + ", retentionPolicy='" + retentionPolicy + '\''
+                + ", version=" + version + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag="
+                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + '}';
+        return sb;
     }
 
     public int getTokenLength() {

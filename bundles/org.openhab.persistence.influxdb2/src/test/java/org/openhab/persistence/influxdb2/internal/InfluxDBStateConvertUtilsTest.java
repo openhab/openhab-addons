@@ -13,7 +13,8 @@
 package org.openhab.persistence.influxdb2.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.math.BigDecimal;
 import java.time.Instant;
