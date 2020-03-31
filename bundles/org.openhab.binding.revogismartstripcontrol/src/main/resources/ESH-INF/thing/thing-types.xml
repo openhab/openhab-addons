@@ -46,6 +46,7 @@
 			<parameter name="ipAddress" type="text">
 				<label>IP Address</label>
 				<description>IP Address of your smart strip</description>
+				<context>network-address</context>
 			</parameter>
 		</config-description>
 
