@@ -141,7 +141,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @param bulbIpAddress the host address from the device.
      */
     public void discoveredLight(final String lightMacAddress, final String lightIpAddress) {
-        Map<String, Object> properties = new HashMap<>(1);
+        Map<String, Object> properties = new HashMap<>(2);
         properties.put(CONFIG_MAC_ADDRESS, lightMacAddress);
         properties.put(CONFIG_IP_ADDRESS, lightIpAddress);
 
