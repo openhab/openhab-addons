@@ -17,7 +17,7 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="5">
-			<label>Update interval</label>
+			<label>Update Interval</label>
 			<description>Update time interval in seconds to request the status of the bulb.</description>
 			<default>60</default>
 			<advanced>true</advanced>
