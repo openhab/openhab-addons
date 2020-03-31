@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="radiothermostat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- RadioThemostat Thing -->
+	<thing-type id="rtherm">
+		<label>Thermostat</label>
+		<description>
+			A Thermostat to control the house's HVAC system
+		</description>
+
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="model" typeId="model" />
+			<channel id="temperature" typeId="temp-temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="mode" typeId="mode" />
+			<channel id="fan_mode" typeId="fan_mode" />
+			<channel id="program_mode" typeId="program_mode" />
+			<channel id="set_point" typeId="temp-sp" />
+			<channel id="override" typeId="override" />
+			<channel id="hold" typeId="hold" />
+			<channel id="status" typeId="status" />
+			<channel id="fan_status" typeId="fan_status" />
+			<channel id="day" typeId="t_day" />
+			<channel id="hour" typeId="t_hour" />
+			<channel id="minute" typeId="t_minute" />
+			<channel id="dt_stamp" typeId="dt_stamp" />
+			<channel id="last_update" typeId="last_update" />
+			<channel id="today_heat_hour" typeId="today_heat_hour" />
+			<channel id="today_heat_minute" typeId="today_heat_minute" />
+			<channel id="today_cool_hour" typeId="today_cool_hour" />
+			<channel id="today_cool_minute" typeId="today_cool_minute" />
+			<channel id="yesterday_heat_hour" typeId="yesterday_heat_hour" />
+			<channel id="yesterday_heat_minute" typeId="yesterday_heat_minute" />
+			<channel id="yesterday_cool_hour" typeId="yesterday_cool_hour" />
+			<channel id="yesterday_cool_minute" typeId="yesterday_cool_minute" />
+		</channels>
+		
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<label>Thermostat Host Name/IP Address</label>
+				<description>Host name or IP address of the thermostat</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in minutes</description>
+				<default>2</default>
+			</parameter>
+			<parameter name="logRefresh" type="integer" min="5" required="false">
+				<label>Run-time Log Refresh Interval</label>
+				<description>Specifies the run-time log and humidity refresh interval in minutes</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="disableLogs" type="integer" min="0" max="1" required="false">
+				<label>Disable retrieval of run-time data</label>
+				<description>Optional flag to disable the retrieval of run-time data from the thermostat</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="disableHumidity" type="integer" min="0" max="1" required="false">
+				<label>Disable retrieval of humidity data</label>
+				<description>Optional flag to disable the retrieval of humidity data from the thermostat</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Thermostat Name</label>
+		<description>The name of the thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="model">
+		<item-type>String</item-type>
+		<label>Thermostat Model</label>
+		<description>The model number and firmware version of the thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="temp-temperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>The current temperature reading of the thermostat</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>The current humidity reading of the thermostat</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>The current operating mode of the HVAC system</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Cool</option>
+				<option value="3">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	
+	<channel-type id="fan_mode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+		<description>The current operating mode of the fan</description>
+	</channel-type>
+	
+	<channel-type id="program_mode">
+		<item-type>Number</item-type>
+		<label>Program Mode</label>
+		<description>The program schedule that the thermostat is running</description>
+		<state>
+			<options>
+				<option value="-1">None</option>
+				<option value="0">Program A</option>
+				<option value="1">Program B</option>
+				<option value="2">Vacation</option>
+				<option value="3">Holiday</option>
+			</options>
+		</state>
+	</channel-type>
+	
+	<channel-type id="temp-sp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Setpoint</label>
+		<description>The current temperature set point of the thermostat</description>
+		<category>Temperature</category>
+		<state min="35" max="95" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="override">
+		<item-type>Number</item-type>
+		<label>Override</label>
+		<description>Indicates if the normal program setpoint has been manually overriden</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="hold">
+		<item-type>Number</item-type>
+		<label>Hold</label>
+		<description>Indicates if the current set point temperature is to be held indefinitely</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	
+	<channel-type id="status">
+		<item-type>Number</item-type>
+		<label>Status</label>
+		<description>Indicates the current running status of the HVAC system</description>
+		<state min="0" max="2" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="fan_status">
+		<item-type>Number</item-type>
+		<label>Fan Status</label>
+		<description>Indicates the current fan status of the HVAC system</description>
+		<state min="0" max="2" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="t_day">
+		<item-type>Number</item-type>
+		<label>Day</label>
+		<description>The current day of the week reported by the thermostat</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="t_hour">
+		<item-type>Number</item-type>
+		<label>Hour</label>
+		<description>The current hour of the day reported by the thermostat</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="t_minute">
+		<item-type>Number</item-type>
+		<label>Minute</label>
+		<description>The current minute past the hour reported by the thermostat</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="dt_stamp">
+		<item-type>String</item-type>
+		<label>Thermostat Date</label>
+		<description>The current day of the week and time reported by the thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="last_update">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<description>Last successful contact with thermostat</description>
+		<category>Date</category>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="today_heat_hour">
+		<item-type>Number</item-type>
+		<label>Today's Heating Hours</label>
+		<description>The number of hours of heating run-time today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="today_heat_minute">
+		<item-type>Number</item-type>
+		<label>Today's Heating Minutes</label>
+		<description>The number of minutes of heating run-time today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="today_cool_hour">
+		<item-type>Number</item-type>
+		<label>Today's Cooling Hours</label>
+		<description>The number of hours of cooling run-time today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="today_cool_minute">
+		<item-type>Number</item-type>
+		<label>Today's Cooling Minutes</label>
+		<description>The number of minutes of cooling run-time today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="yesterday_heat_hour">
+		<item-type>Number</item-type>
+		<label>Yesterday's Heating Hours</label>
+		<description>The number of hours of heating run-time yesterday</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="yesterday_heat_minute">
+		<item-type>Number</item-type>
+		<label>Yesterday's Heating Minutes</label>
+		<description>The number of minutes of heating run-time yesterday</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="yesterday_cool_hour">
+		<item-type>Number</item-type>
+		<label>Yesterday's Cooling Hours</label>
+		<description>The number of hours of cooling run-time yesterday</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+	<channel-type id="yesterday_cool_minute">
+		<item-type>Number</item-type>
+		<label>Yesterday's Cooling Minutes</label>
+		<description>The number of minutes of cooling run-time yesterday</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	
+</thing:thing-descriptions>
+
