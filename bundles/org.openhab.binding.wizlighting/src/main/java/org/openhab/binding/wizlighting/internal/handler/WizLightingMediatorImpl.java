@@ -50,7 +50,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     private final Map<Thing, WizLightingHandler> handlersRegisteredByThing = new HashMap<>();
 
     private @Nullable WizLightingUpdateReceiverRunnable receiver;
-    private @Nullable Thread receiverThread;
+    private @Nullable Thread wizLightingReceiverThread;
 
     private @Nullable WizLightingDiscoveryService wizlightingDiscoveryService;
 
@@ -166,7 +166,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     private void initMediatorWizBulbUpdateReceiverRunnable() {
         WizLightingUpdateReceiverRunnable receiver = this.receiver;
-        Thread receiverThread = this.receiverThread;
+        Thread receiverThread = this.wizLightingReceiverThread;
         // try with handler port if is null
         if ((receiver == null)
                 || ((receiverThread != null) && (receiverThread.isInterrupted() || !receiverThread.isAlive()))) {
@@ -175,9 +175,11 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 WizLightingUpdateReceiverRunnable newReceiver = new WizLightingUpdateReceiverRunnable(this,
                         WizLightingBindingConstants.DEFAULT_LISTENER_UDP_PORT);
                 Thread newThread = new Thread(newReceiver);
+                newThread.setDaemon(true);
                 newThread.start();
+                newThread.setName("wizLightingReceiverThread");
                 this.receiver = newReceiver;
-                this.receiverThread = newThread;
+                this.wizLightingReceiverThread = newThread;
                 logger.trace("A new receiver thread has been started.");
             } catch (SocketException e) {
                 logger.debug("Cannot start the socket with default port {}...", e.getMessage());
@@ -221,14 +223,14 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         try {
             myMacAddress = NetworkUtils.getMyMacAddress();
             if (myMacAddress == null) {
-                logger.warn("No network interface could be found.  Mac of OpenHab device is unknown.");
+                logger.warn("No network interface could be found.  MAC of OpenHab device is unknown.");
                 return "OHMACAddress";
             }
         } catch (Exception e) {
-            logger.warn("Mac Address of OpenHab device is invalid.");
+            logger.warn("MAC Address of OpenHab device is invalid.");
             return "OHMACAddress";
         }
-        logger.info("Mac Address of OpenHab device is {}.", myMacAddress);
+        logger.info("MAC Address of OpenHab device is {}.", myMacAddress);
         return myMacAddress;
     }
 
