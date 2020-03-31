@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.enums;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This enum represents the available WiZ Lighting Request Methods
  *
@@ -31,6 +33,7 @@ public enum WizLightingMethodType {
      * {"method": "registration", "id": 1, "env": "pro", "result":
      * {"mac": "macOfopenHAB", "success": true}}
      */
+    @SerializedName("registration")
     Registration("registration"),
     /**
      * Pulse - tells the bulb to briely change brightness (by delta % for duration ms)
@@ -39,6 +42,7 @@ public enum WizLightingMethodType {
      * Example Response:
      * {"method": "pulse", "id": 22, "env": "pro", "result": {"success": true}}
      */
+    @SerializedName("pulse")
     Pulse("pulse"),
     /**
      * setPilot - used to tell the bulb to change color/temp/state
@@ -47,6 +51,7 @@ public enum WizLightingMethodType {
      * Example Response:
      * {"method": "setPilot", "id": 24, "env": "pro", "result": {"success": true}}
      */
+    @SerializedName("setPilot")
     SetPilot("setPilot"),
     /**
      * getPilot - gets the current bulb state - no paramters need to be included
@@ -57,6 +62,7 @@ public enum WizLightingMethodType {
      * "a8bb508f570a", "rssi":-76, "state": true, "sceneId": 0, "temp": 2700,
      * "dimming": 42, "schdPsetId": 5}}
      */
+    @SerializedName("getPilot")
     GetPilot("getPilot"),
     /**
      * syncPilot - sent by the bulb as heart-beats
@@ -69,6 +75,7 @@ public enum WizLightingMethodType {
      * { "mac": "theBulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true,
      * "sceneId": 0, "temp": 3362, "dimming": 69, "schdPsetId": 5}}
      */
+    @SerializedName("syncPilot")
     SyncPilot("syncPilot"),
     /**
      * getSystemConfig - gets the current system configuration - no paramters need
@@ -81,11 +88,13 @@ public enum WizLightingMethodType {
      * "homeLock": false, "pairingLock": false, "typeId": 0, "moduleName":
      * "ESP01_SHRGB1C_31", "fwVersion": "1.15.2", "groupId": 0, "drvConf":[33,1]}}
      */
+    @SerializedName("getSystemConfig")
     GetSystemConfig("getSystemConfig"),
     /**
      * setSystemConfig - presumably sets up the system
      * I have NOT attempted to call this method
      */
+    @SerializedName("setSystemConfig")
     SetSystemConfig("setSystemConfig"),
     /**
      * getWifiConfig - gets the current wifi configuration - no paramters need to be
@@ -96,10 +105,12 @@ public enum WizLightingMethodType {
      * {"method": "getWifiConfig", "id": 22, "env": "pro", "result":
      * {:["encryptedString"]}
      */
+    @SerializedName("getWifiConfig")
     GetWifiConfig("getWifiConfig"),
     /**
      * setWifiConfig - presumably sets up the system I have NOT attempted to use this method
      */
+    @SerializedName("setWifiConfig")
     SetWifiConfig("setWifiConfig"),
     /**
      * firstBeat - set by a bulb upon power up
@@ -107,6 +118,7 @@ public enum WizLightingMethodType {
      * {"method": "firstBeat", "id": 0, "env": "pro", "params":
      * {"mac": "theBulbMacAddress", "homeId": xxxxxx, "fwVersion": "1.15.2"}}
      */
+    @SerializedName("firstBeat")
     FirstBeat("firstBeat"),
     /**
      * Unknown - using as a default for inproperly received responses
