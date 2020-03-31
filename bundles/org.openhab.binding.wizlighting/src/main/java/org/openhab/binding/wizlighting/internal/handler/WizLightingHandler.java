@@ -118,7 +118,7 @@ public class WizLightingHandler extends BaseThingHandler {
                     handleOnOffCommand((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseCommand(
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
+                            command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
 
