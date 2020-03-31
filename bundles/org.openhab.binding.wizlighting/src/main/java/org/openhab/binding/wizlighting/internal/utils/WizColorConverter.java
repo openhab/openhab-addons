@@ -71,8 +71,7 @@ public class WizColorConverter {
             int i = (int) (hue / 60); // color quadrant 0..2555
             double f = hue % 60; // 0..59
             double q = 255 - ((f / 60) * sat255);
-            // double p = 255 - sat255;
-            // double t = 255 - (((60 - f) / 60) * sat255);
+
             double p = 0;
             double t = 255 - (((60 - f) / 60) * 255);
 
