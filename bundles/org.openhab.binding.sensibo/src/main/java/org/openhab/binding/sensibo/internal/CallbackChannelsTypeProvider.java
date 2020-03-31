@@ -58,6 +58,7 @@ public class CallbackChannelsTypeProvider implements ChannelTypeProvider, ThingH
     }
 
     @Override
+    @Nullable
     public ThingHandler getThingHandler() {
         return handler;
     }
