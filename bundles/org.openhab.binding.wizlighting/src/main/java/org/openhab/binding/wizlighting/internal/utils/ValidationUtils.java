@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.wizlighting.internal.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -36,10 +39,9 @@ public final class ValidationUtils {
      * @return true if is valid.
      */
     public static boolean isMacValid(final String mac) {
-        return true;
-        // Pattern pattern = Pattern.compile(ValidationUtils.MAC_PATTERN);
-        // Matcher matcher = pattern.matcher(mac);
-        // return matcher.matches();
+        Pattern pattern = Pattern.compile(ValidationUtils.MAC_PATTERN);
+        Matcher matcher = pattern.matcher(mac);
+        return matcher.matches();
     }
 
     /**

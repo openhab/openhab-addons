@@ -117,8 +117,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 } else if (command instanceof OnOffType) {
                     handleOnOffCommand((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseCommand(
-                            command == IncreaseDecreaseType.INCREASE);
+                    handleIncreaseDecreaseCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
 
@@ -129,8 +128,7 @@ public class WizLightingHandler extends BaseThingHandler {
                     handleTemperatureCommand(
                             ((OnOffType) command) == OnOffType.ON ? new PercentType(100) : new PercentType(0));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseTemperatureCommand(
-                            command == IncreaseDecreaseType.INCREASE);
+                    handleIncreaseDecreaseTemperatureCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
 
@@ -163,8 +161,7 @@ public class WizLightingHandler extends BaseThingHandler {
                     handleSpeedCommand(
                             ((OnOffType) command) == OnOffType.ON ? new PercentType(100) : new PercentType(0));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    handleIncreaseDecreaseSpeedCommand(
-                            command == IncreaseDecreaseType.INCREASE);
+                    handleIncreaseDecreaseSpeedCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
         }
