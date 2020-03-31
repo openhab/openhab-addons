@@ -125,10 +125,10 @@ public enum WizLightingMethodType {
      */
     UnknownMethod("unknownMethod");
 
-    private String method;
+    private String methodName;
 
-    private WizLightingMethodType(final String method) {
-        this.method = method;
+    private WizLightingMethodType(final String methodName) {
+        this.methodName = methodName;
     }
 
     /**
@@ -136,7 +136,7 @@ public enum WizLightingMethodType {
      *
      * @return the method name
      */
-    public String getMethod() {
-        return method;
+    public String getMethodName() {
+        return methodName;
     }
 }

@@ -30,7 +30,9 @@ public class WizLightingRequest {
     private int id;
     @Expose(serialize = true, deserialize = true)
     private WizLightingMethodType method;
-    @Expose(serialize = true, deserialize = true)
+    @Expose(serialize = false, deserialize = true)
+    private String methodName;
+    @Expose(serialize = true, deserialize = false)
     private @Nullable Param params;
 
     /**
@@ -41,6 +43,7 @@ public class WizLightingRequest {
      */
     public WizLightingRequest(final WizLightingMethodType method, final @Nullable Param params) {
         this.method = method;
+        this.methodName = method.getMethodName();
         this.params = params;
     }
 
@@ -58,6 +61,7 @@ public class WizLightingRequest {
 
     public void setMethod(final WizLightingMethodType method) {
         this.method = method;
+        this.methodName = method.getMethodName();
     }
 
     public int getId() {
