@@ -151,8 +151,6 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
                 .withLabel("WiZ Full Color Bulb at " + lightIpAddress).withRepresentationProperty(lightMacAddress)
                 .build();
 
-        logger.debug("New WiZ bulb sent to inbox! MAC: {}  IP: {}", lightMacAddress, lightIpAddress);
-
         this.thingDiscovered(discoveryResult);
     }
 
