@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -21,7 +23,7 @@ import com.google.gson.annotations.Expose;
  *
  * The incoming JSON looks like this:
  *
- * {"method": "firstBeat", "id": 0, "env": "pro", "params": {"mac": "bulbMacAddress",
+ * {"method": "firstBeat", "id": 0, "env": "pro", "params": {"mac": "theBulbMacAddress",
  * "homeId": xxxxxx, "fwVersion": "1.15.2"}}
  *
  * @author Sara Geleskie Damiano - Initial contribution
@@ -30,7 +32,7 @@ import com.google.gson.annotations.Expose;
 public class FirstBeatResponseParam {
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
-    public String mac = "bulbMacAddress";
+    public String mac = MISSING_INVALID_MAC_ADDRESS;
     // Home ID of the bulb
     @Expose(serialize = false, deserialize = true)
     public int homeId;

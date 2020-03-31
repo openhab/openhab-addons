@@ -33,7 +33,7 @@ import com.google.gson.annotations.Expose;
 public class WizLightingSyncState {
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
-    public String mac = "bulbMacAddress";
+    public String mac = MISSING_INVALID_MAC_ADDRESS;
 
     // The current color mode of the bulb
     // We will assume by default that it's a single color bulb

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.handler;
 
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
+
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
 import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
@@ -93,7 +94,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         String bulbIp = receivedMessage.getWizResponseIpAddress();
         String bulbMac = receivedMessage.getWizResponseMacAddress();
 
-        if (bulbMac != "bulbMacAddress") {
+        if (!bulbMac.equals(MISSING_INVALID_MAC_ADDRESS)) {
             @Nullable
             WizLightingHandler handler = this.getHandlerRegisteredByMac(bulbMac);
 
@@ -102,7 +103,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 handler.newReceivedResponseMessage(receivedMessage);
                 logger.trace("Received message from {} delivered with success to handler of mac {}",
                         receivedMessage.getWizResponseIpAddress(), receivedMessage.getWizResponseMacAddress());
-            } else if (bulbIp != "bulbIpAddress" && bulbMac != "bulbMacAddress") {
+            } else if (!bulbIp.equals(MISSING_INVALID_IP_ADDRESS)) {
                 logger.debug("There is no handler registered for mac address: {}",
                         receivedMessage.getWizResponseMacAddress());
                 WizLightingDiscoveryService discoveryServe = this.wizlightingDiscoveryService;
@@ -173,7 +174,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
             try {
                 logger.trace("Receiver thread is either null, interrupted, or dead.");
                 WizLightingUpdateReceiverRunnable newReceiver = new WizLightingUpdateReceiverRunnable(this,
-                        WizLightingBindingConstants.DEFAULT_LISTENER_UDP_PORT);
+                        DEFAULT_LISTENER_UDP_PORT);
                 Thread newThread = new Thread(newReceiver);
                 newThread.setDaemon(true);
                 newThread.start();

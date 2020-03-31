@@ -28,8 +28,8 @@ public class WizLightingDeviceConfiguration {
     /**
      * Configuration for a Bond Bridge or Device
      */
-    public String bulbMacAddress = "bulbMacAddress";
-    public String bulbIpAddress = "bulbIpAddress";
+    public String bulbMacAddress = MISSING_INVALID_MAC_ADDRESS;
+    public String bulbIpAddress = MISSING_INVALID_IP_ADDRESS;
     public long updateInterval = DEFAULT_REFRESH_INTERVAL_SEC;
     public boolean useHeartBeats = false; // true: register to get 5s heart-beats
 }

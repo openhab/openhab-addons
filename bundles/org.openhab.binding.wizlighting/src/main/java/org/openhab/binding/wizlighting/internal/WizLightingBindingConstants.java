@@ -65,22 +65,21 @@ public class WizLightingBindingConstants {
      * Mac address configuration argument key.
      */
     public static final String CONFIG_MAC_ADDRESS = "bulbMacAddress";
+    public static final String MISSING_INVALID_MAC_ADDRESS = "bulbMacAddress";
 
     /**
      * Host address configuration argument key.
      */
     public static final String CONFIG_IP_ADDRESS = "bulbIpAddress";
+    public static final String MISSING_INVALID_IP_ADDRESS = "bulbIpAddress";
 
     /**
      * Wifi socket update interval configuration argument key.
      */
     public static final String CONFIG_UPDATE_INTERVAL = "updateInterval";
+    public static final long DEFAULT_REFRESH_INTERVAL_SEC = 60;
 
     // -------------- Default values ----------------
-    /**
-     * Default Wifi socket refresh interval.
-     */
-    public static final long DEFAULT_REFRESH_INTERVAL_SEC = 60;
 
     /**
      * The number of refresh intervals without a response before a bulb is marked

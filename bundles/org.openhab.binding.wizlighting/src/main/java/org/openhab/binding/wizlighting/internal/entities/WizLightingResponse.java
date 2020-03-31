@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
@@ -51,7 +53,7 @@ public class WizLightingResponse {
 
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
-    private String mac = "bulbMacAddress";
+    private String mac = MISSING_INVALID_MAC_ADDRESS;
 
     // Whether or not a command succeeded (if the response is from a command)
     @Expose(serialize = true, deserialize = true)
