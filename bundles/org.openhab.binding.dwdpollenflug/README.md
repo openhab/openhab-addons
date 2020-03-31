@@ -1,6 +1,6 @@
 # DWDPollenflug Binding
 
-The "Deutsche Wetterdienst" reports on a daily base the current pollen count index for Germany and a forecast for tomorrow and day after tomorrow. This binding allows you to retrieve this data for your region or partregion. You can find a map of the data here: 
+The "Deutsche Wetterdienst" (DWD) reports the current pollen count index for Germany on a daily base and a forecast for tomorrow and the day after tomorrow. This binding allows you to retrieve this data for your region or partregion. You can find a map of the data here: 
 
 https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.html
 
@@ -13,9 +13,9 @@ This binding supports a bridge thing, which polls the dataset for Germany in an 
 
 ### Bridge
 
-| Property | Default | Required | Description                                                                       |
-| -------- | :-----: | :------: | --------------------------------------------------------------------------------- |
-| refresh  |   30    |   yes    | Define the interval for polling the data from DWD in minutes. Minimum 15 minutes. |
+| Property | Default | Required | Description                                                                          |
+| -------- | :-----: | :------: | ------------------------------------------------------------------------------------ |
+| refresh  |   30    |   yes    | Define the interval for polling the data from DWD in minutes. Minimum is 15 minutes. |
 
 ### Region
 
@@ -25,7 +25,7 @@ This binding supports a bridge thing, which polls the dataset for Germany in an 
 
 #### Manual region or partregion selection ####
 
-The region ID is the partregion_id or if there is no partregion the region_id from this [json](https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json) of the DWD. You can refer to following table.
+The region ID is the partregion_id or if there is no partregion the region_id from this [json](https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json) of DWD. You can refer to the following table.
 
 | regionID | Region                         | Partregion                                         |
 | -------- | ------------------------------ | -------------------------------------------------- |
@@ -59,7 +59,7 @@ The region ID is the partregion_id or if there is no partregion the region_id fr
 
 ## Channels
 
-For each of the eight pollen types reported by the DWD the region thing has three channels for today, tomorrow and day after tomorrow.
+For each of the eight pollen types reported by DWD the region thing has three channels for today, tomorrow and the day after tomorrow.
 
 | channels             | pollen type | german name |
 | -------------------- | ----------- | ----------- |
@@ -88,7 +88,7 @@ For each of the eight pollen types reported by the DWD the region thing has thre
 | rye#tomorrow         |             |             |
 | rye#dayafter_to      |             |             |
 
-There are following possible string values:
+There are the following possible string values:
 
 | value | description                 |
 | ----- | --------------------------- |
@@ -112,7 +112,7 @@ Bridge dwdpollenflug:bridge:dwd "DWD pollen count Bridge" [refresh="15"] {
 }
 ```
 
-### Items example for region "Brandenburg und Berlin" and pollen type ash ###
+### Items example for region "Brandenburg und Berlin" and pollen type ash-tree ###
 
 ```
 ...
@@ -147,7 +147,7 @@ String pollenDayAfterTomorrowEsche
 NULL=keine Daten
 ```
 
-### Sitemap example for region "Brandenburg und Berlin" and pollen type ash ###
+### Sitemap example for region "Brandenburg und Berlin" and pollen type ash-tree ###
 
 ```
 Text label="Pollenflugindex" {
