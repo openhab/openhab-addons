@@ -306,7 +306,7 @@ public class WizLightingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Beginning initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
+        logger.trace("Beginning initialization for bulb");
         this.config = getConfigAs(WizLightingDeviceConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         if (ValidationUtils.isMacNotValid(config.bulbMacAddress)) {
