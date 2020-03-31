@@ -33,7 +33,7 @@ public class DatagramSocketWrapper {
 
     private final Logger logger = LoggerFactory.getLogger(DatagramSocketWrapper.class);
     @Nullable
-    DatagramSocket datagramSocket;
+    private DatagramSocket datagramSocket;
 
     public void initSocket() throws SocketException {
         closeSocket();
@@ -52,7 +52,7 @@ public class DatagramSocketWrapper {
         if (datagramSocket != null && !datagramSocket.isClosed()) {
             datagramSocket.send(datagramPacket);
         } else {
-            logger.error("Datagram Socket closed or not initialized");
+            logger.warn("Datagram Socket closed or not initialized");
         }
     }
 
@@ -60,7 +60,7 @@ public class DatagramSocketWrapper {
         if (datagramSocket != null && !datagramSocket.isClosed()) {
             datagramSocket.receive(datagramPacket);
         } else {
-            logger.error("Datagram Socket closed or not initialized");
+            logger.warn("Datagram Socket closed or not initialized");
         }
     }
 }
