@@ -164,7 +164,7 @@ public class WizLightingHandler extends BaseThingHandler {
                             ((OnOffType) command) == OnOffType.ON ? new PercentType(100) : new PercentType(0));
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseSpeedCommand(
-                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
+                            command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
         }
