@@ -121,4 +121,7 @@ public class WizLightingBindingConstants {
     public static final String PROPERTY_TYPE_ID = "typeId";
     public static final String PROPERTY_MODULE_NAME = "moduleName";
     public static final String PROPERTY_GROUP_ID = "groupId";
+
+    public static final String EXPECTED_MODULE_NAME = "ESP01_SHRGB1C_31";
+    public static final String LAST_KNOWN_FIRMWARE_VERSION = "1.17.1";
 }

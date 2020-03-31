@@ -38,5 +38,5 @@ public class FirstBeatResponseParam {
     public int homeId;
     // Firmware version of the bulb
     @Expose(serialize = true, deserialize = true)
-    public String fwVersion = "1.15.2";
+    public String fwVersion = LAST_KNOWN_FIRMWARE_VERSION;
 }

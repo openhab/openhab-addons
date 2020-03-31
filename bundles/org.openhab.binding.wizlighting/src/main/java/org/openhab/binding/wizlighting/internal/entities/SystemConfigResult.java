@@ -58,10 +58,10 @@ public class SystemConfigResult {
     // The module name
     // The value is "ESP01_SHRGB1C_31" for both BR30 and A19 full color bulbs
     @Expose(serialize = true, deserialize = true)
-    public String moduleName = "ESP01_SHRGB1C_31";
+    public String moduleName = EXPECTED_MODULE_NAME;
     // Firmware version of the bulb
     @Expose(serialize = true, deserialize = true)
-    public String fwVersion = "1.15.2";
+    public String fwVersion = LAST_KNOWN_FIRMWARE_VERSION;
     // The ID of group the bulb is assigned to
     // I don't know how to group bulbs, all of mine return 0
     @Expose(serialize = true, deserialize = true)

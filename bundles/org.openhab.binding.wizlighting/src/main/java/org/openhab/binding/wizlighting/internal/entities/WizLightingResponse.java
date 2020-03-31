@@ -31,7 +31,7 @@ public class WizLightingResponse {
 
     // The IP address we're coming from
     @Expose(serialize = false, deserialize = true)
-    private String wizResponseIpAddress = "bulbIPAddres";
+    private String wizResponseIpAddress = MISSING_INVALID_IP_ADDRESS;
 
     // Increasing numeric value.
     // Bulb doesn't seem to care if it receives the same id multiple time
