@@ -85,7 +85,7 @@ public class LRRHandler extends ADThingHandler {
 
     @Override
     public void initChannelState() {
-        // TODO: Init channel states if necessary
+        // Do nothing
     }
 
     @Override

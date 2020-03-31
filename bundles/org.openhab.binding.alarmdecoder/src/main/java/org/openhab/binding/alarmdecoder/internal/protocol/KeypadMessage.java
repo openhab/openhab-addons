@@ -64,9 +64,9 @@ public class KeypadMessage extends ADMessage {
             throw new IllegalArgumentException("Invalid field length in keypad message");
         }
 
-        bitField = parts.get(0); // TODO: need to remove enclosing []
-        rawData = parts.get(2); // need to remove enclosing []
-        alphaMessage = parts.get(3); // need to remove enclosing ""
+        bitField = parts.get(0);
+        rawData = parts.get(2);
+        alphaMessage = parts.get(3).replaceAll("^\"|\"$", "");
 
         try {
             int numeric = 0;

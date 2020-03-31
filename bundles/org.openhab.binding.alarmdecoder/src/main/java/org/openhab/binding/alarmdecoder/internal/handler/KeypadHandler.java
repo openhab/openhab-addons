@@ -105,7 +105,7 @@ public class KeypadHandler extends ADThingHandler {
 
     @Override
     public void initChannelState() {
-        // TODO: init channels to UNDEF
+        // Do nothing
     }
 
     @Override
