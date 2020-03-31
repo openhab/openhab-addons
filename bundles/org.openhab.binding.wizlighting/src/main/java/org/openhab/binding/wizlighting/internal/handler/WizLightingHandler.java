@@ -96,8 +96,10 @@ public class WizLightingHandler extends BaseThingHandler {
         super(thing);
         this.registrationInfo = registrationPacket;
         this.mostRecentState = new WizLightingSyncState();
+        this.config = getConfigAs(WizLightingDeviceConfiguration.class);
         fullyInitialized = false;
-        logger.trace("Created handler for WiZ bulb.");
+        logger.trace("Created handler for WiZ bulb with IP {} and MAC address {}.", config.bulbIpAddress,
+                config.bulbMacAddress);
     }
 
     @Override
@@ -315,8 +317,8 @@ public class WizLightingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Beginning initialization for WiZ bulb");
         this.config = getConfigAs(WizLightingDeviceConfiguration.class);
+        logger.trace("Beginning initialization for bulb at {} - {}", config.bulbIpAddress, config.bulbMacAddress);
         fullyInitialized = false;
         disposed = false;
 
@@ -334,13 +336,14 @@ public class WizLightingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         disposed = true;
+        fullyInitialized = false;
         // stop update thread
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
             this.keepAliveJob = null;
         }
-        logger.trace("Handler for bulb disposed.");
+        logger.trace("Handler for bulb at {} - {} disposed.", config.bulbIpAddress, config.bulbMacAddress);
     }
 
     private synchronized void getPilot() {
