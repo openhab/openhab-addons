@@ -14,12 +14,13 @@ Changes made through this Thing type will be reflected in the Hydrawise mobile a
 
 #### Cloud Thing Supported Channel Groups
 
-| channel group ID                      |
-|---------------------------------------|
-| [Zones](#Zone-Channel-Group)          |
-| [All Zones](#All-Zones-Channel-Group) |
-| [Sensor](#Sensor-Channel-Group)       |
-| [Forecast](#Sensor-Channel-Group)     |
+| channel group ID                              |
+|-----------------------------------------------|
+| [Controller](#Cloud-Controller-Channel-Group) |
+| [Zones](#Zone-Channel-Group)                  |
+| [All Zones](#All-Zones-Channel-Group)         |
+| [Sensor](#Sensor-Channel-Group)               |
+| [Forecast](#Sensor-Channel-Group)             |
      
 ### Local Thing
 
@@ -70,6 +71,13 @@ Then copy the API key shown here:
 
 ### Channel Groups
 
+#### Cloud Controller Channel Group
+
+| channel group ID | Description                      |
+|------------------|----------------------------------|
+| status           | Status of controller             |
+| lastContact      | Last contact time of controller |
+
 #### Zone Channel Group
 
 Up to 36 total zones are supported per Local or Cloud thing
@@ -114,6 +122,8 @@ A single all zone group are supported per Cloud or Local Thing
 
 ### Channels
 
+Channels uses across zones, sensors and forecasts
+
 | channel ID      | type               | Groups         | description                                 | Read Write |
 |-----------------|--------------------|----------------|---------------------------------------------|------------|
 | name            | String             | zone, sensor   | Descriptive name                            | R          |
@@ -140,7 +150,25 @@ A single all zone group are supported per Cloud or Local Thing
 ## Full Example
 
 ```
-Group SprinklerZones
+Group Sprinkler             "Sprinkler"
+Group SprinklerController   "Controller"    (Sprinkler)
+Group SprinklerZones        "Zones"         (Sprinkler)
+Group SprinklerSensors      "Sensors"       (Sprinkler)
+Group SprinkerForecast      "Forecast"      (Sprinkler)
+
+String SprinkerControllerStatus "Status [%s]" (SprinklerController) {channel="hydrawise:cloud:home:controller#status"}
+Number SprinkerControllerLastContact "Last Contact [%d]" (SprinklerController) {channel="hydrawise:cloud:home:controller#lastContact"}
+
+Switch SprinklerSensor1 "Sprinler Sensor" (SprinklerSensors) {channel="hydrawise:cloud:home:sensor1#active"}
+
+Group SprinkerForecastDay1 "Todays Forecast" (SprinkerForecast)
+Number:Temperature SprinkerForecastDay1HiTemp "High Temp [%d]" (SprinkerForecastDay1) {channel="hydrawise:cloud:home:forecast1#temperaturehigh"}
+Number:Temperature SprinkerForecastDay1LowTemp "Low Temp [%d]" (SprinkerForecastDay1) {channel="hydrawise:cloud:home:forecast1#temperaturelow"}
+String SprinkerForecastDay1Conditions "Conditions [%s]" (SprinkerForecastDay1) {channel="hydrawise:cloud:home:forecast1#conditions"}
+String SprinkerForecastDay1Day "Day [%s]" (SprinkerForecastDay1) {channel="hydrawise:cloud:home:forecast1#day"}
+Number SprinkerForecastDay1Humidity "Humidity [%d%%]" (SprinkerForecastDay1) {channel="hydrawise:cloud:home:forecast1#humidity"}
+Number:Speed SprinkerForecastDay1Wind "Wind [%s]" (SprinkerForecastDay1) {channel="hydrawise:cloud:home:forecast1#wind"}
+
 Group  SprinklerZone1 "1 Front Office Yard" (SprinklerZones)
 String SprinklerZone1Name "1 Front Office Yard name" (SprinklerZone1) {channel="hydrawise:cloud:home:zone1#name"}
 Switch SprinklerZone1Run "1 Front Office Yard Run" (SprinklerZone1) {channel="hydrawise:cloud:home:zone1#run"}

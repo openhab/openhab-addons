@@ -3,6 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="cloudController">
+		<label>Controller</label>
+		<description>Hydrawise cloud controller</description>
+		<channels>
+			<channel id="lastContact" typeId="lastContactTime" />
+			<channel id="status" typeId="status" />
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="zone">
 		<label>Zone</label>
@@ -27,7 +35,7 @@
 			<channel id="run" typeId="run" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="sensor">
 		<label>Sensor</label>
 		<description>Hydrawise sensor</description>
@@ -56,6 +64,23 @@
 	</channel-group-type>
 
 	<!-- Controller -->
+
+	<channel-type id="lastContactTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Contact Time</label>
+		<description>Last contact time of a controller in seconds</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the controller</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Zones -->
+
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>

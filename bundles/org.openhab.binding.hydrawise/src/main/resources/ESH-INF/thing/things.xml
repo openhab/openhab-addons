@@ -12,6 +12,16 @@
 		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list all possible channel groups. 
 			Once this is fixed we can dynamically add them to the thing and not list them here. -->
 		<channel-groups>
+
+			<!-- Controller -->
+
+			<channel-group id="controller" typeId="cloudController">
+				<label>Controller</label>
+				<description>Controller</description>
+			</channel-group>
+
+			<!-- Sensors -->
+
 			<channel-group id="sensor1" typeId="sensor">
 				<label>Sensor 1</label>
 				<description>Sensor 1</description>
@@ -28,6 +38,8 @@
 				<label>Sensor 4</label>
 				<description>Sensor 4</description>
 			</channel-group>
+
+			<!-- Forecasts -->
 
 			<channel-group id="forecast1" typeId="forecast">
 				<label>Today's Weather</label>
@@ -46,7 +58,11 @@
 				<description>Day 4 weather forecast</description>
 			</channel-group>
 
+			<!-- All Zones -->
+
 			<channel-group id="allzones" typeId="allzones" />
+
+			<!-- Zones -->
 
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
@@ -383,6 +399,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-
 </thing:thing-descriptions>

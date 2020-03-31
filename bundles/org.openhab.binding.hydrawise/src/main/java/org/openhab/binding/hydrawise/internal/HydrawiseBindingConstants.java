@@ -32,6 +32,9 @@ public class HydrawiseBindingConstants {
 
     public static final String BASE_IMAGE_URL = "https://app.hydrawise.com/config/images/";
 
+    public static final String CHANNEL_GROUP_CONTROLLER = "controller";
+    public static final String CHANNEL_CONTROLLER_LAST_CONTACT = "lastContact";
+    public static final String CHANNEL_CONTROLLER_STATUS = "status";
     public static final String CHANNEL_GROUP_ALLZONES = "allzones";
     public static final String CHANNEL_ZONE_RUN_CUSTOM = "runcustom";
     public static final String CHANNEL_ZONE_RUN = "run";

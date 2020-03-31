@@ -127,9 +127,10 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     protected void pollController() throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         List<Controller> controllers = client.getCustomerDetails().controllers;
         Controller controller = getController(controllerId, controllers);
-        if (controller != null && !controller.online) {
-            throw new HydrawiseConnectionException("Controller is offline");
+        if (controller == null) {
+            throw new HydrawiseConnectionException("Controller is offline or missing");
         }
+        updateController(controller);
         StatusScheduleResponse status = client.getStatusSchedule(controllerId);
         updateSensors(status);
         updateForecast(status);
@@ -177,6 +178,12 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     protected void sendStopAllCommand()
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
         client.stopAllRelays(controllerId);
+    }
+
+    private void updateController(Controller controller) {
+        updateGroupState(CHANNEL_GROUP_CONTROLLER, CHANNEL_CONTROLLER_LAST_CONTACT,
+                new DecimalType(controller.lastContact));
+        updateGroupState(CHANNEL_GROUP_CONTROLLER, CHANNEL_CONTROLLER_STATUS, new StringType(controller.status));
     }
 
     private void updateSensors(StatusScheduleResponse status) {
