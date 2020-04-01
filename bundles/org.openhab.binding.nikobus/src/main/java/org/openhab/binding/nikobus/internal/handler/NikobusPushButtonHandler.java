@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
-    @NonNullByDefault
+
     private static class ImpactedModule {
         private final ThingUID thingUID;
         private final SwitchModuleGroup group;
@@ -79,7 +79,6 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
     }
 
-    @NonNullByDefault
     private static class ImpactedModuleUID extends AbstractUID {
         ImpactedModuleUID(String uid) {
             super(uid);
@@ -266,8 +265,6 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
     // called when there is a message on the Nikobus
     private void commandReceived() {
-
-        //logger.debug("button press {}", this.address);
 
         // a button itself does not have an on and off state
         // so this command will be correct only half of the time...
