@@ -325,7 +325,7 @@ public class MiCloudConnector {
             String sign = resp.getAsJsonObject().get("_sign").getAsString();
             logger.trace("Xiaomi Login step 1 sign = {}", sign);
             return sign;
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | NullPointerException e) {
             throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage(), e);
         }
     }

@@ -154,10 +154,10 @@ public class RRMapFileParser {
                 case CURRENTLY_CLEANED_ZONES:
                     int zonePairs = getUInt16(header, 0x08);
                     for (int zonePair = 0; zonePair < zonePairs; zonePair++) {
-                        Float x0 = offset - (getUInt16(raw, blockDataStart + zonePair * 8)) / MM;
-                        Float y0 = getUInt16(raw, blockDataStart + zonePair * 8 + 2) / MM - top;
-                        Float x1 = offset - (getUInt16(raw, blockDataStart + zonePair * 8 + 4)) / MM;
-                        Float y1 = getUInt16(raw, blockDataStart + zonePair * 8 + 6) / MM - top;
+                        float x0 = offset - (getUInt16(raw, blockDataStart + zonePair * 8)) / MM;
+                        float y0 = getUInt16(raw, blockDataStart + zonePair * 8 + 2) / MM - top;
+                        float x1 = offset - (getUInt16(raw, blockDataStart + zonePair * 8 + 4)) / MM;
+                        float y1 = getUInt16(raw, blockDataStart + zonePair * 8 + 6) / MM - top;
                         zones.add(new float[] { x0, y0, x1, y1 });
                     }
                     break;
@@ -171,10 +171,10 @@ public class RRMapFileParser {
                 case VIRTUAL_WALLS:
                     int wallPairs = getUInt16(header, 0x08);
                     for (int wallPair = 0; wallPair < wallPairs; wallPair++) {
-                        Float x0 = offset - (getUInt16(raw, blockDataStart + wallPair * 8)) / MM;
-                        Float y0 = getUInt16(raw, blockDataStart + wallPair * 8 + 2) / MM - top;
-                        Float x1 = offset - (getUInt16(raw, blockDataStart + wallPair * 8 + 4)) / MM;
-                        Float y1 = getUInt16(raw, blockDataStart + wallPair * 8 + 6) / MM - top;
+                        float x0 = offset - (getUInt16(raw, blockDataStart + wallPair * 8)) / MM;
+                        float y0 = getUInt16(raw, blockDataStart + wallPair * 8 + 2) / MM - top;
+                        float x1 = offset - (getUInt16(raw, blockDataStart + wallPair * 8 + 4)) / MM;
+                        float y1 = getUInt16(raw, blockDataStart + wallPair * 8 + 6) / MM - top;
                         walls.add(new float[] { x0, y0, x1, y1 });
                     }
                     break;
@@ -271,30 +271,32 @@ public class RRMapFileParser {
 
     @Override
     public String toString() {
-        String s = "RR Map:\tMajor Version: " + majorVersion + " Minor version: " + minorVersion + " Map Index: "
-                + mapIndex + " Map Sequence: " + mapSequence + " \r\n";
-        s += "Image:\tsize: " + Integer.toString(imageSize) + "\ttop: " + Integer.toString(top) + "\tleft: "
+        StringBuilder sb = new StringBuilder();
+        sb.append("RR Map:\tMajor Version: " + majorVersion + " Minor version: " + minorVersion + " Map Index: "
+                + mapIndex + " Map Sequence: " + mapSequence + " \r\n");
+        sb.append("Image:\tsize: " + Integer.toString(imageSize) + "\ttop: " + Integer.toString(top) + "\tleft: "
                 + Integer.toString(left) + " height: " + Integer.toString(imgHeight) + " width: "
-                + Integer.toString(imgWidth) + "\r\n";
-        s += "Charger pos:\tX: " + Float.toString(getChargerX()) + "\tY: " + Float.toString(getChargerY()) + "\r\n";
-        s += "Robo pos:\tX: " + Float.toString(getRoboX()) + "\tY: " + Float.toString(getRoboY()) + " Angle: "
-                + Float.toString(getRoboA()) + "\r\n";
-        s += "Goto:\tX: " + Float.toString(getGotoX()) + "\tY: " + Float.toString(getGotoY()) + "\r\n";
+                + Integer.toString(imgWidth) + "\r\n");
+        sb.append(
+                "Charger pos:\tX: " + Float.toString(getChargerX()) + "\tY: " + Float.toString(getChargerY()) + "\r\n");
+        sb.append("Robo pos:\tX: " + Float.toString(getRoboX()) + "\tY: " + Float.toString(getRoboY()) + " Angle: "
+                + Float.toString(getRoboA()) + "\r\n");
+        sb.append("Goto:\tX: " + Float.toString(getGotoX()) + "\tY: " + Float.toString(getGotoY()) + "\r\n");
         for (Integer area : areas.keySet()) {
-            s += (area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t") + Integer.toString(areas.get(area).size())
-                    + "\r\n";
+            sb.append((area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t")
+                    + Integer.toString(areas.get(area).size()) + "\r\n");
         }
-        s += "Walls:\t" + Integer.toString(walls.size()) + "\r\n";
-        s += "Obstacles:\t" + Integer.toString(obstacles.size()) + "\r\n";
-        s += "Blocks:\t" + Integer.toString(blocks.length) + "\r\n";
-        s += "Paths:";
+        sb.append("Walls:\t" + Integer.toString(walls.size()) + "\r\n");
+        sb.append("Obstacles:\t" + Integer.toString(obstacles.size()) + "\r\n");
+        sb.append("Blocks:\t" + Integer.toString(blocks.length) + "\r\n");
+        sb.append("Paths:");
         for (Integer p : pathsDetails.keySet()) {
-            s += "\r\nPath type:\t" + Integer.toString(p);
+            sb.append("\r\nPath type:\t" + Integer.toString(p));
             for (String detail : pathsDetails.get(p).keySet()) {
-                s += " " + detail + ": " + Integer.toString(pathsDetails.get(p).get(detail));
+                sb.append(" " + detail + ": " + Integer.toString(pathsDetails.get(p).get(detail)));
             }
         }
-        return s;
+        return sb.toString();
     }
 
     /**

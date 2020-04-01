@@ -15,9 +15,12 @@ package org.openhab.binding.miio.internal;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.util.Dictionary;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -43,6 +46,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.miio")
 @NonNullByDefault
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
+    private static final String THING_HANDLER_THREADPOOL_NAME = "thingHandler";
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
 
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
@@ -64,7 +70,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         String password = (String) properties.get("password");
         @Nullable
         String country = (String) properties.get("country");
-        cloudConnector.setCredentials(username, password, country);
+        scheduler.schedule(() -> cloudConnector.setCredentials(username, password, country), 0, TimeUnit.SECONDS);
     }
 
     @Override

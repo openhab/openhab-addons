@@ -63,7 +63,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
 
     protected @Nullable ScheduledFuture<?> pollingJob;
-    // protected MiIoBindingConfiguration configuration;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
