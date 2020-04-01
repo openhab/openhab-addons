@@ -59,9 +59,10 @@ Troubleshooting: In seldom cases (in particular together with updating the bindi
 **Knowing which panel has which id**
 
 Unfortunately it is not easy to find out which panel gets which id while this is pretty important if you have lots of them and you want to assign rules to it. 
-Don't worry: the binding comes with some helpful support in the background (this works only well for the canvas device!)
+Don't worry: the binding comes with some helpful support in the background the canvas type (this is only provided for the canvas device because triangles can have weird layouts that are hard to express in a log output)
 
 - fire up your browser and open the openhab server on port 9001 which shows the logs.
+- Set up a switch item with the channel panelLayout on the controller (see NanoRetrieveLayout below) and set the switch to true
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
 
 Compare the following output with the right picture at the beginning of the article
@@ -75,8 +76,9 @@ Compare the following output with the right picture at the beginning of the arti
 
                                     41451                                     
                                
-```                 
-
+```      
+           
+Disclaimer: this works best with square devices and not necessarily well with triangles due to the more geometrically flexible layout.
 
 ## Thing Configuration
 
@@ -114,6 +116,7 @@ The controller bridge has the following channels:
 | rhythmState         | Switch    | Connection state of the rhythm module                                  | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                    | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable          | No        |
+| panelLayout         | Switch    | Set to true will log out panel layout (returns to off automatically    | No        |
 
 A lightpanel thing has the following channels:
 
@@ -168,11 +171,18 @@ The following files provide a full example for a configuration (using a things f
 ### nanoleaf.things
 
 ```
-Bridge nanoleaf:controller:MyLightPanels [ address="192.168.1.100", port=16021, authToken="AbcDefGhiJk879LmNopqRstUv1234WxyZ", refreshInterval=60 ] {
+Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100", port=16021, authToken="AbcDefGhiJk879LmNopqRstUv1234WxyZ", refreshInterval=60 ] {
     Thing lightpanel 135 [ id=135 ]
     Thing lightpanel 158 [ id=158 ]
 }
 ```
+
+If you define your device statically in the thing file, autodiscovery of the same thing is suppressed by using
+
+* the [address="..." ]  of the controller 
+* and the [id=123] of the lightpanel
+
+in the bracket to identify the uniqueness of the discovered device. Therefore it is recommended to the give the controller a fixed ip address.
 
 Note: To generate the `authToken`:
     
@@ -203,6 +213,8 @@ String NanoleafEffect "Effect" { channel="nanoleaf:controller:MyLightPanels:effe
 Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmState" }
 Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
 Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
+Switch NanoRetrieveLayout "Nano Layout" { channel="nanoleaf:controller:D81E7A7E424E:panelLayout" }
+
 // note that the next to items use the exact same channel but the two different types Color and Dimmer to control different parameters
 Color Panel1Color "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
 Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
@@ -231,6 +243,7 @@ sitemap nanoleaf label="Nanoleaf"
             Text item=NanoleafRhythmState
             Text item=NanoleafRhythmActive
             Selection item=NanoleafRhythmSource mappings=[0="Microphone", 1="Aux"]
+            Switch item=NanoRetrieveLayout
     }
     
     Frame label="Panels" {

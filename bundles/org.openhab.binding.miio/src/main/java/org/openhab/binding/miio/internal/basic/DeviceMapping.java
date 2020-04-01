@@ -15,15 +15,18 @@ package org.openhab.binding.miio.internal.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miio.internal.MiIoCommand;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.openhab.binding.miio.internal.MiIoCommand;
 
 /**
  * Mapping devices from json
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class DeviceMapping {
 
     @SerializedName("id")
@@ -70,5 +73,4 @@ public class DeviceMapping {
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
     }
-
 }

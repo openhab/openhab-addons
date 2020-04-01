@@ -30,7 +30,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class A5_30_03_ELTAKO extends A5_30_03 {
 
     protected static final byte ALARM_ON = 0x0F;
-    protected static final byte ALARM_OFF = 0x10;
+    protected static final byte ALARM_OFF = 0x1F;
 
     public A5_30_03_ELTAKO() {
         super();

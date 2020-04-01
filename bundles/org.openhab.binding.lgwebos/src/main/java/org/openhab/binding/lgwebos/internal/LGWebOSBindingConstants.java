@@ -64,7 +64,6 @@ public class LGWebOSBindingConstants {
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_CHANNEL = "channel";
-    public static final String CHANNEL_CHANNEL_NAME = "channelName";
     public static final String CHANNEL_TOAST = "toast";
     public static final String CHANNEL_MEDIA_PLAYER = "mediaPlayer";
     public static final String CHANNEL_MEDIA_STOP = "mediaStop";

@@ -193,6 +193,17 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
                         state.setZone3Input(value);
                     }
                     break;
+                case "Z4": // Zone 4
+                    if (value.equals("ON") || value.equals("OFF")) {
+                        state.setZone4Power(value.equals("ON"));
+                    } else if (value.equals("MUON") || value.equals("MUOFF")) {
+                        state.setZone4Mute(value.equals("MUON"));
+                    } else if (StringUtils.isNumeric(value)) {
+                        state.setZone4Volume(fromDenonValue(value));
+                    } else {
+                        state.setZone4Input(value);
+                    }
+                    break;
                 case "ZM": // Main zone
                     if (value.equals("ON") || value.equals("OFF")) {
                         state.setMainZonePower(value.equals("ON"));

@@ -156,6 +156,22 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     connector.sendInputCommand(command, 3);
                     break;
 
+                case CHANNEL_ZONE4_POWER:
+                    connector.sendPowerCommand(command, 4);
+                    break;
+                case CHANNEL_ZONE4_MUTE:
+                    connector.sendMuteCommand(command, 4);
+                    break;
+                case CHANNEL_ZONE4_VOLUME:
+                    connector.sendVolumeCommand(command, 4);
+                    break;
+                case CHANNEL_ZONE4_VOLUME_DB:
+                    connector.sendVolumeDbCommand(command, 4);
+                    break;
+                case CHANNEL_ZONE4_INPUT:
+                    connector.sendInputCommand(command, 4);
+                    break;
+
                 default:
                     throw new UnsupportedCommandTypeException();
             }
@@ -172,9 +188,9 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             return false;
         }
         // Check zone count is within supported range
-        if (config.getZoneCount() < 1 || config.getZoneCount() > 3) {
+        if (config.getZoneCount() < 1 || config.getZoneCount() > 4) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "This binding supports 1 to 3 zones. Please update the zone count.");
+                    "This binding supports 1 to 4 zones. Please update the zone count.");
             return false;
         }
         return true;
@@ -325,10 +341,17 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             List<Entry<String, ChannelTypeUID>> channelsToAdd = new ArrayList<>(ZONE2_CHANNEL_TYPES.entrySet());
 
             if (zoneCount > 2) {
-                // add channels for zone 3 (more zones currently not supported)
+                // add channels for zone 3
                 channelsToAdd.addAll(ZONE3_CHANNEL_TYPES.entrySet());
+                if (zoneCount > 3) {
+                    // add channels for zone 4 (more zones currently not supported)
+                    channelsToAdd.addAll(ZONE4_CHANNEL_TYPES.entrySet());
+                } else {
+                    channelsToRemove.addAll(ZONE4_CHANNEL_TYPES.entrySet());
+                }
             } else {
                 channelsToRemove.addAll(ZONE3_CHANNEL_TYPES.entrySet());
+                channelsToRemove.addAll(ZONE4_CHANNEL_TYPES.entrySet());
             }
 
             // filter out the already existing channels
@@ -350,6 +373,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         } else {
             channelsToRemove.addAll(ZONE2_CHANNEL_TYPES.entrySet());
             channelsToRemove.addAll(ZONE3_CHANNEL_TYPES.entrySet());
+            channelsToRemove.addAll(ZONE4_CHANNEL_TYPES.entrySet());
         }
 
         // filter out the non-existing channels

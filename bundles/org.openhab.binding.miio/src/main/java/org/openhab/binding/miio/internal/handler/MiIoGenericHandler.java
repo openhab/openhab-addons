@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +29,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoGenericHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoGenericHandler.class);
 
-    @NonNullByDefault
-    public MiIoGenericHandler(Thing thing) {
-        super(thing);
+    public MiIoGenericHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
+        super(thing, miIoDatabaseWatchService);
     }
 
     @Override

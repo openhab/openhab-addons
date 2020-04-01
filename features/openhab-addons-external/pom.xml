@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>2.5.3-SNAPSHOT</version>
+    <version>2.5.4-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
+  <artifactId>openhab-addons-external</artifactId>
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons External</name>
@@ -28,11 +28,6 @@
             <phase>package</phase>
             <configuration>
               <artifacts>
-                <artifact>
-                  <file>src/main/resources/conf/cometvisu.cfg</file>
-                  <type>cfg</type>
-                  <classifier>cometvisu</classifier>
-                </artifact>
                 <artifact>
                   <file>src/main/resources/conf/voicerss.cfg</file>
                   <type>cfg</type>

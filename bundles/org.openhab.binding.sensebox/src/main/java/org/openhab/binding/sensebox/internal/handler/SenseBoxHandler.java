@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sensebox.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
 import java.math.BigDecimal;
@@ -20,11 +19,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -53,21 +55,21 @@ import org.slf4j.LoggerFactory;
  * @author Hakan Tandogan - Changed use of caching utils to ESH ExpiringCacheMap
  * @author Hakan Tandogan - Unit of Measurement support
  */
+@NonNullByDefault
 public class SenseBoxHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(SenseBoxHandler.class);
 
-    protected SenseBoxConfiguration thingConfiguration;
+    protected @NonNullByDefault({}) SenseBoxConfiguration thingConfiguration;
 
-    private SenseBoxData data = new SenseBoxData();
+    private @Nullable SenseBoxData data;
 
-    ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private static final BigDecimal ONEHUNDRED = BigDecimal.valueOf(100l);
 
     private static final String CACHE_KEY_DATA = "DATA";
 
-    private final ExpiringCacheMap<String, SenseBoxData> cache = new ExpiringCacheMap<String, SenseBoxData>(
-            CACHE_EXPIRY);
+    private final ExpiringCacheMap<String, SenseBoxData> cache = new ExpiringCacheMap<>(CACHE_EXPIRY);
 
     private final SenseBoxAPIConnection connection = new SenseBoxAPIConnection();
 
@@ -98,16 +100,16 @@ public class SenseBoxHandler extends BaseThingHandler {
             thingConfiguration.setRefreshInterval(MINIMUM_UPDATE_INTERVAL);
         }
 
+        cache.put(CACHE_KEY_DATA, () -> {
+            return connection.reallyFetchDataFromServer(senseBoxId);
+        });
+
         if (validConfig) {
             updateStatus(ThingStatus.UNKNOWN);
             startAutomaticRefresh();
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, offlineReason);
         }
-
-        cache.put(CACHE_KEY_DATA, () -> {
-            return connection.reallyFetchDataFromServer(senseBoxId);
-        });
 
         logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
@@ -116,8 +118,9 @@ public class SenseBoxHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             data = fetchData();
-            if (ThingStatus.ONLINE == data.getStatus()) {
+            if (data != null && ThingStatus.ONLINE == data.getStatus()) {
                 publishDataForChannel(channelUID.getId());
+
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -129,181 +132,191 @@ public class SenseBoxHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        stopAutomaticRefresh();
+    }
+
+    private void stopAutomaticRefresh() {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
     }
 
+    private void publishData() {
+        logger.debug("Refreshing data for box {}, scheduled after {} seconds...", thingConfiguration.getSenseBoxId(),
+                thingConfiguration.getRefreshInterval());
+
+        data = fetchData();
+        if (data != null && ThingStatus.ONLINE == data.getStatus()) {
+            publishProperties();
+
+            publishDataForChannel(CHANNEL_LOCATION);
+
+            publishDataForChannel(CHANNEL_UV_INTENSITY);
+            publishDataForChannel(CHANNEL_ILLUMINANCE);
+            publishDataForChannel(CHANNEL_PRESSURE);
+            publishDataForChannel(CHANNEL_HUMIDITY);
+            publishDataForChannel(CHANNEL_TEMPERATURE);
+            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5);
+            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10);
+
+            publishDataForChannel(CHANNEL_UV_INTENSITY_LR);
+            publishDataForChannel(CHANNEL_ILLUMINANCE_LR);
+            publishDataForChannel(CHANNEL_PRESSURE_LR);
+            publishDataForChannel(CHANNEL_HUMIDITY_LR);
+            publishDataForChannel(CHANNEL_TEMPERATURE_LR);
+            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5_LR);
+            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
+
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+    };
+
     private void startAutomaticRefresh() {
-        Runnable runnable = () -> {
-            logger.debug("Refreshing data for box {}, scheduled after {} seconds...",
-                    thingConfiguration.getSenseBoxId(), thingConfiguration.getRefreshInterval());
-
-            data = fetchData();
-            if (ThingStatus.ONLINE == data.getStatus()) {
-                publishProperties();
-
-                publishDataForChannel(CHANNEL_LOCATION);
-
-                publishDataForChannel(CHANNEL_UV_INTENSITY);
-                publishDataForChannel(CHANNEL_ILLUMINANCE);
-                publishDataForChannel(CHANNEL_PRESSURE);
-                publishDataForChannel(CHANNEL_HUMIDITY);
-                publishDataForChannel(CHANNEL_TEMPERATURE);
-                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5);
-                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10);
-
-                publishDataForChannel(CHANNEL_UV_INTENSITY_LR);
-                publishDataForChannel(CHANNEL_ILLUMINANCE_LR);
-                publishDataForChannel(CHANNEL_PRESSURE_LR);
-                publishDataForChannel(CHANNEL_HUMIDITY_LR);
-                publishDataForChannel(CHANNEL_TEMPERATURE_LR);
-                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5_LR);
-                publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
-
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        };
-
-        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, thingConfiguration.getRefreshInterval(),
+        stopAutomaticRefresh();
+        refreshJob = scheduler.scheduleWithFixedDelay(this::publishData, 0, thingConfiguration.getRefreshInterval(),
                 TimeUnit.SECONDS);
     }
 
-    private SenseBoxData fetchData() {
+    private @Nullable SenseBoxData fetchData() {
         return cache.get(CACHE_KEY_DATA);
     }
 
     private void publishProperties() {
-        thing.setProperty(PROPERTY_NAME, data.getName());
-        thing.setProperty(PROPERTY_EXPOSURE, data.getExposure());
-        thing.setProperty(PROPERTY_IMAGE_URL, data.getDescriptor().getImageUrl());
-        thing.setProperty(PROPERTY_MAP_URL, data.getDescriptor().getMapUrl());
+        SenseBoxData localData = data;
+        if (localData != null) {
+            thing.setProperty(PROPERTY_NAME, localData.getName());
+            thing.setProperty(PROPERTY_EXPOSURE, localData.getExposure());
+            thing.setProperty(PROPERTY_IMAGE_URL, localData.getDescriptor().getImageUrl());
+            thing.setProperty(PROPERTY_MAP_URL, localData.getDescriptor().getMapUrl());
+        }
     }
 
     private void publishDataForChannel(String channelID) {
-        switch (channelID) {
-            case CHANNEL_LOCATION:
-                updateState(CHANNEL_LOCATION, locationFromData(data.getLocation()));
-                break;
-            case CHANNEL_UV_INTENSITY:
-                updateState(CHANNEL_UV_INTENSITY, decimalFromSensor(data.getUvIntensity()));
-                break;
-            case CHANNEL_ILLUMINANCE:
-                updateState(CHANNEL_ILLUMINANCE, decimalFromSensor(data.getLuminance()));
-                break;
-            case CHANNEL_PRESSURE:
-                updateState(CHANNEL_PRESSURE, decimalFromSensor(data.getPressure()));
-                break;
-            case CHANNEL_HUMIDITY:
-                updateState(CHANNEL_HUMIDITY, decimalFromSensor(data.getHumidity()));
-                break;
-            case CHANNEL_TEMPERATURE:
-                updateState(CHANNEL_TEMPERATURE, decimalFromSensor(data.getTemperature()));
-                break;
-            case CHANNEL_PARTICULATE_MATTER_2_5:
-                updateState(CHANNEL_PARTICULATE_MATTER_2_5, decimalFromSensor(data.getParticulateMatter2dot5()));
-                break;
-            case CHANNEL_PARTICULATE_MATTER_10:
-                updateState(CHANNEL_PARTICULATE_MATTER_10, decimalFromSensor(data.getParticulateMatter10()));
-                break;
-            case CHANNEL_UV_INTENSITY_LR:
-                updateState(CHANNEL_UV_INTENSITY_LR, dateTimeFromSensor(data.getUvIntensity()));
-                break;
-            case CHANNEL_ILLUMINANCE_LR:
-                updateState(CHANNEL_ILLUMINANCE_LR, dateTimeFromSensor(data.getLuminance()));
-                break;
-            case CHANNEL_PRESSURE_LR:
-                updateState(CHANNEL_PRESSURE_LR, dateTimeFromSensor(data.getPressure()));
-                break;
-            case CHANNEL_HUMIDITY_LR:
-                updateState(CHANNEL_HUMIDITY_LR, dateTimeFromSensor(data.getHumidity()));
-                break;
-            case CHANNEL_TEMPERATURE_LR:
-                updateState(CHANNEL_TEMPERATURE_LR, dateTimeFromSensor(data.getTemperature()));
-                break;
-            case CHANNEL_PARTICULATE_MATTER_2_5_LR:
-                updateState(CHANNEL_PARTICULATE_MATTER_2_5_LR, dateTimeFromSensor(data.getParticulateMatter2dot5()));
-                break;
-            case CHANNEL_PARTICULATE_MATTER_10_LR:
-                updateState(CHANNEL_PARTICULATE_MATTER_10_LR, dateTimeFromSensor(data.getParticulateMatter10()));
-                break;
-            default:
-                logger.debug("Command received for an unknown channel: {}", channelID);
-                break;
+        SenseBoxData localData = data;
+        if (localData != null && isLinked(channelID)) {
+            switch (channelID) {
+                case CHANNEL_LOCATION:
+                    updateState(CHANNEL_LOCATION, locationFromData(localData.getLocation()));
+                    break;
+                case CHANNEL_UV_INTENSITY:
+                    updateState(CHANNEL_UV_INTENSITY, decimalFromSensor(localData.getUvIntensity()));
+                    break;
+                case CHANNEL_ILLUMINANCE:
+                    updateState(CHANNEL_ILLUMINANCE, decimalFromSensor(localData.getLuminance()));
+                    break;
+                case CHANNEL_PRESSURE:
+                    updateState(CHANNEL_PRESSURE, decimalFromSensor(localData.getPressure()));
+                    break;
+                case CHANNEL_HUMIDITY:
+                    updateState(CHANNEL_HUMIDITY, decimalFromSensor(localData.getHumidity()));
+                    break;
+                case CHANNEL_TEMPERATURE:
+                    updateState(CHANNEL_TEMPERATURE, decimalFromSensor(localData.getTemperature()));
+                    break;
+                case CHANNEL_PARTICULATE_MATTER_2_5:
+                    updateState(CHANNEL_PARTICULATE_MATTER_2_5,
+                            decimalFromSensor(localData.getParticulateMatter2dot5()));
+                    break;
+                case CHANNEL_PARTICULATE_MATTER_10:
+                    updateState(CHANNEL_PARTICULATE_MATTER_10, decimalFromSensor(localData.getParticulateMatter10()));
+                    break;
+                case CHANNEL_UV_INTENSITY_LR:
+                    updateState(CHANNEL_UV_INTENSITY_LR, dateTimeFromSensor(localData.getUvIntensity()));
+                    break;
+                case CHANNEL_ILLUMINANCE_LR:
+                    updateState(CHANNEL_ILLUMINANCE_LR, dateTimeFromSensor(localData.getLuminance()));
+                    break;
+                case CHANNEL_PRESSURE_LR:
+                    updateState(CHANNEL_PRESSURE_LR, dateTimeFromSensor(localData.getPressure()));
+                    break;
+                case CHANNEL_HUMIDITY_LR:
+                    updateState(CHANNEL_HUMIDITY_LR, dateTimeFromSensor(localData.getHumidity()));
+                    break;
+                case CHANNEL_TEMPERATURE_LR:
+                    updateState(CHANNEL_TEMPERATURE_LR, dateTimeFromSensor(localData.getTemperature()));
+                    break;
+                case CHANNEL_PARTICULATE_MATTER_2_5_LR:
+                    updateState(CHANNEL_PARTICULATE_MATTER_2_5_LR,
+                            dateTimeFromSensor(localData.getParticulateMatter2dot5()));
+                    break;
+                case CHANNEL_PARTICULATE_MATTER_10_LR:
+                    updateState(CHANNEL_PARTICULATE_MATTER_10_LR,
+                            dateTimeFromSensor(localData.getParticulateMatter10()));
+                    break;
+                default:
+                    logger.debug("Command received for an unknown channel: {}", channelID);
+                    break;
+            }
         }
     }
 
-    private State dateTimeFromSensor(SenseBoxSensor data) {
+    private State dateTimeFromSensor(@Nullable SenseBoxSensor sensorData) {
         State result = UnDefType.UNDEF;
 
-        if (data != null) {
-            if (data.getLastMeasurement() != null) {
-                if (StringUtils.isNotEmpty(data.getLastMeasurement().getCreatedAt())) {
-                    result = new DateTimeType(data.getLastMeasurement().getCreatedAt());
-                }
-            }
+        if (sensorData != null && sensorData.getLastMeasurement() != null
+                && StringUtils.isNotEmpty(sensorData.getLastMeasurement().getCreatedAt())) {
+            result = new DateTimeType(sensorData.getLastMeasurement().getCreatedAt());
         }
 
         return result;
     }
 
-    private State decimalFromSensor(SenseBoxSensor data) {
+    private State decimalFromSensor(@Nullable SenseBoxSensor sensorData) {
         State result = UnDefType.UNDEF;
 
-        if (data != null) {
-            if (data.getLastMeasurement() != null) {
-                if (StringUtils.isNotEmpty(data.getLastMeasurement().getValue())) {
-                    logger.debug("About to determine quantity for {} / {}", data.getLastMeasurement().getValue(), data.getUnit());
-                    BigDecimal bd = new BigDecimal(data.getLastMeasurement().getValue());
+        if (sensorData != null && sensorData.getLastMeasurement() != null
+                && StringUtils.isNotEmpty(sensorData.getLastMeasurement().getValue())) {
+            logger.debug("About to determine quantity for {} / {}", sensorData.getLastMeasurement().getValue(),
+                    sensorData.getUnit());
+            BigDecimal bd = new BigDecimal(sensorData.getLastMeasurement().getValue());
 
-                    switch (data.getUnit()) {
-                        case "%":
-                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
-                            break;
-                        case "°C":
-                            result = new QuantityType<>(bd, SIUnits.CELSIUS);
-                            break;
-                        case "Pa":
-                            result = new QuantityType<>(bd, SIUnits.PASCAL);
-                            break;
-                        case "hPa":
-                            if (BigDecimal.valueOf(10000l).compareTo(bd) < 0) {
-                                // Some stations report measurements in Pascal, but send 'hPa' as units...
-                                bd = bd.divide(ONEHUNDRED);
-                            }
-                            result = new QuantityType<>(bd, HECTO(SIUnits.PASCAL));
-                            break;
-                        case "lx":
-                            result = new QuantityType<>(bd, SmartHomeUnits.LUX);
-                            break;
-                        case "\u00b5g/m³":
-                            result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
-                            break;
-                        case "\u00b5W/cm²":
-                            result = new QuantityType<>(bd, SmartHomeUnits.MICROWATT_PER_SQUARE_CENTIMETRE);
-                            break;
-                        default:
-                            // The data provider might have configured some unknown unit, accept at least the measurement
-                            logger.debug("Could not determine unit for '{}', using default", data.getUnit());
-                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+            switch (sensorData.getUnit()) {
+                case "%":
+                    result = new QuantityType<>(bd, SmartHomeUnits.PERCENT);
+                    break;
+                case "°C":
+                    result = new QuantityType<>(bd, SIUnits.CELSIUS);
+                    break;
+                case "Pa":
+                    result = new QuantityType<>(bd, SIUnits.PASCAL);
+                    break;
+                case "hPa":
+                    if (BigDecimal.valueOf(10000l).compareTo(bd) < 0) {
+                        // Some stations report measurements in Pascal, but send 'hPa' as units...
+                        bd = bd.divide(ONEHUNDRED);
                     }
-
-                    logger.debug("State: '{}'", result);
-                }
+                    result = new QuantityType<>(bd, MetricPrefix.HECTO(SIUnits.PASCAL));
+                    break;
+                case "lx":
+                    result = new QuantityType<>(bd, SmartHomeUnits.LUX);
+                    break;
+                case "\u00b5g/m³":
+                    result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                    break;
+                case "\u00b5W/cm²":
+                    result = new QuantityType<>(bd, SmartHomeUnits.MICROWATT_PER_SQUARE_CENTIMETRE);
+                    break;
+                default:
+                    // The data provider might have configured some unknown unit, accept at least the
+                    // measurement
+                    logger.debug("Could not determine unit for '{}', using default", sensorData.getUnit());
+                    result = new QuantityType<>(bd, SmartHomeUnits.ONE);
             }
+
+            logger.debug("State: '{}'", result);
         }
 
         return result;
     }
 
-    private State locationFromData(SenseBoxLocation data) {
+    private State locationFromData(@Nullable SenseBoxLocation locationData) {
         State result = UnDefType.UNDEF;
 
-        if (data != null) {
-            result = new PointType(new DecimalType(data.getLatitude()), new DecimalType(data.getLongitude()),
-                    new DecimalType(data.getHeight()));
+        if (locationData != null) {
+            result = new PointType(new DecimalType(locationData.getLatitude()),
+                    new DecimalType(locationData.getLongitude()), new DecimalType(locationData.getHeight()));
         }
 
         return result;

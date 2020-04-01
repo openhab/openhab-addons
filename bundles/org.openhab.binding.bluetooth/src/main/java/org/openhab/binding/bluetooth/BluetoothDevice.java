@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Refactored class to use Integer instead of int, fixed bugs, diverse improvements
  */
+@NonNullByDefault
 public abstract class BluetoothDevice {
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDevice.class);
@@ -94,14 +97,20 @@ public abstract class BluetoothDevice {
     /**
      * Manufacturer id
      */
-    protected Integer manufacturer = null;
+    protected @Nullable Integer manufacturer = null;
 
     /**
      * Device name.
      * <p>
      * Uses the devices long name if known, otherwise the short name if known
      */
-    protected String name;
+    protected @Nullable String name;
+
+    protected @Nullable String model;
+    protected @Nullable String serialNumber;
+    protected @Nullable String hardwareRevision;
+    protected @Nullable String firmwareRevision;
+    protected @Nullable String softwareRevision;
 
     /**
      * List of supported services
@@ -111,12 +120,12 @@ public abstract class BluetoothDevice {
     /**
      * Last known RSSI
      */
-    protected Integer rssi = null;
+    protected @Nullable Integer rssi = null;
 
     /**
      * Last reported transmitter power
      */
-    protected Integer txPower = null;
+    protected @Nullable Integer txPower = null;
 
     /**
      * Last time when activity occurred on this device.
@@ -137,6 +146,7 @@ public abstract class BluetoothDevice {
     public BluetoothDevice(BluetoothAdapter adapter, BluetoothAddress address) {
         this.address = address;
         this.adapter = adapter;
+        this.lastSeenTime = ZonedDateTime.now();
     }
 
     /**
@@ -162,8 +172,53 @@ public abstract class BluetoothDevice {
      *
      * @return The devices name
      */
-    public String getName() {
+    public @Nullable String getName() {
         return name;
+    }
+
+    /**
+     * Returns the model of the Bluetooth device.
+     *
+     * @return The devices model, null if not known
+     */
+    public @Nullable String getModel() {
+        return model;
+    }
+
+    /**
+     * Returns the serial number of the Bluetooth device.
+     *
+     * @return The serial model, null if not known
+     */
+    public @Nullable String getSerialNumber() {
+        return serialNumber;
+    }
+
+    /**
+     * Returns the hardware revision of the Bluetooth device.
+     *
+     * @return The hardware revision, null if not known
+     */
+    public @Nullable String getHardwareRevision() {
+        return hardwareRevision;
+    }
+
+    /**
+     * Returns the firmware revision of the Bluetooth device.
+     *
+     * @return The firmware revision, null if not known
+     */
+    public @Nullable String getFirmwareRevision() {
+        return firmwareRevision;
+    }
+
+    /**
+     * Returns the software revision of the Bluetooth device.
+     *
+     * @return The software revision, null if not known
+     */
+    public @Nullable String getSoftwareRevision() {
+        return softwareRevision;
     }
 
     /**
@@ -198,7 +253,7 @@ public abstract class BluetoothDevice {
      *
      * @return an integer with manufacturer ID of the device, or null if not known
      */
-    public Integer getManufacturerId() {
+    public @Nullable Integer getManufacturerId() {
         return manufacturer;
     }
 
@@ -207,7 +262,7 @@ public abstract class BluetoothDevice {
      *
      * @return the {@link BluetoothService} or null if the service is not supported.
      */
-    public BluetoothService getServices(UUID uuid) {
+    public @Nullable BluetoothService getServices(UUID uuid) {
         return supportedServices.get(uuid);
     }
 
@@ -234,7 +289,7 @@ public abstract class BluetoothDevice {
      *
      * @return the last reported transmitter power value in dBm
      */
-    public Integer getTxPower() {
+    public @Nullable Integer getTxPower() {
         return txPower;
     }
 
@@ -256,7 +311,7 @@ public abstract class BluetoothDevice {
      *
      * @return the last RSSI value in dBm
      */
-    public Integer getRssi() {
+    public @Nullable Integer getRssi() {
         return rssi;
     }
 
@@ -267,6 +322,51 @@ public abstract class BluetoothDevice {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Set the model of the device
+     *
+     * @param model a {@link String} defining the device model
+     */
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    /**
+     * Set the serial number of the device
+     *
+     * @param model a {@link String} defining the serial number
+     */
+    public void setSerialNumberl(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    /**
+     * Set the hardware revision of the device
+     *
+     * @param model a {@link String} defining the hardware revision
+     */
+    public void setHardwareRevision(String hardwareRevision) {
+        this.hardwareRevision = hardwareRevision;
+    }
+
+    /**
+     * Set the firmware revision of the device
+     *
+     * @param model a {@link String} defining the firmware revision
+     */
+    public void setFirmwareRevision(String firmwareRevision) {
+        this.firmwareRevision = firmwareRevision;
+    }
+
+    /**
+     * Set the software revision of the device
+     *
+     * @param model a {@link String} defining the software revision
+     */
+    public void setSoftwareRevision(String softwareRevision) {
+        this.softwareRevision = softwareRevision;
     }
 
     /**
@@ -335,7 +435,7 @@ public abstract class BluetoothDevice {
      * @param uuid the {@link UUID} of the characteristic to return
      * @return the {@link BluetoothCharacteristic} or null if the characteristic is not found in the device
      */
-    public BluetoothCharacteristic getCharacteristic(UUID uuid) {
+    public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
         for (BluetoothService service : supportedServices.values()) {
             if (service.providesCharacteristic(uuid)) {
                 return service.getCharacteristic(uuid);
@@ -466,7 +566,7 @@ public abstract class BluetoothDevice {
      * @param handle the handle for the service
      * @return the {@link BluetoothService} or null if the service was not found
      */
-    protected BluetoothService getServiceByHandle(int handle) {
+    protected @Nullable BluetoothService getServiceByHandle(int handle) {
         synchronized (supportedServices) {
             for (BluetoothService service : supportedServices.values()) {
                 if (service.getHandleStart() <= handle && service.getHandleEnd() >= handle) {
@@ -483,7 +583,7 @@ public abstract class BluetoothDevice {
      * @param handle the handle for the characteristic
      * @return the {@link BluetoothCharacteristic} or null if the characteristic was not found
      */
-    protected BluetoothCharacteristic getCharacteristicByHandle(int handle) {
+    protected @Nullable BluetoothCharacteristic getCharacteristicByHandle(int handle) {
         BluetoothService service = getServiceByHandle(handle);
         if (service != null) {
             return service.getCharacteristicByHandle(handle);
@@ -498,9 +598,6 @@ public abstract class BluetoothDevice {
      * @param listener the {@link BluetoothDeviceListener} to add
      */
     public void addListener(BluetoothDeviceListener listener) {
-        if (listener == null) {
-            return;
-        }
         eventListeners.add(listener);
     }
 
@@ -575,10 +672,6 @@ public abstract class BluetoothDevice {
         StringBuilder builder = new StringBuilder();
         builder.append("BluetoothDevice [address=");
         builder.append(address);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", rssi=");
-        builder.append(rssi);
         builder.append(", manufacturer=");
         builder.append(manufacturer);
         if (BluetoothCompanyIdentifiers.get(manufacturer) != null) {
@@ -586,6 +679,20 @@ public abstract class BluetoothDevice {
             builder.append(BluetoothCompanyIdentifiers.get(manufacturer));
             builder.append(')');
         }
+        builder.append(", name=");
+        builder.append(name);
+        builder.append(", model=");
+        builder.append(model);
+        builder.append(", serialNumber=");
+        builder.append(serialNumber);
+        builder.append(", hardwareRevision=");
+        builder.append(hardwareRevision);
+        builder.append(", firmwareRevision=");
+        builder.append(firmwareRevision);
+        builder.append(", softwareRevision=");
+        builder.append(softwareRevision);
+        builder.append(", rssi=");
+        builder.append(rssi);
         builder.append(']');
         return builder.toString();
     }

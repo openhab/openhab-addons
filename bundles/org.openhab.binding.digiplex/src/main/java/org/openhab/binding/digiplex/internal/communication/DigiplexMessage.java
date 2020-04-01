@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DigiplexMessage} is a common ancestor for all commands send to/received from the PRT3 device
  *
  * @author Robert Michalak - Initial contribution
  */
+@NonNullByDefault
 public interface DigiplexMessage {
 
 }

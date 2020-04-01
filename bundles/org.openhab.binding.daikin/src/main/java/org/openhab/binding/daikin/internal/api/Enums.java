@@ -47,7 +47,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected Mode value of \"{}\"", value);
 
             // Default to auto
@@ -81,7 +80,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected FanSpeed value of \"{}\"", value);
 
             // Default to auto
@@ -113,11 +111,29 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
 
             // Default to stopped
             return STOPPED;
         }
     }
+
+    public enum HomekitMode {
+        AUTO            ("auto"),
+        COOL            ("cool"),
+        HEAT            ("heat"),
+        OFF             ("off");
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(HomekitMode.class);
+        private final String value;
+
+        HomekitMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
 }

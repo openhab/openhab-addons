@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.doorbird.internal.DoorbirdHandler;
+import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class DoorbirdUdpListener extends Thread {
     private final DoorbirdEvent event = new DoorbirdEvent();
 
     // Used for callbacks to handler
-    private final DoorbirdHandler thingHandler;
+    private final DoorbellHandler thingHandler;
 
     // UDP socket used to receive status events from doorbell
     private @Nullable DatagramSocket socket;
@@ -56,7 +56,7 @@ public class DoorbirdUdpListener extends Thread {
     private int lastDataLength;
     private long lastDataTime;
 
-    public DoorbirdUdpListener(DoorbirdHandler thingHandler) {
+    public DoorbirdUdpListener(DoorbellHandler thingHandler) {
         this.thingHandler = thingHandler;
     }
 

@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -30,9 +31,9 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
@@ -43,6 +44,7 @@ import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
+import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,31 +58,39 @@ import com.google.gson.JsonParser;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public abstract class MiIoAbstractHandler extends BaseThingHandler implements MiIoMessageListener {
     protected static final int MAX_QUEUE = 5;
 
-    protected ScheduledFuture<?> pollingJob;
-    protected MiIoBindingConfiguration configuration;
+    protected @Nullable ScheduledFuture<?> pollingJob;
+    // protected MiIoBindingConfiguration configuration;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
     protected JsonParser parser;
-    protected byte[] token;
+    protected byte[] token = new byte[0];
 
-    protected MiIoAsyncCommunication miioCom;
+    protected @Nullable MiIoAsyncCommunication miioCom;
     protected int lastId;
 
     protected Map<Integer, String> cmds = new ConcurrentHashMap<Integer, String>();
-    protected ExpiringCache<String> network;
+    protected final ExpiringCache<String> network = new ExpiringCache<String>(CACHE_EXPIRY_NETWORK, () -> {
+        int ret = sendCommand(MiIoCommand.MIIO_INFO);
+        if (ret != 0) {
+            return "id:" + ret;
+        }
+        return "failed";
+    });;
     protected static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
 
     private final Logger logger = LoggerFactory.getLogger(MiIoAbstractHandler.class);
+    protected MiIoDatabaseWatchService miIoDatabaseWatchService;
 
-    @NonNullByDefault
-    public MiIoAbstractHandler(Thing thing) {
+    public MiIoAbstractHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
         parser = new JsonParser();
+        this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
     @Override
@@ -90,7 +100,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     public void initialize() {
         logger.debug("Initializing Mi IO device handler '{}' with thingType {}", getThing().getUID(),
                 getThing().getThingTypeUID());
-        configuration = getConfigAs(MiIoBindingConfiguration.class);
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         if (!tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
@@ -142,15 +152,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     @Override
     public void dispose() {
         logger.debug("Disposing Xiaomi Mi IO handler '{}'", getThing().getUID());
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
+        final @Nullable MiIoAsyncCommunication miioCom = this.miioCom;
         if (miioCom != null) {
             lastId = miioCom.getId();
             miioCom.unregisterListener(this);
             miioCom.close();
-            miioCom = null;
+            this.miioCom = null;
         }
     }
 
@@ -159,11 +171,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected int sendCommand(MiIoCommand command, String params) {
-        if (!hasConnection()) {
-            return 0;
-        }
         try {
-            return getConnection().queueCommand(command, params);
+            final MiIoAsyncCommunication connection = getConnection();
+            return (connection != null) ? connection.queueCommand(command, params) : 0;
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
                     getThing().getThingTypeUID(), e.getLocalizedMessage());
@@ -181,9 +191,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * @return vacuum response
      */
     protected int sendCommand(String commandString) {
-        if (!hasConnection()) {
-            return 0;
-        }
+        final MiIoAsyncCommunication connection = getConnection();
         try {
             String command = commandString.trim();
             String param = "[]";
@@ -193,7 +201,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 param = command.substring(loc).trim();
                 command = command.substring(0, loc).trim();
             }
-            return miioCom.queueCommand(command, param);
+            return (connection != null) ? connection.queueCommand(command, param) : 0;
         } catch (MiIoCryptoException | IOException e) {
             disconnected(e.getMessage());
         }
@@ -201,7 +209,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected boolean skipUpdate() {
-        if (!hasConnection()) {
+        final MiIoAsyncCommunication miioCom = this.miioCom;
+        if (!hasConnection() || miioCom == null) {
             logger.debug("Skipping periodic update for '{}'. No Connection", getThing().getUID().toString());
             return true;
         }
@@ -255,37 +264,38 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     protected void disconnected(String message) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
-        try {
+        final MiIoAsyncCommunication miioCom = this.miioCom;
+        if (miioCom != null) {
             lastId = miioCom.getId();
             lastId += 10;
-        } catch (Exception e) {
-            // Ignore
         }
-        // miioCom = null;
     }
 
-    protected synchronized MiIoAsyncCommunication getConnection() {
+    protected synchronized @Nullable MiIoAsyncCommunication getConnection() {
         if (miioCom != null) {
             return miioCom;
         }
+        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
+        @Nullable
         String deviceId = configuration.deviceId;
         try {
             if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
                 logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
-                miioCom = new MiIoAsyncCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
-                        lastId, configuration.timeout);
+                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
+                        Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
                 if (miIoResponse != null) {
                     logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
                             Utils.getHex(miIoResponse.getDeviceId()), configuration.host, miIoResponse.getTimestamp(),
                             LocalDateTime.now(), miioCom.getTimeDelta());
                     miioCom.registerListener(this);
+                    this.miioCom = miioCom;
                     return miioCom;
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving Mi device ID");
-                MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, new byte[0],
-                        lastId, configuration.timeout);
+                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
+                        new byte[0], lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
                 if (miIoResponse != null) {
                     logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
@@ -299,6 +309,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     logger.debug("Using retrieved Mi device ID: {}", deviceId);
                     updateDeviceIdConfig(deviceId);
                     miioCom.registerListener(this);
+                    this.miioCom = miioCom;
                     return miioCom;
                 }
             }
@@ -312,46 +323,23 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
     }
 
-    @SuppressWarnings("null")
     private void updateDeviceIdConfig(String deviceId) {
-        if (deviceId != null) {
+        if (!deviceId.isEmpty()) {
             updateProperty(Thing.PROPERTY_SERIAL_NUMBER, deviceId);
             Configuration config = editConfiguration();
             config.put(PROPERTY_DID, deviceId);
             updateConfiguration(config);
-            configuration = getConfigAs(MiIoBindingConfiguration.class);
         } else {
             logger.debug("Could not update config with device ID: {}", deviceId);
         }
     }
 
     protected boolean initializeData() {
-        initalizeNetworkCache();
         this.miioCom = getConnection();
         return true;
     }
 
-    /**
-     * Prepares the ExpiringCache for network data
-     */
-    protected void initalizeNetworkCache() {
-        network = new ExpiringCache<String>(CACHE_EXPIRY_NETWORK, () -> {
-            try {
-                int ret = sendCommand(MiIoCommand.MIIO_INFO);
-                if (ret != 0) {
-                    return "id:" + ret;
-                }
-            } catch (Exception e) {
-                logger.debug("Error during network status refresh: {}", e.getMessage(), e);
-            }
-            return null;
-        });
-    }
-
     protected void refreshNetwork() {
-        if (network == null) {
-            initalizeNetworkCache();
-        }
         network.getValue();
     }
 
@@ -375,6 +363,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected boolean updateThingType(JsonObject miioInfo) {
+        MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         String model = miioInfo.get("model").getAsString();
         miDevice = MiIoDevices.getType(model);
         if (configuration.model == null || configuration.model.isEmpty()) {
@@ -387,7 +376,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.info("Mi Device model {} has model config: {}. Unexpected unless manual override", model,
                     configuration.model);
         }
-        if (miDevice.getThingType().equals(getThing().getThingTypeUID())) {
+        if (miDevice.getThingType().equals(getThing().getThingTypeUID())
+                && !(miDevice.getThingType().equals(THING_TYPE_UNSUPPORTED)
+                        && miIoDatabaseWatchService.getDatabaseUrl(model) != null)) {
             logger.info("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
             return true;
@@ -397,7 +388,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 changeType(model);
             } else {
                 logger.warn(
-                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless unless manual override.",
+                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless manual override.",
                         miDevice.toString(), miDevice.getThingType(), getThing().getThingTypeUID().toString(),
                         miDevice.getThingType().toString());
                 return true;
@@ -407,14 +398,16 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     /**
-     * Changes the {@link ThingType} to the right type once it is retrieved from the device.
+     * Changes the {@link org.eclipse.smarthome.core.thing.type.ThingType} to the right type once it is retrieved from
+     * the device.
      *
      * @param modelId String with the model id
      */
     private void changeType(final String modelId) {
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
         scheduler.schedule(() -> {
             ThingBuilder thingBuilder = editThing();
@@ -423,7 +416,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());
-            changeThingType(MiIoDevices.getType(modelId).getThingType(), getConfig());
+            ThingTypeUID thingTypeUID = MiIoDevices.getType(modelId).getThingType();
+            if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED)
+                    && miIoDatabaseWatchService.getDatabaseUrl(modelId) != null) {
+                thingTypeUID = THING_TYPE_BASIC;
+            }
+            changeThingType(thingTypeUID, getConfig());
         }, 10, TimeUnit.SECONDS);
     }
 
@@ -438,7 +436,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 response.getCommand(), response.getResult(), response.getResponse());
         if (response.isError()) {
             logger.debug("Error received: {}", response.getResponse().get("error"));
-            if (MiIoCommand.MIIO_INFO.equals(response.getCommand()) && network != null) {
+            if (MiIoCommand.MIIO_INFO.equals(response.getCommand())) {
                 network.invalidateValue();
             }
             return;
@@ -462,4 +460,5 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.debug("Error while handing message {}", response.getResponse(), e);
         }
     }
+
 }

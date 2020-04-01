@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum MiIoDevices {
     AIRCONDITION_A1("aux.aircondition.v1", "AUX Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_I1("idelan.aircondition.v1", "Idelan Air Conditioner", THING_TYPE_UNSUPPORTED),
@@ -32,6 +34,7 @@ public enum MiIoDevices {
     AIRMONITOR_S1("cgllc.airmonitor.s1", "Mi Air Quality Monitor S1", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_V1("zhimi.humidifier.v1", "Mi Air Humidifier", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_CA1("zhimi.humidifier.ca1", "Mi Air Humidifier", THING_TYPE_BASIC),
+    AIR_HUMIDIFIER_CB1("zhimi.humidifier.cb1", "Mi Air Humidifier 2", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_MJJSQ("deerma.humidifier.mjjsq", "Mija Smart humidifier", THING_TYPE_BASIC),
     AIR_PURIFIER1("zhimi.airpurifier.v1", "Mi Air Purifier v1", THING_TYPE_BASIC),
     AIR_PURIFIER2("zhimi.airpurifier.v2", "Mi Air Purifier v2", THING_TYPE_BASIC),

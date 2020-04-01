@@ -145,11 +145,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void mute(String mac) {
-        setVolume(mac, 0);
+        sendCommand(mac + " mixer muting 1");
     }
 
-    public void unMute(String mac, int unmuteVolume) {
-        setVolume(mac, unmuteVolume);
+    public void unMute(String mac) {
+        sendCommand(mac + " mixer muting 0");
     }
 
     public void powerOn(String mac) {
