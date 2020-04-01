@@ -284,16 +284,19 @@ public class RadioThermostatHandler extends BaseThingHandler {
                 }
                 break;
             case FAN_MODE:
-                sendCommand("fmode", cmdStr);
                 rthermData.getThermostatData().setFanMode(cmdInt);
+                updateChannel(channelUID.getId(), rthermData);
+                sendCommand("fmode", cmdStr);
                 break;
             case PROGRAM_MODE:
-                sendCommand("program_mode", cmdStr);
                 rthermData.getThermostatData().setProgramMode(cmdInt);
+                updateChannel(channelUID.getId(), rthermData);
+                sendCommand("program_mode", cmdStr);
                 break;
-            case HOLD:;
-                sendCommand("hold", cmdStr);
+            case HOLD:
                 rthermData.getThermostatData().setHold(cmdInt);
+                updateChannel(channelUID.getId(), rthermData);
+                sendCommand("hold", cmdStr);
                 break;
             case SET_POINT:
                 String cmdKey = null;
@@ -307,14 +310,12 @@ public class RadioThermostatHandler extends BaseThingHandler {
                     //don't do anything if we are not in heat or cool mode
                     break;
                 }
+                updateChannel(channelUID.getId(), rthermData);
                 sendCommand(cmdKey, cmdStr);
                 break;
             default:
                 logger.error("Unsupported command: {}", command.toString());
             }
-            
-            // update the value in the commanded channel
-            updateChannel(channelUID.getId(), rthermData);
         }
     }
 
