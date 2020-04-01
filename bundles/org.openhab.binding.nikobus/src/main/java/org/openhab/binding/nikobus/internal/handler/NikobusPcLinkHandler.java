@@ -334,7 +334,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         handler.refreshModule();
     }
 
-    private synchronized void connectIfNeeded(NikobusConnection connection) throws IOException {
+    private synchronized void connectIfNeeded(@Nullable NikobusConnection connection) throws IOException {
         if (!connection.isConnected()) {
             connection.connect();
 

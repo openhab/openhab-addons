@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Utils} class defines commonly used utility functions.
@@ -26,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Utils {
-    public static void cancel(Future<?> future) {
+    public static void cancel(@Nullable Future<?> future) {
         if (future != null) {
             future.cancel(true);
         }
@@ -42,6 +43,7 @@ public class Utils {
     }
     */
 
+    /**
     public static <String, Integer> String getKeyByValue(Map<String, Integer> map, Integer value) {
         for (Entry<String, Integer> entry : map.entrySet()) {
             if (Objects.equals(value, entry.getValue())) {
@@ -49,8 +51,8 @@ public class Utils {
             }
         }
         return null;
-    }
-    /**
+    }*/
+
     public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
         for (Entry<T, E> entry : map.entrySet()) {
             if (Objects.equals(value, entry.getValue())) {
@@ -59,5 +61,5 @@ public class Utils {
         }
         return null;
     }
-    */
+
 }
