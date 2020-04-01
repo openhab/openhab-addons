@@ -32,26 +32,6 @@ public class Utils {
             future.cancel(true);
         }
     }
-    
-    /**
-    public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
-        return map.entrySet()
-                  .stream()
-                  .filter(entry -> Objects.equals(entry.getValue(), value))
-                  .map(Map.Entry::getKey)
-                  .collect(Collectors.toSet());
-    }
-    */
-
-    /**
-    public static <String, Integer> String getKeyByValue(Map<String, Integer> map, Integer value) {
-        for (Entry<String, Integer> entry : map.entrySet()) {
-            if (Objects.equals(value, entry.getValue())) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }*/
 
     public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
         for (Entry<T, E> entry : map.entrySet()) {
