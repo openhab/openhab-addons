@@ -27,9 +27,9 @@ public class EtherRainStatusResponse {
     private String macAddress = "";
     private String serviceAccount = "";
 
-    private EtherRainOperatingStatus operatingStatus = EtherRainOperatingStatus.WAITING;
-    private EtherRainCommandStatus lastCommandStatus = EtherRainCommandStatus.ERROR;
-    private EtherRainCommandResult lastCommandResult = EtherRainCommandResult.RESULT_INCOMPLETE;
+    private EtherRainOperatingStatus operatingStatus = EtherRainOperatingStatus.WT;
+    private EtherRainCommandStatus lastCommandStatus = EtherRainCommandStatus.ER;
+    private EtherRainCommandResult lastCommandResult = EtherRainCommandResult.NC;
 
     private int lastActiveValue;
     private boolean rainSensor;

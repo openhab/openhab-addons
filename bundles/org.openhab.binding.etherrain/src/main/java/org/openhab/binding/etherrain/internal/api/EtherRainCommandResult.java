@@ -22,10 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public enum EtherRainCommandResult {
-    RESULT_OK("OK"),
-    RESULT_INTERRUPTED_RAIN("RN"),
-    RESULT_INTERUPPTED_SHORT("SH"),
-    RESULT_INCOMPLETE("NC");
+    OK("OK"),
+    RN("RN"),
+    SH("SH"),
+    NC("NC");
 
     private final String result;
 

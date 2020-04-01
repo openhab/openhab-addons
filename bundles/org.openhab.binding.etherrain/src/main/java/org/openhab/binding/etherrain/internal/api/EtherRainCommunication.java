@@ -12,18 +12,20 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -172,8 +174,6 @@ public class EtherRainCommunication {
     private List<String> sendGet(String command) throws IOException {
         String url = "http://" + address + ":" + port + "/" + command;
 
-        List<String> rVal = null;
-
         ContentResponse response;
 
         try {
@@ -187,9 +187,7 @@ public class EtherRainCommunication {
             return new LinkedList<String>();
         }
 
-        rVal = Arrays.asList(response.getContentAsString().split("\\s+"));
-
-        return rVal;
+        return new BufferedReader(new StringReader(response.getContentAsString())).lines().collect(Collectors.toList());
     }
 
     private static EtherRainUdpResponse updBroadcast() {

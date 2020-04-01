@@ -152,17 +152,17 @@ public class EtherRainHandler extends BaseThingHandler {
                 new StringType(response.getLastCommandStatus().name()));
 
         switch (response.getLastCommandResult()) {
-            case RESULT_OK:
+            case OK:
                 updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_RESULT, new StringType("OK"));
                 break;
-            case RESULT_INTERRUPTED_RAIN:
+            case RN:
                 updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_RESULT, new StringType("RAIN INTERRUPTED"));
                 break;
-            case RESULT_INTERUPPTED_SHORT:
+            case SH:
                 updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_RESULT,
                         new StringType("INTERRUPPTED SHORT"));
                 break;
-            case RESULT_INCOMPLETE:
+            case NC:
                 updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_RESULT, new StringType("DID NOT COMPLETE"));
                 break;
         }

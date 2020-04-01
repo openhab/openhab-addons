@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum EtherRainCommandStatus {
     OK("OK"),
-    ERROR("ER"),
-    UNATHORIZED("NA");
+    ER("ER"),
+    NA("NA");
 
     private final String status;
 

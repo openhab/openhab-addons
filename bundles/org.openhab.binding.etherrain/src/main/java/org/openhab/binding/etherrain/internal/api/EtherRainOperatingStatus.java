@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public enum EtherRainOperatingStatus {
-    READY("RD"),
-    WAITING("WT"),
-    BUSY("BZ");
+    RD("RD"),
+    WT("WT"),
+    BZ("BZ");
 
     private final String status;
 
@@ -32,12 +32,8 @@ public enum EtherRainOperatingStatus {
         this.status = status;
     }
 
-    public static EtherRainOperatingStatus fromString(String text) {
-        for (EtherRainOperatingStatus b : EtherRainOperatingStatus.values()) {
-            if (b.status.equalsIgnoreCase(text)) {
-                return b;
-            }
-        }
-        return BUSY;
+    public String getStatus() {
+        return status;
     }
+
 }
