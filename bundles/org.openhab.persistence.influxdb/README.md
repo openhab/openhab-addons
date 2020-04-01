@@ -1,44 +1,47 @@
 # InfluxDB (0.9 and newer) Persistence
 
-This service allows you to persist and query states using the [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) time series database.
-The persisted values can be queried from within openHAB.
-There also are nice tools on the web for visualizing InfluxDB time series, such as [Grafana](https://grafana.com/).
-
-> There are two Influxdb persistence bundles which support different InfluxDB versions.
-> This service, named `influxdb`, supports InfluxDB 0.9 and newer, and the `influxdb08` service supports InfluxDB up to version 0.8.x.
+This service allows you to persist and query states using the [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) and [InfluxDB 2.0](https://v2.docs.influxdata.com/v2.0/) time series database. The persisted values can be queried from within openHAB. There also are nice tools on the web for visualizing InfluxDB time series, such as [Grafana](http://grafana.org/).
 
 ## Database Structure
 
-The states of an item are persisted in time series with names equal to the name of the item.
-All values are stored in a field called "value" using integers or doubles, `OnOffType` and `OpenClosedType` values are stored using 0 or 1.
-The times for the entries are calculated by InfluxDB.
 
-An example entry for an item with the name "AmbientLight" would look like this:
+- This service allows you to persist and query states using the time series database.
+- The states of an item are persisted in *measurements* points with names equal to the name of the item, or the alias, if one is provided. In both variants, a *tag* named "item" is added, containing the item name. All values are stored in a *field* called "value" using integers or doubles if possible, except for `OnOffType` and `OpenClosedType` values that are stored using a boolean.
+- If configured extra tags for item category, label or type can be added fore each point.
 
-| time          | sequence_number | value |
-| ------------- | --------------- | ----- |
-| 1402243200072 | 79370001        | 6     |
+Some example entries for an item with the name "speedtest" without any further configuration would look like this:
+
+    > Query using Influx DB 2.0 syntax for 1.0 is different
+    > from(bucket: "default")
+        |> range(start: -30d)
+        |> filter(fn: (r) => r._measurement == "speedtest")
+    name: speedtest
+    
+    _time               _item     _value
+    -----               -----     ------
+    1558302027124000000 speedtest 123289369.0
+    1558332852716000000 speedtest 80423789.0
+
 
 ## Prerequisites
 
-First of all you have to setup and run an InfluxDB server.
-This is very easy and you will find good documentation on it on the [InfluxDB web site](https://docs.influxdata.com/influxdb/v1.7/).
-
-Then database and the user must be created.
-This can be done using the InfluxDB admin web interface.
-If you want to use the defaults, then create a database called `openhab` and a user with write access on the database called `openhab`.
-Choose a password and remember it.
+First of all you have to setup and run an InfluxDB 1.X or 2.X server.
+This is very easy and you will find good documentation on it on the 
+[InfluxDB web site for 2.X version](https://v2.docs.influxdata.com/v2.0/get-started/) and [InfluxDB web site for 1.X version](https://docs.influxdata.com/influxdb/v1.7/).
 
 ## Configuration
 
-This service can be configured in the file `services/influxdb.cfg`.
+| Property                           | Default                 | Required | Description                              |
+|------------------------------------|-------------------------|----------|------------------------------------------|
+| version                            | V1                      | No       | InfluxDB database version V1 for 1.X and V2 for 2.x|
+| url                                | http://127.0.0.1:8086   | No       | database URL                                                 |
+| user                               | openhab                 | No       | name of the database user, e.g. `openhab`|
+| password                           |                         | No(*)    | password of the database user you choose  |
+| token                              |                         | No(*)    | token to authenticate the database (only for V2) [Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/) |
+| db                                 | openhab                 | No       | name of the database for V1 and name of the organization for V2 |
+| retentionPolicy                    | autogen                 | No       | name of the retention policy for V1 and name of the bucket for V2 |
 
-| Property        | Default               | Required | Description                                                  |
-| --------------- | --------------------- | :------: | ------------------------------------------------------------ |
-| url             | http://127.0.0.1:8086 |    No    | database URL                                                 |
-| user            | openhab               |    No    | name of the database user, e.g. `openhab`                    |
-| password        |                       |   Yes    | password of the database user that you chose in [Prerequisites](#prerequisites) above |
-| db              | openhab               |    No    | name of the database                                         |
-| retentionPolicy | autogen               |    No    | name of the retentionPolicy. Please note starting with InfluxDB >= 1.0, the default retention policy name is no longer `default` but `autogen`. |
+(*) For 1.X version you must provide user and password, for 2.X you can use also user and password or a token. That means
+that if you use all default values at minimum you must provide a password or a token. 
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.
