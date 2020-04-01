@@ -44,7 +44,7 @@ public class CloudCrypto {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             return Base64.getEncoder().encodeToString(md.digest(inBytes));
         } catch (NoSuchAlgorithmException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -63,7 +63,7 @@ public class CloudCrypto {
             sha256Hmac.init(secretKey);
             return Base64.getEncoder().encodeToString(sha256Hmac.doFinal(cipherText));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 }

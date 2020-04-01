@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -20,8 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
+import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +42,7 @@ import com.google.gson.JsonParser;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@Component(service = CloudConnector.class)
 @NonNullByDefault
 public class CloudConnector {
 
@@ -48,16 +56,12 @@ public class CloudConnector {
     private String username = "";
     private String password = "";
     private String country = "ru,us,tw,sg,cn,de";
-
     private List<JsonObject> deviceList = new ArrayList<JsonObject>();
-    private final JsonParser parser = new JsonParser();
     private boolean connected;
-
-    private @Nullable HttpClient httpClient;
-
+    private final HttpClient httpClient;
     private @Nullable MiCloudConnector cloudConnector;
-    public static final CloudConnector CC_INSTANCE = new CloudConnector();
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
+    private final JsonParser parser = new JsonParser();
 
     private ExpiringCache<Boolean> logonCache = new ExpiringCache<Boolean>(CACHE_EXPIRY, () -> {
         return logon();
@@ -90,11 +94,18 @@ public class CloudConnector {
         return "done";// deviceList;
     });
 
-    private CloudConnector() {
+    @Activate
+    public CloudConnector(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID);
     }
 
-    public static CloudConnector getInstance() {
-        return CC_INSTANCE;
+    @Deactivate
+    public void dispose() {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.stopClient();
+        }
+        cloudConnector = null;
     }
 
     public boolean isConnected() {
@@ -110,7 +121,7 @@ public class CloudConnector {
         return false;
     }
 
-    public byte[] getMap(String mapId, String country) throws MiCloudException {
+    public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.info("Getting vacuum map {} from Xiaomi cloud server: {}", mapId, country);
         String mapCountry;
         String mapUrl = "";
@@ -119,14 +130,11 @@ public class CloudConnector {
             throw new MiCloudException("Cannot execute request. Cloudservice not available");
         }
         if (country.isEmpty()) {
-            // TODO: pick the right server in a more intelligent way
             logger.debug("Server not defined in thing. Trying servers: {}", this.country);
             for (String mapCountryServer : this.country.split(",")) {
-                ;
                 mapCountry = mapCountryServer.trim().toLowerCase();
                 mapUrl = cl.getMapUrl(mapId, mapCountry);
                 logger.debug("Map download from server {} returned {}", mapCountry, mapUrl);
-
                 if (!mapUrl.isEmpty()) {
                     break;
                 }
@@ -135,8 +143,14 @@ public class CloudConnector {
             mapCountry = country.trim().toLowerCase();
             mapUrl = cl.getMapUrl(mapId, mapCountry);
         }
-        byte[] mapData = HttpUtil.downloadData(mapUrl, null, false, -1).getBytes();
-        return mapData;
+        @Nullable
+        RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
+        if (mapData != null) {
+            return mapData;
+        } else {
+            logger.debug("Could not download '{}'", mapUrl);
+            return null;
+        }
     }
 
     public void setCredentials(@Nullable String username, @Nullable String password, @Nullable String country) {
@@ -150,36 +164,26 @@ public class CloudConnector {
         }
     }
 
-    public void setHttpClient(@NotNull HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
     private boolean logon() {
         if (username.isEmpty() || password.isEmpty()) {
             logger.info("No Xiaomi cloud credentials. Cloud connectivity diabled");
-            logger.debug("Username: {} pass: {}, country:{}", username, password.replaceAll(".", "*"), country);
+            logger.debug("Logon details: username: '{}', pass: '{}', country: '{}'", username,
+                    password.replaceAll(".", "*"), country);
             return connected;
         }
-        final HttpClient httpClient = this.httpClient;
-        if (httpClient != null) {
-            try {
-                final MiCloudConnector cl = new MiCloudConnector(username, password, httpClient);
-                this.cloudConnector = cl;
-                connected = cl.login();
-                if (connected) {
-                    getDevicesList();
-                } else {
-                    deviceListState = FAILED;
-                }
-            } catch (MiCloudException e) {
-                connected = false;
+        try {
+            final MiCloudConnector cl = new MiCloudConnector(username, password, httpClient);
+            this.cloudConnector = cl;
+            connected = cl.login();
+            if (connected) {
+                getDevicesList();
+            } else {
                 deviceListState = FAILED;
-                logger.debug("Xiaomi cloud login failed: {}", e.getMessage());
             }
-        } else {
-            logger.info("HTTP client not set. Cloud connectivity diabled");
+        } catch (MiCloudException e) {
             connected = false;
             deviceListState = FAILED;
+            logger.debug("Xiaomi cloud login failed: {}", e.getMessage());
         }
         return connected;
     }
@@ -187,7 +191,6 @@ public class CloudConnector {
     public List<JsonObject> getDevicesList() {
         refreshDeviceList.getValue();
         return deviceList;
-
     }
 
     public JsonObject getDeviceInfo(String id) {
@@ -212,7 +215,6 @@ public class CloudConnector {
                 }
             }
         }
-
         JsonObject returnvalue = new JsonObject();
         switch (devicedata.size()) {
             case 0:

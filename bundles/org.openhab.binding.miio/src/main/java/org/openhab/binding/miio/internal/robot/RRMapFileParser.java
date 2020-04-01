@@ -60,10 +60,10 @@ public class RRMapFileParser {
     private static final float MM = 50.0f;
 
     private byte[] image = new byte[] { 0 };
-    private int majorVersion;
-    private int minorVersion;
-    private int mapIndex;
-    private int mapSequence;
+    private final int majorVersion;
+    private final int minorVersion;
+    private final int mapIndex;
+    private final int mapSequence;
     private boolean isValid;
 
     private int imgHeight;
@@ -80,12 +80,12 @@ public class RRMapFileParser {
     private int roboA;
     private float gotoX = 0;
     private float gotoY = 0;
-    private Map<Integer, ArrayList<Float[]>> paths = new HashMap<>();
+    private Map<Integer, ArrayList<float[]>> paths = new HashMap<>();
     private Map<Integer, Map<String, Integer>> pathsDetails = new HashMap<>();
-    private Map<Integer, ArrayList<Float[]>> areas = new HashMap<>();
-    private ArrayList<Float[]> walls = new ArrayList<Float[]>();
-    private ArrayList<Float[]> zones = new ArrayList<Float[]>();
-    private ArrayList<int[]> obstacles = new ArrayList<int[]>();
+    private Map<Integer, ArrayList<float[]>> areas = new HashMap<>();
+    private ArrayList<float[]> walls = new ArrayList<>();
+    private ArrayList<float[]> zones = new ArrayList<>();
+    private ArrayList<int[]> obstacles = new ArrayList<>();
     private byte[] blocks = new byte[0];
 
     private final Logger logger = LoggerFactory.getLogger(RRMapFileParser.class);
@@ -137,16 +137,16 @@ public class RRMapFileParser {
                 case PATH:
                 case GOTO_PATH:
                 case GOTO_PREDICTED_PATH:
-                    ArrayList<Float[]> path = new ArrayList<Float[]>();
+                    ArrayList<float[]> path = new ArrayList<float[]>();
                     Map<String, Integer> detail = new HashMap<String, Integer>();
                     int pairs = getUInt32LE(header, 0x04) / 4;
                     detail.put(PATH_POINT_LENGTH, getUInt32LE(header, 0x08));
                     detail.put(PATH_POINT_SIZE, getUInt32LE(header, 0x0C));
                     detail.put(PATH_ANGLE, getUInt32LE(header, 0x10));
                     for (int pathpair = 0; pathpair < pairs; pathpair++) {
-                        Float x = offset - (getUInt16(getBytes(raw, blockDataStart + pathpair * 4, 2))) / MM;
-                        Float y = getUInt16(getBytes(raw, blockDataStart + pathpair * 4 + 2, 2)) / MM - top;
-                        path.add(new Float[] { x, y });
+                        float x = offset - (getUInt16(getBytes(raw, blockDataStart + pathpair * 4, 2))) / MM;
+                        float y = getUInt16(getBytes(raw, blockDataStart + pathpair * 4 + 2, 2)) / MM - top;
+                        path.add(new float[] { x, y });
                     }
                     paths.put(blocktype, path);
                     pathsDetails.put(blocktype, detail);
@@ -158,7 +158,7 @@ public class RRMapFileParser {
                         Float y0 = getUInt16(raw, blockDataStart + zonePair * 8 + 2) / MM - top;
                         Float x1 = offset - (getUInt16(raw, blockDataStart + zonePair * 8 + 4)) / MM;
                         Float y1 = getUInt16(raw, blockDataStart + zonePair * 8 + 6) / MM - top;
-                        zones.add(new Float[] { x0, y0, x1, y1 });
+                        zones.add(new float[] { x0, y0, x1, y1 });
                     }
                     break;
                 case GOTO_TARGET:
@@ -175,23 +175,23 @@ public class RRMapFileParser {
                         Float y0 = getUInt16(raw, blockDataStart + wallPair * 8 + 2) / MM - top;
                         Float x1 = offset - (getUInt16(raw, blockDataStart + wallPair * 8 + 4)) / MM;
                         Float y1 = getUInt16(raw, blockDataStart + wallPair * 8 + 6) / MM - top;
-                        walls.add(new Float[] { x0, y0, x1, y1 });
+                        walls.add(new float[] { x0, y0, x1, y1 });
                     }
                     break;
                 case NO_GO_AREAS:
                 case MFBZS_AREA:
                     int areaPairs = getUInt16(header, 0x08);
-                    ArrayList<Float[]> area = new ArrayList<Float[]>();
+                    ArrayList<float[]> area = new ArrayList<float[]>();
                     for (int areaPair = 0; areaPair < areaPairs; areaPair++) {
-                        Float x0 = offset - (getUInt16(raw, blockDataStart + areaPair * 16)) / MM;
-                        Float y0 = getUInt16(raw, blockDataStart + areaPair * 16 + 2) / MM - top;
-                        Float x1 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 4)) / MM;
-                        Float y1 = getUInt16(raw, blockDataStart + areaPair * 16 + 6) / MM - top;
-                        Float x2 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 8)) / MM;
-                        Float y2 = getUInt16(raw, blockDataStart + areaPair * 16 + 10) / MM - top;
-                        Float x3 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 12)) / MM;
-                        Float y3 = getUInt16(raw, blockDataStart + areaPair * 16 + 14) / MM - top;
-                        area.add(new Float[] { x0, y0, x1, y1, x2, y2, x3, y3 });
+                        float x0 = offset - (getUInt16(raw, blockDataStart + areaPair * 16)) / MM;
+                        float y0 = getUInt16(raw, blockDataStart + areaPair * 16 + 2) / MM - top;
+                        float x1 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 4)) / MM;
+                        float y1 = getUInt16(raw, blockDataStart + areaPair * 16 + 6) / MM - top;
+                        float x2 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 8)) / MM;
+                        float y2 = getUInt16(raw, blockDataStart + areaPair * 16 + 10) / MM - top;
+                        float x3 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 12)) / MM;
+                        float y3 = getUInt16(raw, blockDataStart + areaPair * 16 + 14) / MM - top;
+                        area.add(new float[] { x0, y0, x1, y1, x2, y2, x3, y3 });
                     }
                     areas.put(Integer.valueOf(blocktype & 0xFF), area);
                     break;
@@ -213,12 +213,12 @@ public class RRMapFileParser {
                     printBlockDetails = true;
             }
             if (logger.isTraceEnabled() || printBlockDetails) {
-                logger.info("Blocktype: {}", Integer.toString(blocktype));
-                logger.info("Header len: {}   data len: {} ", Integer.toString(blockHeaderLength),
+                logger.debug("Blocktype: {}", Integer.toString(blocktype));
+                logger.debug("Header len: {}   data len: {} ", Integer.toString(blockHeaderLength),
                         Integer.toString(blockDataLength));
-                logger.info("H: {}", Utils.getSpacedHex(header));
+                logger.debug("H: {}", Utils.getSpacedHex(header));
                 if (blockDataLength > 0) {
-                    logger.info("D: {}", (blockDataLength < 60 ? Utils.getSpacedHex(data)
+                    logger.debug("D: {}", (blockDataLength < 60 ? Utils.getSpacedHex(data)
                             : Utils.getSpacedHex(getBytes(data, 0, 60))));
                 }
                 printBlockDetails = false;
@@ -356,7 +356,7 @@ public class RRMapFileParser {
         return left;
     }
 
-    public ArrayList<Float[]> getZones() {
+    public ArrayList<float[]> getZones() {
         return zones;
     }
 
@@ -388,7 +388,7 @@ public class RRMapFileParser {
         return roboA;
     }
 
-    public Map<Integer, ArrayList<Float[]>> getPaths() {
+    public Map<Integer, ArrayList<float[]>> getPaths() {
         return paths;
     }
 
@@ -396,11 +396,11 @@ public class RRMapFileParser {
         return pathsDetails;
     }
 
-    public ArrayList<Float[]> getWalls() {
+    public ArrayList<float[]> getWalls() {
         return walls;
     }
 
-    public Map<Integer, ArrayList<Float[]>> getAreas() {
+    public Map<Integer, ArrayList<float[]>> getAreas() {
         return areas;
     }
 

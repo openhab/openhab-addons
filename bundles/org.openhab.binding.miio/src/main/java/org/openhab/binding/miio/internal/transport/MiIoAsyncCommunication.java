@@ -146,8 +146,12 @@ public class MiIoAsyncCommunication {
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command),
                     fullCommand.toString());
             concurrentLinkedQueue.add(sendCmd);
+            String tokenText = Utils.getHex(token); // Obfuscate part of the token to allow sharing of the logfiles
+            tokenText = tokenText.substring(0, 8)
+                    .concat((tokenText.length() > 8) ? tokenText.substring(8, 24).replaceAll(".", "X") : "")
+                    .concat((tokenText.length() > 24) ? tokenText.substring(24) : "");
             logger.debug("Command added to Queue {} -> {} (Device: {} token: {} Queue: {})", fullCommand.toString(), ip,
-                    Utils.getHex(deviceId), Utils.getHex(token), concurrentLinkedQueue.size());
+                    Utils.getHex(deviceId), tokenText, concurrentLinkedQueue.size());
             if (needPing) {
                 sendPing(ip);
             }

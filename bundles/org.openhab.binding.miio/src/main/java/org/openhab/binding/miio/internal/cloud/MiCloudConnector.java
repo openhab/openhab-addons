@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -61,18 +62,16 @@ public class MiCloudConnector {
             .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString());
     private static final String USERAGENT = "Android-7.1.1-1.0.0-ONEPLUS A3010-136-" + AGENT_ID
             + " APP/xiaomi.smarthome APPV/62830";
+    private static Locale locale = Locale.getDefault();
     private final JsonParser parser = new JsonParser();
+    private final String clientId;
 
-    // String
     private String username;
     private String password;
-
-    private final String clientId;
     private String userId = "";
     private String serviceToken = "";
     private String ssecurity = "";
-    int loginFailedCounter = 0;
-
+    private int loginFailedCounter = 0;
     private HttpClient httpClient;
 
     private final Logger logger = LoggerFactory.getLogger(MiCloudConnector.class);
@@ -99,7 +98,7 @@ public class MiCloudConnector {
                 addCookie(cookieStore, "deviceId", this.clientId, "mi.com");
                 addCookie(cookieStore, "deviceId", this.clientId, "xiaomi.com");
             } catch (Exception e) {
-                throw new MiCloudException("No http client cannot be started: " + e.getMessage());
+                throw new MiCloudException("No http client cannot be started: " + e.getMessage(), e);
             }
         }
     }
@@ -108,7 +107,7 @@ public class MiCloudConnector {
         try {
             this.httpClient.stop();
         } catch (Exception e) {
-            logger.debug("Error stopping httpclient :{}", e.getMessage());
+            logger.debug("Error stopping httpclient :{}", e.getMessage(), e);
         }
     }
 
@@ -168,28 +167,9 @@ public class MiCloudConnector {
         String url = getApiUrl(country) + "/home/device_list";
         Map<String, String> map = new HashMap<String, String>();
         map.put("data", "{\"dids\":[\"" + device + "\"]}");
-        logger.debug("response: {}", request(url, map));
-        return "";
-    }
-
-    public String getLatest(String model, String country) {
-        String url = getApiUrl(country) + "/home/latest_version";
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("data", "{\"model\":\"" + model + "\"}");
-        String resp;
-        try {
-            resp = request(url, map);
-            logger.debug("Response: {}", resp);
-            // CloudUtil.printDevices(resp, logger);
-            if (resp.length() > 2) {
-                // CloudUtil.saveFile(resp, country, logger);
-                return resp;
-            }
-        } catch (MiCloudException e) {
-            logger.debug("{}", e.getMessage());
-            return "";
-        }
-        return "";
+        final String response = request(url, map);
+        logger.debug("response: {}", response);
+        return response;
     }
 
     public String getDevices(String country) {
@@ -222,11 +202,7 @@ public class MiCloudConnector {
         if (this.serviceToken.isEmpty() || this.userId.isEmpty()) {
             throw new MiCloudException("Cannot execute request. service token or userId missing");
         }
-        try {
-            startClient();
-        } catch (Exception e) {
-            throw new MiCloudException("Cannot Execute request. service token or userId missing" + e.getMessage());
-        }
+        startClient();
         logger.debug("Send request: {} to {}", params.get("data"), url);
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
@@ -235,7 +211,7 @@ public class MiCloudConnector {
         request.cookie(new HttpCookie("userId", this.userId));
         request.cookie(new HttpCookie("yetAnotherServiceToken", this.serviceToken));
         request.cookie(new HttpCookie("serviceToken", this.serviceToken));
-        request.cookie(new HttpCookie("locale", "uk_GB"));
+        request.cookie(new HttpCookie("locale", locale.toString()));
         request.cookie(new HttpCookie("timezone", "GMT%2B01%3A00"));
         request.cookie(new HttpCookie("is_daylight", "1"));
         request.cookie(new HttpCookie("dst_offset", "3600000"));
@@ -265,18 +241,10 @@ public class MiCloudConnector {
         } catch (HttpResponseException e) {
             serviceToken = "";
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
-        } catch (InterruptedException e) {
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
-        } catch (TimeoutException e) {
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
-        } catch (ExecutionException e) {
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
-        } catch (IOException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
         } catch (MiIoCryptoException e) {
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage(), e);
-        } catch (Exception e) {
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage(), e);
+            logger.debug("Error while decrypting response of request to {} :{}", url, e.getMessage(), e);
         }
         return "";
     }
@@ -288,7 +256,6 @@ public class MiCloudConnector {
         cookieStore.add(URI.create("https://" + domain), cookie);
     }
 
-    // TODO: better way instead of blocking ?
     public synchronized boolean login() {
         if (!checkCredentials()) {
             return false;
@@ -331,13 +298,12 @@ public class MiCloudConnector {
                     throw new MiCloudException(responseStep3.getStatus() + responseStep3.getReason());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MiCloudException("Cannot logon to Xiaomi cloud: " + e.getMessage());
+            throw new MiCloudException("Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
         } catch (MiIoCryptoException e) {
-            throw new MiCloudException("Error decrypting. Cannot logon to Xiaomi cloud: " + e.getMessage());
+            throw new MiCloudException("Error decrypting. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
         } catch (MalformedURLException e) {
-            throw new MiCloudException("Error getting logon URL. Cannot logon to Xiaomi cloud: " + e.getMessage());
+            throw new MiCloudException("Error getting logon URL. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
         }
-
     }
 
     private String loginStep1() throws InterruptedException, TimeoutException, ExecutionException, MiCloudException {
@@ -360,7 +326,7 @@ public class MiCloudConnector {
             logger.trace("Xiaomi Login step 1 sign = {}", sign);
             return sign;
         } catch (JsonSyntaxException e) {
-            throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage());
+            throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage(), e);
         }
     }
 
@@ -456,7 +422,6 @@ public class MiCloudConnector {
                 serviceToken = cookie.getValue();
                 logger.debug("Xiaomi cloud logon succesfull.");
                 logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
-
             }
         }
         return serviceToken;

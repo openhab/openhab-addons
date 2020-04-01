@@ -56,11 +56,11 @@ import org.slf4j.LoggerFactory;
 public class RoboMapViewer extends JFrame {
 
     private static final String TITLE = "Offline Xiaomi Robot Radar Map Viewer";
-    final private JFrame parent;
-    final private RRDrawPanel rrDrawPanel = new RRDrawPanel();
-    final private JTextArea textArea = new JTextArea();
-    final private JLabel statusbarL = new JLabel();
-    final private JLabel statusbarR = new JLabel("1.0x");
+    private final JFrame parent;
+    private final RRDrawPanel rrDrawPanel = new RRDrawPanel();
+    private final JTextArea textArea = new JTextArea();
+    private final JLabel statusbarL = new JLabel();
+    private final JLabel statusbarR = new JLabel("1.0x");
 
     private float scale = 1.0f;
     private @Nullable File file;

@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -81,9 +82,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> map;
     private String lastHistoryId = "";
     private String lastMap = "";
+    private CloudConnector cloudConnector;
 
-    public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
+    public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
+            CloudConnector cloudConnector) {
         super(thing, miIoDatabaseWatchService);
+        this.cloudConnector = cloudConnector;
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         initializeData();
         status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
@@ -456,26 +460,29 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     private State getMap(String map) {
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
-        if (CloudConnector.getInstance().isConnected()) {
+        if (cloudConnector.isConnected()) {
             try {
-                byte[] mapData = CloudConnector.getInstance().getMap(map,
+                final @Nullable RawType mapDl = cloudConnector.getMap(map,
                         (configuration.cloudServer != null) ? configuration.cloudServer : "");
-                RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                if (logger.isDebugEnabled()) {
-                    String fn = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID + File.separator
-                            + map;
-                    CloudUtil.writeBytesToFileNio(mapData,
-                            fn + (new SimpleDateFormat("yyyyMMdd-HHss")).format(new Date()) + ".rrmap");
-                    logger.debug("Mapdata saved to {}", fn + ".rrmap");
-                }
-                ImageIO.write(rrMap.getImage(MAP_SCALE), "jpg", baos);
-                byte[] byteArray = baos.toByteArray();
-                if (byteArray != null && byteArray.length > 0) {
-                    return new RawType(byteArray, "image/jpeg");
-                } else {
-                    logger.debug("Mapdata empty removing image");
-                    return UnDefType.UNDEF;
+                if (mapDl != null) {
+                    byte[] mapData = mapDl.getBytes();
+                    RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    if (logger.isDebugEnabled()) {
+                        String fn = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID + File.separator
+                                + map;
+                        CloudUtil.writeBytesToFileNio(mapData,
+                                fn + (new SimpleDateFormat("yyyyMMdd-HHss")).format(new Date()) + ".rrmap");
+                        logger.debug("Mapdata saved to {}", fn + ".rrmap");
+                    }
+                    ImageIO.write(rrMap.getImage(MAP_SCALE), "jpg", baos);
+                    byte[] byteArray = baos.toByteArray();
+                    if (byteArray != null && byteArray.length > 0) {
+                        return new RawType(byteArray, "image/jpeg");
+                    } else {
+                        logger.debug("Mapdata empty removing image");
+                        return UnDefType.UNDEF;
+                    }
                 }
             } catch (MiCloudException e) {
                 logger.debug("Error getting data from Xiaomi cloud. Mapdata could not be updated: {}", e.getMessage());

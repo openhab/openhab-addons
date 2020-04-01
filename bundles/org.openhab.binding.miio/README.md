@@ -1433,6 +1433,7 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
+
 Note: cleaning map is only available with cloud access.
 
 ### Mi Air Monitor v1 (zhimi.airmonitor.v1) item file lines

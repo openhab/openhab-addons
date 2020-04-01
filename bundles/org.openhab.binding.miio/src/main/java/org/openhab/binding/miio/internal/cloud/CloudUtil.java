@@ -55,7 +55,7 @@ public class CloudUtil {
         String value = "";
         try {
             value = jsonElement.getAsJsonObject().get(element).getAsString();
-        } catch (Exception e) {
+        } catch (IllegalStateException | ClassCastException e) {
             logger.debug("Json Element {} expected but missing", element);
         }
         return value;
@@ -81,7 +81,7 @@ public class CloudUtil {
             } else {
                 logger.debug("Response is not a json object: '{}'", response);
             }
-        } catch (JsonSyntaxException | IllegalStateException e) {
+        } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             logger.info("Error while printing devices: {}", e.getMessage());
         }
 

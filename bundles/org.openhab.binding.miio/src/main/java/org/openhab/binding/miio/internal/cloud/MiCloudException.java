@@ -21,17 +21,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MiCloudException extends Exception {
+    /**
+     * required variable to avoid IncorrectMultilineIndexException warning
+     */
+    private static final long serialVersionUID = -1280858607995252321L;
 
     public MiCloudException() {
         super();
     }
 
-    public MiCloudException(String arg0) {
-        super(arg0);
+    public MiCloudException(String message) {
+        super(message);
     }
 
-    /**
-     * required variable to avoid IncorrectMultilineIndexException warning
-     */
-    private static final long serialVersionUID = -1280858607995252321L;
+    public MiCloudException(String message, Exception e) {
+        super(message, e);
+    }
 }

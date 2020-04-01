@@ -36,7 +36,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +63,15 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> miIoDiscoveryJob;
     protected @Nullable DatagramSocket clientSocket;
     private @Nullable Thread socketReceiveThread;
-    Set<String> responseIps = new HashSet<String>();
+    private Set<String> responseIps = new HashSet<String>();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
+    private final CloudConnector cloudConnector;
 
-    public MiIoDiscovery() throws IllegalArgumentException {
+    @Activate
+    public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
+        this.cloudConnector = cloudConnector;
     }
 
     @Override
@@ -137,9 +142,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
         String country = "";
         boolean isOnline = false;
-        if (CloudConnector.getInstance().isConnected()) {
-            CloudConnector.getInstance().getDevicesList();
-            JsonObject cloudInfo = CloudConnector.getInstance().getDeviceInfo(id);
+        if (cloudConnector.isConnected()) {
+            cloudConnector.getDevicesList();
+            JsonObject cloudInfo = cloudConnector.getDeviceInfo(id);
             logger.debug("Cloud Response: {}", cloudInfo.toString());
             if (cloudInfo.has("token")) {
                 token = cloudInfo.get("token").getAsString();

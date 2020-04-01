@@ -194,21 +194,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
-        final MiIoAsyncCommunication miioCom = this.miioCom;
+        final MiIoAsyncCommunication miioCom = getConnection();
         try {
-            if (!hasConnection() || skipUpdate()) {
+            if (!hasConnection() || skipUpdate() || miioCom == null) {
                 return;
-            }
-            if (miioCom == null || !initializeData()) {
-                return;
-            }
-            try {
-                miioCom.startReceiver();
-                miioCom.sendPing(configuration.host);
-            } catch (Exception e) {
-                // ignore
             }
             checkChannelStructure();
             if (!isIdentified) {
@@ -250,21 +240,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send refresh failed {}", e.getMessage(), e);
         }
-    }
-
-    @Override
-    protected boolean initializeData() {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
-        final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                Utils.hexStringToByteArray(configuration.deviceId), lastId, configuration.timeout);
-        miioCom.registerListener(this);
-        try {
-            miioCom.sendPing(configuration.host);
-        } catch (IOException e) {
-            logger.debug("ping {} failed", configuration.host);
-        }
-        this.miioCom = miioCom;
-        return true;
     }
 
     /**
@@ -332,10 +307,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 updateThing(thingBuilder.build());
             }
             return true;
-        } catch (JsonIOException e) {
-            logger.warn("Error reading database Json", e);
-        } catch (JsonSyntaxException e) {
-            logger.warn("Error reading database Json", e);
+        } catch (JsonIOException | JsonSyntaxException e) {
+            logger.warn("Error parsing database Json", e);
         } catch (IOException e) {
             logger.warn("Error reading database file", e);
         } catch (Exception e) {

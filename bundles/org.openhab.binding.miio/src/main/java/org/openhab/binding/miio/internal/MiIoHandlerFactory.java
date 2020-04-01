@@ -14,16 +14,15 @@ package org.openhab.binding.miio.internal;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import java.util.Dictionary;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import java.util.Dictionary;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
@@ -46,13 +45,13 @@ import org.osgi.service.component.annotations.Reference;
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private CloudConnector cloudConnector;
 
     @Activate
     public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService,
-            @Reference HttpClientFactory httpClientFactory) {
+            @Reference CloudConnector cloudConnector) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
-        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID);
+        this.cloudConnector = cloudConnector;
     }
 
     @Override
@@ -65,8 +64,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         String password = (String) properties.get("password");
         @Nullable
         String country = (String) properties.get("country");
-        CloudConnector.getInstance().setHttpClient(httpClient);
-        CloudConnector.getInstance().setCredentials(username, password, country);
+        cloudConnector.setCredentials(username, password, country);
     }
 
     @Override
@@ -84,7 +82,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
             return new MiIoBasicHandler(thing, miIoDatabaseWatchService);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
-            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService);
+            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector);
         }
         return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService);
     }
