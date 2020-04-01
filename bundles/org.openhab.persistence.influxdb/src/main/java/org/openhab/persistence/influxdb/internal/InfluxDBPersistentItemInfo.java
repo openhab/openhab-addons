@@ -21,7 +21,7 @@ import org.openhab.core.persistence.PersistenceItemInfo;
 /**
  * Java bean used to return information about stored items
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class InfluxDBPersistentItemInfo implements PersistenceItemInfo {

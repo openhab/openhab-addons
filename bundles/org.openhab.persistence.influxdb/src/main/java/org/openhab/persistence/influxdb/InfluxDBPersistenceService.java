@@ -63,8 +63,9 @@ import org.slf4j.LoggerFactory;
  * interfaces and specific implementation reside in {@link org.openhab.persistence.influxdb.internal.influx1} and
  * {@link org.openhab.persistence.influxdb.internal.influx2} packages
  *
- * @author Joan Pujol Espinar - Initial contribution, rewrite of InfluxDB 1.X addon based on
- *         previous work from Theo Weiss and Dominik Vorreiter
+ * @author Theo Weiss - Initial contribution, rewrite of org.openhab.persistence.influxdb
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0. Some tag code is based
+ * from not integrated branch from Dominik Vorreiter
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,

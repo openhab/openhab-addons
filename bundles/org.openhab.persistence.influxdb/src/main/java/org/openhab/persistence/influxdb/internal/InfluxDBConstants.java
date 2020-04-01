@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Constants used by this addon
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class InfluxDBConstants {

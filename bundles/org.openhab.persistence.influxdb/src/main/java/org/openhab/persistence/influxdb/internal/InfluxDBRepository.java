@@ -21,7 +21,7 @@ import org.openhab.persistence.influxdb.InfluxRow;
 /**
  * Manages InfluxDB server interaction maintaining client connection
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public interface InfluxDBRepository {

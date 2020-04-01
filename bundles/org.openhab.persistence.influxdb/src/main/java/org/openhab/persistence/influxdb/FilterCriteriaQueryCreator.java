@@ -18,7 +18,7 @@ import org.openhab.core.persistence.FilterCriteria;
 /**
  * Creates InfluxDB query sentence given a OpenHab persistence {@link FilterCriteria}
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public interface FilterCriteriaQueryCreator {

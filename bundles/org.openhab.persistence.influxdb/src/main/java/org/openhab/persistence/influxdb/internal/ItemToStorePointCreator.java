@@ -34,7 +34,7 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 /**
  * Logic to create an InfluxDB {@link InfluxPoint} from an openHAB {@link Item}
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class ItemToStorePointCreator {

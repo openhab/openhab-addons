@@ -43,7 +43,7 @@ import retrofit.RetrofitError;
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class InfluxDB1RepositoryImpl implements InfluxDBRepository {

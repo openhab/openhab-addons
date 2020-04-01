@@ -25,7 +25,7 @@ import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2RepositoryImpl
  * Factory that returns {@link InfluxDBRepository} and {@link FilterCriteriaQueryCreator} implementations
  * depending on InfluxDB version
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class RepositoryFactory {

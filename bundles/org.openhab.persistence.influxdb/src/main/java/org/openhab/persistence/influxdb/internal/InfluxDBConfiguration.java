@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Contains this addon configurable parameters
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class InfluxDBConfiguration {

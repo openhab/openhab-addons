@@ -6,7 +6,8 @@ This service allows you to persist and query states using the [InfluxDB](https:/
 
 
 - This service allows you to persist and query states using the time series database.
-- The states of an item are persisted in *measurements* points with names equal to the name of the item, or the alias, if one is provided. In both variants, a *tag* named "item" is added, containing the item name. All values are stored in a *field* called "value" using integers or doubles if possible, except for `OnOffType` and `OpenClosedType` values that are stored using a boolean.
+- The states of an item are persisted in *measurements* points with names equal to the name of the item, or the alias, if one is provided. In both variants, a *tag* named "item" is added, containing the item name.
+ All values are stored in a *field* called "value" using integers or doubles if possible,`OnOffType` and `OpenClosedType` values are stored using 0 or 1.
 - If configured extra tags for item category, label or type can be added fore each point.
 
 Some example entries for an item with the name "speedtest" without any further configuration would look like this:

@@ -28,7 +28,7 @@ import com.influxdb.query.dsl.functions.restriction.Restrictions;
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 2.0
  *
- * @author Joan Pujol Espinar - Initial contribution
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
  */
 @NonNullByDefault
 public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
