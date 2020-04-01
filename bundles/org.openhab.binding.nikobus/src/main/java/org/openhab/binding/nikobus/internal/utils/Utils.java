@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link Utils} class defines commonly used utility functions.
  *
  * @author Boris Krivonog - Initial contribution
+ * @author Wouter Denayer - support for module addresses as seen in the Niko PC tool
  */
 @NonNullByDefault
 public class Utils {
