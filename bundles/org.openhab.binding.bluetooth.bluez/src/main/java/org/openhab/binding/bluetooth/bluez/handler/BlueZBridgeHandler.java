@@ -23,6 +23,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.BlueZBluetoothDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tinyb.BluetoothException;
 import tinyb.BluetoothManager;
@@ -38,6 +40,8 @@ import tinyb.BluetoothManager;
  */
 @NonNullByDefault
 public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBluetoothDevice> {
+
+    private final Logger logger = LoggerFactory.getLogger(BlueZBridgeHandler.class);
 
     private @NonNullByDefault({}) tinyb.BluetoothAdapter adapter;
 
@@ -138,10 +142,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             return;
         }
-        // everything went fine, so lets switch to online if not already
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

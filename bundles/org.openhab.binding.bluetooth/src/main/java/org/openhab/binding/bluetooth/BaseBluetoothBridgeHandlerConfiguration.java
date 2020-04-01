@@ -24,6 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BaseBluetoothBridgeHandlerConfiguration {
     public boolean backgroundDiscovery = false;
-    public int inactiveDeviceCleanupIntervalSecs = 60;
-    public int inactiveDeviceCleanupThresholdSecs = 300;
+    public int inactiveDeviceCleanupInterval = 60;
+    public int inactiveDeviceCleanupThreshold = 300;
 }

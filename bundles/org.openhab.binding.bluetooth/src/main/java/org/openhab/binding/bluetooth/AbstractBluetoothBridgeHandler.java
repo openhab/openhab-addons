@@ -13,9 +13,9 @@
 package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -44,14 +44,14 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice> extends BaseBridgeHandler
         implements BluetoothAdapter {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(AbstractBluetoothBridgeHandler.class);
 
     // Set of discovery listeners
     private final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
     // Map of Bluetooth devices known to this bridge.
     // This contains the devices from the most recent scan
-    private final Map<BluetoothAddress, BD> devices = new ConcurrentHashMap<>();
+    private final Map<BluetoothAddress, BD> devices = new HashMap<>();
 
     // Actual discovery status.
     protected volatile boolean activeScanEnabled = false;
@@ -78,7 +78,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     public void initialize() {
         config = getConfigAs(BaseBluetoothBridgeHandlerConfiguration.class);
 
-        int intervalSecs = config.inactiveDeviceCleanupIntervalSecs;
+        int intervalSecs = config.inactiveDeviceCleanupInterval;
         inactiveRemovalJob = scheduler.scheduleWithFixedDelay(this::removeInactiveDevices, intervalSecs, intervalSecs,
                 TimeUnit.SECONDS);
     }
@@ -133,7 +133,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
         }
 
         // we remove devices we haven't seen in a while
-        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThresholdSecs)
+        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold)
                 .isAfter(device.getLastSeenTime());
     }
 
