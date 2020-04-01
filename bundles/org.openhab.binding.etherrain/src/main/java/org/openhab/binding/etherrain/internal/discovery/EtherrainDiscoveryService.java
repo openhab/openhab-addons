@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class EtherrainDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         EtherRainUdpResponse rdp = EtherRainCommunication.autoDiscover();
 
-        if (rdp != null) {
+        if (rdp.isValid()) {
             ThingUID uid = new ThingUID(EtherRainBindingConstants.ETHERRAIN_THING,
                     rdp.getAddress().replaceAll("[^A-Za-z0-9\\-_]", ""));
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)

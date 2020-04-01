@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EtherRainUdpResponse} is a encapsulation of the UDP broadcast response from the EtherRain
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
+
+@NonNullByDefault
 public class EtherRainUdpResponse {
+    private final boolean valid;
     private final String type;
     private final String address;
     private final int port;
@@ -25,11 +30,25 @@ public class EtherRainUdpResponse {
     private final String additionalParameters; // Note: version 3.77 of spec says this is unused
 
     public EtherRainUdpResponse(String type, String address, int port, String uniqueName, String additionalParameters) {
+        this.valid = true;
         this.type = type;
         this.address = address;
         this.port = port;
         this.uniqueName = uniqueName;
         this.additionalParameters = additionalParameters;
+    }
+
+    public EtherRainUdpResponse() {
+        this.valid = false;
+        this.type = "";
+        this.address = "";
+        this.port = 0;
+        this.uniqueName = "";
+        this.additionalParameters = "";
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 
     public String getType() {

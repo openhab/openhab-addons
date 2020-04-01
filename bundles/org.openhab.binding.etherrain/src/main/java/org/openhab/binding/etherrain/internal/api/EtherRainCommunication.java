@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,21 +12,20 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.etherrain.internal.EtherRainException;
@@ -39,6 +38,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
+
+@NonNullByDefault
 public class EtherRainCommunication {
 
     private static final String BROADCAST_DISCOVERY_MESSAGE = "eviro_id_request1";
@@ -72,24 +73,17 @@ public class EtherRainCommunication {
     }
 
     public EtherRainStatusResponse commandStatus() throws EtherRainException, IOException {
-        if (!commandLogin()) {
-            throw new EtherRainException("could not login");
-        }
+        commandLogin();
 
-        List<String> responseList = null;
+        List<String> responseList = sendGet("result.cgi?xs");
 
-        responseList = sendGet("result.cgi?xs");
-
-        if (responseList == null) {
+        if (responseList.isEmpty()) {
             throw new EtherRainException("Empty Response");
         }
 
-        Iterator<String> i = responseList.iterator();
-
         EtherRainStatusResponse response = new EtherRainStatusResponse();
 
-        while (i.hasNext()) {
-            String line = i.next();
+        for (String line : responseList) {
 
             if (line.matches(RESPONSE_STATUS_PATTERN)) {
                 String command = line.replaceFirst(RESPONSE_STATUS_PATTERN, "$1");
@@ -106,19 +100,19 @@ public class EtherRainCommunication {
                         response.setServiceAccount(status);
                         break;
                     case "os":
-                        response.setOperatingStatus(EtherRainOperatingStatus.fromString(status));
+                        response.setOperatingStatus(EtherRainOperatingStatus.valueOf(status.toUpperCase()));
                         break;
                     case "cs":
-                        response.setLastCommandStatus(EtherRainCommandStatus.fromString(status));
+                        response.setLastCommandStatus(EtherRainCommandStatus.valueOf(status.toUpperCase()));
                         break;
                     case "rz":
-                        response.setLastCommandResult(EtherRainCommandResult.fromString(status));
+                        response.setLastCommandResult(EtherRainCommandResult.valueOf(status.toUpperCase()));
                         break;
                     case "ri":
                         response.setLastActiveValue(Integer.parseInt(status));
                         break;
                     case "rn":
-                        response.setRainSensor(Integer.parseInt(status) == 1 ? true : false);
+                        response.setRainSensor(Integer.parseInt(status) == 1);
                         break;
                     default:
                         logger.debug("Unknown response: {}", command);
@@ -132,10 +126,8 @@ public class EtherRainCommunication {
     public boolean commandIrrigate(int delay, int zone1, int zone2, int zone3, int zone4, int zone5, int zone6,
             int zone7, int zone8) {
         try {
-            if (sendGet("result.cgi?xi=" + delay + ":" + zone1 + ":" + zone2 + ":" + zone3 + ":" + zone4 + ":" + zone5
-                    + ":" + zone6 + ":" + zone7 + ":" + zone8) == null) {
-                return false;
-            }
+            sendGet("result.cgi?xi=" + delay + ":" + zone1 + ":" + zone2 + ":" + zone3 + ":" + zone4 + ":" + zone5 + ":"
+                    + zone6 + ":" + zone7 + ":" + zone8);
         } catch (IOException e) {
             logger.warn("Could not send irrigate command to etherrain: {}", e.getMessage());
             return false;
@@ -146,9 +138,7 @@ public class EtherRainCommunication {
 
     public boolean commandClear() {
         try {
-            if (sendGet("/result.cgi?xr") == null) {
-                return false;
-            }
+            sendGet("/result.cgi?xr");
         } catch (IOException e) {
             logger.warn("Could not send clear command to etherrain: {}", e.getMessage());
             return false;
@@ -157,15 +147,20 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandLogin() throws IOException {
-        return sendGet("/ergetcfg.cgi?lu=" + ETHERRAIN_USERNAME + "&lp=" + password) != null;
+    public boolean commandLogin() throws EtherRainException {
+        try {
+            sendGet("/ergetcfg.cgi?lu=" + ETHERRAIN_USERNAME + "&lp=" + password);
+        } catch (IOException e) {
+            logger.warn("Could not send clear command to etherrain: {}", e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     public boolean commandLogout() {
         try {
-            if (sendGet("/ergetcfg.cgi?m=o") == null) {
-                return false;
-            }
+            sendGet("/ergetcfg.cgi?m=o");
         } catch (IOException e) {
             logger.warn("Could not send logout command to etherrain: {}", e.getMessage());
             return false;
@@ -177,27 +172,28 @@ public class EtherRainCommunication {
     private List<String> sendGet(String command) throws IOException {
         String url = "http://" + address + ":" + port + "/" + command;
 
+        List<String> rVal = null;
+
         ContentResponse response;
 
         try {
             response = httpClient.newRequest(url).timeout(HTTP_TIMEOUT, TimeUnit.SECONDS).send();
             if (response.getStatus() != HttpURLConnection.HTTP_OK) {
                 logger.warn("Etherrain return status other than HTTP_OK : {}", response.getStatus());
-                return null;
+                return new LinkedList<String>();
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Could not connect to Etherrain with exception: {}", e.getMessage());
-            return null;
+            return new LinkedList<String>();
         }
 
-        List<String> rVal = new BufferedReader(new StringReader(response.getContentAsString())).lines()
-                .collect(Collectors.toList());
+        rVal = Arrays.asList(response.getContentAsString().split("\\s+"));
 
         return rVal;
     }
 
     private static EtherRainUdpResponse updBroadcast() {
-        DatagramSocket c;
+        DatagramSocket c = null;
 
         // Find the server using UDP broadcast
         try {
@@ -220,16 +216,14 @@ public class EtherRainCommunication {
                 receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
                 c.receive(receivePacket);
             } catch (SocketTimeoutException e) {
-                c.close();
-                return null;
+                return new EtherRainUdpResponse();
             }
 
             // Check if the message is correct
             String message = new String(receivePacket.getData()).trim();
 
             if (message.length() == 0) {
-                c.close();
-                return null;
+                return new EtherRainUdpResponse();
             }
 
             String addressBC = receivePacket.getAddress().getHostAddress();
@@ -237,13 +231,15 @@ public class EtherRainCommunication {
             String unqiueNameBC = message.replaceAll(BROADCAST_RESPONSE_DISCOVER_PATTERN, "$2");
             int portBC = Integer.parseInt(message.replaceAll(BROADCAST_RESPONSE_DISCOVER_PATTERN, "$3"));
 
-            c.close();
-
             // NOTE: Version 3.77 of API states that Additional Parameters (a=) are not used
             // on EtherRain
-            return new EtherRainUdpResponse(deviceTypeBC, addressBC, portBC, unqiueNameBC, null);
+            return new EtherRainUdpResponse(deviceTypeBC, addressBC, portBC, unqiueNameBC, "");
         } catch (IOException ex) {
-            return null;
+            return new EtherRainUdpResponse();
+        } finally {
+            if (c != null) {
+                c.close();
+            }
         }
     }
 }

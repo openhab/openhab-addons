@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,28 +12,28 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EtherRainCommandStatus} is the response packet for Command Status
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
-public enum EtherRainCommandStatus {
-    STATUS_OK("OK"),
-    STATUS_ERROR("ER"),
-    STATUS_UNATHORIZED("NA");
 
-    protected String status;
+@NonNullByDefault
+public enum EtherRainCommandStatus {
+    OK("OK"),
+    ERROR("ER"),
+    UNATHORIZED("NA");
+
+    private final String status;
 
     EtherRainCommandStatus(String status) {
         this.status = status;
     }
 
-    public static EtherRainCommandStatus fromString(String text) {
-        for (EtherRainCommandStatus b : EtherRainCommandStatus.values()) {
-            if (b.status.equalsIgnoreCase(text)) {
-                return b;
-            }
-        }
-        return null;
+    public String getStatus() {
+        return status;
     }
+
 }

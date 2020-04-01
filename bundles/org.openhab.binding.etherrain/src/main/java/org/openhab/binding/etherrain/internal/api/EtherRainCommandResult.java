@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,29 +12,29 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EtherRainCommandResult} is the response packet for Command Result
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
+
+@NonNullByDefault
 public enum EtherRainCommandResult {
     RESULT_OK("OK"),
     RESULT_INTERRUPTED_RAIN("RN"),
     RESULT_INTERUPPTED_SHORT("SH"),
     RESULT_INCOMPLETE("NC");
 
-    protected String result;
+    private final String result;
 
     EtherRainCommandResult(String result) {
         this.result = result;
     }
 
-    public static EtherRainCommandResult fromString(String text) {
-        for (EtherRainCommandResult b : EtherRainCommandResult.values()) {
-            if (b.result.equalsIgnoreCase(text)) {
-                return b;
-            }
-        }
-        return null;
+    public String getResult() {
+        return result;
     }
+
 }

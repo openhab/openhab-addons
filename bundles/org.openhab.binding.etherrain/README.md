@@ -5,7 +5,7 @@ The Etherrain binding is used to control a sprinkler controller from Quicksmart:
 http://www.quicksmart.com/qs_etherrain.html
 
 The API exposed by the controller is fairly robust, but it is specific. 
-The binding attempts to map this API to an openhab thing while perserving the functionality.
+The binding attempts to map this API to an openHAB thing while perserving the functionality.
 
 ## Overview
 
@@ -17,7 +17,7 @@ The binding exposes the rain sensor as a contact as well as the operating status
 
 ## Supported Things
 
-The bridge represents a physical Etherrain controller and contains all channels need to control it. 
+The etherrain thing represents a physical Etherrain controller and contains all channels need to control it. 
 
 ## Discovery
 
@@ -27,7 +27,7 @@ The binding will automatically discover Etherrain controllers when a thing is ad
 
 There are two main categories of configuration. 
 The first is the configuration of the communication settings (IP address, timeout, etc.).
-The second is the initial delay and on-time for each zone when an exectute command is issued. 
+The second is the initial delay and on-time for each zone when an execute command is issued. 
 
 ## Thing Configuration
 
@@ -36,7 +36,7 @@ This is optional, it is recommended to let the binding discover and add Etherrai
 To manually configure a Etherrain controller you may specify it's host name or ip ("host"). 
 You can also optionally specify the unit's password ("pw"), port it is communicating on ("port") or refresh rate ("refresh") 
 
-```java
+```
 Bridge etherrain:etherrain:BackyardSprinkler [ host="192.168.1.100"]
 ```
 
@@ -47,7 +47,7 @@ Finally, there are commands to execute and clear the commands:
 
 items:
 
-```java
+```
 String SprinkerCommandStatus       "Command Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:commandstatus" }
 String SprinkerOperatingStatus     "Operating Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingstatus" }
 String SprinkerOperatingResult     "Operating Result [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingresult" }

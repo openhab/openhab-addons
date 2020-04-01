@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.etherrain.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EtherRainException} class defines an exception for handling
  * EtherRainExceptions
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
+
+@NonNullByDefault
 public class EtherRainException extends Exception {
     private static final long serialVersionUID = 1348095602193770716L;
 

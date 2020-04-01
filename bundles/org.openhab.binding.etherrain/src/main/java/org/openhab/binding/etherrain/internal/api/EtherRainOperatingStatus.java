@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EtherRainOperatingStatus} is the response packet for Operating Status
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
-public enum EtherRainOperatingStatus {
-    STATUS_READY("RD"),
-    STATUS_WAITING("WT"),
-    STATUS_BUSY("BZ");
 
-    protected String status;
+@NonNullByDefault
+public enum EtherRainOperatingStatus {
+    READY("RD"),
+    WAITING("WT"),
+    BUSY("BZ");
+
+    private final String status;
 
     EtherRainOperatingStatus(String status) {
         this.status = status;
@@ -34,6 +38,6 @@ public enum EtherRainOperatingStatus {
                 return b;
             }
         }
-        return null;
+        return BUSY;
     }
 }

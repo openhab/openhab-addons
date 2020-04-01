@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.etherrain.internal.EtherRainBindingConstants;
 import org.openhab.binding.etherrain.internal.EtherRainException;
 import org.openhab.binding.etherrain.internal.api.EtherRainCommunication;
@@ -66,8 +67,8 @@ public class EtherRainHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString().equals("REFRESH")) {
-            updateBridge();
+        if (command == RefreshType.REFRESH) {
+            scheduler.execute(this::updateBridge);
             return;
         } else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_EXECUTE)) {
             execute();
@@ -84,19 +85,13 @@ public class EtherRainHandler extends BaseThingHandler {
 
         device = new EtherRainCommunication(config.host, config.port, config.password, httpClient);
 
-        EtherRainStatusResponse response;
         try {
-            response = device.commandStatus();
+            device.commandStatus();
         } catch (EtherRainException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create a connection to the EtherRain");
-            logger.debug("Could not open API connection to the EtherRain device. Exception received: {}", e.toString());
-            device = null;
-            updateStatus(ThingStatus.OFFLINE);
-            return false;
-        }
-        if (response == null) {
-            logger.debug("Command Status returned null");
+            logger.debug("Could not open API connection to the EtherRain device. Exception received: {}",
+                    e.getMessage());
             device = null;
             updateStatus(ThingStatus.OFFLINE);
             return false;
@@ -125,6 +120,7 @@ public class EtherRainHandler extends BaseThingHandler {
         this.updateJob = null;
     }
 
+    @SuppressWarnings("null")
     private boolean updateBridge() {
         if (!connected || device == null) {
             connected = connectBridge();
@@ -143,34 +139,17 @@ public class EtherRainHandler extends BaseThingHandler {
         } catch (EtherRainException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create a connection to the EtherRain");
-            logger.debug("Could not open API connection to the EtherRain device. Exception received: {}", e.toString());
+            logger.debug("Could not open API connection to the EtherRain device. Exception received: {}",
+                    e.getMessage());
             device = null;
             return false;
         }
 
-        switch (response.getOperatingStatus()) {
-            case STATUS_READY:
-                updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_STATUS, new StringType("READY"));
-                break;
-            case STATUS_WAITING:
-                updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_STATUS, new StringType("WAITING"));
-                break;
-            case STATUS_BUSY:
-                updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_STATUS, new StringType("BUSY"));
-                break;
-        }
+        updateState(EtherRainBindingConstants.CHANNEL_ID_OPERATING_STATUS,
+                new StringType(response.getOperatingStatus().name()));
 
-        switch (response.getLastCommandStatus()) {
-            case STATUS_OK:
-                updateState(EtherRainBindingConstants.CHANNEL_ID_COMMAND_STATUS, new StringType("OK"));
-                break;
-            case STATUS_ERROR:
-                updateState(EtherRainBindingConstants.CHANNEL_ID_COMMAND_STATUS, new StringType("ERROR"));
-                break;
-            case STATUS_UNATHORIZED:
-                updateState(EtherRainBindingConstants.CHANNEL_ID_COMMAND_STATUS, new StringType("UNATHORIZED"));
-                break;
-        }
+        updateState(EtherRainBindingConstants.CHANNEL_ID_COMMAND_STATUS,
+                new StringType(response.getLastCommandStatus().name()));
 
         switch (response.getLastCommandResult()) {
             case RESULT_OK:
@@ -190,11 +169,7 @@ public class EtherRainHandler extends BaseThingHandler {
 
         updateState(EtherRainBindingConstants.CHANNEL_ID_RELAY_INDEX, new DecimalType(response.getLastActiveValue()));
 
-        OnOffType rs = OnOffType.OFF;
-
-        if (response.isRainSensor()) {
-            rs = OnOffType.ON;
-        }
+        OnOffType rs = OnOffType.from(response.isRainSensor());
 
         updateState(EtherRainBindingConstants.CHANNEL_ID_SENSOR_RAIN, rs);
 
@@ -216,11 +191,10 @@ public class EtherRainHandler extends BaseThingHandler {
         return true;
     }
 
+    @SuppressWarnings("null")
     private boolean clear() {
-        if (device != null) {
-            device.commandClear();
-            updateBridge();
-        }
+        device.commandClear();
+        scheduler.execute(this::updateBridge);
 
         return true;
     }
