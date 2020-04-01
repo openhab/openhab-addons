@@ -20,8 +20,8 @@ The Pulseaudio bridge is discovered through mDNS in the local network.
 
 ## Thing Configuration
 
-The Pulseaudio bridge requires the ip address (or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it.
-You can use `pactl -s <hostname> list-sinks | grep "name:"` to find the name of a sink.
+The Pulseaudio bridge requires the host (ip address or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it.
+You can use `pactl -s <ip-address|hostname> list-sinks | grep "name:"` to find the name of a sink.
 
 ## Channels
 
@@ -38,7 +38,7 @@ All devices support some of the following channels:
 ## Full Example
 ### pulseaudio.things
 ```
-Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ ipAddress="<ipAddress>", port=4712 ] {
+Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ host="<ipAddress>", port=4712 ] {
   Things:
   	Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3"] // this name corresponds to pactl list-sinks output
 	Thing source        microphone      "microphone"         @ "Room"       [name="alsa_input.pci-0000_00_14.2.analog-stereo"]
