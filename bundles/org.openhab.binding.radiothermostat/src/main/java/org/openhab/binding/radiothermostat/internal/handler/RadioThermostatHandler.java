@@ -31,7 +31,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
-import javax.xml.ws.http.HTTPException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +50,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.radiothermostat.internal.RadioThemostatHttpException;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatConfiguration;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatStateDescriptionProvider;
 import org.openhab.binding.radiothermostat.internal.json.RadioThermostatData;
@@ -476,11 +476,11 @@ public class RadioThermostatHandler extends BaseThingHandler {
                     (conn.getInputStream())));
             try {
                 if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    throw new HTTPException(conn.getResponseCode());
+                    throw new RadioThemostatHttpException("HTTP response code: " + conn.getResponseCode());
                 }
                 output = br.readLine();
                 
-            } catch (IOException | HTTPException e) {
+            } catch (IOException | RadioThemostatHttpException e) {
                 logger.error("Exception occurred during execution: {}", e.getMessage(), e);
             } finally {
                 br.close();
