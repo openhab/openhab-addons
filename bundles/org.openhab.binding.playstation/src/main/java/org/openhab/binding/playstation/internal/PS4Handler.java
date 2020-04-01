@@ -267,7 +267,7 @@ public class PS4Handler extends BaseThingHandler {
             parseSearchResponse(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Fetch status exception: {}", e.getMessage());
+            logger.debug("Fetch status exception: {}", e.getMessage());
         }
     }
 

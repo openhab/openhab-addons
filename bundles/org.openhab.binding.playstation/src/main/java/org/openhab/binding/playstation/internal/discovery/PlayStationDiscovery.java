@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.playstation.internal.discovery;
 
-import static org.openhab.binding.playstation.internal.PS4Configuration.*;
 import static org.openhab.binding.playstation.internal.PlayStationBindingConstants.*;
 
 import java.io.IOException;
