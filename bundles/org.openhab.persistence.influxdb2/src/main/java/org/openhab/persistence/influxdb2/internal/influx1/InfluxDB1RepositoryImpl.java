@@ -99,7 +99,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDB2Repository {
         final InfluxDB currentClient = client;
         if (currentClient != null) {
             try {
-                Pong pong = client.ping();
+                Pong pong = currentClient.ping();
                 String version = pong.getVersion();
                 // may be check for version >= 0.9
                 if (version != null && !version.contains("unknown")) {
