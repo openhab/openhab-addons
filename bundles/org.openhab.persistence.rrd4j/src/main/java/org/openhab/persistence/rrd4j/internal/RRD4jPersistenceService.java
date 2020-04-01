@@ -378,14 +378,15 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         RrdDefConfig defaultQuantifiable = new RrdDefConfig(DEFAULT_QUANTIFIABLE);
         // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
-        defaultNumeric.setDef("GAUGE,600,U,U,10");
+        defaultQuantifiable.setDef("GAUGE,600,U,U,10");
         // define 5 different boxes:
         // 1. granularity of 10s for the last hour
         // 2. granularity of 1m for the last week
         // 3. granularity of 15m for the last year
         // 4. granularity of 1h for the last 5 years
         // 5. granularity of 1d for the last 10 years
-        defaultNumeric.addArchives("AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:LAST,0.5,90,36500:AVERAGE,0.5,8640,3650");
+        defaultQuantifiable
+                .addArchives("AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:LAST,0.5,90,36500:AVERAGE,0.5,8640,3650");
         rrdDefs.put(DEFAULT_QUANTIFIABLE, defaultQuantifiable);
 
         RrdDefConfig defaultOther = new RrdDefConfig(DEFAULT_OTHER);
