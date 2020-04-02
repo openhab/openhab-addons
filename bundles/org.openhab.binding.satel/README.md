@@ -55,6 +55,10 @@ Example:
 Bridge satel:ethm-1:home [ host="192.168.0.2", refresh=1000, userCode="1234", encryptionKey="abcdefgh" ]
 ```
 
+**NOTE:** There can be only one client connected to ETHM-1 module. 
+It does not accept new connections if there is already a connection established. 
+In case you have troubles connecting to the system using this module, please make sure there is no other client (for example installed 1.x version of the binding) already connected to it.
+
 ### int-rs bridge
 
 You can configure the following settings for this bridge:
@@ -218,6 +222,8 @@ Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 
 ### output
 
+**NOTE:** You can change state of mono/bistable outputs only.
+
 | Name          | Type   | Description                                               |
 |---------------|--------|-----------------------------------------------------------|
 | state         | Switch | State of the output                                       |
@@ -243,7 +249,9 @@ Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 | grade23_set     | Switch   | Active when Grade2/Grade3 option is set in the system                                                                              |
 | user_code       | String   | Accepts string commands that override configured user code. Send empty string to revert user code to the one in the configuration. |
 
-### event-log
+### event-log (deprecated)
+
+These channels and the thing will be removed in the future release of the binding. Please use `readEvent` rule action instead.
 
 | Name        | Type     | Description                                                                            |
 |-------------|----------|----------------------------------------------------------------------------------------|
@@ -260,6 +268,31 @@ Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 | temperature   | Number:Temperature | Current temperature in the zone                           |
 | device_lobatt | Switch             | Indicates low battery level in the wireless device        |
 | device_nocomm | Switch             | Indicates communication troubles with the wireless device |
+
+## Rule Actions
+
+### readEvent
+
+This action allows you to read one record from the event log placed at index given by input parameter. 
+The result of this action is compatible with channels of `event-log` thing and contains following values:
+
+| Name        | Type          | Description                                                                            |
+|-------------|---------------|----------------------------------------------------------------------------------------|
+| index       | Number        | Index of this record in the event log.                                                 |
+| prev_index  | Number        | Index of the previous record in the event log. Use this value to iterate over the log. |
+| timestamp   | ZonedDateTime | Date and time when the event happened.                                                 |
+| description | String        | Textual description of the event.                                                      |
+| details     | String        | Details about the event, usually list of objects related to the event.                 |
+
+Usage:
+
+```
+    val actions = getActions("satel", "satel:event-log:home:EventLog")
+    val eventRec = actions.readEvent(-1)
+    logInfo("EventLog", eventRec.get("description"))
+```
+
+**NOTE:** To have this action available, you must have `event-log` thing configured in openHAB.
 
 ## Full Example
 
@@ -295,11 +328,6 @@ Rollershutter KITCHEN_BLIND "Kitchen blind" (Satel) { channel="satel:shutter:hom
 Switch SYSTEM_TROUBLES "Troubles in the system" (Satel) { channel="satel:system:home:System:troubles" }
 String KEYPAD_CHAR ">" <none> (Satel)
 String USER_CODE "User code" (Satel) { channel="satel:system:home:System:user_code" }
-Number EVENT_LOG_IDX "Event log - current index [%d]" (Satel) { channel="satel:event-log:home:EventLog:index" }
-Number EVENT_LOG_PREV "Event log - previous index [%d]" (Satel) { channel="satel:event-log:home:EventLog:prev_index" }
-DateTime EVENT_LOG_TIME "Event log - time [%1$tF %1$tR]" (Satel) { channel="satel:event-log:home:EventLog:timestamp" }
-String EVENT_LOG_DESCR "Event log - description [%s]" (Satel) { channel="satel:event-log:home:EventLog:description" }
-String EVENT_LOG_DET "Event log - details [%s]" (Satel) { channel="satel:event-log:home:EventLog:details" }
 Switch SIREN_LOBATT "Siren: low battery level" (Satel) { channel="satel:output:home:Siren:device_lobatt" }
 Switch SIREN_NOCOMM "Siren: no communication" (Satel) { channel="satel:output:home:Siren:device_nocomm" }
 Number:Temperature KITCHEN_TEMP "Kitchen temperature [%.1f °C]" <temperature> (Satel) { channel="satel:atd-100:home:KitchenTemp:temperature" }
@@ -344,8 +372,6 @@ Frame label="Alarm system" {
 var String userCode = ""
 var Timer keypadTimer = null
 var Timer userCodeTimer = null
-var int eventLogCounter = 0
-var String eventLogMsgBody = ""
 
 rule "Keypad char entered"
 when
@@ -381,34 +407,30 @@ then
     ]
 end
 
-rule "Send event log start"
+rule "Send event log"
 when
     Item Alarms changed to ON
 then
-    eventLogCounter = 0
-    eventLogMsgBody = ""
-    EVENT_LOG_PREV.postUpdate(NULL)
-    EVENT_LOG_IDX.sendCommand(-1)
-end
-
-rule "Send event log next"
-when
-    Item EVENT_LOG_PREV changed
-then
-    if (EVENT_LOG_PREV.state == NULL) {
-        
-    } else if (eventLogCounter == 30) {
-        sendMail("my@address.net", "Alarm system log", eventLogMsgBody)
-        // prevent initiating reading when index item is restored during OH startup
-        EVENT_LOG_IDX.postUpdate(NULL)
-    } else {
-        eventLogMsgBody += "\n" + (EVENT_LOG_TIME.state as DateTimeType).format("%1$tF %1$tR") + ": " + EVENT_LOG_DESCR.state
-        if (EVENT_LOG_DET.state != NULL && EVENT_LOG_DET.state != "") {
-            eventLogMsgBody += " - " + EVENT_LOG_DET.state
-        }
-        eventLogCounter += 1
-        EVENT_LOG_IDX.sendCommand(EVENT_LOG_PREV.state)
+    val actions = getActions("satel", "satel:event-log:home:EventLog")
+    if (null === actions) {
+        logInfo("EventLog", "Actions not found, check thing ID")
+        return
     }
+    logInfo("EventLog", "Start")
+    var msgBody = ""
+    var eventIdx = -1
+    (1..10).forEach[
+        val eventRec = actions.readEvent(eventIdx)
+        val details = eventRec.get("details")
+        msgBody += "\n" + String::format("%1$tF %1$tR", eventRec.get("timestamp")) + ": " + eventRec.get("description")
+        if (details != NULL && details != "") {
+             msgBody += " - " + details
+        }
+        eventIdx = eventRec.get("prev_index")
+    ]
+    logInfo("EventLog", "End")
+    // sending notifications via mail requires the mail binding
+    getActions("mail","mail:smtp:local").sendMail("you@email.net", "Event log", msgBody)
 end
 ```
 
