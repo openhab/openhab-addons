@@ -190,10 +190,9 @@ public class EtherRainHandler extends BaseThingHandler {
         return true;
     }
 
-    @SuppressWarnings("null")
     private boolean clear() {
-        device.commandClear();
-        scheduler.execute(this::updateBridge);
+        this.device.commandClear();
+        updateBridge();
 
         return true;
     }

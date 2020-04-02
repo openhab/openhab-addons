@@ -129,8 +129,8 @@ public class EtherRainCommunication {
         return response;
     }
 
-    public boolean commandIrrigate(int delay, int zone1, int zone2, int zone3, int zone4, int zone5, int zone6,
-            int zone7, int zone8) {
+    public synchronized boolean commandIrrigate(int delay, int zone1, int zone2, int zone3, int zone4, int zone5,
+            int zone6, int zone7, int zone8) {
         try {
             sendGet("result.cgi?xi=" + delay + ":" + zone1 + ":" + zone2 + ":" + zone3 + ":" + zone4 + ":" + zone5 + ":"
                     + zone6 + ":" + zone7 + ":" + zone8);
@@ -142,7 +142,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandClear() {
+    public synchronized boolean commandClear() {
         try {
             sendGet("/result.cgi?xr");
         } catch (IOException e) {
@@ -153,7 +153,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandLogin() throws EtherRainException {
+    public synchronized boolean commandLogin() throws EtherRainException {
         try {
             sendGet("/ergetcfg.cgi?lu=" + ETHERRAIN_USERNAME + "&lp=" + password);
         } catch (IOException e) {
@@ -164,7 +164,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandLogout() {
+    public synchronized boolean commandLogout() {
         try {
             sendGet("/ergetcfg.cgi?m=o");
         } catch (IOException e) {
@@ -175,7 +175,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    private List<String> sendGet(String command) throws IOException {
+    private synchronized List<String> sendGet(String command) throws IOException {
         String url = "http://" + address + ":" + port + "/" + command;
 
         ContentResponse response;
