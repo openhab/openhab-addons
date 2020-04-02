@@ -32,6 +32,7 @@ public class WizLightingBindingConstants {
      * The binding id.
      */
     public static final String BINDING_ID = "wizlighting";
+    public static final String CURRENT_BINDING_VERSION = "v0.02.01";
 
     /**
      * List of all Thing Type UIDs.
@@ -113,7 +114,9 @@ public class WizLightingBindingConstants {
 
     // -------------- Bulb Properties ----------------
 
+    public static final String PROPERTY_BINDING_VERSION = "bindingVersion";
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
+
     public static final String PROPERTY_HOME_ID = "homeId";
     public static final String PROPERTY_ROOM_ID = "roomId";
     public static final String PROPERTY_HOME_LOCK = "homeLock";

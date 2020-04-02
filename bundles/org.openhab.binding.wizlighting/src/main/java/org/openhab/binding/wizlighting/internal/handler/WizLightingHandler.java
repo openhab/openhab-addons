@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.wizlighting.internal.config.WizLightingDeviceConfiguration;
@@ -334,6 +335,13 @@ public class WizLightingHandler extends BaseThingHandler {
         if (ValidationUtils.isMacNotValid(config.bulbMacAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
         }
+        // If the binding was updated, change the thing type back to itself to force channels to be reloaded from XML.
+        // This allows new channels to be added or old channels to be modified as the binding is updated without forcing
+        // users to go through the tedium of deleting and re-creating all of their things.
+        if (wasBindingUpdated()) {
+            changeThingType(this.thing.getThingTypeUID(), this.thing.getConfiguration());
+            return;
+        }
         updateBulbProperties();
         initGetStatusAndKeepAliveThread();
         fullyInitialized = true;
@@ -555,6 +563,7 @@ public class WizLightingHandler extends BaseThingHandler {
             if (responseResult != null) {
                 // Update all the thing properties based on the result
                 Map<String, String> thingProperties = new HashMap<String, String>();
+                thingProperties.put(PROPERTY_BINDING_VERSION, CURRENT_BINDING_VERSION);
                 thingProperties.put(PROPERTY_VENDOR, "WiZ Connected");
                 thingProperties.put(PROPERTY_FIRMWARE_VERSION, responseResult.fwVersion);
                 thingProperties.put(PROPERTY_MAC_ADDRESS, responseResult.mac);
@@ -577,8 +586,7 @@ public class WizLightingHandler extends BaseThingHandler {
         } else {
             logger.debug("No response to registration request from bulb at {} - {}", config.bulbIpAddress,
                     config.bulbMacAddress);
-            // Not calling it "gone" because it's probably just been powered off and will be
-            // back any time
+            // Not calling it "gone" because it's probably just been powered off and will beback any time
             updateStatus(ThingStatus.OFFLINE);
         }
     }
@@ -615,6 +623,27 @@ public class WizLightingHandler extends BaseThingHandler {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
+    }
+
+    private synchronized boolean wasBindingUpdated() {
+        // Check if the binding has been updated
+        boolean updatedBinding = true;
+        @Nullable
+        String lastBindingVersion = this.getThing().getProperties().get(PROPERTY_BINDING_VERSION);
+        updatedBinding = !CURRENT_BINDING_VERSION.equals(lastBindingVersion);
+        if (updatedBinding) {
+            logger.info("WiZ lighting binding has been updated.");
+            logger.info("Current version is {}, prior version was {}.", CURRENT_BINDING_VERSION, lastBindingVersion);
+
+            // Update the thing with the new property value
+            final Map<String, String> newProperties = new HashMap<>(thing.getProperties());
+            newProperties.put(PROPERTY_BINDING_VERSION, CURRENT_BINDING_VERSION);
+
+            final ThingBuilder thingBuilder = editThing();
+            thingBuilder.withProperties(newProperties);
+            updateThing(thingBuilder.build());
+        }
+        return updatedBinding;
     }
 
     // SETTERS AND GETTERS
