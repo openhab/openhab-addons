@@ -4,36 +4,13 @@
 	<thing-type id="sagercaster">
 		<label>SagerCaster Thing</label>
 		<description>This thing represents a forecast for a given location</description>
-
-		<channels>
-			<channel id="forecast" typeId="forecast" />
-			<channel id="velocity" typeId="velocity" />
-			<channel id="velocity-beaufort" typeId="wind-speed-beaufort">
-				<label>Wind Velocity</label>
-			</channel>			
-			<channel id="wind-from" typeId="wind-direction">
-				<label>Wind From</label>
-			</channel>  
-			<channel id="wind-to" typeId="wind-direction">
-				<label>Wind To</label>
-			</channel>		   
-			<channel id="wind-evolution" typeId="wind-evolution" />
-			<channel id="pressure-trend" typeId="trend">
-				<label>Pressure Trend</label>
-				<description>Pressure Evolution trend over observation delay</description>			
-			</channel>
-			<channel id="temperature-trend" typeId="trend" >
-				<label>Temperature Trend</label>
-				<description>Temperature Evolution trend over observation delay</description>			
-			</channel>
-			<channel id="cloudiness" typeId="cloudiness" />
-			<channel id="is-raining" typeId="is-raining" />
-			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
-			<channel id="pressure" typeId="pressure" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="wind-angle" typeId="wind-angle-rw"/>
-		</channels>
 		
+		
+		<channel-groups>
+			<channel-group id="input" typeId="input" />
+			<channel-group typeId="output" id="output" />
+		</channel-groups>
+	
 		<config-description>
 			<parameter name="location" type="text" required="true"
 				pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[,]\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$">
@@ -50,6 +27,47 @@
 			
 		</config-description>
 	</thing-type>
+	
+	
+	<channel-group-type id="input">
+		<label>Inputs</label>
+		<description>The channels used to build the forecast results</description>
+		<channels>
+			<channel id="cloudiness" typeId="cloudiness" />
+			<channel id="is-raining" typeId="is-raining" />
+			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="wind-angle" typeId="wind-angle-rw"/>
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="output">
+		<label>Results</label>
+		<description>Results of the Sager Weather Caster algorithm</description>
+		<channels>
+			<channel id="forecast" typeId="forecast" />
+			<channel id="velocity" typeId="velocity" />
+			<channel id="velocity-beaufort" typeId="wind-speed-beaufort">
+				<label>Wind Velocity</label>
+			</channel>
+			<channel id="wind-from" typeId="wind-direction">
+				<label>Wind From</label>
+			</channel>
+			<channel id="wind-to" typeId="wind-direction">
+				<label>Wind To</label>
+			</channel>		 
+			<channel id="wind-evolution" typeId="wind-evolution" />
+			<channel id="pressure-trend" typeId="trend">
+				<label>Pressure Trend</label>
+				<description>Pressure Evolution trend over observation delay</description>
+			</channel>
+			<channel id="temperature-trend" typeId="trend" >
+				<label>Temperature Trend</label>
+				<description>Temperature Evolution trend over observation delay</description>
+			</channel>
+		</channels>
+	</channel-group-type>	
 	
 	<channel-type id="forecast">
 		<item-type>String</item-type>
@@ -146,8 +164,8 @@
 		
 	<channel-type id="trend" advanced="true">
 		<item-type>String</item-type>
-		<label>Pressure Trend</label>
-		<description>Pressure evolution trend over observation delay</description>
+		<label>Measure Trend</label>
+		<description>Measure evolution trend over observation delay</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="1">Rising Rapidly</option>
@@ -202,8 +220,6 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state pattern="%.1f %unit%" />
 	</channel-type>
-	
-
 </thing:thing-descriptions>

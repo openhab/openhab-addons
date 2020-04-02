@@ -179,8 +179,10 @@ public class SagerCasterHandler extends BaseThingHandler {
                             currentTemp = newTemperature.intValue();
                             QuantityType<Temperature> agedTemperature = temperatureCache.getAgedValue();
                             if (agedTemperature != null) {
-                                // TODO : add temperature evolution trend
-                                // https://www.sciencedirect.com/topics/engineering/outdoor-air-temperature
+                                double delta = newTemperature.doubleValue() - agedTemperature.doubleValue();
+                                String trend = (delta > 3) ? "1"
+                                        : (delta > 0.3) ? "2" : (delta > -0.3) ? "3" : (delta > -3) ? "4" : "5";
+                                updateState(CHANNEL_TEMPERATURETREND, new StringType(trend));
                             }
                         }
                     }
