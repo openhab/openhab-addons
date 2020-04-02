@@ -16,26 +16,59 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.persistence.influxdb.InfluxRow;
 
 /**
  * Manages InfluxDB server interaction maintaining client connection
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public interface InfluxDBRepository {
+    /**
+     * Returns if the client is successfully connected to server
+     *
+     * @return True if it's connected, otherwise false
+     */
     boolean isConnected();
 
+    /**
+     * Connect to InfluxDB server
+     *
+     * @return True if successful, otherwise false
+     */
     boolean connect();
 
+    /**
+     * Disconnect from InfluxDB server
+     */
     void disconnect();
 
+    /**
+     * Check if connection is currently ready
+     *
+     * @return True if its ready, otherwise false
+     */
     boolean checkConnectionStatus();
 
+    /**
+     * Return all stored item names with it's count of stored points
+     *
+     * @return Map with <ItemName,ItemCount> entries
+     */
     Map<String, Integer> getStoredItemsCount();
 
+    /**
+     * Executes Flux query
+     *
+     * @param query Query
+     * @return Query results
+     */
     List<InfluxRow> query(String query);
 
+    /**
+     * Write point to database
+     *
+     * @param influxPoint Point to write
+     */
     void write(InfluxPoint influxPoint);
 }

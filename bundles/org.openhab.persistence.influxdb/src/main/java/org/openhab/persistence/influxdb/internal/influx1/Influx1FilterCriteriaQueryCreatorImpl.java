@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
-import org.openhab.persistence.influxdb.FilterCriteriaQueryCreator;
+import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution. Most code has been moved from
+ *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService} where it was in previous version
  */
 @NonNullByDefault
 public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
@@ -38,7 +39,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     }
 
     @Override
-    public String createQuery(FilterCriteria filter, String bucket) {
+    public String createQuery(FilterCriteria filter, String retentionPolicy) {
         StringBuffer query = new StringBuffer();
         query.append("select ").append(InfluxDBConstants.COLUMN_VALUE_NAME).append(' ').append("from \"")
                 .append(configuration.getRetentionPolicy()).append("\".");

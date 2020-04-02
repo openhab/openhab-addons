@@ -10,12 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb;
+package org.openhab.persistence.influxdb.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
-import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
-import org.openhab.persistence.influxdb.internal.UnnexpectedConditionException;
 import org.openhab.persistence.influxdb.internal.influx1.Influx1FilterCriteriaQueryCreatorImpl;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
 import org.openhab.persistence.influxdb.internal.influx2.Influx2FilterCriteriaQueryCreatorImpl;
@@ -25,7 +22,7 @@ import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2RepositoryImpl
  * Factory that returns {@link InfluxDBRepository} and {@link FilterCriteriaQueryCreator} implementations
  * depending on InfluxDB version
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class RepositoryFactory {

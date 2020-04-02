@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb;
+package org.openhab.persistence.influxdb.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
@@ -18,9 +18,16 @@ import org.openhab.core.persistence.FilterCriteria;
 /**
  * Creates InfluxDB query sentence given a OpenHab persistence {@link FilterCriteria}
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public interface FilterCriteriaQueryCreator {
-    String createQuery(FilterCriteria criteria, String bucket);
+    /**
+     * Create query from {@link FilterCriteria}
+     * 
+     * @param criteria Criteria to create query from
+     * @param retentionPolicy Name of the retentionPolicy/bucket to use in query
+     * @return Created query as an String
+     */
+    String createQuery(FilterCriteria criteria, String retentionPolicy);
 }

@@ -19,14 +19,13 @@ import java.util.StringJoiner;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.persistence.influxdb.InfluxDBVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Contains this addon configurable parameters
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class InfluxDBConfiguration {

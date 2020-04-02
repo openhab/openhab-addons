@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Conversion logic between openHAB {@link State} types and InfluxDB store types
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0, based on previous work from Theo Weiss and Dominik Vorreiter
+ * @author Joan Pujol Espinar - Initial contribution, based on previous work from Theo Weiss and Dominik Vorreiter
  */
 @NonNullByDefault
 public class InfluxDBStateConvertUtils {

@@ -34,13 +34,16 @@ import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBHistoricItem;
 import org.openhab.persistence.influxdb.internal.InfluxDBPersistentItemInfo;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
+import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.ItemToStorePointCreator;
+import org.openhab.persistence.influxdb.internal.RepositoryFactory;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -64,8 +67,9 @@ import org.slf4j.LoggerFactory;
  * {@link org.openhab.persistence.influxdb.internal.influx2} packages
  *
  * @author Theo Weiss - Initial contribution, rewrite of org.openhab.persistence.influxdb
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0. Some tag code is based
- * from not integrated branch from Dominik Vorreiter
+ * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0. Some tag code is
+ *         based
+ *         from not integrated branch from Dominik Vorreiter
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -93,10 +97,11 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private InfluxDBRepository influxDBRepository;
 
     @Activate
+    /**
+     * Connect to database when service is activated
+     */
     public void activate(final @Nullable Map<String, @Nullable Object> config) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("InfluxDB persistence service is being activated");
-        }
+        logger.debug("InfluxDB persistence service is being activated");
 
         if (loadConfiguration(config)) {
             itemToStorePointCreator = new ItemToStorePointCreator(configuration, metadataRegistry);
@@ -116,6 +121,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     @Deactivate
+    /**
+     * Disconnect from database when service is deactivated
+     */
     public void deactivate() {
         logger.debug("InfluxDB persistence service deactivated");
         if (influxDBRepository != null) {
@@ -128,6 +136,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     @Modified
+    /**
+     * Rerun deactivation/activation code each time configuration is changed
+     */
     protected void modified(@Nullable Map<String, @Nullable Object> config) {
         if (config != null) {
             logger.debug("Config has been modified will deactivate/activate with new config");
@@ -174,7 +185,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     .map(entry -> new InfluxDBPersistentItemInfo(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toSet());
         } else {
-            logger.warn("InfluxDB is not yet connected");
+            logger.info("getItemInfo ignored, InfluxDB is not yet connected");
             return Collections.emptySet();
         }
     }
@@ -195,7 +206,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 logger.trace("Ignoring item {} as is cannot be converted to a InfluxDB point", item);
             }
         } else {
-            logger.warn("InfluxDB is not yet connected");
+            logger.info("store ignored, InfluxDB is not yet connected");
         }
     }
 
@@ -214,7 +225,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             List<InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());
         } else {
-            logger.warn("InfluxDB is not yet connected");
+            logger.info("query ignored, InfluxDB is not yet connected");
             return Collections.emptyList();
         }
     }
@@ -227,31 +238,23 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
-        if (logger.isTraceEnabled()) {
-            logger.trace("ItemRegistry has been set");
-        }
+        logger.trace("ItemRegistry has been set");
     }
 
     protected void unsetItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = null;
-        if (logger.isTraceEnabled()) {
-            logger.trace("ItemRegistry has been unset");
-        }
+        logger.trace("ItemRegistry has been unset");
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     protected void setMetadataRegistry(MetadataRegistry metadataRegistry) {
         this.metadataRegistry = metadataRegistry;
-        if (logger.isTraceEnabled()) {
-            logger.trace("MetadataRegistry has been set");
-        }
+        logger.trace("MetadataRegistry has been set");
     }
 
     protected void unsetMetadataRegistry(MetadataRegistry metadataRegistry) {
         this.metadataRegistry = null;
-        if (logger.isTraceEnabled()) {
-            logger.trace("MetadataRegistry has been unset");
-        }
+        logger.trace("MetadataRegistry has been unset");
     }
 
     @Override

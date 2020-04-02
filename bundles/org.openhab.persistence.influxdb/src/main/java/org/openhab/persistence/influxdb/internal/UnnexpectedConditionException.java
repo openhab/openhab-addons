@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Throw to indicate an unnexpected condition that should not have happened (a bug)
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class UnnexpectedConditionException extends RuntimeException {

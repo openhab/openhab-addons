@@ -18,7 +18,6 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_LA
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_TYPE_NAME;
 
 import java.time.Instant;
-import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +33,7 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 /**
  * Logic to create an InfluxDB {@link InfluxPoint} from an openHAB {@link Item}
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class ItemToStorePointCreator {
@@ -110,7 +109,10 @@ public class ItemToStorePointCreator {
 
     private void addPointTags(Item item, InfluxPoint.Builder point) {
         if (configuration.isAddCategoryTag()) {
-            point.withTag(TAG_CATEGORY_NAME, Optional.ofNullable(item.getCategory()).orElse("n/a"));
+            String categoryName = item.getCategory();
+            if (categoryName == null)
+                categoryName = "n/a";
+            point.withTag(TAG_CATEGORY_NAME, categoryName);
         }
 
         if (configuration.isAddTypeTag()) {
@@ -118,7 +120,10 @@ public class ItemToStorePointCreator {
         }
 
         if (configuration.isAddLabelTag()) {
-            point.withTag(TAG_LABEL_NAME, Optional.ofNullable(item.getLabel()).orElse("n/a"));
+            String labelName = item.getLabel();
+            if (labelName == null)
+                labelName = "n/a";
+            point.withTag(TAG_LABEL_NAME, labelName);
         }
 
         final MetadataRegistry currentMetadataRegistry = metadataRegistry;

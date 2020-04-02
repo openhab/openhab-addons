@@ -19,7 +19,7 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtil
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
-import org.openhab.persistence.influxdb.FilterCriteriaQueryCreator;
+import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 
 import com.influxdb.query.dsl.Flux;
 import com.influxdb.query.dsl.functions.RangeFlux;
@@ -28,14 +28,13 @@ import com.influxdb.query.dsl.functions.restriction.Restrictions;
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 2.0
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
     @Override
-    public String createQuery(FilterCriteria criteria, String bucket) {
-
-        Flux flux = Flux.from(bucket);
+    public String createQuery(FilterCriteria criteria, String retentionPolicy) {
+        Flux flux = Flux.from(retentionPolicy);
 
         if (criteria.getBeginDateZoned() != null || criteria.getEndDateZoned() != null) {
             RangeFlux range = flux.range();

@@ -24,7 +24,7 @@ import org.openhab.core.types.UnDefType;
  * Java bean used to return items queries results from InfluxDB.
  *
  * @author Theo Weiss - Initial Contribution
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class InfluxDBHistoricItem implements HistoricItem {

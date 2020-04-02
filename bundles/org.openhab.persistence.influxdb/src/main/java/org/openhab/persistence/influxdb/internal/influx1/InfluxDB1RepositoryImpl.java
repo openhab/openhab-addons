@@ -30,10 +30,10 @@ import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
-import org.openhab.persistence.influxdb.InfluxRow;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
+import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,8 @@ import retrofit.RetrofitError;
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution. Most code has beenmoved from
+ *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService} where it was in previous version
  */
 @NonNullByDefault
 public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
@@ -56,43 +57,25 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
         this.configuration = configuration;
     }
 
-    /**
-     * Returns if the client has been successfully connected to server
-     *
-     * @return True if it's connected, otherwise false
-     */
     @Override
     public boolean isConnected() {
         return client != null;
     }
 
-    /**
-     * Connect to InfluxDB server
-     *
-     * @return True if successful, otherwise false
-     */
     @Override
     public boolean connect() {
         final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
                 configuration.getPassword());
         createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
         this.client = createdClient;
-        return true;
+        return checkConnectionStatus();
     }
 
-    /**
-     * Disconnect from InfluxDB server
-     */
     @Override
     public void disconnect() {
         this.client = null;
     }
 
-    /**
-     * Check if connection is currently ready
-     *
-     * @return True if its ready, otherwise false
-     */
     @Override
     public boolean checkConnectionStatus() {
         boolean dbStatus = false;
@@ -106,7 +89,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                     dbStatus = true;
                     logger.debug("database status is OK, version is {}", version);
                 } else {
-                    logger.error("database ping error, version is: \"{}\" response time was \"{}\"", version,
+                    logger.warn("database ping error, version is: \"{}\" response time was \"{}\"", version,
                             pong.getResponseTime());
                     dbStatus = false;
                 }
@@ -116,7 +99,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                 handleDatabaseException(e);
             }
         } else {
-            logger.error("checkConnection: database is not connected");
+            logger.warn("checkConnection: database is not connected");
         }
         return dbStatus;
     }
@@ -124,18 +107,13 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     private void handleDatabaseException(Exception e) {
         if (e instanceof RetrofitError) {
             // e.g. raised if influxdb is not running
-            logger.error("database connection error {}", e.getMessage());
+            logger.warn("database connection error {}", e.getMessage(), e);
         } else if (e instanceof RuntimeException) {
             // e.g. raised by authentication errors
-            logger.error("database error: {}", e.getMessage());
+            logger.warn("database error: {}", e.getMessage(), e);
         }
     }
 
-    /**
-     * Write point to database
-     *
-     * @param point
-     */
     @Override
     public void write(InfluxPoint point) {
         final InfluxDB currentClient = this.client;
@@ -143,7 +121,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             Point clientPoint = convertPointToClientFormat(point);
             currentClient.write(configuration.getDatabaseName(), configuration.getRetentionPolicy(), clientPoint);
         } else {
-            logger.error("Write point {} ignored due to client isn't connected", point);
+            logger.warn("Write point {} ignored due to client isn't connected", point);
         }
     }
 
@@ -169,12 +147,6 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             throw new UnnexpectedConditionException("Not expected value type");
     }
 
-    /**
-     * Executes Flux query
-     *
-     * @param query Query
-     * @return Query results
-     */
     @Override
     public List<InfluxRow> query(String query) {
         final InfluxDB currentClient = client;
@@ -183,7 +155,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
             return convertClientResutToRepository(results);
         } else {
-            logger.error("Returning empty list because queryAPI isn't present");
+            logger.warn("Returning empty list because queryAPI isn't present");
             return Collections.emptyList();
         }
     }
@@ -193,7 +165,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
         for (QueryResult.Result result : results) {
             List<QueryResult.Series> seriess = result.getSeries();
             if (result.getError() != null) {
-                logger.error("{}", result.getError());
+                logger.warn("{}", result.getError());
                 continue;
             }
             if (seriess == null) {
@@ -237,11 +209,6 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
         return rows;
     }
 
-    /**
-     * Return all stored item names with it's count of stored points
-     *
-     * @return Map with <ItemName,ItemCount> entries
-     */
     @Override
     public Map<String, Integer> getStoredItemsCount() {
         return Collections.emptyMap();

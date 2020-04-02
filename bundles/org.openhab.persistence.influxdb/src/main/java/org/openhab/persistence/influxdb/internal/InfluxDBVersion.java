@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb;
+package org.openhab.persistence.influxdb.internal;
 
 /**
  * InfluxDB version
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 public enum InfluxDBVersion {
     V1,

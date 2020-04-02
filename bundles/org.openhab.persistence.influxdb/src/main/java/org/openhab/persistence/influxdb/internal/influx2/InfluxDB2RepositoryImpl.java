@@ -27,11 +27,11 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.persistence.influxdb.InfluxRow;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
+import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ import com.influxdb.query.FluxTable;
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 2.0
  *
- * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding support for InfluxDB 2.0
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
@@ -97,7 +97,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         logger.debug("Succesfully connected to InfluxDB. Instance ready={}", createdClient.ready());
         queryAPI = createdClient.getQueryApi();
         writeAPI = createdClient.getWriteApi();
-        return true;
+        return checkConnectionStatus();
     }
 
     /**
@@ -146,7 +146,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         if (currentWriteAPI != null) {
             currentWriteAPI.writePoint(convertPointToClientFormat(point));
         } else {
-            logger.error("Write point {} ignored due to writeAPI isn't present", point);
+            logger.warn("Write point {} ignored due to writeAPI isn't present", point);
         }
     }
 
@@ -184,7 +184,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             List<FluxTable> clientResult = currentQueryAPI.query(query);
             return convertClientResutToRepository(clientResult);
         } else {
-            logger.error("Returning empty list because queryAPI isn't present");
+            logger.warn("Returning empty list because queryAPI isn't present");
             return Collections.emptyList();
         }
     }
@@ -225,7 +225,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             });
             return result;
         } else {
-            logger.error("Returning empty result  because queryAPI isn't present");
+            logger.warn("Returning empty result  because queryAPI isn't present");
             return Collections.emptyMap();
         }
     }
