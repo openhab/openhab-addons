@@ -124,8 +124,12 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
                 bridgeHandler = (ServerHandler) handler;
-                updateStatus(ThingStatus.ONLINE);
-                return true;
+                if (getApiManager() != null) {
+                    updateStatus(ThingStatus.ONLINE);
+                    return true;
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
             }

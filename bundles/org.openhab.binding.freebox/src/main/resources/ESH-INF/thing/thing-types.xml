@@ -59,7 +59,7 @@
 			<channel-group typeId="player-actions" id="player-actions" />
 		</channel-groups>
 
-        	<representation-property>macAddress</representation-property>
+			<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freebox:player" />
 

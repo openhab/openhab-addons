@@ -12,40 +12,40 @@
 		<config-description-ref uri="bridge-type:freebox:api"/>
 	</bridge-type> -->
 	
-    <bridge-type id="revolution">
-        <label>Freebox Revolution</label>
-        <description>Provides various informations regarding the status of the Freebox Revolution Server</description>
+	<bridge-type id="revolution">
+		<label>Freebox Revolution</label>
+		<description>Provides various informations regarding the status of the Freebox Revolution Server</description>
 
-        <channel-groups>
-            <channel-group typeId="display" id="display" />
-            <channel-group typeId="sensors" id="sensors" />
-            <channel-group typeId="samba" id="samba" />
-            <channel-group typeId="sysinfo" id="sysinfo" />
-            <channel-group typeId="actions" id="actions" />
-            <channel-group typeId="connection-status" id="connection-status" />
-        </channel-groups>    
-        
-        <representation-property>hostAddress</representation-property>   
+		<channel-groups>
+			<channel-group typeId="display" id="display" />
+			<channel-group typeId="sensors" id="sensors" />
+			<channel-group typeId="samba" id="samba" />
+			<channel-group typeId="sysinfo" id="sysinfo" />
+			<channel-group typeId="actions" id="actions" />
+			<channel-group typeId="connection-status" id="connection-status" />
+		</channel-groups>	
+		
+		<representation-property>hostAddress</representation-property>
 
-        <config-description-ref uri="bridge-type:freebox:server" />
+		<config-description-ref uri="bridge-type:freebox:server" />
 
-    </bridge-type>
+	</bridge-type>
 
-    <bridge-type id="delta">
-        <label>Freebox Delta</label>
-        <description>Provides various informations regarding the status of the Freebox Delta Server</description>
+	<bridge-type id="delta">
+		<label>Freebox Delta</label>
+		<description>Provides various informations regarding the status of the Freebox Delta Server</description>
 
-        <channel-groups>
-            <channel-group typeId="sensors" id="sensors" />
-            <channel-group typeId="samba" id="samba" />
-            <channel-group typeId="sysinfo" id="sysinfo" />
-            <channel-group typeId="actions" id="actions" />
-            <channel-group typeId="connection-status" id="connection-status" />
-        </channel-groups> 
-        
-        <representation-property>hostAddress</representation-property>  
+		<channel-groups>
+			<channel-group typeId="sensors" id="sensors" />
+			<channel-group typeId="samba" id="samba" />
+			<channel-group typeId="sysinfo" id="sysinfo" />
+			<channel-group typeId="actions" id="actions" />
+			<channel-group typeId="connection-status" id="connection-status" />
+		</channel-groups> 
+		
+		<representation-property>hostAddress</representation-property>
 
-        <config-description-ref uri="bridge-type:freebox:server" />
-    </bridge-type>
+		<config-description-ref uri="bridge-type:freebox:server" />
+	</bridge-type>
 
 </thing:thing-descriptions>

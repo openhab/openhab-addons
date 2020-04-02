@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VirtualMachineHandler extends HostHandler {
-    private final Logger logger = LoggerFactory.getLogger(PhoneHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VirtualMachineHandler.class);
     private @NonNullByDefault({}) String vmId;
 
     public VirtualMachineHandler(Thing thing, TimeZoneProvider timeZoneProvider) {

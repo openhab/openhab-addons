@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
@@ -48,10 +47,10 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.model.AirMediaConfig;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiver;
 import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaAction;
 import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaType;
+import org.openhab.binding.freebox.internal.api.model.AirMediaConfig;
+import org.openhab.binding.freebox.internal.api.model.AirMediaReceiver;
 import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
 import org.openhab.binding.freebox.internal.api.model.LanHostName.NameSource;
 import org.openhab.binding.freebox.internal.config.PlayerConfiguration;
@@ -124,8 +123,7 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     }
 
     @Override
-    protected boolean internalHandleCommand(@NonNull ChannelUID channelUID, @NonNull Command command)
-            throws FreeboxException {
+    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
             boolean enable = command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
                     || command.equals(OpenClosedType.OPEN);

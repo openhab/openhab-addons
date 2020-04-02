@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.freebox.internal.api.FreeboxResponse;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class SambaConfigResponse extends FreeboxResponse<SambaConfig> {
     @Override
     public void evaluate() throws FreeboxException {

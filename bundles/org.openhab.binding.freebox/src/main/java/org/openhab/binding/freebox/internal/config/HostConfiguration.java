@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
@@ -19,6 +21,7 @@ package org.openhab.binding.freebox.internal.config;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class HostConfiguration extends APIConsumerConfiguration {
-    public String macAddress;
+    public String macAddress = "";
 }

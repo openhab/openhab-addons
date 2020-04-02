@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class DeltaHandler extends ServerHandler {
 
     public DeltaHandler(Bridge bridge) {

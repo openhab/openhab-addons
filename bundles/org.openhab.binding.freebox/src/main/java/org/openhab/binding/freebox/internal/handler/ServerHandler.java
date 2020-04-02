@@ -57,9 +57,11 @@ import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.ApiManager;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.ConnectionStatus;
+import org.openhab.binding.freebox.internal.api.model.ConnectionStatus.Media;
 import org.openhab.binding.freebox.internal.api.model.FtpConfig;
 import org.openhab.binding.freebox.internal.api.model.FtthStatus;
 import org.openhab.binding.freebox.internal.api.model.LanConfig;
+import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
 import org.openhab.binding.freebox.internal.api.model.LanInterface;
 import org.openhab.binding.freebox.internal.api.model.SambaConfig;
@@ -67,8 +69,6 @@ import org.openhab.binding.freebox.internal.api.model.SystemConfig;
 import org.openhab.binding.freebox.internal.api.model.UPnPAVConfig;
 import org.openhab.binding.freebox.internal.api.model.WifiConfig;
 import org.openhab.binding.freebox.internal.api.model.XdslStatus;
-import org.openhab.binding.freebox.internal.api.model.ConnectionStatus.Media;
-import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
 import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.openhab.binding.freebox.internal.discovery.PlayerDiscoveryParticipant;
@@ -125,7 +125,7 @@ public abstract class ServerHandler extends BaseBridgeHandler {
                             internalPoll();
                             updateStatus(ThingStatus.ONLINE);
                         } catch (FreeboxException e) {
-                            logger.debug("Thing {}: exception : {} {}", getThing().getUID(), e.getMessage(), e);
+                            logger.debug("Thing {}: exception : {}", getThing().getUID(), e);
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         }
                     }, 5, configuration.refreshInterval, TimeUnit.SECONDS);

@@ -14,6 +14,7 @@ package org.openhab.binding.freebox.internal.api.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
@@ -22,5 +23,6 @@ import org.openhab.binding.freebox.internal.api.FreeboxResponse;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class CallEntriesResponse extends FreeboxResponse<List<CallEntry>> {
 }

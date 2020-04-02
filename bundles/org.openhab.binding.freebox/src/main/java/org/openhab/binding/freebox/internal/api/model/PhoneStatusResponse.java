@@ -14,6 +14,7 @@ package org.openhab.binding.freebox.internal.api.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 // This API is undocumented but working
 // It is extracted from the freeboxos-java library
 // https://github.com/MatMaul/freeboxos-java/blob/master/src/org/matmaul/freeboxos/phone/PhoneManager.java#L17
+@NonNullByDefault
 public class PhoneStatusResponse extends FreeboxResponse<List<PhoneStatus>> {
     @Override
     public void evaluate() throws FreeboxException {

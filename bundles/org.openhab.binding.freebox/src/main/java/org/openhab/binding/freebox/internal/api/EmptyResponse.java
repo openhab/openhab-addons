@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.freebox.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EmptyResponse} is the Java class used to map an empty response
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class EmptyResponse extends FreeboxResponse<Object> {
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
@@ -21,5 +22,6 @@ import org.openhab.binding.freebox.internal.api.FreeboxResponse;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class SystemConfigResponse extends FreeboxResponse<SystemConfig> {
 }

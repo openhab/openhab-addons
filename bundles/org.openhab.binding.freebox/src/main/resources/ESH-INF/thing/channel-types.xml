@@ -60,11 +60,11 @@
 	</channel-type>
 	
 	<channel-type id="bandwidth-usage">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Bandwidth usage</label>
-        <description>Current bandwidth usage</description>
-        <state readOnly="true" pattern="%.2f %unit%" />
-    </channel-type>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Bandwidth usage</label>
+		<description>Current bandwidth usage</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
 
 	<channel-type id="transfer-rate" advanced="true">
 		<item-type>Number:DataTransferRate</item-type>
@@ -209,7 +209,7 @@
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Called name for outgoing calls. Caller name for incoming calls</description>
-        <state readOnly="true" />
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="reachable">

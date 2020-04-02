@@ -20,17 +20,17 @@
 		<description>The last phone call</description>
 		<channels>
 			<channel id="call-number" typeId="phone-number">
-			    <label>Phone Number</label>
-                <description>Called number for outgoing calls. Caller number for incoming calls</description>
+				<label>Phone Number</label>
+				<description>Called number for outgoing calls. Caller number for incoming calls</description>
 			</channel>
 			<channel id="call-duration" typeId="call-duration" />
 			<channel id="call-timestamp" typeId="timestamp">
-			     <description>Call creation timestamp</description>
+				 <description>Call creation timestamp</description>
 			</channel>
 			<channel id="call-status" typeId="call-status" />
 			<channel id="call-name" typeId="call-name">
-			    <label>Call Name</label>
-                <description>Called name for outgoing calls. Caller name for incoming calls</description>
+				<label>Call Name</label>
+				<description>Called name for outgoing calls. Caller name for incoming calls</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -40,16 +40,16 @@
 		<description>The last accepted phone call</description>
 		<channels>
 			<channel id="call-number" typeId="phone-number">
-			    <label>Phone Number</label>
-                <description>Caller phone number</description>
+				<label>Phone Number</label>
+				<description>Caller phone number</description>
 			</channel>
 			<channel id="call-duration" typeId="call-duration" />
 			<channel id="call-timestamp" typeId="timestamp">
-			     <description>Call creation timestamp</description>
+				 <description>Call creation timestamp</description>
 			</channel>
 			<channel id="call-name" typeId="call-name">
-			    <label>Caller Name</label>
-                <description>Caller name</description>
+				<label>Caller Name</label>
+				<description>Caller name</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -59,16 +59,16 @@
 		<description>The last missed phone call</description>
 		<channels>
 			<channel id="call-number" typeId="phone-number">
-                <label>Phone Number</label>
-                <description>Caller phone number</description>
+				<label>Phone Number</label>
+				<description>Caller phone number</description>
 			</channel>
 			<channel id="call-duration" typeId="call-duration" />
 			<channel id="call-timestamp" typeId="timestamp">
-			     <description>Call creation timestamp</description>
+				 <description>Call creation timestamp</description>
 			</channel>
 			<channel id="call-name" typeId="call-name">
-			    <label>Caller Name</label>
-                <description>Caller name</description>
+				<label>Caller Name</label>
+				<description>Caller name</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -78,17 +78,17 @@
 		<description>The last outgoing phone call</description>
 		<channels>
 			<channel id="call-number" typeId="phone-number">
-			    <label>Phone Number</label>
-                <description>Called phone number</description>
+				<label>Phone Number</label>
+				<description>Called phone number</description>
 			</channel>
 			<channel id="call-duration" typeId="call-duration" />
 			<channel id="call-timestamp" typeId="timestamp">
-			     <description>Call creation timestamp</description>
+				 <description>Call creation timestamp</description>
 			</channel>
 			<channel id="call-name" typeId="call-name">
-                <label>Called Name</label>
-                <description>Name, if known, of the called person</description>
-            </channel>
+				<label>Called Name</label>
+				<description>Name, if known, of the called person</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -119,36 +119,36 @@
 			<channel id="line-status" typeId="line-status" />
 			<channel id="ipv4" typeId="ipv4" />
 			<channel id="bandwidth-usage-up" typeId="bandwidth-usage">
-                <label>Bandwidth Usage Up</label>
-                <description>Portion of the upload bandwidth currently used</description>
-            </channel> 
-            <channel id="bandwidth-usage-down" typeId="bandwidth-usage">
-                <label>Bandwidth Usage Down</label>
-                <description>Portion of the download bandwidth currently used</description>
-            </channel> 
+				<label>Bandwidth Usage Up</label>
+				<description>Portion of the upload bandwidth currently used</description>
+			</channel> 
+			<channel id="bandwidth-usage-down" typeId="bandwidth-usage">
+				<label>Bandwidth Usage Down</label>
+				<description>Portion of the download bandwidth currently used</description>
+			</channel> 
 			<channel id="rate-up" typeId="transfer-rate">
-			    <label>Upload Rate</label>
-                <description>Current upload rate</description>
+				<label>Upload Rate</label>
+				<description>Current upload rate</description>
 			</channel> 
 			<channel id="rate-down" typeId="transfer-rate">
-			    <label>Download Rate</label>
-                <description>Current download rate</description>
+				<label>Download Rate</label>
+				<description>Current download rate</description>
 			</channel> 
 			<channel id="bytes-up" typeId="transfer-bytes">
-                <label>Uploaded</label>
-                <description>Total data uploaded since last connection</description>
-            </channel> 
+				<label>Uploaded</label>
+				<description>Total data uploaded since last connection</description>
+			</channel> 
 			<channel id="bytes-down" typeId="transfer-bytes">
-                <label>Downloaded</label>
-                <description>Total data downloaded since last connection</description>
-            </channel> 
+				<label>Downloaded</label>
+				<description>Total data downloaded since last connection</description>
+			</channel> 
 			<channel id="bandwidth-up" typeId="bandwidth">
-			     <label>Bandwidth Up</label>
-                 <description>Available upload bandwidth</description>
+				 <label>Bandwidth Up</label>
+				 <description>Available upload bandwidth</description>
 			</channel> 
 			<channel id="bandwidth-down" typeId="bandwidth">
-                 <label>Bandwidth Down</label>
-                 <description>Available download bandwidth</description>
+				 <label>Bandwidth Down</label>
+				 <description>Available download bandwidth</description>
 			</channel>
 		</channels>
 	</channel-group-type>

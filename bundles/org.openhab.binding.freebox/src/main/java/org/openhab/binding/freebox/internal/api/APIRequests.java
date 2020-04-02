@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.freebox.internal.api;
 
 import java.security.InvalidKeyException;
@@ -5,6 +17,8 @@ import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freebox.internal.api.model.AirMediaActionData;
+import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaAction;
+import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaType;
 import org.openhab.binding.freebox.internal.api.model.AirMediaConfig;
 import org.openhab.binding.freebox.internal.api.model.AirMediaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.AirMediaReceiversResponse;
@@ -39,10 +53,14 @@ import org.openhab.binding.freebox.internal.api.model.VirtualMachinesResponse;
 import org.openhab.binding.freebox.internal.api.model.WifiConfig;
 import org.openhab.binding.freebox.internal.api.model.WifiConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.XdslStatusResponse;
-import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaAction;
-import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaType;
 import org.osgi.framework.Bundle;
 
+/**
+ * The {@link APIRequests} defines all the action classes that can be used
+ * when interaction with Freebox OS API
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public class APIRequests {
 

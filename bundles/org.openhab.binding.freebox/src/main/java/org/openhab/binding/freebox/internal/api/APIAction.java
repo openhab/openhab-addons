@@ -20,8 +20,14 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * The {@link APIAction} class implement behaviour to build and
+ * send proper requests to the Freebox API
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
-public class APIAction {
+public abstract class APIAction {
     protected final String requestUrl;
     protected final @NonNullByDefault({}) RequestAnnotation annotation;
     protected final @Nullable Object payload;
