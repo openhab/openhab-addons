@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airpurifier.v6",
-			"zhimi.airpurifier.ma2"
+			"zhimi.airpurifier.v7"
 		],
 		"channels": [
 			{
@@ -61,6 +60,15 @@
 				"actions": []
 			},
 			{
+				"property": "volume",
+				"friendlyName": "Volume",
+				"channel": "volume",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
 				"property": "led",
 				"friendlyName": "LED Status",
 				"channel": "led",
@@ -76,17 +84,12 @@
 			},
 			{
 				"property": "bright",
-				"friendlyName": "LED Brightness",
-				"channel": "bright",
+				"friendlyName": "Illuminance",
+				"channel": "illuminance",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_led_b",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": []
 			},
 			{
 				"property": "f1_hour",
@@ -108,19 +111,18 @@
 				"actions": []
 			},
 			{
-				"property": "use_time",
-				"friendlyName": "Run Time",
-				"channel": "usedhours",
+				"property": "motor1_speed",
+				"friendlyName": "Motor Speed",
+				"channel": "motorspeed",
 				"type": "Number",
 				"refresh": true,
-				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
 			{
-				"property": "motor1_speed",
-				"friendlyName": "Motor Speed",
-				"channel": "motorspeed",
+				"property": "motor2_speed",
+				"friendlyName": "Motor Speed 2",
+				"channel": "motorspeed2",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -156,15 +158,6 @@
 				"type": "Number",
 				"refresh": true,
 				"transformation": "/10",
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "purify_volume",
-				"friendlyName": "Purivied Volume",
-				"channel": "purifyvolume",
-				"type": "Number",
-				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
 			},
