@@ -105,14 +105,21 @@ public class WizLightingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (hasConfigurationError() || disposed || !fullyInitialized) {
+            logger.trace(
+                    "WiZ handler for blub {} received command {} on channel {} but is not yet prepared to handle it.",
+                    config.bulbMacAddress, command, channelUID);
             return;
         }
 
         logger.trace("Received command on channel {}: {}", channelUID, command.toFullString());
 
-        // Be patient...
         if (command instanceof RefreshType) {
-            getPilot();
+            long now = System.currentTimeMillis();
+            long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
+            // Be patient...
+            if (latestUpdate < 0 || timePassedFromLastUpdateInSeconds > 5) {
+                getPilot();
+            }
             return;
         }
 
