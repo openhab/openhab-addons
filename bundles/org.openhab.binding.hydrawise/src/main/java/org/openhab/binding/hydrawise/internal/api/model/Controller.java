@@ -59,8 +59,6 @@ public class Controller {
 
     public String statusIcon;
 
-    public Boolean online;
-
     public List<String> tags = null;
 
 }

@@ -66,9 +66,9 @@
 	<!-- Controller -->
 
 	<channel-type id="lastContactTime" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Last Contact Time</label>
-		<description>Last contact time of a controller in seconds</description>
+		<description>Last contact time of a controller</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

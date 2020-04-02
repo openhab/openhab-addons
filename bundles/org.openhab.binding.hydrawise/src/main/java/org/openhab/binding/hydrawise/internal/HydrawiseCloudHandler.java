@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseCloudApiClient;
@@ -182,7 +183,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
 
     private void updateController(Controller controller) {
         updateGroupState(CHANNEL_GROUP_CONTROLLER, CHANNEL_CONTROLLER_LAST_CONTACT,
-                new DecimalType(controller.lastContact));
+                new QuantityType<>(controller.lastContact, SmartHomeUnits.SECOND));
         updateGroupState(CHANNEL_GROUP_CONTROLLER, CHANNEL_CONTROLLER_STATUS, new StringType(controller.status));
     }
 
