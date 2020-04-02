@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LoginResult} is the Java class used to map the
  * structure used by the response of the login API
@@ -19,11 +21,12 @@ package org.openhab.binding.freebox.internal.api.model;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class LoginResult {
-    private Boolean loggedIn;
-    private String challenge;
+    private boolean loggedIn;
+    private String challenge = "";
 
-    public Boolean isLoggedIn() {
+    public boolean isLoggedIn() {
         return loggedIn;
     }
 

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
-
 /**
  * The {@link FtpConfig} is the Java class used to map the "FtpConfig"
  * structure used by the FTP configuration API
@@ -21,7 +19,6 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = FtpConfigResponse.class, relativeUrl = "ftp/config/", retryAuth = true, method = "PUT")
 public class FtpConfig {
     protected Boolean enabled;
     protected Boolean allowAnonymous;

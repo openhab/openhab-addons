@@ -25,9 +25,9 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.LcdConfig;
-import org.openhab.binding.freebox.internal.api.model.LcdConfigResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class RevolutionHandler extends ServerHandler {
         super.internalPoll();
         logger.debug("Polling server state...");
 
-        LcdConfig config = getLcdConfig();
+        LcdConfig config = apiManager.execute(new APIRequests.GetLcdConfig());
         updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.getBrightness(), PERCENT);
         updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.getOrientation());
         updateChannelOnOff(DISPLAY, LCD_FORCED, config.isOrientationForced());
@@ -118,34 +118,29 @@ public class RevolutionHandler extends ServerHandler {
     }
 
     public LcdConfig setLcdOrientation(int orientation) throws FreeboxException {
-        LcdConfig config = getLcdConfig();
+        LcdConfig config = apiManager.execute(new APIRequests.GetLcdConfig());
         config.setOrientation(orientation);
-        return apiManager.execute(config, null);
-    }
-
-    public LcdConfig getLcdConfig() throws FreeboxException {
-        LcdConfig result = apiManager.executeGet(LcdConfigResponse.class, null);
-        return result;
+        return apiManager.execute(new APIRequests.SetLcdConfig(config));
     }
 
     public boolean setLcdOrientationForced(boolean forced) throws FreeboxException {
-        LcdConfig config = getLcdConfig();
+        LcdConfig config = apiManager.execute(new APIRequests.GetLcdConfig());
         config.setOrientationForced(forced);
-        config = apiManager.execute(config, null);
+        config = apiManager.execute(new APIRequests.SetLcdConfig(config));
         return config.isOrientationForced();
     }
 
     public int shiftLcdBrightness(IncreaseDecreaseType direction) throws FreeboxException {
-        LcdConfig config = getLcdConfig();
+        LcdConfig config = apiManager.execute(new APIRequests.GetLcdConfig());
         config.setBrightness(config.getBrightness() + (direction == IncreaseDecreaseType.INCREASE ? 1 : -1));
-        config = apiManager.execute(config, null);
+        config = apiManager.execute(new APIRequests.SetLcdConfig(config));
         return config.getBrightness();
     }
 
     public int setLcdBrightness(int brightness) throws FreeboxException {
-        LcdConfig config = getLcdConfig();
+        LcdConfig config = apiManager.execute(new APIRequests.GetLcdConfig());
         config.setBrightness(brightness);
-        config = apiManager.execute(config, null);
+        config = apiManager.execute(new APIRequests.SetLcdConfig(config));
         return config.getBrightness();
     }
 

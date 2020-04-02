@@ -61,18 +61,12 @@ public class ConnectionStatus {
     private Media media = Media.UNKNOWN;
     private String ipv4 = "";
     private String ipv6 = "";
-    // current upload rate in byte/s
-    private long rateUp;
-    // current download rate in byte/s
-    private long rateDown;
-    // available upload bandwidth in bit/s
-    private long bandwidthUp;
-    // available download bandwidth in bit/s
-    private long bandwidthDown;
-    // total uploaded bytes since last connection
-    private long bytesUp;
-    // total downloaded bytes since last connection
-    private long bytesDown;
+    private long rateUp; // current upload rate in byte/s
+    private long rateDown; // current download rate in byte/s
+    private long bandwidthUp; // available upload bandwidth in bit/s
+    private long bandwidthDown; // available download bandwidth in bit/s
+    private long bytesUp; // total uploaded bytes since last connection
+    private long bytesDown; // total downloaded bytes since last connection
     // Some customers share the same IPv4 and each customer is then assigned a port range. The first value is the first
     // port of the assigned range and the second value is the last port (inclusive).
     private long[] ipv4PortRange = new long[0];

@@ -13,7 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link FtpConfigResponse} is the Java class used to map the
@@ -22,14 +22,10 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "ftp/config/", retryAuth = true)
 public class FtpConfigResponse extends FreeboxResponse<FtpConfig> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in FTP configuration API response", this);
-        }
         if (getResult().isEnabled() == null) {
             throw new FreeboxException("No FTP status in response", this);
         }

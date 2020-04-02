@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link LcdConfigResponse} is the Java class used to map the
@@ -22,13 +21,5 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "lcd/config/", retryAuth = true)
 public class LcdConfigResponse extends FreeboxResponse<LcdConfig> {
-    @Override
-    public void evaluate() throws FreeboxException {
-        super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in LCD configuration API response", this);
-        }
-    }
 }

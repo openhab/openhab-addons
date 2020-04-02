@@ -46,14 +46,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.AirMediaConfig;
-import org.openhab.binding.freebox.internal.api.model.AirMediaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.AirMediaReceiver;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiverRequest;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiverRequest.MediaAction;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiverRequest.MediaType;
-import org.openhab.binding.freebox.internal.api.model.AirMediaReceiversResponse;
+import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaAction;
+import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaType;
 import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
 import org.openhab.binding.freebox.internal.api.model.LanHostName.NameSource;
 import org.openhab.binding.freebox.internal.config.PlayerConfiguration;
@@ -111,7 +109,7 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     @Override
     protected Map<String, String> discoverAttributes() throws FreeboxException {
         final Map<String, String> properties = super.discoverAttributes();
-        List<AirMediaReceiver> devices = getApiManager().executeGet(AirMediaReceiversResponse.class, null);
+        List<AirMediaReceiver> devices = getApiManager().execute(new APIRequests.AirMediaReceivers());
         Optional<AirMediaReceiver> matching = devices.stream()
                 .filter(device -> properties.get(NameSource.UPNP.name()).equals(device.getName())).findFirst();
 
@@ -146,16 +144,10 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            AirMediaReceiverRequest request = new AirMediaReceiverRequest();
-            if (configuration.password.length() > 0) {
-                request.setPassword(configuration.password);
-            }
-
             if (audioStream == null) {
                 try {
-                    request.setAction(MediaAction.STOP);
-                    request.setType(MediaType.VIDEO);
-                    getApiManager().execute(request, playerName);
+                    getApiManager().execute(new APIRequests.AirMediaAction(playerName, configuration.password,
+                            MediaAction.STOP, MediaType.VIDEO));
                 } catch (FreeboxException e) {
                     logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
                 }
@@ -179,10 +171,8 @@ public class PlayerHandler extends HostHandler implements AudioSink {
                     audioStream.close();
                     try {
                         logger.debug("AirPlay audio sink: process url {}", url);
-                        request.setAction(MediaAction.START);
-                        request.setType(MediaType.VIDEO);
-                        request.setMedia(url);
-                        getApiManager().execute(request, playerName);
+                        getApiManager().execute(new APIRequests.AirMediaAction(playerName, configuration.password,
+                                MediaAction.START, MediaType.VIDEO, url));
                     } catch (FreeboxException e) {
                         logger.warn("Audio stream playback failed: {}", e.getMessage());
                     }
@@ -195,8 +185,7 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     }
 
     public boolean enableAirMedia(boolean enable) throws FreeboxException {
-        AirMediaConfig config = new AirMediaConfig(enable);
-        config = getApiManager().execute(config, null);
+        AirMediaConfig config = getApiManager().execute(new APIRequests.SetAirMediaConfig(enable));
         return config.isEnabled();
     }
 
@@ -243,7 +232,7 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         if (bridgeHandler.getNetworkMode() != NetworkMode.BRIDGE) {
-            AirMediaConfig response = bridgeHandler.getApiManager().executeGet(AirMediaConfigResponse.class, null);
+            AirMediaConfig response = bridgeHandler.getApiManager().execute(new APIRequests.GetAirMediaConfig());
             updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, response.isEnabled());
         } else {
             updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, false);

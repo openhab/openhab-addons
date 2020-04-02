@@ -36,10 +36,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
 import org.openhab.binding.freebox.internal.api.model.VirtualMachine;
-import org.openhab.binding.freebox.internal.api.model.VirtualMachinesResponse;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
 import org.openhab.binding.freebox.internal.config.VirtualMachineConfiguration;
 import org.openhab.binding.freebox.internal.handler.ServerHandler;
@@ -150,7 +150,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private void discoverHosts() throws FreeboxException {
-        // List<VirtualMachine> vms = bridgeHandler.getApiManager().executeGet(VirtualMachinesResponse.class, null);
+        // List<VirtualMachine> vms = bridgeHandler.getApiManager().execute(new APIRequests.VirtualMachines());
         List<LanHost> lanHosts = bridgeHandler.getLanHosts();
 
         /*
@@ -180,7 +180,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private void discoverVM() throws FreeboxException {
-        List<VirtualMachine> vms = bridgeHandler.getApiManager().executeGet(VirtualMachinesResponse.class, null);
+        List<VirtualMachine> vms = bridgeHandler.getApiManager().execute(new APIRequests.VirtualMachines());
         vms.forEach(vm -> {
             String uid = vm.getMac().replaceAll("[^A-Za-z0-9_]", "_");
             ThingUID thingUID = new ThingUID(FREEBOX_THING_TYPE_VM, bridgeUID, uid);

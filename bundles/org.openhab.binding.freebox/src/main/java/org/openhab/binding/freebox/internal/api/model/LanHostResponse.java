@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link LanHostResponse} is the Java class used to map the
@@ -22,11 +22,4 @@ import org.openhab.binding.freebox.internal.api.FreeboxException;
  * @author Gaël L'hopital - Initial contribution
  */
 public class LanHostResponse extends FreeboxResponse<LanHost> {
-    @Override
-    public void evaluate() throws FreeboxException {
-        super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in LanHost configuration API response", this);
-        }
-    }
 }

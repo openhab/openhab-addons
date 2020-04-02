@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link OpenSessionResult} is the Java class used to map the
  * structure used by the response of the open session API
@@ -19,10 +21,11 @@ package org.openhab.binding.freebox.internal.api.model;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class OpenSessionResult {
-    private String sessionToken;
-    private String challenge;
-    private Permissions permissions;
+    private String sessionToken = "";
+    private String challenge = "";
+    private Permissions permissions = new Permissions();
 
     public String getSessionToken() {
         return sessionToken;

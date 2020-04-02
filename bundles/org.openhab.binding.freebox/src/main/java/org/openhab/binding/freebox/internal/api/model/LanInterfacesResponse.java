@@ -14,7 +14,7 @@ package org.openhab.binding.freebox.internal.api.model;
 
 import java.util.List;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link LanInterfacesResponse} is the Java class used to map the
@@ -23,6 +23,5 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "lan/browser/interfaces/", retryAuth = true)
 public class LanInterfacesResponse extends FreeboxResponse<List<LanInterface>> {
 }

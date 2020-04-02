@@ -13,7 +13,6 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,7 +23,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = WifiConfigResponse.class, relativeUrl = "wifi/config/", retryAuth = true, method = "PUT")
 @NonNullByDefault
 public class WifiConfig {
     public static enum FilterState {

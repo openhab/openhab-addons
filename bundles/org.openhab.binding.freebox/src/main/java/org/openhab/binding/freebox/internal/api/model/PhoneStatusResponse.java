@@ -15,7 +15,7 @@ package org.openhab.binding.freebox.internal.api.model;
 import java.util.List;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link PhoneStatusResponse} is the Java class used to map the
@@ -26,12 +26,11 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
 // This API is undocumented but working
 // It is extracted from the freeboxos-java library
 // https://github.com/MatMaul/freeboxos-java/blob/master/src/org/matmaul/freeboxos/phone/PhoneManager.java#L17
-@RequestAnnotation(relativeUrl = "phone/?_dc=1415032391207", retryAuth = true)
 public class PhoneStatusResponse extends FreeboxResponse<List<PhoneStatus>> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null || getResult().size() == 0) {
+        if (getResult().size() == 0) {
             throw new FreeboxException("No phone status in response", this);
         }
     }

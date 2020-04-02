@@ -15,31 +15,20 @@ package org.openhab.binding.freebox.internal.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.freebox.internal.api.model.APIAction;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus;
-import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
-import org.openhab.binding.freebox.internal.api.model.AuthorizationStatusResponse;
-import org.openhab.binding.freebox.internal.api.model.AuthorizeRequest;
-import org.openhab.binding.freebox.internal.api.model.AuthorizeResponse;
 import org.openhab.binding.freebox.internal.api.model.AuthorizeResult;
 import org.openhab.binding.freebox.internal.api.model.DiscoveryResponse;
-import org.openhab.binding.freebox.internal.api.model.EmptyResponse;
-import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
-import org.openhab.binding.freebox.internal.api.model.LoginRequest;
 import org.openhab.binding.freebox.internal.api.model.LoginResult;
-import org.openhab.binding.freebox.internal.api.model.LogoutAction;
-import org.openhab.binding.freebox.internal.api.model.OpenSessionRequest;
 import org.openhab.binding.freebox.internal.api.model.OpenSessionResult;
+import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -59,263 +48,152 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ApiManager {
     private final Logger logger = LoggerFactory.getLogger(ApiManager.class);
-    private static final String APP_ID = FrameworkUtil.getBundle(ApiManager.class).getSymbolicName();
-
     private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
-
-    private static final String HTTP_CALL_CONTENT_TYPE = "application/json; charset=utf-8";
+    private static final String APP_ID = FrameworkUtil.getBundle(ApiManager.class).getSymbolicName();
     private static final String AUTH_HEADER = "X-Fbx-App-Auth";
+    private static final String HTTP_CALL_CONTENT_TYPE = "application/json; charset=utf-8";
 
+    private final Properties headers = new Properties();
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
-    private @Nullable String baseAddress;
+    private @NonNullByDefault({}) String baseAddress;
     private @NonNullByDefault({}) String appToken;
-    private @Nullable String sessionToken;
 
-    public ApiManager(ServerConfiguration configuration/* String appName, String appVersion, String deviceName */)
-            throws FreeboxException {
-
-        logger.debug("Authorize job...");
-        String hostAddress = String.format("%s:%d", configuration.hostAddress, configuration.remoteHttpsPort);
-        boolean httpsRequestOk = false;
+    public ApiManager(ServerConfiguration configuration) throws FreeboxException {
+        logger.debug("Discover how to access the server...");
+        baseAddress = String.format("%s://%s/", "http", configuration.hostAddress);
         DiscoveryResponse discovery = null;
-        if (configuration.httpsAvailable) {
-            discovery = checkApi(hostAddress, true);
-            httpsRequestOk = (discovery != null);
-        }
-        if (!httpsRequestOk) {
-            discovery = checkApi(hostAddress, false);
-        }
-        boolean useHttps = false;
-        if (discovery == null) {
-            throw new FreeboxException("Can't connect to " + hostAddress);
-        } else if (discovery.getApiBaseUrl().isEmpty()) {
-            throw new FreeboxException(hostAddress + " does not deliver any API base URL");
-        } else if (discovery.getApiVersion().isEmpty()) {
-            throw new FreeboxException(" does not deliver any API version");
-        } else if (discovery.isHttpsAvailable()) {
-            if (discovery.getHttpsPort() == -1 || discovery.getApiDomain().isEmpty()) {
-                if (httpsRequestOk) {
-                    useHttps = true;
-                } else {
-                    logger.debug("{} does not deliver API domain or HTTPS port; use HTTP API", hostAddress);
+        try {
+            // First let's try simple
+            discovery = execute(new APIRequests.checkAPI());
+        } catch (FreeboxException e1) {
+            if (configuration.remoteHttpsPort != -1) {
+                // Then let's try with port
+                baseAddress = String.format("%s://%s:%d/", "http", configuration.hostAddress,
+                        configuration.remoteHttpsPort);
+                try {
+                    discovery = execute(new APIRequests.checkAPI());
+                } catch (FreeboxException e2) {
+                    if (configuration.httpsAvailable) {
+                        // Then let's try with https
+                        baseAddress = String.format("%s://%s:%d/", "https", configuration.hostAddress,
+                                configuration.remoteHttpsPort);
+                        discovery = execute(new APIRequests.checkAPI());
+                    }
                 }
-            } else if (checkApi(String.format("%s:%d", discovery.getApiDomain(), discovery.getHttpsPort()),
-                    true) != null) {
-                useHttps = true;
-                hostAddress = String.format("%s:%d", discovery.getApiDomain(), discovery.getHttpsPort());
             }
         }
+        if (discovery != null) {
+            this.appToken = configuration.appToken;
+            authorize(discovery);
+        } else {
+            throw new FreeboxException(String.format("Can't connect to '%s'", configuration.hostAddress));
+        }
+    }
 
-        if (!authorize2(useHttps, hostAddress, discovery.getApiBaseUrl(), discovery.getApiVersion(),
-                configuration.appToken)) {
-            if (configuration.appToken.isEmpty()) {
-                throw new FreeboxException("App token not set in the thing configuration");
-            } else {
-                throw new FreeboxException("Check your app token in the thing configuration; opening session with "
-                        + hostAddress + " using " + (useHttps ? "HTTPS" : "HTTP") + " API version "
-                        + discovery.getApiVersion() + " failed");
+    private void authorize(DiscoveryResponse discovery) throws FreeboxException {
+        logger.debug("Getting authorization on '{}'", baseAddress);
+        if (!discovery.getApiBaseUrl().isEmpty() && !discovery.getApiVersion().isEmpty()) {
+            String[] versionSplit = discovery.getApiVersion().split("\\.");
+            String majorVersion = (versionSplit.length > 0) ? majorVersion = versionSplit[0] : "5";
+
+            this.baseAddress = String.format("%s%sv%s/", baseAddress, discovery.getApiBaseUrl().substring(1),
+                    majorVersion);
+
+            try {
+                if (appToken.isEmpty()) {
+                    AuthorizeResult response = execute(
+                            new APIRequests.Authorize(APP_ID, FrameworkUtil.getBundle(getClass())));
+                    appToken = response.getAppToken();
+
+                    logger.info("####################################################################");
+                    logger.info("# Please accept activation request directly on your freebox        #");
+                    logger.info("# Once done, record Apptoken in the Freebox thing configuration    #");
+                    logger.info("# {} #", appToken);
+                    logger.info("####################################################################");
+
+                    AuthorizationStatus authorization;
+                    do {
+                        Thread.sleep(2000);
+                        authorization = execute(new APIRequests.AuthorizationStatus(response.getTrackId()));
+                    } while (authorization.getStatus() == Status.PENDING);
+                    if (authorization.getStatus() != Status.GRANTED) {
+                        throw new FreeboxException(String.format("Unable to grant session"));
+                    }
+                }
+                openSession();
+            } catch (InterruptedException e) {
+                throw new FreeboxException("Granting process interrupted", e);
             }
         } else {
-            logger.debug("Freebox bridge : session opened with {} using {} API version {}", hostAddress,
-                    (useHttps ? "HTTPS" : "HTTP"), discovery.getApiVersion());
-        }
-    }
-
-    public boolean authorize2(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion, String appToken) {
-        String[] versionSplit = apiVersion.split("\\.");
-        String majorVersion = "5";
-        if (versionSplit.length > 0) {
-            majorVersion = versionSplit[0];
-        }
-        this.baseAddress = (useHttps ? "https://" : "http://") + fqdn + apiBaseUrl + "v" + majorVersion + "/";
-
-        boolean granted = false;
-        try {
-            String token = appToken;
-            if (token.isEmpty()) {
-                AuthorizeRequest request = new AuthorizeRequest(APP_ID, FrameworkUtil.getBundle(getClass()));
-                AuthorizeResult response = executeURL(AuthorizeResponse.class, null, "POST", request);
-                token = response.getAppToken();
-
-                logger.info("####################################################################");
-                logger.info("# Please accept activation request directly on your freebox        #");
-                logger.info("# Once done, record Apptoken in the Freebox thing configuration    #");
-                logger.info("# {} #", token);
-                logger.info("####################################################################");
-
-                AuthorizationStatus result;
-                do {
-                    Thread.sleep(2000);
-                    result = execute(AuthorizationStatusResponse.class, response.getTrackId().toString());
-                } while (result.getStatus() == Status.PENDING);
-                granted = result.getStatus() == Status.GRANTED;
-            } else {
-                granted = true;
-            }
-            if (!granted) {
-                return false;
-            }
-
-            this.appToken = token;
-            openSession();
-            return true;
-        } catch (FreeboxException | InterruptedException e) {
-            logger.debug("Error while opening a session", e);
-            return false;
-        }
-    }
-
-    public @Nullable DiscoveryResponse checkApi(String fqdn, boolean secureHttp) {
-        String url = String.format("%s://%s/api_version", secureHttp ? "https" : "http", fqdn);
-        try {
-            String jsonResponse = HttpUtil.executeUrl("GET", url, HTTP_CALL_DEFAULT_TIMEOUT_MS);
-            return gson.fromJson(jsonResponse, DiscoveryResponse.class);
-        } catch (IOException | JsonSyntaxException e) {
-            logger.debug("checkApi with {} failed: {}", url, e.getMessage());
-            return null;
+            throw new FreeboxException(
+                    String.format("Missing API version or base URL on '%s' : '%s'", baseAddress, discovery.toString()));
         }
     }
 
     private synchronized void openSession() throws FreeboxException {
-        LoginResult loginResult = execute(new LoginRequest());
-        OpenSessionResult openSession = execute(new OpenSessionRequest(APP_ID, appToken, loginResult.getChallenge()),
-                null);
-        sessionToken = openSession.getSessionToken();
+        LoginResult loginState = execute(new APIRequests.Login());
+        if (!loginState.isLoggedIn()) {
+            try {
+                OpenSessionResult openSession = execute(
+                        new APIRequests.OpenSession(APP_ID, appToken, loginState.getChallenge()));
+                headers.setProperty(AUTH_HEADER, openSession.getSessionToken());
+            } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+                throw new FreeboxException("Error opening session : {}", e);
+            }
+        }
     }
 
     public synchronized void closeSession() {
-        if (sessionToken != null) {
+        if (headers.getProperty(AUTH_HEADER) != null) {
             try {
-                execute(new LogoutAction());
+                execute(new APIRequests.Logout());
             } catch (FreeboxException e) {
                 logger.warn("Error closing session : {}", e.getMessage());
             }
-            sessionToken = null;
+            headers.remove(AUTH_HEADER);
         }
-    }
-
-    public synchronized @Nullable String getSessionToken() {
-        return sessionToken;
-    }
-
-    private <T extends FreeboxResponse<F>, F> F executeUrl(String httpMethod, @Nullable String relativeUrl,
-            @Nullable String requestContent, Class<T> responseClass, boolean retryAuth, boolean patchTableReponse,
-            boolean doNotLogData) throws FreeboxException {
-        try {
-            Properties headers = null;
-            String token = sessionToken;
-            if (token != null) {
-                headers = new Properties();
-                headers.setProperty(AUTH_HEADER, token);
-            }
-            InputStream stream = null;
-            String contentType = null;
-            if (requestContent != null) {
-                stream = new ByteArrayInputStream(requestContent.getBytes(StandardCharsets.UTF_8));
-                contentType = HTTP_CALL_CONTENT_TYPE;
-            }
-            logger.debug("executeUrl {} {} requestContent {}", httpMethod, relativeUrl,
-                    doNotLogData ? "***" : requestContent);
-            String jsonResponse = HttpUtil.executeUrl(httpMethod, baseAddress + relativeUrl, headers, stream,
-                    contentType, HTTP_CALL_DEFAULT_TIMEOUT_MS);
-            if (stream != null) {
-                stream.close();
-                stream = null;
-            }
-
-            if (patchTableReponse) {
-                // Replace empty result by an empty table result
-                jsonResponse = jsonResponse.replace("\"result\":{}", "\"result\":[]");
-            }
-
-            return evaluateJsonResponse(jsonResponse, responseClass, doNotLogData);
-        } catch (FreeboxException e) {
-            if (retryAuth && e.isAuthRequired()) {
-                logger.debug("Authentication required: open a new session and retry the request");
-                openSession();
-                return executeUrl(httpMethod, relativeUrl, requestContent, responseClass, false, patchTableReponse,
-                        doNotLogData);
-            }
-            throw e;
-        } catch (IOException e) {
-            throw new FreeboxException(httpMethod + " request " + relativeUrl + ": execution failed: " + e.getMessage(),
-                    e);
-        } catch (JsonSyntaxException e) {
-            throw new FreeboxException(
-                    httpMethod + " request " + relativeUrl + ": response parsing failed: " + e.getMessage(), e);
-        }
-    }
-
-    private <T extends FreeboxResponse<F>, F> F evaluateJsonResponse(String jsonResponse, Class<T> responseClass,
-            boolean doNotLogData) throws JsonSyntaxException, FreeboxException {
-        logger.debug("evaluateJsonReesponse Json {}", doNotLogData ? "***" : jsonResponse);
-        // First check only if the result is successful
-        FreeboxResponse<Object> partialResponse = gson.fromJson(jsonResponse, EmptyResponse.class);
-        partialResponse.evaluate();
-        // Parse the full response in case of success
-        T fullResponse = gson.fromJson(jsonResponse, responseClass);
-        fullResponse.evaluate();
-        F result = fullResponse.getResult();
-        return result;
-    }
-
-    private String encodeUrl(String url) throws FreeboxException {
-        try {
-            return URLEncoder.encode(url, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new FreeboxException("Encoding the URL \"" + url + "\" in UTF-8 failed", e);
-        }
-    }
-
-    private <T> @Nullable RequestAnnotation getAnnotation(Class<T> responseClass) {
-        Annotation[] annotations = responseClass.getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof RequestAnnotation) {
-                return (RequestAnnotation) annotation;
-            }
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
     public <T extends FreeboxResponse<F>, F> F execute(APIAction action) throws FreeboxException {
-        return executeUrl(action.getMethod(), action.getUrl(), null, (Class<T>) action.getResponseClass(),
-                action.getRetryAuth(), false, false);
-    }
+        String payload = action.getPayload() != null ? gson.toJson(action.getPayload()) : null;
+        try {
+            InputStream stream = payload != null ? new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8))
+                    : null;
 
-    // private <T extends FreeboxResponse<F>, F> F executePost(Class<T> responseClass, @Nullable String requestUrl,
-    // @Nullable Object content) throws FreeboxException {
-    // return executeURL(responseClass, requestUrl, "POST", content);
-    // }
+            logger.debug("executeUrl {} {} ", action.getMethod(), action.getUrl());
+            String jsonResponse = HttpUtil.executeUrl(action.getMethod(), baseAddress + action.getUrl(), headers,
+                    stream, HTTP_CALL_CONTENT_TYPE, HTTP_CALL_DEFAULT_TIMEOUT_MS);
 
-    public <T extends FreeboxResponse<F>, F> F executeGet(Class<T> responseClass, @Nullable String requestUrl)
-            throws FreeboxException {
-        return executeURL(responseClass, requestUrl, "GET", null);
-    }
-
-    public <T extends FreeboxResponse<F>, F> F executeURL(Class<T> responseClass, @Nullable String requestUrl,
-            String method, @Nullable Object content) throws FreeboxException {
-        RequestAnnotation myAnnotation = getAnnotation(responseClass);
-        if (myAnnotation != null) {
-            String relativeUrl = myAnnotation.relativeUrl() + (requestUrl != null ? encodeUrl(requestUrl) + "/" : "");
-            return executeUrl(method, relativeUrl, content != null ? gson.toJson(content) : null, responseClass,
-                    myAnnotation.retryAuth(), false, false);
+            if (stream != null) {
+                stream.close();
+                stream = null;
+            }
+            if (action instanceof APIRequests.checkAPI) {
+                F fullResponse = gson.fromJson(jsonResponse, (Class<F>) action.getResponseClass());
+                return fullResponse;
+            } else {
+                T fullResponse = gson.fromJson(jsonResponse, (Class<T>) action.getResponseClass());
+                fullResponse.evaluate();
+                return fullResponse.getResult();
+            }
+        } catch (FreeboxException e) {
+            if (e.isAuthRequired() && action.retriesLeft()) {
+                logger.debug("Authentication required: open a new session and retry the request");
+                openSession();
+                return execute(action);
+            }
+            throw e;
+        } catch (IOException e) {
+            throw new FreeboxException(
+                    action.getMethod() + " request " + action.getUrl() + ": execution failed: " + e.getMessage(), e);
+        } catch (JsonSyntaxException e) {
+            throw new FreeboxException(
+                    action.getMethod() + " request " + action.getUrl() + ": response parsing failed: " + e.getMessage(),
+                    e);
         }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends FreeboxResponse<F>, F> F execute(Object request, @Nullable String requestUrl)
-            throws FreeboxException {
-        RequestAnnotation myAnnotation = getAnnotation(request.getClass());
-        if (myAnnotation != null) {
-            String relativeUrl = myAnnotation.relativeUrl() + (requestUrl != null ? encodeUrl(requestUrl) + "/" : "");
-            return executeUrl(myAnnotation.method(), relativeUrl, gson.toJson(request),
-                    (Class<T>) myAnnotation.responseClass(), myAnnotation.retryAuth(), false, false);
-        }
-        return null;
     }
 
 }

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
-
 /**
  * The {@link SambaConfig} is the Java class used to map the "SambaConfig"
  * structure used by the Samba configuration API
@@ -21,7 +19,6 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = SambaConfigResponse.class, relativeUrl = "netshare/samba/", retryAuth = true, method = "PUT")
 public class SambaConfig {
     protected Boolean fileShareEnabled;
     protected Boolean printShareEnabled;

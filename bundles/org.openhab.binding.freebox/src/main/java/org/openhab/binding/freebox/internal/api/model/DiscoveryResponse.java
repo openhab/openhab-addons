@@ -23,21 +23,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DiscoveryResponse {
-    // The device unique id
-    private String uid = "";
+
+    private String uid = ""; // The device unique id
     private String deviceName = "";
-    // The current API version on the Freebox
-    private String apiVersion = "";
-    // The API root path on the HTTP server
-    private String apiBaseUrl = "";
-    // “FreeboxServer1,1” for the Freebox Server revision 1,1
-    private String deviceType = "";
-    // The domain to use in place of hardcoded Freebox ip
-    private String apiDomain = "";
-    // Tells if https has been configured on the Freebox
-    private boolean httpsAvailable;
-    // Port to use for remote https access to the Freebox Api
-    private int httpsPort = -1;
+    private String apiVersion = ""; // The current API version on the Freebox
+    private String apiBaseUrl = ""; // The API root path on the HTTP server
+    private String deviceType = ""; // “FreeboxServer1,1” for the Freebox Server revision 1,1
+    private String apiDomain = ""; // The domain to use in place of hardcoded Freebox ip
+    private boolean httpsAvailable; // Tells if https has been configured on the Freebox
+    private int httpsPort = -1; // Port to use for remote https access to the Freebox Api
 
     public String getUid() {
         return uid;

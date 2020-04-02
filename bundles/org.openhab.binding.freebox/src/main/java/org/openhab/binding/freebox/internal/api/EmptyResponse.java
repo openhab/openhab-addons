@@ -10,17 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freebox.internal.api.model;
-
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+package org.openhab.binding.freebox.internal.api;
 
 /**
- * The {@link LoginRequest} is the Java class used to map the
- * response of the login API
- * https://dev.freebox.fr/sdk/os/login/#
+ * The {@link EmptyResponse} is the Java class used to map an empty response
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "login/", retryAuth = false, responseClass = LoginResponse.class)
-public class LoginRequest extends APIAction {
+public class EmptyResponse extends FreeboxResponse<Object> {
 }

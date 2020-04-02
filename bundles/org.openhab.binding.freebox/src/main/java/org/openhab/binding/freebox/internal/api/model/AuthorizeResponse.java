@@ -13,7 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link AuthorizeResponse} is the Java class used to map the
@@ -22,18 +22,14 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "login/authorize/", retryAuth = false, method = "POST")
 public class AuthorizeResponse extends FreeboxResponse<AuthorizeResult> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in request authorization API response", this);
-        }
-        if ((getResult().getAppToken() == null) || getResult().getAppToken().isEmpty()) {
+        if (getResult().getAppToken().isEmpty()) {
             throw new FreeboxException("No app token in response", this);
         }
-        if (getResult().getTrackId() == null) {
+        if (getResult().getTrackId() == -1) {
             throw new FreeboxException("No track id in response", this);
         }
     }

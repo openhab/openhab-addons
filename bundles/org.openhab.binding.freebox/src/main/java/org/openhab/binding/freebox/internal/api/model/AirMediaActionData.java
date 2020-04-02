@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,8 +21,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = AirMediaActionResponse.class, relativeUrl = "airmedia/receivers/", retryAuth = true, method = "POST")
-public class AirMediaReceiverRequest {
+public class AirMediaActionData {
     public static enum MediaAction {
         UNKNOWN,
         @SerializedName("start")
@@ -47,23 +44,14 @@ public class AirMediaReceiverRequest {
     protected Integer position;
     protected String media;
 
-    public void setAction(MediaAction action) {
-        this.action = action;
-    }
-
-    public void setType(MediaType mediaType) {
-        this.mediaType = mediaType;
-    }
-
-    public void setPassword(String password) {
+    public AirMediaActionData(String password, MediaAction action, MediaType type) {
         this.password = password;
+        this.action = action;
+        this.mediaType = type;
     }
 
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
-    public void setMedia(String media) {
-        this.media = media;
+    public AirMediaActionData(String password, MediaAction action, MediaType type, String url) {
+        this(password, action, type);
+        this.media = url;
     }
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 import org.openhab.binding.freebox.internal.api.model.WifiConfig.FilterState;
 
 /**
@@ -23,14 +23,10 @@ import org.openhab.binding.freebox.internal.api.model.WifiConfig.FilterState;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "wifi/config/", retryAuth = true)
 public class WifiConfigResponse extends FreeboxResponse<WifiConfig> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in Wifi global configuration API response", this);
-        }
         if (getResult().getMacFilterState() == FilterState.UNKNOWN) {
             throw new FreeboxException("No Wifi status in response", this);
         }

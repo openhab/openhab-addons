@@ -23,10 +23,9 @@ import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.freebox.internal.action.HostActions;
+import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
-import org.openhab.binding.freebox.internal.api.model.LanHostRequest;
-import org.openhab.binding.freebox.internal.api.model.LanHostWOLConfig;
 import org.openhab.binding.freebox.internal.config.HostConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,22 +55,21 @@ public class HostHandler extends APIConsumerHandler {
     @Override
     protected Map<String, String> discoverAttributes() throws FreeboxException {
         final Map<String, String> properties = super.discoverAttributes();
-        LanHost lanHost = getApiManager().execute(new LanHostRequest(config.macAddress));
+        LanHost lanHost = getApiManager().execute(new APIRequests.LanHost(config.macAddress));
         lanHost.getNames().forEach(name -> properties.put(name.getSource().name(), name.getName()));
         return properties;
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
-        LanHost lanHost = getApiManager().execute(new LanHostRequest(config.macAddress));
+        LanHost lanHost = getApiManager().execute(new APIRequests.LanHost(config.macAddress));
         updateChannelOnOff(CONNECTIVITY, REACHABLE, lanHost.isReachable());
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, lanHost.getLastSeen());
     }
 
     public void wol() {
-        LanHostWOLConfig wol = new LanHostWOLConfig(config.macAddress);
         try {
-            getApiManager().execute(wol, null);
+            getApiManager().execute(new APIRequests.LanHostWOL(config.macAddress));
         } catch (FreeboxException e) {
             logger.debug("Thing {}: error waking up host : {}", getThing().getUID(), e.getMessage());
         }

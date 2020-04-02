@@ -53,33 +53,22 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.freebox.internal.action.ServerActions;
+import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.ApiManager;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.ConnectionStatus;
-import org.openhab.binding.freebox.internal.api.model.ConnectionStatus.Media;
-import org.openhab.binding.freebox.internal.api.model.ConnectionStatusResponse;
 import org.openhab.binding.freebox.internal.api.model.FtpConfig;
-import org.openhab.binding.freebox.internal.api.model.FtpConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FtthStatus;
-import org.openhab.binding.freebox.internal.api.model.FtthStatusResponse;
 import org.openhab.binding.freebox.internal.api.model.LanConfig;
-import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
-import org.openhab.binding.freebox.internal.api.model.LanConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.LanHost;
-import org.openhab.binding.freebox.internal.api.model.LanHostsResponse;
 import org.openhab.binding.freebox.internal.api.model.LanInterface;
-import org.openhab.binding.freebox.internal.api.model.LanInterfacesResponse;
-import org.openhab.binding.freebox.internal.api.model.RebootResponse;
 import org.openhab.binding.freebox.internal.api.model.SambaConfig;
-import org.openhab.binding.freebox.internal.api.model.SambaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.SystemConfig;
-import org.openhab.binding.freebox.internal.api.model.SystemConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.UPnPAVConfig;
-import org.openhab.binding.freebox.internal.api.model.UPnPAVConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.WifiConfig;
-import org.openhab.binding.freebox.internal.api.model.WifiConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.XdslStatus;
-import org.openhab.binding.freebox.internal.api.model.XdslStatusResponse;
+import org.openhab.binding.freebox.internal.api.model.ConnectionStatus.Media;
+import org.openhab.binding.freebox.internal.api.model.LanConfig.NetworkMode;
 import org.openhab.binding.freebox.internal.config.ServerConfiguration;
 import org.openhab.binding.freebox.internal.discovery.FreeboxDiscoveryService;
 import org.openhab.binding.freebox.internal.discovery.PlayerDiscoveryParticipant;
@@ -148,8 +137,8 @@ public abstract class ServerHandler extends BaseBridgeHandler {
     }
 
     protected void discoverAttributes() throws FreeboxException {
-        SystemConfig systemConfig = apiManager.executeGet(SystemConfigResponse.class, null);
-        ConnectionStatus connectionStatus = apiManager.executeGet(ConnectionStatusResponse.class, null);
+        SystemConfig systemConfig = apiManager.execute(new APIRequests.SystemConfig());
+        ConnectionStatus connectionStatus = apiManager.execute(new APIRequests.ConnectionStatus());
 
         this.media = connectionStatus.getMedia();
 
@@ -204,12 +193,12 @@ public abstract class ServerHandler extends BaseBridgeHandler {
     }
 
     private void fetchLanConfig() throws FreeboxException {
-        LanConfig response = apiManager.executeGet(LanConfigResponse.class, null);
+        LanConfig response = apiManager.execute(new APIRequests.LanConfig());
         networkMode = response.getType();
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-        ConnectionStatus connectionStatus = apiManager.executeGet(ConnectionStatusResponse.class, null);
+        ConnectionStatus connectionStatus = apiManager.execute(new APIRequests.ConnectionStatus());
         updateChannelString(CONNECTION_STATUS, LINE_STATUS, connectionStatus.getState().name());
         updateChannelString(CONNECTION_STATUS, IPV4, connectionStatus.getIpv4());
 
@@ -237,7 +226,7 @@ public abstract class ServerHandler extends BaseBridgeHandler {
     }
 
     private void fetchSystemConfig() throws FreeboxException {
-        SystemConfig systemConfig = apiManager.executeGet(SystemConfigResponse.class, null);
+        SystemConfig systemConfig = apiManager.execute(new APIRequests.SystemConfig());
 
         systemConfig.getFans().forEach(fan -> {
             updateChannelQuantity(PROPERTY_SENSORS, fan.getId(), fan.getValue(), SIUnits.CELSIUS);
@@ -297,82 +286,84 @@ public abstract class ServerHandler extends BaseBridgeHandler {
             globalJob.cancel(true);
             globalJob = null;
         }
-        apiManager.closeSession();
+        if (apiManager != null) {
+            apiManager.closeSession();
+        }
         super.dispose();
     }
 
     private void fetchLinePresence() throws FreeboxException {
         if (media == Media.FTTH) {
-            FtthStatus response = apiManager.executeGet(FtthStatusResponse.class, null);
+            FtthStatus response = apiManager.execute(new APIRequests.FtthStatus());
             updateChannelOnOff(CONNECTION_STATUS, FTTH_STATUS, response.getSfpHasSignal());
         } else {
-            XdslStatus response = apiManager.executeGet(XdslStatusResponse.class, null);
+            XdslStatus response = apiManager.execute(new APIRequests.XdslStatus());
             updateChannelString(CONNECTION_STATUS, XDSL_STATUS, response.getStatus());
 
         }
     }
 
-    private void fetchWifiConfig() throws FreeboxException {
-        WifiConfig wifiConfig = apiManager.executeGet(WifiConfigResponse.class, null);
-        updateChannelOnOff(ACTIONS, WIFI_STATUS, wifiConfig.isEnabled());
-    }
-
     private void fetchFtpConfig() throws FreeboxException {
-        FtpConfig response = apiManager.executeGet(FtpConfigResponse.class, null);
+        FtpConfig response = apiManager.execute(new APIRequests.GetFtpConfig());
         updateChannelOnOff(ACTIONS, FTP_STATUS, response.isEnabled());
     }
 
     private void fetchUPnPAVConfig() throws FreeboxException {
         if (networkMode != NetworkMode.BRIDGE) {
-            UPnPAVConfig response = apiManager.executeGet(UPnPAVConfigResponse.class, null);
+            UPnPAVConfig response = apiManager.execute(new APIRequests.GetUPnPAVConfig());
             updateChannelOnOff(PLAYER_ACTIONS, UPNPAV_STATUS, response.isEnabled());
         }
     }
 
+    public boolean enableFtp(boolean enable) throws FreeboxException {
+        FtpConfig config = apiManager.execute(new APIRequests.GetFtpConfig());
+        config.setEnabled(enable);
+        config = apiManager.execute(new APIRequests.SetFtpConfig(config));
+        return config.isEnabled();
+    }
+
+    public boolean enableWifi(boolean enable) throws FreeboxException {
+        WifiConfig config = apiManager.execute(new APIRequests.GetWifiConfig());
+        config.setEnabled(enable);
+        config = apiManager.execute(new APIRequests.SetWifiConfig(config));
+        return config.isEnabled();
+    }
+
+    private void fetchWifiConfig() throws FreeboxException {
+        WifiConfig wifiConfig = apiManager.execute(new APIRequests.GetWifiConfig());
+        updateChannelOnOff(ACTIONS, WIFI_STATUS, wifiConfig.isEnabled());
+    }
+
     private void fetchSambaConfig() throws FreeboxException {
-        SambaConfig response = apiManager.executeGet(SambaConfigResponse.class, null);
+        SambaConfig response = apiManager.execute(new APIRequests.GetSambaConfig());
         updateChannelOnOff(SAMBA, SAMBA_FILE_STATUS, response.isFileShareEnabled());
         updateChannelOnOff(SAMBA, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
     }
 
-    public boolean enableWifi(boolean enable) throws FreeboxException {
-        WifiConfig config = new WifiConfig();
-        config.setEnabled(enable);
-        config = apiManager.execute(config, null);
-        return config.isEnabled();
-    }
-
-    public boolean enableFtp(boolean enable) throws FreeboxException {
-        FtpConfig config = new FtpConfig();
-        config.setEnabled(enable);
-        config = apiManager.execute(config, null);
-        return config.isEnabled();
-    }
-
     public boolean enableSambaFileShare(boolean enable) throws FreeboxException {
-        SambaConfig config = new SambaConfig();
+        SambaConfig config = apiManager.execute(new APIRequests.GetSambaConfig());
         config.setFileShareEnabled(enable);
-        config = apiManager.execute(config, null);
+        config = apiManager.execute(new APIRequests.SetSambaConfig(config));
         return config.isFileShareEnabled();
     }
 
-    public boolean enableUPnPAV(boolean enable) throws FreeboxException {
-        UPnPAVConfig config = new UPnPAVConfig();
-        config.setEnabled(enable);
-        config = apiManager.execute(config, null);
-        return config.isEnabled();
+    public boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
+        SambaConfig config = apiManager.execute(new APIRequests.GetSambaConfig());
+        config.setPrintShareEnabled(enable);
+        config = apiManager.execute(new APIRequests.SetSambaConfig(config));
+        return config.isPrintShareEnabled();
     }
 
-    public boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
-        SambaConfig config = new SambaConfig();
-        config.setPrintShareEnabled(enable);
-        config = apiManager.execute(config, null);
-        return config.isPrintShareEnabled();
+    public boolean enableUPnPAV(boolean enable) throws FreeboxException {
+        UPnPAVConfig config = apiManager.execute(new APIRequests.GetUPnPAVConfig());
+        config.setEnabled(enable);
+        config = apiManager.execute(new APIRequests.SetUPnPAVConfig(config));
+        return config.isEnabled();
     }
 
     public void reboot() {
         try {
-            apiManager.execute(new RebootResponse());
+            apiManager.execute(new APIRequests.Reboot());
         } catch (FreeboxException e) {
             logger.debug("Thing {}: error rebooting server", getThing().getUID());
         }
@@ -432,10 +423,10 @@ public abstract class ServerHandler extends BaseBridgeHandler {
 
     public List<LanHost> getLanHosts() throws FreeboxException {
         List<LanHost> hosts = new ArrayList<>();
-        List<LanInterface> lans = getApiManager().executeGet(LanInterfacesResponse.class, null);
+        List<LanInterface> lans = getApiManager().execute(new APIRequests.LanInterfaces());
         lans.stream().filter(LanInterface::hasHosts).forEach(lan -> {
             try {
-                List<LanHost> lanHosts = getApiManager().executeGet(LanHostsResponse.class, lan.getName());
+                List<LanHost> lanHosts = getApiManager().execute(new APIRequests.LanHosts(lan.getName()));
                 hosts.addAll(lanHosts);
             } catch (FreeboxException e) {
                 logger.warn("Error getting hosts for interface {}", lan.getName());

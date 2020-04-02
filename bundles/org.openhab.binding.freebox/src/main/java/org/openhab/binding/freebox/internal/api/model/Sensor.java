@@ -16,7 +16,7 @@ package org.openhab.binding.freebox.internal.api.model;
  * The {@link Sensor} is the Java class used to map the fans and sensors part of the "SystemConfig"
  * structure used by the system API
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 public class Sensor {
     private String id;

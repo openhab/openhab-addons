@@ -24,13 +24,11 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
-import org.openhab.binding.freebox.internal.api.model.CallEntriesRequest;
 import org.openhab.binding.freebox.internal.api.model.CallEntry;
-import org.openhab.binding.freebox.internal.api.model.CallEntry.CallType;
-import org.openhab.binding.freebox.internal.api.model.PhoneAction;
 import org.openhab.binding.freebox.internal.api.model.PhoneStatus;
-import org.openhab.binding.freebox.internal.api.model.PhoneStatusResponse;
+import org.openhab.binding.freebox.internal.api.model.CallEntry.CallType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,12 +56,15 @@ public class PhoneHandler extends APIConsumerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         logger.debug("Polling phone status...");
-        PhoneStatus phoneStatus = getApiManager().executeGet(PhoneStatusResponse.class, null).get(0);
-        updateChannelOnOff(STATE, ONHOOK, phoneStatus.isOnHook());
-        updateChannelOnOff(STATE, RINGING, phoneStatus.isRinging());
+        pollPhoneStatus();
+        pollCalls();
+        // TODO : implement usage of this
+        // PhoneConfig phoneConfig = getApiManager().execute(new APIRequests.PhoneConfig());
+    }
 
+    private void pollCalls() throws FreeboxException {
         logger.debug("Polling phone calls since last...");
-        List<CallEntry> callEntries = getApiManager().execute(new CallEntriesRequest(lastCallTimestamp));
+        List<CallEntry> callEntries = getApiManager().execute(new APIRequests.CallEntries(lastCallTimestamp));
         if (callEntries != null) {
             callEntries = callEntries.stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
                     .filter(c -> c.getDatetime() > lastCallTimestamp).collect(Collectors.toList());
@@ -78,6 +79,14 @@ public class PhoneHandler extends APIConsumerHandler {
                 });
                 updateProperty(LAST_CALL_TIMESTAMP, lastCallTimestamp.toString());
             }
+        }
+    }
+
+    private void pollPhoneStatus() throws FreeboxException {
+        List<PhoneStatus> phoneStatus = getApiManager().execute(new APIRequests.PhoneStatus());
+        if (!phoneStatus.isEmpty()) {
+            updateChannelOnOff(STATE, ONHOOK, phoneStatus.get(0).isOnHook());
+            updateChannelOnOff(STATE, RINGING, phoneStatus.get(0).isRinging());
         }
     }
 
@@ -96,7 +105,7 @@ public class PhoneHandler extends APIConsumerHandler {
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
         if (RINGING.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            getApiManager().execute(new PhoneAction((OnOffType) command == OnOffType.ON));
+            getApiManager().execute(new APIRequests.RingPhone((OnOffType) command == OnOffType.ON));
             return true;
         }
         return false;

@@ -13,6 +13,7 @@
 package org.openhab.binding.freebox.internal.api.model;
 
 import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse;
 
 /**
  * The {@link LoginResponse} is the Java class used to map the
@@ -25,10 +26,7 @@ public class LoginResponse extends FreeboxResponse<LoginResult> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in login API response", this);
-        }
-        if ((getResult().getChallenge() == null) || getResult().getChallenge().isEmpty()) {
+        if (getResult().getChallenge().isEmpty()) {
             throw new FreeboxException("No challenge in response", this);
         }
     }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link AuthorizeResult} is the Java class used to map the
  * structure used by the response of the request authorization API
@@ -19,15 +21,16 @@ package org.openhab.binding.freebox.internal.api.model;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class AuthorizeResult {
-    private String appToken;
-    private Integer trackId;
+    private String appToken = "";
+    private int trackId = -1;
 
     public String getAppToken() {
         return appToken;
     }
 
-    public Integer getTrackId() {
+    public int getTrackId() {
         return trackId;
     }
 }

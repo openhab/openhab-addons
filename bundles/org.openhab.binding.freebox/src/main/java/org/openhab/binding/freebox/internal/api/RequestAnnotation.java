@@ -17,8 +17,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.openhab.binding.freebox.internal.api.model.EmptyResponse;
-
 /**
  * The {@link RequestAnnotation} provides informations needed at
  * runtime in order to handle properly API calls
@@ -37,7 +35,9 @@ public @interface RequestAnnotation {
 
     String relativeUrl();
 
-    boolean retryAuth() default true;
+    int maxRetries() default 3;
 
     String method() default "GET";
+
+    boolean endWithSlash() default true;
 }

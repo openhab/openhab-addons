@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.openhab.binding.freebox.internal.api.APIAction;
 
 /**
  * The {@link AirMediaConfig} is the Java class used to map the "AirMediaConfig"
@@ -21,8 +21,7 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = AirMediaConfigResponse.class, relativeUrl = "airmedia/config/", method = "PUT")
-public class AirMediaConfig {
+public class AirMediaConfig extends APIAction {
     protected Boolean enabled;
     protected String password;
 
@@ -38,5 +37,4 @@ public class AirMediaConfig {
     public Boolean isEnabled() {
         return enabled;
     }
-
 }

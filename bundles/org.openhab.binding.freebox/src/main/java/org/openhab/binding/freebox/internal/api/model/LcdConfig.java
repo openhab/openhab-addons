@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
-
 /**
  * The {@link LcdConfig} is the Java class used to map the "LcdConfig"
  * structure used by the LCD configuration API
@@ -21,7 +19,6 @@ import org.openhab.binding.freebox.internal.api.RequestAnnotation;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@RequestAnnotation(responseClass = LcdConfigResponse.class, relativeUrl = "lcd/config/", retryAuth = true, method = "PUT")
 public class LcdConfig {
     private int brightness;
     private boolean orientationForced;

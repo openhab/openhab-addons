@@ -12,24 +12,22 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.framework.Bundle;
 
 /**
- * The {@link AuthorizeRequest} is the Java class used to map the
- * structure used by the request of the request authorization API
+ * The {@link AuthorizeData} holds and handle data needed to
+ * be sent to API in order to get authorization
  * https://dev.freebox.fr/sdk/os/login/#
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
-@NonNullByDefault
-public class AuthorizeRequest {
+public class AuthorizeData {
     protected String appId;
     protected String appName;
     protected String appVersion;
     protected String deviceName;
 
-    public AuthorizeRequest(String appId, Bundle bundle) {
+    public AuthorizeData(String appId, Bundle bundle) {
         this.appId = appId;
         this.appName = bundle.getHeaders().get("Bundle-Name");
         this.appVersion = String.format("%d.%d", bundle.getVersion().getMajor(), bundle.getVersion().getMinor());

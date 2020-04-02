@@ -12,18 +12,25 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.RequestAnnotation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LanHostRequest} is the Java class used to map the
- * response of the lan browser API
- * https://dev.freebox.fr/sdk/os/lcd/#
+ * The {@link LanHostWOLData} is the Java class used to send a
+ * WOL order to the given host
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@RequestAnnotation(relativeUrl = "lan/browser/pub/", retryAuth = true, responseClass = LanHostResponse.class)
-public class LanHostRequest extends APIAction {
-    public LanHostRequest(String mac) {
-        super(String.format("ether-%s", mac));
+@NonNullByDefault
+public class LanHostWOLData {
+    protected final String mac;
+    protected final String password;
+
+    public LanHostWOLData(String mac) {
+        this(mac, "");
+    }
+
+    public LanHostWOLData(String mac, String password) {
+        this.mac = mac;
+        this.password = password;
     }
 }
