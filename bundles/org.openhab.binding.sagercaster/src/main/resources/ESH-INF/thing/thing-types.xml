@@ -8,7 +8,7 @@
 		
 		<channel-groups>
 			<channel-group id="input" typeId="input" />
-			<channel-group typeId="output" id="output" />
+			<channel-group id="output" typeId="output" />
 		</channel-groups>
 	
 		<config-description>

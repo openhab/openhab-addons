@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SagerCasterHandler extends BaseThingHandler {
-    private final static StringType FORECAST_PENDING = new StringType("0");
+    private final static String FORECAST_PENDING = "0";
     private final static Set<String> SHOWERS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList("G", "K", "L", "R", "S", "T", "U", "W")));
 
@@ -99,8 +99,10 @@ public class SagerCasterHandler extends BaseThingHandler {
         }
 
         options.add(new StateOption("9", "Shifting / Variable winds"));
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_WINDFROM), options);
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_WINDTO), options);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), GROUP_OUTPUT, CHANNEL_WINDFROM),
+                options);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), GROUP_OUTPUT, CHANNEL_WINDTO),
+                options);
     }
 
     @Override
@@ -108,7 +110,7 @@ public class SagerCasterHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             postNewForecast();
         } else {
-            String id = channelUID.getId();
+            String id = channelUID.getIdWithoutGroup();
             switch (id) {
                 case CHANNEL_CLOUDINESS:
                     logger.debug("Octa cloud level changed, updating forecast");
@@ -158,12 +160,12 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 scheduler.submit(() -> {
                                     sagerWeatherCaster.setPressure(newPressure.doubleValue(),
                                             agedPressure.doubleValue());
-                                    updateState(CHANNEL_PRESSURETREND,
-                                            new StringType(String.valueOf(sagerWeatherCaster.getPressureEvolution())));
+                                    updateChannelString(GROUP_OUTPUT, CHANNEL_PRESSURETREND,
+                                            String.valueOf(sagerWeatherCaster.getPressureEvolution()));
                                     postNewForecast();
                                 });
                             } else {
-                                updateState(CHANNEL_FORECAST, FORECAST_PENDING);
+                                updateChannelString(GROUP_OUTPUT, CHANNEL_FORECAST, FORECAST_PENDING);
                             }
                         }
                     }
@@ -182,7 +184,7 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 double delta = newTemperature.doubleValue() - agedTemperature.doubleValue();
                                 String trend = (delta > 3) ? "1"
                                         : (delta > 0.3) ? "2" : (delta > -0.3) ? "3" : (delta > -3) ? "4" : "5";
-                                updateState(CHANNEL_TEMPERATURETREND, new StringType(trend));
+                                updateChannelString(GROUP_OUTPUT, CHANNEL_TEMPERATURETREND, trend);
                             }
                         }
                     }
@@ -197,8 +199,8 @@ public class SagerCasterHandler extends BaseThingHandler {
                         if (agedAngle != null) {
                             scheduler.submit(() -> {
                                 sagerWeatherCaster.setBearing(newAngle.intValue(), agedAngle.intValue());
-                                updateState(CHANNEL_WINDEVOLUTION,
-                                        new StringType(String.valueOf(sagerWeatherCaster.getWindEvolution())));
+                                updateChannelString(GROUP_OUTPUT, CHANNEL_WINDEVOLUTION,
+                                        String.valueOf(sagerWeatherCaster.getWindEvolution()));
                                 postNewForecast();
                             });
                         }
@@ -215,12 +217,12 @@ public class SagerCasterHandler extends BaseThingHandler {
         // Sharpens forecast if current temp is below 2 degrees, likely to be flurries rather than shower
         forecast += SHOWERS.contains(forecast) ? (currentTemp > 2) ? "1" : "2" : "";
 
-        updateState(CHANNEL_FORECAST, new StringType(forecast));
-        updateState(CHANNEL_WINDFROM, new StringType(sagerWeatherCaster.getWindDirection()));
-        updateState(CHANNEL_WINDTO, new StringType(sagerWeatherCaster.getWindDirection2()));
+        updateChannelString(GROUP_OUTPUT, CHANNEL_FORECAST, forecast);
+        updateChannelString(GROUP_OUTPUT, CHANNEL_WINDFROM, sagerWeatherCaster.getWindDirection());
+        updateChannelString(GROUP_OUTPUT, CHANNEL_WINDTO, sagerWeatherCaster.getWindDirection2());
 
         String velocity = sagerWeatherCaster.getWindVelocity();
-        updateState(CHANNEL_VELOCITY, new StringType(velocity));
+        updateChannelString(GROUP_OUTPUT, CHANNEL_VELOCITY, velocity);
         int predictedBeaufort = sagerWeatherCaster.getBeaufort();
         switch (velocity) {
             case "N":
@@ -245,7 +247,21 @@ public class SagerCasterHandler extends BaseThingHandler {
                 predictedBeaufort -= 1;
                 break;
         }
-        updateState(CHANNEL_VELOCITY_BEAUFORT, new DecimalType(predictedBeaufort));
+        updateChannelDecimal(GROUP_OUTPUT, CHANNEL_VELOCITY_BEAUFORT, predictedBeaufort);
+    }
+
+    protected void updateChannelString(String group, String channelId, String value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, new StringType(value));
+        }
+    }
+
+    protected void updateChannelDecimal(String group, String channelId, int value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, new DecimalType(value));
+        }
     }
 
 }

@@ -34,20 +34,24 @@ public class SagerCasterBindingConstants {
     public static final String CONFIG_LOCATION = "location";
     public static final String CONFIG_PERIOD = "observation-period";
 
+    // List of all Channel Groups Group Channel ids
+    public static final String GROUP_INPUT = "input";
+    public static final String GROUP_OUTPUT = "output";
+
     // Output channel ids
-    public static final String CHANNEL_FORECAST = "output#forecast";
-    public static final String CHANNEL_VELOCITY = "output#velocity";
-    public static final String CHANNEL_VELOCITY_BEAUFORT = "output#velocity-beaufort";
-    public static final String CHANNEL_WINDFROM = "output#wind-from";
-    public static final String CHANNEL_WINDTO = "output#wind-to";
-    public static final String CHANNEL_WINDEVOLUTION = "output#wind-evolution";
-    public static final String CHANNEL_PRESSURETREND = "output#pressure-trend";
-    public static final String CHANNEL_TEMPERATURETREND = "output#temperature-trend";
+    public static final String CHANNEL_FORECAST = "forecast";
+    public static final String CHANNEL_VELOCITY = "velocity";
+    public static final String CHANNEL_VELOCITY_BEAUFORT = "velocity-beaufort";
+    public static final String CHANNEL_WINDFROM = "wind-from";
+    public static final String CHANNEL_WINDTO = "wind-to";
+    public static final String CHANNEL_WINDEVOLUTION = "wind-evolution";
+    public static final String CHANNEL_PRESSURETREND = "pressure-trend";
+    public static final String CHANNEL_TEMPERATURETREND = "temperature-trend";
     // Input channel ids
-    public static final String CHANNEL_CLOUDINESS = "input#cloudiness";
-    public static final String CHANNEL_IS_RAINING = "input#is-raining";
-    public static final String CHANNEL_WIND_SPEED = "input#wind-speed-beaufort";
-    public static final String CHANNEL_TEMPERATURE = "input#temperature";
-    public static final String CHANNEL_PRESSURE = "input#pressure";
-    public static final String CHANNEL_WIND_ANGLE = "input#wind-angle";
+    public static final String CHANNEL_CLOUDINESS = "cloudiness";
+    public static final String CHANNEL_IS_RAINING = "is-raining";
+    public static final String CHANNEL_WIND_SPEED = "wind-speed-beaufort";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_PRESSURE = "pressure";
+    public static final String CHANNEL_WIND_ANGLE = "wind-angle";
 }
