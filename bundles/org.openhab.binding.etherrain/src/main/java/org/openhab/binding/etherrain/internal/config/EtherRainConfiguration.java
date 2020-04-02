@@ -63,13 +63,13 @@ public class EtherRainConfiguration {
     /**
      * Default Zone on times
      */
-    public static int zoneOnTime1 = 0;
-    public static int zoneOnTime2 = 0;
-    public static int zoneOnTime3 = 0;
-    public static int zoneOnTime4 = 0;
-    public static int zoneOnTime5 = 0;
-    public static int zoneOnTime6 = 0;
-    public static int zoneOnTime7 = 0;
-    public static int zoneOnTime8 = 0;
+    public int zoneOnTime1 = 0;
+    public int zoneOnTime2 = 0;
+    public int zoneOnTime3 = 0;
+    public int zoneOnTime4 = 0;
+    public int zoneOnTime5 = 0;
+    public int zoneOnTime6 = 0;
+    public int zoneOnTime7 = 0;
+    public int zoneOnTime8 = 0;
 
 }

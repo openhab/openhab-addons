@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.etherrain.internal.discovery;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,17 +54,22 @@ public class EtherrainDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        EtherRainUdpResponse rdp = EtherRainCommunication.autoDiscover();
+        List<EtherRainUdpResponse> rdpl = EtherRainCommunication.autoDiscover();
 
-        if (rdp.isValid()) {
-            ThingUID uid = new ThingUID(EtherRainBindingConstants.ETHERRAIN_THING,
-                    rdp.getAddress().replaceAll("[^A-Za-z0-9\\-_]", ""));
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                    .withLabel("Etherrain " + rdp.getType() + " " + rdp.getUnqiueName())
-                    .withProperty("host", rdp.getAddress()).withProperty("port", rdp.getPort()).build();
-            thingDiscovered(discoveryResult);
-        } else {
-            logger.debug("Nothing responded to request");
+        Iterator<EtherRainUdpResponse> i = rdpl.iterator();
+
+        while (i.hasNext()) {
+            EtherRainUdpResponse rdp = i.next();
+            if (rdp.isValid()) {
+                ThingUID uid = new ThingUID(EtherRainBindingConstants.ETHERRAIN_THING,
+                        rdp.getAddress().replaceAll("[^A-Za-z0-9\\-_]", ""));
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
+                        .withLabel("Etherrain " + rdp.getType() + " " + rdp.getUnqiueName())
+                        .withProperty("host", rdp.getAddress()).withProperty("port", rdp.getPort()).build();
+                thingDiscovered(discoveryResult);
+            } else {
+                logger.debug("Nothing responded to request");
+            }
         }
 
     }

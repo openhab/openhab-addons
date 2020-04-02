@@ -178,13 +178,12 @@ public class EtherRainHandler extends BaseThingHandler {
         return true;
     }
 
-    private boolean execute() {
+    private synchronized boolean execute() {
+        EtherRainCommunication device = this.device;
+
         if (device != null) {
-            device.commandIrrigate(config.programDelay, EtherRainConfiguration.zoneOnTime1,
-                    EtherRainConfiguration.zoneOnTime2, EtherRainConfiguration.zoneOnTime3,
-                    EtherRainConfiguration.zoneOnTime4, EtherRainConfiguration.zoneOnTime5,
-                    EtherRainConfiguration.zoneOnTime6, EtherRainConfiguration.zoneOnTime7,
-                    EtherRainConfiguration.zoneOnTime8);
+            device.commandIrrigate(config.programDelay, config.zoneOnTime1, config.zoneOnTime2, config.zoneOnTime3,
+                    config.zoneOnTime4, config.zoneOnTime5, config.zoneOnTime6, config.zoneOnTime7, config.zoneOnTime8);
             updateBridge();
         }
 

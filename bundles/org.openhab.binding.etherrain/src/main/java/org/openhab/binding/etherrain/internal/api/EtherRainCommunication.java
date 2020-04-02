@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +58,8 @@ public class EtherRainCommunication {
     private static final String RESPONSE_STATUS_PATTERN = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
     private static final String BROADCAST_RESPONSE_DISCOVER_PATTERN = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
 
+    private static Pattern broadcastResponseDiscoverPattern = Pattern.compile(BROADCAST_RESPONSE_DISCOVER_PATTERN);
+
     private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
     private final HttpClient httpClient;
 
@@ -70,7 +74,7 @@ public class EtherRainCommunication {
         this.httpClient = httpClient;
     }
 
-    public static EtherRainUdpResponse autoDiscover() {
+    public static List<EtherRainUdpResponse> autoDiscover() {
         return updBroadcast();
     }
 
@@ -190,13 +194,14 @@ public class EtherRainCommunication {
         return new BufferedReader(new StringReader(response.getContentAsString())).lines().collect(Collectors.toList());
     }
 
-    private static EtherRainUdpResponse updBroadcast() {
-        DatagramSocket c = null;
+    private static List<EtherRainUdpResponse> updBroadcast() {
+
+        LinkedList<EtherRainUdpResponse> rList = new LinkedList<EtherRainUdpResponse>();
 
         // Find the server using UDP broadcast
-        try {
-            // Open a random port to send the package
-            c = new DatagramSocket();
+
+        try (DatagramSocket c = new DatagramSocket()) {
+
             c.setSoTimeout(BROADCAST_TIMEOUT);
             c.setBroadcast(true);
 
@@ -207,37 +212,37 @@ public class EtherRainCommunication {
                     InetAddress.getByName("255.255.255.255"), BROADCAST_DISCOVERY_PORT);
             c.send(sendPacket);
 
-            // Wait for a response
-            byte[] recvBuf = new byte[15000];
-            DatagramPacket receivePacket;
-            try {
-                receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-                c.receive(receivePacket);
-            } catch (SocketTimeoutException e) {
-                return new EtherRainUdpResponse();
+            while (true) {
+                // Wait for a response
+                byte[] recvBuf = new byte[15000];
+                DatagramPacket receivePacket;
+                try {
+                    receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+                    c.receive(receivePacket);
+                } catch (SocketTimeoutException e) {
+                    return rList;
+                }
+
+                // Check if the message is correct
+                String message = new String(receivePacket.getData()).trim();
+
+                if (message.length() == 0) {
+                    return rList;
+                }
+
+                String addressBC = receivePacket.getAddress().getHostAddress();
+
+                Matcher matcher = broadcastResponseDiscoverPattern.matcher(message);
+                String deviceTypeBC = matcher.replaceAll("$1");
+                String unqiueNameBC = matcher.replaceAll("$2");
+                int portBC = Integer.parseInt(matcher.replaceAll("$3"));
+
+                // NOTE: Version 3.77 of API states that Additional Parameters (a=) are not used
+                // on EtherRain
+                rList.add(new EtherRainUdpResponse(deviceTypeBC, addressBC, portBC, unqiueNameBC, ""));
             }
-
-            // Check if the message is correct
-            String message = new String(receivePacket.getData()).trim();
-
-            if (message.length() == 0) {
-                return new EtherRainUdpResponse();
-            }
-
-            String addressBC = receivePacket.getAddress().getHostAddress();
-            String deviceTypeBC = message.replaceAll(BROADCAST_RESPONSE_DISCOVER_PATTERN, "$1");
-            String unqiueNameBC = message.replaceAll(BROADCAST_RESPONSE_DISCOVER_PATTERN, "$2");
-            int portBC = Integer.parseInt(message.replaceAll(BROADCAST_RESPONSE_DISCOVER_PATTERN, "$3"));
-
-            // NOTE: Version 3.77 of API states that Additional Parameters (a=) are not used
-            // on EtherRain
-            return new EtherRainUdpResponse(deviceTypeBC, addressBC, portBC, unqiueNameBC, "");
         } catch (IOException ex) {
-            return new EtherRainUdpResponse();
-        } finally {
-            if (c != null) {
-                c.close();
-            }
+            return rList;
         }
     }
 }
