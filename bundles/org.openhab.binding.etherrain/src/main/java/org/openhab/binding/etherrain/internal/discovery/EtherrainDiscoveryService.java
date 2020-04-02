@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.etherrain.internal.discovery;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,12 +52,7 @@ public class EtherrainDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        List<EtherRainUdpResponse> rdpl = EtherRainCommunication.autoDiscover();
-
-        Iterator<EtherRainUdpResponse> i = rdpl.iterator();
-
-        while (i.hasNext()) {
-            EtherRainUdpResponse rdp = i.next();
+        for (EtherRainUdpResponse rdp : EtherRainCommunication.autoDiscover()) {
             if (rdp.isValid()) {
                 ThingUID uid = new ThingUID(EtherRainBindingConstants.ETHERRAIN_THING,
                         rdp.getAddress().replaceAll("[^A-Za-z0-9\\-_]", ""));

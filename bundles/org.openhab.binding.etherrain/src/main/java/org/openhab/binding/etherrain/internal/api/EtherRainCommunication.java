@@ -20,6 +20,7 @@ import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -58,7 +59,9 @@ public class EtherRainCommunication {
     private static final String RESPONSE_STATUS_PATTERN = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
     private static final String BROADCAST_RESPONSE_DISCOVER_PATTERN = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
 
-    private static Pattern broadcastResponseDiscoverPattern = Pattern.compile(BROADCAST_RESPONSE_DISCOVER_PATTERN);
+    private static final Pattern broadcastResponseDiscoverPattern = Pattern
+            .compile(BROADCAST_RESPONSE_DISCOVER_PATTERN);
+    private static final Pattern responseStatusPattern = Pattern.compile(RESPONSE_STATUS_PATTERN);
 
     private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
     private final HttpClient httpClient;
@@ -91,9 +94,11 @@ public class EtherRainCommunication {
 
         for (String line : responseList) {
 
-            if (line.matches(RESPONSE_STATUS_PATTERN)) {
-                String command = line.replaceFirst(RESPONSE_STATUS_PATTERN, "$1");
-                String status = line.replaceFirst(RESPONSE_STATUS_PATTERN, "$2");
+            Matcher m = responseStatusPattern.matcher(line);
+
+            if (m.matches()) {
+                String command = m.replaceAll("$1");
+                String status = m.replaceAll("$2");
 
                 switch (command) {
                     case "un":
@@ -129,8 +134,8 @@ public class EtherRainCommunication {
         return response;
     }
 
-    public boolean commandIrrigate(int delay, int zone1, int zone2, int zone3, int zone4, int zone5, int zone6,
-            int zone7, int zone8) {
+    public synchronized boolean commandIrrigate(int delay, int zone1, int zone2, int zone3, int zone4, int zone5,
+            int zone6, int zone7, int zone8) {
         try {
             sendGet("result.cgi?xi=" + delay + ":" + zone1 + ":" + zone2 + ":" + zone3 + ":" + zone4 + ":" + zone5 + ":"
                     + zone6 + ":" + zone7 + ":" + zone8);
@@ -142,7 +147,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandClear() {
+    public synchronized boolean commandClear() {
         try {
             sendGet("/result.cgi?xr");
         } catch (IOException e) {
@@ -153,7 +158,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandLogin() throws EtherRainException {
+    public synchronized boolean commandLogin() throws EtherRainException {
         try {
             sendGet("/ergetcfg.cgi?lu=" + ETHERRAIN_USERNAME + "&lp=" + password);
         } catch (IOException e) {
@@ -164,7 +169,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    public boolean commandLogout() {
+    public synchronized boolean commandLogout() {
         try {
             sendGet("/ergetcfg.cgi?m=o");
         } catch (IOException e) {
@@ -175,7 +180,7 @@ public class EtherRainCommunication {
         return true;
     }
 
-    private List<String> sendGet(String command) throws IOException {
+    private synchronized List<String> sendGet(String command) throws IOException {
         String url = "http://" + address + ":" + port + "/" + command;
 
         ContentResponse response;
@@ -184,11 +189,11 @@ public class EtherRainCommunication {
             response = httpClient.newRequest(url).timeout(HTTP_TIMEOUT, TimeUnit.SECONDS).send();
             if (response.getStatus() != HttpURLConnection.HTTP_OK) {
                 logger.warn("Etherrain return status other than HTTP_OK : {}", response.getStatus());
-                return new LinkedList<String>();
+                return Collections.emptyList();
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Could not connect to Etherrain with exception: {}", e.getMessage());
-            return new LinkedList<String>();
+            return Collections.emptyList();
         }
 
         return new BufferedReader(new StringReader(response.getContentAsString())).lines().collect(Collectors.toList());
@@ -205,7 +210,7 @@ public class EtherRainCommunication {
             c.setSoTimeout(BROADCAST_TIMEOUT);
             c.setBroadcast(true);
 
-            byte[] sendData = BROADCAST_DISCOVERY_MESSAGE.getBytes();
+            byte[] sendData = BROADCAST_DISCOVERY_MESSAGE.getBytes("UTF-8");
 
             // Try the 255.255.255.255 first
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
@@ -224,7 +229,7 @@ public class EtherRainCommunication {
                 }
 
                 // Check if the message is correct
-                String message = new String(receivePacket.getData()).trim();
+                String message = new String(receivePacket.getData(), "UTF-8").trim();
 
                 if (message.length() == 0) {
                     return rList;

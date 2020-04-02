@@ -69,7 +69,6 @@ public class EtherRainHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             scheduler.execute(this::updateBridge);
-            return;
         } else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_EXECUTE)) {
             execute();
             updateState(EtherRainBindingConstants.CHANNEL_ID_EXECUTE, OnOffType.OFF);
@@ -83,7 +82,8 @@ public class EtherRainHandler extends BaseThingHandler {
         logger.debug("Attempting to connect to Etherrain with config = (Host: {}, Port: {}, Refresh: {}).", config.host,
                 config.port, config.refresh);
 
-        device = new EtherRainCommunication(config.host, config.port, config.password, httpClient);
+        EtherRainCommunication device = new EtherRainCommunication(config.host, config.port, config.password,
+                httpClient);
 
         try {
             device.commandStatus();
@@ -92,10 +92,11 @@ public class EtherRainHandler extends BaseThingHandler {
                     "Could not create a connection to the EtherRain");
             logger.debug("Could not open API connection to the EtherRain device. Exception received: {}",
                     e.getMessage());
-            device = null;
+            this.device = null;
             updateStatus(ThingStatus.OFFLINE);
             return false;
         }
+        this.device = device;
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -190,10 +191,12 @@ public class EtherRainHandler extends BaseThingHandler {
         return true;
     }
 
-    @SuppressWarnings("null")
     private boolean clear() {
-        device.commandClear();
-        scheduler.execute(this::updateBridge);
+        EtherRainCommunication device = this.device;
+        if (device != null) {
+            device.commandClear();
+        }
+        updateBridge();
 
         return true;
     }
