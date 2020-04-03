@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
 import org.osgi.framework.BundleException;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -49,9 +50,15 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CALENDAR);
 
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
-    private @Nullable @Reference HttpClientFactory httpClientFactory;
+    private final @Nullable HttpClientFactory httpClientFactory;
     private @Nullable HttpClient sharedHttpClient = null;
     private @Nullable EventPublisher eventPublisher = null;
+
+    @Activate
+    public ICalendarHandlerFactory(@Nullable @Reference HttpClientFactory httpClientFactory) {
+        super();
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

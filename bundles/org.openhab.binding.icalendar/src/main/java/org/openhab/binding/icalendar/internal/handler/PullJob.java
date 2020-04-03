@@ -65,7 +65,7 @@ class PullJob implements Runnable {
     /**
      * Exception for failure if size of the response is greater than allowed.
      */
-    public static class ResponseTooBigException extends Exception {
+    private static class ResponseTooBigException extends Exception {
 
         /**
          * The only local definition. Rest of implementation is taken from Exception or is default.
@@ -78,7 +78,7 @@ class PullJob implements Runnable {
     private Authentication.@Nullable Result authentication;
     private File destination;
     private HttpClient httpClient;
-    private @Nullable CalendarUpdateListener listener;
+    private CalendarUpdateListener listener;
     private final Logger logger = LoggerFactory.getLogger(PullJob.class);
     private URI sourceURI;
 
@@ -93,7 +93,7 @@ class PullJob implements Runnable {
      * @param listener The listener that should be fired when update succeed.
      */
     public PullJob(HttpClient httpClient, URI sourceURI, @Nullable String username, @Nullable String password,
-            File destination, @Nullable CalendarUpdateListener listener) {
+            File destination, CalendarUpdateListener listener) {
         this.httpClient = httpClient;
         this.sourceURI = sourceURI;
         if (username != null && password != null) {
@@ -146,13 +146,17 @@ class PullJob implements Runnable {
         }
 
         File tmpTargetFile;
-        FileOutputStream tmpOutStream = null;
         try {
             tmpTargetFile = File.createTempFile(TMP_FILE_PREFIX, null);
-            tmpOutStream = new FileOutputStream(tmpTargetFile);
+        } catch (IOException e) {
+            logger.warn("Not able to create temporary file for downloading iCal.");
+            return;
+        }
+
+        try (FileOutputStream tmpOutStream = new FileOutputStream(tmpTargetFile);
+                InputStream httpInputStream = asyncListener.getInputStream()) {
             byte[] buffer = new byte[1024];
             int readBytesTotal = 0;
-            InputStream httpInputStream = asyncListener.getInputStream();
             int currentReadBytes = -1;
             while ((currentReadBytes = httpInputStream.read(buffer)) > -1) {
                 readBytesTotal += currentReadBytes;
@@ -167,14 +171,6 @@ class PullJob implements Runnable {
         } catch (IOException e) {
             logger.warn("Not able to write temporary file with downloaded iCal.");
             return;
-        } finally {
-            if (tmpOutStream != null) {
-                try {
-                    tmpOutStream.close();
-                } catch (IOException e) {
-                    logger.trace("Failed while closing stream on cleanup.", e);
-                }
-            }
         }
 
         try {
@@ -191,13 +187,10 @@ class PullJob implements Runnable {
             return;
         }
 
-        CalendarUpdateListener currentUpdateListener = listener;
-        if (currentUpdateListener != null) {
-            try {
-                currentUpdateListener.onCalendarUpdated();
-            } catch (Exception e) {
-                logger.debug("An Exception was thrown while calling back", e);
-            }
+        try {
+            listener.onCalendarUpdated();
+        } catch (Exception e) {
+            logger.debug("An Exception was thrown while calling back", e);
         }
     }
 }
