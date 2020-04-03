@@ -114,6 +114,8 @@ All devices support some of the following channels:
 | ircode                  | String    | Received IR code                                                                       |
 | numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
 | playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
+| like                    | Switch    | "Like" the currently playing song (if supported by the streaming service)              |
+| unlike                  | Switch    | "Unlike" the currently playing song (if supported by the streaming service)            |
 
 ## Playing Favorites
 
@@ -199,12 +201,18 @@ end
 
 ### Known Issues
 
--   There are some versions of squeezelite that will not correctly play very short duration mp3 files. Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably. For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
+-   There are some versions of squeezelite that will not correctly play very short duration mp3 files.
+Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.
+For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications.
+This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
 
 -   When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.
 
--   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5. Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
+-   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5.
+Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
 
 -   There have been reports that the LMS does not play some WAV files reliably. If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP3-formatted TTS notification.
+This issue reportedly was [fixed in the LMS](https://github.com/Logitech/slimserver/issues/307) by accepting additional MIME types for WAV files.
 
--   The LMS treats player MAC addresses as case-sensitive. Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.
+-   The LMS treats player MAC addresses as case-sensitive.
+Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.
