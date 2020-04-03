@@ -18,6 +18,7 @@ package org.openhab.binding.upb.internal.message;
  * @author cvanorman - Initial contribution
  */
 public enum Command {
+    NULL(0),
     ACTIVATE(0x20),
     DEACTIVATE(0x21),
     GOTO(0x22),
@@ -26,8 +27,7 @@ public enum Command {
     BLINK(0x25),
     REPORT_STATE(0x30),
     STORE_STATE(0x31),
-    DEVICE_STATE(0x86),
-    NONE(0);
+    DEVICE_STATE(0x86);
 
     private final byte mdid;
 
@@ -54,6 +54,6 @@ public enum Command {
                 return cmd;
             }
         }
-        return NONE;
+        return NULL;
     }
 }

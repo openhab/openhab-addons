@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.upb.handler;
 
+import static org.openhab.binding.upb.internal.message.Command.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -63,18 +65,17 @@ public class VirtualThingHandler extends UPBThingHandler {
             return;
         }
 
-        final byte[] cmdBytes;
+        final MessageBuilder message;
         if (channelUID.getId().equals(Constants.LINK_ACTIVATE_CHANNEL_ID)) {
-            cmdBytes = ACTIVATE_CMD;
+            message = MessageBuilder.forCommand(ACTIVATE);
         } else if (channelUID.getId().equals(Constants.LINK_DEACTIVATE_CHANNEL_ID)) {
-            cmdBytes = DEACTIVATE_CMD;
+            message = MessageBuilder.forCommand(DEACTIVATE);
         } else {
             logger.warn("channel {}: unexpected channel type", channelUID);
             return;
         }
         final byte dst = ((DecimalType) cmd).byteValue();
-        final MessageBuilder message = MessageBuilder.create().network(networkId).destination(dst).link(true)
-                .command(cmdBytes);
+        message.network(networkId).destination(dst).link(true);
         controllerHandler.sendPacket(message);
     }
 

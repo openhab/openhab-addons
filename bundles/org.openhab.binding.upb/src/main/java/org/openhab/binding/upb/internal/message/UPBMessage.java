@@ -81,7 +81,7 @@ public class UPBMessage {
     private byte destination;
     private byte source;
 
-    private Command command = Command.NONE;
+    private Command command = Command.NULL;
     private byte @Nullable [] arguments;
 
     private UPBMessage(final Type type) {
@@ -102,7 +102,7 @@ public class UPBMessage {
         try {
             if (commandString.length() > 2) {
                 byte[] data = HexUtils.hexToBytes(commandString.substring(2));
-                msg.getControlWord().setBytes(data[1], data[0]);
+                msg.getControlWord().setBytes(data[0], data[1]);
                 int index = 2;
                 msg.setNetwork(data[index++]);
                 msg.setDestination(data[index++]);

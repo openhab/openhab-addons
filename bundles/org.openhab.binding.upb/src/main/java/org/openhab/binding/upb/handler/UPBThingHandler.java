@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.upb.handler;
 
+import static org.openhab.binding.upb.internal.message.Command.*;
+
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,11 +47,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UPBThingHandler extends BaseThingHandler {
-    protected static final byte[] DEACTIVATE_CMD = new byte[] {
-            org.openhab.binding.upb.internal.message.Command.DEACTIVATE.toByte() };
-    protected static final byte[] ACTIVATE_CMD = new byte[] {
-            org.openhab.binding.upb.internal.message.Command.ACTIVATE.toByte() };
-
     private final Logger logger = LoggerFactory.getLogger(UPBThingHandler.class);
 
     @Nullable
@@ -146,14 +143,13 @@ public class UPBThingHandler extends BaseThingHandler {
             return;
         }
 
-        final byte[] cmdBytes;
+        final MessageBuilder message;
         if (cmd == OnOffType.ON) {
-            cmdBytes = ACTIVATE_CMD;
+            message = MessageBuilder.forCommand(ACTIVATE);
         } else if (cmd == OnOffType.OFF) {
-            cmdBytes = DEACTIVATE_CMD;
+            message = MessageBuilder.forCommand(DEACTIVATE);
         } else if (cmd instanceof PercentType) {
-            cmdBytes = new byte[] { org.openhab.binding.upb.internal.message.Command.GOTO.toByte(),
-                    ((PercentType) cmd).byteValue() };
+            message = MessageBuilder.forCommand(GOTO).args(((PercentType) cmd).byteValue());
         } else if (cmd == RefreshType.REFRESH) {
             refreshDeviceState();
             return;
@@ -162,8 +158,7 @@ public class UPBThingHandler extends BaseThingHandler {
             return;
         }
 
-        final MessageBuilder message = MessageBuilder.create().network(networkId).destination(getUnitId())
-                .command(cmdBytes);
+        message.network(networkId).destination(getUnitId());
         controllerHandler.sendPacket(message).thenAccept(this::updateStatus);
     }
 
@@ -251,8 +246,10 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     protected void pingDevice() {
-        controllerHandler.sendPacket(MessageBuilder.create().ackMessage(true).network(networkId)
-                .destination((byte) unitId).command((byte) 0x00)).thenAccept(this::updateStatus);
+        controllerHandler
+                .sendPacket(
+                        MessageBuilder.forCommand(NULL).ackMessage(true).network(networkId).destination((byte) unitId))
+                .thenAccept(this::updateStatus);
     }
 
     private void updateStatus(final CmdStatus result) {
@@ -270,7 +267,7 @@ public class UPBThingHandler extends BaseThingHandler {
 
     private void refreshDeviceState() {
         controllerHandler
-                .sendPacket(MessageBuilder.create().network(networkId).destination(getUnitId()).command((byte) 0x30))
+                .sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
                 .thenAccept(this::updateStatus);
     }
 

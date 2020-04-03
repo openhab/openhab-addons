@@ -13,7 +13,6 @@
 package org.openhab.binding.upb.internal.message;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
@@ -28,21 +27,20 @@ public final class MessageBuilder {
     private byte network;
     private byte source = -1;
     private byte destination;
-    private byte @Nullable [] commands;
+    private byte command;
+    private byte[] args = new byte[0];
     private boolean link;
     private boolean ackMessage;
 
-    /**
-     * Gets a new {@link MessageBuilder} instance.
-     *
-     * @return a new MessageBuilder.
-     */
-    public static MessageBuilder create() {
-        return new MessageBuilder();
+    private MessageBuilder(final Command cmd) {
+        this.command = cmd.toByte();
     }
 
-    private MessageBuilder() {
-
+    /**
+     * @return a new MessageBuilder for the specified command
+     */
+    public static MessageBuilder forCommand(final Command cmd) {
+        return new MessageBuilder(cmd);
     }
 
     /**
@@ -94,20 +92,19 @@ public final class MessageBuilder {
     }
 
     /**
-     * Sets the command and any arguments of the message.
+     * Sets any command arguments.
      *
-     * @param commands
-     *                     the command followed by any arguments.
+     * @param args the arguments (bytes following the command byte)
      * @return this builder
      */
-    public MessageBuilder command(byte... commands) {
-        this.commands = commands;
+    public MessageBuilder args(byte... args) {
+        this.args = args;
         return this;
     }
 
     /**
      * Sets whether an Acknowledgement Response message should be requested
-     * (by settig the the MSG-bit in the control word).
+     * (by setting the the MSG-bit in the control word).
      *
      * @param ackMessage {@code true} if the MSG-bit should be set
      * @return this builder
@@ -125,24 +122,21 @@ public final class MessageBuilder {
     public String build() {
         ControlWord controlWord = new ControlWord();
 
-        int packetLength = 6 + commands.length;
+        int packetLength = args.length + 7;
 
         controlWord.setPacketLength(packetLength);
         controlWord.setAckPulse(true);
         controlWord.setAckMessage(ackMessage);
         controlWord.setLink(link);
 
-        int index = 2;
         byte[] bytes = new byte[packetLength];
-        bytes[index++] = network;
-        bytes[index++] = destination;
-        bytes[index++] = source;
-
-        // Copy in the header
-        System.arraycopy(controlWord.getBytes(), 0, bytes, 0, 2);
-
-        // Copy in the actual command and arguments being sent.
-        System.arraycopy(commands, 0, bytes, index, commands.length);
+        bytes[0] = controlWord.getHi();
+        bytes[1] = controlWord.getLo();
+        bytes[2] = network;
+        bytes[3] = destination;
+        bytes[4] = source;
+        bytes[5] = command;
+        System.arraycopy(args, 0, bytes, 6, args.length);
 
         // Calculate the checksum
         // The checksum is the 2's complement of the sum.
