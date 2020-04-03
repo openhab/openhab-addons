@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.humidifier.cb1"
+			"zhimi.airpurifier.v7"
 		],
 		"channels": [
 			{
@@ -20,8 +20,8 @@
 			},
 			{
 				"property": "mode",
-				"friendlyName": "Humidifier Mode",
-				"channel": "humidifierMode",
+				"friendlyName": "Mode",
+				"channel": "mode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -42,74 +42,68 @@
 				"actions": []
 			},
 			{
-				"property": "limit_hum",
-				"friendlyName": "Humidity Set",
-				"channel": "setHumidity",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": [
-					{
-						"command": "set_limit_hum",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "led_b",
-				"friendlyName": "LED Brightness",
-				"channel": "bright",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_led_b",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "buzzer",
-				"friendlyName": "Buzzer Status",
-				"channel": "buzzer",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_buzzer",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "depth",
-				"friendlyName": "Depth",
-				"channel": "depth",
+				"property": "aqi",
+				"friendlyName": "Air Quality Index",
+				"channel": "aqi",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
 			},
 			{
-				"property": "dry",
-				"friendlyName": "Dry",
-				"channel": "dry",
-				"type": "Switch",
+				"property": "average_aqi",
+				"friendlyName": "Average Air Quality Index",
+				"channel": "averageaqi",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "volume",
+				"friendlyName": "Volume",
+				"channel": "volume",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "led",
+				"friendlyName": "LED Status",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_dry",
+						"command": "set_led",
 						"parameterType": "ONOFF"
 					}
 				]
 			},
 			{
-				"property": "use_time",
-				"friendlyName": "Run Time",
-				"channel": "usedhours",
+				"property": "bright",
+				"friendlyName": "Illuminance",
+				"channel": "illuminance",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": []
+			},
+			{
+				"property": "f1_hour",
+				"friendlyName": "Filter Max Life",
+				"channel": "filtermaxlife",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "f1_hour_used",
+				"friendlyName": "Filter Hours used",
+				"channel": "filterhours",
 				"type": "Number",
 				"refresh": true,
 				"transformation": "SecondsToHours",
@@ -117,7 +111,7 @@
 				"actions": []
 			},
 			{
-				"property": "speed",
+				"property": "motor1_speed",
 				"friendlyName": "Motor Speed",
 				"channel": "motorspeed",
 				"type": "Number",
@@ -126,11 +120,44 @@
 				"actions": []
 			},
 			{
-				"property": "temperature",
+				"property": "motor2_speed",
+				"friendlyName": "Motor Speed 2",
+				"channel": "motorspeed2",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "filter1_life",
+				"friendlyName": "Filter  Life",
+				"channel": "filterlife",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "favorite_level",
+				"friendlyName": "Favorite Level",
+				"channel": "favoritelevel",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_level_favorite",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number",
 				"refresh": true,
+				"transformation": "/10",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
