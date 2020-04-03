@@ -4,27 +4,27 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <channel-type id="ejphpmType">
-        <item-type>Number:Energy</item-type>
-        <label>EJPHPM</label>
-        <description>EJPHPM</description>
-        <category>Energy</category>
-        <state pattern="%d Wh" readOnly="true" />
-    </channel-type>
+	<channel-type id="ejphpmType">
+		<item-type>Number:Energy</item-type>
+		<label>EJPHPM</label>
+		<description>EJPHPM</description>
+		<category>Energy</category>
+		<state pattern="%d Wh" readOnly="true" />
+	</channel-type>
 
-    <channel-type id="ejphnType">
-        <item-type>Number:Energy</item-type>
-        <label>EJPHN</label>
-        <description>EJPHN</description>
-        <category>Energy</category>
-        <state pattern="%d Wh" readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="pejpType">
-        <item-type>Number:Time</item-type>
-        <label>PEJP</label>
-        <description>PEJP</description>
-        <category>Energy</category>
-        <state pattern="%d min" readOnly="true" />
-    </channel-type>
+	<channel-type id="ejphnType">
+		<item-type>Number:Energy</item-type>
+		<label>EJPHN</label>
+		<description>EJPHN</description>
+		<category>Energy</category>
+		<state pattern="%d Wh" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="pejpType">
+		<item-type>Number:Time</item-type>
+		<label>PEJP</label>
+		<description>PEJP</description>
+		<category>Energy</category>
+		<state pattern="%d min" readOnly="true" />
+	</channel-type>
 </thing:thing-descriptions>
