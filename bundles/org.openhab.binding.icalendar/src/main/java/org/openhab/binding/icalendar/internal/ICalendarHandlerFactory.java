@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
-import org.osgi.framework.BundleException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,16 +49,14 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CALENDAR);
 
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
-    private final @Nullable HttpClientFactory httpClientFactory;
-    private @Nullable HttpClient sharedHttpClient = null;
+    private final HttpClient sharedHttpClient;
     private final @Nullable EventPublisher eventPublisher;
 
     @Activate
-    public ICalendarHandlerFactory(@Nullable @Reference HttpClientFactory httpClientFactory,
-            @Nullable @Reference EventPublisher eventPublisher) {
-        super();
-        this.httpClientFactory = httpClientFactory;
+    public ICalendarHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
+        sharedHttpClient = httpClientFactory.createHttpClient(BINDING_ID);
     }
 
     @Override
@@ -75,42 +72,15 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
         try {
-            retrieveHttpClient();
-            HttpClient localHttpClient = sharedHttpClient;
-            if (localHttpClient != null) {
-                if (!localHttpClient.isStarted()) {
-                    localHttpClient.start();
-                }
-                return new ICalendarHandler(thing, localHttpClient, eventPublisher);
-            } else {
-                throw new IllegalStateException("HttpClient could not be created.");
+            if (!sharedHttpClient.isStarted()) {
+                sharedHttpClient.start();
             }
+            return new ICalendarHandler(thing, sharedHttpClient, eventPublisher);
         } catch (Exception e) {
             logger.warn("Failed to create handler for thing with uid {}.", thing.getUID());
             logger.debug("internal exception while creating or preparing handler.", e);
         }
 
         return null;
-    }
-
-    /**
-     * Retrieves an instance of HttpClient for use with this bundle. Only one
-     * instance will be retrieved and used for all handler instances.
-     *
-     * @throws BundleException If ServiceReference of the HttpClientFactory is
-     *             missing.
-     */
-    protected void retrieveHttpClient() throws BundleException {
-        if (sharedHttpClient != null) {
-            return;
-        }
-
-        HttpClientFactory currentHCF = httpClientFactory;
-        if (currentHCF == null) {
-            throw new BundleException(
-                    "Reference for HttpClientFactory is missing. This binding will not work without a valid HttpClient.");
-        }
-
-        sharedHttpClient = currentHCF.createHttpClient(BINDING_ID);
     }
 }
