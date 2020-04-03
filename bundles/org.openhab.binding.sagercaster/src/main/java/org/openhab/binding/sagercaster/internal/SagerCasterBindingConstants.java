@@ -49,7 +49,7 @@ public class SagerCasterBindingConstants {
     public static final String CHANNEL_TEMPERATURETREND = "temperature-trend";
     // Input channel ids
     public static final String CHANNEL_CLOUDINESS = "cloudiness";
-    public static final String CHANNEL_IS_RAINING = "is-raining";
+    public static final String CHANNEL_RAIN = "rain";
     public static final String CHANNEL_WIND_SPEED = "wind-speed-beaufort";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_PRESSURE = "pressure";

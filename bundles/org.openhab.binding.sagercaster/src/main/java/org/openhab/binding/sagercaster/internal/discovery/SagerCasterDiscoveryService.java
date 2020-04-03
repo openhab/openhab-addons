@@ -112,7 +112,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
         String propGeolocation;
         propGeolocation = String.format("%s,%s", location.getLatitude(), location.getLongitude());
         thingDiscovered(DiscoveryResultBuilder.create(sagerCasterThing).withLabel("Local Sager Weather Caster")
-                .withProperty("location", propGeolocation).build());
+                .withRepresentationProperty(CONFIG_LOCATION).withProperty(CONFIG_LOCATION, propGeolocation).build());
     }
 
     @Reference

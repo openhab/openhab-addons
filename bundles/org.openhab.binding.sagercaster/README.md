@@ -45,17 +45,18 @@ Input channel can be updated via profiles in versions of OH > 2.4.
 
 ```
 Number:Pressure NWS_Abs_Pressure "Pression absolue" <pressure> {channel="netatmo:NAMain:home:insidews:AbsolutePressure", channel="sagercaster:sagercaster:triel:input#pressure" [profile="follow"]}
-Number:Angle	NWS_wind_angle   "Orientation [%d°]" 	{channel="netatmo:NAModule2:home:anemometre:WindAngle", channel="sagercaster:sagercaster:triel:input#wind-angle" [profile="follow"]}
+Number:Angle NWS_wind_angle   "Orientation [%d°]" 	{channel="netatmo:NAModule2:home:anemometre:WindAngle", channel="sagercaster:sagercaster:triel:input#wind-angle" [profile="follow"]}
 Number:Dimensionless OWM_Cloudiness "Cloudiness [%d %unit%]" <clouds> {channel="openweathermap:weather-and-forecast:api:local:current#cloudiness", channel="sagercaster:sagercaster:triel:input#cloudiness" [profile="follow"] }
 Number Synop_beaufort "Beaufort [%d]" <beaufort> {channel="synopanalyzer:synopanalyzer:orly:wind-speed-beaufort", channel="sagercaster:sagercaster:triel:input#wind-speed-beaufort" [profile="follow"] }
+Number:Length NWS_rain_1h "Précipitation 1h [%.2f %unit%]" <rain> {channel="netatmo:NAModule3:home:pluviometre:SumRain1", channel="sagercaster:sagercaster:triel:input#rain" [profile="follow"]}
+
            	
 ```
 
 Here is the definition of output channels
 
 ```
-Switch  SWC_IsRaining           "Raining ? [%s]"                <rain>  (gSager, gSensorRain)   {channel="sagercaster:sagercaster:triel:output#is-raining"}
-    
+   
 // Items directly derived from inputs
 String  SWC_windevolution       "Wind Evolution"                        (gSager)                {channel="sagercaster:sagercaster:triel:output#wind-evolution"}
 String  SWC_presstrend          "Pressure Trend"                        (gSager)                {channel="sagercaster:sagercaster:triel:output#pressure-trend"}

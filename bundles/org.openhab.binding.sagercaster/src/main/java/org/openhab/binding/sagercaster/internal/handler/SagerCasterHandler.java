@@ -26,12 +26,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -123,12 +123,13 @@ public class SagerCasterHandler extends BaseThingHandler {
                         });
                         break;
                     }
-                case CHANNEL_IS_RAINING:
+                case CHANNEL_RAIN:
                     logger.debug("Rain status updated, updating forecast");
-                    if (command instanceof OnOffType) {
-                        OnOffType isRaining = (OnOffType) command;
+                    if (command instanceof QuantityType) {
+                        @SuppressWarnings("unchecked")
+                        QuantityType<Length> newQtty = ((QuantityType<Length>) command);
                         scheduler.submit(() -> {
-                            sagerWeatherCaster.setRaining(isRaining == OnOffType.ON);
+                            sagerWeatherCaster.setRaining(newQtty.doubleValue() > 0);
                             postNewForecast();
                         });
                     } else {

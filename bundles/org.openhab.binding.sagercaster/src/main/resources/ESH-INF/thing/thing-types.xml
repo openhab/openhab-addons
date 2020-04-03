@@ -10,6 +10,8 @@
 			<channel-group id="input" typeId="input" />
 			<channel-group id="output" typeId="output" />
 		</channel-groups>
+
+		<representation-property>location</representation-property>
 	
 		<config-description>
 			<parameter name="location" type="text" required="true"
@@ -34,7 +36,7 @@
 		<description>The channels used to build the forecast results</description>
 		<channels>
 			<channel id="cloudiness" typeId="cloudiness" />
-			<channel id="is-raining" typeId="is-raining" />
+			<channel id="rain" typeId="rain" />
 			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
 			<channel id="pressure" typeId="pressure" />
 			<channel id="temperature" typeId="temperature" />
@@ -193,10 +195,12 @@
 		<state min="0" max="100" pattern="%d %%" />
 	</channel-type>
 	
-	<channel-type id="is-raining">
-		<item-type>Switch</item-type>
-		<label>Raining</label>
-		<description>Is it currently raining ?</description>
+	<channel-type id="rain">
+		<item-type>Number:Length</item-type>
+		<label>Rain</label>
+		<description>Quantity of water</description>
+		<category>Rain</category>
+		<state pattern="%.2f %unit%" />
 	</channel-type>
 	
 	<channel-type id="wind-speed-beaufort">
