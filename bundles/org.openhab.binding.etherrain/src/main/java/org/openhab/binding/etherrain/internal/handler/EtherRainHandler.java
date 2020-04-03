@@ -196,6 +196,7 @@ public class EtherRainHandler extends BaseThingHandler {
         if (device != null) {
             device.commandClear();
         }
+
         updateBridge();
 
         return true;
