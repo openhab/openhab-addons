@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,19 +192,21 @@ public abstract class KNXChannelType {
     }
 
     public final @Nullable InboundSpec getListenSpec(Configuration configuration, GroupAddress groupAddress) {
-        return getAllGAKeys().stream()
+        Optional<ListenSpecImpl> result = getAllGAKeys().stream()
                 .map(key -> new ListenSpecImpl(parse((String) configuration.get(key)), getDefaultDPT(key)))
                 .filter(spec -> !spec.getGroupAddresses().isEmpty())
-                .filter(spec -> spec.getGroupAddresses().contains(groupAddress)).findFirst().orElse(null);
+                .filter(spec -> spec.getGroupAddresses().contains(groupAddress)).findFirst();
+        return result.isPresent() ? result.get() : null;
     }
 
     protected abstract String getDefaultDPT(String gaConfigKey);
 
     public final @Nullable OutboundSpec getResponseSpec(Configuration configuration, GroupAddress groupAddress,
             Type type) throws KNXFormatException {
-        return getAllGAKeys().stream()
+        Optional<ReadResponseSpecImpl> result = getAllGAKeys().stream()
                 .map(key -> new ReadResponseSpecImpl(parse((String) configuration.get(key)), getDefaultDPT(key), type))
-                .filter(spec -> groupAddress.equals(spec.getGroupAddress())).findFirst().orElse(null);
+                .filter(spec -> groupAddress.equals(spec.getGroupAddress())).findFirst();
+        return result.isPresent() ? result.get() : null;
     }
 
     @Override

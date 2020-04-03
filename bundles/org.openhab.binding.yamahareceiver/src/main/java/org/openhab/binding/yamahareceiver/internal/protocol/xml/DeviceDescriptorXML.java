@@ -164,7 +164,7 @@ public class DeviceDescriptorXML {
         unitName = descNode.getAttributes().getNamedItem("Unit_Name").getTextContent();
 
         system = buildFeatureLookup(descNode, "Unit", tag -> tag, (tag, e) -> new SystemDescriptor(e))
-                .getOrDefault("System", null); // there will be only one System entry
+                .getOrDefault("System", this.system); // there will be only one System entry
 
         zones = buildFeatureLookup(descNode, "Subunit", tag -> YamahaUtils.tryParseEnum(Zone.class, tag),
                 (zone, e) -> new ZoneDescriptor(zone, e));
