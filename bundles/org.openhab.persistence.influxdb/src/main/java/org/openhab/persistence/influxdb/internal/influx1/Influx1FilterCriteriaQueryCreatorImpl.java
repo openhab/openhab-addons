@@ -40,7 +40,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
     @Override
     public String createQuery(FilterCriteria filter, String retentionPolicy) {
-        StringBuffer query = new StringBuffer();
+        StringBuilder query = new StringBuilder();
         query.append("select ").append(InfluxDBConstants.COLUMN_VALUE_NAME).append(' ').append("from \"")
                 .append(configuration.getRetentionPolicy()).append("\".");
 

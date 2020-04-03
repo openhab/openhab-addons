@@ -96,10 +96,10 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     @NonNullByDefault({}) // Relax rules because can only be null if component is not active
     private InfluxDBRepository influxDBRepository;
 
-    @Activate
     /**
      * Connect to database when service is activated
      */
+     @Activate
     public void activate(final @Nullable Map<String, @Nullable Object> config) {
         logger.debug("InfluxDB persistence service is being activated");
 

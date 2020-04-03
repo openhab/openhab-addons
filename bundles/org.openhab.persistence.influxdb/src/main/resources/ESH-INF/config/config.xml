@@ -95,7 +95,7 @@
 		</parameter>
 
 		<parameter name="addLabelTag" type="boolean" required="true" groupName="tags">
-			<label>Add label tag</label>
+			<label>Add Label Tag</label>
 			<description>Should the item label be included as tag "label"? If no label is set, "n/a" is used.
 			</description>
 			<default>false</default>

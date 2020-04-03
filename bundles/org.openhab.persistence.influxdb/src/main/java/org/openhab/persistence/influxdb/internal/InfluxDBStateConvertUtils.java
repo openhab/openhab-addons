@@ -183,7 +183,7 @@ public class InfluxDBStateConvertUtils {
     }
 
     private static String point2String(PointType point) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(point.getLatitude().toString());
         buf.append(",");
         buf.append(point.getLongitude().toString());

@@ -38,8 +38,7 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 @NonNullByDefault
 public class ItemToStorePointCreator {
     private final InfluxDBConfiguration configuration;
-    @Nullable
-    private final MetadataRegistry metadataRegistry;
+    private final @Nullable MetadataRegistry metadataRegistry;
 
     public ItemToStorePointCreator(InfluxDBConfiguration configuration, @Nullable MetadataRegistry metadataRegistry) {
         this.configuration = configuration;
