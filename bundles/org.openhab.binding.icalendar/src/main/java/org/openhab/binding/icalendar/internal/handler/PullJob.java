@@ -75,11 +75,11 @@ class PullJob implements Runnable {
     }
 
     private final static String TMP_FILE_PREFIX = "icalendardld";
+    private final Logger logger = LoggerFactory.getLogger(PullJob.class);
     private Authentication.@Nullable Result authentication;
     private File destination;
     private HttpClient httpClient;
     private CalendarUpdateListener listener;
-    private final Logger logger = LoggerFactory.getLogger(PullJob.class);
     private URI sourceURI;
 
     /**
