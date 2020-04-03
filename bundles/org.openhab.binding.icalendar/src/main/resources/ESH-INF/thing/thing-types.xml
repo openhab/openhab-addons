@@ -20,10 +20,10 @@
 
 		<config-description>
 			<parameter-group name="source">
-				<label>Source settings</label>
+				<label>Source Settings</label>
 			</parameter-group>
 			<parameter-group name="parsing">
-				<label>Parsing settings</label>
+				<label>Parsing Settings</label>
 			</parameter-group>
 			<parameter name="url" type="text" required="true" groupName="source">
 				<label>URL</label>
