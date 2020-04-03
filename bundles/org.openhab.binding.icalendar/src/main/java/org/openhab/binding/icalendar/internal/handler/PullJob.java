@@ -173,8 +173,8 @@ class PullJob implements Runnable {
             return;
         }
 
-        try {
-            AbstractPresentableCalendar.create(new FileInputStream(tmpTargetFile));
+        try (FileInputStream tmpInput = new FileInputStream(tmpTargetFile)){
+            AbstractPresentableCalendar.create(tmpInput);
         } catch (IOException | CalendarException e) {
             logger.warn("Not able to read downloaded iCal. Validation failed or file not readable.");
             return;
