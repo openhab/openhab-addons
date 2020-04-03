@@ -40,7 +40,7 @@
 			},
 			{
 				"property": "delayoff",
-				"friendlyName": "Shutdowm Timer",
+				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
 				"type": "Number",
 				"refresh": true,
