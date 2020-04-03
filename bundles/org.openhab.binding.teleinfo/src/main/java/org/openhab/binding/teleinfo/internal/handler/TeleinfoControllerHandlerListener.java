@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 
 /**
- * The {@link TeleinfoControllerHandlerListener} interface defines all events pushed by a {@link TeleinfoAbstractControllerHandler}.
+ * The {@link TeleinfoControllerHandlerListener} interface defines all events pushed by a
+ * {@link TeleinfoAbstractControllerHandler}.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
