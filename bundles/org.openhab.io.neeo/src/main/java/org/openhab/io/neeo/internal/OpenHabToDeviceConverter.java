@@ -197,7 +197,7 @@ class OpenHabToDeviceConverter {
 
         try {
             final Item item = context.getItemRegistry().getItem(itemName);
-            return NeeoDeviceChannel.from(item, null, null, NeeoCapabilityType.EXCLUDE, new HashSet<String>());
+            return NeeoDeviceChannel.from(item, null, null, NeeoCapabilityType.EXCLUDE, new HashSet<>());
         } catch (ItemNotFoundException e) {
             return null;
         }

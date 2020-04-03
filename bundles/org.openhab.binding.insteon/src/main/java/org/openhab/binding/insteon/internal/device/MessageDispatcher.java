@@ -14,6 +14,7 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,7 +37,7 @@ public abstract class MessageDispatcher {
 
     DeviceFeature feature;
     @Nullable
-    HashMap<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, @Nullable String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -47,8 +48,8 @@ public abstract class MessageDispatcher {
         feature = f;
     }
 
-    public void setParameters(@Nullable HashMap<String, @Nullable String> hm) {
-        parameters = hm;
+    public void setParameters(@Nullable Map<String, @Nullable String> map) {
+        parameters = map;
     }
 
     /**
@@ -85,9 +86,8 @@ public abstract class MessageDispatcher {
             }
             if (!h.isDuplicate(msg)) {
                 if (h.matchesGroup(group) && h.matches(msg)) {
-                    logger.debug("{}:{}->{} cmd1:{} group {}/{}", feature.getDevice().getAddress(),
-                            feature.getName(), h.getClass().getSimpleName(), Utils.getHexByte(cmd1), group,
-                            h.getGroup());
+                    logger.debug("{}:{}->{} cmd1:{} group {}/{}", feature.getDevice().getAddress(), feature.getName(),
+                            h.getClass().getSimpleName(), Utils.getHexByte(cmd1), group, h.getGroup());
                     h.handleMessage(group, cmd1, msg, feature, port);
                 } else {
                     logger.debug("message ignored because matches group: {} matches filter: {}", h.matchesGroup(group),
@@ -162,8 +162,8 @@ public abstract class MessageDispatcher {
                 // you have to know what message was sent before to
                 // interpret the reply message
                 if (isMyDirectAck(msg)) {
-                    logger.debug("{}:{} DIRECT_ACK: q:{} cmd: {}", feature.getDevice().getAddress(),
-                            feature.getName(), feature.getQueryStatus(), cmd);
+                    logger.debug("{}:{} DIRECT_ACK: q:{} cmd: {}", feature.getDevice().getAddress(), feature.getName(),
+                            feature.getQueryStatus(), cmd);
                     isConsumed = true;
                     if (cmd == 0x50) {
                         // must be a reply to our message, tweak the cmd1 code!
@@ -189,8 +189,8 @@ public abstract class MessageDispatcher {
             }
             if (isConsumed) {
                 feature.setQueryStatus(DeviceFeature.QueryStatus.QUERY_ANSWERED);
-                logger.debug("defdisp: {}:{} set status to: {}", feature.getDevice().getAddress(),
-                        feature.getName(), feature.getQueryStatus());
+                logger.debug("defdisp: {}:{} set status to: {}", feature.getDevice().getAddress(), feature.getName(),
+                        feature.getQueryStatus());
             }
             return isConsumed;
         }
@@ -400,7 +400,7 @@ public abstract class MessageDispatcher {
      */
     @Nullable
     public static <T extends MessageDispatcher> T makeHandler(String name,
-            @Nullable HashMap<String, @Nullable String> params, DeviceFeature f) {
+            @Nullable Map<String, @Nullable String> params, DeviceFeature f) {
         String cname = MessageDispatcher.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);

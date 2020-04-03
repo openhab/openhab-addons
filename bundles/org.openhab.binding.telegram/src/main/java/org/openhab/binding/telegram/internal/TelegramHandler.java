@@ -99,7 +99,7 @@ public class TelegramHandler extends BaseThingHandler {
         }
     }
 
-    private final List<Long> chatIds = new ArrayList<Long>();
+    private final List<Long> chatIds = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
     private @Nullable ScheduledFuture<?> thingOnlineStatusJob;
 
@@ -155,7 +155,7 @@ public class TelegramHandler extends BaseThingHandler {
         Integer proxyPort = config.getProxyPort();
         String proxyType = config.getProxyType();
 
-        if (proxyHost != null && proxyPort !=null) {
+        if (proxyHost != null && proxyPort != null) {
             InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
 
             Proxy.Type proxyTypeParam = Proxy.Type.SOCKS;

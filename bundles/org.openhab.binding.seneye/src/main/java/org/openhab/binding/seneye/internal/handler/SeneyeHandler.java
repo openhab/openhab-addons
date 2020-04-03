@@ -145,7 +145,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         }
 
         // ok, initialization succeeded
-        cachedSeneyeDeviceReading = new ExpiringCache<SeneyeDeviceReading>(TimeUnit.SECONDS.toMillis(10), () -> {
+        cachedSeneyeDeviceReading = new ExpiringCache<>(TimeUnit.SECONDS.toMillis(10), () -> {
             return seneyeService.getDeviceReadings();
         });
 

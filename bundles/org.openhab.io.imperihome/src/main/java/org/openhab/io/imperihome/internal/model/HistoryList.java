@@ -25,7 +25,7 @@ public class HistoryList {
     private List<HistoryItem> values;
 
     public HistoryList() {
-        this(new LinkedList<HistoryItem>());
+        this(new LinkedList<>());
     }
 
     public HistoryList(List<HistoryItem> resultItems) {

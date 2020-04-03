@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.measure.quantity.Length;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -270,7 +269,7 @@ public class DwdWarningsData {
         if (data == null) {
             return UnDefType.NULL;
         }
-        return new QuantityType<Length>(data.getAltitude(), ImperialUnits.FOOT);
+        return new QuantityType<>(data.getAltitude(), ImperialUnits.FOOT);
     }
 
     public State getCeiling(int number) {
@@ -278,7 +277,7 @@ public class DwdWarningsData {
         if (data == null) {
             return UnDefType.NULL;
         }
-        return new QuantityType<Length>(data.getCeiling(), ImperialUnits.FOOT);
+        return new QuantityType<>(data.getCeiling(), ImperialUnits.FOOT);
     }
 
     public State getInstruction(int number) {
@@ -307,7 +306,7 @@ public class DwdWarningsData {
      * Only for Tests
      */
     protected void setDataAccess(DwdWarningDataAccess dataAccess) {
-        dataAccessCached = new ExpiringCache<String>(Duration.ofMinutes(MIN_REFRESH_WAIT_MINUTES),
+        dataAccessCached = new ExpiringCache<>(Duration.ofMinutes(MIN_REFRESH_WAIT_MINUTES),
                 () -> dataAccess.getDataFromEndpoint(""));
     }
 

@@ -85,7 +85,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
             KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
             return handler;

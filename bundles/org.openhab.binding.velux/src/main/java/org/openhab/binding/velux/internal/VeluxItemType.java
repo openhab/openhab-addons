@@ -439,7 +439,7 @@ public enum VeluxItemType {
      * @return <b>listOfveluxItemType</b> of type List of VeluxItemType containing all similar enum entries.
      */
     public static List<VeluxItemType> getPropertyEntriesByThing(ThingTypeUID thingIdentifier) {
-        List<VeluxItemType> list = new ArrayList<VeluxItemType>();
+        List<VeluxItemType> list = new ArrayList<>();
         for (VeluxItemType v : VeluxItemType.values()) {
             if (thingIdentifier.equals(v.thingIdentifier) && v.itemIsProperty) {
                 list.add(v);

@@ -58,8 +58,8 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
 
     private final Logger logger = LoggerFactory.getLogger(WemoDimmerHandler.class);
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
-    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
+    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
     protected final static int SUBSCRIPTION_DURATION = 600;
     private UpnpIOService service;
     private int currentBrightness;
@@ -413,7 +413,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
                 service.removeSubscription(this, subscription);
             }
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
         }
     }

@@ -475,8 +475,8 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                             sysInfo.getHostname(), ipAddress);
                     servlets.add(newServlet);
 
-                    localContext.getHttpService().registerServlet(servletUrl, newServlet,
-                            new Hashtable<String, String>(), localContext.getHttpService().createDefaultHttpContext());
+                    localContext.getHttpService().registerServlet(servletUrl, newServlet, new Hashtable<>(),
+                            localContext.getHttpService().createDefaultHttpContext());
                     logger.debug("Started NEEO Listener at {}", servletUrl);
                 } catch (NamespaceException | ServletException | IOException e) {
                     logger.error("Error during servlet startup", e);
