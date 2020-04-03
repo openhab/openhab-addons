@@ -94,8 +94,7 @@ public class CommandTag {
         }
     }
 
-    @Nullable
-    public static CommandTag createCommandTag(String line) {
+    public static @Nullable CommandTag createCommandTag(String line) {
         if (CommandTagType.prefixValid(line)) {
             CommandTag tag = new CommandTag(line.trim());
             return tag.isValid ? tag : null;
