@@ -52,12 +52,14 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
     private final @Nullable HttpClientFactory httpClientFactory;
     private @Nullable HttpClient sharedHttpClient = null;
-    private @Nullable EventPublisher eventPublisher = null;
+    private final @Nullable EventPublisher eventPublisher;
 
     @Activate
-    public ICalendarHandlerFactory(@Nullable @Reference HttpClientFactory httpClientFactory) {
+    public ICalendarHandlerFactory(@Nullable @Reference HttpClientFactory httpClientFactory,
+            @Nullable @Reference EventPublisher eventPublisher) {
         super();
         this.httpClientFactory = httpClientFactory;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -111,24 +113,4 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
         sharedHttpClient = currentHCF.createHttpClient(BINDING_ID);
     }
-
-    /**
-     * Sets the event publisher.
-     *
-     * @param eventPublisher the new event publisher
-     */
-    @Reference
-    public void setEventPublisher(EventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
-
-    /**
-     * Unset event publisher.
-     *
-     * @param eventPublisher the event publisher (ignored)
-     */
-    public void unsetEventPublisher(EventPublisher eventPublisher) {
-        this.eventPublisher = null;
-    }
-
 }
