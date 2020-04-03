@@ -246,7 +246,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
      * Checks if the channel structure has been build already based on the model data. If not build it.
      */
     private void checkChannelStructure() {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
+        final MiIoBindingConfiguration configuration = this.configuration;
+        if (configuration == null) {
+            return;
+        }
         if (!hasChannelStructure) {
             if (configuration.model == null || configuration.model.isEmpty()) {
                 logger.debug("Model needs to be determined");

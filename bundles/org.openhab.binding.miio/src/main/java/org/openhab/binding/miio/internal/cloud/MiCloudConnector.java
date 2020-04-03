@@ -18,11 +18,16 @@ import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,6 +48,8 @@ import org.openhab.binding.miio.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -63,7 +70,11 @@ public class MiCloudConnector {
     private static final String USERAGENT = "Android-7.1.1-1.0.0-ONEPLUS A3010-136-" + AGENT_ID
             + " APP/xiaomi.smarthome APPV/62830";
     private static Locale locale = Locale.getDefault();
-    private final JsonParser parser = new JsonParser();
+    private static final TimeZone TZ = TimeZone.getDefault();
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("OOOO");
+    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
+    private static final JsonParser PARSER = new JsonParser();
+
     private final String clientId;
 
     private String username;
@@ -85,14 +96,15 @@ public class MiCloudConnector {
         }
         clientId = (new Random().ints(97, 122 + 1).limit(6)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString());
+
     }
 
     void startClient() throws MiCloudException {
         if (!httpClient.isStarted()) {
             try {
                 httpClient.start();
-                // set default cookies
                 CookieStore cookieStore = httpClient.getCookieStore();
+                // set default cookies
                 addCookie(cookieStore, "sdkVersion", "accountsdk-18.8.15", "mi.com");
                 addCookie(cookieStore, "sdkVersion", "accountsdk-18.8.15", "xiaomi.com");
                 addCookie(cookieStore, "deviceId", this.clientId, "mi.com");
@@ -143,7 +155,7 @@ public class MiCloudConnector {
         String mapResponse = request(url, map);
         logger.trace("response: {}", mapResponse);
         String errorMsg = "";
-        JsonElement response = parser.parse(mapResponse);
+        JsonElement response = PARSER.parse(mapResponse);
         if (response.isJsonObject()) {
             logger.debug("Received  JSON message {}", response.toString());
             if (response.getAsJsonObject().has("result") && response.getAsJsonObject().get("result").isJsonObject()) {
@@ -172,7 +184,33 @@ public class MiCloudConnector {
         return response;
     }
 
-    public String getDevices(String country) {
+    public List<CloudDeviceDTO> getDevices(String country) {
+        final String response = getDeviceString(country);
+        List<CloudDeviceDTO> devicesList = new ArrayList<>();
+        try {
+            final JsonElement resp = PARSER.parse(response);
+            if (resp.isJsonObject()) {
+                final JsonObject jor = resp.getAsJsonObject();
+                if (jor.has("result")) {
+                    devicesList = GSON.fromJson(jor.get("result"), CloudDeviceListDTO.class).getCloudDevices();
+
+                    for (CloudDeviceDTO device : devicesList) {
+                        device.setServer(country);
+                        logger.debug("Xiaomi cloud info: {}", device);
+                    }
+                } else {
+                    logger.debug("Response missing result: '{}'", response);
+                }
+            } else {
+                logger.debug("Response is not a json object: '{}'", response);
+            }
+        } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
+            logger.info("Error while parsing devices: {}", e.getMessage());
+        }
+        return devicesList;
+    }
+
+    public String getDeviceString(String country) {
         String url = getApiUrl(country) + "/home/device_list";
         Map<String, String> map = new HashMap<String, String>();
         map.put("data", "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
@@ -180,7 +218,6 @@ public class MiCloudConnector {
         try {
             resp = request(url, map);
             logger.trace("Get devices response: {}", resp);
-            CloudUtil.printDevices(resp, country, logger);
             if (resp.length() > 2) {
                 CloudUtil.saveFile(resp, country, logger);
                 return resp;
@@ -212,14 +249,16 @@ public class MiCloudConnector {
         request.cookie(new HttpCookie("yetAnotherServiceToken", this.serviceToken));
         request.cookie(new HttpCookie("serviceToken", this.serviceToken));
         request.cookie(new HttpCookie("locale", locale.toString()));
-        request.cookie(new HttpCookie("timezone", "GMT%2B01%3A00"));
-        request.cookie(new HttpCookie("is_daylight", "1"));
-        request.cookie(new HttpCookie("dst_offset", "3600000"));
+        request.cookie(new HttpCookie("timezone", ZonedDateTime.now().format(FORMATTER)));
+        request.cookie(new HttpCookie("is_daylight", TZ.inDaylightTime(new Date()) ? "1" : "0"));
+        request.cookie(new HttpCookie("dst_offset", Integer.toString(TZ.getDSTSavings())));
         request.cookie(new HttpCookie("channel", "MI_APP_STORE"));
 
-        for (HttpCookie cookie : request.getCookies()) {
-            logger.trace("Cookie set for request ({}) : {} --> {}     (path: {})", cookie.getDomain(), cookie.getName(),
-                    cookie.getValue(), cookie.getPath());
+        if (logger.isTraceEnabled()) {
+            for (HttpCookie cookie : request.getCookies()) {
+                logger.trace("Cookie set for request ({}) : {} --> {}     (path: {})", cookie.getDomain(),
+                        cookie.getName(), cookie.getValue(), cookie.getPath());
+            }
         }
         String method = "POST";
         request.method(method);
@@ -237,6 +276,9 @@ public class MiCloudConnector {
 
             logger.trace("fieldcontent: {}", fields.toString());
             final ContentResponse response = request.send();
+            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
+                this.serviceToken = "";
+            }
             return response.getContentAsString();
         } catch (HttpResponseException e) {
             serviceToken = "";
@@ -254,6 +296,14 @@ public class MiCloudConnector {
         cookie.setDomain("." + domain);
         cookie.setPath("/");
         cookieStore.add(URI.create("https://" + domain), cookie);
+    }
+
+    private void removeCookies(CookieStore cookieStore, String domain) {
+        URI uri = URI.create(domain);
+        final List<HttpCookie> cookies = cookieStore.get(uri);
+        for (HttpCookie cookie : cookies) {
+            cookieStore.remove(uri, cookie);
+        }
     }
 
     public synchronized boolean login() {
@@ -284,7 +334,12 @@ public class MiCloudConnector {
         try {
             startClient();
             String sign = loginStep1();
-            String location = loginStep2(sign);
+            String location;
+            if (!sign.startsWith("http")) {
+                location = loginStep2(sign);
+            } else {
+                location = sign; // seems we already have login location
+            }
             final ContentResponse responseStep3 = loginStep3(location);
 
             switch (responseStep3.getStatus()) {
@@ -322,9 +377,15 @@ public class MiCloudConnector {
         logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
         try {
             JsonElement resp = new JsonParser().parse(parseJson(content));
-            String sign = resp.getAsJsonObject().get("_sign").getAsString();
-            logger.trace("Xiaomi Login step 1 sign = {}", sign);
-            return sign;
+            if (resp.getAsJsonObject().has("_sign")) {
+                String sign = resp.getAsJsonObject().get("_sign").getAsString();
+                logger.trace("Xiaomi Login step 1 sign = {}", sign);
+                return sign;
+            } else {
+                logger.trace("Xiaomi Login _sign missing. Maybe still has login cookie.");
+                return "";
+            }
+
         } catch (JsonSyntaxException | NullPointerException e) {
             throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage(), e);
         }
@@ -344,12 +405,13 @@ public class MiCloudConnector {
 
         Fields fields = new Fields();
         fields.put("sid", "xiaomiio");
-        // fields.put("hash", encodePassword(password));
         fields.put("hash", Utils.getHex(MiIoCrypto.md5(password.getBytes())));
         fields.put("callback", "https://sts.api.io.mi.com/sts");
         fields.put("qs", "%3Fsid%3Dxiaomiio%26_json%3Dtrue");
         fields.put("user", username);
-        fields.put("_sign", sign);
+        if (!sign.isEmpty()) {
+            fields.put("_sign", sign);
+        }
         fields.put("_json", "true");
 
         request.content(new FormContentProvider(fields));
@@ -360,12 +422,14 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login step 2 content = {}", content2);
 
         JsonElement resp2 = new JsonParser().parse(parseJson(content2));
-        ssecurity = CloudUtil.getElementString(resp2, "ssecurity", logger);
-        userId = CloudUtil.getElementString(resp2, "userId", logger);
-        cUserId = CloudUtil.getElementString(resp2, "cUserId", logger);
-        passToken = CloudUtil.getElementString(resp2, "passToken", logger);
-        String location = CloudUtil.getElementString(resp2, "location", logger);
-        String code = CloudUtil.getElementString(resp2, "code", logger);
+        CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
+
+        ssecurity = jsonResp.getSsecurity();
+        userId = jsonResp.getUserId();
+        cUserId = jsonResp.getcUserId();
+        passToken = jsonResp.getPassToken();
+        String location = jsonResp.getLocation();
+        String code = jsonResp.getCode();
 
         logger.trace("Xiaomi login ssecurity = {}", ssecurity);
         logger.trace("Xiaomi login userId = {}", userId);
@@ -404,12 +468,23 @@ public class MiCloudConnector {
     }
 
     private void dumpCookies(String url) {
-        URI uri = URI.create(url);
-        logger.trace("Cookie dump for {}", url);
-        List<HttpCookie> cookies = httpClient.getCookieStore().get(uri);
-        for (HttpCookie cookie : cookies) {
-            logger.trace("Cookie ({}) : {} --> {}     (path: {})", cookie.getDomain(), cookie.getName(),
-                    cookie.getValue(), cookie.getPath());
+        if (logger.isTraceEnabled()) {
+            try {
+                URI uri = URI.create(url);
+                if (uri != null) {
+                    logger.trace("Cookie dump for {}", uri);
+                    CookieStore cs = httpClient.getCookieStore();
+                    List<HttpCookie> cookies = cs.get(uri);
+                    for (HttpCookie cookie : cookies) {
+                        logger.trace("Cookie ({}) : {} --> {}     (path: {})", cookie.getDomain(), cookie.getName(),
+                                cookie.getValue(), cookie.getPath());
+                    }
+                } else {
+                    logger.trace("Could not create URI from {}", url);
+                }
+            } catch (IllegalArgumentException | NullPointerException e) {
+                logger.trace("Error dumping cookies from {}: ", url, e.getMessage(), e);
+            }
         }
     }
 

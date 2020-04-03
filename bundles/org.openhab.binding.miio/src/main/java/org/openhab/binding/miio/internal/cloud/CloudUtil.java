@@ -37,9 +37,6 @@ import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link CloudUtil} class is used for supporting functions for Xiaomi cloud access
@@ -59,32 +56,6 @@ public class CloudUtil {
             logger.debug("Json Element {} expected but missing", element);
         }
         return value;
-    }
-
-    public static void printDevices(String response, String country, Logger logger) {
-        try {
-            final JsonElement resp = new JsonParser().parse(response);
-            if (resp.isJsonObject()) {
-                final JsonObject jor = resp.getAsJsonObject();
-                String result = jor.get("result").getAsJsonObject().toString();
-                for (JsonElement di : jor.get("result").getAsJsonObject().get("list").getAsJsonArray()) {
-                    if (di.isJsonObject()) {
-                        final JsonObject deviceInfo = di.getAsJsonObject();
-                        logger.debug(
-                                "Xiaomi cloud info: device name: '{}', did: '{}', token: '{}', ip: {}, server: {} ",
-                                deviceInfo.get("name").getAsString(), deviceInfo.get("did").getAsString(),
-                                deviceInfo.get("token").getAsString(), deviceInfo.get("localip").getAsString(),
-                                country);
-                    }
-                }
-                logger.trace("Devices: {}", result);
-            } else {
-                logger.debug("Response is not a json object: '{}'", response);
-            }
-        } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
-            logger.info("Error while printing devices: {}", e.getMessage());
-        }
-
     }
 
     public static void saveFile(String data, String country, Logger logger) {

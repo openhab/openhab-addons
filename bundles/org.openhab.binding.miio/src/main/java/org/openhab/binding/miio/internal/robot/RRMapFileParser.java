@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -92,10 +94,8 @@ public class RRMapFileParser {
 
     public RRMapFileParser(byte[] raw) {
         boolean printBlockDetails = false;
-
         int mapHeaderLength = getUInt16(raw, 0x02);
         int mapDataLength = getUInt32LE(raw, 0x04);
-
         this.majorVersion = getUInt16(raw, 0x08);
         this.minorVersion = getUInt16(raw, 0x0A);
         this.mapIndex = getUInt32LE(raw, 0x0C);
@@ -271,32 +271,32 @@ public class RRMapFileParser {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("RR Map:\tMajor Version: " + majorVersion + " Minor version: " + minorVersion + " Map Index: "
-                + mapIndex + " Map Sequence: " + mapSequence + " \r\n");
-        sb.append("Image:\tsize: " + Integer.toString(imageSize) + "\ttop: " + Integer.toString(top) + "\tleft: "
-                + Integer.toString(left) + " height: " + Integer.toString(imgHeight) + " width: "
-                + Integer.toString(imgWidth) + "\r\n");
-        sb.append(
-                "Charger pos:\tX: " + Float.toString(getChargerX()) + "\tY: " + Float.toString(getChargerY()) + "\r\n");
-        sb.append("Robo pos:\tX: " + Float.toString(getRoboX()) + "\tY: " + Float.toString(getRoboY()) + " Angle: "
-                + Float.toString(getRoboA()) + "\r\n");
-        sb.append("Goto:\tX: " + Float.toString(getGotoX()) + "\tY: " + Float.toString(getGotoY()) + "\r\n");
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        pw.printf("RR Map:\tMajor Version: %d Minor version: %d Map Index: %d Map Sequence: %d\r\n", majorVersion,
+                minorVersion, mapIndex, mapSequence);
+        pw.printf("Image:\tsize: %9d\ttop: %9d\tleft: %9d height: %9d width: %9d\r\n", imageSize, top, left, imgHeight,
+                imgWidth);
+        pw.printf("Charger pos:\tX: %.1f\tY: %.1f\r\n", getChargerX(), getChargerY());
+        pw.printf("Robo pos:\tX: %.1f\tY: %.1f\tAngle: %d\r\n", getRoboX(), getRoboY(), getRoboA());
+        pw.printf("Goto:\tX: %.1f\tY: %.1f\r\n", getGotoX(), getGotoY());
         for (Integer area : areas.keySet()) {
-            sb.append((area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t")
-                    + Integer.toString(areas.get(area).size()) + "\r\n");
+            pw.print(area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t");
+            pw.printf("%d\r\n", areas.get(area).size());
         }
-        sb.append("Walls:\t" + Integer.toString(walls.size()) + "\r\n");
-        sb.append("Obstacles:\t" + Integer.toString(obstacles.size()) + "\r\n");
-        sb.append("Blocks:\t" + Integer.toString(blocks.length) + "\r\n");
-        sb.append("Paths:");
+        pw.printf("Walls:\t%d\r\n", walls.size());
+        pw.printf("Obstacles:\t%d\r\n", obstacles.size());
+        pw.printf("Blocks:\t%d\r\n", blocks.length);
+        pw.print("Paths:");
         for (Integer p : pathsDetails.keySet()) {
-            sb.append("\r\nPath type:\t" + Integer.toString(p));
+            pw.printf("\r\nPath type:\t%d", p);
             for (String detail : pathsDetails.get(p).keySet()) {
-                sb.append(" " + detail + ": " + Integer.toString(pathsDetails.get(p).get(detail)));
+                pw.printf("   %s: %d", detail, pathsDetails.get(p).get(detail));
             }
         }
-        return sb.toString();
+        pw.println();
+        pw.close();
+        return sw.toString();
     }
 
     /**

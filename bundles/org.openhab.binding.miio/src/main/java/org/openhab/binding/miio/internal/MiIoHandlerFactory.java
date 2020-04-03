@@ -16,7 +16,6 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.util.Dictionary;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,7 +69,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         String password = (String) properties.get("password");
         @Nullable
         String country = (String) properties.get("country");
-        scheduler.schedule(() -> cloudConnector.setCredentials(username, password, country), 0, TimeUnit.SECONDS);
+        scheduler.submit(() -> cloudConnector.setCredentials(username, password, country));
     }
 
     @Override

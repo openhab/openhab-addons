@@ -50,6 +50,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RRMapDraw {
 
+    private static final int MAP_OUTSIDE = 0x00;
+    private static final int MAP_WALL = 0x01;
+    private static final int MAP_INSIDE = 0xFF;
+    private static final int MAP_SCAN = 0x07;
     private static final Color COLOR_MAP_INSIDE = new Color(32, 115, 185);
     private static final Color COLOR_MAP_OUTSIDE = new Color(19, 87, 148);
     private static final Color COLOR_MAP_WALL = new Color(100, 196, 254);
@@ -80,15 +84,11 @@ public class RRMapDraw {
             ROOM11, ROOM12, ROOM13, ROOM14, ROOM15, ROOM16 };
     private final @Nullable Bundle bundle = FrameworkUtil.getBundle(getClass());
     private boolean multicolor = false;
-    private RRMapFileParser rmfp;
+    private final RRMapFileParser rmfp;
 
     private final Logger logger = LoggerFactory.getLogger(RRMapDraw.class);
 
     public RRMapDraw(RRMapFileParser rmfp) {
-        this.rmfp = rmfp;
-    }
-
-    public void setRRFileDecoder(RRMapFileParser rmfp) {
         this.rmfp = rmfp;
     }
 
@@ -130,16 +130,16 @@ public class RRMapDraw {
             for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
                 byte walltype = rmfp.getImage()[x + rmfp.getImgWidth() * y];
                 switch (walltype & 0xFF) {
-                    case 0x00:
+                    case MAP_OUTSIDE:
                         g2d.setColor(COLOR_MAP_OUTSIDE);
                         break;
-                    case 0x01:
+                    case MAP_WALL:
                         g2d.setColor(COLOR_MAP_WALL);
                         break;
-                    case 0xFF:
+                    case MAP_INSIDE:
                         g2d.setColor(COLOR_MAP_INSIDE);
                         break;
-                    case 0x07:
+                    case MAP_SCAN:
                         g2d.setColor(COLOR_SCAN);
                         break;
                     default:
@@ -319,30 +319,31 @@ public class RRMapDraw {
         try {
             if (image != null) {
                 BufferedImage ohLogo = ImageIO.read(image);
-                textPos = (int) (ohLogo.getWidth() * scale / 2 + offset);
+                textPos = (int) (ohLogo.getWidth() * scale / 2 + offset * scale);
                 AffineTransform at = new AffineTransform();
                 at.scale(scale / 2, scale / 2);
                 AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-                g2d.drawImage(ohLogo, scaleOp, offset, height - (int) (ohLogo.getHeight() * scale / 2) - offset);
+                g2d.drawImage(ohLogo, scaleOp, offset,
+                        height - (int) (ohLogo.getHeight() * scale / 2) - (int) (offset * scale));
             } else {
                 logger.debug("Error loading image ohlogo.png: File not be found.");
             }
         } catch (IOException e) {
             logger.debug("Error loading image ohlogo.png:: {}", e.getMessage());
         }
-        Font font = new Font("TimesRoman", Font.BOLD, 14);
+        Font font = new Font("Helvetica", Font.BOLD, 14);
         g2d.setFont(font);
         String message = "Openhab rocks your Xiaomi vacuum!";
         FontMetrics fontMetrics = g2d.getFontMetrics();
         int stringWidth = fontMetrics.stringWidth(message);
         if ((stringWidth + textPos) > rmfp.getImgWidth() * scale) {
             font = new Font("Helvetica ", Font.BOLD,
-                    (int) Math.floor(14 * (rmfp.getImgWidth() * scale - textPos - offset) / stringWidth));
+                    (int) Math.floor(14 * (rmfp.getImgWidth() * scale - textPos - offset * scale) / stringWidth));
             g2d.setFont(font);
         }
         int stringHeight = fontMetrics.getAscent();
         g2d.setPaint(Color.white);
-        g2d.drawString(message, textPos, height - offset - stringHeight / 2);
+        g2d.drawString(message, textPos, height - offset * scale - stringHeight / 2);
     }
 
     private @Nullable URL getImageUrl(String image) {

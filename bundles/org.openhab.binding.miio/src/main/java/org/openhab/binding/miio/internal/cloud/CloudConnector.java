@@ -32,10 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 
 /**
  * The {@link CloudConnector} is responsible for connecting OH to the Xiaomi cloud communication.
@@ -51,17 +48,16 @@ public class CloudConnector {
     private static final int STARTING = 0;
     private static final int REFRESHING = 1;
     private static final int AVAILABLE = 2;
-    private int deviceListState = STARTING;
+    private volatile int deviceListState = STARTING;
 
     private String username = "";
     private String password = "";
     private String country = "ru,us,tw,sg,cn,de";
-    private List<JsonObject> deviceList = new ArrayList<JsonObject>();
+    private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
     private final HttpClient httpClient;
     private @Nullable MiCloudConnector cloudConnector;
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
-    private final JsonParser parser = new JsonParser();
 
     private ExpiringCache<Boolean> logonCache = new ExpiringCache<Boolean>(CACHE_EXPIRY, () -> {
         return logon();
@@ -79,13 +75,7 @@ public class CloudConnector {
         deviceList.clear();
         for (String server : country.split(",")) {
             try {
-                JsonElement response = parser.parse(cl.getDevices(server));
-                if (response.isJsonObject() && response.getAsJsonObject().has("result")
-                        && response.getAsJsonObject().get("result").isJsonObject()) {
-                    JsonObject result = response.getAsJsonObject().get("result").getAsJsonObject();
-                    result.addProperty("server", server);
-                    deviceList.add(result);
-                }
+                cl.getDevices(server);
             } catch (JsonParseException e) {
                 logger.debug("Parsing error getting devices: {}", e.getMessage());
             }
@@ -188,55 +178,35 @@ public class CloudConnector {
         return connected;
     }
 
-    public List<JsonObject> getDevicesList() {
+    public List<CloudDeviceDTO> getDevicesList() {
         refreshDeviceList.getValue();
         return deviceList;
     }
 
-    public JsonObject getDeviceInfo(String id) {
+    public @Nullable CloudDeviceDTO getDeviceInfo(String id) {
         getDevicesList();
         if (deviceListState < AVAILABLE) {
-            JsonObject returnvalue = new JsonObject();
-            returnvalue.addProperty("deviceListState", deviceListState);
-            return returnvalue;
+            return null;
         }
         String did = Long.toString(Long.parseUnsignedLong(id, 16));
-        List<JsonObject> devicedata = new ArrayList<JsonObject>();
-        for (JsonObject countyDeviceList : deviceList) {
-            if (countyDeviceList.has("list") && countyDeviceList.get("list").isJsonArray()) {
-                for (JsonElement device : countyDeviceList.get("list").getAsJsonArray()) {
-                    if (device.isJsonObject() && device.getAsJsonObject().has("did")
-                            && device.getAsJsonObject().get("did").getAsString().contentEquals(did)
-                            && device.getAsJsonObject().has("token")) {
-                        JsonObject deviceDetails = device.getAsJsonObject();
-                        deviceDetails.addProperty("server", countyDeviceList.get("server").getAsString());
-                        devicedata.add(deviceDetails);
-                    }
-                }
+        List<CloudDeviceDTO> devicedata = new ArrayList<>();
+        for (CloudDeviceDTO deviceDetails : deviceList) {
+            if (deviceDetails.getDid().contentEquals(did)) {
+                devicedata.add(deviceDetails);
             }
         }
-        JsonObject returnvalue = new JsonObject();
-        switch (devicedata.size()) {
-            case 0:
-                returnvalue.addProperty("connected", connected);
-                break;
-            case 1:
-                returnvalue = devicedata.get(0);
-                break;
-            default:
-                for (JsonObject device : devicedata) {
-                    if (device.has("isOnline") && device.get("isOnline").getAsBoolean()) {
-                        return device;
-                    }
-                }
-                logger.debug("Found multiple servers for device, with device offline {} {} ",
-                        devicedata.get(0).get("name").getAsString(), id);
-                for (JsonObject device : devicedata) {
-                    logger.debug("Server {} token: {}", device.get("server").getAsString(),
-                            device.get("token").getAsString());
-                }
-                returnvalue = devicedata.get(0);
+        if (devicedata.isEmpty()) {
+            return null;
         }
-        return returnvalue;
+        for (CloudDeviceDTO device : devicedata) {
+            if (device.getIsOnline()) {
+                return device;
+            }
+        }
+        if (devicedata.size() > 1) {
+            logger.debug("Found multiple servers for device {} {} returning first", devicedata.get(0).getDid(),
+                    devicedata.get(0).getName());
+        }
+        return devicedata.get(0);
     }
 }

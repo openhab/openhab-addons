@@ -72,6 +72,9 @@ import com.google.gson.JsonObject;
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final float MAP_SCALE = 2.0f;
+    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHss");
+    private static final String MAP_PATH = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID
+            + File.separator;
     private final ChannelUID mapChannelUid;
 
     private ExpiringCache<String> status;
@@ -445,8 +448,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     String mapresponse = response.getResult().getAsJsonArray().get(0).getAsString();
                     if (!mapresponse.contentEquals("retry") && !mapresponse.contentEquals(lastMap)) {
                         lastMap = mapresponse;
-                        scheduler.schedule(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)), 0,
-                                TimeUnit.MILLISECONDS);
+                        scheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
                     }
                 }
                 break;
@@ -459,8 +461,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     }
 
     private State getMap(String map) {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
-        if (cloudConnector.isConnected()) {
+        final MiIoBindingConfiguration configuration = this.configuration;
+        if (configuration != null && cloudConnector.isConnected()) {
             try {
                 final @Nullable RawType mapDl = cloudConnector.getMap(map,
                         (configuration.cloudServer != null) ? configuration.cloudServer : "");
@@ -469,11 +471,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     if (logger.isDebugEnabled()) {
-                        String fn = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID + File.separator
-                                + map;
-                        CloudUtil.writeBytesToFileNio(mapData,
-                                fn + (new SimpleDateFormat("yyyyMMdd-HHss")).format(new Date()) + ".rrmap");
-                        logger.debug("Mapdata saved to {}", fn + ".rrmap");
+                        final String mapPath = MAP_PATH + map + DATEFORMATTER.format(new Date()) + ".rrmap";
+                        CloudUtil.writeBytesToFileNio(mapData, mapPath);
+                        logger.debug("Mapdata saved to {}", mapPath);
                     }
                     ImageIO.write(rrMap.getImage(MAP_SCALE), "jpg", baos);
                     byte[] byteArray = baos.toByteArray();

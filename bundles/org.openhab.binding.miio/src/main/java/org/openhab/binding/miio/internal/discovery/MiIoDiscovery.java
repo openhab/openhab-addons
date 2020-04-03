@@ -36,13 +36,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.cloud.CloudDeviceDTO;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 /**
  * The {@link MiIoDiscovery} is responsible for discovering new Xiaomi Mi IO devices
@@ -144,13 +143,13 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         boolean isOnline = false;
         if (cloudConnector.isConnected()) {
             cloudConnector.getDevicesList();
-            JsonObject cloudInfo = cloudConnector.getDeviceInfo(id);
-            logger.debug("Cloud Response: {}", cloudInfo.toString());
-            if (cloudInfo.has("token")) {
-                token = cloudInfo.get("token").getAsString();
-                label = cloudInfo.get("name").getAsString() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
-                country = cloudInfo.get("server").getAsString();
-                isOnline = cloudInfo.get("isOnline").getAsBoolean();
+            CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
+            if (cloudInfo != null) {
+                logger.debug("Cloud Info: {}", cloudInfo);
+                token = cloudInfo.getToken();
+                label = cloudInfo.getName() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+                country = cloudInfo.getServer();
+                isOnline = cloudInfo.getIsOnline();
             }
         }
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
