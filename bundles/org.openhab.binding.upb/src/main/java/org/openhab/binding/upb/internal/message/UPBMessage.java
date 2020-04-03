@@ -15,7 +15,6 @@ package org.openhab.binding.upb.internal.message;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,7 @@ public class UPBMessage {
     private byte source;
 
     private Command command = Command.NULL;
-    private byte @Nullable [] arguments;
+    private byte[] arguments = new byte[0];
 
     private UPBMessage(final Type type) {
         this.type = type;
@@ -207,7 +206,7 @@ public class UPBMessage {
     /**
      * @return the arguments
      */
-    public byte @Nullable [] getArguments() {
+    public byte[] getArguments() {
         return arguments;
     }
 

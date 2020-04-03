@@ -94,6 +94,10 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
 
         final byte[] buffer = new byte[256];
         try (final InputStream in = serialPort.getInputStream()) {
+            if (in == null) {
+                // should never happen
+                throw new IllegalStateException("serial port is not readable");
+            }
             enterMessageMode();
             int len;
             while (!done && (len = in.read(buffer)) >= 0) {
@@ -191,8 +195,12 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
     // puts the PIM is in message mode
     private void enterMessageMode() {
         try {
-            serialPort.getOutputStream().write(ENABLE_MESSAGE_MODE_CMD);
-            serialPort.getOutputStream().flush();
+            final OutputStream out = serialPort.getOutputStream();
+            if (out == null) {
+                throw new IOException("serial port is not writable");
+            }
+            out.write(ENABLE_MESSAGE_MODE_CMD);
+            out.flush();
         } catch (final IOException e) {
             logger.warn("error setting message mode", e);
         }
@@ -255,6 +263,9 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
             try {
                 logger.debug("Writing bytes: {}", msg);
                 final OutputStream out = serialPort.getOutputStream();
+                if (out == null) {
+                    throw new IOException("serial port is not writable");
+                }
                 for (int tries = 0; tries < MAX_RETRIES && ack == null; tries++) {
                     out.write(0x14);
                     out.write(msg.getBytes(US_ASCII));
@@ -266,6 +277,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
                     }
                     logger.debug("ack timed out, retrying ({} of {})", tries + 1, MAX_RETRIES);
                 }
+                final Boolean ack = this.ack;
                 if (ack == null) {
                     logger.debug("write not acked");
                     completion.complete(CmdStatus.WRITE_FAILED);

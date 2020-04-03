@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.upb.internal;
 
+import static org.eclipse.jdt.annotation.DefaultLocation.*;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,13 +36,13 @@ import org.slf4j.LoggerFactory;
  * @author Marcus Better - Initial contribution
  *
  */
-@NonNullByDefault
+@NonNullByDefault({ PARAMETER, RETURN_TYPE, FIELD })
 public class UPBController {
     private final Logger logger = LoggerFactory.getLogger(UPBController.class);
 
     // Maps of devices and things keyed by (networkId, unitId)
-    private final ConcurrentHashMap<Integer, @Nullable UPBDevice> devices = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, @Nullable UPBThingHandler> things = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, UPBDevice> devices = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, UPBThingHandler> things = new ConcurrentHashMap<>();
 
     public void incomingMessage(final UPBMessage msg) {
         if (msg.getType() != Type.MESSAGE_REPORT) {

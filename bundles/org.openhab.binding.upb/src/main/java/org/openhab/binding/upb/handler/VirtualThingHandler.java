@@ -52,6 +52,7 @@ public class VirtualThingHandler extends UPBThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command cmd) {
+        final PIMHandler controllerHandler = this.controllerHandler;
         if (controllerHandler == null) {
             logger.info("DEV {}: received cmd {} but no bridge handler", unitId, cmd);
             return;

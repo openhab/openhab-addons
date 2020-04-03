@@ -54,6 +54,7 @@ public class UPBHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void activate(final ComponentContext componentContext) {
         super.activate(componentContext);
         final Dictionary<String, Object> config = componentContext.getProperties();

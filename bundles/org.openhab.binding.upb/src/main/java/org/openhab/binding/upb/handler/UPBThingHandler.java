@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -48,11 +49,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UPBThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(UPBThingHandler.class);
+    private final @Nullable Byte defaultNetworkId;
 
-    @Nullable
-    private Byte defaultNetworkId;
-    @Nullable
-    protected volatile PIMHandler controllerHandler;
+    protected volatile @Nullable PIMHandler controllerHandler;
     protected volatile byte networkId;
     protected volatile int unitId;
 
@@ -68,11 +67,12 @@ public class UPBThingHandler extends BaseThingHandler {
         final BigDecimal val = (BigDecimal) getConfig().get(Constants.CONFIGURATION_NETWORK_ID);
         if (val == null) {
             // use value from binding config
+            final Byte defaultNetworkId = this.defaultNetworkId;
             if (defaultNetworkId == null) {
                 logger.warn("missing network ID for {}", getThing().getUID());
                 return;
             }
-            networkId = defaultNetworkId;
+            networkId = defaultNetworkId.byteValue();
         } else if (val.compareTo(BigDecimal.ZERO) < 0 || val.compareTo(BigDecimal.valueOf(255)) > 0) {
             logger.warn("invalid network ID {} for {}", val, getThing().getUID());
             return;
@@ -138,6 +138,7 @@ public class UPBThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command cmd) {
+        final PIMHandler controllerHandler = this.controllerHandler;
         if (controllerHandler == null) {
             logger.info("DEV {}: received cmd {} but no bridge handler", unitId, cmd);
             return;
@@ -206,7 +207,8 @@ public class UPBThingHandler extends BaseThingHandler {
     private void handleLinkMessage(final UPBMessage msg) {
         final byte linkId = msg.getDestination();
         for (final Channel ch : getThing().getChannels()) {
-            if (Constants.SCENE_CHANNEL_TYPE_ID.equals(ch.getChannelTypeUID().getId())) {
+            ChannelTypeUID channelTypeUID = ch.getChannelTypeUID();
+            if (channelTypeUID != null && Constants.SCENE_CHANNEL_TYPE_ID.equals(channelTypeUID.getId())) {
                 final BigDecimal channelLinkId = (BigDecimal) ch.getConfiguration()
                         .get(Constants.CONFIGURATION_LINK_ID);
                 if (channelLinkId == null || channelLinkId.byteValue() != linkId) {
@@ -246,10 +248,12 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     protected void pingDevice() {
-        controllerHandler
-                .sendPacket(
-                        MessageBuilder.forCommand(NULL).ackMessage(true).network(networkId).destination((byte) unitId))
-                .thenAccept(this::updateStatus);
+        final PIMHandler controllerHandler = this.controllerHandler;
+        if (controllerHandler != null) {
+            controllerHandler.sendPacket(
+                    MessageBuilder.forCommand(NULL).ackMessage(true).network(networkId).destination((byte) unitId))
+                    .thenAccept(this::updateStatus);
+        }
     }
 
     private void updateStatus(final CmdStatus result) {
@@ -266,9 +270,12 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     private void refreshDeviceState() {
-        controllerHandler
-                .sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
-                .thenAccept(this::updateStatus);
+        final PIMHandler controllerHandler = this.controllerHandler;
+        if (controllerHandler != null) {
+            controllerHandler
+                    .sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
+                    .thenAccept(this::updateStatus);
+        }
     }
 
     public byte getNetworkId() {

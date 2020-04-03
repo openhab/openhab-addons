@@ -73,10 +73,12 @@ public class SerialPIMHandler extends PIMHandler {
 
     @Override
     public void dispose() {
+        final ScheduledFuture<?> futSerialPortInit = this.futSerialPortInit;
         if (futSerialPortInit != null) {
             futSerialPortInit.cancel(true);
+            this.futSerialPortInit = null;
         }
-        futSerialPortInit = null;
+        final SerialIoThread receiveThread = this.receiveThread;
         if (receiveThread != null) {
             receiveThread.terminate();
             try {
@@ -84,7 +86,7 @@ public class SerialPIMHandler extends PIMHandler {
             } catch (final InterruptedException e) {
                 // ignore
             }
-            receiveThread = null;
+            this.receiveThread = null;
         }
         logger.debug("Stopped UPB serial handler");
         super.dispose();
@@ -99,8 +101,9 @@ public class SerialPIMHandler extends PIMHandler {
                 return;
             }
             logger.debug("Starting receive thread");
-            receiveThread = new SerialIoThread(serialPort, this);
+            final SerialIoThread receiveThread = new SerialIoThread(serialPort, this);
             receiveThread.setName("upb-serial-reader");
+            this.receiveThread = receiveThread;
             // Once the receiver starts, it may set the PIM status to ONLINE
             // so we must ensure all initialization is finished at that point.
             receiveThread.start();
@@ -149,6 +152,7 @@ public class SerialPIMHandler extends PIMHandler {
 
     @Override
     public CompletionStage<CmdStatus> sendPacket(final MessageBuilder msg) {
+        final SerialIoThread receiveThread = this.receiveThread;
         if (receiveThread != null) {
             return receiveThread.enqueue(msg);
         } else {

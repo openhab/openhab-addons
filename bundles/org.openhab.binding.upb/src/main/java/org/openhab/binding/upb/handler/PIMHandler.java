@@ -40,8 +40,8 @@ public abstract class PIMHandler extends BaseBridgeHandler implements MessageLis
 
     private final Logger logger = LoggerFactory.getLogger(PIMHandler.class);
 
-    @Nullable
-    private UPBController controller;
+    // volatile to ensure visibility for callbacks from the serial I/O thread
+    private volatile UPBController controller = new UPBController();
 
     public PIMHandler(final Bridge bridge) {
         super(bridge);
@@ -81,16 +81,10 @@ public abstract class PIMHandler extends BaseBridgeHandler implements MessageLis
     @Override
     public void incomingMessage(final UPBMessage msg) {
         updateStatus(ThingStatus.ONLINE);
-        if (controller == null) {
-            return;
-        }
         controller.incomingMessage(msg);
     }
 
     public @Nullable UPBDevice getDevice(byte networkId, byte unitId) {
-        if (controller == null) {
-            return null;
-        }
         return controller.getDevice(networkId, unitId);
     }
 }
