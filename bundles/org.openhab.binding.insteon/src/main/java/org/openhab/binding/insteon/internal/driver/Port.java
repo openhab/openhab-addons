@@ -102,6 +102,10 @@ public class Port {
         this.mdbb = new ModemDBBuilder(this);
     }
 
+    public boolean isModem(InsteonAddress a) {
+        return modem.getAddress().equals(a);
+    }
+
     public synchronized boolean isModemDBComplete() {
         return (modemDBComplete);
     }
