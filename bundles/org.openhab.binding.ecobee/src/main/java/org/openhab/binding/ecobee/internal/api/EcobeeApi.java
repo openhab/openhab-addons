@@ -72,7 +72,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
 
     private static final String ECOBEE_THERMOSTAT_URL = ECOBEE_BASE_URL + "1/thermostat";
     private static final String ECOBEE_THERMOSTAT_SUMMARY_URL = ECOBEE_BASE_URL + "1/thermostatSummary";
-    private static final String ECOBEE_THERMOSTAT_UPDATE_URL = ECOBEE_THERMOSTAT_URL + "&format=json";
+    private static final String ECOBEE_THERMOSTAT_UPDATE_URL = ECOBEE_THERMOSTAT_URL + "?format=json";
 
     // These errors from the API will require an Ecobee authorization
     private static final int ECOBEE_TOKEN_EXPIRED = 14;
