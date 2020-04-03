@@ -18,6 +18,7 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_LA
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_TYPE_NAME;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,9 +83,9 @@ public class ItemToStorePointCreator {
 
     private State getItemState(Item item) {
         final State state;
-        final Class<? extends State> desiredConversion = calculateDesiredTypeConversionToStore(item);
-        if (desiredConversion != null) {
-            State convertedState = item.getStateAs(desiredConversion);
+        final Optional<Class<? extends State>> desiredConversion = calculateDesiredTypeConversionToStore(item);
+        if (desiredConversion.isPresent()) {
+            State convertedState = item.getStateAs(desiredConversion.get());
             if (convertedState != null) {
                 state = convertedState;
             } else {
@@ -96,14 +97,9 @@ public class ItemToStorePointCreator {
         return state;
     }
 
-    private @Nullable Class<? extends State> calculateDesiredTypeConversionToStore(Item item) {
-        Class<? extends State> conversion = null;
-        if (item.getAcceptedCommandTypes().size() > 1) {
-            if (item.getAcceptedCommandTypes().get(0).isAssignableFrom(State.class)) {
-                conversion = item.getAcceptedCommandTypes().get(0).asSubclass(State.class);
-            }
-        }
-        return conversion;
+    private Optional<Class<? extends State>> calculateDesiredTypeConversionToStore(Item item) {
+        return item.getAcceptedCommandTypes().stream().filter(commandType -> commandType.isAssignableFrom(State.class))
+                .findFirst().map(commandType -> commandType.asSubclass(State.class));
     }
 
     private void addPointTags(Item item, InfluxPoint.Builder point) {

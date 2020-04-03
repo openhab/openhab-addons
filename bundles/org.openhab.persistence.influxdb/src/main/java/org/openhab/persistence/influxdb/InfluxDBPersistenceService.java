@@ -99,7 +99,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     /**
      * Connect to database when service is activated
      */
-     @Activate
+    @Activate
     public void activate(final @Nullable Map<String, @Nullable Object> config) {
         logger.debug("InfluxDB persistence service is being activated");
 
@@ -206,7 +206,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 logger.trace("Ignoring item {} as is cannot be converted to a InfluxDB point", item);
             }
         } else {
-            logger.info("store ignored, InfluxDB is not yet connected");
+            logger.debug("store ignored, InfluxDB is not yet connected");
         }
     }
 
@@ -225,7 +225,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             List<InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());
         } else {
-            logger.info("query ignored, InfluxDB is not yet connected");
+            logger.debug("query ignored, InfluxDB is not yet connected");
             return Collections.emptyList();
         }
     }

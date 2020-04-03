@@ -42,18 +42,18 @@ public class InfluxDBConfiguration {
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
     public static InfluxDBConfiguration NO_CONFIGURATION = new InfluxDBConfiguration(Collections.emptyMap());
     private final Logger logger = LoggerFactory.getLogger(InfluxDBConfiguration.class);
-    private String url;
-    private String user;
-    private String password;
-    private String token;
-    private String databaseName;
-    private String retentionPolicy;
-    private InfluxDBVersion version;
+    private final String url;
+    private final String user;
+    private final String password;
+    private final String token;
+    private final String databaseName;
+    private final String retentionPolicy;
+    private final InfluxDBVersion version;
 
-    private boolean replaceUnderscore;
-    private boolean addCategoryTag;
-    private boolean addTypeTag;
-    private boolean addLabelTag;
+    private final boolean replaceUnderscore;
+    private final boolean addCategoryTag;
+    private final boolean addTypeTag;
+    private final boolean addLabelTag;
 
     @SuppressWarnings("null")
     public InfluxDBConfiguration(Map<String, @Nullable Object> config) {
@@ -114,14 +114,17 @@ public class InfluxDBConfiguration {
             if (!hasVersion) {
                 reason.add("Unknown version");
             } else {
-                if (!hasCredentials)
+                if (!hasCredentials) {
                     reason.add("No credentials");
-                if (!hasDatabase)
+                }
+                if (!hasDatabase) {
                     reason.add("No database name / organization defined");
-                if (!hasRetentionPolicy)
+                }
+                if (!hasRetentionPolicy) {
                     reason.add("No retention policy / bucket defined");
+                }
             }
-            logger.warn("{} {}", msg, reason.toString());
+            logger.warn("{} {}", msg, reason);
             return false;
         }
     }
