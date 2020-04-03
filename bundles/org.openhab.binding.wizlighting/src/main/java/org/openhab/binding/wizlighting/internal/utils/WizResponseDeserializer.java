@@ -58,7 +58,9 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
             jobject = json.getAsJsonObject();
 
             // Parse the ID
-            deserializedResponse.setId(jobject.get("id").getAsInt());
+            if (jobject.has("id")) {
+                deserializedResponse.setId(jobject.get("id").getAsInt());
+            }
             // Parse the environment - I think this is always sent, but I'm checking anyway
             if (jobject.has("env")) {
                 deserializedResponse.setEnv(jobject.get("env").getAsString());
@@ -70,8 +72,12 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                 ErrorResponseResult error = context.deserialize(jobject.getAsJsonObject("error"),
                         ErrorResponseResult.class);
                 deserializedResponse.setError(error);
-                logger.warn("Bulb returned an error on method {}:  {}, {}", jobject.get("method"), error.code,
-                        error.message);
+                if (jobject.has("method")) {
+                    logger.warn("Bulb returned an error on method {}:  {}, {}", jobject.get("method"), error.code,
+                            error.message);
+                } else {
+                    logger.warn("Bulb returned an error:  {}, {}", error.code);
+                }
                 return deserializedResponse;
             }
 
@@ -97,7 +103,13 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     // {"method": "registration", "id": 1, "env": "pro", "result": {"mac":
                     // "macOfopenHAB", "success": true}}
                     logger.trace("Deserializing registration result");
+                    if (!jobject.has("result")){
+                        throw new JsonParseException("registration received, but no result object present");
+                    }
                     JsonObject registrationResult = jobject.getAsJsonObject("result");
+                    if (!registrationResult.has("mac")) {
+                        throw new JsonParseException("registration received, but no MAC address present");
+                    }
                     String mac = registrationResult.get("mac").getAsString();
                     deserializedResponse.setWizResponseMacAddress(mac);
                     deserializedResponse.setResultSucess(registrationResult.get("success").getAsBoolean());
@@ -110,6 +122,9 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                 case SetPilot:
                     // {"method":"setPilot","id":24,"env":"pro","result":{"success":true}}
                     logger.trace("Deserializing pulse/setPilot");
+                    if (!jobject.has("result")) {
+                        throw new JsonParseException("pulse or setPilot method received, but no result object present");
+                    }
                     JsonObject setResult = jobject.getAsJsonObject("result");
                     deserializedResponse.setResultSucess(setResult.get("success").getAsBoolean());
                     logger.trace("Result deserialized - command success {}", setResult.get("success").getAsBoolean());
@@ -119,10 +134,16 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     // {"method": "firstBeat", "id": 0, "env": "pro", "params": {"mac": "theBulbMacAddress",
                     // "homeId": xxxxxx, "fwVersion": "1.15.2"}}
                     logger.trace("Deserializing firstBeat");
+                    if (!jobject.has("params")) {
+                        throw new JsonParseException("firstBeat received, but no params object present");
+                    }
                     SystemConfigResult parsedFBParams = context.deserialize(jobject.getAsJsonObject("params"),
                             SystemConfigResult.class);
-                    deserializedResponse.setResultSucess(true);
+                    if (parsedFBParams.mac != null) {
+                        throw new JsonParseException("firstBeat received, but no MAC address present");
+                    }
                     deserializedResponse.setWizResponseMacAddress(parsedFBParams.mac);
+                    deserializedResponse.setResultSucess(true);
                     deserializedResponse.setSystemConfigResult(parsedFBParams);
                     logger.trace("firstBeat result deserialized with mac {}", parsedFBParams.mac);
                     break;
@@ -133,36 +154,54 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     // "homeLock": false, "pairingLock": false, "typeId": 0, "moduleName":
                     // "ESP01_SHRGB1C_31", "fwVersion": "1.15.2", "groupId": 0, "drvConf":[33,1]}}
                     logger.trace("Deserializing SystemConfig");
+                    if (!jobject.has("result")) {
+                        throw new JsonParseException("getSystemConfig received, but no result object present");
+                    }
                     SystemConfigResult parsedCResult = context.deserialize(jobject.getAsJsonObject("result"),
                             SystemConfigResult.class);
-                    deserializedResponse.setResultSucess(true);
+                    if (parsedCResult.mac != null) {
+                        throw new JsonParseException("getSystemConfig received, but no MAC address present");
+                    }
                     deserializedResponse.setWizResponseMacAddress(parsedCResult.mac);
+                    deserializedResponse.setResultSucess(true);
                     deserializedResponse.setSystemConfigResult(parsedCResult);
                     logger.trace("systemConfig result deserialized with mac {}", parsedCResult.mac);
                     break;
 
                 case GetPilot:
-                    logger.trace("Deserializing getPilot");
                     // {"method": "getPilot", "id": 22, "env": "pro", "result": {"mac":
                     // "theBulbMacAddress", "rssi":-76, "state": true, "sceneId": 0, "temp": 2700,
                     // "dimming": 42, "schdPsetId": 5}}
+                    logger.trace("Deserializing getPilot");
+                    if (!jobject.has("result")) {
+                        throw new JsonParseException("getPilot received, but no result object present");
+                    }
                     WizLightingSyncState parsedPResult = context.deserialize(jobject.getAsJsonObject("result"),
                             WizLightingSyncState.class);
-                    deserializedResponse.setResultSucess(true);
+                    if (parsedPResult.mac != null) {
+                        throw new JsonParseException("getPilot received, but no MAC address present");
+                    }
                     deserializedResponse.setWizResponseMacAddress(parsedPResult.mac);
+                    deserializedResponse.setResultSucess(true);
                     deserializedResponse.setSyncParams(parsedPResult);
                     logger.trace("getPilot result deserialized with mac {}", parsedPResult.mac);
                     break;
 
                 case SyncPilot:
-                    logger.trace("Deserializing syncPilot");
                     // {"method": "syncPilot", "id": 219, "env": "pro", "params": { "mac":
                     // "theBulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true, "sceneId":
                     // 0, "temp": 3362, "dimming": 69, "schdPsetId": 5}}
+                    logger.trace("Deserializing syncPilot");
+                    if (!jobject.has("params")) {
+                        throw new JsonParseException("syncPilot received, but no params object present");
+                    }
                     WizLightingSyncState parsedPParam = context.deserialize(jobject.getAsJsonObject("params"),
                             WizLightingSyncState.class);
-                    deserializedResponse.setResultSucess(true);
+                    if (parsedPParam.mac != null) {
+                        throw new JsonParseException("syncPilot received, but no MAC address present");
+                    }
                     deserializedResponse.setWizResponseMacAddress(parsedPParam.mac);
+                    deserializedResponse.setResultSucess(true);
                     deserializedResponse.setSyncParams(parsedPParam);
                     logger.trace("syncPilot result deserialized with mac {}", parsedPParam.mac);
                     break;
