@@ -217,8 +217,17 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             if (!channels.isEmpty()) {
                 updateThing(editThing().withChannels(channels).build());
 
-                logger.debug("{} address = {} productKey = {} channels = {}", thingId, address, productKey,
-                        channelList.toString());
+                StringBuilder builder = new StringBuilder(thingId);
+                builder.append(" address = ");
+                builder.append(address);
+                builder.append(" productKey = ");
+                builder.append(productKey);
+                builder.append(" channels = ");
+                builder.append(channelList.toString());
+                String msg = builder.toString();
+                logger.debug("{}", msg);
+
+                getInsteonNetworkHandler().initialized(getThing().getUID(), msg);
 
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -249,6 +258,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
             logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
         }
+
+        getInsteonNetworkHandler().disposed(getThing().getUID());
 
         super.dispose();
     }
@@ -322,18 +333,30 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 new InsteonAddress(config.getAddress()), productKey, params);
         getInsteonBinding().addFeatureListener(bindingConfig);
 
-        logger.debug("channel {} linked with the feature: {} parameters: {}", channelUID.getAsString(), feature,
-                params);
+        StringBuilder builder = new StringBuilder(channelUID.getAsString());
+        builder.append(" feature = ");
+        builder.append(feature);
+        builder.append(" parameters = ");
+        builder.append(params);
+        String msg = builder.toString();
+        logger.debug("{}", msg);
+
+        getInsteonNetworkHandler().linked(channelUID, msg);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         getInsteonBinding().removeFeatureListener(channelUID);
+        getInsteonNetworkHandler().unlinked(channelUID);
 
         logger.debug("channel {} unlinked ", channelUID.getAsString());
     }
 
+    private @Nullable InsteonNetworkHandler getInsteonNetworkHandler() {
+        return (InsteonNetworkHandler) getBridge().getHandler();
+    }
+
     private @Nullable InsteonBinding getInsteonBinding() {
-        return ((InsteonNetworkHandler) getBridge().getHandler()).getInsteonBinding();
+        return getInsteonNetworkHandler().getInsteonBinding();
     }
 }

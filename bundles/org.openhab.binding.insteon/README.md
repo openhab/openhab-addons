@@ -111,7 +111,7 @@ These have been tested and should work out of the box:
 ## Channels
 
 Below is the list of possible channels for the Insteon devices.
-In order to determine which channels a device supports, you can look at the device in the UI.
+In order to determine which channels a device supports, you can look at the device in the UI, or with the command `display_devices` in the console.
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
@@ -190,7 +190,7 @@ In order to determine which channels a device supports, you can look at the devi
 Sample things file:
 
 ```
-Bridge insteon:network:local [port="/dev/ttyUSB0"] {
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device 22F8A8 [address="22.F8.A8", productKey="F00.00.15"] {
     Channels:
       Type switch : keypadButtonA [ group=3 ]
@@ -221,17 +221,31 @@ Bridge insteon:network:local [port="/dev/ttyUSB0"] {
 Sample items file:
 
 ```
-Switch switch1 { channel="insteon:device:local:243141:switch" }
-Dimmer dimmer1 { channel="insteon:device:local:238F55:dimmer" }
-Dimmer dimmer2 { channel="insteon:device:local:23B0D9:dimmer" }
-Dimmer dimmer3 { channel="insteon:device:local:238FC9:dimmer" }
-Dimmer keypad  { channel="insteon:device:local:22F8A8:loadDimmer" }
-Switch keypadA { channel="insteon:device:local:22F8A8:keypadButtonA" }
-Switch keypadB { channel="insteon:device:local:22F8A8:keypadButtonB" }
-Switch keypadC { channel="insteon:device:local:22F8A8:keypadButtonC" }
-Switch keypadD { channel="insteon:device:local:22F8A8:keypadButtonD" }
-Dimmer dimmer  { channel="insteon:device:local:238D93:dimmer" }
+Switch switch1 { channel="insteon:device:home:243141:switch" }
+Dimmer dimmer1 { channel="insteon:device:home:238F55:dimmer" }
+Dimmer dimmer2 { channel="insteon:device:home:23B0D9:dimmer" }
+Dimmer dimmer3 { channel="insteon:device:home:238FC9:dimmer" }
+Dimmer keypad  { channel="insteon:device:home:22F8A8:loadDimmer" }
+Switch keypadA { channel="insteon:device:home:22F8A8:keypadButtonA" }
+Switch keypadB { channel="insteon:device:home:22F8A8:keypadButtonB" }
+Switch keypadC { channel="insteon:device:home:22F8A8:keypadButtonC" }
+Switch keypadD { channel="insteon:device:home:22F8A8:keypadButtonD" }
+Dimmer dimmer  { channel="insteon:device:home:238D93:dimmer" }
 ```
+
+## Console Commands
+
+The binding provides commands you can use to help with troubleshooting.
+Enter `smarthome:insteon` in the console and you will get a list of available commands.
+
+```
+openhab> smarthome:insteon
+Usage: smarthome:insteon display_devices - display devices that are online, along with available channels
+Usage: smarthome:insteon display_channels - display channels that are linked, along with configuration information
+Usage: smarthome:insteon display_local_database - display Insteon PLM or hub database details
+```
+
+Here is an example of command: `smarthome:insteon display_local_database`.
 
 ## Insteon Groups and Scenes
 
@@ -267,8 +281,8 @@ Since Insteon devices can have multiple features (for instance a switchable rela
 For example, the following lines would create two Number items referring to the same thermostat device, but to different features of it:
 
 ```
-Number  thermostatCoolPoint "cool point [%.1f °F]" { channel="insteon:device:local:32F422:coolSetPoint" }
-Number  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:local:32F422:heatSetPoint" }
+Number  thermostatCoolPoint "cool point [%.1f °F]" { channel="insteon:device:home:32F422:coolSetPoint" }
+Number  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:home:32F422:heatSetPoint" }
 ```
 
 ### Simple Light Switches
@@ -276,7 +290,7 @@ Number  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:lo
 The following example shows how to configure a simple light switch (2477S) in the .items file:
 
 ```
-Switch officeLight "office light"  { channel="insteon:device:local:AABBCC:switch" }
+Switch officeLight "office light"  { channel="insteon:device:home:AABBCC:switch" }
 ```
 
 ### Simple Dimmers
@@ -284,7 +298,7 @@ Switch officeLight "office light"  { channel="insteon:device:local:AABBCC:switch
 Here is how to configure a simple dimmer (2477D) in the .items file:
 
 ```
-Dimmer kitchenChandelier "kitchen chandelier" { channel="insteon:device:local:AABBCC:dimmer" }
+Dimmer kitchenChandelier "kitchen chandelier" { channel="insteon:device:home:AABBCC:dimmer" }
 ```
 
 Dimmers can be configured with a maximum level when turning a device on or setting a percentage level.
@@ -295,7 +309,7 @@ The below example sets a maximum level of 70% for dim 1 and 60% for dim 2:
 **Things**
 
 ```
-Bridge insteon:network:local [port="/dev/ttyUSB0"] {
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"]  {
     Channels:
       Type dimmer : dimmer [dimmermax=70]
@@ -310,8 +324,8 @@ Bridge insteon:network:local [port="/dev/ttyUSB0"] {
 **Items**
 
 ```
-Dimmer d1 "dimmer 1" { channel="insteon:device:local:AABBCC:dimmer"}
-Dimmer d2 "dimmer 2" { channel="insteon:device:local:AABBCD:loadDimmer"}
+Dimmer d1 "dimmer 1" { channel="insteon:device:home:AABBCC:dimmer"}
+Dimmer d2 "dimmer 2" { channel="insteon:device:home:AABBCD:loadDimmer"}
 ```
 
 Setting a maximum level does not affect manual turning on or dimming a switch.
@@ -321,8 +335,8 @@ Setting a maximum level does not affect manual turning on or dimming a switch.
 Here's how to configure the top and bottom outlet of the in-wall 2 outlet controller:
 
 ```
-Switch fOutTop "Front Outlet Top"    <socket> { channel="insteon:device:local:AABBCC:topOutlet" }
-Switch fOutBot "Front Outlet Bottom" <socket> { channel="insteon:device:local:AABBCC:bottomOutlet" }
+Switch fOutTop "Front Outlet Top"    <socket> { channel="insteon:device:home:AABBCC:topOutlet" }
+Switch fOutBot "Front Outlet Bottom" <socket> { channel="insteon:device:home:AABBCC:bottomOutlet" }
 ```
 
 This will give you individual control of each outlet.
@@ -345,10 +359,10 @@ The modem's link database (see [Insteon Terminal](https://github.com/pfrommerd/i
 This goes into the items file:
 
 ```
-    Switch miniRemoteButtonA "mini remote button a" { channel="insteon:device:local:AABBCC:buttonA", autoupdate="false" }
-    Switch miniRemoteButtonB "mini remote button b" { channel="insteon:device:local:AABBCC:buttonB", autoupdate="false" }
-    Switch miniRemoteButtonC "mini remote button c" { channel="insteon:device:local:AABBCC:buttonC", autoupdate="false" }
-    Switch miniRemoteButtonD "mini remote button d" { channel="insteon:device:local:AABBCC:buttonD", autoupdate="false" }
+    Switch miniRemoteButtonA "mini remote button a" { channel="insteon:device:home:AABBCC:buttonA", autoupdate="false" }
+    Switch miniRemoteButtonB "mini remote button b" { channel="insteon:device:home:AABBCC:buttonB", autoupdate="false" }
+    Switch miniRemoteButtonC "mini remote button c" { channel="insteon:device:home:AABBCC:buttonC", autoupdate="false" }
+    Switch miniRemoteButtonD "mini remote button d" { channel="insteon:device:home:AABBCC:buttonD", autoupdate="false" }
 ```
 
 **Sitemap**
@@ -373,9 +387,9 @@ Then create entries in the .items file like this:
 **Items**
 
 ```
-    Contact motionSensor             "motion sensor [MAP(contact.map):%s]" { channel="insteon:device:local:AABBCC:contact"}
-    Number  motionSensorBatteryLevel "motion sensor battery level [%.1f]"  { channel="insteon:device:local:AABBCC:batteryLevel" }
-    Number  motionSensorLightLevel   "motion sensor light level [%.1f]"    { channel="insteon:device:local:AABBCC:lightLevel" }
+    Contact motionSensor             "motion sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
+    Number  motionSensorBatteryLevel "motion sensor battery level [%.1f]"  { channel="insteon:device:home:AABBCC:batteryLevel" }
+    Number  motionSensorLightLevel   "motion sensor light level [%.1f]"    { channel="insteon:device:home:AABBCC:lightLevel" }
 ```
 
 This will give you a contact, the battery level, and the light level.
@@ -397,8 +411,8 @@ Create a contact.map file in the transforms directory like the following:
 Then create entries in the .items file like this:
 
 ```
-    Contact doorSensor             "Door sensor [MAP(contact.map):%s]" { channel="insteon:device:local:AABBCC:contact" }
-    Number  doorSensorBatteryLevel "Door sensor battery level [%.1f]"  { channel="insteon:device:local:AABBCC:batteryLevel" }
+    Contact doorSensor             "Door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact" }
+    Number  doorSensorBatteryLevel "Door sensor battery level [%.1f]"  { channel="insteon:device:home:AABBCC:batteryLevel" }
 ```
 
 This will give you a contact and the battery level.
@@ -412,7 +426,7 @@ Read the instructions very carefully: sync with lock within 5 feet to avoid bad 
 Put something like this into your .items file:
 
 ```
-    Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:local:AABBCC:switch" }
+    Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:AABBCC:switch" }
 ```
 
 and create a file "lock.map" in the transforms directory with these entries: 
@@ -440,8 +454,8 @@ Add this map into your transforms directory as "contact.map":
 Along with this into your .items file:
 
 ```
-    Switch  garageDoorOpener  "garage door opener"                        <garagedoor>  { channel="insteon:device:local:AABBCC:switch", autoupdate="false" }
-    Contact garageDoorContact "garage door contact [MAP(contact.map):%s]"               { channel="insteon:device:local:AABBCC:contact" }
+    Switch  garageDoorOpener  "garage door opener"                        <garagedoor>  { channel="insteon:device:home:AABBCC:switch", autoupdate="false" }
+    Contact garageDoorContact "garage door contact [MAP(contact.map):%s]"               { channel="insteon:device:home:AABBCC:contact" }
 ```
 
 **Sitemap**
@@ -498,9 +512,9 @@ In your items file you specify these groups with the "group=" parameters such th
 Here is a simple example, just using the load (main) switch:
 
 ```
-    Switch keypadSwitch             "main load"          { channel="insteon:device:local:AABBCC:loadSwitch" }
-    Number keypadSwitchManualChange "main manual change" { channel="insteon:device:local:AABBCC:loadSwitchManualChange" }
-    Switch keypadSwitchFastOnOff    "main fast on/off"   { channel="insteon:device:local:AABBCC:loadSwitchFastOnOff" }
+    Switch keypadSwitch             "main load"          { channel="insteon:device:home:AABBCC:loadSwitch" }
+    Number keypadSwitchManualChange "main manual change" { channel="insteon:device:home:AABBCC:loadSwitchManualChange" }
+    Switch keypadSwitchFastOnOff    "main fast on/off"   { channel="insteon:device:home:AABBCC:loadSwitchFastOnOff" }
 ```
 
 Most people will not use the fast on/off features or the manual change feature, so you really only need the first line.
@@ -509,7 +523,7 @@ To make the buttons available, add the following:
 **Things**
 
 ```
-Bridge insteon:network:local [port="/dev/ttyUSB0"] {
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.15"] {
     Channels:
       Type switch : keypadButtonA [ group="0xf3" ]
@@ -526,10 +540,10 @@ The hexadecimal value 0xf3 can either converted to a numeric value 243 or the st
 **Items**
 
 ```
-    Switch keypadSwitchA "keypad button A" { channel="insteon:device:local:AABBCC:keypadButtonA"}
-    Switch keypadSwitchB "keypad button B" { channel="insteon:device:local:AABBCC:keypadButtonB"}
-    Switch keypadSwitchC "keypad button C" { channel="insteon:device:local:AABBCC:keypadButtonC"}
-    Switch keypadSwitchD "keypad button D" { channel="insteon:device:local:AABBCC:keypadButtonD"}
+    Switch keypadSwitchA "keypad button A" { channel="insteon:device:home:AABBCC:keypadButtonA"}
+    Switch keypadSwitchB "keypad button B" { channel="insteon:device:home:AABBCC:keypadButtonB"}
+    Switch keypadSwitchC "keypad button C" { channel="insteon:device:home:AABBCC:keypadButtonC"}
+    Switch keypadSwitchD "keypad button D" { channel="insteon:device:home:AABBCC:keypadButtonD"}
 ```
 
 **Sitemap**
@@ -555,8 +569,8 @@ The keypad dimmers are like keypad switches, except that the main load is dimmab
 **Items**
 
 ```
-    Dimmer keypadDimmer           "dimmer"                          { channel="insteon:device:local:AABBCC:loadDimmer" }
-    Switch keypadDimmerButtonA    "keypad dimmer button A [%d %%]"  { channel="insteon:device:local:AABBCC:keypadButtonA" }
+    Dimmer keypadDimmer           "dimmer"                          { channel="insteon:device:home:AABBCC:loadDimmer" }
+    Switch keypadDimmerButtonA    "keypad dimmer button A [%d %%]"  { channel="insteon:device:home:AABBCC:keypadButtonA" }
 ```
 
 **Sitemap**
@@ -582,25 +596,25 @@ Again, refer to the [Insteon Terminal](https://github.com/pfrommerd/insteon-term
 This is an example of what to put into your .items file:
 
 ```
-    Number  thermostatCoolPoint   "cool point [%.1f °F]"  { channel="insteon:device:local:AABBCC:coolSetPoint" }
-    Number  thermostatHeatPoint   "heat point [%.1f °F]"  { channel="insteon:device:local:AABBCC:heatSetPoint" }
-    Number  thermostatSystemMode  "system mode [%d]"      { channel="insteon:device:local:AABBCC:systemMode" }
-    Number  thermostatFanMode     "fan mode [%d]"         { channel="insteon:device:local:AABBCC:fanMode" }
-    Number  thermostatIsHeating   "is heating [%d]"       { channel="insteon:device:local:AABBCC:isHeating"}
-    Number  thermostatIsCooling   "is cooling [%d]"       { channel="insteon:device:local:AABBCC:isCooling" }
-    Number  thermostatTempFahren  "temperature [%.1f °F]" { channel="insteon:device:local:AABBCC:tempFahrenheit" }
-    Number  thermostatTempCelsius "temperature [%.1f °C]" { channel="insteon:device:local:AABBCC:tempCelsius" }
-    Number  thermostatHumidity    "humidity [%.0f %%]"    { channel="insteon:device:local:AABBCC:humidity" }
+    Number  thermostatCoolPoint   "cool point [%.1f °F]"  { channel="insteon:device:home:AABBCC:coolSetPoint" }
+    Number  thermostatHeatPoint   "heat point [%.1f °F]"  { channel="insteon:device:home:AABBCC:heatSetPoint" }
+    Number  thermostatSystemMode  "system mode [%d]"      { channel="insteon:device:home:AABBCC:systemMode" }
+    Number  thermostatFanMode     "fan mode [%d]"         { channel="insteon:device:home:AABBCC:fanMode" }
+    Number  thermostatIsHeating   "is heating [%d]"       { channel="insteon:device:home:AABBCC:isHeating"}
+    Number  thermostatIsCooling   "is cooling [%d]"       { channel="insteon:device:home:AABBCC:isCooling" }
+    Number  thermostatTempFahren  "temperature [%.1f °F]" { channel="insteon:device:home:AABBCC:tempFahrenheit" }
+    Number  thermostatTempCelsius "temperature [%.1f °C]" { channel="insteon:device:home:AABBCC:tempCelsius" }
+    Number  thermostatHumidity    "humidity [%.0f %%]"    { channel="insteon:device:home:AABBCC:humidity" }
 ```
 
 Add this as well for some more exotic features:
 
 ```
-    Number  thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:local:AABBCC:acDelay" }
-    Number  thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:local:AABBCC:backlightDuration" }
-    Number  thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:local:AABBCC:stage1Duration" }
-    Number  thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:local:AABBCC:humidityHigh" }
-    Number  thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:local:AABBCC:humidityLow" }
+    Number  thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:home:AABBCC:acDelay" }
+    Number  thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:home:AABBCC:backlightDuration" }
+    Number  thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:home:AABBCC:stage1Duration" }
+    Number  thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:home:AABBCC:humidityHigh" }
+    Number  thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:home:AABBCC:humidityLow" }
 ```
 
 **Sitemap**
@@ -633,10 +647,10 @@ See the example below:
 **Items**
 
 ``` 
-    Number iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:local:AABBCC:watts" }
-    Number iMeterKwh     "iMeter [%.04f kwh]"  { channel="insteon:device:local:AABBCC:kwh" }
-    Switch iMeterUpdate  "iMeter Update"       { channel="insteon:device:local:AABBCC:update" }
-    Switch iMeterReset   "iMeter Reset"        { channel="insteon:device:local:AABBCC:reset" }
+    Number iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:home:AABBCC:watts" }
+    Number iMeterKwh     "iMeter [%.04f kwh]"  { channel="insteon:device:home:AABBCC:kwh" }
+    Switch iMeterUpdate  "iMeter Update"       { channel="insteon:device:home:AABBCC:update" }
+    Switch iMeterReset   "iMeter Reset"        { channel="insteon:device:home:AABBCC:reset" }
 ```
 
 ### Fan Controllers
@@ -646,8 +660,8 @@ Here is an example configuration for a FanLinc module, which has a dimmable ligh
 **Items**
 
 ```
-    Dimmer fanLincDimmer "fanlinc dimmer [%d %%]" { channel="insteon:device:local:AABBCC:lightDimmer" }
-    Number fanLincFan    "fanlinc fan"            { channel="insteon:device:local:AABBCC:fan"}
+    Dimmer fanLincDimmer "fanlinc dimmer [%d %%]" { channel="insteon:device:home:AABBCC:lightDimmer" }
+    Number fanLincFan    "fanlinc fan"            { channel="insteon:device:home:AABBCC:fan"}
 ```
 
 **Sitemap**
@@ -668,9 +682,9 @@ Further note that X10 devices are addressed with `houseCode.unitCode`, e.g. `A.2
 **Items**
 
 ```
-    Switch x10Switch  "X10 switch" { channel="insteon:device:local:AABB:switch" }
-    Dimmer x10Dimmer  "X10 dimmer" { channel="insteon:device:local:AABB:dimmer" }
-    Contact x10Motion "X10 motion" { channel="insteon:device:local:AABB:contact" }
+    Switch x10Switch  "X10 switch" { channel="insteon:device:home:AABB:switch" }
+    Dimmer x10Dimmer  "X10 dimmer" { channel="insteon:device:home:AABB:dimmer" }
+    Contact x10Motion "X10 motion" { channel="insteon:device:home:AABB:contact" }
 ```
 
 ## Direct Sending of Group Broadcasts (Triggering Scenes)
@@ -682,7 +696,7 @@ The format is broadcastOnOff#X where X is the group that you want to be able to 
 **Things**
 
 ```
-Bridge insteon:network:local      [port="/dev/ttyUSB0"] {
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
       Type switch : broadcastOnOff#2
@@ -694,7 +708,7 @@ Bridge insteon:network:local      [port="/dev/ttyUSB0"] {
 **Items**
 
 ```
-    Switch  broadcastOnOff "group on/off"  { channel="insteon:device:local:AABBCC:broadcastOnOff#2" }
+    Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
 ```
 
 Flipping this switch to "ON" will cause the modem to send a broadcast message with group=2, and all devices that are configured to respond to it should react.
@@ -708,7 +722,7 @@ In this scenario, the "related" keyword can be used to have the binding poll a r
 A typical example would be two dimmers (A and B) in a 3-way configuration:
 
 ```
-Bridge insteon:network:local [port="/dev/ttyUSB0"] {
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"] {
     Channels:
       Type dimmer : dimmer [related="AA.BB.DD"]
@@ -725,7 +739,7 @@ In this scenario, the "related" keyword can be used to have the binding poll one
 A typical example would be a switch configured to broadcast to a group, and one or more devices configured to respond to the message:
 
 ```
-Bridge insteon:network:local [port="/dev/ttyUSB0"] {
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="A.BB.CC", productKey="0x000045"] {
     Channels:
       Type switch : broadcastOnOff#3 [related="AA.BB.DD"]
