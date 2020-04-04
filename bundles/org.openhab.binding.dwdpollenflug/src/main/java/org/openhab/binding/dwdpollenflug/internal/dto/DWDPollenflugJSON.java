@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
+import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,16 +33,58 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DWDPollenflugJSON {
-    public @Nullable String sender;
+    private final static String DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
-    public @Nullable String name;
+    private final static SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
 
-    public @Nullable String next_update;
+    private String sender = EMPTY;
 
-    public @Nullable String last_update;
+    private String name = EMPTY;
 
-    public @Nullable Map<String, String> legend;
+    @SerializedName("next_update")
+    private @Nullable String nextUpdate;
+
+    @SerializedName("last_update")
+    private @Nullable String lastUpdate;
+
+    private @Nullable Map<String, String> legend;
 
     @SerializedName("content")
-    public @Nullable Set<DWDRegionJSON> regions;
+    private @Nullable Set<DWDRegionJSON> regions;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public @Nullable Set<DWDRegionJSON> getRegions() {
+        return regions;
+    }
+
+    public @Nullable Date getNextUpdate() {
+        return parseDate(nextUpdate);
+    }
+
+    public @Nullable Date getLastUpdate() {
+        return parseDate(lastUpdate);
+    }
+
+    private @Nullable Date parseDate(@Nullable String date) {
+        try {
+            if (date == null) {
+                return null;
+            }
+
+            return FORMATTER.parse(date.replace("Uhr", "").trim());
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    public @Nullable Map<String, String> getLegend() {
+        return Collections.unmodifiableMap(legend);
+    }
 }

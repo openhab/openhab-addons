@@ -7,7 +7,15 @@
 	<bridge-type id="bridge">
 		<label>DWD Pollen count index - Bridge</label>
 		<description>Bridge for accessing pollen count index data of the DWD</description>
-		
+			
+		<properties>
+			<property name="sender"/>
+			<property name="name"/>
+			<property name="refreshed"/>
+			<property name="next_update"/>
+			<property name="last_update"/>
+		</properties>
+
 		<config-description>
 			<parameter name="refresh" type="integer" unit="min" min="15">
 				<default>30</default>

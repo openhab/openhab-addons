@@ -15,6 +15,7 @@ package org.openhab.binding.dwdpollenflug.internal.handler;
 import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable DWDPollenflug pollenflug;
+
+    private boolean ignoreConfigurationUpdate;
 
     private final List<DWDPollenflugRegionListener> regionListeners = new CopyOnWriteArrayList<>();
 
@@ -103,6 +106,13 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        if (!ignoreConfigurationUpdate) {
+            super.handleConfigurationUpdate(configurationParameters);
+        }
+    }
+
     public void onBridgeOnline() {
         updateStatus(ThingStatus.ONLINE);
     }
@@ -136,6 +146,10 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     public synchronized void notifyOnUpdate(@Nullable DWDPollenflug newState) {
         pollenflug = newState;
         if (newState != null) {
+            ignoreConfigurationUpdate = true;
+            updateProperties(newState.getProperties());
+            ignoreConfigurationUpdate = false;
+
             for (DWDPollenflugRegionListener regionListener : regionListeners) {
                 regionListener.notifyOnUpdate(newState);
             }

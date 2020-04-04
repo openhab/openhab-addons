@@ -101,6 +101,13 @@ There are the following possible string values:
 | 2-3   | medium to high pollen count |
 | 3     | high pollen count           |
 
+| channel             | description                                               |
+| ------------------- | --------------------------------------------------------- |
+| updates#refreshed   | Hold the time of the bridge's last refresh                |
+| updates#last_update | The time when data was last updated by DWD                |
+| updates#next_update | The time when data will be updated next by DWD            |
+| updates#updated     | Triggers event "REFRESHED" when data was refreshed by DWD |
+
 ## Full Example
 
 ### Things file for region "Brandenburg und Berlin" and partregion "Bayern - Mainfranken" ###
