@@ -67,7 +67,6 @@ public class CRC8 implements Checksum {
      *
      * @param buffer the buffer
      */
-    @Override
     public void update(byte[] buffer) {
         update(buffer, 0, buffer.length);
     }
