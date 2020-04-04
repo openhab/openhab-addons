@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.things;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,9 +46,9 @@ public class VeluxExistingProducts {
 
     // Type definitions, class-internal variables
 
-    private ConcurrentHashMap<String, VeluxProduct> existingProductsByUniqueIndex;
-    private ConcurrentHashMap<Integer, String> bridgeIndexToSerialNumber;
-    private ConcurrentHashMap<String, VeluxProduct> modifiedProductsByUniqueIndex;
+    private Map<String, VeluxProduct> existingProductsByUniqueIndex;
+    private Map<Integer, String> bridgeIndexToSerialNumber;
+    private Map<String, VeluxProduct> modifiedProductsByUniqueIndex;
     private int memberCount;
 
     /*
@@ -59,9 +60,9 @@ public class VeluxExistingProducts {
 
     public VeluxExistingProducts() {
         logger.trace("VeluxExistingProducts(constructor) called.");
-        existingProductsByUniqueIndex = new ConcurrentHashMap<String, VeluxProduct>();
-        bridgeIndexToSerialNumber = new ConcurrentHashMap<Integer, String>();
-        modifiedProductsByUniqueIndex = new ConcurrentHashMap<String, VeluxProduct>();
+        existingProductsByUniqueIndex = new ConcurrentHashMap<>();
+        bridgeIndexToSerialNumber = new ConcurrentHashMap<>();
+        modifiedProductsByUniqueIndex = new ConcurrentHashMap<>();
         memberCount = 0;
         dirty = true;
         logger.trace("VeluxExistingProducts(constructor) done.");
@@ -178,7 +179,7 @@ public class VeluxExistingProducts {
 
     public void resetDirtyFlag() {
         logger.trace("resetDirtyFlag() called.");
-        modifiedProductsByUniqueIndex = new ConcurrentHashMap<String, VeluxProduct>();
+        modifiedProductsByUniqueIndex = new ConcurrentHashMap<>();
         dirty = false;
     }
 

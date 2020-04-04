@@ -69,10 +69,9 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KMDEVICE);
 
-    private final Map<Channel, JsonObject> sendMap = Collections
-            .synchronizedMap(new LinkedHashMap<Channel, JsonObject>());
+    private final Map<Channel, JsonObject> sendMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    private List<KM200GatewayStatusListener> listeners = new CopyOnWriteArrayList<KM200GatewayStatusListener>();
+    private List<KM200GatewayStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * shared instance of HTTP client for (a)synchronous calls
@@ -306,7 +305,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      * Updates bridges properties
      */
     private void updateBridgeProperties() {
-        List<String> propertyServices = new ArrayList<String>();
+        List<String> propertyServices = new ArrayList<>();
         propertyServices.add(KM200ThingType.GATEWAY.getRootPath());
         propertyServices.add(KM200ThingType.SYSTEM.getRootPath());
         Map<String, String> bridgeProperties = editProperties();

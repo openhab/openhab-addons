@@ -68,7 +68,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private final Object synchronizeRefresh = new Object();
 
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
-            .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
+            .synchronizedList(new ArrayList<>());
 
     @Nullable
     ScheduledFuture<?> refreshJob;
@@ -89,7 +89,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("iCloud bridge handler initializing ...");
-        iCloudDeviceInformationCache = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 return connection.requestDeviceStatusJSON();
             } catch (IOException e) {

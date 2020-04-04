@@ -265,7 +265,7 @@ public class LGWebOSTVSocket {
 
         };
 
-        this.requests.put(id, new ServiceSubscription<JsonObject>("dummy", payload, x -> x, dummyListener));
+        this.requests.put(id, new ServiceSubscription<>("dummy", payload, x -> x, dummyListener));
         sendMessage(packet);
     }
 

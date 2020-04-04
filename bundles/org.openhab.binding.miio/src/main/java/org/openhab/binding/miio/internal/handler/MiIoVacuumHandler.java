@@ -65,7 +65,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing, miIoDatabaseWatchService);
         initializeData();
-        status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.GET_STATUS);
                 if (ret != 0) {
@@ -76,7 +76,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        consumables = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.CONSUMABLES_GET);
                 if (ret != 0) {
@@ -87,7 +87,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        dnd = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        dnd = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.DND_GET);
                 if (ret != 0) {
@@ -98,7 +98,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        history = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        history = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.CLEAN_SUMMARY_GET);
                 if (ret != 0) {

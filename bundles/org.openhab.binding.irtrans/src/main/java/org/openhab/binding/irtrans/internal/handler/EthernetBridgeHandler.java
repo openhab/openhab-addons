@@ -49,8 +49,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
-import org.openhab.binding.irtrans.internal.IrCommand;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
+import org.openhab.binding.irtrans.internal.IrCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +102,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
      * configuration files. Command loading from pre-defined configuration files is not supported
      * (anymore), but the code is maintained in case this functionality is re-added in the future
      **/
-    protected final Collection<IrCommand> irCommands = new HashSet<IrCommand>();
+    protected final Collection<IrCommand> irCommands = new HashSet<>();
 
     public EthernetBridgeHandler(Bridge bridge) {
         super(bridge);

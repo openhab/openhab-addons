@@ -158,7 +158,7 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     }
 
     protected <U extends Quantity<U>> State getAsQuantityTypeOrNull(@Nullable Number value, Unit<U> unit) {
-        return value == null ? UnDefType.NULL : new QuantityType<U>(value, unit);
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
     protected State getAsStringTypeOrNull(@Nullable Object value) {

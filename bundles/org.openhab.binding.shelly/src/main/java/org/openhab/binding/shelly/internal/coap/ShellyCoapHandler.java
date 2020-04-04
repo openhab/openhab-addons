@@ -77,8 +77,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
     private int lastSerial = -1;
     private String lastPayload = "";
-    private Map<String, CoIotDescrBlk> blockMap = new HashMap<String, CoIotDescrBlk>();
-    private Map<String, CoIotDescrSen> sensorMap = new HashMap<String, CoIotDescrSen>();
+    private Map<String, CoIotDescrBlk> blockMap = new HashMap<>();
+    private Map<String, CoIotDescrSen> sensorMap = new HashMap<>();
 
     public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
             @Nullable ShellyCoapServer coapServer) {
@@ -330,7 +330,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Parse Json,
         CoIotGenericSensorList list = gson.fromJson(payload, CoIotGenericSensorList.class);
         Validate.notNull(list, "sensor list must not be empty!");
-        Map<String, State> updates = new HashMap<String, State>();
+        Map<String, State> updates = new HashMap<>();
 
         if (list.generic == null) {
             logger.debug("{}: Sensor list is empty! Payload: {}", devId, payload);

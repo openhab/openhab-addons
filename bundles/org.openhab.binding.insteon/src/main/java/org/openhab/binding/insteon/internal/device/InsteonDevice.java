@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
@@ -26,8 +27,8 @@ import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureGroup;
 import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.message.FieldException;
-import org.openhab.binding.insteon.internal.message.Msg;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
+import org.openhab.binding.insteon.internal.message.Msg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,7 +268,7 @@ public class InsteonDevice {
      */
     public void doPoll(long delay) {
         long now = System.currentTimeMillis();
-        ArrayList<QEntry> l = new ArrayList<QEntry>();
+        List<QEntry> l = new ArrayList<>();
         synchronized (features) {
             int spacing = 0;
             for (DeviceFeature i : features.values()) {
@@ -343,7 +344,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, InvalidMessageTypeException {
+    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2)
+            throws FieldException, InvalidMessageTypeException {
         return (makeStandardMessage(flags, cmd1, cmd2, -1));
     }
 
@@ -358,7 +360,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group) throws FieldException, InvalidMessageTypeException {
+    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group)
+            throws FieldException, InvalidMessageTypeException {
         Msg m = Msg.makeMessage("SendStandardMessage");
         InsteonAddress addr = null;
         byte f = flags;
@@ -394,7 +397,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, InvalidMessageTypeException {
+    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2)
+            throws FieldException, InvalidMessageTypeException {
         return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {});
     }
 
@@ -409,7 +413,8 @@ public class InsteonDevice {
      * @throws FieldException
      * @throws IOException
      */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data) throws FieldException, InvalidMessageTypeException {
+    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data)
+            throws FieldException, InvalidMessageTypeException {
         Msg m = Msg.makeMessage("SendExtendedMessage");
         m.setAddress("toAddress", getAddress());
         m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));

@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -101,12 +103,12 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
      * A HashMap which saves all the 'channel-acceppted_item_type' pairs.
      * It is set before all the tests.
      */
-    private static HashMap<String, String> acceptedItemTypes;
+    private static Map<String, String> acceptedItemTypes;
 
     /**
      * ArrayList of channels which is used to initialize a radioThing in the test cases.
      */
-    private final ArrayList<Channel> channels = new ArrayList<Channel>();
+    private final List<Channel> channels = new ArrayList<>();
 
     private FSInternetRadioHandler radioHandler;
     private Thing radioThing;
@@ -753,7 +755,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     }
 
     private static void setTheChannelsMap() {
-        acceptedItemTypes = new HashMap<String, String>();
+        acceptedItemTypes = new HashMap<>();
         acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_POWER, "Switch");
         acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_MODE, "Number");
         acceptedItemTypes.put(FSInternetRadioBindingConstants.CHANNEL_MUTE, "Switch");

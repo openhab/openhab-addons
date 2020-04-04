@@ -53,7 +53,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
 
     private final Logger logger = LoggerFactory.getLogger(TellstickDiscoveryService.class);
 
-    private List<TelldusBridgeHandler> telldusBridgeHandlers = new Vector<TelldusBridgeHandler>();
+    private List<TelldusBridgeHandler> telldusBridgeHandlers = new Vector<>();
 
     public TellstickDiscoveryService(TelldusBridgeHandler telldusBridgeHandler) {
         super(TellstickBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10, true);

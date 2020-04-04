@@ -30,7 +30,7 @@ public class RioBank {
     /**
      * The Bank Name
      */
-    private final AtomicReference<String> name = new AtomicReference<String>(null);
+    private final AtomicReference<String> name = new AtomicReference<>(null);
 
     /**
      * Create the object from the given ID (using the default name of "Bank" + id)

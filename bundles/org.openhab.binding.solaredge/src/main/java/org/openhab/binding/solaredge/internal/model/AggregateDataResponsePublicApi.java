@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Energy;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -98,8 +97,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies production data to the result map
      *
-     * @param meter    - meter raw data
-     * @param valueMap - target structure
+     * @param meter meter raw data
+     * @param valueMap target structure
      */
     private final void fillProductionData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
@@ -129,8 +128,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies consumption data to the result map
      *
-     * @param meter    - meter raw data
-     * @param valueMap - target structure
+     * @param meter meter raw data
+     * @param valueMap target structure
      */
     private final void fillConsumptionData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
@@ -160,8 +159,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies self-consumption data to the result map
      *
-     * @param meter    - meter raw data
-     * @param valueMap - target structure
+     * @param meter meter raw data
+     * @param valueMap target structure
      */
     private final void fillSelfConsumptionData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
@@ -193,8 +192,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies import data to the result map
      *
-     * @param meter    - meter raw data
-     * @param valueMap - target structure
+     * @param meter meter raw data
+     * @param valueMap target structure
      */
     private final void fillImportData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
@@ -224,8 +223,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * copies export data to the result map
      *
-     * @param meter    - meter raw data
-     * @param valueMap - target structure
+     * @param meter meter raw data
+     * @param valueMap target structure
      */
     private final void fillExportData(MeterTelemetries meter, Map<Channel, State> valueMap) {
         switch (getEnergyDetails().timeUnit) {
@@ -255,7 +254,7 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * calculates the self consumption coverage
      *
-     * @param valueMap - target structure
+     * @param valueMap target structure
      */
     private final void fillSelfConsumptionCoverage(Map<Channel, State> valueMap) {
         State selfConsumption = null;
@@ -293,8 +292,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
      * unit can be determined UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param values    one or more meter values
+     * @param channel channel to assign the value
+     * @param values one or more meter values
      */
     protected final void assignValue(Map<Channel, State> targetMap, Channel channel, MeterTelemetry... values) {
         double sum = 0.0;
@@ -309,7 +308,7 @@ public class AggregateDataResponsePublicApi implements DataResponse {
         if (energyDetails != null && energyDetails.unit != null) {
             Unit<Energy> unit = determineEnergyUnit(energyDetails.unit);
             if (unit != null) {
-                result = new QuantityType<Energy>(sum, unit);
+                result = new QuantityType<>(sum, unit);
             } else {
                 logger.debug("Channel {}: Could not determine unit: '{}'", channel.getFQName(), energyDetails.unit);
             }
@@ -323,8 +322,8 @@ public class AggregateDataResponsePublicApi implements DataResponse {
     /**
      * calculates percentage and assigns it to the corresponding channel and puts it into the targetmap
      *
-     * @param targetMap      result will be put into this map
-     * @param channel        channel to assign the value
+     * @param targetMap result will be put into this map
+     * @param channel channel to assign the value
      * @param dividendString
      * @param divisorString
      */
@@ -348,7 +347,7 @@ public class AggregateDataResponsePublicApi implements DataResponse {
         }
 
         if (percent >= 0.0) {
-            result = new QuantityType<Dimensionless>(percent, SmartHomeUnits.PERCENT);
+            result = new QuantityType<>(percent, SmartHomeUnits.PERCENT);
         } else {
             logger.debug("Channel {}: Could not calculate percent.", channel.getFQName());
         }

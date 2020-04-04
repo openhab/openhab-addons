@@ -100,7 +100,7 @@ public class CloudClient {
     /*
      * This hashmap holds HTTP requests to local openHAB which are currently running
      */
-    private HashMap<Integer, Request> runningRequests;
+    private Map<Integer, Request> runningRequests;
 
     /*
      * This variable indicates if connection to the openHAB Cloud is currently in an established state
@@ -147,7 +147,7 @@ public class CloudClient {
         this.localBaseUrl = localBaseUrl;
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
-        runningRequests = new HashMap<Integer, Request>();
+        runningRequests = new HashMap<>();
         this.jettyClient = httpClient;
     }
 

@@ -438,7 +438,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
         String query = String.format(soapQuery, timeoutInSeconds);
         String response = sendSoapQuery(null, query, getTimeout() + timeoutInSeconds * 1000);
-        List<WSResourceValue> resourceValueList = new ArrayList<WSResourceValue>();
+        List<WSResourceValue> resourceValueList = new ArrayList<>();
 
         try {
             NodeList nodeList = XPathUtils.parseList(response,
