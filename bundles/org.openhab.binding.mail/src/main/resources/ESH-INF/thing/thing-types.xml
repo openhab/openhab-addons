@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="mail"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="smtp">
@@ -23,8 +24,8 @@
 				<label>SMTP Server Security Protocol</label>
 				<options>
 					<option value="PLAIN">plain</option>
-                    <option value="STARTTLS">STARTTLS</option>
-                    <option value="SSL">SSL/TLS</option>
+					<option value="STARTTLS">STARTTLS</option>
+					<option value="SSL">SSL/TLS</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
@@ -54,7 +55,7 @@
 				<label>SMTP Server Security Protocol</label>
 				<options>
 					<option value="PLAIN">plain</option>
-                    <option value="STARTTLS">STARTTLS</option>
+					<option value="STARTTLS">STARTTLS</option>
 					<option value="SSL">SSL/TLS</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
@@ -89,8 +90,8 @@
 				<label>SMTP Server Security Protocol</label>
 				<options>
 					<option value="PLAIN">plain</option>
-                    <option value="STARTTLS">STARTTLS</option>
-                    <option value="SSL">SSL/TLS</option>
+					<option value="STARTTLS">STARTTLS</option>
+					<option value="SSL">SSL/TLS</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
@@ -113,7 +114,7 @@
 		<item-type>Number</item-type>
 		<label>Mail Count</label>
 		<description>Number of mails in folder</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="folder" type="text" required="true">
 				<label>Folder Name</label>
