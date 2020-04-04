@@ -98,6 +98,24 @@
             </parameter>
         </config-description>
 
+    </thing-type>
+    
+    <thing-type id="motion-detector">
+        <label>Motion Detector</label>
+        <description>Bosch Motion Detector</description>
+
+        <channels>
+            <channel id="latest-motion" typeId="latest-motion" />
+        </channels>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>Device ID</label>
+                <description>Device ID of the contact</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+
     </thing-type>  
 
     <!-- https://www.eclipse.org/smarthome/documentation/concepts/items.html -->
@@ -171,6 +189,12 @@
        <item-type>Contact</item-type>
        <label>Window/Door contact</label>
        <description>A Bosch window and door contact.</description>   
+    </channel-type>
+    
+    <channel-type id="latest-motion">
+       <item-type>DateTime</item-type>
+       <label>Latest motion</label>
+       <description>Timestamp of the latest motion.</description>   
     </channel-type>
     
 </thing:thing-descriptions>
