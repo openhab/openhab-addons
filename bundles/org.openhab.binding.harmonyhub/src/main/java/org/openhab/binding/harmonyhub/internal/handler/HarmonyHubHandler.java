@@ -314,7 +314,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         }
     }
 
-    private void updateActivityStatus(@Nullable Activity activity, Activity.@Nullable Status status) {
+    private void updateActivityStatus(@Nullable Activity activity, @Nullable Status status) {
         if (activity == null) {
             logger.debug("Cannot update activity status of {} with activity that is null", getThing().getUID());
             return;

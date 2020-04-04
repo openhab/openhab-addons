@@ -68,7 +68,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private final Object synchronizeRefresh = new Object();
 
     private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
-            .synchronizedList(new ArrayList<ICloudDeviceInformationListener>());
+            .synchronizedList(new ArrayList<>());
 
     @Nullable
     ScheduledFuture<?> refreshJob;
@@ -89,7 +89,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("iCloud bridge handler initializing ...");
-        iCloudDeviceInformationCache = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 return connection.requestDeviceStatusJSON();
             } catch (IOException e) {
@@ -117,7 +117,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     public void findMyDevice(String deviceId) throws IOException {
-        if(connection == null) {
+        if (connection == null) {
             logger.debug("Can't send Find My Device request, because connection is null!");
             return;
         }
@@ -136,13 +136,13 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         try {
             logger.debug("iCloud bridge starting handler ...");
             ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-            final String appleId = config.appleId;
-            final String password = config.password;
-            if(appleId != null || password != null) {
-                connection = new ICloudConnection(appleId, password);
-            }
-            else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Apple ID/Password is not set!");
+            final String localAppleId = config.appleId;
+            final String localPassword = config.password;
+            if (localAppleId != null && localPassword != null) {
+                connection = new ICloudConnection(localAppleId, localPassword);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Apple ID/Password is not set!");
                 return;
             }
             refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes, MINUTES);
@@ -167,7 +167,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
             try {
                 ICloudAccountDataResponse iCloudData = deviceInformationParser.parse(json);
-                if(iCloudData == null) {
+                if (iCloudData == null) {
                     return;
                 }
                 int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());

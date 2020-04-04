@@ -30,30 +30,30 @@ public class SeneyeBindingConstants {
     public static final String BINDING_ID = "seneye";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SENEYE = new ThingTypeUID(BINDING_ID, "monitor");
+    public static final ThingTypeUID THING_TYPE_SENEYE = new ThingTypeUID(BINDING_ID, "monitor");
 
     // List of all Channel ids
-    public final static String CHANNEL_TEMPERATURE = "temperature";
-    public final static String CHANNEL_PH = "ph";
-    public final static String CHANNEL_NH3 = "nh3";
-    public final static String CHANNEL_NH4 = "nh4";
-    public final static String CHANNEL_O2 = "O2";
-    public final static String CHANNEL_LUX = "lux";
-    public final static String CHANNEL_PAR = "par";
-    public final static String CHANNEL_KELVIN = "kelvin";
-    public final static String CHANNEL_LASTREADING = "lastreading";
-    public final static String CHANNEL_SLIDEEXPIRES = "slideexpires";
-    public final static String CHANNEL_WRONGSLIDE = "wrongslide";
-    public final static String CHANNEL_SLIDESERIAL = "slideserial";
-    public final static String CHANNEL_OUTOFWATER = "outofwater";
-    public final static String CHANNEL_DISCONNECTED = "disconnected";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_PH = "ph";
+    public static final String CHANNEL_NH3 = "nh3";
+    public static final String CHANNEL_NH4 = "nh4";
+    public static final String CHANNEL_O2 = "O2";
+    public static final String CHANNEL_LUX = "lux";
+    public static final String CHANNEL_PAR = "par";
+    public static final String CHANNEL_KELVIN = "kelvin";
+    public static final String CHANNEL_LASTREADING = "lastreading";
+    public static final String CHANNEL_SLIDEEXPIRES = "slideexpires";
+    public static final String CHANNEL_WRONGSLIDE = "wrongslide";
+    public static final String CHANNEL_SLIDESERIAL = "slideserial";
+    public static final String CHANNEL_OUTOFWATER = "outofwater";
+    public static final String CHANNEL_DISCONNECTED = "disconnected";
 
     // List of all Parameters
-    public final static String PARAMETER_AQUARIUMNAME = "aquariumname";
-    public final static String PARAMETER_USERNAME = "username";
-    public final static String PARAMETER_PASSWORD = "password";
-    public final static String PARAMETER_POLLTIME = "polltime";
+    public static final String PARAMETER_AQUARIUMNAME = "aquariumname";
+    public static final String PARAMETER_USERNAME = "username";
+    public static final String PARAMETER_PASSWORD = "password";
+    public static final String PARAMETER_POLLTIME = "polltime";
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SENEYE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SENEYE);
 
 }

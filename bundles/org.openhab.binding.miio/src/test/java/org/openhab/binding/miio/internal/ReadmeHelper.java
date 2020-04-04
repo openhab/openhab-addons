@@ -181,7 +181,7 @@ public class ReadmeHelper {
     }
 
     private List<MiIoBasicDevice> findDatabaseEntrys() {
-        List<MiIoBasicDevice> arrayList = new ArrayList<MiIoBasicDevice>();
+        List<MiIoBasicDevice> arrayList = new ArrayList<>();
         String path = "./src/main/resources/database/";
         File dir = new File(path);
         File[] filesList = dir.listFiles();
@@ -192,7 +192,9 @@ public class ReadmeHelper {
                     Gson gson = new GsonBuilder().serializeNulls().create();
                     @Nullable
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    arrayList.add(devdb);
+                    if (devdb != null) {
+                        arrayList.add(devdb);
+                    }
                 } catch (Exception e) {
                     LOGGER.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
                     LOGGER.info(e.getMessage());

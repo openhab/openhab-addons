@@ -64,8 +64,8 @@ final class BridgeChannels {
      * @return <b>channelUIDs</B> of type {@link Set} of {@link ChannelUID}s.
      */
     static Set<ChannelUID> getAllChannelUIDs(ExtendedBaseBridgeHandler bridge) {
-        Set<ChannelUID> channelUIDs = new HashSet<ChannelUID>();
-        Set<Thing> things = new HashSet<Thing>(bridge.getThing().getThings());
+        Set<ChannelUID> channelUIDs = new HashSet<>();
+        Set<Thing> things = new HashSet<>(bridge.getThing().getThings());
         things.add(bridge.getThing());
         for (Thing thing : things) {
             for (Channel channel : thing.getChannels()) {
@@ -85,8 +85,8 @@ final class BridgeChannels {
      * @return <b>channelUIDs</B> of type {@link Set} of {@link ChannelUID}s.
      */
     static Set<ChannelUID> getAllLinkedChannelUIDs(ExtendedBaseBridgeHandler bridge) {
-        Set<ChannelUID> channelUIDs = new HashSet<ChannelUID>();
-        Set<Thing> things = new HashSet<Thing>(bridge.getThing().getThings());
+        Set<ChannelUID> channelUIDs = new HashSet<>();
+        Set<Thing> things = new HashSet<>(bridge.getThing().getThings());
         things.add(bridge.getThing());
         for (Thing thing : things) {
             for (Channel channel : thing.getChannels()) {

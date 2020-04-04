@@ -1,0 +1,18 @@
+{
+    "status": "success",
+    "result": {
+        "status": "Success",
+        "reason": "UserRequest",
+        "acState": {
+            "on": true,
+            "fanLevel": "medium_high",
+            "temperatureUnit": "C",
+            "targetTemperature": 21,
+            "mode": "heat",
+            "swing": "rangeFull"
+        },
+        "changedProperties": [],
+        "id": "RESULTID",
+        "failureReason": null
+    }
+}

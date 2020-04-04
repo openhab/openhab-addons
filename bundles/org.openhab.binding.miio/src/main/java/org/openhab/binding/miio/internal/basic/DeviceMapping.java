@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miio.internal.MiIoCommand;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.openhab.binding.miio.internal.MiIoCommand;
 
 /**
  * Mapping devices from json
@@ -31,10 +31,10 @@ public class DeviceMapping {
 
     @SerializedName("id")
     @Expose
-    private List<String> id = new ArrayList<String>();
+    private List<String> id = new ArrayList<>();
     @SerializedName("channels")
     @Expose
-    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
     @SerializedName("propertyMethod")
     @Expose
     private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();
@@ -73,5 +73,4 @@ public class DeviceMapping {
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
     }
-
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,9 +46,9 @@ public class DeviceFeatureListener {
 
     private String itemName;
     private ChannelUID channelUID;
-    private HashMap<String, @Nullable String> parameters = new HashMap<>();
-    private HashMap<Class<?>, @Nullable State> state = new HashMap<>();
-    private ArrayList<InsteonAddress> relatedDevices = new ArrayList<>();
+    private Map<String, @Nullable String> parameters = new HashMap<>();
+    private Map<Class<?>, @Nullable State> state = new HashMap<>();
+    private List<InsteonAddress> relatedDevices = new ArrayList<>();
     private InsteonBinding binding;
     private static final int TIME_DELAY_POLL_RELATED_MSEC = 5000;
 
@@ -89,7 +91,7 @@ public class DeviceFeatureListener {
      *
      * @param p the parameters to set
      */
-    public void setParameters(HashMap<String, @Nullable String> p) {
+    public void setParameters(Map<String, @Nullable String> p) {
         parameters = p;
         updateRelatedDevices();
     }
@@ -176,7 +178,7 @@ public class DeviceFeatureListener {
      * polls all devices that are related to this item
      * by the "related" keyword
      */
-    private void pollRelatedDevices() {
+    public void pollRelatedDevices() {
         for (InsteonAddress a : relatedDevices) {
             logger.debug("polling related device {} in {} ms", a, TIME_DELAY_POLL_RELATED_MSEC);
             InsteonDevice d = binding.getDevice(a);

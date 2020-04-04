@@ -33,7 +33,6 @@ import org.openhab.binding.plclogo.internal.handler.PLCDigitalHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCMemoryHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCPulseHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link PLCLogoHandlerFactory} is responsible for creating things and

@@ -60,6 +60,11 @@ public class ValloxMVWebSocket {
     private final URI destUri;
     private ValloxMVWebSocketListener socket;
 
+    private int iBoostTime;
+    private OnOffType ooBoostTimerEnabled;
+    private int iFireplaceTime;
+    private OnOffType ooFireplaceTimerEnabled;
+
     private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
 
     public ValloxMVWebSocket(WebSocketClient webSocketClient, ValloxMVHandler voHandler, String ip) {
@@ -103,6 +108,7 @@ public class ValloxMVWebSocket {
         private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocketListener.class);
         private final String updateState;
         private ChannelUID channelUID;
+        private int iValloxCmd;
 
         public ValloxMVWebSocketListener(ChannelUID channelUID, String updateState) {
             this.updateState = updateState;
@@ -112,7 +118,7 @@ public class ValloxMVWebSocket {
         @OnWebSocketConnect
         public void onConnect(Session session) {
             try {
-                logger.debug("Connect: {}", session.getRemoteAddress().getAddress());
+                logger.debug("Connected to: {}", session.getRemoteAddress().getAddress());
                 ByteBuffer buf = generateRequest();
                 session.getRemote().sendBytes(buf);
             } catch (IOException e) {
@@ -124,20 +130,20 @@ public class ValloxMVWebSocket {
          * Method to generate ByteBuffer request to be sent to vallox online websocket
          * to request or set data
          *
-         * @param mode         246 for data request, 249 for setting data
+         * @param mode 246 for data request, 249 for setting data
          * @param hmParameters HashMap for setting data with register as key and value as value
          * @return ByteBuffer to be sent to websocket
          */
         public ByteBuffer generateCustomRequest(Integer mode, Map<Integer, Integer> hmParameters) {
             // If we just want data the format is different so its just hardcoded here
             if (mode == 246) {
-                // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
+                // requestData (Length 3, Command to get data 246, 0, checksum [sum of everything before])
                 return ByteBuffer.wrap(new byte[] { 3, 0, (byte) 246, 0, 0, 0, (byte) 249, 0 });
             }
 
-            int numberParameters = (hmParameters.size() + 1) * 2; // Parameters + Checksum
+            int numberParameters = (hmParameters.size() * 2) + 2; // Parameters (key + value) + Mode + Checksum
             int checksum = numberParameters;
-            // Allocate for Content incl. Checksum + Length
+            // Allocate for bytebuffer incl. Length
             ByteBuffer bb = ByteBuffer.allocate((numberParameters + 1) * 2)
                     .put(convertIntegerIntoByteBuffer(numberParameters));
 
@@ -151,6 +157,13 @@ public class ValloxMVWebSocket {
                 checksum += i.getKey() + i.getValue();
             }
 
+            // We have to make sure that checksum is within the range
+            // Checksum may hold larger value than 65535 from the above loop
+            // We will never reach integer max value in the loop so it is ok to do this after the loop
+            // This is not needed if we make sure that conversion to bytes will take care of it
+            // bitwise AND inside convertIntegerIntoByteBuffer() takes care of this
+            // checksum = checksum & 0xffff;
+
             bb.put(convertIntegerIntoByteBuffer(checksum));
             bb.position(0);
             return bb;
@@ -158,64 +171,152 @@ public class ValloxMVWebSocket {
 
         // Convert Integer to ByteBuffer in Little-endian
         public ByteBuffer convertIntegerIntoByteBuffer(Integer i) {
-            byte b1 = (byte) (i % 256);
-            byte b2 = (byte) ((i - i % 256) / 256);
-
+            // Use bitwise operators to extract two rightmost bytes from the integer
+            byte b1 = (byte) (i & 0xff); // Rightmost byte
+            byte b2 = (byte) ((i >> 8) & 0xff); // Second rightmost byte
             return ByteBuffer.wrap(new byte[] { b1, b2 });
         }
 
         public ByteBuffer generateRequest() {
-            if (updateState == null || channelUID == null) {
+            if ((updateState == null) || (channelUID == null)) {
                 // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
-                return generateCustomRequest(246, new HashMap<Integer, Integer>());
+                iValloxCmd = 246;
+                return generateCustomRequest(246, new HashMap<>());
             }
+            String strChannelUIDid = channelUID.getId();
+            int iUpdateState = Integer.parseInt(updateState);
             Map<Integer, Integer> request = new HashMap<>();
-            if (ValloxMVBindingConstants.CHANNEL_STATE.equals(channelUID.getId())) {
-                if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_FIREPLACE) {
-                    // 15 Min fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
-                    // CYC_FIREPLACE_TIMER
-                    // (4613) = 15, checksum)
-                    request.put(4612, 0);
-                    request.put(4613, 15);
-                } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_ATHOME) {
-                    // At Home (Length 8, Command to set data 249, CYC_STATE (4609) = 0, CYC_BOOST_TIMER (4612) = 0,
-                    // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
-                    request.put(4609, 0);
-                    request.put(4612, 0);
-                    request.put(4613, 0);
-                } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_AWAY) {
-                    // Away (Length 8, Command to set data 249, CYC_STATE (4609) = 1, CYC_BOOST_TIMER (4612) = 0,
-                    // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
-                    request.put(4609, 1);
-                    request.put(4612, 0);
-                    request.put(4613, 0);
-                } else if (Integer.parseInt(updateState) == ValloxMVBindingConstants.STATE_BOOST) {
-                    // 30 Min boost (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 30, CYC_FIREPLACE_TIMER
-                    // (4613) = 0, checksum)
-                    request.put(4612, 30);
-                    request.put(4613, 0);
-                }
-            } else if (ValloxMVBindingConstants.CHANNEL_ONOFF.equals(channelUID.getId())) {
-                request.put(4610, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                request.put(20485, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                request.put(20486, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
-                request.put(20507, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING.equals(channelUID.getId())) {
-                request.put(20501, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING.equals(channelUID.getId())) {
-                request.put(20513, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20508, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20502, Integer.parseInt(updateState));
-            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET.equals(channelUID.getId())) {
-                request.put(20514, Integer.parseInt(updateState));
-            } else {
-                return null;
+            switch (strChannelUIDid) {
+                case ValloxMVBindingConstants.CHANNEL_STATE:
+                    switch (iUpdateState) {
+                        case ValloxMVBindingConstants.STATE_FIREPLACE:
+                            // Fireplace (Length 6, Command to set data 249, CYC_BOOST_TIMER (4612) = 0,
+                            // CYC_FIREPLACE_TIMER (4613) = value from CYC_FIREPLACE_TIME, checksum)
+                            // CYC_FIREPLACE_TIME is read during READ_TABLES and stored into outer class variable
+                            if (iFireplaceTime < 1) {
+                                // use 15 minutes in case not initialized (should never happen)
+                                iFireplaceTime = 15;
+                            }
+                            if (OnOffType.ON.equals(ooFireplaceTimerEnabled)) {
+                                logger.debug("Changing to Fireplace profile, timer {} minutes", iFireplaceTime);
+                            } else {
+                                logger.debug("Changing to Fireplace profile, timer not enabled");
+                            }
+                            request.put(4612, 0);
+                            request.put(4613, iFireplaceTime);
+                            break;
+                        case ValloxMVBindingConstants.STATE_ATHOME:
+                            // At Home (Length 8, Command to set data 249, CYC_STATE (4609) = 0,
+                            // CYC_BOOST_TIMER (4612) = 0, CYC_FIREPLACE_TIMER (4613) = 0, checksum)
+                            logger.debug("Changing to At Home profile");
+                            request.put(4609, 0);
+                            request.put(4612, 0);
+                            request.put(4613, 0);
+                            break;
+                        case ValloxMVBindingConstants.STATE_AWAY:
+                            // Away (Length 8, Command to set data 249, CYC_STATE (4609) = 1,
+                            // CYC_BOOST_TIMER (4612) = 0, CYC_FIREPLACE_TIMER (4613) = 0, checksum)
+                            logger.debug("Changing to Away profile");
+                            request.put(4609, 1);
+                            request.put(4612, 0);
+                            request.put(4613, 0);
+                            break;
+                        case ValloxMVBindingConstants.STATE_BOOST:
+                            // Boost (Length 6, Command to set data 249,
+                            // CYC_BOOST_TIMER (4612) = value from CYC_BOOST_TIME,
+                            // CYC_FIREPLACE_TIMER (4613) = 0, checksum)
+                            // CYC_BOOST_TIME is read during READ_TABLES and stored into outer class variable
+                            if (iBoostTime < 1) {
+                                // use 30 minutes in case not initialized (should never happen)
+                                iBoostTime = 30;
+                            }
+                            if (OnOffType.ON.equals(ooBoostTimerEnabled)) {
+                                logger.debug("Changing to Boost profile, timer {} minutes", iBoostTime);
+                            } else {
+                                logger.debug("Changing to Boost profile, timer not enabled");
+                            }
+                            request.put(4612, iBoostTime);
+                            request.put(4613, 0);
+                            break;
+                        default:
+                            // This should never happen. Let's get back to basic profile.
+                            // Clearing boost and fireplace timers.
+                            logger.debug("Incorrect profile requested, changing back to basic profile");
+                            request.put(4612, 0);
+                            request.put(4613, 0);
+                    }
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_ONOFF:
+                    request.put(4610, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE:
+                    request.put(20485, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE:
+                    request.put(20486, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING:
+                    request.put(20507, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING:
+                    request.put(20501, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING:
+                    request.put(20513, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET:
+                    request.put(20508, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET:
+                    request.put(20502, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET:
+                    request.put(20514, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_BOOST_TIME:
+                    iBoostTime = iUpdateState;
+                    request.put(20544, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED:
+                    ooBoostTimerEnabled = OnOffType.from(Integer.toString(iUpdateState));
+                    request.put(21766, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN:
+                    request.put(20487, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN:
+                    request.put(20488, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME:
+                    iFireplaceTime = iUpdateState;
+                    request.put(20545, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED:
+                    ooFireplaceTimerEnabled = OnOffType.from(Integer.toString(iUpdateState));
+                    request.put(21767, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET:
+                    request.put(20493, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN:
+                    request.put(20494, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN:
+                    request.put(20495, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_EXTRA_TIME:
+                    request.put(20496, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED:
+                    request.put(21772, iUpdateState);
+                    break;
+                case ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED:
+                    request.put(4615, iUpdateState);
+                    break;
+                default:
+                    return null;
             }
+            iValloxCmd = 249;
             return generateCustomRequest(249, request);
         }
 
@@ -247,57 +348,124 @@ public class ValloxMVWebSocket {
 
                 byte[] bytes = buffer.toByteArray();
 
-                logger.debug("Response length: {}", bytes.length);
-
-                // neglect non data responses
-                if (updateState != null) {
-                    if ((bytes[2] & 0xFF) == 245) {
-                        logger.debug("State successfully updated to {} ", updateState);
-                    } else {
-                        logger.debug("State could not be updated");
-                    }
+                if ((bytes.length > 5) && (bytes.length % 2 == 0)) {
+                    logger.debug("Response length: {} bytes", bytes.length);
+                } else {
+                    logger.debug("Response corrupted, length: {} bytes", bytes.length);
                     return;
                 }
 
-                logger.debug("Fan Speed: {}", (bytes[129] & 0xFF));
+                int iDataLength = bytes.length / 2;
 
-                int iFanspeed = getNumber(bytes, 128);
-                int iFanspeedExtract = getNumber(bytes, 144);
-                int iFanspeedSupply = getNumber(bytes, 146);
+                // Verify responses to requests
+                if ((iValloxCmd == 249) || (iValloxCmd == 250)) {
+                    // COMMAND_WRITE_DATA (249) or COMMAND_READ_DATA (250)
+                    int iChecksum = 0;
+                    int[] arriData = new int[iDataLength];
+                    for (int i = 0; i < iDataLength; i++) {
+                        arriData[i] = getNumberLE(bytes, (i * 2));
+                    }
+                    for (int i = 0; i < (iDataLength - 1); i++) {
+                        iChecksum += arriData[i];
+                    }
+                    iChecksum &= 0xffff;
+                    if ((arriData[0] != (iDataLength - 1)) || (arriData[iDataLength - 1] != iChecksum)) {
+                        // Data length or Checksum do not match
+                        logger.debug("Response corrupted, Data length or Checksum do not match");
+                        return;
+                    }
+                    // COMMAND_WRITE_DATA (249)
+                    if (iValloxCmd == 249) {
+                        String strChannelUIDid = channelUID.getId();
+                        if (arriData[1] == 245) {
+                            // ACK
+                            logger.debug("Channel {} successfully updated to {}", strChannelUIDid, updateState);
+                        } else {
+                            logger.debug("Channel {} could not be updated", strChannelUIDid);
+                        }
+                        return;
+                    }
+                    // COMMAND_READ_DATA (250)
+                    /* Read data command is not implemented, response check is ready for future implementation
+                    // @formatter:off
+                    if ((((iDataLength - 1) % 2) != 0) || (iDataLength < 5)) {
+                        logger.debug("Response corrupted, data length is wrong");
+                        return;
+                    }
+                    // number of data pairs (address, value) = (iDataLength - 3) / 2
+                    // First data pair (address, value) is in positions 2 and 3
+                    // (address, value) pairs could be put into array or hashmap
+                    // @formatter:on
+                    */
+                    logger.debug("Vallox command {} not implemented", iValloxCmd);
+                    return;
+                } else if (iValloxCmd == 246) {
+                    // COMMAND_READ_TABLES (246)
+                    if (iDataLength > 704) {
+                        logger.debug("Data table response with {} values, updating to channels", iDataLength);
+                    } else {
+                        logger.debug("Response corrupted, data table response not complete");
+                        return;
+                    }
+                } else {
+                    logger.debug("Vallox command {} not implemented", iValloxCmd);
+                    return;
+                }
+
+                // COMMAND_READ_TABLES (246)
+                // Read values from received tables
+                int iFanspeed = getNumberBE(bytes, 128);
+                int iFanspeedExtract = getNumberBE(bytes, 144);
+                int iFanspeedSupply = getNumberBE(bytes, 146);
                 BigDecimal bdTempInside = getTemperature(bytes, 130);
                 BigDecimal bdTempExhaust = getTemperature(bytes, 132);
                 BigDecimal bdTempOutside = getTemperature(bytes, 134);
                 BigDecimal bdTempIncomingBeforeHeating = getTemperature(bytes, 136);
                 BigDecimal bdTempIncoming = getTemperature(bytes, 138);
-                int iHumidity = getNumber(bytes, 166);
+                int iHumidity = getNumberBE(bytes, 166);
 
-                int iStateOrig = getNumber(bytes, 214);
-                int iBoostTimer = getNumber(bytes, 220);
-                int iFireplaceTimer = getNumber(bytes, 222);
+                int iStateOrig = getNumberBE(bytes, 214);
+                int iBoostTimer = getNumberBE(bytes, 220);
+                int iFireplaceTimer = getNumberBE(bytes, 222);
 
-                int iCellstate = getNumber(bytes, 228);
-                int iUptimeYears = getNumber(bytes, 230);
-                int iUptimeHours = getNumber(bytes, 232);
-                int iUptimeHoursCurrent = getNumber(bytes, 234);
+                int iCellstate = getNumberBE(bytes, 228);
+                int iUptimeYears = getNumberBE(bytes, 230);
+                int iUptimeHours = getNumberBE(bytes, 232);
+                int iUptimeHoursCurrent = getNumberBE(bytes, 234);
 
-                int iRemainingTimeForFilter = getNumber(bytes, 236);
-                int iFilterChangedDateDay = getNumber(bytes, 496);
-                int iFilterChangedDateMonth = getNumber(bytes, 498);
-                int iFilterChangedDateYear = getNumber(bytes, 500);
+                int iRemainingTimeForFilter = getNumberBE(bytes, 236);
+                int iFilterChangedDateDay = getNumberBE(bytes, 496);
+                int iFilterChangedDateMonth = getNumberBE(bytes, 498);
+                int iFilterChangedDateYear = getNumberBE(bytes, 500);
 
                 Calendar cFilterChangedDate = Calendar.getInstance();
                 cFilterChangedDate.set(iFilterChangedDateYear + 2000,
                         iFilterChangedDateMonth - 1 /* Month is 0-based */, iFilterChangedDateDay, 0, 0, 0);
 
-                int iExtrFanBalanceBase = getNumber(bytes, 374);
-                int iSuppFanBalanceBase = getNumber(bytes, 376);
+                int iExtrFanBalanceBase = getNumberBE(bytes, 374);
+                int iSuppFanBalanceBase = getNumberBE(bytes, 376);
 
-                int iHomeSpeedSetting = getNumber(bytes, 418);
-                int iAwaySpeedSetting = getNumber(bytes, 406);
-                int iBoostSpeedSetting = getNumber(bytes, 430);
+                int iHomeSpeedSetting = getNumberBE(bytes, 418);
+                int iAwaySpeedSetting = getNumberBE(bytes, 406);
+                int iBoostSpeedSetting = getNumberBE(bytes, 430);
                 BigDecimal bdHomeAirTempTarget = getTemperature(bytes, 420);
                 BigDecimal bdAwayAirTempTarget = getTemperature(bytes, 408);
                 BigDecimal bdBoostAirTempTarget = getTemperature(bytes, 432);
+
+                // Using outer class variable for boost time and timer enabled
+                iBoostTime = getNumberBE(bytes, 492);
+                ooBoostTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 528)));
+                int iFireplaceExtrFan = getNumberBE(bytes, 378);
+                int iFireplaceSuppFan = getNumberBE(bytes, 380);
+                // Using outer class variable for fireplace time and timer enabled
+                iFireplaceTime = getNumberBE(bytes, 494);
+                ooFireplaceTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 530)));
+                BigDecimal bdExtraAirTempTarget = getTemperature(bytes, 390);
+                int iExtraExtrFan = getNumberBE(bytes, 392);
+                int iExtraSuppFan = getNumberBE(bytes, 394);
+                int iExtraTime = getNumberBE(bytes, 396);
+                OnOffType ooExtraTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 540)));
+                OnOffType ooWeeklyTimerEnabled = OnOffType.from(Integer.toString(getNumberBE(bytes, 226)));
 
                 BigDecimal bdState;
                 if (iFireplaceTimer > 0) {
@@ -310,14 +478,10 @@ public class ValloxMVWebSocket {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_ATHOME);
                 }
 
-                OnOffType onoff;
-                if (bytes[217] != 5) {
-                    onoff = OnOffType.ON;
-                } else {
-                    onoff = OnOffType.OFF;
-                }
+                OnOffType ooOnOff = OnOffType.from(bytes[217] != 5);
 
-                updateChannel(ValloxMVBindingConstants.CHANNEL_ONOFF, onoff);
+                // Update channels with read values
+                updateChannel(ValloxMVBindingConstants.CHANNEL_ONOFF, ooOnOff);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_STATE, new DecimalType(bdState));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED,
                         new QuantityType<>(iFanspeed, SmartHomeUnits.PERCENT));
@@ -360,35 +524,57 @@ public class ValloxMVWebSocket {
                         new QuantityType<>(bdAwayAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET,
                         new QuantityType<>(bdBoostAirTempTarget, SIUnits.CELSIUS));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIME, new DecimalType(iBoostTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_TIMER_ENABLED, ooBoostTimerEnabled);
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_EXTR_FAN,
+                        new QuantityType<>(iFireplaceExtrFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_SUPP_FAN,
+                        new QuantityType<>(iFireplaceSuppFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIME, new DecimalType(iFireplaceTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FIREPLACE_TIMER_ENABLED, ooFireplaceTimerEnabled);
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_AIR_TEMP_TARGET,
+                        new QuantityType<>(bdExtraAirTempTarget, SIUnits.CELSIUS));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_EXTR_FAN,
+                        new QuantityType<>(iExtraExtrFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_SUPP_FAN,
+                        new QuantityType<>(iExtraSuppFan, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_TIME, new DecimalType(iExtraTime));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_EXTRA_TIMER_ENABLED, ooExtraTimerEnabled);
+                updateChannel(ValloxMVBindingConstants.CHANNEL_WEEKLY_TIMER_ENABLED, ooWeeklyTimerEnabled);
 
                 voHandler.updateStatus(ThingStatus.ONLINE);
-                voHandler.dataUpdated();
+                logger.debug("Data updated successfully");
+
             } catch (IOException e) {
                 connectionError(e);
             }
-            logger.debug("Data updated successfully");
         }
 
         private void updateChannel(String strChannelName, State state) {
             voHandler.updateState(strChannelName, state);
         }
 
-        private int getNumber(byte[] bytes, int pos) {
-            return (bytes[pos] & 0xff) * 256 + (bytes[pos + 1] & 0xff);
+        private int getNumberBE(byte[] bytes, int pos) {
+            return ((bytes[pos] & 0xff) << 8) | (bytes[pos + 1] & 0xff);
+        }
+
+        private int getNumberLE(byte[] bytes, int pos) {
+            return (bytes[pos] & 0xff) | ((bytes[pos + 1] & 0xff) << 8);
         }
 
         @SuppressWarnings("null")
         private BigDecimal getTemperature(byte[] bytes, int pos) {
-            // Fetch 2 byte number out of bytearray representing the temperature in milli degree kelvin
-            BigDecimal bdTemperatureMiliKelvin = new BigDecimal(getNumber(bytes, pos));
-            // Return number converted to degree celsius
-            return (new QuantityType<>(bdTemperatureMiliKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
+            // Fetch 2 byte number out of bytearray representing the temperature in centiKelvin
+            BigDecimal bdTemperatureCentiKelvin = new BigDecimal(getNumberBE(bytes, pos));
+            // Return number converted to degree celsius (= (centiKelvin - 27315) / 100 )
+            return (new QuantityType<>(bdTemperatureCentiKelvin, MetricPrefix.CENTI(SmartHomeUnits.KELVIN))
                     .toUnit(SIUnits.CELSIUS)).toBigDecimal();
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
             logger.debug("WebSocket Closed. Code: {}; Reason: {}", statusCode, reason);
+            this.closeLatch.countDown();
         }
 
         public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {

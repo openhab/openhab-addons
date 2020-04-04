@@ -40,7 +40,7 @@ public class KM200ErrorServiceHandler {
     private final List<Map<String, String>> errorMap;
 
     public KM200ErrorServiceHandler() {
-        errorMap = new ArrayList<Map<String, String>>();
+        errorMap = new ArrayList<>();
     }
 
     /**
@@ -64,7 +64,7 @@ public class KM200ErrorServiceHandler {
             JsonArray sPoints = nodeRoot.get("values").getAsJsonArray();
             for (int i = 0; i < sPoints.size(); i++) {
                 JsonObject subJSON = sPoints.get(i).getAsJsonObject();
-                Map<String, String> valMap = new HashMap<String, String>();
+                Map<String, String> valMap = new HashMap<>();
                 Set<Map.Entry<String, JsonElement>> oMap = subJSON.entrySet();
                 oMap.forEach(item -> {
                     logger.debug("Set: {} val: {}", item.getKey(), item.getValue().getAsString());

@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,7 +72,7 @@ public class DeviceFeature {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceFeature.class);
 
-    private static HashMap<String, FeatureTemplate> features = new HashMap<String, FeatureTemplate>();
+    private static Map<String, FeatureTemplate> features = new HashMap<>();
 
     private InsteonDevice device = new InsteonDevice();
     private String name = "INVALID_FEATURE_NAME";
@@ -83,10 +85,10 @@ public class DeviceFeature {
     private @Nullable PollHandler pollHandler = null;
     private @Nullable MessageDispatcher dispatcher = null;
 
-    private HashMap<Integer, @Nullable MessageHandler> msgHandlers = new HashMap<>();
-    private HashMap<Class<? extends Command>, @Nullable CommandHandler> commandHandlers = new HashMap<>();
-    private ArrayList<DeviceFeatureListener> listeners = new ArrayList<>();
-    private ArrayList<DeviceFeature> connectedFeatures = new ArrayList<>();
+    private Map<Integer, @Nullable MessageHandler> msgHandlers = new HashMap<>();
+    private Map<Class<? extends Command>, @Nullable CommandHandler> commandHandlers = new HashMap<>();
+    private List<DeviceFeatureListener> listeners = new ArrayList<>();
+    private List<DeviceFeature> connectedFeatures = new ArrayList<>();
 
     /**
      * Constructor
@@ -137,11 +139,11 @@ public class DeviceFeature {
         return defaultMsgHandler;
     }
 
-    public HashMap<Integer, @Nullable MessageHandler> getMsgHandlers() {
+    public Map<Integer, @Nullable MessageHandler> getMsgHandlers() {
         return this.msgHandlers;
     }
 
-    public ArrayList<DeviceFeature> getConnectedFeatures() {
+    public List<DeviceFeature> getConnectedFeatures() {
         return (connectedFeatures);
     }
 
@@ -334,6 +336,17 @@ public class DeviceFeature {
     }
 
     /**
+     * Poll all device feature listeners for related devices
+     */
+    public void pollRelatedDevices() {
+        synchronized (listeners) {
+            for (DeviceFeatureListener listener : listeners) {
+                listener.pollRelatedDevices();
+            }
+        }
+    }
+
+    /**
      * Adds a message handler to this device feature.
      *
      * @param cm1 The insteon cmd1 of the incoming message for which the handler should be used
@@ -391,7 +404,7 @@ public class DeviceFeature {
      */
     public static void readFeatureTemplates(InputStream input) {
         try {
-            ArrayList<FeatureTemplate> featureTemplates = FeatureTemplateLoader.readTemplates(input);
+            List<FeatureTemplate> featureTemplates = FeatureTemplateLoader.readTemplates(input);
             synchronized (features) {
                 for (FeatureTemplate f : featureTemplates) {
                     features.put(f.getName(), f);

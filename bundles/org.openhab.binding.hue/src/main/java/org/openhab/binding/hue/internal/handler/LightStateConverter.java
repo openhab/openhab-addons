@@ -206,7 +206,12 @@ public class LightStateConverter {
      * @return string type representing the alert mode.
      */
     public static StringType toAlertStringType(State lightState) {
-        return new StringType(lightState.getAlertMode().toString());
+        AlertMode alertMode = lightState.getAlertMode();
+        if (alertMode == null) {
+            return new StringType("NULL");
+        } else {
+            return new StringType(alertMode.toString());
+        }
     }
 
     /**

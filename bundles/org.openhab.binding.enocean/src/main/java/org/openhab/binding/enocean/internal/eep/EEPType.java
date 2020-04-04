@@ -470,8 +470,8 @@ public enum EEPType {
 
     private ThingTypeUID thingTypeUID;
 
-    private Hashtable<String, Configuration> channelIdsWithConfig = new Hashtable<String, Configuration>();
-    private Hashtable<String, EnOceanChannelDescription> supportedChannels = new Hashtable<String, EnOceanChannelDescription>();
+    private Hashtable<String, Configuration> channelIdsWithConfig = new Hashtable<>();
+    private Hashtable<String, EnOceanChannelDescription> supportedChannels = new Hashtable<>();
 
     private boolean supportsRefresh;
 

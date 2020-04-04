@@ -115,8 +115,8 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerAppDiscoveryService(final LaMetricTimeHandler deviceHandler) {
         logger.debug("Registering app discovery service");
         LaMetricTimeAppDiscoveryService discoveryService = new LaMetricTimeAppDiscoveryService(deviceHandler);
-        discoveryServiceReg.put(deviceHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceReg.put(deviceHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     /**

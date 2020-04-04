@@ -13,8 +13,8 @@
 package org.openhab.binding.insteon.internal.device;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -144,9 +144,9 @@ public class ModemDBBuilder implements MsgListener, Runnable {
     private void logModemDB() {
         try {
             logger.debug("MDB ------- start of modem link records ------------------");
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             for (Entry<InsteonAddress, @Nullable ModemDBEntry> db : dbes.entrySet()) {
-                ArrayList<Msg> lrs = db.getValue().getLinkRecords();
+                List<Msg> lrs = db.getValue().getLinkRecords();
                 for (Msg m : lrs) {
                     int recordFlags = m.getByte("RecordFlags") & 0xff;
                     String ms = ((recordFlags & (0x1 << 6)) != 0) ? "CTRL" : "RESP";
@@ -170,7 +170,7 @@ public class ModemDBBuilder implements MsgListener, Runnable {
 
     public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m) {
         try {
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             ModemDBEntry dbe = dbes.get(linkAddr);
             if (dbe == null) {
                 dbe = new ModemDBEntry(linkAddr);

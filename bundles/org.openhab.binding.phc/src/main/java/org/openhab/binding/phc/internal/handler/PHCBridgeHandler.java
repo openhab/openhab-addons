@@ -74,13 +74,13 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     byte[] messageFragment;
     RXTXPort serialPort;
 
-    private final Map<String, Boolean> toggleMap = new HashMap<String, Boolean>();
-    private final ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<Long, QueueObject>();
+    private final Map<String, Boolean> toggleMap = new HashMap<>();
+    private final ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<>();
 
     private final byte emLedOutputState[] = new byte[32];
     private final byte amOutputState[] = new byte[32];
 
-    private final List<Byte> modules = new ArrayList<Byte>();
+    private final List<Byte> modules = new ArrayList<>();
 
     public PHCBridgeHandler(Bridge phcBridge) {
         super(phcBridge);
@@ -189,8 +189,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      * @param buffer
      */
     private void processInputStream(byte[] buffer) {
-        List<Byte> result = new ArrayList<Byte>();
-        List<String> repeat = new ArrayList<String>();
+        List<Byte> result = new ArrayList<>();
+        List<String> repeat = new ArrayList<>();
         int pos = 0;
         messageFragment = null;
         Byte moduleAddress = null;

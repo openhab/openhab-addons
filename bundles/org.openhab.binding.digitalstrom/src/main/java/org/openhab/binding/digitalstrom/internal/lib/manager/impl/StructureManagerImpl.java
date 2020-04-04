@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
+import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.AbstractGeneralDeviceInformations;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
@@ -75,11 +76,11 @@ public class StructureManagerImpl implements StructureManager {
      */
     public static final String ZONE_GROUP_NAMES = "/apartment/zones/*(ZoneID,name)/groups/*(group,name)";
 
-    private final Map<Integer, HashMap<Short, List<Device>>> zoneGroupDeviceMap = Collections
-            .synchronizedMap(new HashMap<Integer, HashMap<Short, List<Device>>>());
-    private final Map<DSID, Device> deviceMap = Collections.synchronizedMap(new HashMap<DSID, Device>());
-    private final Map<DSID, Circuit> circuitMap = Collections.synchronizedMap(new HashMap<DSID, Circuit>());
-    private final Map<String, DSID> dSUIDToDSIDMap = Collections.synchronizedMap(new HashMap<String, DSID>());
+    private final Map<Integer, Map<Short, List<Device>>> zoneGroupDeviceMap = Collections
+            .synchronizedMap(new HashMap<>());
+    private final Map<DSID, Device> deviceMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<DSID, Circuit> circuitMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, DSID> dSUIDToDSIDMap = Collections.synchronizedMap(new HashMap<>());
 
     private Map<Integer, ZoneGroupsNameAndIDMap> zoneGroupIdNameMap;
     private Map<String, ZoneGroupsNameAndIDMap> zoneGroupNameIdMap;
@@ -118,8 +119,8 @@ public class StructureManagerImpl implements StructureManager {
         if (resultJsonObj != null && resultJsonObj.get("zones") instanceof JsonArray) {
             JsonArray zones = (JsonArray) resultJsonObj.get("zones");
             if (zoneGroupIdNameMap == null) {
-                zoneGroupIdNameMap = new HashMap<Integer, ZoneGroupsNameAndIDMap>(zones.size());
-                zoneGroupNameIdMap = new HashMap<String, ZoneGroupsNameAndIDMap>(zones.size());
+                zoneGroupIdNameMap = new HashMap<>(zones.size());
+                zoneGroupNameIdMap = new HashMap<>(zones.size());
             }
             if (zones != null) {
                 for (int i = 0; i < zones.size(); i++) {
@@ -172,7 +173,7 @@ public class StructureManagerImpl implements StructureManager {
 
     @Override
     public boolean checkZoneGroupID(int zoneID, short groupID) {
-        final HashMap<Short, List<Device>> tmp = getGroupsFromZoneX(zoneID);
+        final Map<Short, List<Device>> tmp = getGroupsFromZoneX(zoneID);
         return tmp != null ? tmp.get(groupID) != null : false;
     }
 
@@ -187,7 +188,7 @@ public class StructureManagerImpl implements StructureManager {
 
     @Override
     public Map<DSID, Device> getDeviceMap() {
-        return new HashMap<DSID, Device>(deviceMap);
+        return new HashMap<>(deviceMap);
     }
 
     private void putDeviceToHashMap(Device device) {
@@ -205,7 +206,7 @@ public class StructureManagerImpl implements StructureManager {
      * <b>Note:</b> the zone id 0 is the broadcast address and the group id 0, too.
      */
     private void handleStructure(List<Device> deviceList) {
-        HashMap<Short, List<Device>> groupXHashMap = new HashMap<Short, List<Device>>();
+        Map<Short, List<Device>> groupXHashMap = new HashMap<>();
         groupXHashMap.put((short) 0, deviceList);
 
         zoneGroupDeviceMap.put(0, groupXHashMap);
@@ -221,18 +222,18 @@ public class StructureManagerImpl implements StructureManager {
     }
 
     @Override
-    public Map<Integer, HashMap<Short, List<Device>>> getStructureReference() {
+    public Map<Integer, Map<Short, List<Device>>> getStructureReference() {
         return zoneGroupDeviceMap;
     }
 
     @Override
-    public HashMap<Short, List<Device>> getGroupsFromZoneX(int zoneID) {
+    public Map<Short, List<Device>> getGroupsFromZoneX(int zoneID) {
         return zoneGroupDeviceMap.get(zoneID);
     }
 
     @Override
     public List<Device> getReferenceDeviceListFromZoneXGroupX(int zoneID, short groupID) {
-        final HashMap<Short, List<Device>> tmp = getGroupsFromZoneX(zoneID);
+        final Map<Short, List<Device>> tmp = getGroupsFromZoneX(zoneID);
         return tmp != null ? tmp.get(groupID) : null;
     }
 
@@ -336,14 +337,14 @@ public class StructureManagerImpl implements StructureManager {
     }
 
     private void addDevicetoZoneXGroupX(int zoneID, short groupID, Device device) {
-        HashMap<Short, List<Device>> groupXHashMap = zoneGroupDeviceMap.get(zoneID);
+        Map<Short, List<Device>> groupXHashMap = zoneGroupDeviceMap.get(zoneID);
         if (groupXHashMap == null) {
-            groupXHashMap = new HashMap<Short, List<Device>>();
+            groupXHashMap = new HashMap<>();
             zoneGroupDeviceMap.put(zoneID, groupXHashMap);
         }
         List<Device> groupDeviceList = groupXHashMap.get(groupID);
         if (groupDeviceList == null) {
-            groupDeviceList = new LinkedList<Device>();
+            groupDeviceList = new LinkedList<>();
             groupDeviceList.add(device);
             groupXHashMap.put(groupID, groupDeviceList);
         } else {
@@ -419,6 +420,6 @@ public class StructureManagerImpl implements StructureManager {
 
     @Override
     public Map<DSID, Circuit> getCircuitMap() {
-        return new HashMap<DSID, Circuit>(circuitMap);
+        return new HashMap<>(circuitMap);
     }
 }

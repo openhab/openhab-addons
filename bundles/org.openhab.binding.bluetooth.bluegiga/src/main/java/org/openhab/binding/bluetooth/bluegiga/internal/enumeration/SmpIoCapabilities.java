@@ -68,7 +68,7 @@ public enum SmpIoCapabilities {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, SmpIoCapabilities>();
+        codeMapping = new HashMap<>();
         for (SmpIoCapabilities s : values()) {
             codeMapping.put(s.key, s);
         }

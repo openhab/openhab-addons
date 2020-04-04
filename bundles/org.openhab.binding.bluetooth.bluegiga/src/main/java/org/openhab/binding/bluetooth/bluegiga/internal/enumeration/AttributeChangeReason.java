@@ -62,7 +62,7 @@ public enum AttributeChangeReason {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, AttributeChangeReason>();
+        codeMapping = new HashMap<>();
         for (AttributeChangeReason s : values()) {
             codeMapping.put(s.key, s);
         }

@@ -404,7 +404,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private ArrayList<IhcEnumValue> getEnumValues(WSResourceValue value) {
+    private List<IhcEnumValue> getEnumValues(WSResourceValue value) {
         if (value instanceof WSEnumValue) {
             return enumDictionary.getEnumValues(((WSEnumValue) value).definitionTypeID);
         }

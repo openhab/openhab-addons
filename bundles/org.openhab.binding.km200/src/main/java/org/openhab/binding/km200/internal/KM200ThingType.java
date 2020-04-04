@@ -28,7 +28,7 @@ public enum KM200ThingType {
     GATEWAY("/gateway", KM200BindingConstants.THING_TYPE_GATEWAY) {
         @Override
         public List<String> asBridgeProperties() {
-            List<String> asProperties = new ArrayList<String>();
+            List<String> asProperties = new ArrayList<>();
             asProperties.add("versionFirmware");
             asProperties.add("instAccess");
             asProperties.add("versionHardware");
@@ -42,7 +42,7 @@ public enum KM200ThingType {
     DHWCIRCUIT("/dhwCircuits", KM200BindingConstants.THING_TYPE_DHW_CIRCUIT) {
         @Override
         public List<String> ignoreSubService() {
-            List<String> subServices = new ArrayList<String>();
+            List<String> subServices = new ArrayList<>();
             subServices.add("switchPrograms");
             return subServices;
         }
@@ -56,7 +56,7 @@ public enum KM200ThingType {
     HEATINGCIRCUIT("/heatingCircuits", KM200BindingConstants.THING_TYPE_HEATING_CIRCUIT) {
         @Override
         public List<String> ignoreSubService() {
-            List<String> subServices = new ArrayList<String>();
+            List<String> subServices = new ArrayList<>();
             subServices.add("switchPrograms");
             return subServices;
         }
@@ -87,7 +87,7 @@ public enum KM200ThingType {
     SYSTEM("/system", KM200BindingConstants.THING_TYPE_SYSTEM) {
         @Override
         public List<String> ignoreSubService() {
-            List<String> subServices = new ArrayList<String>();
+            List<String> subServices = new ArrayList<>();
             subServices.add("sensors");
             subServices.add("appliance");
             subServices.add("holidayModes");
@@ -96,7 +96,7 @@ public enum KM200ThingType {
 
         @Override
         public List<String> asBridgeProperties() {
-            List<String> asProperties = new ArrayList<String>();
+            List<String> asProperties = new ArrayList<>();
             asProperties.add("bus");
             asProperties.add("systemType");
             asProperties.add("brand");

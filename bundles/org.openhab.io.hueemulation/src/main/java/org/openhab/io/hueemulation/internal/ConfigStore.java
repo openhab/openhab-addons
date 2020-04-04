@@ -12,7 +12,6 @@
  */
 package org.openhab.io.hueemulation.internal;
 
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -255,10 +254,9 @@ public class ConfigStore {
     private String getConfiguredHostAddress(InetAddress configuredAddress) {
         String hostAddress = configuredAddress.getHostAddress();
         int percentIndex = hostAddress.indexOf("%");
-        if(percentIndex != -1){
+        if (percentIndex != -1) {
             return hostAddress.substring(0, percentIndex);
-        }
-        else{
+        } else {
             return hostAddress;
         }
     }

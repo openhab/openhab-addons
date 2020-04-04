@@ -245,6 +245,12 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                         state.setZone3Mute(zoneSecondary.getMute().getValue());
                         state.setZone3Input(zoneSecondary.getInputFuncSelect().getValue());
                         break;
+                    case 4:
+                        state.setZone4Power(zoneSecondary.getPower().getValue());
+                        state.setZone4Volume(zoneSecondary.getMasterVolume().getValue());
+                        state.setZone4Mute(zoneSecondary.getMute().getValue());
+                        state.setZone4Input(zoneSecondary.getInputFuncSelect().getValue());
+                        break;
                 }
             }
         }

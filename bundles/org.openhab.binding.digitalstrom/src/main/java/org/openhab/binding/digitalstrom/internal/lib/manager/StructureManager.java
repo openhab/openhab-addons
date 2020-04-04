@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.manager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,12 +93,12 @@ public interface StructureManager {
     Map<DSID, Device> getDeviceHashMapReference();
 
     /**
-     * Returns the reference of the structure as {@link Map}[zoneID, {@link HashMap}[groupID,
+     * Returns the reference of the structure as {@link Map}[zoneID, {@link Map}[groupID,
      * {@link List}[{@link Device}]]].
      *
      * @return structure reference
      */
-    Map<Integer, HashMap<Short, List<Device>>> getStructureReference();
+    Map<Integer, Map<Short, List<Device>>> getStructureReference();
 
     /**
      * Returns the Map of all groups as format HashMap[Short, List[Device]].
@@ -107,7 +106,7 @@ public interface StructureManager {
      * @param zoneID of the zone
      * @return groups
      */
-    HashMap<Short, List<Device>> getGroupsFromZoneX(int zoneID);
+    Map<Short, List<Device>> getGroupsFromZoneX(int zoneID);
 
     /**
      * Returns the reference {@link List} of the {@link Device}'s of an zone-group.

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,29 +23,31 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoDeviceAction {
 
     @SerializedName("command")
     @Expose
-    private String command;
+    private @Nullable String command;
     @SerializedName("parameterType")
     @Expose
-    private CommandParameterType commandParameterType;
+    private CommandParameterType commandParameterType = CommandParameterType.EMPTY;
     @SerializedName("preCommandParameter1")
     @Expose
-    private String preCommandParameter1;
+    private @Nullable String preCommandParameter1;
     @SerializedName("parameter1")
     @Expose
-    private String parameter1;
+    private @Nullable String parameter1;
     @SerializedName("parameter2")
     @Expose
-    private String parameter2;
+    private @Nullable String parameter2;
     @SerializedName("parameter3")
     @Expose
-    private String parameter3;
+    private @Nullable String parameter3;
 
     public String getCommand() {
-        return command;
+        final @Nullable String command = this.command;
+        return command != null ? command : "";
     }
 
     public void setCommand(String command) {
@@ -61,7 +66,7 @@ public class MiIoDeviceAction {
         this.commandParameterType = org.openhab.binding.miio.internal.basic.CommandParameterType.fromString(type);
     }
 
-    public String getPreCommandParameter1() {
+    public @Nullable String getPreCommandParameter1() {
         return preCommandParameter1;
     }
 
@@ -69,7 +74,7 @@ public class MiIoDeviceAction {
         this.preCommandParameter1 = preCommandParameter1;
     }
 
-    public String getParameter1() {
+    public @Nullable String getParameter1() {
         return parameter1;
     }
 
@@ -77,7 +82,7 @@ public class MiIoDeviceAction {
         this.parameter1 = parameter1;
     }
 
-    public String getParameter2() {
+    public @Nullable String getParameter2() {
         return parameter2;
     }
 
@@ -85,7 +90,7 @@ public class MiIoDeviceAction {
         this.parameter1 = parameter2;
     }
 
-    public String getParameter3() {
+    public @Nullable String getParameter3() {
         return parameter3;
     }
 

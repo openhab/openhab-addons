@@ -20,8 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -107,7 +105,7 @@ public class Atd100Handler extends WirelessChannelsHandler {
     public void incomingEvent(ZoneTemperatureEvent event) {
         logger.trace("Handling incoming event: {}", event);
         if (event.getZoneNbr() == getThingConfig().getId()) {
-            updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(event.getTemperature(), SIUnits.CELSIUS));
+            updateState(CHANNEL_TEMPERATURE, new QuantityType<>(event.getTemperature(), SIUnits.CELSIUS));
         }
     }
 
