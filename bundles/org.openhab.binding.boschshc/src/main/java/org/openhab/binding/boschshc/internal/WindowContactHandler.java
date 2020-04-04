@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,31 +58,31 @@ public class WindowContactHandler extends BoschSHCHandler {
             BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
             if (bridgeHandler != null) {
-
-                // XXX - Add refresh command.
+                if (command instanceof RefreshType && CHANNEL_CONTACT.equals(channelUID.getId())) {
+                    updateShutterContactState(
+                            bridgeHandler.refreshState(getThing(), "ShutterContact", ShutterContactState.class));
+                }
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge or config is NUL");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge or config is null");
         }
+    }
+
+    void updateShutterContactState(ShutterContactState state) {
+        State contact = state.value.equals("CLOSED") ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        updateState(CHANNEL_CONTACT, contact);
+
+        logger.debug("Parsed shutter contact state state of {}: {}", this.getBoschID(), state.value);
     }
 
     @Override
     public void processUpdate(String id, JsonElement state) {
-        logger.warn("Twinguard: received update: {} {}", id, state);
-
-        Gson gson = new Gson();
-
+        logger.debug("WindowContact: received update: {} {}", id, state);
         try {
-            ShutterContactState parsed = gson.fromJson(state, ShutterContactState.class);
-
-            State contact = parsed.value.equals("CLOSED") ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-            updateState(CHANNEL_CONTACT, contact);
-
-            // Update power switch
-            logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed.value);
-
+            Gson gson = new Gson();
+            updateShutterContactState(gson.fromJson(state, ShutterContactState.class));
         } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in in-wall switch: {}", state);
+            logger.warn("Received unknown update in window contact handler: {}", state);
         }
     }
 

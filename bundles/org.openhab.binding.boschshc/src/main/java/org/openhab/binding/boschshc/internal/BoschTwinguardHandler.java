@@ -60,19 +60,29 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
 
             if (bridgeHandler != null) {
 
-                if (CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
-                    if (command instanceof RefreshType) {
+                if (command instanceof RefreshType && CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
 
-                        // Refresh the temperature from the Bosch Twinguard device.
-                        // Might not be necessary, can just wait until we get one
-                        logger.warn("Refreshing the temperature is not yet supported.");
-                    }
-                    // Otherwise: not action supported here.
+                    // Only refresh the state for CHANNEL_TEMPERATURE, the rest will be filled in too.
+                    TwinguardState state = bridgeHandler.refreshState(getThing(), "AirQualityLevel",
+                            TwinguardState.class);
+                    updateAirQualityState(state);
                 }
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge or config is NUL");
         }
+    }
+
+    void updateAirQualityState(TwinguardState state) {
+
+        updateState(CHANNEL_TEMPERATURE, new DecimalType(state.temperature));
+        updateState(CHANNEL_TEMPERATURE_RATING, new StringType(state.temperatureRating));
+        updateState(CHANNEL_HUMIDITY, new DecimalType(state.humidity));
+        updateState(CHANNEL_HUMIDITY_RATING, new StringType(state.humidityRating));
+        updateState(CHANNEL_PURITY, new DecimalType(state.purity));
+        updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
+        updateState(CHANNEL_PURITY_RATING, new StringType(state.purityRating));
+        updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));
     }
 
     @Override
@@ -85,15 +95,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
             TwinguardState parsed = gson.fromJson(state, TwinguardState.class);
 
             logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed);
-
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(parsed.temperature));
-            updateState(CHANNEL_TEMPERATURE_RATING, new StringType(parsed.temperatureRating));
-            updateState(CHANNEL_HUMIDITY, new DecimalType(parsed.humidity));
-            updateState(CHANNEL_HUMIDITY_RATING, new StringType(parsed.humidityRating));
-            updateState(CHANNEL_PURITY, new DecimalType(parsed.purity));
-            updateState(CHANNEL_AIR_DESCRIPTION, new StringType(parsed.description));
-            updateState(CHANNEL_PURITY_RATING, new StringType(parsed.purityRating));
-            updateState(CHANNEL_COMBINED_RATING, new StringType(parsed.combinedRating));
+            updateAirQualityState(parsed);
 
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in in-wall switch: {}", state);

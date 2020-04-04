@@ -623,11 +623,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private BoschSHCBridgeConfiguration config;
 
     /**
-     * Query the Bosch Smart Home Controller for the current power switch state.
+     * Query the Bosch Smart Home Controller for the state of the given thing.
      *
-     * @param thing The thing to query the device state for
+     * @param thing Thing to query the device state for
+     * @param stateName Name of the state to query
+     * @param classOfT Class to convert the resulting JSON to
      */
-    public PowerSwitchState refreshSwitchState(@NonNull Thing thing) {
+
+    public <T extends Object> T refreshState(@NonNull Thing thing, String stateName, Class<T> classOfT) {
 
         BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
 
@@ -637,29 +640,31 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
 
                 String boschID = handler.getBoschID();
-                logger.debug("Requesting state update from Bosch: {} via {}", boschID, config.ipAddress);
+                String url = "https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID + "/services/"
+                        + stateName + "/state";
+
+                logger.warn("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, boschID, url);
 
                 // GET request
                 // ----------------------------------------------------------------------------------
 
-                // TODO: PowerSwitch is hard-coded
-                contentResponse = this.httpClient
-                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID
-                                + ")/services/PowerSwitch/state")
-                        .header("Content-Type", "application/json").header("Accept", "application/json")
-                        .header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
+                // TODO: Gateway ID is hard-coded!
+                contentResponse = this.httpClient.newRequest(url).header("Content-Type", "application/json")
+                        .header("Accept", "application/json").header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET)
+                        .send();
 
                 String content = contentResponse.getContentAsString();
-                logger.info("Refresh switch state request complete: [{}] - return code: {}", content,
+                logger.warn("refreshState: Request complete: [{}] - return code: {}", content,
                         contentResponse.getStatus());
 
+                // TODO Perhaps we should have only one single gson builder per thing?
                 Gson gson = new GsonBuilder().create();
 
-                PowerSwitchState state = gson.fromJson(content, PowerSwitchState.class);
+                T state = gson.fromJson(content, classOfT);
                 return state;
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
+                logger.warn("refreshState: HTTP request failed: {}", e);
             }
         }
 
@@ -667,7 +672,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     }
 
     /*
-     * {{shc_api}}/devices/{{device_id}}/services/PowerSwitch/state
+     * TODO: The only place from which we currently send updates is the PowerSwitch, might have to extend this over time
+     * if we want to enable the alarm system etc.
      */
     public void updateSwitchState(@NonNull Thing thing, String command) {
 
