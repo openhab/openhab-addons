@@ -38,6 +38,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -124,7 +125,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         if ((currentConfiguration.username == null && currentConfiguration.password != null)
                 || (currentConfiguration.username != null && currentConfiguration.password == null)) {
             logger.warn("Only one of username and password was set. This is invalid.");
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -136,7 +137,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn(
                     "The URI '{}' for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
                     currentConfiguration.url, e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -180,7 +181,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         @Nullable
         ICalendarConfiguration syncConfiguration = configuration;
         if (syncConfiguration == null) {
-            logger.warn("Configuration not instantiated!");
+            logger.debug("Configuration not instantiated!");
             return;
         }
         // loop through all events in the list

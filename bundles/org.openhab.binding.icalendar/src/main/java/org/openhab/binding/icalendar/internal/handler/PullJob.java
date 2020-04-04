@@ -116,7 +116,9 @@ class PullJob implements Runnable {
         if (responseLength != null) {
             try {
                 if (Integer.parseInt(responseLength) > maxSize) {
-                    logger.warn("Calendar is too big ({} bytes), aborting request", responseLength);
+                    logger.warn(
+                            "Calendar is too big ({} bytes > {} bytes), aborting request. You may change the maximum calendar size in configuration, if appropriate.",
+                            responseLength, maxSize);
                     response.abort(new ResponseTooBigException());
                     return;
                 }
@@ -143,7 +145,9 @@ class PullJob implements Runnable {
             while ((currentReadBytes = httpInputStream.read(buffer)) > -1) {
                 readBytesTotal += currentReadBytes;
                 if (readBytesTotal > maxSize) {
-                    logger.warn("Calendar is too big (> {} bytes). Stopping receiving calendar.", maxSize);
+                    logger.warn(
+                            "Calendar is too big (> {} bytes). Stopping receiving calendar. You may change the maximum calendar size in configuration, if appropriate.",
+                            maxSize);
                     response.abort(new ResponseTooBigException());
                     return;
                 }
