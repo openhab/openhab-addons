@@ -113,6 +113,9 @@ public enum MiIoDevices {
     ROBOROCK_VACUUM_C1("roborock.vacuum.c1", "roborock.vacuum.c1", THING_TYPE_UNSUPPORTED),
     SWEEPER2("roborock.sweeper.e2v2", "Rockrobo Xiaowa Sweeper v2", THING_TYPE_UNSUPPORTED),
     SWEEPER3("roborock.sweeper.e2v3", "Rockrobo Xiaowa Sweeper v3", THING_TYPE_UNSUPPORTED),
+    SWITCH01("090615.switch.xswitch01", " Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch", THING_TYPE_BASIC),
+    SWITCH02("090615.switch.xswitch02", " Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch", THING_TYPE_BASIC),
+    SWITCH03("090615.switch.xswitch03", " Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch", THING_TYPE_BASIC),
     WATER_PURIFIER2("yunmi.waterpuri.v2", "Mi Water Purifier v2", THING_TYPE_BASIC),
     WATER_PURIFIERLX2("yunmi.waterpuri.lx2", "Mi Water Purifier lx2", THING_TYPE_BASIC),
     WATER_PURIFIERLX3("yunmi.waterpuri.lx3", "Mi Water Purifier lx3", THING_TYPE_BASIC),
@@ -133,7 +136,11 @@ public enum MiIoDevices {
     YEELIGHT_CEIL6("yeelink.light.ceiling6", "Yeelight LED Ceiling Lamp v6", THING_TYPE_BASIC),
     YEELIGHT_CEIL7("yeelink.light.ceiling7", "Yeelight LED Ceiling Lamp v7", THING_TYPE_BASIC),
     YEELIGHT_CEIL8("yeelink.light.ceiling8", "Yeelight LED Ceiling Lamp v8", THING_TYPE_BASIC),
+    YEELIGHT_CEIL9("yeelink.light.ceiling9", "Yeelight LED Ceiling Lamp v9", THING_TYPE_BASIC),
     YEELIGHT_CEIL10("yeelink.light.ceiling10", "Yeelight LED Meteorite lamp", THING_TYPE_BASIC),
+    YEELIGHT_CEIL11("yeelink.light.ceiling11", "Yeelight LED Ceiling Lamp v11", THING_TYPE_BASIC),
+    YEELIGHT_CEIL12("yeelink.light.ceiling12", "Yeelight LED Ceiling Lamp v12", THING_TYPE_BASIC),
+    YEELIGHT_CEIL13("yeelink.light.ceiling13", "Yeelight LED Ceiling Lamp v13", THING_TYPE_BASIC),
     YEELIGHT_CT2("yeelink.light.ct2", "Yeelight ct2", THING_TYPE_BASIC),
     YEELIGHT_DOLPHIN("yeelink.light.mono1", "Yeelight White Bulb", THING_TYPE_BASIC),
     YEELIGHT_DOLPHIN2("yeelink.light.mono2", "Yeelight White Bulb v2", THING_TYPE_BASIC),
@@ -146,7 +153,8 @@ public enum MiIoDevices {
     YEELIGHT_VIRT("yeelink.light.virtual", "Yeelight", THING_TYPE_BASIC),
     YEELIGHT_C1("yeelink.light.color1", "Yeelight Color Bulb", THING_TYPE_BASIC),
     YEELIGHT_C2("yeelink.light.color2", "Yeelight Color Bulb YLDP06YL 10W", THING_TYPE_BASIC),
-    YEELIGHT_WONDER("yeelink.light.color3", "Yeelight Color Bulb", THING_TYPE_BASIC),
+    YEELIGHT_C3("yeelink.light.color3", "Yeelight Color Bulb YLDP02YL 9W", THING_TYPE_BASIC),
+    YEELIGHT_C4("yeelink.light.color4", "Yeelight Bulb YLDP13YL (8,5W)", THING_TYPE_BASIC),
     UNKNOWN("unknown", "Unknown Mi IO Device", THING_TYPE_UNSUPPORTED);
 
     public static MiIoDevices getType(String modelString) {

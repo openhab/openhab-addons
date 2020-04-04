@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -31,7 +32,7 @@ public class HPStatus {
 
     private static final Map<String, String> STATUS_MESSAGES = initializeStatus();
 
-    private final String printerStatus;
+    private final @Nullable String printerStatus;
 
     public HPStatus(Document document) {
         NodeList nodes = document.getDocumentElement().getElementsByTagName("psdyn:Status");
@@ -61,7 +62,7 @@ public class HPStatus {
         return statusMap;
     }
 
-    public String getPrinterStatus() {
-        return STATUS_MESSAGES.getOrDefault(printerStatus, printerStatus);
+    public @Nullable String getPrinterStatus() {
+        return STATUS_MESSAGES.get(printerStatus);
     }
 }
