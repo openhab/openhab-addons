@@ -25,8 +25,8 @@ public class EleroTransmitterStickBindingConstants {
     public static final String BINDING_ID = "elerotransmitterstick";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_STICK = new ThingTypeUID(BINDING_ID, "elerostick");
-    public final static ThingTypeUID THING_TYPE_ELERO_CHANNEL = new ThingTypeUID(BINDING_ID, "elerochannel");
+    public static final ThingTypeUID THING_TYPE_STICK = new ThingTypeUID(BINDING_ID, "elerostick");
+    public static final ThingTypeUID THING_TYPE_ELERO_CHANNEL = new ThingTypeUID(BINDING_ID, "elerochannel");
 
     public static final String CONTROL_CHANNEL = "control";
     public static final String STATUS_CHANNEL = "status";

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -25,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Björn Brings - Initial contribution
  */
-
+@NonNullByDefault
 public class ValloxMVBindingConstants {
 
     private static final String BINDING_ID = "valloxmv";
@@ -235,15 +236,15 @@ public class ValloxMVBindingConstants {
     /**
      * Set of writable channels that are Switches
      */
-    public final static Set<String> WRITABLE_CHANNELS_SWITCHES = Collections
+    public static final Set<String> WRITABLE_CHANNELS_SWITCHES = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_ONOFF, CHANNEL_BOOST_TIMER_ENABLED,
                     CHANNEL_FIREPLACE_TIMER_ENABLED, CHANNEL_EXTRA_TIMER_ENABLED, CHANNEL_WEEKLY_TIMER_ENABLED)));
 
     /**
-     * 
+     *
      * Set of writable channels that are dimensionless
      */
-    public final static Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections
+    public static final Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,
                     CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING, CHANNEL_BOOST_SPEED_SETTING,
                     CHANNEL_BOOST_TIME, CHANNEL_BOOST_TIMER_ENABLED, CHANNEL_FIREPLACE_EXTR_FAN,
@@ -254,7 +255,7 @@ public class ValloxMVBindingConstants {
     /**
      * Set of writable channels that are temperatures
      */
-    public final static Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections
+    public static final Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_HOME_AIR_TEMP_TARGET, CHANNEL_AWAY_AIR_TEMP_TARGET,
                     CHANNEL_BOOST_AIR_TEMP_TARGET, CHANNEL_EXTRA_AIR_TEMP_TARGET)));
 

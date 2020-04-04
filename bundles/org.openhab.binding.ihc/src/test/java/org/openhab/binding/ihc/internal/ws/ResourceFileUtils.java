@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Pauli Anttila - Initial contribution
  */
 public class ResourceFileUtils {
-    static public String getFileContent(String resourceFile) {
+    public static String getFileContent(String resourceFile) {
         try (InputStream inputStream = ResourceFileUtils.class.getClassLoader().getResourceAsStream(resourceFile);
                 Reader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {

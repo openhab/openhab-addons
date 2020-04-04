@@ -23,7 +23,7 @@ import org.openhab.binding.tado.internal.api.client.HomeApi;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
-abstract public class BaseHomeThingHandler extends BaseThingHandler {
+public abstract class BaseHomeThingHandler extends BaseThingHandler {
 
     public BaseHomeThingHandler(Thing thing) {
         super(thing);

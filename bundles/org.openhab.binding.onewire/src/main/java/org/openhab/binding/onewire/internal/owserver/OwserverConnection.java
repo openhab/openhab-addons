@@ -100,7 +100,7 @@ public class OwserverConnection {
         boolean success = false;
         do {
             success = open();
-        } while (success != true && owserverConnectionState != OwserverConnectionState.FAILED);
+        } while (!success && owserverConnectionState != OwserverConnectionState.FAILED);
     }
 
     /**

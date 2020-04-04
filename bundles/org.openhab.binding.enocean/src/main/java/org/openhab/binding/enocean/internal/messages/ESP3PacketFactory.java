@@ -23,9 +23,9 @@ import org.openhab.binding.enocean.internal.messages.CCMessage.CCMessageType;
  */
 public class ESP3PacketFactory {
 
-    public final static BasePacket CO_RD_VERSION = new CCMessage(CCMessageType.CO_RD_VERSION);
-    public final static BasePacket CO_RD_IDBASE = new CCMessage(CCMessageType.CO_RD_IDBASE);
-    public final static BasePacket CO_RD_REPEATER = new CCMessage(CCMessageType.CO_RD_REPEATER);
+    public static final BasePacket CO_RD_VERSION = new CCMessage(CCMessageType.CO_RD_VERSION);
+    public static final BasePacket CO_RD_IDBASE = new CCMessage(CCMessageType.CO_RD_IDBASE);
+    public static final BasePacket CO_RD_REPEATER = new CCMessage(CCMessageType.CO_RD_REPEATER);
 
     public static BasePacket CO_WR_IDBASE(byte[] newId) {
         return new CCMessage(CCMessageType.CO_WR_IDBASE, new byte[] { 7, newId[0], newId[1], newId[2], newId[3] });
