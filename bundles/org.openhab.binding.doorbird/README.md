@@ -8,15 +8,15 @@ The following thing types are supported:
 
 | Device                           | Thing ID  |
 |----------------------------------|-----------|
-| Doorbird D101/D201/D205 Doorbell | d101      |
+| Doorbird D101/D201/D205/D1101V  Doorbell | d101      |
 | Doorbird D210x Doorbell          | d210x     |
 | Doorbird A1081 Controller        | a1081     |
 
 ## Thing Configuration
 
-### D101/D201/D205 and D210x Doorbell
+### D101/D201/D205/D1101V and D210x Doorbell
 
-The following configuration parameters are available on the Doorbird D101/D201/D205 and D210x Doorbell things:
+The following configuration parameters are available on the Doorbird D101/D201/D205/D1101V and D210x Doorbell things:
 
 | Parameter                | Parameter ID       | Required/Optional | Description |
 |--------------------------|--------------------|-------------------|-------------|
@@ -137,9 +137,9 @@ Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your netw
 ### Things
 
 ```
-Thing doorbird:d101:doorbell Doorbird D101 Doorbell [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN",imageRefreshRate=60,doorbellOffDelay=3,motionOffDelay=30,montageNumImages=3,montageScaleFactor=35]
+Thing doorbird:d101:doorbell "Doorbird D101 Doorbell" [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN",imageRefreshRate=60,doorbellOffDelay=3,motionOffDelay=30,montageNumImages=3,montageScaleFactor=35]
 
-Thing doorbird:a1081:controller Doorbird A1081 Controller [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN"]
+Thing doorbird:a1081:controller "Doorbird A1081 Controller" [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN"]
 ```
 
 ### Items
@@ -149,7 +149,7 @@ Switch Doorbell_Pressed "Doorbell Pressed [%s]" <switch> ["Switch"] { channel="d
 DateTime Doorbell_PressedTimestamp "Doorbell Pressed Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:doorbellTimestamp" }
 Image Doorbell_PressedImage "Doorbell Pressed Image [%s]" { channel="doorbird:d101:doorbell:doorbellImage" }
 Switch Doorbell_Motion "Doorbell Motion [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:motion" }
-DateTim Doorbell_MotionTimestamp "Doorbell Motion Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:motionTimestamp" }
+DateTime Doorbell_MotionTimestamp "Doorbell Motion Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:motionTimestamp" }
 Image Doorbell_MotionDetectedImage "Motion Detected Image [%s]" { channel="doorbird:d101:doorbell:motionImage" }
 Switch Doorbell_Light "Doorbell Light [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:light", expire="5s,command=OFF" }
 Switch Doorbell_OpenDoor1 "Doorbell Open Door 1 [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:openDoor1", expire="5s,command=OFF" }
