@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.bluegiga;
 
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -80,8 +79,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
 
     // The connection handle if the device is connected
     private int connection = -1;
-
-    private ZonedDateTime lastSeenTime = ZonedDateTime.now();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
@@ -524,6 +521,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     /**
      * Clean up and release memory.
      */
+    @Override
     public void dispose() {
         if (connectionState == ConnectionState.CONNECTED) {
             disconnect();
@@ -534,19 +532,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         procedureProgress = BlueGigaProcedure.NONE;
         connectionState = ConnectionState.DISCOVERING;
         connection = -1;
-    }
-
-    /**
-     * Return last seen Time
-     *
-     * @return last seen Time
-     */
-    public ZonedDateTime getLastSeenTime() {
-        return lastSeenTime;
-    }
-
-    private void updateLastSeenTime() {
-        this.lastSeenTime = ZonedDateTime.now();
     }
 
     private void cancelTimer(@Nullable ScheduledFuture<?> task) {

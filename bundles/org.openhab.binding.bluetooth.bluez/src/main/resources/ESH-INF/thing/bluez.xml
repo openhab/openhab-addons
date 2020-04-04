@@ -14,11 +14,23 @@
 				<label>Address</label>
 				<description>The Bluetooth address of the adapter in format XX:XX:XX:XX:XX:XX</description>
 			</parameter>
-			<parameter name="discovery" type="boolean">
-				<label>Device Discovery</label>
-				<description>Whether Bluetooth device discovery is always enabled for this adapter</description>
+			<parameter name="backgroundDiscovery" type="boolean">
+				<label>Background Discovery</label>
+				<description>Whether this adapter performs background discovery of Bluetooth devices</description>
 				<advanced>true</advanced>
 				<default>false</default>
+			</parameter>
+			<parameter name="inactiveDeviceCleanupInterval" type="integer" min="1" unit="s">
+				<label>Device Cleanup Interval</label>
+				<description>How often device cleanup is performed</description>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
+			<parameter name="inactiveDeviceCleanupThreshold" type="integer" min="1" unit="s">
+				<label>Device Cleanup Threshold</label>
+				<description>Timespan a device can remain radio silent before it is eligible for cleanup</description>
+				<advanced>true</advanced>
+				<default>300</default>
 			</parameter>
 		</config-description>
 

@@ -63,8 +63,8 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
     }
 
     @Override
-    public boolean hasDevice(BluetoothAddress address) {
-        return devices.containsKey(address);
+    public boolean hasHandlerForDevice(BluetoothAddress address) {
+        return false;
     }
 
 }

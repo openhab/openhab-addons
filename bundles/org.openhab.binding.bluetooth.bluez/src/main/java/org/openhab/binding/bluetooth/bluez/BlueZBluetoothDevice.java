@@ -51,8 +51,6 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
-    private long lastSeenTime;
-
     /**
      * Constructor
      *
@@ -376,17 +374,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return null;
     }
 
-    private void updateLastSeenTime() {
-        this.lastSeenTime = System.currentTimeMillis();
-    }
-
-    public long getTimeSinceSeen(TimeUnit unit) {
-        return unit.convert(System.currentTimeMillis() - this.lastSeenTime, TimeUnit.MILLISECONDS);
-    }
-
     /**
      * Clean up and release memory.
      */
+    @Override
     public void dispose() {
         if (device == null) {
             return;
