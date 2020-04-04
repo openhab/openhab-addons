@@ -31,24 +31,24 @@ sensor, and then dynamically create channels for those capabilities.
 
 ## Authorization
 
-After you have installed the binding, and have created the Account thing with a valid API key, 
-when the binding performs its first poll of the Ecobee servers, it will discover that is has 
-not yet been authorized.
-At that point it will retrieve a four-character PIN from the Ecobee server.
-This PIN will appear prominently in your `openhab.log` file:
+After you have installed the binding, and have created the Account thing with a valid API key,
+the binding will try to get information about your thermostats from the Ecobee web service.
+When this happens, the binding will determine that it has not yet been authorized by the Ecobee web service.
+
+At this point the binding will retrieve a four-character PIN code from the Ecobee web service.
+The binding will mark the Account thing OFFLINE with a detailed status message that contains the
+PIN code needed to complete the authorization.
+The PIN code will be valid for 9 minutes.
+The status message will look something like this.
 
 ```
-    #################################################################
-    # Ecobee: U S E R   I N T E R A C T I O N   R E Q U I R E D !!
-    # Go to the Ecobee web portal, then:
-    # Enter PIN 'jhsh' in My Apps within 9 minutes.
-    # NOTE: All API attempts will fail in the meantime.
-    #################################################################
+Enter PIN 'RVLA' in MyApps. PIN expires in 9 minutes.
 ```
 
-When you see the above message, enter the PIN into your **My Apps** settings in your account at ecobee.com.
-This will authorize your instance of the binding to work with your Ecobee account.
-On the next poll of the API, it will retrieve information about the available thermostats, and add them to the inbox.
+To complete the authorization, the PIN code must be entered into the Ecobee **My Apps** settings in your account at ecobee.com.
+This will authorize the binding to work with the thermostats associated with your Ecobee account.
+Once authorization is complete, the binding will retrieve information about the available thermostats, 
+and add those thermostats to the inbox.
 
 ## Thing Configuration
 

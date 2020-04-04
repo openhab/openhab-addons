@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ecobee.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * @author John Cocula - Initial contribution
  * @author Mark Hilbush - Adapt for OH2/3
  */
+@NonNullByDefault
 public enum HoldType {
 
     /**

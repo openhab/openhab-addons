@@ -43,7 +43,8 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link EcobeeAuth} performs the initial OAuth authorization
  * with the Ecobee authorization servers. Once this process is complete, the
- * AccessTokenResponse will be imported into the OHC OAuth Client Service.
+ * AccessTokenResponse will be imported into the OHC OAuth Client Service. At
+ * that point, the OHC OAuth service will be responsible for refreshing tokens.
  *
  * @author Mark Hilbush - Initial contribution
  */
@@ -121,7 +122,7 @@ public class EcobeeAuth {
         url.append("&client_id=").append(apiKey);
         url.append("&scope=").append(ECOBEE_SCOPE);
 
-        logger.trace("EcobeeAuth: Getting authorize URL={}", url.toString());
+        logger.trace("EcobeeAuth: Getting authorize URL={}", url);
         String response = executeUrl("GET", url.toString());
         logger.trace("EcobeeAuth: Auth response: {}", response);
 
@@ -159,7 +160,7 @@ public class EcobeeAuth {
         url.append("&code=").append(code);
         url.append("&client_id=").append(apiKey);
 
-        logger.trace("EcobeeAuth: Posting token URL={}", url.toString());
+        logger.trace("EcobeeAuth: Posting token URL={}", url);
         String response = executeUrl("POST", url.toString());
         logger.trace("EcobeeAuth: Got a valid token response: {}", response);
 
@@ -206,9 +207,8 @@ public class EcobeeAuth {
         AuthorizeResponseDTO response = authResponse;
         if (response != null) {
             bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    String.format("Awaiting entry of PIN %s. Expires in %d minutes", response.pin,
+                    String.format("Enter PIN '%s' in MyApps. PIN expires in %d minutes", response.pin,
                             getMinutesUntilPinExpiration()));
-
         }
     }
 

@@ -99,23 +99,25 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("AccountBridge: Initializing");
-        apiKey = getConfigAs(EcobeeAccountConfiguration.class).apiKey;
+
+        EcobeeAccountConfiguration config = getConfigAs(EcobeeAccountConfiguration.class);
+        apiKey = config.apiKey;
 
         Integer value;
-        value = getConfigAs(EcobeeAccountConfiguration.class).refreshIntervalNormal;
+        value = config.refreshIntervalNormal;
         refreshIntervalNormal = value == null ? DEFAULT_REFRESH_INTERVAL_NORMAL_SECONDS : value;
 
-        value = getConfigAs(EcobeeAccountConfiguration.class).refreshIntervalQuick;
+        value = config.refreshIntervalQuick;
         refreshIntervalQuick = value == null ? DEFAULT_REFRESH_INTERVAL_QUICK_SECONDS : value;
 
-        value = getConfigAs(EcobeeAccountConfiguration.class).apiTimeout;
+        value = config.apiTimeout;
         apiTimeout = (value == null ? DEFAULT_API_TIMEOUT_SECONDS : value) * 1000;
 
-        Boolean booleanValue = getConfigAs(EcobeeAccountConfiguration.class).discoveryEnabled;
+        Boolean booleanValue = config.discoveryEnabled;
         discoveryEnabled = booleanValue == null ? false : booleanValue.booleanValue();
-        logger.info("AccountBridge: Thermostat and sensor discovery is {}", discoveryEnabled ? "enabled" : "disabled");
+        logger.debug("AccountBridge: Thermostat and sensor discovery is {}", discoveryEnabled ? "enabled" : "disabled");
 
-        value = getConfigAs(EcobeeAccountConfiguration.class).discoveryInterval;
+        value = config.discoveryInterval;
         discoveryInterval = value == null ? DISCOVERY_INTERVAL_SECONDS : value;
 
         api = new EcobeeApi(this, apiKey, apiTimeout, oAuthFactory, httpClient);
