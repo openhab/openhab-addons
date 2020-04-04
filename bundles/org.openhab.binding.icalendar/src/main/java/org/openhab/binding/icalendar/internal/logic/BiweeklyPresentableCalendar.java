@@ -191,41 +191,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     * A Class describing an event together with a start and end instant.
-     *
-     * @author Michael Wodniok - Initial contribution.
-     */
-    private static class VEventWPeriod {
-        final VEvent vEvent;
-        final Instant start;
-        final Instant end;
-
-        VEventWPeriod(VEvent vEvent, Instant start, Instant end) {
-            this.vEvent = vEvent;
-            this.start = start;
-            this.end = end;
-        }
-
-        Event toEvent() {
-            String title;
-            Summary eventSummary = vEvent.getSummary();
-            if (eventSummary != null) {
-                title = eventSummary.getValue();
-            } else {
-                title = "-";
-            }
-            String description;
-            Description eventDescription = vEvent.getDescription();
-            if (eventDescription != null) {
-                description = eventDescription.getValue();
-            } else {
-                description = "";
-            }
-            return new Event(title, start, end, description);
-        }
-    }
-
-    /**
      * Classifies events into positive and negative ones.
      *
      * @param positiveEvents A List where to add positive ones.
@@ -344,5 +309,40 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             }
         }
         return ignoreThis;
+    }
+
+    /**
+     * A Class describing an event together with a start and end instant.
+     *
+     * @author Michael Wodniok - Initial contribution.
+     */
+    private static class VEventWPeriod {
+        final VEvent vEvent;
+        final Instant start;
+        final Instant end;
+
+        VEventWPeriod(VEvent vEvent, Instant start, Instant end) {
+            this.vEvent = vEvent;
+            this.start = start;
+            this.end = end;
+        }
+
+        Event toEvent() {
+            String title;
+            Summary eventSummary = vEvent.getSummary();
+            if (eventSummary != null) {
+                title = eventSummary.getValue();
+            } else {
+                title = "-";
+            }
+            String description;
+            Description eventDescription = vEvent.getDescription();
+            if (eventDescription != null) {
+                description = eventDescription.getValue();
+            } else {
+                description = "";
+            }
+            return new Event(title, start, end, description);
+        }
     }
 }

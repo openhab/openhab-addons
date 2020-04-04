@@ -21,9 +21,10 @@ import java.math.BigDecimal;
  * @author Andrew Fiddian-Green - Support for authorizationCode
  */
 public class ICalendarConfiguration {
-    public String url;
-    public BigDecimal refreshTime;
-    public String username;
-    public String password;
     public String authorizationCode;
+    public Integer maxSize;
+    public String password;
+    public BigDecimal refreshTime;
+    public String url;
+    public String username;
 }

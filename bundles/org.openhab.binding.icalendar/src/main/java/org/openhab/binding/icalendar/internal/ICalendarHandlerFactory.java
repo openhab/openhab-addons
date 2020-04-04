@@ -50,7 +50,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
     private final HttpClient sharedHttpClient;
-    private final @Nullable EventPublisher eventPublisher;
+    private final EventPublisher eventPublisher;
 
     @Activate
     public ICalendarHandlerFactory(@Reference HttpClientFactory httpClientFactory,

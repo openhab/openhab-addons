@@ -40,6 +40,5 @@ public class ICalendarBindingConstants {
 
     // additional constants
     public static final int HTTP_TIMEOUT_SECS = 60;
-    public static final int HTTP_MAX_CALENDAR_SIZE = 16777216;
 
 }

@@ -49,49 +49,75 @@ public class CommandTag {
             RewindFastforwardType.class, StringType.class);
     private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
 
-    private @Nullable String authorizationCode;
-    private String fullTag;
-    private boolean isValid = false;
-    private @Nullable String itemName;
+    private final @Nullable String authorizationCode;
+    private final String fullTag;
+    private final boolean isValid;
+    private final @Nullable String itemName;
     private final Logger logger = LoggerFactory.getLogger(CommandTag.class);
-    private @Nullable CommandTagType tagType;
-    private @Nullable String targetState;
+    private final @Nullable CommandTagType tagType;
+    private final @Nullable String targetState;
 
     public CommandTag(String line) {
         fullTag = line;
+        boolean seemsValid = false;
+        @Nullable
+        String parsedAuthorizationCode = null;
+        @Nullable
+        String parsedItemName = null;
+        @Nullable
+        CommandTagType parsedTagType = null;
+        @Nullable
+        String parsedTargetState = null;
+        boolean parse = true;
+
         if (!fullTag.contains(":")) {
             logger.trace("Input line \"{}\" => No \":\" delimiters!", fullTag);
-            return;
+            parse = false;
         }
         String[] fields = fullTag.split(":");
-        if (fields.length < 3) {
+        if (fields.length < 3 && parse) {
             logger.trace("Input line \"{}\" => Not enough fields!", fullTag);
-            return;
+            parse = false;
         }
-        try {
-            tagType = CommandTagType.valueOf(fields[0]);
-        } catch (IllegalArgumentException e) {
-            logger.trace("Input line \"{}\" => Bad tag prefix!", fullTag);
-            return;
+        if (parse) {
+            try {
+                parsedTagType = CommandTagType.valueOf(fields[0]);
+            } catch (IllegalArgumentException e) {
+                logger.trace("Input line \"{}\" => Bad tag prefix!", fullTag);
+                parse = false;
+            }
         }
-        String newItemName = fields[1].trim();
-        if (newItemName.isEmpty()) {
-            logger.trace("Input line \"{}\" => Item name empty!", fullTag);
-            return;
-        } else {
-            itemName = newItemName;
+        if (parse) {
+            String newItemName = fields[1].trim();
+            if (newItemName.isEmpty()) {
+                logger.trace("Input line \"{}\" => Item name empty!", fullTag);
+                parse = false;
+            } else {
+                parsedItemName = newItemName;
+            }
         }
-        String newTargetState = fields[2].trim();
-        if (newTargetState.isEmpty()) {
-            logger.trace("Input line \"{}\" => Target State empty!", fullTag);
-            return;
-        } else {
-            targetState = newTargetState;
+        if (parse) {
+            String newTargetState = fields[2].trim();
+            if (newTargetState.isEmpty()) {
+                logger.trace("Input line \"{}\" => Target State empty!", fullTag);
+                parse = false;
+            } else {
+                parsedTargetState = newTargetState;
+            }
         }
-        isValid = true;
-        if (fields.length > 3) {
-            authorizationCode = fields[3].trim();
+
+        if (parse) {
+            seemsValid = true;
+            if (fields.length > 3) {
+                parsedAuthorizationCode = fields[3].trim();
+            }
         }
+
+        authorizationCode = parsedAuthorizationCode;
+        isValid = seemsValid;
+        itemName = parsedItemName;
+        tagType = parsedTagType;
+        targetState = parsedTargetState;
     }
 
     public static @Nullable CommandTag createCommandTag(String line) {

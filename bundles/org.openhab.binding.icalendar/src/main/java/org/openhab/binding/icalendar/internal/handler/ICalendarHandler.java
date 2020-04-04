@@ -64,22 +64,23 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ICalendarHandler extends BaseThingHandler implements CalendarUpdateListener {
 
-    private File calendarFile;
+    private final File calendarFile;
     private @Nullable ICalendarConfiguration configuration;
-    private @Nullable EventPublisher eventPublisherCallback = null;
-    private HttpClient httpClient;
+    private final EventPublisher eventPublisherCallback;
+    private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandler.class);
     private @Nullable ScheduledFuture<?> pullJobFuture;
     private @Nullable AbstractPresentableCalendar runtimeCalendar;
     private @Nullable ScheduledFuture<?> updateJobFuture;
-    private Instant updateStatesLastCalledTime = Instant.now();
+    private Instant updateStatesLastCalledTime;
 
-    public ICalendarHandler(Thing thing, HttpClient httpClient, @Nullable EventPublisher eventPublisher) {
+    public ICalendarHandler(Thing thing, HttpClient httpClient, EventPublisher eventPublisher) {
         super(thing);
         this.httpClient = httpClient;
         calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
+        updateStatesLastCalledTime = Instant.now();
     }
 
     @Override
@@ -130,7 +131,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         PullJob regularPull;
         try {
             regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                    currentConfiguration.password, calendarFile, this);
+                    currentConfiguration.password, calendarFile, currentConfiguration.maxSize * 1048576, this);
         } catch (URISyntaxException e) {
             logger.warn(
                     "The URI '{}' for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
@@ -169,26 +170,12 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         }
     }
 
-    protected void setEventPublisher(EventPublisher eventPublisher) {
-        eventPublisherCallback = eventPublisher;
-    }
-
-    protected void unsetEventPublisher(EventPublisher eventPublisher) {
-        eventPublisherCallback = null;
-    }
-
     private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
         // no begun or ended events => exit quietly as there is nothing to do
         if ((events == null) || (events.isEmpty())) {
             return;
         }
-        // prevent synchronization issues (MVN null pointer warnings) in "eventPublisherCallback"
-        @Nullable
-        EventPublisher syncEventPublisherCallback = eventPublisherCallback;
-        if (syncEventPublisherCallback == null) {
-            logger.warn("EventPublisher object not instantiated!");
-            return;
-        }
+
         // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
         @Nullable
         ICalendarConfiguration syncConfiguration = configuration;
@@ -225,7 +212,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
                 // (try to) execute the command
                 try {
-                    syncEventPublisherCallback.post(ItemEventFactory.createCommandEvent(itemName, cmdState));
+                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(itemName, cmdState));
                     if (logger.isDebugEnabled()) {
                         String cmdType = cmdState.getClass().toString();
                         int index = cmdType.lastIndexOf(".") + 1;

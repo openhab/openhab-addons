@@ -44,6 +44,12 @@
 				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic auth)</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="maxSize" type="integer" required="true" min="1" groupName="source">
+				<label>Maximum Calendar Size</label>
+				<description>The maximum size of the calendar in Mebibytes.</description>
+				<default>16</default>
+				<unitLabel>MiB</unitLabel>
+			</parameter>
 			<parameter name="authorizationCode" type="text" required="false" groupName="parsing">
 				<label>Command Authorization Code</label>
 				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
