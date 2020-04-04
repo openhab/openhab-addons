@@ -71,23 +71,24 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
     public void initialize() {
         ChannelUID currentDraw = new ChannelUID(thing.getUID(), "currentDraw");
         ThingBuilder thingBuilder = editThing();
-        try {
-            getApi().currentDraw();
+        if (thing.getChannel(currentDraw) == null) {
+            try {
+                getApi().currentDraw();
 
-            if (thing.getChannel(currentDraw) == null) {
                 Channel currentDrawChannel = ChannelBuilder.create(currentDraw, "Number:ElectricCurrent")
                         .withType(new ChannelTypeUID(BINDING_ID, SENSOR_CURRENT_DRAW)).withLabel("Current Draw")
                         .withDescription("Provides the current draw.").build();
                 thingBuilder.withChannel(currentDrawChannel);
+
+                updateThing(thingBuilder.build());
+            } catch (NoCurrentDrawSensorException e) {
+                if (thing.getChannel(currentDraw) != null) {
+                    thingBuilder.withoutChannel(currentDraw);
+                }
+                updateThing(thingBuilder.build());
+            } catch (CommunicationApiException e) {
+                logger.debug("Could not query current draw. Not removing channel as it could be temporary.", e);
             }
-            updateThing(thingBuilder.build());
-        } catch (NoCurrentDrawSensorException e) {
-            if (thing.getChannel(currentDraw) != null) {
-                thingBuilder.withoutChannel(currentDraw);
-            }
-            updateThing(thingBuilder.build());
-        } catch (CommunicationApiException e) {
-            logger.debug("Could not query current draw. Not removing channel as it could be temporary.", e);
         }
         super.initialize();
     }
