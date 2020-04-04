@@ -10,13 +10,14 @@ The only thing type is the calendar. It is based on a single iCalendar file. The
 
 Each Calendar Thing requires the following configuration parameters:
 
-| parameter name      | description                                                                                                                                                                                                                                                                | optional  |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `url`               | The URL of an iCalendar to be used as a source of events.                                                                                                                                                                                                                  | mandatory |
-| `refreshTime`       | The frequency in minutes with which the calendar gets refreshed from the source.                                                                                                                                                                                           | mandatory |
-| `username`          | The username for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `password`                                                                                                                                  | optional  |
-| `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`                                                                                                                                  | optional  |
-| `authorizationCode` | The authorization code to permit the execution of embedded Command Tags. If set, the binding checks that the authorization code in the Command Tag matches before executing any commands.                                                                                  | optional  |
+| parameter name      | description                                                                                                                                                                               | optional                      |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| `url`               | The URL of an iCalendar to be used as a source of events.                                                                                                                                 | mandatory                     |
+| `refreshTime`       | The frequency in minutes with which the calendar gets refreshed from the source.                                                                                                          | mandatory                     |
+| `username`          | The username for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `password`                                                 | optional                      |
+| `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`                                                 | optional                      |
+| `maxSize`           | The maximum size of the iCal-file in Mebibytes.                                                                                                                                           | mandatory (default available) |
+| `authorizationCode` | The authorization code to permit the execution of embedded Command Tags. If set, the binding checks that the authorization code in the Command Tag matches before executing any commands. | optional                      |
 
 ## Channels
 
@@ -59,7 +60,7 @@ The `Authorization_Code` may *optionally* be used as follows:
 Provide at least all required information into the Thing definition, either via UI or in the things file
 
 ```
-Thing icalendar:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60, readAroundTime=20160 ]
+Thing icalendar:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]
 ```
 
 Link the channels as usual to items
