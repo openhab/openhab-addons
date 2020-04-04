@@ -57,10 +57,10 @@ import org.slf4j.LoggerFactory;
 public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(WemoDimmerHandler.class);
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
     private Map<String, Boolean> subscriptionState = new HashMap<>();
     private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
-    protected final static int SUBSCRIPTION_DURATION = 600;
+    protected static final int SUBSCRIPTION_DURATION = 600;
     private UpnpIOService service;
     private int currentBrightness;
     private int currentNightModeBrightness;

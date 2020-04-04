@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -40,7 +41,7 @@ public class SinopeThingsDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SinopeThingsDiscoveryService.class);
 
-    private final static int SEARCH_TIME = 120;
+    private static final int SEARCH_TIME = 120;
 
     private SinopeGatewayHandler sinopeGatewayHandler;
 

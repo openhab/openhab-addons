@@ -31,7 +31,7 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
 
     private final Logger logger = LoggerFactory.getLogger(MemoryRequestPayload.class);
 
-    private final static short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
+    private static final short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
 
     private int address;
     private byte bytesToRead;

@@ -49,7 +49,7 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
         if (tcsStatus == null || gatewayStatus == null) {
             updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Status not found, check the display id");
-        } else if (handleActiveFaults(gatewayStatus) == false) {
+        } else if (!handleActiveFaults(gatewayStatus)) {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
             updateState(EvohomeBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL,
                     new StringType(tcsStatus.getMode().getMode()));

@@ -103,7 +103,7 @@ public enum Conformity {
         }
     };
 
-    private final static Logger logger = LoggerFactory.getLogger(Conformity.class);
+    private static final Logger logger = LoggerFactory.getLogger(Conformity.class);
 
     /**
      * Applies the overwritten negation setting for the channel.

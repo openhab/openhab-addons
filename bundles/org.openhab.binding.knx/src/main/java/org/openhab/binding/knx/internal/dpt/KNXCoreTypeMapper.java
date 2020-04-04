@@ -945,7 +945,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @throws IllegalArgumentException if none of the datapoint types DPT_DATE or
      *             DPT_TIMEOFDAY has been used.
      */
-    static private String formatDateTime(DateTimeType dateType, String dpt) {
+    private static String formatDateTime(DateTimeType dateType, String dpt) {
         if (DPTXlatorDate.DPT_DATE.getID().equals(dpt)) {
             return dateType.format("%tF");
         } else if (DPTXlatorTime.DPT_TIMEOFDAY.getID().equals(dpt)) {

@@ -52,7 +52,7 @@ import io.reactivex.schedulers.Schedulers;
 @NonNullByDefault
 public abstract class MeterDevice<T> {
 
-    private final static int RETRY_DELAY = 2;
+    private static final int RETRY_DELAY = 2;
     private final Logger logger = LoggerFactory.getLogger(MeterDevice.class);
     /**
      * Controls wether the device info is logged to the OSGi console.

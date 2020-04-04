@@ -70,7 +70,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     private Logger logger = LoggerFactory.getLogger(EnOceanBridgeHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
 
     private EnOceanTransceiver transceiver; // holds connection to serial/tcp port and sends/receives messages
     private ScheduledFuture<?> connectorTask; // is used for reconnection if something goes wrong

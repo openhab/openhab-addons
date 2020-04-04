@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,25 +34,26 @@ import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
-    final public static ThingUID testGenericThing = new ThingUID(GENERIC_MQTT_THING, "genericthing");
+    public static final ThingUID testGenericThing = new ThingUID(GENERIC_MQTT_THING, "genericthing");
 
-    final public static ChannelTypeUID textChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.STRING);
-    final public static ChannelTypeUID textWithJsonChannel = new ChannelTypeUID(BINDING_ID,
+    public static final ChannelTypeUID textChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.STRING);
+    public static final ChannelTypeUID textWithJsonChannel = new ChannelTypeUID(BINDING_ID,
             MqttBindingConstants.STRING);
-    final public static ChannelTypeUID onoffChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.SWITCH);
-    final public static ChannelTypeUID numberChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.NUMBER);
-    final public static ChannelTypeUID percentageChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.DIMMER);
-    final public static ChannelTypeUID unknownChannel = new ChannelTypeUID(BINDING_ID, "unknown");
+    public static final ChannelTypeUID onoffChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.SWITCH);
+    public static final ChannelTypeUID numberChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.NUMBER);
+    public static final ChannelTypeUID percentageChannel = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.DIMMER);
+    public static final ChannelTypeUID unknownChannel = new ChannelTypeUID(BINDING_ID, "unknown");
 
-    final public static ChannelUID textChannelUID = new ChannelUID(testGenericThing, "mytext");
+    public static final ChannelUID textChannelUID = new ChannelUID(testGenericThing, "mytext");
 
-    final public static String jsonPathJSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
-    final public static String jsonPathPattern = "$.device.status.temperature";
+    public static final String jsonPathJSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
+    public static final String jsonPathPattern = "$.device.status.temperature";
 
-    final public static List<Channel> thingChannelList = new ArrayList<>();
-    final public static List<Channel> thingChannelListWithJson = new ArrayList<>();
+    public static final List<Channel> thingChannelList = new ArrayList<>();
+    public static final List<Channel> thingChannelListWithJson = new ArrayList<>();
 
     /**
      * Create a channel with exact the parameters we need for the tests

@@ -149,7 +149,7 @@ public class KonnectedHandler extends BaseThingHandler {
                             new QuantityType<>(Double.parseDouble(event.getHumi()), SmartHomeUnits.PERCENT));
                 } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
                     Configuration configuration = channel.getConfiguration();
-                    if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE) == true)) {
+                    if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE))) {
                         updateState(channelId,
                                 new QuantityType<>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
                     } else {
@@ -225,7 +225,7 @@ public class KonnectedHandler extends BaseThingHandler {
             // https://github.com/eclipse/smarthome/issues/3484 has been implemented in the framework
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
-                if (cfg[1].equals("softreset") && value instanceof Boolean && ((Boolean) value) == true) {
+                if (cfg[1].equals("softreset") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
                             http.doGet(moduleIpAddress + "/settings?restart=true", null, retryCount);
@@ -234,7 +234,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         }
                     });
                     value = false;
-                } else if (cfg[1].equals("removewifi") && value instanceof Boolean && ((Boolean) value) == true) {
+                } else if (cfg[1].equals("removewifi") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
                             http.doGet(moduleIpAddress + "/settings?restore=true", null, retryCount);
@@ -243,7 +243,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         }
                     });
                     value = false;
-                } else if (cfg[1].equals("sendConfig") && value instanceof Boolean && ((Boolean) value) == true) {
+                } else if (cfg[1].equals("sendConfig") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
                             String response = updateKonnectedModule();

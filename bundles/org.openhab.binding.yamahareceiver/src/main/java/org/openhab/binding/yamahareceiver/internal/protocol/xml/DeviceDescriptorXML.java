@@ -79,7 +79,7 @@ public class DeviceDescriptorXML {
         return result;
     }
 
-    public static abstract class HasCommands {
+    public abstract static class HasCommands {
 
         public final Set<String> commands;
 

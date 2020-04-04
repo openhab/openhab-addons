@@ -32,16 +32,16 @@ public class BoseSoundTouchBindingConstants {
     public static final String BINDING_ID = "bosesoundtouch";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID BST_UNKNOWN_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID BST_UNKNOWN_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "device");
 
-    public final static ThingTypeUID BST_10_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "10");
-    public final static ThingTypeUID BST_20_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "20");
-    public final static ThingTypeUID BST_30_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "30");
-    public final static ThingTypeUID BST_300_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "300");
-    public final static ThingTypeUID BST_WLA_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "wirelessLinkAdapter");
-    public final static ThingTypeUID BST_WSMS_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID BST_10_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "10");
+    public static final ThingTypeUID BST_20_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "20");
+    public static final ThingTypeUID BST_30_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "30");
+    public static final ThingTypeUID BST_300_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "300");
+    public static final ThingTypeUID BST_WLA_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "wirelessLinkAdapter");
+    public static final ThingTypeUID BST_WSMS_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "waveSoundTouchMusicSystemIV");
-    public final static ThingTypeUID BST_SA5A_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "sa5Amplifier");
+    public static final ThingTypeUID BST_SA5A_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "sa5Amplifier");
 
     public static final Set<ThingTypeUID> SUPPORTED_KNOWN_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(BST_UNKNOWN_THING_TYPE_UID, BST_10_THING_TYPE_UID, BST_20_THING_TYPE_UID, BST_30_THING_TYPE_UID,

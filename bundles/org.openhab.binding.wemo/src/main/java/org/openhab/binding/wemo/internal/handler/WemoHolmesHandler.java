@@ -72,7 +72,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     /**
      * The default refresh interval in Seconds.
      */
-    private final static int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
+    private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
     private static final int FILTER_LIFE_DAYS = 330;
     private static final int FILTER_LIFE_MINS = FILTER_LIFE_DAYS * 24 * 60;
     private final Map<String, Boolean> subscriptionState = new HashMap<>();

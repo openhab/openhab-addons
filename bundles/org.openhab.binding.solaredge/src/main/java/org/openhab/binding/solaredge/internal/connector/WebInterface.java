@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WebInterface implements AtomicReferenceTrait {
 
-    private final static int API_KEY_THRESHOLD = 40;
-    private final static int TOKEN_THRESHOLD = 80;
+    private static final int API_KEY_THRESHOLD = 40;
+    private static final int TOKEN_THRESHOLD = 80;
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
@@ -274,7 +274,7 @@ public class WebInterface implements AtomicReferenceTrait {
             preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
         } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
             preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
-        } else if (config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+        } else if (!config.isUsePrivateApi() && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
             preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
                     + calcRequestsPerDay();
         } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
