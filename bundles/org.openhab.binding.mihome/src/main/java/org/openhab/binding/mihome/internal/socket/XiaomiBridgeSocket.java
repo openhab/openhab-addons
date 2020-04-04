@@ -42,8 +42,9 @@ public class XiaomiBridgeSocket extends XiaomiSocket {
      */
     @Override
     synchronized DatagramSocket setupSocket() {
-        if (getOpenSockets().containsValue(getPort())) {
-            return getOpenSockets().get(getPort());
+        DatagramSocket openSocket = getOpenSockets().get(getPort());
+        if (openSocket != null) {
+            return openSocket;
         }
         try {
             logger.debug("Setup socket");
