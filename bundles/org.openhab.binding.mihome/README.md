@@ -47,6 +47,17 @@ After setup, you can disconnect the gateway from the internet to keep your senso
 
         1.  Select your Gateway in the MiHome app
         2.  Go to the "..." menu on the top right corner and click "About"
+        3.  You now see two options "Smart Home Kit Forum" and "Gameplay Tutorial". Tap 5 times below the "Gameplay Tutorial" in the empty space (not the button itself) until you enable developer mode
+        4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`, it may appear in Chinese
+        5.  Choose `wireless communication protocol`
+        6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
+        7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
+        8.  Now update the gateway to the latest firmware
+
+*   Enable developer mode of your gateway (legacy app):
+
+        1.  Select your Gateway in the MiHome app
+        2.  Go to the "..." menu on the top right corner and click "About"
         3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
         4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
         5.  Choose `wireless communication protocol`
