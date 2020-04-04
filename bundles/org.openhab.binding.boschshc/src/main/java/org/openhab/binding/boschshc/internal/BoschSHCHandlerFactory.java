@@ -46,7 +46,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
     // List of all supported Bosch devices.
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
-            THING_TYPE_INWALL_SWITCH, THING_TYPE_TWINGUARD, THING_TYPE_WINDOW_CONTACT);
+            THING_TYPE_INWALL_SWITCH, THING_TYPE_TWINGUARD, THING_TYPE_WINDOW_CONTACT, THING_TYPE_MOTION_DETECTOR);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -75,6 +75,10 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         else if (THING_TYPE_WINDOW_CONTACT.equals(thingTypeUID)) {
             return new WindowContactHandler(thing);
+        }
+
+        else if (THING_TYPE_MOTION_DETECTOR.equals(thingTypeUID)) {
+            return new MotionDetectorHandler(thing);
         }
 
         else {
