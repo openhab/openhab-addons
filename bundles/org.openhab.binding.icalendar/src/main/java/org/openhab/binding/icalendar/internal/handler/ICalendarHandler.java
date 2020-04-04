@@ -247,9 +247,9 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn("Can't reload calendar when configuration is missing.");
             return false;
         }
-        try {
+        try (FileInputStream fileStream = new FileInputStream(calendarFile)){
             AbstractPresentableCalendar calendar = AbstractPresentableCalendar
-                    .create(new FileInputStream(calendarFile));
+                    .create(fileStream);
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
