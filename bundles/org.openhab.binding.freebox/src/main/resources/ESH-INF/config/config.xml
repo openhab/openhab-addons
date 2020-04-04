@@ -70,6 +70,10 @@
 			<label>Password</label>
 			<description>AirPlay password</description>
 		</parameter>
+        <parameter name="remoteCode" type="text" required="false">
+            <label>Remote Code</label>
+            <description>Code associated to remote control</description>
+        </parameter>
 		<parameter name="acceptAllMp3" type="boolean" required="false">
 			<label>Accept All MP3</label>
 			<description>Accept any bitrate for MP3 audio or only bitrates greater than 64 kbps</description>

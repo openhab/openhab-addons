@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  *         https://github.com/betonniere/freeteuse/
  *         https://github.com/MaximeCheramy/remotefreebox/blob/16e2a42ed7cfcfd1ab303184280564eeace77919/remotefreebox/fbx_descriptor.py
  *         https://dev.freebox.fr/sdk/freebox_player_1.1.4_codes.html
- *
+ *         http://192.168.0.98/pub/remote_control?code=78952520&key=1&long=true
  */
 @NonNullByDefault
 public class PlayerHandler extends HostHandler implements AudioSink {
@@ -117,7 +117,6 @@ public class PlayerHandler extends HostHandler implements AudioSink {
             properties.put(PROPERTY_VIDEO, Boolean.valueOf(matching.get().isVideoCapable()).toString());
             properties.put(PROPERTY_PHOTO, Boolean.valueOf(matching.get().isPhotoCapable()).toString());
             properties.put(PROPERTY_SCREEN, Boolean.valueOf(matching.get().isScreenCapable()).toString());
-
         }
         return properties;
     }

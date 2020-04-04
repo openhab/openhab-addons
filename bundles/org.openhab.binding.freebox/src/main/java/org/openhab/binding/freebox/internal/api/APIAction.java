@@ -13,6 +13,7 @@
 package org.openhab.binding.freebox.internal.api;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -46,7 +47,8 @@ public abstract class APIAction {
     }
 
     public APIAction(@Nullable String requestUrl, @Nullable Object payload) {
-        this.annotation = Arrays.stream(getClass().getAnnotations()).filter(a -> a instanceof RequestAnnotation)
+        Annotation[] annotations = getClass().getAnnotations();
+        this.annotation = Arrays.stream(annotations).filter(a -> a instanceof RequestAnnotation)
                 .map(a -> (RequestAnnotation) a).findFirst().get();
         this.payload = payload;
         this.maxRetry = annotation.maxRetries();

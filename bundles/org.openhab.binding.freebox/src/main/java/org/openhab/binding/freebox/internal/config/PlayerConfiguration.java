@@ -27,4 +27,5 @@ public class PlayerConfiguration extends HostConfiguration {
     public Integer port = -1;
     public String password = "";
     public Boolean acceptAllMp3 = true;
+    public String remoteCode = "";
 }

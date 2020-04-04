@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
-import org.openhab.binding.freebox.internal.api.APIAction;
-
 /**
  * The {@link AirMediaConfig} is the Java class used to map the "AirMediaConfig"
  * structure used by the AirMedia configuration API
@@ -21,7 +19,7 @@ import org.openhab.binding.freebox.internal.api.APIAction;
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class AirMediaConfig extends APIAction {
+public class AirMediaConfig {
     protected Boolean enabled;
     protected String password;
 
