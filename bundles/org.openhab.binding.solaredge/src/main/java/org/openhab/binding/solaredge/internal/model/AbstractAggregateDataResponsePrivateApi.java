@@ -15,7 +15,6 @@ package org.openhab.binding.solaredge.internal.model;
 import java.util.Map;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Energy;
 
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -69,8 +68,8 @@ public abstract class AbstractAggregateDataResponsePrivateApi implements DataRes
      * converts the value to QuantityType. If no unit can be determined UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param value     the value to convert
+     * @param channel channel to assign the value
+     * @param value the value to convert
      */
     protected final void assignValue(Map<Channel, State> targetMap, Channel channel, Value value) {
         State result = UnDefType.UNDEF;
@@ -78,7 +77,7 @@ public abstract class AbstractAggregateDataResponsePrivateApi implements DataRes
         if (value != null && value.value != null && value.unit != null) {
             Unit<Energy> unit = determineEnergyUnit(value.unit);
             if (unit != null) {
-                result = new QuantityType<Energy>(value.value, unit);
+                result = new QuantityType<>(value.value, unit);
             } else {
                 logger.debug("Channel {}: Could not determine unit: '{}'", channel.getFQName(), value.unit);
             }
@@ -92,14 +91,14 @@ public abstract class AbstractAggregateDataResponsePrivateApi implements DataRes
      * converts the value to QuantityType
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param value     the value to convert
+     * @param channel channel to assign the value
+     * @param value the value to convert
      */
     protected final void assignPercentage(Map<Channel, State> targetMap, Channel channel, ValueAndPercent value) {
         State result = UnDefType.UNDEF;
 
         if (value != null && value.percentage != null) {
-            result = new QuantityType<Dimensionless>(value.percentage * 100, SmartHomeUnits.PERCENT);
+            result = new QuantityType<>(value.percentage * 100, SmartHomeUnits.PERCENT);
         } else {
             logger.debug("Channel {}: no value provided.", channel.getFQName());
         }

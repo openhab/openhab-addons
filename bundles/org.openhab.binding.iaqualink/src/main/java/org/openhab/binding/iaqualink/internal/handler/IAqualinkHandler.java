@@ -450,7 +450,7 @@ public class IAqualinkHandler extends BaseThingHandler {
 
             switch (type) {
                 case "Number:Temperature":
-                    return new QuantityType<Temperature>(Float.parseFloat(value), temperatureUnit);
+                    return new QuantityType<>(Float.parseFloat(value), temperatureUnit);
                 case "Number":
                     return new DecimalType(value);
                 case "Dimmer":
@@ -469,7 +469,7 @@ public class IAqualinkHandler extends BaseThingHandler {
      * Creates channels based on what is supported by the controller.
      */
     private void updateChannels(Auxiliary[] auxes, OneTouch[] oneTouches) {
-        List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
         for (Auxiliary aux : auxes) {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), aux.getName());
             logger.debug("Add channel Aux Name: {} Label: {} Type: {} Subtype: {}", aux.getName(), aux.getLabel(),
@@ -532,7 +532,7 @@ public class IAqualinkHandler extends BaseThingHandler {
         if (command instanceof QuantityType) {
             quantity = (QuantityType<Temperature>) command;
         } else {
-            quantity = new QuantityType<Temperature>(new BigDecimal(command.toString()), unit);
+            quantity = new QuantityType<>(new BigDecimal(command.toString()), unit);
         }
 
         QuantityType<Temperature> temparatureQuantity = quantity.toUnit(unit);

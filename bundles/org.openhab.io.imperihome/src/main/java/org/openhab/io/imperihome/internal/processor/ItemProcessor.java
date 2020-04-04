@@ -349,7 +349,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                     if (issTag.startsWith(tagType.getPrefix() + ':')) {
                         String tagValue = issTag.substring(tagType.getPrefix().length() + 1);
                         if (!tags.containsKey(tagType)) {
-                            tags.put(tagType, new LinkedList<String>());
+                            tags.put(tagType, new LinkedList<>());
                         } else if (!tagType.isMultiValue()) {
                             logger.error("Found multiple values for tag {} - only first value is used",
                                     tagType.getPrefix());
@@ -394,7 +394,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Generates an unique device ID for the given item.
-     * 
+     *
      * @param item Item to get device ID for.
      * @return Device ID.
      */
@@ -404,7 +404,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Generates an unique device ID for the given item name.
-     * 
+     *
      * @param itemName Item name.
      * @return Device ID.
      */

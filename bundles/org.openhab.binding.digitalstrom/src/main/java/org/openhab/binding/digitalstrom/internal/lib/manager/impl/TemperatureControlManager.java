@@ -114,7 +114,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
 
     private String currentHeatingWaterSystemStage;
 
-    private final List<String> echoBox = Collections.synchronizedList(new LinkedList<String>());
+    private final List<String> echoBox = Collections.synchronizedList(new LinkedList<>());
 
     /**
      * Creates a new {@link TemperatureControlManager}. The {@link ConnectionManager} is needed. The other fields are
@@ -196,8 +196,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
      * @return all temperature controlled zones
      */
     public Collection<TemperatureControlStatus> getTemperatureControlStatusFromAllZones() {
-        return temperationControlStatus != null ? this.temperationControlStatus.values()
-                : new LinkedList<TemperatureControlStatus>();
+        return temperationControlStatus != null ? this.temperationControlStatus.values() : new LinkedList<>();
     }
 
     /**
@@ -222,7 +221,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
                 }
             } else {
                 if (zoneTemperationControlListenerMap == null) {
-                    zoneTemperationControlListenerMap = new HashMap<Integer, TemperatureControlStatusListener>();
+                    zoneTemperationControlListenerMap = new HashMap<>();
                 }
                 TemperatureControlStatus tempConStat = checkAndGetTemperatureControlStatus(
                         temperatureControlStatusListener.getTemperationControlStatusListenrID());
@@ -339,7 +338,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
     private void addTemperatureControlStatus(TemperatureControlStatus temperationControlStatus) {
         if (temperationControlStatus.isNotSetOff()) {
             if (this.temperationControlStatus == null) {
-                this.temperationControlStatus = new HashMap<Integer, TemperatureControlStatus>();
+                this.temperationControlStatus = new HashMap<>();
             }
             if (this.temperationControlStatus.get(temperationControlStatus.getZoneID()) == null && discovery != null) {
                 discovery.configChanged(temperationControlStatus);

@@ -173,7 +173,7 @@ public class WebInterface implements AtomicReferenceTrait {
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.requestExecutor = new WebRequestExecutor();
-        this.requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(null);
+        this.requestExecutorJobReference = new AtomicReference<>(null);
     }
 
     public void start() {

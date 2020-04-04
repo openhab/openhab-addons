@@ -39,7 +39,7 @@ public abstract class AbstractOwDevice {
     protected OwBaseThingHandler callback;
     protected Boolean isConfigured = false;
 
-    protected Set<String> enabledChannels = new HashSet<String>();
+    protected Set<String> enabledChannels = new HashSet<>();
 
     /**
      * constructor for the onewire device

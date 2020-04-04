@@ -94,7 +94,7 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
     }
 
     private List<Thing> findDevices(Set<ThingTypeUID> deviceTypes) {
-        List<Thing> devs = new ArrayList<Thing>();
+        List<Thing> devs = new ArrayList<>();
         for (Thing thing : thingRegistry.getAll()) {
             if (deviceTypes.contains(thing.getThingTypeUID())) {
                 devs.add(thing);

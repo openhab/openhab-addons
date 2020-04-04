@@ -23,9 +23,6 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Temperature;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -300,7 +297,7 @@ public class AirQualityHandler extends BaseThingHandler {
                 case CO:
                     return data.getData().getIaqi().getCo();
                 case SO2:
-                    return data.getData().getIaqi().getSo2();                    
+                    return data.getData().getIaqi().getSo2();
                 case LOCATIONNAME:
                     return data.getData().getCity().getName();
                 case STATIONID:
@@ -310,9 +307,9 @@ public class AirQualityHandler extends BaseThingHandler {
                 case OBSERVATIONTIME:
                     return data.getData().getTime().getObservationTime();
                 case TEMPERATURE:
-                    return new QuantityType<Temperature>(data.getData().getIaqi().getT(), API_TEMPERATURE_UNIT);
+                    return new QuantityType<>(data.getData().getIaqi().getT(), API_TEMPERATURE_UNIT);
                 case PRESSURE:
-                    return new QuantityType<Pressure>(data.getData().getIaqi().getP(), API_PRESSURE_UNIT);
+                    return new QuantityType<>(data.getData().getIaqi().getP(), API_PRESSURE_UNIT);
                 case HUMIDITY:
                     return new QuantityType<>(data.getData().getIaqi().getH(), API_HUMIDITY_UNIT);
                 case DOMINENTPOL:

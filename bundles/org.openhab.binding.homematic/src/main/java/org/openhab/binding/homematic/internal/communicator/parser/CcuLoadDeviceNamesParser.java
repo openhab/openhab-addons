@@ -36,7 +36,7 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
     @Override
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
-            Map<String, HmDevice> devicesByAddress = new HashMap<String, HmDevice>();
+            Map<String, HmDevice> devicesByAddress = new HashMap<>();
             for (HmDevice device : devices) {
                 devicesByAddress.put(device.getAddress(), device);
             }

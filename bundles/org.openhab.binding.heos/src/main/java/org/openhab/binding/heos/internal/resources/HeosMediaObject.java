@@ -25,8 +25,8 @@ import java.util.Map;
  */
 public class HeosMediaObject {
 
-    private static final String[] SUPPORTED_MEDIA_ITEM_STRINGS = { TYPE, STATION, SONG, ALBUM, ARTIST, IMAGE_URL, QID, MID,
-            ALBUM_ID };
+    private static final String[] SUPPORTED_MEDIA_ITEM_STRINGS = { TYPE, STATION, SONG, ALBUM, ARTIST, IMAGE_URL, QID,
+            MID, ALBUM_ID };
 
     private Map<String, String> mediaInfo;
 
@@ -83,7 +83,7 @@ public class HeosMediaObject {
     }
 
     private void initObject() {
-        mediaInfo = new HashMap<String, String>(9);
+        mediaInfo = new HashMap<>(9);
 
         for (String key : SUPPORTED_MEDIA_ITEM_STRINGS) {
             mediaInfo.put(key, null);

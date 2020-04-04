@@ -37,18 +37,18 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  */
 @Component(service = { HomematicConfigDescriptionProvider.class, ConfigDescriptionProvider.class }, immediate = true)
 public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDescriptionProvider {
-    private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<URI, ConfigDescription>();
+    private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<>();
     protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();
-    
+
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    protected void addHomematicThingTypeExcluder(HomematicThingTypeExcluder homematicThingTypeExcluder){
-        if(homematicThingTypeExcluders != null){
+    protected void addHomematicThingTypeExcluder(HomematicThingTypeExcluder homematicThingTypeExcluder) {
+        if (homematicThingTypeExcluders != null) {
             homematicThingTypeExcluders.add(homematicThingTypeExcluder);
         }
     }
-     
-    protected void removeHomematicThingTypeExcluder(HomematicThingTypeExcluder homematicThingTypeExcluder){
-        if(homematicThingTypeExcluders != null){
+
+    protected void removeHomematicThingTypeExcluder(HomematicThingTypeExcluder homematicThingTypeExcluder) {
+        if (homematicThingTypeExcluders != null) {
             homematicThingTypeExcluders.remove(homematicThingTypeExcluder);
         }
     }
@@ -62,7 +62,7 @@ public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDe
         }
         return false;
     }
-    
+
     @Override
     public Collection<ConfigDescription> getConfigDescriptions(Locale locale) {
         Collection<ConfigDescription> result = new ArrayList<>();
@@ -78,7 +78,7 @@ public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDe
     public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
         return isConfigDescriptionExcluded(uri) ? null : configDescriptionsByURI.get(uri);
     }
-    
+
     @Override
     public ConfigDescription getInternalConfigDescription(URI uri) {
         return configDescriptionsByURI.get(uri);

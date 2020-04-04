@@ -112,7 +112,7 @@ public class KM200ServiceHandler {
                 valObject = new String(nodeRoot.get("value").getAsString());
                 serviceObject.setValue(valObject);
                 if (nodeRoot.has("allowedValues")) {
-                    List<String> valParas = new ArrayList<String>();
+                    List<String> valParas = new ArrayList<>();
                     JsonArray paras = nodeRoot.get("allowedValues").getAsJsonArray();
                     for (int i = 0; i < paras.size(); i++) {
                         String subJSON = paras.get(i).getAsString();
@@ -134,7 +134,7 @@ public class KM200ServiceHandler {
                     serviceObject.setValue(tmpObj);
                 }
                 if (nodeRoot.has("minValue") && nodeRoot.has("maxValue")) {
-                    List<Object> valParas = new ArrayList<Object>();
+                    List<Object> valParas = new ArrayList<>();
                     valParas.add(nodeRoot.get("minValue").getAsBigDecimal());
                     valParas.add(nodeRoot.get("maxValue").getAsBigDecimal());
                     if (nodeRoot.has("unitOfMeasure")) {

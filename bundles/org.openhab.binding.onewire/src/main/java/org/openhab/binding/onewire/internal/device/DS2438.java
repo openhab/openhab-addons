@@ -16,9 +16,6 @@ import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -98,7 +95,7 @@ public class DS2438 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_DEWPOINT)) {
-                QuantityType<Temperature> temperature = new QuantityType<Temperature>(
+                QuantityType<Temperature> temperature = new QuantityType<>(
                         (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
                 logger.trace("read temperature {} from {}", temperature, sensorId);
 
@@ -108,7 +105,7 @@ public class DS2438 extends AbstractOwDevice {
 
                 if (enabledChannels.contains(CHANNEL_HUMIDITY) || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
                         || enabledChannels.contains(CHANNEL_DEWPOINT)) {
-                    QuantityType<Dimensionless> humidity = new QuantityType<Dimensionless>(
+                    QuantityType<Dimensionless> humidity = new QuantityType<>(
                             (DecimalType) bridgeHandler.readDecimalType(sensorId, humidityParameter),
                             SmartHomeUnits.PERCENT);
                     logger.trace("read humidity {} from {}", humidity, sensorId);
@@ -135,7 +132,7 @@ public class DS2438 extends AbstractOwDevice {
                     // workaround bug in DS2438
                     measured = 0.0;
                 }
-                State voltage = new QuantityType<ElectricPotential>(measured, SmartHomeUnits.VOLT);
+                State voltage = new QuantityType<>(measured, SmartHomeUnits.VOLT);
 
                 logger.trace("read voltage {} from {}", voltage, sensorId);
                 callback.postUpdate(CHANNEL_VOLTAGE, voltage);
@@ -147,15 +144,14 @@ public class DS2438 extends AbstractOwDevice {
                     if (current instanceof DecimalType) {
                         double currentDouble = ((DecimalType) current).doubleValue();
                         if (currentDouble >= 0.1 || currentDouble <= 3.78) {
-                            current = new QuantityType<ElectricCurrent>(currentDouble * 5.163 + 0.483,
-                                    SmartHomeUnits.AMPERE);
+                            current = new QuantityType<>(currentDouble * 5.163 + 0.483, SmartHomeUnits.AMPERE);
                         }
                         callback.postUpdate(CHANNEL_CURRENT, current);
                     } else {
                         callback.postUpdate(CHANNEL_CURRENT, UnDefType.UNDEF);
                     }
                 } else {
-                    State current = new QuantityType<ElectricCurrent>(
+                    State current = new QuantityType<>(
                             (DecimalType) bridgeHandler.readDecimalType(sensorId, currentParamater),
                             MILLI(SmartHomeUnits.AMPERE));
                     callback.postUpdate(CHANNEL_CURRENT, current);
@@ -164,7 +160,7 @@ public class DS2438 extends AbstractOwDevice {
 
             if (enabledChannels.contains(CHANNEL_SUPPLYVOLTAGE)) {
                 Vcc = ((DecimalType) bridgeHandler.readDecimalType(sensorId, supplyVoltageParameter)).doubleValue();
-                State supplyVoltage = new QuantityType<ElectricPotential>(Vcc, SmartHomeUnits.VOLT);
+                State supplyVoltage = new QuantityType<>(Vcc, SmartHomeUnits.VOLT);
                 callback.postUpdate(CHANNEL_SUPPLYVOLTAGE, supplyVoltage);
             }
 
@@ -173,7 +169,7 @@ public class DS2438 extends AbstractOwDevice {
                     case ELABNET_V2:
                         State light = bridgeHandler.readDecimalType(sensorId, currentParamater);
                         if (light instanceof DecimalType) {
-                            light = new QuantityType<Illuminance>(
+                            light = new QuantityType<>(
                                     Math.round(Math.pow(10, ((DecimalType) light).doubleValue() / 47 * 1000)),
                                     SmartHomeUnits.LUX);
                             callback.postUpdate(CHANNEL_LIGHT, light);
@@ -182,7 +178,7 @@ public class DS2438 extends AbstractOwDevice {
                     case ELABNET_V1:
                         light = bridgeHandler.readDecimalType(sensorId, currentParamater);
                         if (light instanceof DecimalType) {
-                            light = new QuantityType<Illuminance>(Math.round(Math
+                            light = new QuantityType<>(Math.round(Math
                                     .exp(1.059 * Math.log(1000000 * ((DecimalType) light).doubleValue() / (4096 * 390))
                                             + 4.518)
                                     * 20000), SmartHomeUnits.LUX);
@@ -194,10 +190,10 @@ public class DS2438 extends AbstractOwDevice {
                                 .doubleValue();
                         if (measured <= 0 || measured > 10.0) {
                             // workaround bug in DS2438
-                            light = new QuantityType<Illuminance>(0, SmartHomeUnits.LUX);
+                            light = new QuantityType<>(0, SmartHomeUnits.LUX);
                         } else {
-                            light = new QuantityType<Illuminance>(
-                                    Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)), SmartHomeUnits.LUX);
+                            light = new QuantityType<>(Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)),
+                                    SmartHomeUnits.LUX);
                         }
                         callback.postUpdate(CHANNEL_LIGHT, light);
                 }

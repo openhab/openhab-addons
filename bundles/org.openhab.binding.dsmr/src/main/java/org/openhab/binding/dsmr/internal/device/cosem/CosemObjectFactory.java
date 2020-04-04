@@ -45,7 +45,7 @@ public class CosemObjectFactory {
     /**
      * Lookup cache for dynamic OBIS Identifiers
      */
-    private final HashMap<OBISIdentifier, CosemObjectType> obisLookupTableDynamic = new HashMap<>();
+    private final Map<OBISIdentifier, CosemObjectType> obisLookupTableDynamic = new HashMap<>();
 
     /**
      * Lookup cache for wild card Cosem Object types
@@ -75,8 +75,7 @@ public class CosemObjectFactory {
             if (msgType.obisId.reducedOBISIdentifierIsWildCard()) {
                 obisWildcardCosemTypeList.add(msgType);
             } else if (msgType.obisId.isConflict()) {
-                obisLookupTableMultipleFixed.computeIfAbsent(msgType.obisId, r -> new ArrayList<CosemObjectType>())
-                        .add(msgType);
+                obisLookupTableMultipleFixed.computeIfAbsent(msgType.obisId, r -> new ArrayList<>()).add(msgType);
             } else {
                 obisLookupTableFixed.put(msgType.obisId, msgType);
             }
