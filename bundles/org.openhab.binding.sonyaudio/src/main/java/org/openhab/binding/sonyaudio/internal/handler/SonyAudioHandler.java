@@ -394,7 +394,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         }
     }
 
-    abstract public String setInputCommand(Command command);
+    public abstract String setInputCommand(Command command);
 
     @Override
     public void initialize() {
@@ -498,7 +498,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         }
     }
 
-    abstract public StringType inputSource(String input);
+    public abstract StringType inputSource(String input);
 
     @Override
     public void updateCurrentRadioStation(int radioStation) {

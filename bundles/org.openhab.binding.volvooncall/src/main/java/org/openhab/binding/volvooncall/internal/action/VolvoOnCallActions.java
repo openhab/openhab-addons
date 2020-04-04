@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VolvoOnCallActions implements ThingActions {
 
-    private final static Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
+    private final Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
 
     private @Nullable VehicleHandler handler;
 

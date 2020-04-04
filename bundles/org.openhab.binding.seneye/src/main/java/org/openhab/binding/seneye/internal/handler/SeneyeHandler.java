@@ -54,7 +54,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (seneyeService == null || seneyeService.isInitialized() == false) {
+        if (seneyeService == null || !seneyeService.isInitialized()) {
             return;
         }
 
