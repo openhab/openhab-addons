@@ -187,17 +187,17 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
             boolean matchesAction = result.contains("<s:Body><u:" + action);
 
             if (action != null) {
-                if (matchesAction == false) {
+                if (!matchesAction) {
                     continue;
                 }
             }
             if (capitability != null) {
-                if (matchesCapability == false) {
+                if (!matchesCapability) {
                     continue;
                 }
             }
             if (value != null) {
-                if (matchesValue == false) {
+                if (!matchesValue) {
                     continue;
                 }
             }

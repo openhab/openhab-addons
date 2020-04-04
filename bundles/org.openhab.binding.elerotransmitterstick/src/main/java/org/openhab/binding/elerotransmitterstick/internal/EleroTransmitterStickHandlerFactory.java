@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.elerotransmitterstick")
 public class EleroTransmitterStickHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_STICK);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ELERO_CHANNEL);

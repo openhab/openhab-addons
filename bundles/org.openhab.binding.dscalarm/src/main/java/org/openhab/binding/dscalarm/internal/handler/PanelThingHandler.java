@@ -262,7 +262,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
         boolean isTimeStamp = timeStamp != "";
 
-        if ((timeStamp == "" && isTimeStamp == false) || (timeStamp != "" && isTimeStamp == true)) {
+        if ((timeStamp == "" && !isTimeStamp) || (timeStamp != "" && isTimeStamp)) {
             logger.debug("setTimeStampState(): Already Set: {}", timeStamp);
             return;
         } else if (timeStamp != "") {
