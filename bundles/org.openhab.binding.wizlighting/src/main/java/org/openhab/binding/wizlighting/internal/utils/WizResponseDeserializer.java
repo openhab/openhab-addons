@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.utils;
 
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
+
 import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +78,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     logger.warn("Bulb returned an error on method {}:  {}, {}", jobject.get("method"), error.code,
                             error.message);
                 } else {
-                    logger.warn("Bulb returned an error:  {}, {}", error.code);
+                    logger.warn("Bulb returned an error:  {}", error.code);
                 }
                 return deserializedResponse;
             }
@@ -103,7 +105,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     // {"method": "registration", "id": 1, "env": "pro", "result": {"mac":
                     // "macOfopenHAB", "success": true}}
                     logger.trace("Deserializing registration result");
-                    if (!jobject.has("result")){
+                    if (!jobject.has("result")) {
                         throw new JsonParseException("registration received, but no result object present");
                     }
                     JsonObject registrationResult = jobject.getAsJsonObject("result");
@@ -139,7 +141,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     }
                     SystemConfigResult parsedFBParams = context.deserialize(jobject.getAsJsonObject("params"),
                             SystemConfigResult.class);
-                    if (parsedFBParams.mac != null) {
+                    if (parsedFBParams.mac == MISSING_INVALID_MAC_ADDRESS) {
                         throw new JsonParseException("firstBeat received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedFBParams.mac);
@@ -159,7 +161,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     }
                     SystemConfigResult parsedCResult = context.deserialize(jobject.getAsJsonObject("result"),
                             SystemConfigResult.class);
-                    if (parsedCResult.mac != null) {
+                    if (parsedCResult.mac == MISSING_INVALID_MAC_ADDRESS) {
                         throw new JsonParseException("getSystemConfig received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedCResult.mac);
