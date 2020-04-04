@@ -13,7 +13,7 @@
   <name>openHAB Add-ons :: Bundles :: Voice :: Mary Text-to-Speech</name>
 
   <properties>
-    <bnd.importpackage>com.twmacinta.util;resolution:=optional,gnu.trove;resolution:=optional,Jama;resolution:=optional,Jampack;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>com.twmacinta.util;resolution:=optional,gnu.trove;resolution:=optional,Jampack;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -93,6 +93,12 @@
       <groupId>de.dfki.mary</groupId>
       <artifactId>voice-cmu-slt-hsmm</artifactId>
       <version>5.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>gov.nist.math</groupId>
+      <artifactId>jama</artifactId>
+      <version>1.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
