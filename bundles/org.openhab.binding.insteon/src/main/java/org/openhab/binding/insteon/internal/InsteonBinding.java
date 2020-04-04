@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -308,7 +309,7 @@ public class InsteonBinding {
     private int checkIfInModemDatabase(InsteonDevice dev) {
         try {
             InsteonAddress addr = dev.getAddress();
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
             if (dbes.containsKey(addr)) {
                 if (!dev.hasModemDBEntry()) {
                     logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr, true));
@@ -328,7 +329,7 @@ public class InsteonBinding {
     public Map<String, String> getDatabaseInfo() {
         try {
             Map<String, String> databaseInfo = new HashMap<>();
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
             for (InsteonAddress addr : dbes.keySet()) {
                 String a = addr.toString();
                 databaseInfo.put(a, a + ": " + getLinkInfo(dbes, addr, false));
@@ -367,10 +368,10 @@ public class InsteonBinding {
         return (dev);
     }
 
-    private String getLinkInfo(HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
+    private String getLinkInfo(Map<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
         ModemDBEntry dbe = dbes.get(a);
-        ArrayList<Byte> controls = dbe.getControls();
-        ArrayList<Byte> responds = dbe.getRespondsTo();
+        List<Byte> controls = dbe.getControls();
+        List<Byte> responds = dbe.getRespondsTo();
 
         Port port = dbe.getPort();
         String deviceName = port.getDeviceName();
@@ -399,8 +400,8 @@ public class InsteonBinding {
         return buf.toString();
     }
 
-    private String toGroupString(ArrayList<Byte> group) {
-        ArrayList<Byte> sorted = new ArrayList<>(group);
+    private String toGroupString(List<Byte> group) {
+        List<Byte> sorted = new ArrayList<>(group);
         Collections.sort(sorted, new Comparator<Byte>() {
             @Override
             public int compare(Byte b1, Byte b2) {
@@ -460,9 +461,9 @@ public class InsteonBinding {
 
         @Override
         public void driverCompletelyInitialized() {
-            List<String> missing = new ArrayList<String>();
+            List<String> missing = new ArrayList<>();
             try {
-                HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+                Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
                 logger.debug("modem database has {} entries!", dbes.size());
                 if (dbes.isEmpty()) {
                     logger.warn("the modem link database is empty!");
@@ -470,7 +471,7 @@ public class InsteonBinding {
                 for (InsteonAddress k : dbes.keySet()) {
                     logger.debug("modem db entry: {}", k);
                 }
-                HashSet<InsteonAddress> addrs = new HashSet<>();
+                Set<InsteonAddress> addrs = new HashSet<>();
                 for (InsteonDevice dev : devices.values()) {
                     InsteonAddress a = dev.getAddress();
                     if (!dbes.containsKey(a)) {

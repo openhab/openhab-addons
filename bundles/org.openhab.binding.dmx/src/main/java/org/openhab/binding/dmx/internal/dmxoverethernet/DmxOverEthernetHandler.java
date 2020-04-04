@@ -38,7 +38,7 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
 
     protected DmxOverEthernetPacket packetTemplate;
     protected IpNode senderNode = new IpNode();
-    protected List<IpNode> receiverNodes = new ArrayList<IpNode>();
+    protected List<IpNode> receiverNodes = new ArrayList<>();
 
     protected boolean refreshAlways = false;
 

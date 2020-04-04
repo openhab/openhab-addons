@@ -115,7 +115,7 @@ public abstract class BluetoothDevice {
     /**
      * List of supported services
      */
-    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<UUID, BluetoothService>();
+    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<>();
 
     /**
      * Last known RSSI
@@ -135,7 +135,7 @@ public abstract class BluetoothDevice {
     /**
      * The event listeners will be notified of device updates
      */
-    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<BluetoothDeviceListener>();
+    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address

@@ -130,7 +130,7 @@ public class ValloxMVWebSocket {
          * Method to generate ByteBuffer request to be sent to vallox online websocket
          * to request or set data
          *
-         * @param mode         246 for data request, 249 for setting data
+         * @param mode 246 for data request, 249 for setting data
          * @param hmParameters HashMap for setting data with register as key and value as value
          * @return ByteBuffer to be sent to websocket
          */
@@ -162,7 +162,7 @@ public class ValloxMVWebSocket {
             // We will never reach integer max value in the loop so it is ok to do this after the loop
             // This is not needed if we make sure that conversion to bytes will take care of it
             // bitwise AND inside convertIntegerIntoByteBuffer() takes care of this
-            // checksum = checksum & 0xffff; 
+            // checksum = checksum & 0xffff;
 
             bb.put(convertIntegerIntoByteBuffer(checksum));
             bb.position(0);
@@ -181,7 +181,7 @@ public class ValloxMVWebSocket {
             if ((updateState == null) || (channelUID == null)) {
                 // requestData (Length 3, Command to get data 246, empty set, checksum [sum of everything before])
                 iValloxCmd = 246;
-                return generateCustomRequest(246, new HashMap<Integer, Integer>());
+                return generateCustomRequest(246, new HashMap<>());
             }
             String strChannelUIDid = channelUID.getId();
             int iUpdateState = Integer.parseInt(updateState);
@@ -231,8 +231,7 @@ public class ValloxMVWebSocket {
                                 iBoostTime = 30;
                             }
                             if (OnOffType.ON.equals(ooBoostTimerEnabled)) {
-                                logger.debug("Changing to Boost profile, timer {} minutes",
-                                    iBoostTime);
+                                logger.debug("Changing to Boost profile, timer {} minutes", iBoostTime);
                             } else {
                                 logger.debug("Changing to Boost profile, timer not enabled");
                             }
@@ -363,10 +362,10 @@ public class ValloxMVWebSocket {
                     // COMMAND_WRITE_DATA (249) or COMMAND_READ_DATA (250)
                     int iChecksum = 0;
                     int[] arriData = new int[iDataLength];
-                    for (int i=0; i < iDataLength; i++) {
+                    for (int i = 0; i < iDataLength; i++) {
                         arriData[i] = getNumberLE(bytes, (i * 2));
                     }
-                    for (int i=0; i < (iDataLength - 1); i++) {
+                    for (int i = 0; i < (iDataLength - 1); i++) {
                         iChecksum += arriData[i];
                     }
                     iChecksum &= 0xffff;
@@ -388,6 +387,7 @@ public class ValloxMVWebSocket {
                     }
                     // COMMAND_READ_DATA (250)
                     /* Read data command is not implemented, response check is ready for future implementation
+                    // @formatter:off
                     if ((((iDataLength - 1) % 2) != 0) || (iDataLength < 5)) {
                         logger.debug("Response corrupted, data length is wrong");
                         return;
@@ -395,6 +395,7 @@ public class ValloxMVWebSocket {
                     // number of data pairs (address, value) = (iDataLength - 3) / 2
                     // First data pair (address, value) is in positions 2 and 3
                     // (address, value) pairs could be put into array or hashmap
+                    // @formatter:on
                     */
                     logger.debug("Vallox command {} not implemented", iValloxCmd);
                     return;

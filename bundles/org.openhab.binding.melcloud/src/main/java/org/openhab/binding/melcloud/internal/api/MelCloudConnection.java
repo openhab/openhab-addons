@@ -100,7 +100,7 @@ public class MelCloudConnection {
             String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
                     TIMEOUT_MILLISECONDS);
             logger.debug("Device list response: {}", response);
-            List<Device> devices = new ArrayList<Device>();
+            List<Device> devices = new ArrayList<>();
             ListDevicesResponse[] buildings = gson.fromJson(response, ListDevicesResponse[].class);
             Arrays.asList(buildings).forEach(building -> {
                 if (building.getStructure().getDevices() != null) {

@@ -33,8 +33,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = { ChannelTypeProvider.class, KM200ChannelTypeProvider.class }, immediate = true)
 public class KM200ChannelTypeProvider implements ChannelTypeProvider {
-    private List<ChannelType> channelTypes = new CopyOnWriteArrayList<ChannelType>();
-    private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
+    private List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
+    private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
 
     @Override
     public Collection<ChannelType> getChannelTypes(Locale locale) {
@@ -75,7 +75,7 @@ public class KM200ChannelTypeProvider implements ChannelTypeProvider {
     }
 
     public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<ChannelType>();
+        List<ChannelType> removes = new ArrayList<>();
         for (ChannelType c : channelTypes) {
             if (c.getUID().getAsString().startsWith(uid.getAsString())) {
                 removes.add(c);

@@ -39,7 +39,7 @@ public final class NetworkUtils {
      * @return list with all the broadcast address's
      */
     public static List<InetAddress> getAllBroadcastAddresses() {
-        List<InetAddress> listOfBroadcasts = new ArrayList<InetAddress>();
+        List<InetAddress> listOfBroadcasts = new ArrayList<>();
         Enumeration<NetworkInterface> list;
         try {
             list = NetworkInterface.getNetworkInterfaces();
@@ -64,7 +64,7 @@ public final class NetworkUtils {
                 }
             }
         } catch (SocketException ex) {
-            return new ArrayList<InetAddress>();
+            return new ArrayList<>();
         }
         return listOfBroadcasts;
     }

@@ -14,7 +14,7 @@ package org.openhab.binding.insteon.internal.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -151,7 +151,7 @@ public class Port {
      */
     public void clearModemDB() {
         logger.debug("clearing modem db!");
-        HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
+        Map<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
         dbes.clear();
         getDriver().unlockModemDBEntries();
     }

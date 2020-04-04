@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class DelayedExecuter {
     private final Logger logger = LoggerFactory.getLogger(DelayedExecuter.class);
 
-    private Map<HmDatapointInfo, Timer> delayedEvents = new HashMap<HmDatapointInfo, Timer>();
+    private Map<HmDatapointInfo, Timer> delayedEvents = new HashMap<>();
 
     /**
      * Executes a callback method either immediately or after a given delay.

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.things;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,13 +45,13 @@ public class VeluxExistingScenes {
 
     // Type definitions, class-internal variables
 
-    private ConcurrentHashMap<String, VeluxScene> existingScenesBySceneName;
+    private Map<String, VeluxScene> existingScenesBySceneName;
     private int memberCount;
 
     // Constructor methods
 
     public VeluxExistingScenes() {
-        existingScenesBySceneName = new ConcurrentHashMap<String, VeluxScene>();
+        existingScenesBySceneName = new ConcurrentHashMap<>();
         memberCount = 0;
         logger.trace("VeluxExistingScenes(constructor) done.");
     }

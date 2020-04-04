@@ -114,7 +114,7 @@ public class ShellyEventServlet extends HttpServlet {
                 type = StringUtils.substringAfterLast(path, "/").toLowerCase();
             }
             logger.trace("Process event of type type={} for device {}, index={}", type, deviceName, index);
-            Map<String, String> parms = new HashMap<String, String>();
+            Map<String, String> parms = new HashMap<>();
             for (Map.Entry<String, String[]> p : parameters.entrySet()) {
                 parms.put(p.getKey(), p.getValue()[0]);
 

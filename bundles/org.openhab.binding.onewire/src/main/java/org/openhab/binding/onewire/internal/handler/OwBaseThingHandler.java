@@ -70,7 +70,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
     protected List<String> requiredProperties = new ArrayList<>(REQUIRED_PROPERTIES);
     protected Set<OwSensorType> supportedSensorTypes;
 
-    protected final List<AbstractOwDevice> sensors = new ArrayList<AbstractOwDevice>();
+    protected final List<AbstractOwDevice> sensors = new ArrayList<>();
     protected @NonNullByDefault({}) SensorId sensorId;
     protected @NonNullByDefault({}) OwSensorType sensorType;
 

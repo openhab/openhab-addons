@@ -113,7 +113,7 @@ public class KM200ThingHandler extends BaseThingHandler {
      * Choose a tag for a channel
      */
     Set<String> checkTag(String unitOfMeasure, boolean readOnly) {
-        Set<String> tags = new HashSet<String>();
+        Set<String> tags = new HashSet<>();
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
             if (readOnly) {
                 tags.add("CurrentTemperature");
@@ -216,7 +216,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                 logger.debug("Bridge: not initialized: {}", bridge);
                 return;
             }
-            List<Channel> subChannels = new ArrayList<Channel>();
+            List<Channel> subChannels = new ArrayList<>();
             if (gateway.getDevice().containsService(service)) {
                 KM200ServiceObject serObj = gateway.getDevice().getServiceObject(service);
                 addChannels(serObj, thing, subChannels, "");
@@ -326,7 +326,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                     /* Creating an new channel type with capabilities from service */
                     List<@NonNull StateOption> options = null;
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
-                        options = new ArrayList<StateOption>();
+                        options = new ArrayList<>();
                         // The type is definitely correct here
                         @SuppressWarnings("unchecked")
                         List<String> subValParas = (List<String>) serObj.serviceTreeMap.get(subKey).getValueParameter();
