@@ -245,7 +245,7 @@ public class BsbLanParameterConverterTests {
         assertEquals("1", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, OnOffType.ON));
         assertEquals("0", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, OnOffType.OFF));
         assertEquals("42", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new DecimalType(42)));
-        assertEquals("22.5", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE,  new DecimalType(22.5)));
+        assertEquals("22.5", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new DecimalType(22.5)));
         assertEquals("A string value", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new StringType("A string value")));
         assertEquals("", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new StringType("")));
     }

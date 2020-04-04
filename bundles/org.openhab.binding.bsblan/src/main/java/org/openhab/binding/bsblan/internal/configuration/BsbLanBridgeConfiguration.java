@@ -40,7 +40,7 @@ public class BsbLanBridgeConfiguration {
     public String username;
 
     /**
-     * * HTTP Basic Authentication Password
+     * HTTP Basic Authentication Password
      */
     public String password;
 
