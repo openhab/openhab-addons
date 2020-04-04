@@ -386,16 +386,17 @@ public class ValloxMVWebSocket {
                         return;
                     }
                     // COMMAND_READ_DATA (250)
-                    /*
-                     * Read data command is not implemented, response check is ready for future implementation
-                     * if ((((iDataLength - 1) % 2) != 0) || (iDataLength < 5)) {
-                     * logger.debug("Response corrupted, data length is wrong");
-                     * return;
-                     * }
-                     * // number of data pairs (address, value) = (iDataLength - 3) / 2
-                     * // First data pair (address, value) is in positions 2 and 3
-                     * // (address, value) pairs could be put into array or hashmap
-                     */
+                    /* Read data command is not implemented, response check is ready for future implementation
+                    // @formatter:off
+                    if ((((iDataLength - 1) % 2) != 0) || (iDataLength < 5)) {
+                        logger.debug("Response corrupted, data length is wrong");
+                        return;
+                    }
+                    // number of data pairs (address, value) = (iDataLength - 3) / 2
+                    // First data pair (address, value) is in positions 2 and 3
+                    // (address, value) pairs could be put into array or hashmap
+                    // @formatter:on
+                    */
                     logger.debug("Vallox command {} not implemented", iValloxCmd);
                     return;
                 } else if (iValloxCmd == 246) {
