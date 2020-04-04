@@ -104,7 +104,7 @@ public class SlipVeluxBridge extends VeluxBridge {
         super(bridgeInstance);
         logger.trace("SlipVeluxBridge(constructor) called.");
         bridgeAPI = new SlipBridgeAPI(bridgeInstance);
-        supportedProtocols = new TreeSet<String>();
+        supportedProtocols = new TreeSet<>();
         supportedProtocols.add("slip");
         logger.trace("SlipVeluxBridge(constructor) done.");
     }

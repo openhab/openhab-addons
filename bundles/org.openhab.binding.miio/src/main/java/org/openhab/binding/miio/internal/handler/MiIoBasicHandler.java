@@ -79,10 +79,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return true;
     });
 
-    List<MiIoBasicChannel> refreshList = new ArrayList<MiIoBasicChannel>();
+    List<MiIoBasicChannel> refreshList = new ArrayList<>();
 
     private @Nullable MiIoBasicDevice miioDevice;
-    private Map<String, MiIoDeviceAction> actions = new HashMap<String, MiIoDeviceAction>();
+    private Map<String, MiIoDeviceAction> actions = new HashMap<>();
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing, miIoDatabaseWatchService);
@@ -93,7 +93,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         super.initialize();
         hasChannelStructure = false;
         isIdentified = false;
-        refreshList = new ArrayList<MiIoBasicChannel>();
+        refreshList = new ArrayList<>();
     }
 
     @Override
@@ -280,7 +280,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
         }
         if (hasChannelStructure) {
-            refreshList = new ArrayList<MiIoBasicChannel>();
+            refreshList = new ArrayList<>();
             final MiIoBasicDevice miioDevice = this.miioDevice;
             if (miioDevice != null) {
                 for (MiIoBasicChannel miChannel : miioDevice.getDevice().getChannels()) {
@@ -312,7 +312,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             int channelsAdded = 0;
 
             // make a map of the actions
-            actions = new HashMap<String, MiIoDeviceAction>();
+            actions = new HashMap<>();
             final MiIoBasicDevice device = this.miioDevice;
             if (device != null) {
                 for (MiIoBasicChannel miChannel : device.getDevice().getChannels()) {

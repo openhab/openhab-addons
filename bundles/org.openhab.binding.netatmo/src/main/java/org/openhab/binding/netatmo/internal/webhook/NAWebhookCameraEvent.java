@@ -147,7 +147,7 @@ public class NAWebhookCameraEvent {
     }
 
     @SerializedName("persons")
-    private List<NAWebhookCameraEventPerson> persons = new ArrayList<NAWebhookCameraEventPerson>();
+    private List<NAWebhookCameraEventPerson> persons = new ArrayList<>();
 
     public List<NAWebhookCameraEventPerson> getPersons() {
         return persons;

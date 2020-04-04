@@ -204,7 +204,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
-        updateState(CHANNEL_MEASURED, new QuantityType<Temperature>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
+        updateState(CHANNEL_MEASURED, new QuantityType<>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
         long overruletime = nhcThermostat.getRemainingOverruletime();
         updateState(CHANNEL_OVERRULETIME, new DecimalType(overruletime));
@@ -214,9 +214,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         // If there is an overrule temperature set, use this in the setpoint channel, otherwise use the original
         // setpoint temperature
         if (overruletime == 0) {
-            updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(setpoint / 10.0, CELSIUS));
+            updateState(CHANNEL_SETPOINT, new QuantityType<>(setpoint / 10.0, CELSIUS));
         } else {
-            updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(overrule / 10.0, CELSIUS));
+            updateState(CHANNEL_SETPOINT, new QuantityType<>(overrule / 10.0, CELSIUS));
         }
 
         updateState(CHANNEL_MODE, new DecimalType(mode));

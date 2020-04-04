@@ -90,7 +90,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
             ItemStateEvent stateEvent = (ItemStateEvent) event;
             logger.trace("Captured event: {} of type {}. Payload: {}", event,
                     stateEvent.getItemState().getClass().getSimpleName(), event.getPayload());
-            stateUpdates.computeIfAbsent(stateEvent.getItemName(), (item) -> new ArrayList<State>())
+            stateUpdates.computeIfAbsent(stateEvent.getItemName(), (item) -> new ArrayList<>())
                     .add(stateEvent.getItemState());
         }
 

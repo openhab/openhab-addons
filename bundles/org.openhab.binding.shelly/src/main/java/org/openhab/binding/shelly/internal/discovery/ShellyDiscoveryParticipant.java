@@ -106,7 +106,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String thingType = "";
         ThingUID thingUID = null;
         ShellyDeviceProfile profile = null;
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         try {
             name = service.getName().toLowerCase();

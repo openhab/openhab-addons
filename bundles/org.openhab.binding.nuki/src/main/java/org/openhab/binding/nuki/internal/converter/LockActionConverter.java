@@ -24,10 +24,10 @@ import org.openhab.binding.nuki.internal.NukiBindingConstants;
  */
 public abstract class LockActionConverter {
 
-    private static HashMap<Integer, Integer> mapping;
+    private static Map<Integer, Integer> mapping;
 
     private static void setupMapping() {
-        mapping = new HashMap<Integer, Integer>();
+        mapping = new HashMap<>();
         mapping.put(NukiBindingConstants.LOCK_STATES_UNLOCKING, NukiBindingConstants.LOCK_ACTIONS_UNLOCK);
         mapping.put(NukiBindingConstants.LOCK_STATES_LOCKING, NukiBindingConstants.LOCK_ACTIONS_LOCK);
         mapping.put(NukiBindingConstants.LOCK_STATES_UNLATCHING, NukiBindingConstants.LOCK_ACTIONS_UNLATCH);

@@ -87,10 +87,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
-            .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+            .synchronizedList(new ArrayList<>());
 
-    private Map<String, SqueezeBoxPlayer> players = Collections
-            .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+    private Map<String, SqueezeBoxPlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     // client socket and listener thread
     private Socket clientSocket;

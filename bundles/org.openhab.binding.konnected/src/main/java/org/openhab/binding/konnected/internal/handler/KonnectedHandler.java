@@ -20,9 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -148,21 +145,21 @@ public class KonnectedHandler extends BaseThingHandler {
                     updateState(channelId, onOffType);
                 } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
-                    updateState(channelId, new QuantityType<Dimensionless>(Double.parseDouble(event.getHumi()),
-                            SmartHomeUnits.PERCENT));
+                    updateState(channelId,
+                            new QuantityType<>(Double.parseDouble(event.getHumi()), SmartHomeUnits.PERCENT));
                 } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
                     Configuration configuration = channel.getConfiguration();
                     if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE) == true)) {
                         updateState(channelId,
-                                new QuantityType<Temperature>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
+                                new QuantityType<>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
                     } else {
                         // need to check to make sure right dsb1820 address
                         logger.debug("The address of the DSB1820 sensor received from modeule {} is: {}",
                                 this.thing.getUID(), event.getAddr());
                         if (event.getAddr().toString()
                                 .equalsIgnoreCase((String) (configuration.get(CHANNEL_TEMPERATURE_DS18B20_ADDRESS)))) {
-                            updateState(channelId, new QuantityType<Temperature>(Double.parseDouble(event.getTemp()),
-                                    SIUnits.CELSIUS));
+                            updateState(channelId,
+                                    new QuantityType<>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
                         } else {
                             logger.debug("The address of {} does not match {} not updating this channel",
                                     event.getAddr().toString(),

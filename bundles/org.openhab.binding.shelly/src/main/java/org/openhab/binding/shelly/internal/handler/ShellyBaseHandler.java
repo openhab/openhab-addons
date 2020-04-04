@@ -409,7 +409,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         String alarm = "";
         boolean force = false;
 
-        Map<String, String> propertyUpdates = new HashMap<String, String>();
+        Map<String, String> propertyUpdates = new HashMap<>();
 
         // Update uptime and WiFi
         if (updated) {
@@ -784,7 +784,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             properties.put(PROPERTY_UPDATE_NEW_VERS, getString(status.update.newVersion));
         }
 
-        Map<String, String> thingProperties = new HashMap<String, String>();
+        Map<String, String> thingProperties = new HashMap<>();
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             thingProperties.put(property.getKey(), (String) property.getValue());
         }
@@ -843,7 +843,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     @SuppressWarnings("null")
     public static Map<String, Object> fillDeviceProperties(ShellyDeviceProfile profile) {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         properties.put(PROPERTY_VENDOR, VENDOR);
         if (profile != null) {

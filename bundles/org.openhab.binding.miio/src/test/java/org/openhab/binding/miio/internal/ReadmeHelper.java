@@ -181,7 +181,7 @@ public class ReadmeHelper {
     }
 
     private List<MiIoBasicDevice> findDatabaseEntrys() {
-        List<MiIoBasicDevice> arrayList = new ArrayList<MiIoBasicDevice>();
+        List<MiIoBasicDevice> arrayList = new ArrayList<>();
         String path = "./src/main/resources/database/";
         File dir = new File(path);
         File[] filesList = dir.listFiles();

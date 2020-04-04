@@ -86,7 +86,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     private static final Set<String> USUAL_FEATURES = Stream.of(FEATURE_CONDITIONS, FEATURE_FORECAST10DAY)
             .collect(Collectors.toSet());
 
-    private static final Map<String, String> LANG_ISO_TO_WU_CODES = new HashMap<String, String>();
+    private static final Map<String, String> LANG_ISO_TO_WU_CODES = new HashMap<>();
     // Codes from https://www.wunderground.com/weather/api/d/docs?d=language-support
     static {
         LANG_ISO_TO_WU_CODES.put("AF", "AF");
@@ -170,7 +170,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         // Yiddish - transliterated => JI
         LANG_ISO_TO_WU_CODES.put("YI", "YI");
     }
-    private static final Map<String, String> LANG_COUNTRY_TO_WU_CODES = new HashMap<String, String>();
+    private static final Map<String, String> LANG_COUNTRY_TO_WU_CODES = new HashMap<>();
     static {
         LANG_COUNTRY_TO_WU_CODES.put("en-GB", "LI"); // British English
         LANG_COUNTRY_TO_WU_CODES.put("fr-CA", "FC"); // French Canadian

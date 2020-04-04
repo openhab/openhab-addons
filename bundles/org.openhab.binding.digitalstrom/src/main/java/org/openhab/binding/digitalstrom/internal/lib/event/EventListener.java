@@ -65,7 +65,7 @@ public class EventListener {
 
     private int subscriptionID = 15;
     private final int timeout = 500;
-    private final List<String> subscribedEvents = Collections.synchronizedList(new LinkedList<String>());
+    private final List<String> subscribedEvents = Collections.synchronizedList(new LinkedList<>());
     private boolean subscribed = false;
 
     // error message
@@ -74,7 +74,7 @@ public class EventListener {
                                                                      // found."
 
     private final ConnectionManager connManager;
-    private final List<EventHandler> eventHandlers = Collections.synchronizedList(new LinkedList<EventHandler>());
+    private final List<EventHandler> eventHandlers = Collections.synchronizedList(new LinkedList<>());
     private final Config config;
     private boolean isStarted = false;
 
@@ -218,7 +218,7 @@ public class EventListener {
      */
     public void removeEventHandler(EventHandler eventHandler) {
         if (eventHandler != null && eventHandlers.contains(eventHandler)) {
-            List<String> tempSubsList = new ArrayList<String>();
+            List<String> tempSubsList = new ArrayList<>();
             int index = -1;
             EventHandler intEventHandler = null;
             boolean subscribedEventsChanged = false;

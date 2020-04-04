@@ -195,13 +195,13 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     }
 
     private Synop createSynopObject(String synopMessage) {
-        ArrayList<String> liste = new ArrayList<String>(Arrays.asList(synopMessage.split("\\s+")));
+        List<String> list = new ArrayList<>(Arrays.asList(synopMessage.split("\\s+")));
         if (synopMessage.startsWith(Constants.LAND_STATION_CODE)) {
-            return new SynopLand(liste);
+            return new SynopLand(list);
         } else if (synopMessage.startsWith(Constants.SHIP_STATION_CODE)) {
-            return new SynopShip(liste);
+            return new SynopShip(list);
         } else {
-            return new SynopMobileLand(liste);
+            return new SynopMobileLand(list);
         }
     }
 

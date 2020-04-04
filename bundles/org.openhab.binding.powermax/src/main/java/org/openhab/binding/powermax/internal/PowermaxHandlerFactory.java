@@ -109,8 +109,8 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
         PowermaxDiscoveryService discoveryService = new PowermaxDiscoveryService(bridgeHandler);
         discoveryService.activate();
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDiscoveryService(PowermaxBridgeHandler bridgeHandler) {

@@ -191,7 +191,7 @@ public class DsAPIImpl implements DsAPI {
                 && responseObj.get(JSONApiResponseKeysEnum.RESULT.getKey()) instanceof JsonArray) {
             JsonArray array = (JsonArray) responseObj.get(JSONApiResponseKeysEnum.RESULT.getKey());
 
-            List<Device> deviceList = new LinkedList<Device>();
+            List<Device> deviceList = new LinkedList<>();
             for (int i = 0; i < array.size(); i++) {
                 if (array.get(i) instanceof JsonObject) {
                     deviceList.add(new DeviceImpl((JsonObject) array.get(i)));
@@ -199,7 +199,7 @@ public class DsAPIImpl implements DsAPI {
             }
             return deviceList;
         }
-        return new LinkedList<Device>();
+        return new LinkedList<>();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class DsAPIImpl implements DsAPI {
             if (responseObj.get(JSONApiResponseKeysEnum.CIRCUITS.getKey()).isJsonArray()) {
                 JsonArray array = responseObj.get(JSONApiResponseKeysEnum.CIRCUITS.getKey()).getAsJsonArray();
 
-                List<Circuit> circuitList = new LinkedList<Circuit>();
+                List<Circuit> circuitList = new LinkedList<>();
                 for (int i = 0; i < array.size(); i++) {
                     if (array.get(i).isJsonObject()) {
                         circuitList.add(new CircuitImpl(array.get(i).getAsJsonObject()));
@@ -223,7 +223,7 @@ public class DsAPIImpl implements DsAPI {
                 return circuitList;
             }
         }
-        return new LinkedList<Circuit>();
+        return new LinkedList<>();
     }
 
     @Override
@@ -483,7 +483,7 @@ public class DsAPIImpl implements DsAPI {
             if (resObj != null && resObj.get(JSONApiResponseKeysEnum.RESOLUTIONS.getKey()) instanceof JsonArray) {
                 JsonArray array = (JsonArray) resObj.get(JSONApiResponseKeysEnum.RESOLUTIONS.getKey());
 
-                List<Integer> resolutionList = new LinkedList<Integer>();
+                List<Integer> resolutionList = new LinkedList<>();
                 for (int i = 0; i < array.size(); i++) {
                     if (array.get(i) instanceof JsonObject) {
                         JsonObject jObject = (JsonObject) array.get(i);
@@ -543,7 +543,7 @@ public class DsAPIImpl implements DsAPI {
                 if (latestObj != null && latestObj.get(JSONApiResponseKeysEnum.VALUES.getKey()) instanceof JsonArray) {
                     JsonArray array = (JsonArray) latestObj.get(JSONApiResponseKeysEnum.VALUES.getKey());
 
-                    List<CachedMeteringValue> list = new LinkedList<CachedMeteringValue>();
+                    List<CachedMeteringValue> list = new LinkedList<>();
                     for (int i = 0; i < array.size(); i++) {
                         if (array.get(i) instanceof JsonObject) {
                             list.add(new JSONCachedMeteringValueImpl((JsonObject) array.get(i), type, unit));
@@ -572,7 +572,7 @@ public class DsAPIImpl implements DsAPI {
 
     @Override
     public List<String> getMeterList(String token) {
-        List<String> meterList = new LinkedList<String>();
+        List<String> meterList = new LinkedList<>();
         JsonObject responseObj = query(token, QUERY_GET_METERLIST);
         if (responseObj != null && responseObj.get(JSONApiResponseKeysEnum.DS_METERS.getKey()).isJsonArray()) {
             JsonArray array = responseObj.get(JSONApiResponseKeysEnum.DS_METERS.getKey()).getAsJsonArray();
@@ -647,7 +647,7 @@ public class DsAPIImpl implements DsAPI {
         if (JSONResponseHandler.checkResponse(responseObj)) {
             JsonObject obj = JSONResponseHandler.getResultJsonObject(responseObj);
             if (obj != null) {
-                Map<String, String> dsidMap = new HashMap<String, String>(obj.entrySet().size());
+                Map<String, String> dsidMap = new HashMap<>(obj.entrySet().size());
                 for (Entry<String, JsonElement> entry : obj.entrySet()) {
                     dsidMap.put(entry.getKey(), entry.getValue().getAsString());
                 }
@@ -1109,7 +1109,7 @@ public class DsAPIImpl implements DsAPI {
             if (obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).isJsonArray()) {
                 JsonArray jArray = obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).getAsJsonArray();
                 if (jArray.size() != 0) {
-                    List<TemperatureControlStatus> list = new ArrayList<TemperatureControlStatus>(jArray.size());
+                    List<TemperatureControlStatus> list = new ArrayList<>(jArray.size());
                     Iterator<JsonElement> iter = jArray.iterator();
                     while (iter.hasNext()) {
                         TemperatureControlStatus tContStat = new TemperatureControlStatus(
@@ -1124,7 +1124,7 @@ public class DsAPIImpl implements DsAPI {
     }
 
     @Override
-    public HashMap<Integer, TemperatureControlConfig> getApartmentTemperatureControlConfig(String sessionToken) {
+    public Map<Integer, TemperatureControlConfig> getApartmentTemperatureControlConfig(String sessionToken) {
         String response = transport.execute(SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.APARTMENT)
                 .addFunction(FunctionKeys.GET_TEMPERATURE_CONTROL_CONFIG)
                 .addParameter(ParameterKeys.TOKEN, sessionToken).buildRequestString());
@@ -1135,8 +1135,7 @@ public class DsAPIImpl implements DsAPI {
             if (obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).isJsonArray()) {
                 JsonArray jArray = obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).getAsJsonArray();
                 if (jArray.size() != 0) {
-                    HashMap<Integer, TemperatureControlConfig> map = new HashMap<Integer, TemperatureControlConfig>(
-                            jArray.size());
+                    Map<Integer, TemperatureControlConfig> map = new HashMap<>(jArray.size());
                     Iterator<JsonElement> iter = jArray.iterator();
                     while (iter.hasNext()) {
                         TemperatureControlConfig tContConf = new TemperatureControlConfig(
@@ -1151,7 +1150,7 @@ public class DsAPIImpl implements DsAPI {
     }
 
     @Override
-    public HashMap<Integer, TemperatureControlValues> getApartmentTemperatureControlValues(String sessionToken) {
+    public Map<Integer, TemperatureControlValues> getApartmentTemperatureControlValues(String sessionToken) {
         String response = transport.execute(SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.APARTMENT)
                 .addFunction(FunctionKeys.GET_TEMPERATURE_CONTROL_VALUES)
                 .addParameter(ParameterKeys.TOKEN, sessionToken).buildRequestString());
@@ -1162,8 +1161,7 @@ public class DsAPIImpl implements DsAPI {
             if (obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).isJsonArray()) {
                 JsonArray jArray = obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).getAsJsonArray();
                 if (jArray.size() != 0) {
-                    HashMap<Integer, TemperatureControlValues> map = new HashMap<Integer, TemperatureControlValues>(
-                            jArray.size());
+                    Map<Integer, TemperatureControlValues> map = new HashMap<>(jArray.size());
                     Iterator<JsonElement> iter = jArray.iterator();
                     while (iter.hasNext()) {
                         TemperatureControlValues tContVal = new TemperatureControlValues(iter.next().getAsJsonObject());
@@ -1177,7 +1175,7 @@ public class DsAPIImpl implements DsAPI {
     }
 
     @Override
-    public HashMap<Integer, AssignedSensors> getApartmentAssignedSensors(String sessionToken) {
+    public Map<Integer, AssignedSensors> getApartmentAssignedSensors(String sessionToken) {
         String response = transport.execute(SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.APARTMENT)
                 .addFunction(FunctionKeys.GET_ASSIGNED_SENSORS).addParameter(ParameterKeys.TOKEN, sessionToken)
                 .buildRequestString());
@@ -1188,7 +1186,7 @@ public class DsAPIImpl implements DsAPI {
             if (obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).isJsonArray()) {
                 JsonArray jArray = obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).getAsJsonArray();
                 if (jArray.size() != 0) {
-                    HashMap<Integer, AssignedSensors> map = new HashMap<Integer, AssignedSensors>(jArray.size());
+                    HashMap<Integer, AssignedSensors> map = new HashMap<>(jArray.size());
                     Iterator<JsonElement> iter = jArray.iterator();
                     while (iter.hasNext()) {
                         AssignedSensors assignedSensors = new AssignedSensors(iter.next().getAsJsonObject());
@@ -1202,7 +1200,7 @@ public class DsAPIImpl implements DsAPI {
     }
 
     @Override
-    public HashMap<Integer, BaseSensorValues> getApartmentSensorValues(String sessionToken) {
+    public Map<Integer, BaseSensorValues> getApartmentSensorValues(String sessionToken) {
         String response = transport.execute(SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.APARTMENT)
                 .addFunction(FunctionKeys.GET_SENSOR_VALUES).addParameter(ParameterKeys.TOKEN, sessionToken)
                 .buildRequestString());
@@ -1214,7 +1212,7 @@ public class DsAPIImpl implements DsAPI {
                 JsonArray jArray = obj.get(JSONApiResponseKeysEnum.ZONES.getKey()).getAsJsonArray();
                 WeatherSensorData weather = new WeatherSensorData(obj);
                 if (jArray.size() != 0) {
-                    HashMap<Integer, BaseSensorValues> map = new HashMap<Integer, BaseSensorValues>(jArray.size() + 1);
+                    HashMap<Integer, BaseSensorValues> map = new HashMap<>(jArray.size() + 1);
                     Iterator<JsonElement> iter = jArray.iterator();
                     while (iter.hasNext()) {
                         SensorValues sensorValues = new SensorValues(iter.next().getAsJsonObject());
@@ -1363,7 +1361,7 @@ public class DsAPIImpl implements DsAPI {
         if (JSONResponseHandler.checkResponse(responseObj)) {
             responseObj = JSONResponseHandler.getResultJsonObject(responseObj);
             Set<Entry<String, JsonElement>> flagEntries = responseObj.entrySet();
-            Map<String, Boolean> flags = new HashMap<String, Boolean>(flagEntries.size());
+            Map<String, Boolean> flags = new HashMap<>(flagEntries.size());
             for (Entry<String, JsonElement> flag : flagEntries) {
                 flags.put(flag.getKey(), flag.getValue().getAsBoolean());
             }
@@ -1399,7 +1397,7 @@ public class DsAPIImpl implements DsAPI {
         JsonObject responseObj = JSONResponseHandler.toJsonObject(response);
         if (JSONResponseHandler.checkResponse(responseObj)) {
             Set<Entry<String, JsonElement>> entries = JSONResponseHandler.getResultJsonObject(responseObj).entrySet();
-            Map<String, String> versions = new HashMap<String, String>(entries.size());
+            Map<String, String> versions = new HashMap<>(entries.size());
             for (Entry<String, JsonElement> entry : entries) {
                 versions.put(entry.getKey(), entry.getValue().getAsString());
             }

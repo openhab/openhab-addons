@@ -57,17 +57,17 @@ public class KM200SwitchProgramServiceHandler {
     private Integer activeCycle = 1;
 
     /* Night- and daylist for all weekdays */
-    public Map<String, HashMap<String, ArrayList<Integer>>> switchMap;
+    public Map<String, Map<String, List<Integer>>> switchMap;
 
     /* List with all days */
     private List<String> days;
     public static List<StateOption> daysList;
     /* List with setpoints */
-    ArrayList<String> setpoints;
+    private List<String> setpoints;
 
     public KM200SwitchProgramServiceHandler() {
-        switchMap = new HashMap<String, HashMap<String, ArrayList<Integer>>>();
-        days = new ArrayList<String>();
+        switchMap = new HashMap<>();
+        days = new ArrayList<>();
         days.add(TYPE_MONDAY);
         days.add(TYPE_TUESDAY);
         days.add(TYPE_WEDNESDAY);
@@ -75,7 +75,7 @@ public class KM200SwitchProgramServiceHandler {
         days.add(TYPE_FRIDAY);
         days.add(TYPE_SATURDAY);
         days.add(TYPE_SUNDAY);
-        daysList = new ArrayList<StateOption>();
+        daysList = new ArrayList<>();
         daysList.add(new StateOption(TYPE_MONDAY, "Monday"));
         daysList.add(new StateOption(TYPE_TUESDAY, "Tuesday"));
         daysList.add(new StateOption(TYPE_WEDNESDAY, "Wednesday"));
@@ -83,18 +83,18 @@ public class KM200SwitchProgramServiceHandler {
         daysList.add(new StateOption(TYPE_FRIDAY, "Friday"));
         daysList.add(new StateOption(TYPE_SATURDAY, "Saturday"));
         daysList.add(new StateOption(TYPE_SUNDAY, "Sunday"));
-        setpoints = new ArrayList<String>();
+        setpoints = new ArrayList<>();
     }
 
     /**
      * This function inits the week list
      */
     void initWeeklist(String setpoint) {
-        HashMap<String, ArrayList<Integer>> weekMap = switchMap.get(setpoint);
+        Map<String, List<Integer>> weekMap = switchMap.get(setpoint);
         if (weekMap == null) {
-            weekMap = new HashMap<String, ArrayList<Integer>>();
+            weekMap = new HashMap<>();
             for (String day : days) {
-                weekMap.put(day, new ArrayList<Integer>());
+                weekMap.put(day, new ArrayList<>());
             }
             switchMap.put(setpoint, weekMap);
         }
@@ -122,12 +122,12 @@ public class KM200SwitchProgramServiceHandler {
                 }
             }
         }
-        HashMap<String, ArrayList<Integer>> weekMap = switchMap.get(setpoint);
+        Map<String, List<Integer>> weekMap = switchMap.get(setpoint);
         if (weekMap == null) {
             initWeeklist(setpoint);
             weekMap = switchMap.get(setpoint);
         }
-        ArrayList<Integer> dayList = weekMap.get(day);
+        List<Integer> dayList = weekMap.get(day);
         dayList.add(time);
         Collections.sort(dayList);
     }
@@ -204,9 +204,9 @@ public class KM200SwitchProgramServiceHandler {
             actTime = time;
         }
         synchronized (switchMap) {
-            HashMap<String, ArrayList<Integer>> week = switchMap.get(getPositiveSwitch());
+            Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
             if (week != null) {
-                ArrayList<Integer> daysList = week.get(getActiveDay());
+                List<Integer> daysList = week.get(getActiveDay());
                 if (daysList != null) {
                     Integer actC = getActiveCycle();
                     Integer nbrC = getNbrCycles();
@@ -261,9 +261,9 @@ public class KM200SwitchProgramServiceHandler {
             actTime = time;
         }
         synchronized (switchMap) {
-            HashMap<String, ArrayList<Integer>> week = switchMap.get(getNegativeSwitch());
+            Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {
-                ArrayList<Integer> daysList = week.get(getActiveDay());
+                List<Integer> daysList = week.get(getActiveDay());
                 if (daysList != null) {
                     Integer nbrC = getNbrCycles();
                     Integer actC = getActiveCycle();
@@ -384,7 +384,7 @@ public class KM200SwitchProgramServiceHandler {
             }
             logger.debug("Positive switch: {}", positiveSwitch);
             logger.debug("Negative switch: {}", negativeSwitch);
-            HashMap<String, ArrayList<Integer>> weekMap = null;
+            Map<String, List<Integer>> weekMap = null;
             weekMap = switchMap.get(positiveSwitch);
             if (weekMap == null) {
                 initWeeklist(positiveSwitch);
@@ -490,14 +490,14 @@ public class KM200SwitchProgramServiceHandler {
      */
     public Integer getNbrCycles() {
         synchronized (switchMap) {
-            HashMap<String, ArrayList<Integer>> weekP = switchMap.get(getPositiveSwitch());
-            HashMap<String, ArrayList<Integer>> weekN = switchMap.get(getNegativeSwitch());
+            Map<String, List<Integer>> weekP = switchMap.get(getPositiveSwitch());
+            Map<String, List<Integer>> weekN = switchMap.get(getNegativeSwitch());
             if (weekP != null && weekN != null) {
                 if (weekP.isEmpty() && weekN.isEmpty()) {
                     return 0;
                 }
-                ArrayList<Integer> daysListP = weekP.get(getActiveDay());
-                ArrayList<Integer> daysListN = weekN.get(getActiveDay());
+                List<Integer> daysListP = weekP.get(getActiveDay());
+                List<Integer> daysListN = weekN.get(getActiveDay());
                 return Math.min(daysListP.size(), daysListN.size());
             }
         }
@@ -523,9 +523,9 @@ public class KM200SwitchProgramServiceHandler {
      */
     public Integer getActivePositiveSwitch() {
         synchronized (switchMap) {
-            HashMap<String, ArrayList<Integer>> week = switchMap.get(getPositiveSwitch());
+            Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
             if (week != null) {
-                ArrayList<Integer> daysList = week.get(getActiveDay());
+                List<Integer> daysList = week.get(getActiveDay());
                 if (daysList.size() > 0) {
                     Integer cycl = getActiveCycle();
                     if (cycl <= daysList.size()) {
@@ -542,9 +542,9 @@ public class KM200SwitchProgramServiceHandler {
      */
     public Integer getActiveNegativeSwitch() {
         synchronized (switchMap) {
-            HashMap<String, ArrayList<Integer>> week = switchMap.get(getNegativeSwitch());
+            Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {
-                ArrayList<Integer> daysList = week.get(getActiveDay());
+                List<Integer> daysList = week.get(getActiveDay());
                 if (daysList.size() > 0) {
                     Integer cycl = getActiveCycle();
                     if (cycl <= daysList.size()) {

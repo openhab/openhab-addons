@@ -13,6 +13,7 @@
 package org.openhab.binding.km200.internal;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -35,12 +36,12 @@ public class KM200ServiceObject {
     private Object valueParameter;
 
     /* Device services */
-    public HashMap<String, KM200ServiceObject> serviceTreeMap;
+    public Map<String, KM200ServiceObject> serviceTreeMap;
     KM200ServiceObject parentObject;
 
     public KM200ServiceObject(String fullServiceName, String serviceType, int readable, int writeable, int recordable,
             int virtual, String parent, KM200ServiceObject parentObject) {
-        serviceTreeMap = new HashMap<String, KM200ServiceObject>();
+        serviceTreeMap = new HashMap<>();
         this.fullServiceName = fullServiceName;
         this.serviceType = serviceType;
         this.readable = readable;

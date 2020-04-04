@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class Sun extends RiseSet implements Planet {
 
-    private Map<SunPhaseName, Range> ranges = new HashMap<SunPhaseName, Range>();
+    private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
     private Position position = new Position();
 
@@ -196,6 +196,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Sets the rise range.
      */
+    @Override
     public void setRise(Range rise) {
         super.setRise(rise);
         ranges.put(SunPhaseName.SUN_RISE, rise);
@@ -204,6 +205,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Sets the set range.
      */
+    @Override
     public void setSet(Range set) {
         super.setSet(set);
         ranges.put(SunPhaseName.SUN_SET, set);

@@ -103,8 +103,8 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDiscoveryService(NanoleafControllerHandler bridgeHandler) {
         NanoleafPanelsDiscoveryService discoveryService = new NanoleafPanelsDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
         logger.debug("Discovery service for panels registered.");
     }
 
@@ -113,8 +113,9 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
         @Nullable
         ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
         // would require null check but "if (response!=null)" throws warning on comoile time :´-(
-        if (serviceReg != null)
+        if (serviceReg != null) {
             serviceReg.unregister();
+        }
         logger.debug("Discovery service for panels removed.");
     }
 }

@@ -250,32 +250,32 @@ public class BAE0910 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_PWM_FREQ1)) {
                 period1 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)).intValue();
                 double frequency = (period1 > 0) ? 1 / (period1 * resolution1 * 1e-6) : 0;
-                callback.postUpdate(CHANNEL_PWM_FREQ1, new QuantityType<Frequency>(frequency, SmartHomeUnits.HERTZ));
+                callback.postUpdate(CHANNEL_PWM_FREQ1, new QuantityType<>(frequency, SmartHomeUnits.HERTZ));
             }
             if (enabledChannels.contains(CHANNEL_PWM_FREQ2)) {
                 period2 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)).intValue();
                 double frequency = (period2 > 0) ? 1 / (period2 * resolution2 * 1e-6) : 0;
-                callback.postUpdate(CHANNEL_PWM_FREQ2, new QuantityType<Frequency>(frequency, SmartHomeUnits.HERTZ));
+                callback.postUpdate(CHANNEL_PWM_FREQ2, new QuantityType<>(frequency, SmartHomeUnits.HERTZ));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY1)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty1Parameter)).intValue();
                 double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY2)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty2Parameter)).intValue();
                 double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY3)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty3Parameter)).intValue();
                 double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY3, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY3, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
             }
             if (enabledChannels.contains(CHANNEL_PWM_DUTY4)) {
                 int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty4Parameter)).intValue();
                 double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-                callback.postUpdate(CHANNEL_PWM_DUTY4, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+                callback.postUpdate(CHANNEL_PWM_DUTY4, new QuantityType<>(duty, SmartHomeUnits.PERCENT));
             }
         }
     }

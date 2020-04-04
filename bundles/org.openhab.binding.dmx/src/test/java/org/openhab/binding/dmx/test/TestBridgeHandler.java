@@ -83,7 +83,6 @@ public class TestBridgeHandler extends DmxBridgeHandler {
      * calc buffer for timestamp after timespam
      *
      * @param time UNIX timestamp of calculation time
-     *
      * @return new timestamp
      */
     public long calcBuffer(long time, long timespan) {

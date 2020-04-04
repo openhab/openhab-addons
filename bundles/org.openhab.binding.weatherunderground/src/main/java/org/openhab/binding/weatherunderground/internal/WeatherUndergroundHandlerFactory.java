@@ -120,8 +120,8 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
         WeatherUndergroundDiscoveryService discoveryService = new WeatherUndergroundDiscoveryService(bridgeUID,
                 localeProvider, locationProvider);
         discoveryService.activate(null);
-        discoveryServiceRegs.put(bridgeUID, bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeUID,
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDiscoveryService(ThingUID bridgeUID) {

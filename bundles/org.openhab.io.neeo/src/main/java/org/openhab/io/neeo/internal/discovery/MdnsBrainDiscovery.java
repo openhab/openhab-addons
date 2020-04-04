@@ -207,7 +207,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
             return null;
         }
 
-        return new AbstractMap.SimpleImmutableEntry<String, InetAddress>(model, ipAddress);
+        return new AbstractMap.SimpleImmutableEntry<>(model, ipAddress);
     }
 
     /**

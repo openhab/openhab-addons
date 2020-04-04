@@ -74,9 +74,9 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
             .collect(Collectors.toSet());
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     // protected static final int SUBSCRIPTION_DURATION = WemoBindingConstants.SUBSCRIPTION_DURATION;
 
@@ -388,7 +388,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     service.removeSubscription(this, subscription);
                 }
             }
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
         }
     }

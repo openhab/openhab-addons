@@ -60,7 +60,7 @@ public class Device {
     protected static final String PROTOCOL_ID_VIRTUAL = "Virtual";
     protected static final String PROTOCOL_ID_WMBUS = "wMBus";
 
-    public static final List<String> EMPTY_CAPABILITY_LINK_LIST = new ArrayList<String>();
+    public static final List<String> EMPTY_CAPABILITY_LINK_LIST = new ArrayList<>();
 
     /**
      * Unique id for the device, always available in model.

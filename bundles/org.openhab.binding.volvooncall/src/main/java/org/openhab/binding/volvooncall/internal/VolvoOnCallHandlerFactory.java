@@ -82,8 +82,8 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDeviceDiscoveryService(VolvoOnCallBridgeHandler bridgeHandler) {
         VolvoOnCallDiscoveryService discoveryService = new VolvoOnCallDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private void unregisterDeviceDiscoveryService(ThingUID thingUID) {

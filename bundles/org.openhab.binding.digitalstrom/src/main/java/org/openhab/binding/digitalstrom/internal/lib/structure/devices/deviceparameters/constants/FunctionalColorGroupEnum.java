@@ -15,6 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@link FunctionalColorGroupEnum} contains all digitalSTROM functional color groups.
@@ -56,7 +57,7 @@ public enum FunctionalColorGroupEnum {
 
     private final List<Short> colorGroup;
 
-    static final HashMap<Short, FunctionalColorGroupEnum> COLOR_GROUPS = new HashMap<Short, FunctionalColorGroupEnum>();
+    static final Map<Short, FunctionalColorGroupEnum> COLOR_GROUPS = new HashMap<>();
 
     static {
         for (FunctionalColorGroupEnum colorGroup : FunctionalColorGroupEnum.values()) {

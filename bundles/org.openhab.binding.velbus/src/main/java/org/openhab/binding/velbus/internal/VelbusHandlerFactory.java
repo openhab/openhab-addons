@@ -91,8 +91,8 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {
         VelbusThingDiscoveryService discoveryService = new VelbusThingDiscoveryService(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {

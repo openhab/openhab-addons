@@ -76,12 +76,12 @@ public class KM200Device {
 
     public KM200Device(HttpClient httpClient) {
         this.httpClient = httpClient;
-        serviceTreeMap = new HashMap<String, KM200ServiceObject>();
-        setBlacklistMap(new ArrayList<String>());
+        serviceTreeMap = new HashMap<>();
+        setBlacklistMap(new ArrayList<>());
         getBlacklistMap().add("/gateway/firmware");
-        virtualList = new ArrayList<KM200ServiceObject>();
+        virtualList = new ArrayList<>();
         comCryption = new KM200Cryption(this);
-        deviceCommunicator = new KM200Comm<KM200Device>(this, httpClient);
+        deviceCommunicator = new KM200Comm<>(this, httpClient);
     }
 
     public Boolean isConfigured() {

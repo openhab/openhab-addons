@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * The {@link SonosZoneGroup} is data structure to describe
  * Groups of Zone Players in the Sonos ecosystem
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
 public class SonosZoneGroup implements Cloneable {
@@ -29,6 +29,7 @@ public class SonosZoneGroup implements Cloneable {
     private final String coordinator;
     private final String id;
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -39,17 +40,17 @@ public class SonosZoneGroup implements Cloneable {
 
     public SonosZoneGroup(String id, String coordinator, Collection<String> members,
             Collection<String> memberZoneNames) {
-        this.members = new ArrayList<String>(members);
+        this.members = new ArrayList<>(members);
         if (!this.members.contains(coordinator)) {
             this.members.add(coordinator);
         }
-        this.memberZoneNames = new ArrayList<String>(memberZoneNames);
+        this.memberZoneNames = new ArrayList<>(memberZoneNames);
         this.coordinator = coordinator;
         this.id = id;
     }
 
     public SonosZoneGroup(String id, String coordinator, Collection<String> members) {
-        this.members = new ArrayList<String>(members);
+        this.members = new ArrayList<>(members);
         if (!this.members.contains(coordinator)) {
             this.members.add(coordinator);
         }

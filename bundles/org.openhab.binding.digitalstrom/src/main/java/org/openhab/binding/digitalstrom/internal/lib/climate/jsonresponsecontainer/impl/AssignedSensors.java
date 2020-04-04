@@ -65,7 +65,7 @@ public class AssignedSensors extends BaseZoneIdentifier {
                 && jObject.get(JSONApiResponseKeysEnum.SENSORS.getKey()).isJsonArray()) {
             JsonArray jArray = jObject.get(JSONApiResponseKeysEnum.SENSORS.getKey()).getAsJsonArray();
             if (jArray.size() != 0) {
-                sensors = new LinkedList<AssignSensorType>();
+                sensors = new LinkedList<>();
                 Iterator<JsonElement> iter = jArray.iterator();
                 while (iter.hasNext()) {
                     JsonObject assignedSensor = iter.next().getAsJsonObject();
@@ -90,7 +90,7 @@ public class AssignedSensors extends BaseZoneIdentifier {
      * @return list of all assigned sensor types
      */
     public List<SensorEnum> getAssignedZoneSensorTypes() {
-        List<SensorEnum> sensorTypes = new LinkedList<SensorEnum>();
+        List<SensorEnum> sensorTypes = new LinkedList<>();
         if (sensors != null) {
             for (AssignSensorType aSensorValue : sensors) {
                 sensorTypes.add(aSensorValue.getSensorType());

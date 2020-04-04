@@ -31,15 +31,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Illuminance;
-import javax.measure.quantity.Power;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -357,7 +348,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                 break;
             case CHANNEL_TEMPERATURE:
                 if (temperature != null) {
-                    updateState(channelUID, new QuantityType<Temperature>(temperature / 100, CELSIUS));
+                    updateState(channelUID, new QuantityType<>(temperature / 100, CELSIUS));
                 }
                 break;
         }
@@ -400,27 +391,27 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                 break;
             case CHANNEL_POWER:
                 if (power != null) {
-                    updateState(channelUID, new QuantityType<Power>(power, WATT));
+                    updateState(channelUID, new QuantityType<>(power, WATT));
                 }
                 break;
             case CHANNEL_CONSUMPTION:
                 if (consumption != null) {
-                    updateState(channelUID, new QuantityType<Energy>(consumption, WATT_HOUR));
+                    updateState(channelUID, new QuantityType<>(consumption, WATT_HOUR));
                 }
                 break;
             case CHANNEL_VOLTAGE:
                 if (voltage != null) {
-                    updateState(channelUID, new QuantityType<ElectricPotential>(voltage, VOLT));
+                    updateState(channelUID, new QuantityType<>(voltage, VOLT));
                 }
                 break;
             case CHANNEL_CURRENT:
                 if (current != null) {
-                    updateState(channelUID, new QuantityType<ElectricCurrent>(current, MILLI(AMPERE)));
+                    updateState(channelUID, new QuantityType<>(current, MILLI(AMPERE)));
                 }
                 break;
             case CHANNEL_LIGHT_LUX:
                 if (lux != null) {
-                    updateState(channelUID, new QuantityType<Illuminance>(lux, LUX));
+                    updateState(channelUID, new QuantityType<>(lux, LUX));
                 }
                 break;
             case CHANNEL_LIGHT_LEVEL:
@@ -436,17 +427,17 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                 break;
             case CHANNEL_TEMPERATURE:
                 if (temperature != null) {
-                    updateState(channelUID, new QuantityType<Temperature>(temperature / 100, CELSIUS));
+                    updateState(channelUID, new QuantityType<>(temperature / 100, CELSIUS));
                 }
                 break;
             case CHANNEL_HUMIDITY:
                 if (humidity != null) {
-                    updateState(channelUID, new QuantityType<Dimensionless>(humidity / 100, PERCENT));
+                    updateState(channelUID, new QuantityType<>(humidity / 100, PERCENT));
                 }
                 break;
             case CHANNEL_PRESSURE:
                 if (pressure != null) {
-                    updateState(channelUID, new QuantityType<Pressure>(pressure, HECTO(PASCAL)));
+                    updateState(channelUID, new QuantityType<>(pressure, HECTO(PASCAL)));
                 }
                 break;
             case CHANNEL_PRESENCE:

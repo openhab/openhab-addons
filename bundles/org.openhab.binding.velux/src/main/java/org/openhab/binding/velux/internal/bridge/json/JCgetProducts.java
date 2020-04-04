@@ -19,9 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.bridge.common.GetProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductType;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 
 /**
  * Specific bridge communication message supported by the Velux bridge.
@@ -75,8 +75,8 @@ class JCgetProducts extends GetProducts implements JsonBridgeCommunicationProtoc
     }
 
     /**
-     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge JsonVeluxBridge}
-     * for serializing.
+     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge
+     * JsonVeluxBridge} for serializing.
      * <P>
      * Resulting JSON:
      *
@@ -95,7 +95,7 @@ class JCgetProducts extends GetProducts implements JsonBridgeCommunicationProtoc
 
         public Request() {
             this.action = "get";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 

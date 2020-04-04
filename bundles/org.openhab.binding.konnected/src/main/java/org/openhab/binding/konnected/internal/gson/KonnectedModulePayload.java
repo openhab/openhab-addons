@@ -41,10 +41,10 @@ public class KonnectedModulePayload {
     public KonnectedModulePayload(String authTokenPassed, String apiURLPassed) {
         this.authToken = authTokenPassed;
         this.apiUrl = apiURLPassed;
-        this.sensors = new HashSet<KonnectedModuleGson>();
-        this.actuators = new HashSet<KonnectedModuleGson>();
-        this.dht22 = new HashSet<KonnectedModuleGson>();
-        this.ds18b20 = new HashSet<KonnectedModuleGson>();
+        this.sensors = new HashSet<>();
+        this.actuators = new HashSet<>();
+        this.dht22 = new HashSet<>();
+        this.ds18b20 = new HashSet<>();
     }
 
     public Set<KonnectedModuleGson> getSensors() {

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.insteon.internal.config;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,10 +33,10 @@ public class InsteonChannelConfiguration {
     private final InsteonAddress address;
     private final String feature;
     private final String productKey;
-    private final HashMap<String, @Nullable String> parameters;
+    private final Map<String, @Nullable String> parameters;
 
     public InsteonChannelConfiguration(ChannelUID channelUID, String feature, InsteonAddress address, String productKey,
-            HashMap<String, @Nullable String> parameters) {
+            Map<String, @Nullable String> parameters) {
         this.channelUID = channelUID;
         this.feature = feature;
         this.address = address;
@@ -66,7 +66,7 @@ public class InsteonChannelConfiguration {
         return productKey;
     }
 
-    public HashMap<String, @Nullable String> getParameters() {
+    public Map<String, @Nullable String> getParameters() {
         return parameters;
     }
 }

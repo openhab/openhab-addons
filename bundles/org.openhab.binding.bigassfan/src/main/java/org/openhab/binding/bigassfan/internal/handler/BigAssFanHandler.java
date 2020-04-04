@@ -84,7 +84,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
     private FanListener fanListener;
 
-    protected Map<String, State> fanStateMap = Collections.synchronizedMap(new HashMap<String, State>());
+    protected Map<String, State> fanStateMap = Collections.synchronizedMap(new HashMap<>());
 
     public BigAssFanHandler(@NonNull Thing thing, String ipv4Address) {
         super(thing);

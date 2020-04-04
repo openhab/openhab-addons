@@ -147,8 +147,8 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             WemoHttpCall wemoHttpCaller) {
         WemoLinkDiscoveryService discoveryService = new WemoLinkDiscoveryService(wemoBridgeHandler, upnpIOService,
                 wemoHttpCaller);
-        this.discoveryServiceRegs.put(wemoBridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(wemoBridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
 }

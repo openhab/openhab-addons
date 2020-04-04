@@ -88,7 +88,7 @@ public class JsonVeluxBridge extends VeluxBridge {
         super(bridgeInstance);
         logger.trace("JsonVeluxBridge(constructor) called.");
         bridgeAPI = new JsonBridgeAPI(bridgeInstance);
-        supportedProtocols = new TreeSet<String>();
+        supportedProtocols = new TreeSet<>();
         supportedProtocols.add("http");
         supportedProtocols.add("https");
         logger.trace("JsonVeluxBridge(constructor) done.");

@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes;
+import org.openhab.binding.digitalstrom.internal.lib.climate.constants.OperationModes;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.BaseSensorValues;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.AssignedSensors;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.SensorValues;
@@ -829,7 +830,7 @@ public interface DsAPI {
      *            registered at the {@link HttpTransport}
      * @return temperature control status of all zones
      */
-    HashMap<Integer, TemperatureControlConfig> getApartmentTemperatureControlConfig(String sessionToken);
+    Map<Integer, TemperatureControlConfig> getApartmentTemperatureControlConfig(String sessionToken);
 
     /**
      * Returns the temperature control status of all zones.
@@ -839,7 +840,7 @@ public interface DsAPI {
      *            registered at the {@link HttpTransport}
      * @return temperature control status of all zones
      */
-    HashMap<Integer, TemperatureControlValues> getApartmentTemperatureControlValues(String sessionToken);
+    Map<Integer, TemperatureControlValues> getApartmentTemperatureControlValues(String sessionToken);
 
     /**
      * Returns the assigned Sensor dSUID of all zones.
@@ -850,7 +851,7 @@ public interface DsAPI {
      *            registered at the {@link HttpTransport}
      * @return assigned Sensor dSUID of all zones.
      */
-    HashMap<Integer, AssignedSensors> getApartmentAssignedSensors(String sessionToken);
+    Map<Integer, AssignedSensors> getApartmentAssignedSensors(String sessionToken);
 
     /**
      * Returns the value of a Sensor of all zones.
@@ -860,7 +861,7 @@ public interface DsAPI {
      *            registered at the {@link HttpTransport}
      * @return value of a Sensor of all zones
      */
-    HashMap<Integer, BaseSensorValues> getApartmentSensorValues(String sessionToken);
+    Map<Integer, BaseSensorValues> getApartmentSensorValues(String sessionToken);
 
     /**
      * <b>Description taken form digitalSTROM JSON-API:</b><br>

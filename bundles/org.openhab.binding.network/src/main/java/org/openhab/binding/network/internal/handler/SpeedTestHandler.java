@@ -103,7 +103,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         timeouts = configuration.maxTimeout;
         if (testReport != null) {
             BigDecimal rate = testReport.getTransferRateBit();
-            QuantityType<DataTransferRate> quantity = new QuantityType<DataTransferRate>(rate, BIT_PER_SECOND)
+            QuantityType<DataTransferRate> quantity = new QuantityType<>(rate, BIT_PER_SECOND)
                     .toUnit(MEGABIT_PER_SECOND);
             if (quantity != null) {
                 switch (testReport.getSpeedTestMode()) {

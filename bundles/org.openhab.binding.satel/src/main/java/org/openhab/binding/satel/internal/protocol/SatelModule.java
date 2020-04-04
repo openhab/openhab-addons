@@ -54,7 +54,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     private static final byte[] FRAME_START = { FRAME_SYNC, FRAME_SYNC };
     private static final byte[] FRAME_END = { FRAME_SYNC, (byte) 0x0d };
 
-    private final BlockingQueue<SatelCommand> sendQueue = new LinkedBlockingQueue<SatelCommand>();
+    private final BlockingQueue<SatelCommand> sendQueue = new LinkedBlockingQueue<>();
 
     private final int timeout;
     private volatile IntegraType integraType;
@@ -210,7 +210,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     /**
      * Enqueues specified command in send queue.
      *
-     * @param cmd   command to enqueue
+     * @param cmd command to enqueue
      * @param force if <code>true</code> enqueues unconditionally
      * @return <code>true</code> if operation succeeded
      */

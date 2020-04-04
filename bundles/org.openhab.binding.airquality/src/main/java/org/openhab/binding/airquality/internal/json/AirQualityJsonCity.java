@@ -39,7 +39,7 @@ public class AirQualityJsonCity {
     }
 
     public String getGeo() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (int i = 0; i < geo.size(); i++) {
             list.add(geo.get(i).toString());
         }

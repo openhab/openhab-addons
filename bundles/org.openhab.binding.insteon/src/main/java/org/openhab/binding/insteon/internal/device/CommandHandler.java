@@ -15,6 +15,7 @@ package org.openhab.binding.insteon.internal.device;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,7 +48,7 @@ public abstract class CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommandHandler.class);
     DeviceFeature feature; // related DeviceFeature
     @Nullable
-    HashMap<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, @Nullable String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -111,7 +112,7 @@ public abstract class CommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonChannelConfiguration conf, int defaultLevel) {
-        HashMap<String, @Nullable String> params = conf.getParameters();
+        Map<String, @Nullable String> params = conf.getParameters();
         if (conf.getFeature().contains("dimmer") && params.containsKey("dimmermax")) {
             String item = conf.getChannelName();
             String dimmerMax = params.get("dimmermax");
@@ -134,8 +135,8 @@ public abstract class CommandHandler {
         return defaultLevel;
     }
 
-    void setParameters(HashMap<String, @Nullable String> hm) {
-        parameters = hm;
+    void setParameters(Map<String, @Nullable String> map) {
+        parameters = map;
     }
 
     /**
@@ -289,7 +290,7 @@ public abstract class CommandHandler {
         }
 
         private int getRampLevel(InsteonChannelConfiguration conf, int defaultValue) {
-            HashMap<String, @Nullable String> params = conf.getParameters();
+            Map<String, @Nullable String> params = conf.getParameters();
             return params.containsKey("ramplevel") ? Integer.parseInt(params.get("ramplevel")) : defaultValue;
         }
     }
@@ -595,7 +596,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        void setParameters(HashMap<String, @Nullable String> params) {
+        void setParameters(Map<String, @Nullable String> params) {
             super.setParameters(params);
             onCmd = (byte) getIntParameter("on", 0x2E);
             offCmd = (byte) getIntParameter("off", 0x2F);
@@ -640,7 +641,7 @@ public abstract class CommandHandler {
         }
 
         protected double getRampTime(InsteonChannelConfiguration conf, double defaultValue) {
-            HashMap<String, @Nullable String> params = conf.getParameters();
+            Map<String, @Nullable String> params = conf.getParameters();
             return params.containsKey("ramptime") ? Double.parseDouble(params.get("ramptime")) : defaultValue;
         }
     }
@@ -873,7 +874,7 @@ public abstract class CommandHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends CommandHandler> T makeHandler(String name, HashMap<String, @Nullable String> params,
+    public static <T extends CommandHandler> T makeHandler(String name, Map<String, @Nullable String> params,
             DeviceFeature f) {
         String cname = CommandHandler.class.getName() + "$" + name;
         try {

@@ -83,7 +83,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
     /**
      * Contains all supported thing types of this handler, will be filled by DsDeviceThingTypeProvider.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
 
     public static final String TWO_STAGE_SWITCH_IDENTICATOR = "2";
     public static final String THREE_STAGE_SWITCH_IDENTICATOR = "3";
@@ -527,7 +527,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
     }
 
     private String getBinarayInputList() {
-        List<String> binarayInputs = new ArrayList<String>(device.getBinaryInputs().size());
+        List<String> binarayInputs = new ArrayList<>(device.getBinaryInputs().size());
         for (DeviceBinaryInput binInput : device.getBinaryInputs()) {
             DeviceBinarayInputEnum devBinInp = DeviceBinarayInputEnum.getdeviceBinarayInput(binInput.getInputType());
             if (devBinInp != null) {
@@ -592,7 +592,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
 
     private boolean addLoadedSensorChannel(String sensorChannelType) {
         if (loadedSensorChannels == null) {
-            loadedSensorChannels = new LinkedList<String>();
+            loadedSensorChannels = new LinkedList<>();
         }
         if (!loadedSensorChannels.contains(sensorChannelType.toString())) {
             return loadedSensorChannels.add(sensorChannelType.toString());
@@ -615,7 +615,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
     }
 
     private void checkSensorChannel() {
-        List<Channel> channelList = new LinkedList<Channel>(this.getThing().getChannels());
+        List<Channel> channelList = new LinkedList<>(this.getThing().getChannels());
 
         boolean channelListChanged = false;
 
@@ -732,7 +732,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         }
         currentChannel = channelTypeUID.getId();
 
-        List<Channel> channelList = new LinkedList<Channel>(this.getThing().getChannels());
+        List<Channel> channelList = new LinkedList<>(this.getThing().getChannels());
         boolean channelIsAlreadyLoaded = false;
         boolean channelListChanged = false;
 

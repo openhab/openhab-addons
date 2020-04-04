@@ -99,7 +99,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         AllPlayAudioSink audioSink = new AllPlayAudioSink(handler, audioHTTPServer, callbackUrl);
         @SuppressWarnings("unchecked")
         ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
     }
 

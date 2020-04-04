@@ -53,7 +53,7 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     private long lastPacketTimeMillis;
 
     private VelbusPacketListener defaultPacketListener;
-    private Map<Byte, VelbusPacketListener> packetListeners = new HashMap<Byte, VelbusPacketListener>();
+    private Map<Byte, VelbusPacketListener> packetListeners = new HashMap<>();
 
     public VelbusBridgeHandler(Bridge velbusBridge) {
         super(velbusBridge);

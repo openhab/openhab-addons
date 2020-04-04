@@ -435,7 +435,7 @@ public class InnogyClient {
                 if (deviceMessageMap.containsKey(deviceId)) {
                     ml = deviceMessageMap.get(deviceId);
                 } else {
-                    ml = new ArrayList<Message>();
+                    ml = new ArrayList<>();
                 }
                 ml.add(m);
                 deviceMessageMap.put(deviceId, ml);

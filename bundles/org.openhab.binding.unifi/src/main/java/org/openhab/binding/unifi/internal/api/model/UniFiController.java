@@ -189,7 +189,7 @@ public class UniFiController {
     // Internal API
 
     private <T> UniFiControllerRequest<T> newRequest(Class<T> responseType) {
-        return new UniFiControllerRequest<T>(responseType, gson, httpClient, host, port);
+        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port);
     }
 
     private <T> @Nullable T executeRequest(UniFiControllerRequest<T> request) throws UniFiException {

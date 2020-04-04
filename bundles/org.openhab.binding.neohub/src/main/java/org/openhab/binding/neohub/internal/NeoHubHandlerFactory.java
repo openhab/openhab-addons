@@ -62,11 +62,13 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
 
-        if (thingTypeUID.equals(THING_TYPE_NEOSTAT))
+        if (thingTypeUID.equals(THING_TYPE_NEOSTAT)) {
             return new NeoStatHandler(thing);
+        }
 
-        if (thingTypeUID.equals(THING_TYPE_NEOPLUG))
+        if (thingTypeUID.equals(THING_TYPE_NEOPLUG)) {
             return new NeoPlugHandler(thing);
+        }
 
         return null;
     }
@@ -91,7 +93,7 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
         // register the discovery service
         ServiceRegistration<?> serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), ds,
-                new Hashtable<String, Object>());
+                new Hashtable<>());
 
         /*
          * store service registration in a list so we can destroy it when the respective
@@ -115,8 +117,9 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
             serviceReg.unregister();
 
             // deactivate the service
-            if (disco != null)
+            if (disco != null) {
                 disco.deactivate();
+            }
         }
     }
 

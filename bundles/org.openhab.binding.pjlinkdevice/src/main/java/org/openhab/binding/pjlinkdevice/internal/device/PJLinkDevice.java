@@ -77,8 +77,7 @@ public class PJLinkDevice {
     private final Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
     private String prefixForNextCommand = "";
     private @Nullable Instant socketCreatedOn;
-    private CachedCommand<LampStatesResponse> cachedLampHoursCommand = new CachedCommand<LampStatesResponse>(
-            new LampStatesCommand(this));
+    private CachedCommand<LampStatesResponse> cachedLampHoursCommand = new CachedCommand<>(new LampStatesCommand(this));
 
     public PJLinkDevice(int tcpPort, InetAddress ipAddress, @Nullable String adminPassword, int timeout) {
         this.tcpPort = tcpPort;

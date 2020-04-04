@@ -91,8 +91,8 @@ public class IhcClient {
     /** Timeout in milliseconds */
     private int timeout;
 
-    private Map<Integer, WSResourceValue> resourceValues = new HashMap<Integer, WSResourceValue>();
-    private List<IhcEventListener> eventListeners = new ArrayList<IhcEventListener>();
+    private Map<Integer, WSResourceValue> resourceValues = new HashMap<>();
+    private List<IhcEventListener> eventListeners = new ArrayList<>();
 
     public IhcClient(String host, String username, String password) {
         this(host, username, password, 5000);
@@ -339,7 +339,7 @@ public class IhcClient {
     /**
      * Wait controller state change notification.
      *
-     * @param previousState        Previous controller state.
+     * @param previousState Previous controller state.
      * @param timeoutInSecondscHow many seconds to wait notifications.
      * @return current controller state.
      */

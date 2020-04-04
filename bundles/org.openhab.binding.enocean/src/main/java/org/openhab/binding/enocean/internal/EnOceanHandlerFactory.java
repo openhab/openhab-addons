@@ -99,7 +99,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(EnOceanBridgeHandler handler) {
         EnOceanDeviceDiscoveryService discoveryService = new EnOceanDeviceDiscoveryService(handler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

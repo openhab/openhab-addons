@@ -68,7 +68,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     private DSID meterDSID;
     private int zoneId = 0;
-    private List<Short> groupList = new LinkedList<Short>();
+    private List<Short> groupList = new LinkedList<>();
 
     private FunctionalColorGroupEnum functionalGroup;
     private FuncNameAndColorGroupEnum functionalName;
@@ -90,12 +90,10 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private final int maxSlatPosition = DeviceConstants.MAX_ROLLERSHUTTER;
     private final int minSlatPosition = DeviceConstants.MIN_ROLLERSHUTTER;
 
-    private final List<DeviceSensorValue> deviceSensorValues = Collections
-            .synchronizedList(new ArrayList<DeviceSensorValue>());
-    private final List<DeviceBinaryInput> deviceBinaryInputs = Collections
-            .synchronizedList(new ArrayList<DeviceBinaryInput>());
-    private final List<SensorEnum> devicePowerSensorTypes = new ArrayList<SensorEnum>();
-    private final List<SensorEnum> deviceClimateSensorTypes = new ArrayList<SensorEnum>();
+    private final List<DeviceSensorValue> deviceSensorValues = Collections.synchronizedList(new ArrayList<>());
+    private final List<DeviceBinaryInput> deviceBinaryInputs = Collections.synchronizedList(new ArrayList<>());
+    private final List<SensorEnum> devicePowerSensorTypes = new ArrayList<>();
+    private final List<SensorEnum> deviceClimateSensorTypes = new ArrayList<>();
 
     // for scenes
     private short activeSceneNumber = -1;
@@ -105,13 +103,11 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private short slatAngleBeforeSceneCall = 0;
     private boolean lastCallWasUndo = false;
 
-    private final Map<Short, DeviceSceneSpec> sceneConfigMap = Collections
-            .synchronizedMap(new HashMap<Short, DeviceSceneSpec>());
-    private final Map<Short, Integer[]> sceneOutputMap = Collections.synchronizedMap(new HashMap<Short, Integer[]>());
+    private final Map<Short, DeviceSceneSpec> sceneConfigMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Short, Integer[]> sceneOutputMap = Collections.synchronizedMap(new HashMap<>());
 
     // saves outstanding commands
-    private final List<DeviceStateUpdate> deviceStateUpdates = Collections
-            .synchronizedList(new LinkedList<DeviceStateUpdate>());
+    private final List<DeviceStateUpdate> deviceStateUpdates = Collections.synchronizedList(new LinkedList<>());
 
     /*
      * Saves the refresh priorities and reading initialized flag of power sensors as an matrix.
@@ -137,8 +133,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
      * the key is the output value and the value is an Integer array for the sensor values (0 = active power, 1 =
      * output current, 2 = power consumption, 3 = output current high)
      */
-    private final Map<Short, Integer[]> cachedSensorPowerValues = Collections
-            .synchronizedMap(new HashMap<Short, Integer[]>());
+    private final Map<Short, Integer[]> cachedSensorPowerValues = Collections.synchronizedMap(new HashMap<>());
 
     public static final int ACTIVE_POWER_ARRAY_FIELD = 0;
     public static final int OUTPUT_CURRENT_ARRAY_FIELD = 1;
@@ -275,7 +270,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public List<Short> getGroups() {
-        return new LinkedList<Short>(groupList);
+        return new LinkedList<>(groupList);
     }
 
     @Override
@@ -890,9 +885,9 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public List<Short> getSavedScenes() {
-        Set<Short> bothKeySet = new HashSet<Short>(sceneOutputMap.keySet());
+        Set<Short> bothKeySet = new HashSet<>(sceneOutputMap.keySet());
         bothKeySet.addAll(sceneConfigMap.keySet());
-        return new LinkedList<Short>(bothKeySet);
+        return new LinkedList<>(bothKeySet);
     }
 
     @Override
@@ -1176,7 +1171,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     // Device sensors
     @Override
     public List<SensorEnum> getSensorTypes() {
-        List<SensorEnum> list = new ArrayList<SensorEnum>(devicePowerSensorTypes);
+        List<SensorEnum> list = new ArrayList<>(devicePowerSensorTypes);
         list.addAll(deviceClimateSensorTypes);
         return list;
     }
@@ -1247,7 +1242,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
         return sensorEchoBox != null ? sensorEchoBox.contains(sensorType) : false;
     }
 
-    private List<SensorEnum> sensorEchoBox = Collections.synchronizedList(new LinkedList<SensorEnum>());
+    private List<SensorEnum> sensorEchoBox = Collections.synchronizedList(new LinkedList<>());
 
     @Override
     public void setDeviceSensorDsValueBySensorJob(SensorEnum sensorType, Integer value) {
@@ -1268,7 +1263,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     @Override
     public void enableSensorEchoBox() {
         if (sensorEchoBox == null) {
-            sensorEchoBox = Collections.synchronizedList(new LinkedList<SensorEnum>());
+            sensorEchoBox = Collections.synchronizedList(new LinkedList<>());
         }
     }
 

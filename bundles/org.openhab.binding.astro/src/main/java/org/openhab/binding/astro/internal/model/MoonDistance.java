@@ -53,7 +53,7 @@ public class MoonDistance {
      * Returns the distance in kilometers.
      */
     public QuantityType<Length> getDistance() {
-        return new QuantityType<Length>(distance, KILO(METRE));
+        return new QuantityType<>(distance, KILO(METRE));
     }
 
     /**

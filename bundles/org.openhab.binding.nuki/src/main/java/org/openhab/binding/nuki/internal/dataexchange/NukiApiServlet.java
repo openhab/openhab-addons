@@ -98,7 +98,7 @@ public class NukiApiServlet extends HttpServlet {
     private void activate() {
         logger.debug("Activating NukiApiServlet.");
         path = NukiBindingConstants.CALLBACK_ENDPOINT;
-        Dictionary<String, String> servletParams = new Hashtable<String, String>();
+        Dictionary<String, String> servletParams = new Hashtable<>();
         try {
             httpService.registerServlet(path, this, servletParams, httpService.createDefaultHttpContext());
             logger.debug("Started NukiApiServlet at path[{}]", path);

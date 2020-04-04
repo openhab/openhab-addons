@@ -61,7 +61,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private EvohomeAccountConfiguration configuration;
     private EvohomeApiClient apiClient;
-    private List<AccountStatusListener> listeners = new CopyOnWriteArrayList<AccountStatusListener>();
+    private List<AccountStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     protected ScheduledFuture<?> refreshTask;
 
@@ -155,7 +155,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         boolean result = true;
 
         // Make sure that there are no duplicate IDs
-        Set<String> ids = new HashSet<String>();
+        Set<String> ids = new HashSet<>();
 
         for (Location location : locations) {
             result &= ids.add(location.getLocationInfo().getLocationId());

@@ -42,7 +42,7 @@ public class BlueGigaConnectionStatusEvent extends BlueGigaDeviceResponse {
      * BlueGiga API type is <i>ConnectionStatusFlag</i> - Java type is {@link ConnectionStatusFlag}
      * Parameter allows multiple options so implemented as a {@link Set}.
      */
-    private Set<ConnectionStatusFlag> flags = new HashSet<ConnectionStatusFlag>();
+    private Set<ConnectionStatusFlag> flags = new HashSet<>();
 
     /**
      * Remote devices Bluetooth address

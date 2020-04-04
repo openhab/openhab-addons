@@ -16,10 +16,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.ArrayList;
 
 import javax.measure.quantity.Temperature;
 
@@ -32,20 +28,18 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
-import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
+import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
-
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,13 +66,16 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     protected abstract void pollStatus() throws IOException;
 
     protected abstract void changePower(boolean power) throws DaikinCommunicationException;
+
     protected abstract void changeSetPoint(double newTemperature) throws DaikinCommunicationException;
+
     protected abstract void changeMode(String mode) throws DaikinCommunicationException;
+
     protected abstract void changeFanSpeed(String fanSpeed) throws DaikinCommunicationException;
 
-    // Power, Temp, Fan and Mode are handled in this base class. Override this to handle additional channels. 
-    protected abstract boolean handleCommandInternal(ChannelUID channelUID, Command command) throws DaikinCommunicationException;
-
+    // Power, Temp, Fan and Mode are handled in this base class. Override this to handle additional channels.
+    protected abstract boolean handleCommandInternal(ChannelUID channelUID, Command command)
+            throws DaikinCommunicationException;
 
     public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
@@ -123,7 +120,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                     }
                     break;
             }
-            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(), channelUID.getId());
+            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
+                    thing.getUID().getAsString(), channelUID.getId());
         } catch (DaikinCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
@@ -182,9 +180,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     }
 
     protected void updateTemperatureChannel(String channel, Optional<Double> maybeTemperature) {
-        updateState(channel,
-                maybeTemperature.<State> map(t -> new QuantityType<Temperature>(new DecimalType(t), SIUnits.CELSIUS))
-                        .orElse(UnDefType.UNDEF));
+        updateState(channel, maybeTemperature.<State> map(t -> new QuantityType<>(new DecimalType(t), SIUnits.CELSIUS))
+                .orElse(UnDefType.UNDEF));
     }
 
     /**
@@ -209,16 +206,16 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     private void changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (HomekitMode.OFF.getValue().equals(homekitmode)) {
-           changePower(false);
+            changePower(false);
         } else {
-           changePower(true);
-           if (HomekitMode.AUTO.getValue().equals(homekitmode)) {
+            changePower(true);
+            if (HomekitMode.AUTO.getValue().equals(homekitmode)) {
                 changeMode("AUTO");
-           } else if (HomekitMode.HEAT.getValue().equals(homekitmode)) {
+            } else if (HomekitMode.HEAT.getValue().equals(homekitmode)) {
                 changeMode("HEAT");
-           } else if (HomekitMode.COOL.getValue().equals(homekitmode)) {
+            } else if (HomekitMode.COOL.getValue().equals(homekitmode)) {
                 changeMode("COLD");
-           }       
+            }
         }
     }
 

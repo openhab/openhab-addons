@@ -183,7 +183,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                             + " for the OpenSprinkler device. Exception received: " + exp);
         }
 
-        return new QuantityType<Time>(remainingWaterTime, Units.SECOND);
+        return new QuantityType<>(remainingWaterTime, Units.SECOND);
     }
 
     @Override

@@ -65,7 +65,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     public ShellyLightHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
             @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
         super(thing, bindingConfig, coapServer, localIP, httpPort);
-        channelColors = new HashMap<Integer, ShellyColorUtils>();
+        channelColors = new HashMap<>();
     }
 
     @Override
@@ -442,7 +442,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         // boolean updated = false;
         Integer channelId = lightId + 1;
-        Map<String, String> parms = new HashMap<String, String>();
+        Map<String, String> parms = new HashMap<>();
 
         logger.trace(
                 "{}: New color settings for channel {}: RGB {}/{}/{}, white={}, gain={}, brightness={}, color-temp={}",

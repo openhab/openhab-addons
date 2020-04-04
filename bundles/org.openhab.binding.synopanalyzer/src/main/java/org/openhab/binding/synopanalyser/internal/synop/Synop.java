@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.synopanalyser.internal.synop;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@link Synop} is the ancestor common class for analyzing
@@ -24,7 +24,7 @@ public abstract class Synop {
 
     private final int VALID_STRING_LENGTH = 5;
 
-    protected final ArrayList<String> stringArray;
+    protected final List<String> stringArray;
 
     private String stationType;
     protected String stationCode;
@@ -49,7 +49,7 @@ public abstract class Synop {
     protected String windString;
     protected String pressureString;
 
-    public Synop(ArrayList<String> stringArray) {
+    public Synop(List<String> stringArray) {
         this.stringArray = stringArray;
 
         setStationType();

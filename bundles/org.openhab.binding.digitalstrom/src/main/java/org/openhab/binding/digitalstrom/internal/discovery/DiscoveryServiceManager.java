@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
 import org.openhab.binding.digitalstrom.internal.handler.CircuitHandler;
@@ -50,7 +51,7 @@ import org.osgi.framework.ServiceRegistration;
 public class DiscoveryServiceManager
         implements SceneStatusListener, DeviceStatusListener, TemperatureControlStatusListener {
 
-    private final HashMap<String, AbstractDiscoveryService> discoveryServices;
+    private final Map<String, AbstractDiscoveryService> discoveryServices;
     private final Map<String, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final String bridgeUID;
 
@@ -63,7 +64,7 @@ public class DiscoveryServiceManager
      */
     public DiscoveryServiceManager(BridgeHandler bridgeHandler) {
         bridgeUID = bridgeHandler.getThing().getUID().getAsString();
-        discoveryServices = new HashMap<String, AbstractDiscoveryService>(SceneHandler.SUPPORTED_THING_TYPES.size()
+        discoveryServices = new HashMap<>(SceneHandler.SUPPORTED_THING_TYPES.size()
                 + DeviceHandler.SUPPORTED_THING_TYPES.size() + CircuitHandler.SUPPORTED_THING_TYPES.size()
                 + ZoneTemperatureControlHandler.SUPPORTED_THING_TYPES.size());
         for (ThingTypeUID type : SceneHandler.SUPPORTED_THING_TYPES) {
@@ -127,20 +128,17 @@ public class DiscoveryServiceManager
         if (discoveryServices != null) {
             for (AbstractDiscoveryService service : discoveryServices.values()) {
                 if (service instanceof SceneDiscoveryService) {
-                    this.discoveryServiceRegs.put(bridgeUID + ((SceneDiscoveryService) service).getID(),
-                            bundleContext.registerService(DiscoveryService.class.getName(), service,
-                                    new Hashtable<String, Object>()));
+                    this.discoveryServiceRegs.put(bridgeUID + ((SceneDiscoveryService) service).getID(), bundleContext
+                            .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
                 }
                 if (service instanceof DeviceDiscoveryService) {
-                    this.discoveryServiceRegs.put(bridgeUID + ((DeviceDiscoveryService) service).getID(),
-                            bundleContext.registerService(DiscoveryService.class.getName(), service,
-                                    new Hashtable<String, Object>()));
+                    this.discoveryServiceRegs.put(bridgeUID + ((DeviceDiscoveryService) service).getID(), bundleContext
+                            .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
                 }
                 if (service instanceof ZoneTemperatureControlDiscoveryService) {
-                    this.discoveryServiceRegs.put(
-                            bridgeUID + ((ZoneTemperatureControlDiscoveryService) service).getID(),
-                            bundleContext.registerService(DiscoveryService.class.getName(), service,
-                                    new Hashtable<String, Object>()));
+                    this.discoveryServiceRegs
+                            .put(bridgeUID + ((ZoneTemperatureControlDiscoveryService) service).getID(), bundleContext
+                                    .registerService(DiscoveryService.class.getName(), service, new Hashtable<>()));
                 }
             }
         }

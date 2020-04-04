@@ -14,6 +14,7 @@ package org.openhab.binding.insteon.internal.driver;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,9 +42,9 @@ public class Driver {
     private final Logger logger = LoggerFactory.getLogger(Driver.class);
 
     // maps device name to serial port, i.e /dev/insteon -> Port object
-    private HashMap<String, Port> ports = new HashMap<>();
+    private Map<String, Port> ports = new HashMap<>();
     private @Nullable DriverListener listener = null; // single listener for notifications
-    private HashMap<InsteonAddress, @Nullable ModemDBEntry> modemDBEntries = new HashMap<>();
+    private Map<InsteonAddress, @Nullable ModemDBEntry> modemDBEntries = new HashMap<>();
     private ReentrantLock modemDBEntriesLock = new ReentrantLock();
     private int modemDBRetryTimeout = 120000; // in milliseconds
 
@@ -67,7 +68,7 @@ public class Driver {
         return true;
     }
 
-    public HashMap<InsteonAddress, @Nullable ModemDBEntry> lockModemDBEntries() {
+    public Map<InsteonAddress, @Nullable ModemDBEntry> lockModemDBEntries() {
         modemDBEntriesLock.lock();
         return modemDBEntries;
     }

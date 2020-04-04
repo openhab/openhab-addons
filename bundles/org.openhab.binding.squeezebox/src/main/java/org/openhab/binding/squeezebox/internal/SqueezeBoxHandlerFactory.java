@@ -108,7 +108,7 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
             SqueezeBoxAudioSink audioSink = new SqueezeBoxAudioSink(playerHandler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
             return playerHandler;
@@ -134,8 +134,8 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(discoveryService);
 
         // Register the service, then add the service to the ServiceRegistration map
-        discoveryServiceRegs.put(squeezeBoxServerHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(squeezeBoxServerHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

@@ -80,8 +80,8 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
         ICloudDeviceDiscovery discoveryService = new ICloudDeviceDiscovery(bridgeHandler, bundleContext.getBundle(),
                 i18nProvider, localeProvider);
         discoveryService.activate();
-        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDeviceDiscoveryService(ICloudAccountBridgeHandler bridgeHandler) {

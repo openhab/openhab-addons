@@ -104,7 +104,7 @@ public class EirRecord {
     }
 
     private List<UUID> processUuid16(int[] data) {
-        List<UUID> uuidList = new ArrayList<UUID>();
+        List<UUID> uuidList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 2) {
             uuidList.add(process16BitUUID(data, cnt));
@@ -114,7 +114,7 @@ public class EirRecord {
     }
 
     private List<UUID> processUuid32(int[] data) {
-        List<UUID> uuidList = new ArrayList<UUID>();
+        List<UUID> uuidList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 4) {
             uuidList.add(process32BitUUID(data, cnt));
@@ -124,7 +124,7 @@ public class EirRecord {
     }
 
     private List<UUID> processUuid128(int[] data) {
-        List<UUID> uuidList = new ArrayList<UUID>();
+        List<UUID> uuidList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 16) {
             uuidList.add(process128BitUUID(data, cnt));
@@ -157,7 +157,7 @@ public class EirRecord {
     }
 
     private List<Integer> processUInt16List(int[] data) {
-        List<Integer> intList = new ArrayList<Integer>();
+        List<Integer> intList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 2) {
             intList.add(Integer.valueOf(data[cnt] + (data[cnt + 1] << 8)));
@@ -167,7 +167,7 @@ public class EirRecord {
     }
 
     private List<EirFlags> processFlags(int[] data) {
-        List<EirFlags> flags = new ArrayList<EirFlags>();
+        List<EirFlags> flags = new ArrayList<>();
         int flagBit = 0;
         for (int cnt = 1; cnt < data.length; cnt++) {
             for (int bitcnt = 0; bitcnt < 8; bitcnt++) {

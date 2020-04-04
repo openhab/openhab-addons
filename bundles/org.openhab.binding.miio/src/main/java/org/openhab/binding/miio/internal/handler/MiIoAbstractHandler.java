@@ -73,8 +73,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected @Nullable MiIoAsyncCommunication miioCom;
     protected int lastId;
 
-    protected Map<Integer, String> cmds = new ConcurrentHashMap<Integer, String>();
-    protected final ExpiringCache<String> network = new ExpiringCache<String>(CACHE_EXPIRY_NETWORK, () -> {
+    protected Map<Integer, String> cmds = new ConcurrentHashMap<>();
+    protected final ExpiringCache<String> network = new ExpiringCache<>(CACHE_EXPIRY_NETWORK, () -> {
         int ret = sendCommand(MiIoCommand.MIIO_INFO);
         if (ret != 0) {
             return "id:" + ret;

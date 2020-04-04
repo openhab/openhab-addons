@@ -87,7 +87,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     public PresenceDetection(final PresenceDetectionListener updateListener, int cacheDeviceStateTimeInMS)
             throws IllegalArgumentException {
         this.updateListener = updateListener;
-        cache = new ExpiringCacheAsync<PresenceDetectionValue>(cacheDeviceStateTimeInMS, () -> {
+        cache = new ExpiringCacheAsync<>(cacheDeviceStateTimeInMS, () -> {
             performPresenceDetection(false);
         });
     }
@@ -110,7 +110,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
-        this.destination = new ExpiringCache<@Nullable InetAddress>(DESTINATION_TTL, () -> {
+        this.destination = new ExpiringCache<>(DESTINATION_TTL, () -> {
             try {
                 InetAddress destinationAddress = InetAddress.getByName(hostname);
                 if (!destinationAddress.equals(cachedDestination)) {

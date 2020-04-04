@@ -65,8 +65,8 @@ public class SinopeHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(SinopeGatewayHandler bridge) {
         SinopeThingsDiscoveryService discoveryService = new SinopeThingsDiscoveryService(bridge);
 
-        this.discoveryServiceRegs.put(bridge.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridge.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

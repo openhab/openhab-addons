@@ -72,8 +72,8 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerOpenUVDiscoveryService(OpenUVBridgeHandler bridgeHandler) {
         OpenUVDiscoveryService discoveryService = new OpenUVDiscoveryService(bridgeHandler, locationProvider);
-        bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
 }

@@ -23,7 +23,6 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.dimension.Density;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -58,7 +57,7 @@ public class Util {
         Double saturationVaporPressure = 611.2 * Math.exp(17.62 * theta / (243.12 + theta));
         // absolute humidity in kg/m^3
         Double aH = relativeHumidity.doubleValue() / 100 * saturationVaporPressure / (461.52 * (273.15 + theta));
-        State absoluteHumidity = new QuantityType<Density>(aH, SmartHomeUnits.KILOGRAM_PER_CUBICMETRE).toUnit("g/m³");
+        State absoluteHumidity = new QuantityType<>(aH, SmartHomeUnits.KILOGRAM_PER_CUBICMETRE).toUnit("g/m³");
         if (absoluteHumidity != null) {
             return absoluteHumidity;
         } else {
@@ -84,7 +83,7 @@ public class Util {
         // dewpoint in °C
         Double dP = 243.12 * (((17.62 * theta) / (243.12 + theta) + Math.log(rH))
                 / (((17.62 * 243.12) / (243.12 + theta) - Math.log(rH))));
-        State dewPoint = new QuantityType<Temperature>(dP, SIUnits.CELSIUS);
+        State dewPoint = new QuantityType<>(dP, SIUnits.CELSIUS);
         return dewPoint;
     }
 
@@ -97,7 +96,7 @@ public class Util {
                     .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue()));
         } catch (IOException e) {
             LOGGER.error("could not read resource file {}, binding will probably fail: {}", filename, e.getMessage());
-            return new HashMap<String, String>();
+            return new HashMap<>();
         }
     }
 }

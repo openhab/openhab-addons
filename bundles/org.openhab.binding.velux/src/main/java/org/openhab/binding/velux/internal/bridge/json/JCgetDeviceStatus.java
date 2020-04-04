@@ -50,8 +50,8 @@ class JCgetDeviceStatus extends GetDeviceStatus implements JsonBridgeCommunicati
      */
 
     /**
-     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge JsonVeluxBridge}
-     * for serializing.
+     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge
+     * JsonVeluxBridge} for serializing.
      *
      * Resulting JSON:
      *
@@ -73,7 +73,7 @@ class JCgetDeviceStatus extends GetDeviceStatus implements JsonBridgeCommunicati
 
         public Request() {
             this.action = "getDeviceStatus";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 

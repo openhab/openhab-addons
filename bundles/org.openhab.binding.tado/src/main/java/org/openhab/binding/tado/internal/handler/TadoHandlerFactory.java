@@ -73,7 +73,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerTadoDiscoveryService(TadoHomeHandler tadoHomeHandler) {
         TadoDiscoveryService discoveryService = new TadoDiscoveryService(tadoHomeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>());
+                discoveryService, new Hashtable<>());
         discoveryService.activate();
         this.discoveryServiceRegs.put(tadoHomeHandler.getThing().getUID(), serviceRegistration);
     }

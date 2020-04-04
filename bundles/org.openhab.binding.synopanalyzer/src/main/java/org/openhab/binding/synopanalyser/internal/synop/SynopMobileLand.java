@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.synopanalyser.internal.synop;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@link SynopMobileLand} is responsible for analyzing Mobile Land
@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class SynopMobileLand extends SynopMobile {
 
-    public SynopMobileLand(ArrayList<String> stringArray) {
+    public SynopMobileLand(List<String> stringArray) {
         super(stringArray);
     }
 

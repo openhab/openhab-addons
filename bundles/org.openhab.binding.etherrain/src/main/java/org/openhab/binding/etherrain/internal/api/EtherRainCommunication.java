@@ -201,7 +201,7 @@ public class EtherRainCommunication {
 
     private static List<EtherRainUdpResponse> updBroadcast() {
 
-        LinkedList<EtherRainUdpResponse> rList = new LinkedList<EtherRainUdpResponse>();
+        List<EtherRainUdpResponse> rList = new LinkedList<>();
 
         // Find the server using UDP broadcast
 

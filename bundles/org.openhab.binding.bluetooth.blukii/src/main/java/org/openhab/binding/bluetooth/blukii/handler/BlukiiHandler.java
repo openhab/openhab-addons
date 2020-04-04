@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.bluetooth.blukii.handler;
 
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Illuminance;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -57,21 +51,21 @@ public class BlukiiHandler extends BeaconBluetoothHandler implements BluetoothDe
                 updateState(BlukiiBindingConstants.CHANNEL_ID_BATTERY, new DecimalType(blukiiData.battery));
                 blukiiData.environment.ifPresent(environment -> {
                     updateState(BlukiiBindingConstants.CHANNEL_ID_TEMPERATURE,
-                            new QuantityType<Temperature>(environment.temperature, SIUnits.CELSIUS));
+                            new QuantityType<>(environment.temperature, SIUnits.CELSIUS));
                     updateState(BlukiiBindingConstants.CHANNEL_ID_HUMIDITY,
-                            new QuantityType<Dimensionless>(environment.humidity, SmartHomeUnits.PERCENT));
+                            new QuantityType<>(environment.humidity, SmartHomeUnits.PERCENT));
                     updateState(BlukiiBindingConstants.CHANNEL_ID_PRESSURE,
-                            new QuantityType<Pressure>(environment.pressure, MetricPrefix.HECTO(SIUnits.PASCAL)));
+                            new QuantityType<>(environment.pressure, MetricPrefix.HECTO(SIUnits.PASCAL)));
                     updateState(BlukiiBindingConstants.CHANNEL_ID_LUMINANCE,
-                            new QuantityType<Illuminance>(environment.luminance, SmartHomeUnits.LUX));
+                            new QuantityType<>(environment.luminance, SmartHomeUnits.LUX));
                 });
                 blukiiData.accelerometer.ifPresent(accelerometer -> {
                     updateState(BlukiiBindingConstants.CHANNEL_ID_TILTX,
-                            new QuantityType<Angle>(accelerometer.tiltX, SmartHomeUnits.DEGREE_ANGLE));
+                            new QuantityType<>(accelerometer.tiltX, SmartHomeUnits.DEGREE_ANGLE));
                     updateState(BlukiiBindingConstants.CHANNEL_ID_TILTY,
-                            new QuantityType<Angle>(accelerometer.tiltY, SmartHomeUnits.DEGREE_ANGLE));
+                            new QuantityType<>(accelerometer.tiltY, SmartHomeUnits.DEGREE_ANGLE));
                     updateState(BlukiiBindingConstants.CHANNEL_ID_TILTZ,
-                            new QuantityType<Angle>(accelerometer.tiltZ, SmartHomeUnits.DEGREE_ANGLE));
+                            new QuantityType<>(accelerometer.tiltZ, SmartHomeUnits.DEGREE_ANGLE));
                 });
                 blukiiData.magnetometer.ifPresent(magnetometer -> {
                     // It isn't easy to get a heading from these values without any calibration, so we ignore those

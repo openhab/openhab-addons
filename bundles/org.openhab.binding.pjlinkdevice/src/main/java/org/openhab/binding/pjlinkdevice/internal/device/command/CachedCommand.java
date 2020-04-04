@@ -35,7 +35,7 @@ public class CachedCommand<ResponseType extends Response<?>> implements Command<
 
     public CachedCommand(Command<ResponseType> cachedCommand, int expiry) {
         this.cachedCommand = cachedCommand;
-        this.cache = new ExpiringCache<ResponseType>(expiry, () -> {
+        this.cache = new ExpiringCache<>(expiry, () -> {
             try {
                 return this.cachedCommand.execute();
             } catch (ResponseException | IOException | AuthenticationException e) {

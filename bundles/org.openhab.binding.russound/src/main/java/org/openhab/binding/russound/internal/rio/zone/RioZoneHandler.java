@@ -70,7 +70,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
     /**
      * The zone name for this instance
      */
-    private final AtomicReference<String> zoneName = new AtomicReference<String>(null);
+    private final AtomicReference<String> zoneName = new AtomicReference<>(null);
 
     /**
      * Constructs the handler from the {@link Thing}

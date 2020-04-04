@@ -81,7 +81,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     private PowermaxBaseMessage lastSendMsg;
 
     /** The message queue of messages to be sent to the the Powermax alarm system */
-    private ConcurrentLinkedQueue<PowermaxBaseMessage> msgQueue = new ConcurrentLinkedQueue<PowermaxBaseMessage>();
+    private ConcurrentLinkedQueue<PowermaxBaseMessage> msgQueue = new ConcurrentLinkedQueue<>();
 
     /** The time in milliseconds the last download of the panel setup was requested */
     private Long lastTimeDownloadRequested;
@@ -95,10 +95,10 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Constructor for Serial Connection
      *
-     * @param sPort             the serial port name
-     * @param panelType         the panel type to be used when in standard mode
+     * @param sPort the serial port name
+     * @param panelType the panel type to be used when in standard mode
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
-     * @param autoSyncTime      true for automatic sync time
+     * @param autoSyncTime true for automatic sync time
      * @param serialPortManager the serial port manager
      */
     public PowermaxCommManager(String sPort, PowermaxPanelType panelType, boolean forceStandardMode,
@@ -118,11 +118,11 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Constructor for TCP connection
      *
-     * @param ip                the IP address
-     * @param port              TCP port number; default port is used if value <= 0
-     * @param panelType         the panel type to be used when in standard mode
+     * @param ip the IP address
+     * @param port TCP port number; default port is used if value <= 0
+     * @param panelType the panel type to be used when in standard mode
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
-     * @param autoSyncTime      true for automatic sync time
+     * @param autoSyncTime true for automatic sync time
      * @param serialPortManager
      */
     public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
@@ -174,7 +174,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
             connector.open();
         }
         lastSendMsg = null;
-        msgQueue = new ConcurrentLinkedQueue<PowermaxBaseMessage>();
+        msgQueue = new ConcurrentLinkedQueue<>();
         return isConnected();
     }
 
@@ -275,7 +275,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * Compute the CRC of a message
      *
      * @param data the buffer containing the message
-     * @param len  the size of the message in the buffer
+     * @param len the size of the message in the buffer
      *
      * @return the computed CRC
      */
@@ -294,7 +294,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Send an ACK for a received message
      *
-     * @param msg     the received message object
+     * @param msg the received message object
      * @param ackType the type of ACK to be sent
      *
      * @return true if the ACK was sent or false if not
@@ -391,8 +391,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Send a message to the Powermax alarm panel to bypass a zone or to not bypass a zone
      *
-     * @param bypass  true to bypass the zone; false to not bypass the zone
-     * @param zone    the zone number (first zone is number 1)
+     * @param bypass true to bypass the zone; false to not bypass the zone
+     * @param zone the zone number (first zone is number 1)
      * @param pinCode the PIN code. A string of 4 characters is expected
      *
      * @return true if the message was sent or false if not
@@ -582,7 +582,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Delay the sending of a message
      *
-     * @param msgType  the message type to be sent
+     * @param msgType the message type to be sent
      * @param waitTime the delay in seconds to wait
      *
      * @return true if the sending is delayed; false in other cases
@@ -594,9 +594,9 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     /**
      * Send a message or delay the sending if time frame for receiving response is not ended
      *
-     * @param msg       the message to be sent
+     * @param msg the message to be sent
      * @param immediate true if the message has to be send without considering timing
-     * @param waitTime  the delay in seconds to wait
+     * @param waitTime the delay in seconds to wait
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */

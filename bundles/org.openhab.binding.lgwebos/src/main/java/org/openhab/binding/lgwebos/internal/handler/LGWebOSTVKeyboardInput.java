@@ -61,7 +61,7 @@ public class LGWebOSTVKeyboardInput {
     public LGWebOSTVKeyboardInput(LGWebOSTVSocket service) {
         this.service = service;
         waiting = false;
-        toSend = new ArrayList<String>();
+        toSend = new ArrayList<>();
     }
 
     public void sendText(String input) {

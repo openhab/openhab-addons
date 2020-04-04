@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Component;
 public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     /** Map from UPnP manufacturer to model number for supported radios; filled in static initializer below. */
-    private static final Map<String, Set<String>> SUPPORTED_RADIO_MODELS = new HashMap<String, Set<String>>();
+    private static final Map<String, Set<String>> SUPPORTED_RADIO_MODELS = new HashMap<>();
 
     static {
         // to allow case-insensitive match: add all values UPPER-CASE!
@@ -54,7 +54,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         // https://community.openhab.org/t/internet-radio-i-need-your-help/2131
 
         // list of medion internet radios taken from: http://internetradio.medion.com/
-        final Set<String> medionRadios = new HashSet<String>();
+        final Set<String> medionRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("MEDION AG", medionRadios);
         medionRadios.add("MD83813");
         medionRadios.add("MD84017");
@@ -75,7 +75,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
 
         // list of hama internet radios taken from:
         // https://www.hama.com/action/searchCtrl/search?searchMode=1&q=Internet%20Radio
-        final Set<String> hamaRadios = new HashSet<String>();
+        final Set<String> hamaRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("HAMA", hamaRadios);
         hamaRadios.add("IR100");
         hamaRadios.add("IR110");
@@ -89,7 +89,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         // and: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/20
         // and: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/23
         // these radios do not provide model number, but the model name should also be ok
-        final Set<String> radiosWithoutManufacturer = new HashSet<String>();
+        final Set<String> radiosWithoutManufacturer = new HashSet<>();
         radiosWithoutManufacturer.add(""); // empty manufacturer / model name
         radiosWithoutManufacturer.add(null); // missing manufacturer / model name
         SUPPORTED_RADIO_MODELS.put("SMRS18A1", radiosWithoutManufacturer);
@@ -97,36 +97,36 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         SUPPORTED_RADIO_MODELS.put("SMRS35A1", radiosWithoutManufacturer);
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/5
-        final Set<String> ttmicroRadios = new HashSet<String>();
+        final Set<String> ttmicroRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("TTMICRO AS", ttmicroRadios);
         ttmicroRadios.add("PINELL SUPERSOUND");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/7
-        final Set<String> revoRadios = new HashSet<String>();
+        final Set<String> revoRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("REVO TECHNOLOGIES LTD", revoRadios);
         revoRadios.add("S10");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/10
         // and: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/21
-        final Set<String> robertsRadios = new HashSet<String>();
+        final Set<String> robertsRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("ROBERTS RADIO LIMITED", robertsRadios);
         robertsRadios.add("ROBERTS STREAM 93I");
         robertsRadios.add("ROBERTS STREAM 83I");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/11
-        final Set<String> aunaRadios = new HashSet<String>();
+        final Set<String> aunaRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("AUNA", aunaRadios);
         aunaRadios.add("10028154 & 10028155");
         aunaRadios.add("10028154");
         aunaRadios.add("10028155");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/22
-        final Set<String> sangeanRadios = new HashSet<String>();
+        final Set<String> sangeanRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("SANGEAN RADIO LIMITED", sangeanRadios);
         sangeanRadios.add("28");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/25
-        final Set<String> rokuRadios = new HashSet<String>();
+        final Set<String> rokuRadios = new HashSet<>();
         SUPPORTED_RADIO_MODELS.put("ROKU", rokuRadios);
         rokuRadios.add("M1001");
     }

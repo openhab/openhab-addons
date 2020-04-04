@@ -133,8 +133,8 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(FreeboxHandler bridgeHandler) {
         FreeboxDiscoveryService discoveryService = new FreeboxDiscoveryService(bridgeHandler);
         discoveryService.activate(null);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDiscoveryService(Thing thing) {
@@ -155,7 +155,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
         FreeboxAirPlayAudioSink audioSink = new FreeboxAirPlayAudioSink(thingHandler, audioHTTPServer, callbackUrl);
         @SuppressWarnings("unchecked")
         ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
         audioSinkRegistrations.put(thingHandler.getThing().getUID(), reg);
     }
 

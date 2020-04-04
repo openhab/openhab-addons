@@ -71,7 +71,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COFFEE);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     protected static final int SUBSCRIPTION_DURATION = 600;
 
@@ -231,7 +231,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 service.removeSubscription(this, subscription);
             }
 
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
         }
     }

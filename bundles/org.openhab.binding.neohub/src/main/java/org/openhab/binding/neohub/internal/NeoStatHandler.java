@@ -14,22 +14,19 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
  * The {@link NeoStatHandler} is the openHAB Handler for NeoStat devices Note:
  * inherits almost all the functionality of a {@link NeoBaseHandler}
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 public class NeoStatHandler extends NeoBaseHandler {
 
@@ -53,13 +50,13 @@ public class NeoStatHandler extends NeoBaseHandler {
     @Override
     protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo) {
         toOpenHabSendValueDebounced(CHAN_TARGET_TEMP,
-                new QuantityType<Temperature>(deviceInfo.getTargetTemperature(), SIUnits.CELSIUS));
+                new QuantityType<>(deviceInfo.getTargetTemperature(), SIUnits.CELSIUS));
 
         toOpenHabSendValueDebounced(CHAN_ROOM_TEMP,
-                new QuantityType<Temperature>(deviceInfo.getRoomTemperature(), SIUnits.CELSIUS));
+                new QuantityType<>(deviceInfo.getRoomTemperature(), SIUnits.CELSIUS));
 
         toOpenHabSendValueDebounced(CHAN_FLOOR_TEMP,
-                new QuantityType<Temperature>(deviceInfo.getFloorTemperature(), SIUnits.CELSIUS));
+                new QuantityType<>(deviceInfo.getFloorTemperature(), SIUnits.CELSIUS));
 
         toOpenHabSendValueDebounced(CHAN_OCC_MODE_PRESENT, OnOffType.from(!deviceInfo.isStandby()));
 

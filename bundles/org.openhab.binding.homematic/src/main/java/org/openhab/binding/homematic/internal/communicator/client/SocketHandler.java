@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class SocketHandler {
     private final Logger logger = LoggerFactory.getLogger(SocketHandler.class);
 
-    private Map<Integer, SocketInfo> socketsPerPort = new HashMap<Integer, SocketInfo>();
+    private Map<Integer, SocketInfo> socketsPerPort = new HashMap<>();
     private HomematicConfig config;
 
     public SocketHandler(HomematicConfig config) {

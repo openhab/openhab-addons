@@ -81,7 +81,7 @@ public abstract class RpcResponseHandler<T> {
      * Creates a BINRPC message with the supported method names.
      */
     private List<String> getListMethods() {
-        List<String> events = new ArrayList<String>();
+        List<String> events = new ArrayList<>();
         events.add(RPC_METHODNAME_SYSTEM_MULTICALL);
         events.add(RPC_METHODNAME_EVENT);
         events.add(RPC_METHODNAME_DELETE_DEVICES);

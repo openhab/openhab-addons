@@ -96,7 +96,7 @@ public class MacTTSService implements TTSService {
      * @return The voices of this instance
      */
     private final Set<Voice> initVoices() {
-        Set<Voice> voices = new HashSet<Voice>();
+        Set<Voice> voices = new HashSet<>();
         InputStreamReader inputStreamReader = null;
         BufferedReader bufferedReader = null;
         try {

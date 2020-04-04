@@ -19,9 +19,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.measure.quantity.Speed;
-import javax.measure.quantity.Temperature;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -213,7 +210,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         Matcher matcher = TEMPERATURE_PATTERN.matcher(tempString);
         if (matcher.matches()) {
             try {
-                updateGroupState(group, channel, new QuantityType<Temperature>(Double.valueOf(matcher.group(1)),
+                updateGroupState(group, channel, new QuantityType<>(Double.valueOf(matcher.group(1)),
                         "C".equals(matcher.group(2)) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse temperature string {} ", tempString);
@@ -225,7 +222,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         Matcher matcher = WIND_SPEED_PATTERN.matcher(windString);
         if (matcher.matches()) {
             try {
-                updateGroupState(group, channel, new QuantityType<Speed>(Integer.parseInt(matcher.group(1)),
+                updateGroupState(group, channel, new QuantityType<>(Integer.parseInt(matcher.group(1)),
                         "kph".equals(matcher.group(2)) ? SIUnits.KILOMETRE_PER_HOUR : ImperialUnits.MILES_PER_HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse wind string {} ", windString);

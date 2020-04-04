@@ -69,7 +69,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
                 connectionStateOverwrite = MqttConnectionState.CONNECTED;
                 return CompletableFuture.completedFuture(null);
             }
-            return new CompletableFuture<Boolean>();
+            return new CompletableFuture<>();
         }).when(mockedClient).connect(any(), anyInt(), any(), any());
         doAnswer(i -> {
             if (disconnectSuccess) {
@@ -77,7 +77,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
                 connectionStateOverwrite = MqttConnectionState.DISCONNECTED;
                 return CompletableFuture.completedFuture(null);
             }
-            return new CompletableFuture<Boolean>();
+            return new CompletableFuture<>();
         }).when(mockedClient).disconnect();
         // subscribe
         doAnswer(i -> {

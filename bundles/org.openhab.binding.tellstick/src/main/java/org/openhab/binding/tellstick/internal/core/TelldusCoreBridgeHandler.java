@@ -62,8 +62,8 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
     private Logger logger = LoggerFactory.getLogger(TelldusCoreBridgeHandler.class);
     private TelldusDeviceController deviceController = null;
-    private List<TellstickDevice> deviceList = new Vector<TellstickDevice>();
-    private List<TellstickSensor> sensorList = new Vector<TellstickSensor>();
+    private List<TellstickDevice> deviceList = new Vector<>();
+    private List<TellstickSensor> sensorList = new Vector<>();
     private TellstickEventHandler eventHandler;
     private static boolean initialized = false;
     private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();

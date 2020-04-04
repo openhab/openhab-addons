@@ -926,7 +926,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         if (command instanceof QuantityType) {
             return ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS);
         }
-        return new QuantityType<Temperature>(new BigDecimal(command.toString()), SIUnits.CELSIUS);
+        return new QuantityType<>(new BigDecimal(command.toString()), SIUnits.CELSIUS);
     }
 
     protected float quanityToRoundedFloat(QuantityType<Temperature> quantity) {

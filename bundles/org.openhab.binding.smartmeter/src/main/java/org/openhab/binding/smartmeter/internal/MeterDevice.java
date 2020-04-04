@@ -77,7 +77,7 @@ public abstract class MeterDevice<T> {
             byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
         super();
         this.deviceId = deviceId;
-        this.valueCache = new HashMap<String, MeterValue<?>>();
+        this.valueCache = new HashMap<>();
         this.valueChangeListeners = new CopyOnWriteArrayList<>();
         this.printMeterInfo = true;
         this.connector = createConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,

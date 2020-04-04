@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.coap;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.Validate;
 
@@ -79,13 +80,13 @@ public class ShellyCoapJSonDTO {
         @SerializedName("L")
         public String links; // Links
         @SerializedName("P")
-        public ArrayList<CoIotDescrP> pTag; // ?
+        public List<CoIotDescrP> pTag; // ?
     }
 
     public static class CoIotDevDescription {
-        public ArrayList<CoIotDescrBlk> blk;
-        public ArrayList<CoIotDescrSen> sen;
-        public ArrayList<CoIotDescrAct> act;
+        public List<CoIotDescrBlk> blk;
+        public List<CoIotDescrSen> sen;
+        public List<CoIotDescrAct> act;
     }
 
     public static class CoIotSensor {
@@ -95,10 +96,10 @@ public class ShellyCoapJSonDTO {
 
     public static class CoIotGenericSensorList {
         @SerializedName("G")
-        public ArrayList<CoIotSensor> generic;
+        public List<CoIotSensor> generic;
 
         public CoIotGenericSensorList() {
-            generic = new ArrayList<CoIotSensor>();
+            generic = new ArrayList<>();
         }
     }
 

@@ -18,6 +18,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -49,7 +50,7 @@ public abstract class XiaomiSocket {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiSocket.class);
 
-    private static ConcurrentHashMap<Integer, DatagramSocket> openSockets = new ConcurrentHashMap<Integer, DatagramSocket>();
+    private static Map<Integer, DatagramSocket> openSockets = new ConcurrentHashMap<>();
 
     private int port;
     private DatagramSocket socket;
@@ -164,7 +165,7 @@ public abstract class XiaomiSocket {
     /**
      * @return - a list of already open sockets
      */
-    public static ConcurrentHashMap<Integer, DatagramSocket> getOpenSockets() {
+    public static Map<Integer, DatagramSocket> getOpenSockets() {
         return openSockets;
     }
 

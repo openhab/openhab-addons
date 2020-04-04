@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -112,7 +113,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
     private SceneReadingJobExecutor sceneJobExecutor;
     private EventListener eventListener;
 
-    private final List<TrashDevice> trashDevices = new LinkedList<TrashDevice>();
+    private final List<TrashDevice> trashDevices = new LinkedList<>();
 
     private long lastBinCheck = 0;
     private ManagerStates state = ManagerStates.STOPPED;
@@ -244,11 +245,11 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                     stateChanged(ManagerStates.INITIALIZING);
                 }
             }
-            HashMap<DSID, Device> tempDeviceMap;
+            Map<DSID, Device> tempDeviceMap;
             if (strucMan.getDeviceMap() != null) {
-                tempDeviceMap = (HashMap<DSID, Device>) strucMan.getDeviceMap();
+                tempDeviceMap = strucMan.getDeviceMap();
             } else {
-                tempDeviceMap = new HashMap<DSID, Device>();
+                tempDeviceMap = new HashMap<>();
             }
 
             List<Device> currentDeviceList = getDetailedDevices();
@@ -403,7 +404,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         }
 
         private List<Device> getDetailedDevices() {
-            List<Device> deviceList = new LinkedList<Device>();
+            List<Device> deviceList = new LinkedList<>();
             JsonObject result = connMan.getDigitalSTROMAPI().query2(connMan.getSessionToken(), GET_DETAILD_DEVICES);
             if (result != null && result.isJsonObject()) {
                 if (result.getAsJsonObject().get(GeneralLibConstance.QUERY_BROADCAST_ZONE_STRING).isJsonObject()) {

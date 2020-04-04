@@ -79,7 +79,7 @@ public class MiIoAsyncCommunication {
     private static final int MAX_ERRORS = 3;
     private static final int MAX_ID = 15000;
 
-    private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<MiIoSendCommand>();
+    private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     public MiIoAsyncCommunication(String ip, byte[] token, byte[] did, int id, int timeout) {
         this.ip = ip;

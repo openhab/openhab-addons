@@ -56,7 +56,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
 
     public TelldusCoreDeviceController(long resendInterval) {
         this.resendInterval = resendInterval;
-        messageQue = Collections.synchronizedSortedMap(new TreeMap<Device, TelldusCoreSendEvent>());
+        messageQue = Collections.synchronizedSortedMap(new TreeMap<>());
         telldusCoreWorker = new TelldusCoreWorker(messageQue);
         workerThread = new Thread(telldusCoreWorker);
     }

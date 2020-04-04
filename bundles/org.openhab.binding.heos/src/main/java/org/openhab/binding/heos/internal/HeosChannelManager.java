@@ -45,7 +45,6 @@ public class HeosChannelManager {
 
     private List<Channel> channelList = new ArrayList<>();
 
-
     public HeosChannelManager(ThingHandler handler) {
         this.handler = handler;
     }
@@ -104,7 +103,7 @@ public class HeosChannelManager {
     }
 
     public List<Channel> addFavoriteChannels(List<Map<String, String>> favoritesList) {
-        List<Channel> channelList = new ArrayList<Channel>();
+        List<Channel> channelList = new ArrayList<>();
         favoritesList.forEach(element -> channelList.add(generateFavoriteChannel(element)));
         return addMultibleChannels(channelList);
     }

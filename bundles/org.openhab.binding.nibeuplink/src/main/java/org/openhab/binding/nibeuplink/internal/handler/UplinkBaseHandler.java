@@ -72,8 +72,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new UplinkWebInterface(scheduler, this, httpClient);
-        this.pollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
-        this.deadChannelHouseKeepingReference = new AtomicReference<@Nullable Future<?>>(null);
+        this.pollingJobReference = new AtomicReference<>(null);
+        this.deadChannelHouseKeepingReference = new AtomicReference<>(null);
     }
 
     @Override

@@ -43,7 +43,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     /**
      * Defines all devices where the state datapoint must be inverted.
      */
-    private static final List<StateInvertInfo> stateInvertDevices = new ArrayList<StateInvertInfo>(3);
+    private static final List<StateInvertInfo> stateInvertDevices = new ArrayList<>(3);
 
     static {
         stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT));

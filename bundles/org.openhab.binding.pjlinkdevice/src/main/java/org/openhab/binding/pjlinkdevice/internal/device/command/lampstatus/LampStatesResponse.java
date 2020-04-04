@@ -65,7 +65,7 @@ public class LampStatesResponse extends PrefixedResponse<List<LampStatesResponse
         }
 
         // go through individual matches for each lamp
-        List<LampStatesResponse.LampState> result = new ArrayList<LampStatesResponse.LampState>();
+        List<LampStatesResponse.LampState> result = new ArrayList<>();
         Matcher matcher = RESPONSE_PARSING_PATTERN.matcher(responseWithoutPrefix);
         while (matcher.find()) {
             int lampHours = Integer.parseInt(matcher.group("hours"));

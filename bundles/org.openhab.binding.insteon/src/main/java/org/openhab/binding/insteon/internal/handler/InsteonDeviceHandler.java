@@ -156,7 +156,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey);
 
             StringBuilder channelList = new StringBuilder();
-            List<Channel> channels = new ArrayList<Channel>();
+            List<Channel> channels = new ArrayList<>();
             String thingId = getThing().getUID().getAsString();
             for (String channelId : ALL_CHANNEL_IDS) {
                 String feature = channelId.toLowerCase();
@@ -273,7 +273,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HashMap<String, @Nullable String> params = new HashMap<String, @Nullable String>();
+        Map<String, @Nullable String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
 
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();

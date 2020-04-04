@@ -118,8 +118,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 DPTXlatorSceneControl.class, DPTXlatorSceneNumber.class, DPTXlatorString.class, DPTXlatorTime.class,
                 DPTXlatorUtf8.class);
 
-        dptTypeMap = new HashMap<String, Class<? extends Type>>();
-        dptMainTypeMap = new HashMap<Integer, Class<? extends Type>>();
+        dptTypeMap = new HashMap<>();
+        dptMainTypeMap = new HashMap<>();
 
         /**
          * MainType: 1
@@ -558,7 +558,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         /** Exceptions Datapoint Types "RGB Color", Main number 232 */
         // Example: dptTypeMap.put(DPTXlatorRGB.DPT_RGB.getID(), HSBType.class);
 
-        defaultDptMap = new HashMap<Class<? extends Type>, String>();
+        defaultDptMap = new HashMap<>();
         defaultDptMap.put(OnOffType.class, DPTXlatorBoolean.DPT_SWITCH.getID());
         defaultDptMap.put(UpDownType.class, DPTXlatorBoolean.DPT_UPDOWN.getID());
         defaultDptMap.put(StopMoveType.class, DPTXlatorBoolean.DPT_START.getID());

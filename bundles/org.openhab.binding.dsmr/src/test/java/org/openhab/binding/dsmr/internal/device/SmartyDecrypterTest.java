@@ -76,7 +76,7 @@ public class SmartyDecrypterTest {
      */
     @Test
     public void testSmartyDecrypter() {
-        AtomicReference<String> telegramResult = new AtomicReference<String>("");
+        AtomicReference<String> telegramResult = new AtomicReference<>("");
         P1TelegramListener telegramListener = telegram -> telegramResult.set(telegram.getRawTelegram());
         SmartyDecrypter decoder = new SmartyDecrypter(new P1TelegramParser(telegramListener),
                 new DSMRTelegramListener(KEY), KEY);

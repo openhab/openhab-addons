@@ -13,6 +13,7 @@
 package org.openhab.binding.fronius.internal.api;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,16 +29,16 @@ public class PowerFlowRealtimeBodyData {
     private PowerFlowRealtimeSite site;
 
     @SerializedName("Inverters")
-    private HashMap<String, PowerFlowRealtimeInverter> inverters;
+    private Map<String, PowerFlowRealtimeInverter> inverters;
 
-    public HashMap<String, PowerFlowRealtimeInverter> getInverters() {
+    public Map<String, PowerFlowRealtimeInverter> getInverters() {
         if (inverters == null) {
-            inverters = new HashMap<String, PowerFlowRealtimeInverter>();
+            inverters = new HashMap<>();
         }
         return inverters;
     }
 
-    public void setInverters(HashMap<String, PowerFlowRealtimeInverter> inverters) {
+    public void setInverters(Map<String, PowerFlowRealtimeInverter> inverters) {
         this.inverters = inverters;
     }
 

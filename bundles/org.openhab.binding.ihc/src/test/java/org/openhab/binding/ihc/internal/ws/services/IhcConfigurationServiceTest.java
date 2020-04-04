@@ -40,7 +40,7 @@ public class IhcConfigurationServiceTest {
     private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/ConfigurationService";
     final String query = ResourceFileUtils.getFileContent("EmptyQuery.xml");
-    private Map<String, String> requestProps = new HashMap<String, String>();
+    private Map<String, String> requestProps = new HashMap<>();
     private final int timeout = 100;
 
     @Before
