@@ -58,11 +58,6 @@
 			<parameter name="regionID" type="integer" required="true">
 				<label>Region</label>
 				<description>The partregion or region that should be reported.</description>
-		<config-description>
-			<parameter name="regionId" type="integer" required="true">
-				<label>Region</label>
-				<description>The region that should be reported.</description>
-
 				<options>
 					<option value="11">Inseln und Marschen</option>
 					<option value="12">Geest, Schleswig-Holstein und Hamburg</option>

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
@@ -35,7 +36,7 @@ public class DWDRegion {
 
     private final Map<String, String> properties;
 
-    private final Map<String, @Nullable String> channels = new HashMap<>();
+    private final Map<String, StringType> channels = new HashMap<>();
 
     public DWDRegion(final DWDRegionJSON json) {
         regionID = json.regionID;

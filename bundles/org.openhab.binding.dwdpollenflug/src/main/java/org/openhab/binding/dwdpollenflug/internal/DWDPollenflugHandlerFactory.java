@@ -54,13 +54,6 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
         this.httpClientFactory = httpClientFactory;
     }
 
-    private final HttpClientFactory httpClientFactory;
-
-    @Activate
-    public DWDPollenflugHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
-    }
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
