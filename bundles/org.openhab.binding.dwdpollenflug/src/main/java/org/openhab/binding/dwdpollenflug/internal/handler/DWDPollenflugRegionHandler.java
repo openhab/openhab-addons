@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.handler;
 
+import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
+
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugRegionConfiguration;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
@@ -47,6 +50,8 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     private @Nullable DWDPollenflugBridgeHandler bridgeHandler;
 
     private boolean ignoreConfigurationUpdate;
+
+    private @Nullable Date lastUpdate;
 
     public DWDPollenflugRegionHandler(Thing thing) {
         super(thing);
@@ -134,14 +139,21 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
         ignoreConfigurationUpdate = false;
 
         updateChannels(region.getChannels());
+
+        updateChannels(pollenflug.getChannels());
+
+        if (lastUpdate == null || !lastUpdate.equals(pollenflug.getLastUpdate())) {
+            triggerChannel(CHANNEL_UPDATES + "#" + CHANNEL_UPDATED, TRIGGER_REFRESHED);
+            lastUpdate = pollenflug.getLastUpdate();
+        }
     }
 
-    private void updateChannels(Map<String, String> channels) {
-        for (Entry<String, String> entry : channels.entrySet()) {
+    private void updateChannels(Map<String, State> channels) {
+        for (Entry<String, State> entry : channels.entrySet()) {
             String channelID = entry.getKey();
             if (isLinked(channelID)) {
                 logger.debug("Updating channel {} to {}", channelID, entry.getValue());
-                updateState(channelID, new StringType(entry.getValue()));
+                updateState(channelID, entry.getValue());
             } else {
                 logger.debug("Channel {} not linked to an item", channelID);
             }

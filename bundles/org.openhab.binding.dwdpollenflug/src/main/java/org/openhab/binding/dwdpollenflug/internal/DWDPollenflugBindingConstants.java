@@ -28,6 +28,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class DWDPollenflugBindingConstants {
+    public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
+
+    public static final String EMPTY = "";
 
     public static final long INITIAL_DELAY = TimeUnit.SECONDS.toSeconds(1);
 
@@ -57,13 +60,29 @@ public class DWDPollenflugBindingConstants {
         return Collections.unmodifiableMap(map);
     }
 
-    // Channels of Pollen groups
+    // Channels of pollen groups
     public static final String CHANNEL_TODAY = "today";
     public static final String CHANNEL_TOMORROW = "tomorrow";
     public static final String CHANNEL_DAYAFTER_TO = "dayafter_to";
 
+    // Channels of region update
+    public static final String CHANNEL_UPDATES = "updates";
+    public static final String CHANNEL_REFRESHED = "refreshed";
+    public static final String CHANNEL_NEXT_UPDATE = "next_update";
+    public static final String CHANNEL_LAST_UPDATE = "last_update";
+    public static final String CHANNEL_UPDATED = "updated";
+
+    public static final String TRIGGER_REFRESHED = "REFRESHED";
+
     // Bridge config properties
     public static final String REFRESH = "refresh";
+
+    // Bridge properties
+    public static final String PROPERTY_SENDER = "sender";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_REFRESHED = "refreshed";
+    public static final String PROPERTY_NEXT_UPDATE = "next_update";
+    public static final String PROPERTY_LAST_UPDATE = "last_update";
 
     // Region config properties
     public static final String REGION_ID = "regionID";
