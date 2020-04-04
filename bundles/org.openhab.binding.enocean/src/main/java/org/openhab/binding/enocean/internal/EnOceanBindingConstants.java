@@ -29,7 +29,7 @@ import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Volume;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.ItemUtil;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.dimension.VolumetricFlowRate;
@@ -43,38 +43,39 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanBindingConstants {
 
     public static final String BINDING_ID = "enocean";
 
     // bridge
-    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_PUSHBUTTON = new ThingTypeUID(BINDING_ID, "pushButton");
-    public final static ThingTypeUID THING_TYPE_ROCKERSWITCH = new ThingTypeUID(BINDING_ID, "rockerSwitch");
-    public final static ThingTypeUID THING_TYPE_CLASSICDEVICE = new ThingTypeUID(BINDING_ID, "classicDevice");
+    public static final ThingTypeUID THING_TYPE_PUSHBUTTON = new ThingTypeUID(BINDING_ID, "pushButton");
+    public static final ThingTypeUID THING_TYPE_ROCKERSWITCH = new ThingTypeUID(BINDING_ID, "rockerSwitch");
+    public static final ThingTypeUID THING_TYPE_CLASSICDEVICE = new ThingTypeUID(BINDING_ID, "classicDevice");
 
-    public final static ThingTypeUID THING_TYPE_CENTRALCOMMAND = new ThingTypeUID(BINDING_ID, "centralCommand");
-    public final static ThingTypeUID THING_TYPE_ROOMOPERATINGPANEL = new ThingTypeUID(BINDING_ID, "roomOperatingPanel");
-    public final static ThingTypeUID THING_TYPE_MECHANICALHANDLE = new ThingTypeUID(BINDING_ID, "mechanicalHandle");
-    public final static ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
-    public final static ThingTypeUID THING_TYPE_MEASUREMENTSWITCH = new ThingTypeUID(BINDING_ID, "measurementSwitch");
-    public final static ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperatureSensor");
-    public final static ThingTypeUID THING_TYPE_TEMPERATUREHUMIDITYSENSOR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_CENTRALCOMMAND = new ThingTypeUID(BINDING_ID, "centralCommand");
+    public static final ThingTypeUID THING_TYPE_ROOMOPERATINGPANEL = new ThingTypeUID(BINDING_ID, "roomOperatingPanel");
+    public static final ThingTypeUID THING_TYPE_MECHANICALHANDLE = new ThingTypeUID(BINDING_ID, "mechanicalHandle");
+    public static final ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
+    public static final ThingTypeUID THING_TYPE_MEASUREMENTSWITCH = new ThingTypeUID(BINDING_ID, "measurementSwitch");
+    public static final ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperatureSensor");
+    public static final ThingTypeUID THING_TYPE_TEMPERATUREHUMIDITYSENSOR = new ThingTypeUID(BINDING_ID,
             "temperatureHumiditySensor");
-    public final static ThingTypeUID THING_TYPE_AUTOMATEDMETERSENSOR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_AUTOMATEDMETERSENSOR = new ThingTypeUID(BINDING_ID,
             "automatedMeterSensor");
-    public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
-    public final static ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancySensor");
-    public final static ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancySensor");
+    public static final ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
             "lightTemperatureOccupancySensor");
-    public final static ThingTypeUID THING_TYPE_LIGHTSENSOR = new ThingTypeUID(BINDING_ID, "lightSensor");
-    public final static ThingTypeUID THING_TYPE_ENVIRONMENTALSENSOR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_LIGHTSENSOR = new ThingTypeUID(BINDING_ID, "lightSensor");
+    public static final ThingTypeUID THING_TYPE_ENVIRONMENTALSENSOR = new ThingTypeUID(BINDING_ID,
             "environmentalSensor");
-    public final static ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
-    public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
-    public final static ThingTypeUID THING_TYPE_MULTFUNCTIONSMOKEDETECTOR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
+    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
+    public static final ThingTypeUID THING_TYPE_MULTFUNCTIONSMOKEDETECTOR = new ThingTypeUID(BINDING_ID,
             "multiFunctionSmokeDetector");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(
@@ -87,96 +88,96 @@ public class EnOceanBindingConstants {
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
-    public final static String CHANNEL_REPEATERMODE = "repeaterMode";
-    public final static String CHANNEL_SETBASEID = "setBaseId";
-    public final static String CHANNEL_GENERAL_SWITCHING = "generalSwitch";
+    public static final String CHANNEL_REPEATERMODE = "repeaterMode";
+    public static final String CHANNEL_SETBASEID = "setBaseId";
+    public static final String CHANNEL_GENERAL_SWITCHING = "generalSwitch";
 
-    public final static String CHANNEL_GENERAL_SWITCHINGA = "generalSwitchA"; // used for D2-01-12 EEP
-    public final static String CHANNEL_GENERAL_SWITCHINGB = "generalSwitchB"; // used for D2-01-12 EEP
+    public static final String CHANNEL_GENERAL_SWITCHINGA = "generalSwitchA"; // used for D2-01-12 EEP
+    public static final String CHANNEL_GENERAL_SWITCHINGB = "generalSwitchB"; // used for D2-01-12 EEP
 
-    public final static String CHANNEL_DIMMER = "dimmer";
-    public final static String CHANNEL_ROLLERSHUTTER = "rollershutter";
-    public final static String CHANNEL_ANGLE = "angle";
-    public final static String CHANNEL_TEMPERATURE = "temperature";
-    public final static String CHANNEL_HUMIDITY = "humidity";
-    public final static String CHANNEL_SETPOINT = "setPoint";
-    public final static String CHANNEL_FANSPEEDSTAGE = "fanSpeedStage";
-    public final static String CHANNEL_OCCUPANCY = "occupancy";
-    public final static String CHANNEL_MOTIONDETECTION = "motionDetection";
-    public final static String CHANNEL_VIBRATION = "vibration";
-    public final static String CHANNEL_ILLUMINATION = "illumination";
-    public final static String CHANNEL_ILLUMINATIONWEST = "illuminationWest";
-    public final static String CHANNEL_ILLUMINATIONSOUTHNORTH = "illuminationSouthNorth";
-    public final static String CHANNEL_ILLUMINATIONEAST = "illuminationEast";
-    public final static String CHANNEL_WINDSPEED = "windspeed";
-    public final static String CHANNEL_RAINSTATUS = "rainStatus";
-    public final static String CHANNEL_COUNTER = "counter";
-    public final static String CHANNEL_CURRENTNUMBER = "currentNumber";
-    public final static String CHANNEL_SMOKEDETECTION = "smokeDetection";
-    public final static String CHANNEL_SENSORFAULT = "sensorFault";
-    public final static String CHANNEL_MAINTENANCESTATUS = "maintenanceStatus";
-    public final static String CHANNEL_SENSORANALYSISHUMIDITYRANGE = "saHumidityRange";
-    public final static String CHANNEL_SENSORANALYSISTEMPERATURRANGE = "saTemperatureRange";
-    public final static String CHANNEL_TIMESINCELASTMAINTENANCE = "timeSinceLastMaintenance";
-    public final static String CHANNEL_REMAININGPLT = "remainingPLT";
-    public final static String CHANNEL_HYGROCOMFORTINDEX = "hygroComfortIndex";
-    public final static String CHANNEL_INDOORAIRANALYSIS = "indoorAirAnalysis";
+    public static final String CHANNEL_DIMMER = "dimmer";
+    public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
+    public static final String CHANNEL_ANGLE = "angle";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_SETPOINT = "setPoint";
+    public static final String CHANNEL_FANSPEEDSTAGE = "fanSpeedStage";
+    public static final String CHANNEL_OCCUPANCY = "occupancy";
+    public static final String CHANNEL_MOTIONDETECTION = "motionDetection";
+    public static final String CHANNEL_VIBRATION = "vibration";
+    public static final String CHANNEL_ILLUMINATION = "illumination";
+    public static final String CHANNEL_ILLUMINATIONWEST = "illuminationWest";
+    public static final String CHANNEL_ILLUMINATIONSOUTHNORTH = "illuminationSouthNorth";
+    public static final String CHANNEL_ILLUMINATIONEAST = "illuminationEast";
+    public static final String CHANNEL_WINDSPEED = "windspeed";
+    public static final String CHANNEL_RAINSTATUS = "rainStatus";
+    public static final String CHANNEL_COUNTER = "counter";
+    public static final String CHANNEL_CURRENTNUMBER = "currentNumber";
+    public static final String CHANNEL_SMOKEDETECTION = "smokeDetection";
+    public static final String CHANNEL_SENSORFAULT = "sensorFault";
+    public static final String CHANNEL_MAINTENANCESTATUS = "maintenanceStatus";
+    public static final String CHANNEL_SENSORANALYSISHUMIDITYRANGE = "saHumidityRange";
+    public static final String CHANNEL_SENSORANALYSISTEMPERATURRANGE = "saTemperatureRange";
+    public static final String CHANNEL_TIMESINCELASTMAINTENANCE = "timeSinceLastMaintenance";
+    public static final String CHANNEL_REMAININGPLT = "remainingPLT";
+    public static final String CHANNEL_HYGROCOMFORTINDEX = "hygroComfortIndex";
+    public static final String CHANNEL_INDOORAIRANALYSIS = "indoorAirAnalysis";
 
-    public final static String CHANNEL_PUSHBUTTON = "pushButton";
-    public final static String CHANNEL_DOUBLEPRESS = "doublePress";
-    public final static String CHANNEL_LONGPRESS = "longPress";
+    public static final String CHANNEL_PUSHBUTTON = "pushButton";
+    public static final String CHANNEL_DOUBLEPRESS = "doublePress";
+    public static final String CHANNEL_LONGPRESS = "longPress";
 
-    public final static String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
-    public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
+    public static final String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
+    public static final String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
 
-    public final static String CHANNEL_VIRTUALSWITCHA = "virtualSwitchA";
-    public final static String CHANNEL_VIRTUALROLLERSHUTTERA = "virtualRollershutterA";
-    public final static String CHANNEL_VIRTUALROCKERSWITCHB = "virtualRockerswitchB";
-    public final static String CHANNEL_ROCKERSWITCHLISTENERSWITCH = "rockerswitchListenerSwitch";
-    public final static String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
-    public final static String CHANNEL_ROCKERSWITCHLISTENER_START = "rockerswitchListener";
+    public static final String CHANNEL_VIRTUALSWITCHA = "virtualSwitchA";
+    public static final String CHANNEL_VIRTUALROLLERSHUTTERA = "virtualRollershutterA";
+    public static final String CHANNEL_VIRTUALROCKERSWITCHB = "virtualRockerswitchB";
+    public static final String CHANNEL_ROCKERSWITCHLISTENERSWITCH = "rockerswitchListenerSwitch";
+    public static final String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
+    public static final String CHANNEL_ROCKERSWITCHLISTENER_START = "rockerswitchListener";
 
-    public final static String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
-    public final static String CHANNEL_CONTACT = "contact";
-    public final static String CHANNEL_TEACHINCMD = "teachInCMD";
-    public final static String CHANNEL_INSTANTPOWER = "instantpower";
-    public final static String CHANNEL_TOTALUSAGE = "totalusage";
-    public final static String CHANNEL_CURRENTFLOW = "currentFlow";
-    public final static String CHANNEL_CUMULATIVEVALUE = "cumulativeValue";
-    public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
-    public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
-    public final static String CHANNEL_BATTERY_LEVEL = "batteryLevel";
-    public final static String CHANNEL_BATTERYLOW = "batteryLow";
+    public static final String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
+    public static final String CHANNEL_CONTACT = "contact";
+    public static final String CHANNEL_TEACHINCMD = "teachInCMD";
+    public static final String CHANNEL_INSTANTPOWER = "instantpower";
+    public static final String CHANNEL_TOTALUSAGE = "totalusage";
+    public static final String CHANNEL_CURRENTFLOW = "currentFlow";
+    public static final String CHANNEL_CUMULATIVEVALUE = "cumulativeValue";
+    public static final String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
+    public static final String CHANNEL_ENERGY_STORAGE = "energyStorage";
+    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_BATTERYLOW = "batteryLow";
 
-    public final static String CHANNEL_AUTOOFF = "autoOFF";
-    public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
-    public final static String CHANNEL_EXTERNALINTERFACEMODE = "externalInterfaceMode";
-    public final static String CHANNEL_TWOSTATESWITCH = "twoStateSwitch";
-    public final static String CHANNEL_ECOMODE = "ecoMode";
+    public static final String CHANNEL_AUTOOFF = "autoOFF";
+    public static final String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
+    public static final String CHANNEL_EXTERNALINTERFACEMODE = "externalInterfaceMode";
+    public static final String CHANNEL_TWOSTATESWITCH = "twoStateSwitch";
+    public static final String CHANNEL_ECOMODE = "ecoMode";
 
-    public final static String CHANNEL_RSSI = "rssi";
-    public final static String CHANNEL_REPEATCOUNT = "repeatCount";
-    public final static String CHANNEL_LASTRECEIVED = "lastReceived";
+    public static final String CHANNEL_RSSI = "rssi";
+    public static final String CHANNEL_REPEATCOUNT = "repeatCount";
+    public static final String CHANNEL_LASTRECEIVED = "lastReceived";
 
-    public final static String CHANNEL_GENERIC_SWITCH = "genericSwitch";
-    public final static String CHANNEL_GENERIC_ROLLERSHUTTER = "genericRollershutter";
-    public final static String CHANNEL_GENERIC_DIMMER = "genericDimmer";
-    public final static String CHANNEL_GENERIC_NUMBER = "genericNumber";
-    public final static String CHANNEL_GENERIC_STRING = "genericString";
-    public final static String CHANNEL_GENERIC_COLOR = "genericColor";
-    public final static String CHANNEL_GENERIC_TEACHINCMD = "genericTeachInCMD";
+    public static final String CHANNEL_GENERIC_SWITCH = "genericSwitch";
+    public static final String CHANNEL_GENERIC_ROLLERSHUTTER = "genericRollershutter";
+    public static final String CHANNEL_GENERIC_DIMMER = "genericDimmer";
+    public static final String CHANNEL_GENERIC_NUMBER = "genericNumber";
+    public static final String CHANNEL_GENERIC_STRING = "genericString";
+    public static final String CHANNEL_GENERIC_COLOR = "genericColor";
+    public static final String CHANNEL_GENERIC_TEACHINCMD = "genericTeachInCMD";
 
-    public final static String CHANNEL_VALVE_POSITION = "valvePosition";
-    public final static String CHANNEL_BUTTON_LOCK = "buttonLock";
-    public final static String CHANNEL_DISPLAY_ORIENTATION = "displayOrientation";
-    public final static String CHANNEL_TEMPERATURE_SETPOINT = "temperatureSetPoint";
-    public final static String CHANNEL_FEED_TEMPERATURE = "feedTemperature";
-    public final static String CHANNEL_MEASUREMENT_CONTROL = "measurementControl";
-    public final static String CHANNEL_FAILURE_CODE = "failureCode";
-    public final static String CHANNEL_WAKEUPCYCLE = "wakeUpCycle";
-    public final static String CHANNEL_SERVICECOMMAND = "serviceCommand";
-    public final static String CHANNEL_STATUS_REQUEST_EVENT = "statusRequestEvent";
-    public final static String CHANNEL_SEND_COMMAND = "sendCommand";
+    public static final String CHANNEL_VALVE_POSITION = "valvePosition";
+    public static final String CHANNEL_BUTTON_LOCK = "buttonLock";
+    public static final String CHANNEL_DISPLAY_ORIENTATION = "displayOrientation";
+    public static final String CHANNEL_TEMPERATURE_SETPOINT = "temperatureSetPoint";
+    public static final String CHANNEL_FEED_TEMPERATURE = "feedTemperature";
+    public static final String CHANNEL_MEASUREMENT_CONTROL = "measurementControl";
+    public static final String CHANNEL_FAILURE_CODE = "failureCode";
+    public static final String CHANNEL_WAKEUPCYCLE = "wakeUpCycle";
+    public static final String CHANNEL_SERVICECOMMAND = "serviceCommand";
+    public static final String CHANNEL_STATUS_REQUEST_EVENT = "statusRequestEvent";
+    public static final String CHANNEL_SEND_COMMAND = "sendCommand";
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
@@ -389,10 +390,9 @@ public class EnOceanBindingConstants {
             });
 
     // List of all repeater mode states
-    @NonNull
-    public final static String REPEATERMODE_OFF = "OFF";
-    public final static String REPEATERMODE_LEVEL_1 = "LEVEL1";
-    public final static String REPEATERMODE_LEVEL_2 = "LEVEL2";
+    public static final String REPEATERMODE_OFF = "OFF";
+    public static final String REPEATERMODE_LEVEL_1 = "LEVEL1";
+    public static final String REPEATERMODE_LEVEL_2 = "LEVEL2";
 
     // Bridge config properties
     public static final String SENDERID = "senderId";
@@ -402,17 +402,11 @@ public class EnOceanBindingConstants {
     public static final String NEXTSENDERID = "nextSenderId";
 
     // Bridge properties
-    @NonNull
     public static final String PROPERTY_BASE_ID = "Base ID";
-    @NonNull
     public static final String PROPERTY_REMAINING_WRITE_CYCLES_Base_ID = "Remaining Base ID Write Cycles";
-    @NonNull
     public static final String PROPERTY_APP_VERSION = "APP Version";
-    @NonNull
     public static final String PROPERTY_API_VERSION = "API Version";
-    @NonNull
     public static final String PROPERTY_CHIP_ID = "Chip ID";
-    @NonNull
     public static final String PROPERTY_DESCRIPTION = "Description";
 
     // Thing properties
@@ -422,7 +416,6 @@ public class EnOceanBindingConstants {
     public static final String PARAMETER_SENDERIDOFFSET = "senderIdOffset";
     public static final String PARAMETER_SENDINGEEPID = "sendingEEPId";
     public static final String PARAMETER_RECEIVINGEEPID = "receivingEEPId";
-    @NonNull
     public static final String PARAMETER_EEPID = "eepId";
 
     public static final String PARAMETER_BROADCASTMESSAGES = "broadcastMessages";
