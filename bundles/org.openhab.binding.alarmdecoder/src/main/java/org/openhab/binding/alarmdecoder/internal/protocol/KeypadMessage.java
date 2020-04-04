@@ -15,6 +15,7 @@ package org.openhab.binding.alarmdecoder.internal.protocol;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link KeypadMessage} class represents a parsed keypad (KPM) message.
@@ -128,5 +129,19 @@ public class KeypadMessage extends ADMessage {
      */
     public int getIntAddressMask() {
         return Integer.parseInt(getAddressMask(), 16);
+    }
+
+    /**
+     * Compares two KeypadMessage objects
+     *
+     * @param other KeypadMessage to compare against
+     * @return true if messages are equal, false if other is null or messages are not equal
+     */
+    public boolean equals(@Nullable KeypadMessage other) {
+        if (other == null) {
+            return false;
+        } else {
+            return this.message.equals(other.message);
+        }
     }
 }

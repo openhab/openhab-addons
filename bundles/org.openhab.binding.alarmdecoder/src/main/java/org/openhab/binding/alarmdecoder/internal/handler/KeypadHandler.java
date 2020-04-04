@@ -50,6 +50,7 @@ public class KeypadHandler extends ADThingHandler {
     private boolean singleAddress;
     private Pattern validCommandPattern = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
     private @Nullable IntCommandMap intCommandMap;
+    private @Nullable KeypadMessage previousMessage;
 
     public KeypadHandler(Thing thing) {
         super(thing);
@@ -105,7 +106,7 @@ public class KeypadHandler extends ADThingHandler {
 
     @Override
     public void initChannelState() {
-        // Do nothing
+        previousMessage = null;
     }
 
     @Override
@@ -167,9 +168,11 @@ public class KeypadHandler extends ADThingHandler {
     }
 
     public void handleUpdate(KeypadMessage kpm) {
-        // TODO: Update channels only if linked?
-
         logger.trace("Keypad handler for address mask {} received update: {}", config.addressMask, kpm);
+
+        if (kpm.equals(previousMessage)) {
+            return; // ignore repeated messages
+        }
 
         if (config.sendStar) {
             if (kpm.alphaMessage.contains("Hit * for faults") || kpm.alphaMessage.contains("Press * to show faults")
@@ -205,5 +208,7 @@ public class KeypadHandler extends ADThingHandler {
         updateState(CHANNEL_KP_FIRE, (kpm.getStatus(KeypadMessage.BIT_FIRE)) ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_KP_SYSFAULT, (kpm.getStatus(KeypadMessage.BIT_SYSFAULT)) ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_KP_PERIMETER, (kpm.getStatus(KeypadMessage.BIT_PERIMETER)) ? OnOffType.ON : OnOffType.OFF);
+
+        previousMessage = kpm;
     }
 }
