@@ -42,9 +42,8 @@ public class MotionDetectorHandler extends BoschSHCHandler {
                 if (CHANNEL_LATEST_MOTION.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
 
-                        // Refresh the temperature from the Bosch Twinguard device.
-                        // Might not be necessary, can just wait until we get one
-                        logger.warn("Refreshing the temperature is not yet supported.");
+                        updateLatestMotionState(
+                                bridgeHandler.refreshState(getThing(), "LatestMotion", LatestMotionState.class));
                     }
                     // Otherwise: not action supported here.
                 }
@@ -54,18 +53,19 @@ public class MotionDetectorHandler extends BoschSHCHandler {
         }
     }
 
+    void updateLatestMotionState(LatestMotionState state) {
+        DateTimeType date = new DateTimeType(state.latestMotionDetected);
+        logger.debug("Parsed date of latest motion to {}: {} as date {}", this.getBoschID(), state, date);
+        updateState(CHANNEL_LATEST_MOTION, date);
+    }
+
     @Override
     public void processUpdate(String id, @NonNull JsonElement state) {
-        logger.warn("Motion detector: received update: {} {}", id, state);
-        Gson gson = new Gson();
+        logger.debug("Motion detector: received update: {} {}", id, state);
 
         try {
-            LatestMotionState parsed = gson.fromJson(state, LatestMotionState.class);
-
-            DateTimeType date = new DateTimeType(parsed.latestMotionDetected);
-            logger.warn("Parsed date of latest motion to {}: {} as date {}", this.getBoschID(), parsed, date);
-            updateState(CHANNEL_LATEST_MOTION, date);
-
+            Gson gson = new Gson();
+            updateLatestMotionState(gson.fromJson(state, LatestMotionState.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in in-wall switch: {}", state);
         }

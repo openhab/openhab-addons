@@ -46,20 +46,24 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
             if (bridgeHandler != null) {
 
-                if (CHANNEL_POWER_SWITCH.equals(channelUID.getId())) {
-                    if (command instanceof RefreshType) {
-                        PowerSwitchState state = bridgeHandler.refreshSwitchState(getThing());
-
-                        if (state != null) {
-
-                            State powerState = OnOffType.from(state.switchState);
-                            updateState(channelUID, powerState);
-                        }
+                if (command instanceof RefreshType) {
+                    switch (channelUID.getId()) {
+                        case CHANNEL_POWER_SWITCH:
+                            updatePowerSwitchState(
+                                    bridgeHandler.refreshState(getThing(), "PowerSwitch", PowerSwitchState.class));
+                            break;
+                        case CHANNEL_POWER_CONSUMPTION:
+                            updatePowerMeterState(
+                                    bridgeHandler.refreshState(getThing(), "PowerMeter", PowerMeterState.class));
+                            break;
+                        case CHANNEL_ENERGY_CONSUMPTION:
+                            // Nothing to do here, since the same update is received from POWER_CONSUMPTION
+                            break;
+                        default:
+                            logger.warn("Received refresh request for unsupported channel: {}", channelUID);
                     }
-
-                    else {
-                        bridgeHandler.updateSwitchState(getThing(), command.toFullString());
-                    }
+                } else {
+                    bridgeHandler.updateSwitchState(getThing(), command.toFullString());
                 }
             }
         } else {
@@ -69,32 +73,36 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
     }
 
+    void updatePowerMeterState(PowerMeterState state) {
+        logger.debug("Parsed power meter state of {}: energy {} - power {}", this.getBoschID(), state.energyConsumption,
+                state.energyConsumption);
+
+        updateState(CHANNEL_POWER_CONSUMPTION, new DecimalType(state.powerConsumption));
+        updateState(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(state.energyConsumption));
+    }
+
+    void updatePowerSwitchState(PowerSwitchState state) {
+
+        // Update power switch
+        logger.debug("Parsed switch state of {}: {}", this.getBoschID(), state.switchState);
+        State powerState = OnOffType.from(state.switchState);
+        updateState(CHANNEL_POWER_SWITCH, powerState);
+    }
+
     @Override
     public void processUpdate(String id, JsonElement state) {
-        logger.warn("in-wall switch: received update: ID {} state {}", id, state);
+        logger.debug("in-wall switch: received update: ID {} state {}", id, state);
 
         Gson gson = new Gson();
 
         try {
 
             if (id.equals("PowerMeter")) {
-
-                PowerMeterState parsed = gson.fromJson(state, PowerMeterState.class);
-
-                logger.warn("Parsed power meter state of {}: energy {} - power {}", this.getBoschID(),
-                        parsed.energyConsumption, parsed.energyConsumption);
-
-                updateState(CHANNEL_POWER_CONSUMPTION, new DecimalType(parsed.powerConsumption));
-                updateState(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(parsed.energyConsumption));
+                updatePowerMeterState(gson.fromJson(state, PowerMeterState.class));
 
             } else {
+                updatePowerSwitchState(gson.fromJson(state, PowerSwitchState.class));
 
-                PowerSwitchState parsed = gson.fromJson(state, PowerSwitchState.class);
-
-                // Update power switch
-                logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed.switchState);
-                State powerState = OnOffType.from(parsed.switchState);
-                updateState(CHANNEL_POWER_SWITCH, powerState);
             }
 
         } catch (JsonSyntaxException e) {
