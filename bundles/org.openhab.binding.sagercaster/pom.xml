@@ -10,6 +10,6 @@
 
   <artifactId>org.openhab.binding.sagercaster</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Sager Weather Caster Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Sager Weathercaster Binding</name>
 
 </project>

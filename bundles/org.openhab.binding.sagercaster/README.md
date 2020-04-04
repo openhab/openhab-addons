@@ -24,12 +24,21 @@ The binding itself does not require any configuration.
 
 | Name               | Type     | Description                                                              |
 |--------------------|----------|--------------------------------------------------------------------------|
-| location           | Location | Latitude and longitude of the desired weather forecast                   |
-| observation-period | int      | Minimum delay (in hours) before producing forecasts. Defaulted to 6      |
+| location           | Location | Latitude and longitude of the desired weather forecast.                  |
+| observation-period | int      | Minimum delay (in hours) before producing forecasts. Defaulted to 6.     |
 
 ## Channels
 
 The binding will use some input channels, that can be configured directly with profiles (sample below).
+
+| Name               | Type          | Description                                                     |
+|--------------------|---------------|-----------------------------------------------------------------|
+| is-raining         | Switch        | On if it is raining, else Off.                                  |
+| rain-qtty          | Number        | Any value that give indication of a current rain volume         |
+|                 or | Number:Speed  | Any value that give indication of a current rain volume eg mm/h |
+|                 or | Number:Length | Any value that give indication of a current rain volume eg mm   |
+|                    |               |                                                                 |
+
 
 ## Full Example
 
@@ -48,7 +57,7 @@ Number:Pressure NWS_Abs_Pressure "Pression absolue" <pressure> {channel="netatmo
 Number:Angle NWS_wind_angle   "Orientation [%d°]" 	{channel="netatmo:NAModule2:home:anemometre:WindAngle", channel="sagercaster:sagercaster:triel:input#wind-angle" [profile="follow"]}
 Number:Dimensionless OWM_Cloudiness "Cloudiness [%d %unit%]" <clouds> {channel="openweathermap:weather-and-forecast:api:local:current#cloudiness", channel="sagercaster:sagercaster:triel:input#cloudiness" [profile="follow"] }
 Number Synop_beaufort "Beaufort [%d]" <beaufort> {channel="synopanalyzer:synopanalyzer:orly:wind-speed-beaufort", channel="sagercaster:sagercaster:triel:input#wind-speed-beaufort" [profile="follow"] }
-Number:Length NWS_rain_1h "Précipitation 1h [%.2f %unit%]" <rain> {channel="netatmo:NAModule3:home:pluviometre:SumRain1", channel="sagercaster:sagercaster:triel:input#rain" [profile="follow"]}
+Number:Length NWS_rain_1h "Précipitation 1h [%.2f %unit%]" <rain> {channel="netatmo:NAModule3:home:pluviometre:SumRain1", channel="sagercaster:sagercaster:triel:input#rain-qtty" [profile="follow"]}
 
            	
 ```

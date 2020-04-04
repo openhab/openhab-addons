@@ -36,7 +36,8 @@
 		<description>The channels used to build the forecast results</description>
 		<channels>
 			<channel id="cloudiness" typeId="cloudiness" />
-			<channel id="rain" typeId="rain" />
+			<channel id="is-raining" typeId="is-raining" />
+			<channel id="rain-qtty" typeId="rain-qtty" />
 			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
 			<channel id="pressure" typeId="pressure" />
 			<channel id="temperature" typeId="temperature" />
@@ -46,7 +47,7 @@
 	
 	<channel-group-type id="output">
 		<label>Results</label>
-		<description>Results of the Sager Weather Caster algorithm</description>
+		<description>Results of the Sager Weathercaster algorithm</description>
 		<channels>
 			<channel id="forecast" typeId="forecast" />
 			<channel id="velocity" typeId="velocity" />
@@ -195,18 +196,25 @@
 		<state min="0" max="100" pattern="%d %%" />
 	</channel-type>
 	
-	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
-		<label>Rain</label>
-		<description>Quantity of water</description>
+	<channel-type id="rain-qtty" advanced="true">
+		<item-type>Number</item-type>
+		<label>Rain Quantity</label>		
+		<description>Current rain quantity</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="is-raining">
+		<item-type>Switch</item-type>
+		<label>Raining</label>
+		<description>Is it currently raining ?</description>
+		<category>Rain</category>
 	</channel-type>
 	
 	<channel-type id="wind-speed-beaufort">
 		<item-type>Number</item-type>
 		<label>Beaufort</label>
-		<description>Wind speed in Beaufort Scale</description>
+		<description>Wind speed using Beaufort Scale</description>
 		<category>Wind</category>
 		<state min="0" max="12" pattern="%d" />
 	</channel-type>

@@ -71,7 +71,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Starting Sager WeatherCaster discovery scan");
+        logger.debug("Starting Sager Weathercaster discovery scan");
         PointType location = locationProvider.getLocation();
         if (location == null) {
             logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
@@ -99,7 +99,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping Sager Weather Caster background discovery");
+        logger.debug("Stopping Sager Weathercaster background discovery");
         if (sagerCasterDiscoveryJob != null && !sagerCasterDiscoveryJob.isCancelled()) {
             if (sagerCasterDiscoveryJob.cancel(true)) {
                 sagerCasterDiscoveryJob = null;
@@ -111,7 +111,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     public void createResults(PointType location) {
         String propGeolocation;
         propGeolocation = String.format("%s,%s", location.getLatitude(), location.getLongitude());
-        thingDiscovered(DiscoveryResultBuilder.create(sagerCasterThing).withLabel("Local Sager Weather Caster")
+        thingDiscovered(DiscoveryResultBuilder.create(sagerCasterThing).withLabel("Local Sager Weathercaster")
                 .withRepresentationProperty(CONFIG_LOCATION).withProperty(CONFIG_LOCATION, propGeolocation).build());
     }
 
