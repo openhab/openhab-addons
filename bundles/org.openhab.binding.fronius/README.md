@@ -6,25 +6,30 @@ This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovol
 ## Supported Things
 
 Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger.
-You can add multiple inverters that depend on the same datalogger with different device ids. ( Default 1 )
+You can add multiple inverters that depend on the same datalogger with different device ids. (Default 1)
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually and specify the IP of the Datalogger and the DeviceId.
+There is no discovery implemented. You have to create your things manually and specify the hostname or IP address of the Datalogger and the device id.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options, all configuration is done at `bridge` or `powerinverter` level.
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+### Bridge Thing Configuration
 
 | Parameter       | Description                                           |
 |-----------------|------------------------------------------------------ |
-| hostname        | The ip-address of your Fronius Datalogger |
-| deviceId        | The identifier of your device (Default: 1) |
-| refreshInterval | Refresh interval in seconds |
+| hostname        | The hostname or IP address of your Fronius Datalogger |
+| refreshInterval | Refresh interval in seconds                           |
+
+### Powerinverter Thing Configuration
+
+| Parameter       | Description                                           |
+|-----------------|------------------------------------------------------ |
+| deviceId        | The identifier of your device (Default: 1)            |
 
 ## Channels
 
@@ -50,8 +55,8 @@ The thing has a few configuration parameters:
 demo.things:
 
 ```
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148",refreshInterval=5] {
-    Thing powerinverter myinverter [ deviceId=1 ]
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
+    Thing powerinverter myinverter [deviceId=1]
 }
 ```
 
