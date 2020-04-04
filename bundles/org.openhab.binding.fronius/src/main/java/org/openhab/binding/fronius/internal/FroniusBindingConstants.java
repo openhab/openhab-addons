@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Thomas Rokohl - Initial contribution
+ * @author Peter Schraffl - Added device status and error status channels
  */
 @NonNullByDefault
 public class FroniusBindingConstants {
@@ -40,6 +41,8 @@ public class FroniusBindingConstants {
     public static final String InverterDataChannelIdc = "inverterdatachannelidc";
     public static final String InverterDataChannelUac = "inverterdatachanneluac";
     public static final String InverterDataChannelUdc = "inverterdatachanneludc";
+    public static final String InverterDataChannelDeviceStatusErrorCode = "inverterdatadevicestatuserrorcode";
+    public static final String InverterDataChannelDeviceStatusStatusCode = "inverterdatadevicestatusstatuscode";
     public static final String PowerFlowpGrid = "powerflowchannelpgrid";
     public static final String PowerFlowpLoad = "powerflowchannelpload";
     public static final String PowerFlowpAkku = "powerflowchannelpakku";

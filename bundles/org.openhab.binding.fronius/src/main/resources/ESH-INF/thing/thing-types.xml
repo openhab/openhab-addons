@@ -21,6 +21,8 @@
 			<channel id="inverterdatachannelidc" typeId="idc" />
 			<channel id="inverterdatachanneluac" typeId="uac" />
 			<channel id="inverterdatachanneludc" typeId="udc" />
+			<channel id="inverterdatadevicestatuserrorcode" typeId="devicestatus_errorcode" />
+			<channel id="inverterdatadevicestatusstatuscode" typeId="devicestatus_statuscode" />
 			<channel id="powerflowchannelpgrid" typeId="pGrid" />
 			<channel id="powerflowchannelpload" typeId="pLoad" />
 			<channel id="powerflowchannelpakku" typeId="pAkku" />
@@ -91,6 +93,19 @@
 		<label>DC Voltage</label>
 		<description>DC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devicestatus_errorcode">
+		<item-type>Number</item-type>
+		<label>Error Code</label>
+		<description>Current device error code</description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="devicestatus_statuscode">
+		<item-type>Number</item-type>
+		<label>Status Code</label>
+		<description>Current device status code</description>
+		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="pGrid">
