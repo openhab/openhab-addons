@@ -32,7 +32,7 @@ public class WizLightingBindingConstants {
      * The binding id.
      */
     public static final String BINDING_ID = "wizlighting";
-    public static final String CURRENT_BINDING_VERSION = "v0.02.03";
+    public static final String CURRENT_BINDING_VERSION = "v0.02.05";
 
     /**
      * List of all Thing Type UIDs.
@@ -126,5 +126,5 @@ public class WizLightingBindingConstants {
     public static final String PROPERTY_GROUP_ID = "groupId";
 
     public static final String EXPECTED_MODULE_NAME = "ESP01_SHRGB1C_31";
-    public static final String LAST_KNOWN_FIRMWARE_VERSION = "1.17.1";
+    public static final String LAST_KNOWN_FIRMWARE_VERSION = "1.18.0";
 }

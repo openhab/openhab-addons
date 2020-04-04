@@ -180,7 +180,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     }
                     WizLightingSyncState parsedPResult = context.deserialize(jobject.getAsJsonObject("result"),
                             WizLightingSyncState.class);
-                    if (parsedPResult.mac != null) {
+                    if (parsedPResult.mac == MISSING_INVALID_MAC_ADDRESS) {
                         throw new JsonParseException("getPilot received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedPResult.mac);
@@ -199,7 +199,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     }
                     WizLightingSyncState parsedPParam = context.deserialize(jobject.getAsJsonObject("params"),
                             WizLightingSyncState.class);
-                    if (parsedPParam.mac != null) {
+                    if (parsedPParam.mac == MISSING_INVALID_MAC_ADDRESS) {
                         throw new JsonParseException("syncPilot received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedPParam.mac);
