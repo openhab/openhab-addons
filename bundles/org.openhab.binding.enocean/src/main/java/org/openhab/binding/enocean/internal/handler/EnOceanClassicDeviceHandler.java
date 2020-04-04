@@ -126,7 +126,6 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                 getBridgeHandler().addPacketListener(this, Long.parseLong(config.enoceanId, 16));
                 return true;
             } catch (NumberFormatException e) {
-
             }
 
             return false;
@@ -208,7 +207,6 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-
         // We must have a valid sendingEEPType and sender id to send commands
         if (sendingEEPType == null || senderId == null || command == RefreshType.REFRESH) {
             return;

@@ -58,7 +58,6 @@ public class DeviceParam {
             return false;
         }
         return value != null ? value.equals(that.value) : that.value == null;
-
     }
 
     @Override

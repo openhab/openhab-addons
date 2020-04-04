@@ -42,7 +42,4 @@ public class VehicleConfig {
     public String trim_badging;
     public String wheel_type;
 
-    VehicleConfig() {
-
-    }
 }

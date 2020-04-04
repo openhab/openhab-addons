@@ -60,7 +60,6 @@ public class XMLProtocolFactoryTest extends AbstractXMLProtocolTest {
     @Test
     public void given_HTR4069_with_ZONEB_then_Zone2_control_is_ZoneBControlXML()
             throws IOException, ReceivedMessageParseException {
-
         // arrange
         ctx.prepareForModel("HTR-4069");
 
@@ -77,7 +76,6 @@ public class XMLProtocolFactoryTest extends AbstractXMLProtocolTest {
     @Test
     public void given_RXS601D_without_ZONEB_then_Zone2_control_is_ZoneControlXML()
             throws IOException, ReceivedMessageParseException {
-
         // arrange
         ctx.prepareForModel("RX-S601D");
 

@@ -75,7 +75,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
 
         if (senderIdOffset > 0 && senderIdOffset < 128) {
-
             EnOceanBridgeHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler != null) {
                 return !bridgeHandler.existsSender(senderIdOffset, this.thing);
@@ -107,7 +106,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     boolean validateConfig() {
-
         EnOceanActuatorConfig config = getConfiguration();
         if (config == null) {
             configurationErrorDescription = "Configuration is not valid";
@@ -128,14 +126,12 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         if (super.validateConfig()) {
             try {
-
                 if (sendingEEPType.getSupportsRefresh()) {
                     if (getConfiguration().pollingInterval > 0) {
                         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                             try {
                                 refreshStates();
                             } catch (Exception e) {
-
                             }
                         }, 30, getConfiguration().pollingInterval, TimeUnit.SECONDS);
                     }
@@ -146,7 +142,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 } else {
                     destinationId = HexUtils.hexToBytes(config.enoceanId);
                 }
-
             } catch (Exception e) {
                 configurationErrorDescription = "Configuration is not valid";
                 return false;
@@ -201,7 +196,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     }
 
     private void refreshStates() {
-
         logger.debug("polling channels");
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
             for (Channel channel : this.getThing().getChannels()) {
@@ -212,7 +206,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         // We must have a valid sendingEEPType and sender id to send commands
         if (sendingEEPType == null || senderId == null) {
             return;

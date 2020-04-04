@@ -194,7 +194,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
         }
 
         if (!discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
-
             ThingUID freeThingUID = null;
             int freeIndex = 0;
             for (int i = 1; i < 1000; i++) {

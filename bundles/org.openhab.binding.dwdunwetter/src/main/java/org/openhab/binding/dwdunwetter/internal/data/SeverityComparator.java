@@ -25,7 +25,6 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
 
     @Override
     public int compare(DwdWarningData o1, DwdWarningData o2) {
-
         Comparator.comparingInt(d -> ((DwdWarningData) d).getSeverity().getOrder());
         Comparator.comparing(DwdWarningData::getOnset);
 

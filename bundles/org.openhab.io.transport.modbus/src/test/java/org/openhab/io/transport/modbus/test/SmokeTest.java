@@ -385,7 +385,6 @@ public class SmokeTest extends IntegrationTestSupport {
 
                     @Override
                     public void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
-
                         unexpectedCount.incrementAndGet();
 
                         callbackCalled.countDown();

@@ -201,14 +201,12 @@ public class WebInterface implements AtomicReferenceTrait {
         setAuthenticated(false);
 
         if (preCheck()) {
-
             SolarEdgeCommand tokenCheckCommand;
 
             StatusUpdateListener tokenCheckListener = new StatusUpdateListener() {
 
                 @Override
                 public void update(CommunicationStatus status) {
-
                     String errorMessageCodeFound;
                     String errorMessgaeCodeForbidden;
                     if (config.isUsePrivateApi()) {
