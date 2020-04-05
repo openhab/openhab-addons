@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -46,9 +45,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-    // Path to use for pairing requests.
-    private static String PATH_PAIRING = "/smarthome/clients";
-
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
 
     private @Nullable HttpClient httpClient;
@@ -78,70 +74,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         return sslContextFactory;
     }
 
-    private void pair(String keystore, String keystorePassword) throws Exception {
-
-        // Instantiate HttpClient with the SslContextFactory
-        HttpClient httpClient = new HttpClient(getSslContext(keystore, keystorePassword));
-        httpClient.start();
-
-        // Attempt connecting to the SHC
-
-        // There is probably going to be some sort of loop here. Because the user has to press the button on the
-        // Smart
-        // Home Controller during setup procedure.
-
-        boolean pairingSuccessful = false;
-        int maxTries = 100;
-        int currTries = 0;
-
-        while (!pairingSuccessful && currTries < maxTries) {
-            ContentResponse contentResponse;
-            try {
-
-                PairRequest r = new PairRequest("OpenHab Test", "openhabtest");
-
-                Gson gson = new Gson();
-                String str_content = gson.toJson(r);
-
-                String base64password = new String(Base64.getEncoder().encode(this.config.password.getBytes()));
-
-                logger.debug("pairing: Sending http request to Bosch to request clients: {}", config.ipAddress);
-                contentResponse = httpClient
-                        .newRequest("https://" + config.ipAddress + ":8444/" + BoschSHCBridgeHandler.PATH_PAIRING)
-                        .header("Content-Type", "application/json").header("Accept", "application/json")
-                        .header("Systempassword", base64password).method(POST)
-                        .content(new StringContentProvider(str_content)).send();
-
-                String content = contentResponse.getContentAsString();
-                logger.info("Response complete: {} - return code: {}", content, contentResponse.getStatus());
-
-                // TODO Mark pairing as successful after a while.
-
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
-            }
-
-            maxTries++;
-        }
-
-    }
-
     // https://stackoverflow.com/questions/13894699/java-how-to-store-a-key-in-keystore
-    public X509Certificate generateCertificate(
-            KeyPair keyPair) /* throws OperatorCreationException, CertificateException */ {
+    public X509Certificate generateCertificate(KeyPair keyPair) {
 
-        // ContentSigner sigGen = new
-        // JcaContentSignerBuilder("SHA1withRSA").setProvider("BC").build(keyPair.getPrivate());
-        //
-        // Date startDate = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
-        // Date endDate = new Date(System.currentTimeMillis() + 365 * 24 * 60 * 60 * 1000);
-        //
-        // X509v1CertificateBuilder v1CertGen = new JcaX509v1CertificateBuilder(new X500Principal("CN=localhost"),
-        // BigInteger.ONE, startDate, endDate, new X500Principal("CN=localhost"), keyPair.getPublic());
-        //
-        // X509CertificateHolder certHolder = v1CertGen.build(sigGen);
-        //
-        // return new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder);
         return null;
     }
 
@@ -163,81 +98,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
                 if (!new File(keystore).exists()) {
 
+                    logger.warn("Initial pairing for the smart home controller not yet supported: {}");
+                    updateStatus(ThingStatus.OFFLINE);
+
                     throw new UnsupportedOperationException();
-                    //
-                    // logger.warn("Keystore for connecting to Bosch SHC does not exists yet, parining .. ");
-                    //
-                    // // 0. Download BSHC certificate
-                    // // --------------------------------------------------
-                    // // Might have to import the BSHC's self-signed certificate into the keystore too.
-                    // // Can download it from:
-                    // // - https://<ip-of-bshc>:8444/smarthome/rooms
-                    // // Alternatively, it should be possible to allow unvalidated access in the Jetty instance.
-                    //
-                    // // Documentation from:
-                    // // --------------------------------------------------
-                    // // - https://docs.oracle.com/javase/7/docs/api/java/security/KeyStore.html
-                    // // - http://tutorials.jenkov.com/java-cryptography/keystore.html
-                    //
-                    // // Load empty keystore
-                    // // --------------------------------------------------
-                    // try {
-                    //
-                    // KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-                    // // Need "null" here to generate a new keystore instead of opening an existing one
-                    // ks.load(null, KEYSTORE_PASSWORD.toCharArray());
-                    //
-                    // // Maybe the first step is to peek into the existing keystore and see what's there?
-                    //
-                    // // Generate RSA key
-                    // // --------------------------------------------------
-                    // // Function pairClient in bosch-smart-home-bridge.ts and according to client-key.ts, should be
-                    // // RSA
-                    // // private
-                    // // key (see ~/projects/smart-home/bosch-smart-home-bridge)
-                    // KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-                    // kpg.initialize(2048);
-                    //
-                    // KeyPair kp = kpg.genKeyPair();
-                    // KeyFactory fact = KeyFactory.getInstance("RSA");
-                    //
-                    // RSAPrivateKeySpec privateKeySpec = fact.getKeySpec(kp.getPrivate(), RSAPrivateKeySpec.class);
-                    //
-                    // //
-                    // https://www.programcreek.com/java-api-examples/?class=java.security.KeyStore&method=setKeyEntry
-                    // RSAPrivateKey privateKey = (RSAPrivateKey) fact.generatePrivate(privateKeySpec);
-                    //
-                    // X509Certificate certificate = generateCertificate(kp);
-                    // Certificate[] certs = new Certificate[1];
-                    // certs[0] = certificate;
-                    //
-                    // // Store RSA key
-                    // ks.setKeyEntry("boschshc", privateKey, BoschSHCBridgeHandler.KEYSTORE_PASSWORD.toCharArray(), //
-                    // replace with config.keystorePassword
-                    // certs);
-                    //
-                    // // Store the keystore to a new file
-                    // // --------------------------------------------------
-                    // java.io.FileOutputStream fos = null;
-                    // try {
-                    // fos = new java.io.FileOutputStream(keystore);
-                    // ks.store(fos, KEYSTORE_PASSWORD.toCharArray());
-                    // } finally {
-                    // if (fos != null) {
-                    // fos.close();
-                    // }
-                    // }
-                    //
-                    // // Register the key to the Bosch SHC.
-                    // // TODO
-                    //
-                    // pair(keystore);
-                    // } catch (Exception e) {
-                    //
-                    // logger.warn("Pairing failed! {}", e);
-                    // }
-                    //
-                    // System.exit(1);
                 }
 
                 // Instantiate HttpClient with the SslContextFactory
@@ -249,7 +113,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     logger.warn("Failed to start http client from: {}", keystore, e);
                 }
 
-                logger.warn("Initializing bridge: {} - HTTP client is: {} - version: 2020-03-15", config.ipAddress,
+                logger.warn("Initializing bridge: {} - HTTP client is: {} - version: 2020-04-05", config.ipAddress,
                         this.httpClient);
 
                 Boolean thingReachable = true;
@@ -310,7 +174,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         .send();
 
                 String content = contentResponse.getContentAsString();
-                logger.info("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
                 Gson gson = new GsonBuilder().create();
                 Type collectionType = new TypeToken<ArrayList<Device>>() {
@@ -319,12 +183,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 if (this.devices != null) {
                     for (Device d : this.devices) {
-                        Room room = this.getRoomForDevice(d);
-
                         // TODO keeping these as warn for the time being, until we have a better means of listing
                         // devices with their Bosch ID
-                        logger.warn("Found device: name={} room={} id={}", d.name, room != null ? room.name : "n.a.",
-                                d.id);
+                        logger.warn("Found device: name={} id={}", d.name, d.id);
                         if (d.deviceSerivceIDs != null) {
                             for (String s : d.deviceSerivceIDs) {
                                 logger.warn(".... service: " + s);
@@ -422,7 +283,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private void longPoll() {
         /*
          * // TODO Change hard-coded Gateway ID
-         * // TODO Change hard-coded IP address
          * // TODO Change hard-coded port
          */
 
@@ -469,7 +329,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                             byte[] responseContent = getContent();
                             content = new String(responseContent);
 
-                            logger.info("Response complete: {} - return code: {}", content,
+                            logger.debug("Response complete: {} - return code: {}", content,
                                     result.getResponse().getStatus());
 
                             LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
