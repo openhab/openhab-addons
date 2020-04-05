@@ -191,7 +191,6 @@ public class KonnectedHandler extends BaseThingHandler {
             this.retryCount = 2;
         }
         try {
-
             this.http.setRequestTimeout(Integer.parseInt(testRequestTimeout));
         } catch (NumberFormatException e) {
             logger.debug(

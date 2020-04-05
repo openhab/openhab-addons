@@ -70,9 +70,7 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
     }
 
     private void addMissingSettingParts(ZoneStateProvider zoneStateProvider,
-            GenericZoneCapabilities genericCapabilities, CoolingZoneSetting setting)
-            throws IOException, ApiException {
-
+            GenericZoneCapabilities genericCapabilities, CoolingZoneSetting setting) throws IOException, ApiException {
         if (setting.getMode() == null) {
             AcMode targetMode = getCurrentOrDefaultAcMode(zoneStateProvider);
             setting.setMode(targetMode);
@@ -99,8 +97,7 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
         }
     }
 
-    private AcMode getCurrentOrDefaultAcMode(ZoneStateProvider zoneStateProvider)
-            throws IOException, ApiException {
+    private AcMode getCurrentOrDefaultAcMode(ZoneStateProvider zoneStateProvider) throws IOException, ApiException {
         CoolingZoneSetting zoneSetting = (CoolingZoneSetting) zoneStateProvider.getZoneState().getSetting();
 
         return zoneSetting.getMode() != null ? zoneSetting.getMode() : DEFAULT_MODE;

@@ -103,7 +103,6 @@ public class GenericEEP extends EEP {
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
         if (config != null) {
-
             EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
             String payload = HexUtils.bytesToHex(bytes);
@@ -120,7 +119,6 @@ public class GenericEEP extends EEP {
 
                     if (state != null) {
                         if (state.isEnum()) {
-
                             for (State s : state.getEnumConstants()) {
                                 if (s.toString().equalsIgnoreCase(parts[1])) {
                                     return s;

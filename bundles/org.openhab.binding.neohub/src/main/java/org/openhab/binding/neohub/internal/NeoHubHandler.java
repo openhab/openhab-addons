@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-
+import org.openhab.binding.neohub.internal.NeoHubBindingConstants.NeoHubReturnResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial contribution (v2.x binding code)
  * @author Sebastian Prehn - Initial contribution (v1.x hub communication)
- * 
+ *
  */
 public class NeoHubHandler extends BaseBridgeHandler {
 
@@ -70,24 +70,27 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("hostname={}", config.hostName);
+        }
 
         if (config.hostName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "parameter hostName must be set!");
             return;
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("port={}", config.portNumber);
+        }
 
         if (config.portNumber <= 0 || config.portNumber > 0xFFFF) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portNumber is invalid!");
             return;
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("polling interval={}", config.pollingInterval);
+        }
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
@@ -97,8 +100,9 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
         socket = new NeoHubSocket(config.hostName, config.portNumber);
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("start background polling..");
+        }
 
         // create a "lazy" polling scheduler
         if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) {
@@ -121,8 +125,9 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("stop background polling..");
+        }
 
         // clean up the lazy polling scheduler
         if (lazyPollingScheduler != null && !lazyPollingScheduler.isCancelled()) {
@@ -160,7 +165,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
             startFastPollingBurst();
 
             return NeoHubReturnResult.SUCCEEDED;
-
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("set value error \"{}\"", e.getMessage());
@@ -170,9 +174,9 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     /**
      * sends a JSON "INFO" request to the NeoHub
-     * 
+     *
      * @return a class that contains the full status of all devices
-     * 
+     *
      */
     protected NeoHubInfoResponse fromNeoHubFetchPollingResponse() {
         if (socket == null || config == null) {
@@ -183,7 +187,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         try {
             @Nullable
             String response = socket.sendMessage(CMD_CODE_INFO);
-            
+
             NeoHubInfoResponse newInfoResponse = NeoHubInfoResponse.createInfoResponse(response);
 
             if (newInfoResponse == null) {
@@ -203,7 +207,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
             }
 
             return newInfoResponse;
-
         } catch (Exception e) {
             logger.warn(MSG_FMT_POLL_ERR, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -217,7 +220,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * handlers
      */
     private synchronized void lazyPollingSchedulerExecute() {
-        NeoHubInfoResponse infoResponse = fromNeoHubFetchPollingResponse(); 
+        NeoHubInfoResponse infoResponse = fromNeoHubFetchPollingResponse();
 
         if (infoResponse != null) {
             List<Thing> children = getThing().getThings();

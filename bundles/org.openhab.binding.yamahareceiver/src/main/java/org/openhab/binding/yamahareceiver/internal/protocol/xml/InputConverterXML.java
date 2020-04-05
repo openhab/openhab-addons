@@ -125,7 +125,6 @@ public class InputConverterXML implements InputConverter {
 
     @Override
     public String fromStateName(String name) {
-
         String convertedName;
         String method;
 

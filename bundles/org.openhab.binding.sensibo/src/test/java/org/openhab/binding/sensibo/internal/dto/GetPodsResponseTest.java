@@ -31,7 +31,6 @@ public class GetPodsResponseTest extends AbstractSerializationDeserializationTes
 
     @Test
     public void testDeserialize() throws IOException {
-
         final Type type = new TypeToken<ArrayList<PodDTO>>() {
         }.getType();
 

@@ -199,7 +199,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     }
 
     protected Vehicle[] queryVehicles() {
-
         String authHeader = getAuthHeader();
 
         if (authHeader != null) {

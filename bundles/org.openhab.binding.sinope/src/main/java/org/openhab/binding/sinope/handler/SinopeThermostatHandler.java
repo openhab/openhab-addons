@@ -108,11 +108,9 @@ public class SinopeThermostatHandler extends BaseThingHandler {
         } finally {
             getSinopeGatewayHandler().schedulePoll();
         }
-
     }
 
     private void setSetpointMode(int mode) throws UnknownHostException, IOException {
-
         getSinopeGatewayHandler().stopPoll();
         try {
             if (getSinopeGatewayHandler().connectToBridge()) {

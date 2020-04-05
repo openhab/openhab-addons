@@ -84,7 +84,6 @@ public class HomekitTaggedItem {
                     throw new BadItemConfigurationException(
                             "Item belongs to multiple Groups which are tagged as Homekit devices.");
             }
-
         } catch (BadItemConfigurationException e) {
             logger.warn("Item {} was misconfigured: {}. Excluding item from homekit.", item.getName(), e.getMessage());
             homekitAccessoryType = null;

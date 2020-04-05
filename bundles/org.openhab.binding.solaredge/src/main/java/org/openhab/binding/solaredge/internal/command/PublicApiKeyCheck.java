@@ -34,7 +34,6 @@ public class PublicApiKeyCheck extends AbstractCommandCallback implements SolarE
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         // as a key is used no real login is to be done here. It is just checked if a protected page can be retrieved
         // and therefore the key is valid.
         requestToPrepare.followRedirects(false);

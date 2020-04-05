@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.junit.Test;
-import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
+import static org.junit.Assert.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
+import org.junit.Test;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 
 /**
  * Unit test for {@link DeviceDescriptorXML}.
@@ -33,77 +33,45 @@ public class DeviceDescriptorXMLTest extends AbstractXMLProtocolTest {
 
     @Test
     public void given_RXS601D_parsesDescriptor() throws IOException {
-        parsesDescriptor("RX-S601D",
-                Arrays.asList(Main_Zone, Zone_2),
+        parsesDescriptor("RX-S601D", Arrays.asList(Main_Zone, Zone_2),
                 Arrays.asList(AIRPLAY, SPOTIFY, USB, BLUETOOTH, DAB, NET_RADIO),
-                new CommandsSpec(9, Arrays.asList(
-                        "System,Power_Control,Power",
-                        "System,Party_Mode,Mode",
-                        "System,Party_Mode,Volume,Lvl",
-                        "System,Party_Mode,Volume,Mute")),
-                new CommandsSpec[]{
+                new CommandsSpec(9,
+                        Arrays.asList("System,Power_Control,Power", "System,Party_Mode,Mode",
+                                "System,Party_Mode,Volume,Lvl", "System,Party_Mode,Volume,Mute")),
+                new CommandsSpec[] {
                         // Main_Zone
-                        new CommandsSpec(29, Arrays.asList(
-                                "Main_Zone,Power_Control,Power",
-                                "Main_Zone,Volume,Lvl",
-                                "Main_Zone,Volume,Mute",
-                                "Main_Zone,Input,Input_Sel",
-                                "Main_Zone,Input,Input_Sel_Item",
-                                "Main_Zone,Scene,Scene_Sel",
-                                "Main_Zone,Scene,Scene_Sel_Item",
+                        new CommandsSpec(29, Arrays.asList("Main_Zone,Power_Control,Power", "Main_Zone,Volume,Lvl",
+                                "Main_Zone,Volume,Mute", "Main_Zone,Input,Input_Sel", "Main_Zone,Input,Input_Sel_Item",
+                                "Main_Zone,Scene,Scene_Sel", "Main_Zone,Scene,Scene_Sel_Item",
                                 "Main_Zone,Surround,Program_Sel,Current,Straight",
                                 "Main_Zone,Surround,Program_Sel,Current,Enhancer",
                                 "Main_Zone,Surround,Program_Sel,Current,Sound_Program")),
                         // Zone_2
-                        new CommandsSpec(20, Arrays.asList(
-                                "Zone_2,Power_Control,Power",
-                                "Zone_2,Volume,Lvl",
-                                "Zone_2,Volume,Mute",
-                                "Zone_2,Input,Input_Sel",
-                                "Zone_2,Input,Input_Sel_Item",
-                                "Zone_2,Scene,Scene_Sel",
-                                "Zone_2,Scene,Scene_Sel_Item"))
-                });
+                        new CommandsSpec(20,
+                                Arrays.asList("Zone_2,Power_Control,Power", "Zone_2,Volume,Lvl", "Zone_2,Volume,Mute",
+                                        "Zone_2,Input,Input_Sel", "Zone_2,Input,Input_Sel_Item",
+                                        "Zone_2,Scene,Scene_Sel", "Zone_2,Scene,Scene_Sel_Item")) });
     }
 
     @Test
     public void given_RXV3900_parsesDescriptor() throws IOException {
-        parsesDescriptor("RX-V3900",
-                Arrays.asList(Main_Zone, Zone_2, Zone_3),
-                Arrays.asList(BLUETOOTH, TUNER, NET_USB),
-                new CommandsSpec(2, Arrays.asList(
-                        "System,Power_Control,Power")),
-                new CommandsSpec[]{
+        parsesDescriptor("RX-V3900", Arrays.asList(Main_Zone, Zone_2, Zone_3), Arrays.asList(BLUETOOTH, TUNER, NET_USB),
+                new CommandsSpec(2, Arrays.asList("System,Power_Control,Power")), new CommandsSpec[] {
                         // Main_Zone
-                        new CommandsSpec(9, Arrays.asList(
-                                "Main_Zone,Power_Control,Power",
-                                "Main_Zone,Vol,Lvl",
-                                "Main_Zone,Vol,Mute",
-                                "Main_Zone,Input,Input_Sel",
-                                "Main_Zone,Input,Input_Sel_Item")),
+                        new CommandsSpec(9, Arrays.asList("Main_Zone,Power_Control,Power", "Main_Zone,Vol,Lvl",
+                                "Main_Zone,Vol,Mute", "Main_Zone,Input,Input_Sel", "Main_Zone,Input,Input_Sel_Item")),
                         // Zone_2
-                        new CommandsSpec(9, Arrays.asList(
-                                "Zone_2,Power_Control,Power",
-                                "Zone_2,Vol,Lvl",
-                                "Zone_2,Vol,Mute",
-                                "Zone_2,Input,Input_Sel",
-                                "Zone_2,Input,Input_Sel_Item")),
+                        new CommandsSpec(9,
+                                Arrays.asList("Zone_2,Power_Control,Power", "Zone_2,Vol,Lvl", "Zone_2,Vol,Mute",
+                                        "Zone_2,Input,Input_Sel", "Zone_2,Input,Input_Sel_Item")),
                         // Zone_3
-                        new CommandsSpec(9, Arrays.asList(
-                                "Zone_3,Power_Control,Power",
-                                "Zone_3,Vol,Lvl",
-                                "Zone_3,Vol,Mute",
-                                "Zone_3,Input,Input_Sel",
-                                "Zone_3,Input,Input_Sel_Item"))
-        });
+                        new CommandsSpec(9, Arrays.asList("Zone_3,Power_Control,Power", "Zone_3,Vol,Lvl",
+                                "Zone_3,Vol,Mute", "Zone_3,Input,Input_Sel", "Zone_3,Input,Input_Sel_Item")) });
     }
 
-    private void parsesDescriptor(String model,
-                                  List<YamahaReceiverBindingConstants.Zone> zones,
-                                  Collection<YamahaReceiverBindingConstants.Feature> features,
-                                  CommandsSpec systemCommandsSpec,
-                                  CommandsSpec[] zonesCommandsSpec) throws IOException {
-
+    private void parsesDescriptor(String model, List<YamahaReceiverBindingConstants.Zone> zones,
+            Collection<YamahaReceiverBindingConstants.Feature> features, CommandsSpec systemCommandsSpec,
+            CommandsSpec[] zonesCommandsSpec) throws IOException {
         // arrange
         ctx.prepareForModel(model);
 

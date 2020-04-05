@@ -184,7 +184,6 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     @Override
     public void attributeChanged(String name, Object value, MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
-
         if (!initialized || !allMandatoryFieldsReceived) {
             return;
         }

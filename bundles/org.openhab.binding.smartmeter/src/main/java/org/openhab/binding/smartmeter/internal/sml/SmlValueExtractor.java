@@ -95,7 +95,6 @@ public final class SmlValueExtractor {
      * @return the value as String if available - otherwise null.
      */
     public String getValue() {
-
         org.openmuc.jsml.structures.SmlValue smlValue = smlListEntry.getValue();
         ASNObject choice = smlValue.getChoice();
         String value = choice.toString();
@@ -152,7 +151,6 @@ public final class SmlValueExtractor {
      * @return the hex encoded OBIS code as readable string.
      */
     protected static String getObisAsString(byte[] octetBytes) {
-
         String formattedObis = String.format(SmartMeterBindingConstants.OBIS_FORMAT_MINIMAL, byteToInt(octetBytes[0]),
                 byteToInt(octetBytes[1]), byteToInt(octetBytes[2]), byteToInt(octetBytes[3]), byteToInt(octetBytes[4]));
 
