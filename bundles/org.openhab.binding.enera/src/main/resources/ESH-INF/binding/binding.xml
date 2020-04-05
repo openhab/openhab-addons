@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="enera" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Enera Binding</name>
+	<description>This is the binding for the Enera project (https://projekt-enera.de/).
+
+		Currently, its only features are to
+		receive meter reading and current consumption and provide them as Channels on an Enera
+		Device Thing.</description>
+	<author>Oliver Rahner</author>
+
+</binding:binding>
