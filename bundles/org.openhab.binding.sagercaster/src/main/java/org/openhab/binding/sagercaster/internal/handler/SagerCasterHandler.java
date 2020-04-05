@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -174,11 +175,11 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 .toUnit(HECTO(SIUnits.PASCAL));
                         if (newPressure != null) {
                             pressureCache.put(newPressure);
-                            QuantityType<Pressure> agedPressure = pressureCache.getAgedValue();
-                            if (agedPressure != null) {
+                            Optional<QuantityType<Pressure>> agedPressure = pressureCache.getAgedValue();
+                            if (agedPressure.isPresent()) {
                                 scheduler.submit(() -> {
                                     sagerWeatherCaster.setPressure(newPressure.doubleValue(),
-                                            agedPressure.doubleValue());
+                                            agedPressure.get().doubleValue());
                                     updateChannelString(GROUP_OUTPUT, CHANNEL_PRESSURETREND,
                                             String.valueOf(sagerWeatherCaster.getPressureEvolution()));
                                     postNewForecast();
@@ -198,9 +199,9 @@ public class SagerCasterHandler extends BaseThingHandler {
                         if (newTemperature != null) {
                             temperatureCache.put(newTemperature);
                             currentTemp = newTemperature.intValue();
-                            QuantityType<Temperature> agedTemperature = temperatureCache.getAgedValue();
-                            if (agedTemperature != null) {
-                                double delta = newTemperature.doubleValue() - agedTemperature.doubleValue();
+                            Optional<QuantityType<Temperature>> agedTemperature = temperatureCache.getAgedValue();
+                            if (agedTemperature.isPresent()) {
+                                double delta = newTemperature.doubleValue() - agedTemperature.get().doubleValue();
                                 String trend = (delta > 3) ? "1"
                                         : (delta > 0.3) ? "2" : (delta > -0.3) ? "3" : (delta > -3) ? "4" : "5";
                                 updateChannelString(GROUP_OUTPUT, CHANNEL_TEMPERATURETREND, trend);
@@ -214,10 +215,10 @@ public class SagerCasterHandler extends BaseThingHandler {
                         @SuppressWarnings("unchecked")
                         QuantityType<Angle> newAngle = (QuantityType<Angle>) command;
                         bearingCache.put(newAngle);
-                        QuantityType<Angle> agedAngle = bearingCache.getAgedValue();
-                        if (agedAngle != null) {
+                        Optional<QuantityType<Angle>> agedAngle = bearingCache.getAgedValue();
+                        if (agedAngle.isPresent()) {
                             scheduler.submit(() -> {
-                                sagerWeatherCaster.setBearing(newAngle.intValue(), agedAngle.intValue());
+                                sagerWeatherCaster.setBearing(newAngle.intValue(), agedAngle.get().intValue());
                                 updateChannelString(GROUP_OUTPUT, CHANNEL_WINDEVOLUTION,
                                         String.valueOf(sagerWeatherCaster.getWindEvolution()));
                                 postNewForecast();

@@ -17,19 +17,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-/**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ExpiringMap} is responsible for storing a list of values of class T
@@ -39,8 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class ExpiringMap<T> {
-    private SortedMap<Long, T> values = new TreeMap<>();
-    private @Nullable T agedValue;
+    private final SortedMap<Long, T> values = new TreeMap<>();
+    private Optional<T> agedValue = Optional.empty();
     private long eldestAge = 0;
 
     public void setObservationPeriod(long eldestAge) {
@@ -52,12 +39,12 @@ class ExpiringMap<T> {
         values.put(now, newValue);
         Optional<Long> eldestKey = values.keySet().stream().filter(key -> key < now - eldestAge).findFirst();
         if (eldestKey.isPresent()) {
-            agedValue = values.get(eldestKey.get());
+            agedValue = Optional.of(values.get(eldestKey.get()));
             values.entrySet().removeIf(map -> map.getKey() <= eldestKey.get());
         }
     }
 
-    public @Nullable T getAgedValue() {
+    public Optional<T> getAgedValue() {
         return agedValue;
     }
 }

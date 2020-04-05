@@ -31,14 +31,24 @@ The binding itself does not require any configuration.
 
 The binding will use some input channels, that can be configured directly with profiles (sample below).
 
-| Name               | Type          | Description                                                     |
-|--------------------|---------------|-----------------------------------------------------------------|
-| is-raining         | Switch        | On if it is raining, else Off.                                  |
-| rain-qtty          | Number        | Any value that give indication of a current rain volume         |
-|                 or | Number:Speed  | Any value that give indication of a current rain volume eg mm/h |
-|                 or | Number:Length | Any value that give indication of a current rain volume eg mm   |
-|                    |               |                                                                 |
-
+| Name                | Group  |Type                 | Description                                                     |
+|---------------------|--------|---------------------|-----------------------------------------------------------------|
+| is-raining          | input  |Switch               | On if it is raining, else Off.                                  |
+| rain-qtty           | input  |Number               | Any value that give indication of a current rain volume         |
+|                 or  | input  |Number:Speed         | Any value that give indication of a current rain volume eg mm/h |
+|                 or  | input  |Number:Length        | Any value that give indication of a current rain volume eg mm   |
+| cloudiness          | input  |Number:Dimensionless | Cloud cover percentage                                          |
+| wind-speed-beaufort | input  |Number               | Wind speed expressed using the Beaufort scale                   |
+| pressure            | input  |Number:Pressure      | Sea level pressure                                              |
+| wind-angle          | input  |Number:Angle         | Wind direction                                                  |
+| forecast            | output |String               | Description of the weather forecast                             |
+| velocity            | output |String               | Description of the expected wind evolution                      |
+| velocity-beaufort   | output |Number               | Expected wind evolution using the Beaufort scale                |
+| wind-from           | output |String               | Expected wind orientation                                       |
+| wind-to             | output |String               | Evolution of the expected wind orientation                      |
+| wind-evolution      | output |String               | Wind orientation evolution over observation period              |
+| pressure-trend      | output |String               | Pressure evolution over observation period                      |
+| temperature-trend   | output |String               | Temperature evolution over observation period                   |
 
 ## Full Example
 
