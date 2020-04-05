@@ -16,6 +16,58 @@ The following things types are available:
 | miio:basic       | For several basic devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
 | miio:unsupported | For experimenting with other devices which use the Mi IO protocol                                                        |
 
+# Discovery
+
+The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
+
+The mDNS discovery method will discover your device type, but will not discover a (required) token.
+The basic discovery will not discovery the type, but will discover a token for models that support it.
+Accept only one of the 2 discovery results, the alternate one can further be ignored.
+
+## Tokens
+
+The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
+The binding can retrieve the needed tokens from the Xiaomi cloud. Go to the binding config page and enter your cloud username and password. The server(s) to which your devices are connected need to be entered as well. Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
+
+## Tokens without cloud access
+
+Some devices provide the token upon discovery. This may depends on the firmware version.
+If the device does not discover your token, it needs to be retrieved from the Mi Home app.
+
+The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
+It seems that version was released with debug messages turned on by mistake. 
+An APK file with the old version can be easily found using one of the popular web search engines. 
+After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
+
+For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
+Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.
+
+Note. The Xiaomi devices change the token when inclusion is done. Hence if you get your token after reset and than include it with the Mi Home app, the token will change.
+
+## Binding Configuration
+
+No binding configuration is required. However to enable cloud functionality enter Xiaomi username, password and server(s)
+
+## Thing Configuration
+
+Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
+The configuration for model is automatically retrieved from the device in normal operation. 
+However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
+
+| Parameter       | Type    | Required | Description                                                       |
+|-----------------|---------|----------|-------------------------------------------------------------------|
+| host            | text    | true     | Device IP address                                                 |
+| token           | text    | true     | Token for communication (in Hex)                                  |
+| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
+| model           | text    | false    | Device model string, used to determine the subtype                |
+| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
+| timeout         | integer | false    | Timeout time in milliseconds                                      |
+
+### Example Thing file
+
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx" ]` 
+
 ## Mi IO Devices
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
@@ -168,7 +220,7 @@ The following things types are available:
 # Advanced: Unsupported devices
 
 Newer devices may not yet be supported.
-However, many devices share large similarties with existing devices.
+However, many devices share large similarities with existing devices.
 The binding allows to try/test if your new device is working with database files of older devices as well.
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
@@ -179,7 +231,7 @@ Look at the openhab forum, or the openhab github repository for the modelId of s
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The config/misc/miio (e.g. in Linux `/opt/openhab2/config/misc/miio/`) is scanned for database files and will be used for your devices. 
+The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in Openhab github.
 
@@ -279,7 +331,6 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| humidifierMode   | String  | Mode                                |
 | humidifierMode   | String  | Humidifier Mode                     |
 | humidity         | Number  | Humidity                            |
 | setHumidity      | Number  | Humidity Set                        |
@@ -1580,7 +1631,7 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Mi Air Humidifier 2" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-String humidifierMode "Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
+String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
 Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}

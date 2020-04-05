@@ -75,7 +75,7 @@ public class CloudConnector {
         deviceList.clear();
         for (String server : country.split(",")) {
             try {
-                cl.getDevices(server);
+                deviceList.addAll(cl.getDevices(server));
             } catch (JsonParseException e) {
                 logger.debug("Parsing error getting devices: {}", e.getMessage());
             }

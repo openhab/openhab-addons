@@ -298,14 +298,6 @@ public class MiCloudConnector {
         cookieStore.add(URI.create("https://" + domain), cookie);
     }
 
-    private void removeCookies(CookieStore cookieStore, String domain) {
-        URI uri = URI.create(domain);
-        final List<HttpCookie> cookies = cookieStore.get(uri);
-        for (HttpCookie cookie : cookies) {
-            cookieStore.remove(uri, cookie);
-        }
-    }
-
     public synchronized boolean login() {
         if (!checkCredentials()) {
             return false;
@@ -325,6 +317,11 @@ public class MiCloudConnector {
             logger.info("Error logging on to Xiaomi cloud ({}): {}", loginFailedCounter, e.getMessage());
             loginFailedCounter++;
             serviceToken = "";
+            if (loginFailedCounter > 10) {
+                logger.info("Repeated errors logging on to Xiaomi cloud. Cleaning stored cookies");
+                dumpCookies(".xiaomi.com", true);
+                dumpCookies(".mi.com", true);
+            }
             return false;
         }
         return true;
@@ -437,8 +434,9 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login passToken = {}", passToken);
         logger.trace("Xiaomi login location = {}", location);
         logger.trace("Xiaomi login code = {}", code);
-
-        dumpCookies(url);
+        if (logger.isTraceEnabled()) {
+            dumpCookies(url, false);
+        }
         if (!location.isEmpty()) {
             return location;
         } else {
@@ -457,8 +455,9 @@ public class MiCloudConnector {
         responseStep3 = request.send();
         logger.trace("Xiaomi login step 3 content = {}", responseStep3.getContentAsString());
         logger.trace("Xiaomi login step 3 response = {}", responseStep3);
-
-        dumpCookies(location);
+        if (logger.isTraceEnabled()) {
+            dumpCookies(location, false);
+        }
         URI uri = URI.create("http://sts.api.io.mi.com");
         String serviceToken = extractServiceToken(uri);
         if (!serviceToken.isEmpty()) {
@@ -467,7 +466,7 @@ public class MiCloudConnector {
         return responseStep3;
     }
 
-    private void dumpCookies(String url) {
+    private void dumpCookies(String url, boolean delete) {
         if (logger.isTraceEnabled()) {
             try {
                 URI uri = URI.create(url);
@@ -476,8 +475,11 @@ public class MiCloudConnector {
                     CookieStore cs = httpClient.getCookieStore();
                     List<HttpCookie> cookies = cs.get(uri);
                     for (HttpCookie cookie : cookies) {
-                        logger.trace("Cookie ({}) : {} --> {}     (path: {})", cookie.getDomain(), cookie.getName(),
-                                cookie.getValue(), cookie.getPath());
+                        logger.trace("Cookie ({}) : {} --> {}     (path: {}. Removed: {})", cookie.getDomain(),
+                                cookie.getName(), cookie.getValue(), cookie.getPath(), delete);
+                        if (delete) {
+                            cs.remove(uri, cookie);
+                        }
                     }
                 } else {
                     logger.trace("Could not create URI from {}", url);
