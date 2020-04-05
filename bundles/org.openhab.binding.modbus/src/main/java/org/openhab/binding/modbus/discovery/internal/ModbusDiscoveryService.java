@@ -82,7 +82,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.trace("ModbusDiscoveryService starting scan");
 
-        if (participants.size() == 0) {
+        if (participants.isEmpty()) {
             // There's no point on continuing if there are no participants at the moment
             stopScan();
             return;

@@ -75,7 +75,7 @@ public class NukiApiServlet extends HttpServlet {
                     nukiBridgeHandler.getThing().getUID());
             return;
         }
-        if (nukiBridgeHandlers.size() == 0) {
+        if (nukiBridgeHandlers.isEmpty()) {
             this.activate();
         }
         nukiBridgeHandlers.add(nukiBridgeHandler);
@@ -86,7 +86,7 @@ public class NukiApiServlet extends HttpServlet {
                 nukiBridgeHandler.getThing().getUID(),
                 nukiBridgeHandler.getThing().getConfiguration().get(NukiBindingConstants.CONFIG_IP));
         nukiBridgeHandlers.remove(nukiBridgeHandler);
-        if (nukiBridgeHandlers.size() == 0) {
+        if (nukiBridgeHandlers.isEmpty()) {
             this.deactivate();
         }
     }

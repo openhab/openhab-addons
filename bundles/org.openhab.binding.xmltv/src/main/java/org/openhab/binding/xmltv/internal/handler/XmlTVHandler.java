@@ -81,7 +81,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
                     // Remove all finished programmes
                     xmlFile.getProgrammes().removeIf(programme -> Instant.now().isAfter(programme.getProgrammeStop()));
 
-                    if (xmlFile.getProgrammes().size() > 0) {
+                    if (!xmlFile.getProgrammes().isEmpty()) {
                         // Sort programmes by starting instant
                         Collections.sort(xmlFile.getProgrammes(), Comparator.comparing(Programme::getProgrammeStart));
                         // Ready to deliver data to ChannelHandlers

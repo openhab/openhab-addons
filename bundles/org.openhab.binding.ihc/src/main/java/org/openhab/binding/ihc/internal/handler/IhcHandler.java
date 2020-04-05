@@ -937,7 +937,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             resourceIds.addAll(linkedResourceIds);
             resourceIds.addAll(getAllLinkedChannelsResourceIds());
             logger.debug("Enable runtime notfications for {} resources: {}", resourceIds.size(), resourceIds);
-            if (resourceIds.size() > 0) {
+            if (!resourceIds.isEmpty()) {
                 try {
                     ihc.enableRuntimeValueNotifications(resourceIds);
                 } catch (IhcExecption e) {

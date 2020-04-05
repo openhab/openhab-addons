@@ -122,7 +122,7 @@ class OpenHabToDeviceConverter {
 
         }
 
-        if (channels.size() == 0) {
+        if (channels.isEmpty()) {
             logger.debug("No linked channels found for thing {} - ignoring", thing.getLabel());
             return null;
         }

@@ -392,18 +392,18 @@ public class StateUtils {
         if (t == null) {
             switch (type) {
                 case CoreItemFactory.COLOR:
-                    if (cs.colorFilter.size() == 0) {
+                    if (cs.colorFilter.isEmpty()) {
                         t = DeviceType.ColorType;
                     }
                     break;
                 case CoreItemFactory.DIMMER:
                 case CoreItemFactory.ROLLERSHUTTER:
-                    if (cs.whiteFilter.size() == 0) {
+                    if (cs.whiteFilter.isEmpty()) {
                         t = DeviceType.WhiteTemperatureType;
                     }
                     break;
                 case CoreItemFactory.SWITCH:
-                    if (cs.switchFilter.size() == 0) {
+                    if (cs.switchFilter.isEmpty()) {
                         t = DeviceType.SwitchType;
                     }
                     break;

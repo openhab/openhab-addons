@@ -38,7 +38,7 @@ public class Sink extends AbstractAudioDeviceConfig {
     }
 
     public boolean isCombinedSink() {
-        return combinedSinkNames.size() > 0;
+        return !combinedSinkNames.isEmpty();
     }
 
     public List<String> getCombinedSinkNames() {

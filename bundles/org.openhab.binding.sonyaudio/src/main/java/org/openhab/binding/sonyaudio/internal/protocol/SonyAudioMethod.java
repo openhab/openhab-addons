@@ -432,7 +432,7 @@ class SwitchNotifications extends SonyAudioMethod {
 
     SwitchNotifications(List<Notification> enabled, List<Notification> disabled) {
         super("switchNotifications", "1.0");
-        params = new Param[] { new Param(enabled.size() > 0 ? enabled : null, disabled.size() > 0 ? disabled : null) };
+        params = new Param[] { new Param(!enabled.isEmpty() ? enabled : null, !disabled.isEmpty() ? disabled : null) };
     }
 }
 

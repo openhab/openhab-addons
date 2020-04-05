@@ -82,7 +82,7 @@ public class ChannelHandler extends BaseThingHandler {
                 if (programmes.size() < 2) {
                     refreshProgramList();
                 }
-                if (programmes.size() == 0) {
+                if (programmes.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "No programmes to come in the current XML file for this channel");
                 } else if (Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
@@ -171,7 +171,7 @@ public class ChannelHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_CHANNEL_URL:
                         updateState(channelUID,
-                                mediaChannel != null ? mediaChannel.getIcons().size() > 0
+                                mediaChannel != null ? !mediaChannel.getIcons().isEmpty()
                                         ? new StringType(mediaChannel.getIcons().get(0).getSrc())
                                         : UnDefType.UNDEF : UnDefType.UNDEF);
                         break;
@@ -188,19 +188,19 @@ public class ChannelHandler extends BaseThingHandler {
                     case CHANNEL_PROGRAMME_TITLE:
                         List<WithLangType> titles = programme.getTitles();
                         updateState(channelUID,
-                                titles.size() > 0 ? new StringType(programme.getTitles().get(0).getValue())
+                                !titles.isEmpty() ? new StringType(programme.getTitles().get(0).getValue())
                                         : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_CATEGORY:
                         List<WithLangType> categories = programme.getCategories();
                         updateState(channelUID,
-                                categories.size() > 0 ? new StringType(programme.getCategories().get(0).getValue())
+                                !categories.isEmpty() ? new StringType(programme.getCategories().get(0).getValue())
                                         : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_ICON:
                         List<Icon> icons = programme.getIcons();
                         updateState(channelUID,
-                                icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.UNDEF);
+                                !icons.isEmpty() ? new StringType(icons.get(0).getSrc()) : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_ELAPSED:
                         updateState(channelUID, getDurationInSeconds(programme.getProgrammeStart(), Instant.now()));
@@ -240,7 +240,7 @@ public class ChannelHandler extends BaseThingHandler {
     }
 
     private @Nullable RawType downloadIcon(List<Icon> icons) {
-        if (icons.size() > 0) {
+        if (!icons.isEmpty()) {
             String url = icons.get(0).getSrc();
             return HttpUtil.downloadImage(url);
         }

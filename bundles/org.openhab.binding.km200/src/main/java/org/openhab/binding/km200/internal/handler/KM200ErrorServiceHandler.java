@@ -121,7 +121,7 @@ public class KM200ErrorServiceHandler {
         String value = "";
         synchronized (errorMap) {
             int actN = getActiveError();
-            if (errorMap.size() < actN || errorMap.size() == 0) {
+            if (errorMap.size() < actN || errorMap.isEmpty()) {
                 return null;
             }
             /* is the time value existing ("t") then use it on the begin */

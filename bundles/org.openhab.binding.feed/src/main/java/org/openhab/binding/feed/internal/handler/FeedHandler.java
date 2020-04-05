@@ -271,7 +271,7 @@ public class FeedHandler extends BaseThingHandler {
     private SyndEntry getLatestEntry(SyndFeed feed) {
         List<SyndEntry> allEntries = feed.getEntries();
         SyndEntry lastEntry = null;
-        if (allEntries.size() >= 1) {
+        if (!allEntries.isEmpty()) {
             /*
              * The entries are stored in the SyndFeed object in the following order -
              * the newest entry has index 0. The order is determined from the time the entry was posted, not the

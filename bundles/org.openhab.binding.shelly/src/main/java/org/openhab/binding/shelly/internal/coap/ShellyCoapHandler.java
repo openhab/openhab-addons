@@ -310,7 +310,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private void handleStatusUpdate(String devId, String payload, int serial) throws IOException {
         // payload = StringUtils.substringBefore(payload, "]]}") + "]]}";
         logger.debug("{}: CoIoT Sensor data {}", thingName, payload);
-        if (blockMap.size() == 0) {
+        if (blockMap.isEmpty()) {
             // send discovery packet
             resetSerial();
             reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
@@ -497,7 +497,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         }
 
-        if (updates.size() > 0) {
+        if (!updates.isEmpty()) {
             logger.debug("{}: Process {} CoIoT channel updates", thingName, updates.size());
             int i = 0;
             for (Map.Entry<String, State> u : updates.entrySet()) {

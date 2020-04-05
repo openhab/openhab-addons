@@ -201,7 +201,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return originalStateDescription;
             }
             List<Device> devices = accountHandler.getLastKnownDevices();
-            if (devices.size() == 0) {
+            if (devices.isEmpty()) {
                 return originalStateDescription;
             }
 

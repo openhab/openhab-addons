@@ -941,7 +941,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * Updates the room information by sending M command
      */
     public void sendDeviceAndRoomNameUpdate(String comment) {
-        if (devices.size() > 0) {
+        if (!devices.isEmpty()) {
             SendCommand sendCommand = new SendCommand("Cube(" + getThing().getUID().getId() + ")",
                     new MCommand(devices, rooms), comment);
             queueCommand(sendCommand);

@@ -60,9 +60,9 @@ public class MeasurableChannels {
     protected Optional<State> getNAThingProperty(String channelId) {
         int index = measuredChannels.indexOf(channelId);
         if (index != -1 && measures != null) {
-            if (measures.getBody().size() > 0) {
+            if (!measures.getBody().isEmpty()) {
                 List<List<Float>> valueList = measures.getBody().get(0).getValue();
-                if (valueList.size() > 0) {
+                if (!valueList.isEmpty()) {
                     List<Float> values = valueList.get(0);
                     if (values.size() >= index) {
                         Float value = values.get(index);
@@ -75,7 +75,7 @@ public class MeasurableChannels {
     }
 
     public Optional<CSVParams> getAsCsv() {
-        if (measuredChannels.size() > 0) {
+        if (!measuredChannels.isEmpty()) {
             return Optional.of(new CSVParams(measuredChannels));
         }
         return Optional.empty();
