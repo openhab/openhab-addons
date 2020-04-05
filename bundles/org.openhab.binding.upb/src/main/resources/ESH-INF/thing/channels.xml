@@ -13,7 +13,7 @@
 
 	<channel-type id="scene-selection">
 		<kind>trigger</kind>
-		<label>Scene selection events</label>
+		<label>Scene Selection Events</label>
 		<event>
 		<options>
 			<option value="ACTIVATED">activated</option>
