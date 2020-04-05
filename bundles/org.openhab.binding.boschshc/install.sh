@@ -2,7 +2,7 @@
 
 if [[ $_ != $0 ]]
 then
-    echo "Script is being sourced, need to executed"
+    echo "Script has to be executed, not sourced"
 
 else
 
@@ -20,7 +20,7 @@ else
 	echo "Deleting old Bosch bundle from openhab"
 	openhab-cli console -p habopen "bundle:list" | grep -i bosch
 	openhab-cli console -p habopen "bundle:uninstall org.openhab.binding.boschshc"
-	
+
 	echo "After deleting it .. "
 	openhab-cli console -p habopen "bundle:list" | grep -i bosch
     ) || true

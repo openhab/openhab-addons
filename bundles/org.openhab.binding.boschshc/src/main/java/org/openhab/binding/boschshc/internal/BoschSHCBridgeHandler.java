@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -31,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -343,26 +343,32 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                         Bridge bridge = bridgeHandler.getThing();
                                         boolean handled = false;
 
-                                        List<Thing> things = bridge.getThings();
-                                        for (Thing childThing : things) {
+                                        for (Thing childThing : bridge.getThings()) {
 
-                                            // We return one handler here, we don't know the type here
-                                            BoschSHCHandler handler = (BoschSHCHandler) childThing.getHandler();
+                                            // All children of this should implement BoschSHCHandler
+                                            ThingHandler baseHandler = childThing.getHandler();
+                                            if (BoschSHCHandler.class.isInstance(baseHandler)) {
+                                                BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
 
-                                            // Probably, we should let all supported devices inherit from
-                                            // BoschThingHandler (so we get the ID) and then just pass in the
+                                                if (handler != null) {
 
-                                            if (handler != null) {
+                                                    handled = true;
+                                                    logger.debug("Registered device: {} - looking for {}",
+                                                            handler.getBoschID(), update.deviceId);
 
-                                                handled = true;
-                                                logger.debug("Registered device: {} - looking for {}",
-                                                        handler.getBoschID(), update.deviceId);
+                                                    if (update.deviceId.equals(handler.getBoschID())) {
 
-                                                if (update.deviceId.equals(handler.getBoschID())) {
-
-                                                    logger.info("Found child: {} - sending {}", handler, update.state);
-                                                    handler.processUpdate(update.id, update.state);
+                                                        logger.info("Found child: {} - calling processUpdate with {}",
+                                                                handler, update.state);
+                                                        handler.processUpdate(update.id, update.state);
+                                                    }
+                                                } else {
+                                                    logger.warn("longPoll: handler is null");
                                                 }
+                                            } else {
+                                                logger.warn(
+                                                        "longPoll: child handler for {} does not implement Bosch SHC handler",
+                                                        baseHandler);
                                             }
 
                                         }
