@@ -103,7 +103,7 @@ class BlueGigaResponsePackets {
 
     private static Logger logger = LoggerFactory.getLogger(BlueGigaResponsePackets.class);
 
-    final private static Map<Integer, Class<?>> packetMap = new HashMap<Integer, Class<?>>();
+    private static final Map<Integer, Class<?>> packetMap = new HashMap<>();
 
     static {
         packetMap.put(Objects.hash(0x00, 0x06, true), BlueGigaProtocolErrorEvent.class);

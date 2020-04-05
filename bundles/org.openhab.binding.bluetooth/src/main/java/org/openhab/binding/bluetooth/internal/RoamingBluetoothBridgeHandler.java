@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -171,8 +172,20 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public boolean hasDevice(BluetoothAddress address) {
-        return devices.containsKey(address);
+    public boolean hasHandlerForDevice(BluetoothAddress address) {
+        String addrStr = address.toString();
+        /*
+         * This type of search is inefficient and won't scale as the number of bluetooth Thing children increases on
+         * this bridge. But implementing a more efficient search would require a bit more overhead.
+         * Luckily though, it is reasonable to assume that the number of Thing children will remain small.
+         */
+        for (Thing childThing : getThing().getThings()) {
+            Object childAddr = childThing.getConfiguration().get(BluetoothBindingConstants.CONFIGURATION_ADDRESS);
+            if (addrStr.equals(childAddr)) {
+                return childThing.getHandler() != null;
+            }
+        }
+        return false;
     }
 
 }

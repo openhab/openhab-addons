@@ -55,13 +55,13 @@ public class DS1923 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_DEWPOINT)) {
-                QuantityType<Temperature> temperature = new QuantityType<Temperature>(
+                QuantityType<Temperature> temperature = new QuantityType<>(
                         (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
                 callback.postUpdate(CHANNEL_TEMPERATURE, temperature);
 
                 if (enabledChannels.contains(CHANNEL_HUMIDITY) || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
                         || enabledChannels.contains(CHANNEL_DEWPOINT)) {
-                    QuantityType<Dimensionless> humidity = new QuantityType<Dimensionless>(
+                    QuantityType<Dimensionless> humidity = new QuantityType<>(
                             (DecimalType) bridgeHandler.readDecimalType(sensorId, humidityParameter),
                             SmartHomeUnits.PERCENT);
 

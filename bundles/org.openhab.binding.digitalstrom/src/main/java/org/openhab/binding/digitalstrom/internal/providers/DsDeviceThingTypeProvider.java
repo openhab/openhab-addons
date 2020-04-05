@@ -124,7 +124,7 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
 
     @Override
     public Collection<ThingType> getThingTypes(Locale locale) {
-        List<ThingType> thingTypes = new LinkedList<ThingType>();
+        List<ThingType> thingTypes = new LinkedList<>();
         for (SupportedThingTypes supportedThingType : SupportedThingTypes.values()) {
             thingTypes.add(getThingType(
                     new ThingTypeUID(DigitalSTROMBindingConstants.BINDING_ID, supportedThingType.toString()), locale));
@@ -157,7 +157,7 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
                                 .build()));
             }
             if (SupportedThingTypes.circuit.equals(supportedThingType)) {
-                List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>(3);
+                List<ChannelDefinition> channelDefinitions = new ArrayList<>(3);
                 for (MeteringTypeEnum meteringType : MeteringTypeEnum.values()) {
                     channelDefinitions.add(new ChannelDefinitionBuilder(
                             DsChannelTypeProvider.getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false),

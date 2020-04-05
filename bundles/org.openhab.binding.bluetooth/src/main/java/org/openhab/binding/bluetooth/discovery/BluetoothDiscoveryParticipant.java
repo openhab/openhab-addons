@@ -69,7 +69,7 @@ public interface BluetoothDiscoveryParticipant {
      * @param device the Bluetooth device
      * @return true if a connection is required before calling {@link createResult(BluetoothDevice)}
      */
-    default public boolean requiresConnection(BluetoothDevice device) {
+    public default boolean requiresConnection(BluetoothDevice device) {
         return false;
     }
 }

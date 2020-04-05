@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.mqtt.internal;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -30,18 +27,14 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttService;
 import org.eclipse.smarthome.io.transport.mqtt.internal.TopicSubscribers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
-import org.openhab.binding.mqtt.discovery.TopicSubscribe;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandlerEx;
 import org.openhab.binding.mqtt.handler.MqttBrokerConnectionEx;
-import org.openhab.binding.mqtt.internal.MqttBrokerHandlerFactory;
-import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.osgi.service.cm.ConfigurationException;
 
 /**

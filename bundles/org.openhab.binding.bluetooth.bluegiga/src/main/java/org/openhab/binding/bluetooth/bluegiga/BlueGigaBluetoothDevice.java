@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.bluegiga;
 
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -81,8 +80,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     // The connection handle if the device is connected
     private int connection = -1;
 
-    private ZonedDateTime lastSeenTime = ZonedDateTime.now();
-
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
     private @Nullable ScheduledFuture<?> connectTimer;
@@ -128,7 +125,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         this.addressType = addressType;
 
         bgHandler.addEventListener(this);
-        updateLastSeenTime();
+        updateLastActivityTime();
     }
 
     @Override
@@ -258,7 +255,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         logger.trace("scanEvent: {}", event);
-        updateLastSeenTime();
+        updateLastActivityTime();
 
         // Set device properties
         rssi = event.getRssi();
@@ -382,7 +379,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         logger.trace("BlueGiga Group: {} svcs={}", this, supportedServices);
-        updateLastSeenTime();
+        updateLastActivityTime();
 
         BluetoothService service = new BluetoothService(event.getUuid(), true, event.getStart(), event.getEnd());
         addService(service);
@@ -395,7 +392,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         logger.trace("BlueGiga FindInfo: {} svcs={}", this, supportedServices);
-        updateLastSeenTime();
+        updateLastActivityTime();
 
         BluetoothCharacteristic characteristic = new BluetoothCharacteristic(event.getUuid(), event.getChrHandle());
 
@@ -421,7 +418,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         cancelTimer(procedureTimer);
-        updateLastSeenTime();
+        updateLastActivityTime();
 
         // The current procedure is now complete - move on...
         switch (procedureProgress) {
@@ -467,7 +464,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         }
 
         cancelTimer(connectTimer);
-        updateLastSeenTime();
+        updateLastActivityTime();
 
         // If we're connected, then remember the connection handle
         if (event.getFlags().contains(ConnectionStatusFlag.CONNECTION_CONNECTED)) {
@@ -499,7 +496,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             return;
         }
 
-        updateLastSeenTime();
+        updateLastActivityTime();
 
         BluetoothCharacteristic characteristic = getCharacteristicByHandle(event.getAttHandle());
         if (characteristic == null) {
@@ -524,6 +521,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
     /**
      * Clean up and release memory.
      */
+    @Override
     public void dispose() {
         if (connectionState == ConnectionState.CONNECTED) {
             disconnect();
@@ -534,19 +532,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         procedureProgress = BlueGigaProcedure.NONE;
         connectionState = ConnectionState.DISCOVERING;
         connection = -1;
-    }
-
-    /**
-     * Return last seen Time
-     *
-     * @return last seen Time
-     */
-    public ZonedDateTime getLastSeenTime() {
-        return lastSeenTime;
-    }
-
-    private void updateLastSeenTime() {
-        this.lastSeenTime = ZonedDateTime.now();
     }
 
     private void cancelTimer(@Nullable ScheduledFuture<?> task) {

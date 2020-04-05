@@ -116,7 +116,7 @@ public abstract class BluetoothDevice {
     /**
      * List of supported services
      */
-    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<UUID, BluetoothService>();
+    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<>();
 
     /**
      * Last known RSSI
@@ -136,7 +136,7 @@ public abstract class BluetoothDevice {
     /**
      * The event listeners will be notified of device updates
      */
-    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<BluetoothDeviceListener>();
+    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address
@@ -150,7 +150,7 @@ public abstract class BluetoothDevice {
     }
 
     /**
-     * Returns the the name of the Bluetooth device.
+     * Returns the name of the Bluetooth device.
      *
      * @return The devices name
      */
@@ -299,6 +299,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Updates the lastSeenTime of this device to now.
+     * Should be called whenever activity occurs on this device.
      */
     public void updateLastActivityTime() {
         this.lastActivityTime = ZonedDateTime.now();
@@ -615,6 +616,14 @@ public abstract class BluetoothDevice {
      */
     public boolean hasListeners() {
         return !eventListeners.isEmpty();
+    }
+
+    /**
+     * Releases resources that this device is using.
+     *
+     */
+    protected void dispose() {
+
     }
 
     /**

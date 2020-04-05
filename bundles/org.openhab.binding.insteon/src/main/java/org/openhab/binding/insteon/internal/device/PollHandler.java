@@ -14,12 +14,13 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.message.FieldException;
-import org.openhab.binding.insteon.internal.message.Msg;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
+import org.openhab.binding.insteon.internal.message.Msg;
 import org.openhab.binding.insteon.internal.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
     DeviceFeature feature;
-    HashMap<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, @Nullable String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -56,7 +57,7 @@ public abstract class PollHandler {
      */
     public abstract @Nullable Msg makeMsg(InsteonDevice device);
 
-    public void setParameters(HashMap<String, @Nullable String> hm) {
+    public void setParameters(Map<String, @Nullable String> hm) {
         parameters = hm;
     }
 

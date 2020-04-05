@@ -442,7 +442,7 @@ public enum BgApiResponse {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, BgApiResponse>();
+        codeMapping = new HashMap<>();
         for (BgApiResponse s : values()) {
             codeMapping.put(s.key, s);
         }

@@ -66,7 +66,7 @@ public enum ConnectionStatusFlag {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, ConnectionStatusFlag>();
+        codeMapping = new HashMap<>();
         for (ConnectionStatusFlag s : values()) {
             codeMapping.put(s.key, s);
         }

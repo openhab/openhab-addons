@@ -37,7 +37,7 @@ public class RioPreset {
     /**
      * The preset name
      */
-    private final AtomicReference<String> name = new AtomicReference<String>(null);
+    private final AtomicReference<String> name = new AtomicReference<>(null);
 
     /**
      * Simply creates the preset from the given ID. The preset will not be valid and the name will default to

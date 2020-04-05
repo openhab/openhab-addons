@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UplinkWebInterface implements AtomicReferenceTrait {
 
-    private final static int NIBE_ID_THRESHOLD = 14;
+    private static final int NIBE_ID_THRESHOLD = 14;
 
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
@@ -81,8 +81,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     /**
      * periodic request executor job
      */
-    private AtomicReference<@Nullable Future<?>> requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(
-            null);
+    private AtomicReference<@Nullable Future<?>> requestExecutorJobReference = new AtomicReference<>(null);
 
     /**
      * this class is responsible for executing periodic web requests. This ensures that only one request is executed at

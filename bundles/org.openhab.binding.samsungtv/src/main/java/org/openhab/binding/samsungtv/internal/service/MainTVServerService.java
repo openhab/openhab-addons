@@ -65,7 +65,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     private String udn;
     private int pollingInterval;
 
-    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
+    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
@@ -289,7 +289,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private Map<String, String> parseSourceList(String xml) {
-        Map<String, String> list = new HashMap<String, String>();
+        Map<String, String> list = new HashMap<>();
 
         Document dom = SamsungTvUtils.loadXMLFromString(xml);
 

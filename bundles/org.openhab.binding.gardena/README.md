@@ -1,20 +1,20 @@
 # Gardena Binding
 
-This is the binding for [Gardena Smart Home](https://www.gardena.com/de/rasenpflege/smartsystem/).
-This binding allows you to integrate, view and control Gardena Smart Home devices in the openHAB environment.
+This is the binding for [Gardena smart system](https://www.gardena.com/de/rasenpflege/smartsystem/).
+This binding allows you to integrate, view and control Gardena smart system devices in the openHAB environment.
 
 ## Supported Things
 
-Devices connected to Gardena Smart Home, currently:
+Devices connected to Gardena smart system, currently:
 
 | Thing type               | Name                     |
 |--------------------------|--------------------------|
-| bridge                   | smart Home Gateway       |
+| bridge                   | smart Garden Gateway     |
 | mower                    | smart Sileno(+) Mower    |
 | watering_computer        | smart Water Control      |
 | sensor                   | smart Sensor             |
 | electronic_pressure_pump | smart Pressure Pump      |
-| power                    | smart Power Plug         |
+| power                    | smart Power              |
 | ic24                     | smart Irrigation Control |
 
 The schedules are not yet integrated!
@@ -27,13 +27,13 @@ An account must be specified, all things for an account are discovered automatic
 
 There are several settings for an account:
 
-| Name                  | Required | Description                                                                            |
-|-----------------------|----------|----------------------------------------------------------------------------------------|
-| **email**             | yes      | The email address for logging into the Gardena Smart Home                              |
-| **password**          | yes      | The password for logging into the Gardena Smart Home                                   |
-| **sessionTimeout**    | no       | The timeout in minutes for a session to Gardena Smart Home (default = 30)              |
-| **connectionTimeout** | no       | The timeout in seconds for connections to Gardena Smart Home (default = 10)            |
-| **refresh**           | no       | The interval in seconds for refreshing the data from Gardena Smart Home (default = 60) |
+| Name                  | Required | Description                                                                              |
+|-----------------------|----------|------------------------------------------------------------------------------------------|
+| **email**             | yes      | The email address for logging into the Gardena smart system                              |
+| **password**          | yes      | The password for logging into the Gardena smart system                                   |
+| **sessionTimeout**    | no       | The timeout in minutes for a session to Gardena smart system (default = 30)              |
+| **connectionTimeout** | no       | The timeout in seconds for connections to Gardena smart system (default = 10)            |
+| **refresh**           | no       | The interval in seconds for refreshing the data from Gardena smart system (default = 60) |
 
 **Example**
 

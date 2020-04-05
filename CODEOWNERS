@@ -5,6 +5,7 @@
 *       @openhab/2-x-add-ons-maintainers
 
 # Add-on maintainers:
+/bundles/org.openhab.binding.adorne/ @theiding
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.allplay/ @dominicdesu
@@ -44,6 +45,7 @@
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enturno/ @klocsson
+/bundles/org.openhab.binding.etherrain/ @dfad1469
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feed/ @svilenvul
@@ -157,6 +159,7 @@
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
+/bundles/org.openhab.binding.sensibo/ @seime
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemensrds/ @andrewfg

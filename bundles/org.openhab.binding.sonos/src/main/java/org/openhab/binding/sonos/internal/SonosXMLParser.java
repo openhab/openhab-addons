@@ -261,7 +261,7 @@ public class SonosXMLParser {
         private StringBuilder desc = new StringBuilder();
         private Element element = null;
 
-        private List<SonosEntry> artists = new ArrayList<SonosEntry>();
+        private List<SonosEntry> artists = new ArrayList<>();
 
         EntryHandler() {
             // shouldn't be used outside of this package.
@@ -291,7 +291,7 @@ public class SonosXMLParser {
                 element = Element.RESMD;
             } else {
                 if (ignore == null) {
-                    ignore = new ArrayList<String>();
+                    ignore = new ArrayList<>();
                     ignore.add("DIDL-Lite");
                     ignore.add("type");
                     ignore.add("ordinal");
@@ -462,7 +462,7 @@ public class SonosXMLParser {
         private String volume;
         private String includeLinkedZones;
 
-        private List<SonosAlarm> alarms = new ArrayList<SonosAlarm>();
+        private List<SonosAlarm> alarms = new ArrayList<>();
 
         AlarmHandler() {
             // shouldn't be used outside of this package.
@@ -524,9 +524,9 @@ public class SonosXMLParser {
 
     private static class ZoneGroupHandler extends DefaultHandler {
 
-        private final List<SonosZoneGroup> groups = new ArrayList<SonosZoneGroup>();
-        private final List<String> currentGroupPlayers = new ArrayList<String>();
-        private final List<String> currentGroupPlayerZones = new ArrayList<String>();
+        private final List<SonosZoneGroup> groups = new ArrayList<>();
+        private final List<String> currentGroupPlayers = new ArrayList<>();
+        private final List<String> currentGroupPlayerZones = new ArrayList<>();
         private String coordinator;
         private String groupId;
 
@@ -563,7 +563,7 @@ public class SonosXMLParser {
         }
 
         private Set<String> getAllHomeTheaterMembers(String homeTheaterDescription) {
-            Set<String> homeTheaterMembers = new HashSet<String>();
+            Set<String> homeTheaterMembers = new HashSet<>();
             Matcher matcher = Pattern.compile("(RINCON_\\w+)").matcher(homeTheaterDescription);
             while (matcher.find()) {
                 String member = matcher.group();
@@ -596,7 +596,7 @@ public class SonosXMLParser {
         // </body>
         // </opml>
 
-        private final List<String> textFields = new ArrayList<String>();
+        private final List<String> textFields = new ArrayList<>();
         private String textField;
         private String type;
         // private String logo;
@@ -678,7 +678,7 @@ public class SonosXMLParser {
          * </Event>
          */
 
-        private final Map<String, String> changes = new HashMap<String, String>();
+        private final Map<String, String> changes = new HashMap<>();
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
@@ -790,7 +790,7 @@ public class SonosXMLParser {
 
     private static class RenderingControlEventHandler extends DefaultHandler {
 
-        private final Map<String, String> changes = new HashMap<String, String>();
+        private final Map<String, String> changes = new HashMap<>();
 
         private boolean getPresetName = false;
         private String presetName;
@@ -837,7 +837,7 @@ public class SonosXMLParser {
 
     private static class MusicServiceHandler extends DefaultHandler {
 
-        private final List<SonosMusicService> services = new ArrayList<SonosMusicService>();
+        private final List<SonosMusicService> services = new ArrayList<>();
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -25,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Björn Brings - Initial contribution
  */
-
+@NonNullByDefault
 public class ValloxMVBindingConstants {
 
     private static final String BINDING_ID = "valloxmv";
@@ -167,17 +168,96 @@ public class ValloxMVBindingConstants {
     public static final String CHANNEL_BOOST_AIR_TEMP_TARGET = "boostairtemptarget";
 
     /**
+     * Timer value setting in minutes of boost profile (1-65535).
+     */
+    public static final String CHANNEL_BOOST_TIME = "boosttime";
+
+    /**
+     * Timer enabled setting in boost profile (Enabled = 1, Disabled = 0).
+     */
+    public static final String CHANNEL_BOOST_TIMER_ENABLED = "boosttimerenabled";
+
+    /**
+     * Fireplace profile extract fan speed setting in % (0-100).
+     */
+    public static final String CHANNEL_FIREPLACE_EXTR_FAN = "fireplaceextrfan";
+
+    /**
+     * Fireplace profile supply fan speed setting in % (0-100).
+     */
+    public static final String CHANNEL_FIREPLACE_SUPP_FAN = "fireplacesuppfan";
+
+    /**
+     * Timer value setting in minutes of fireplace profile (1-65535).
+     */
+    public static final String CHANNEL_FIREPLACE_TIME = "fireplacetime";
+
+    /**
+     * Timer enabled setting in fireplace profile (Enabled = 1, Disabled = 0).
+     */
+    public static final String CHANNEL_FIREPLACE_TIMER_ENABLED = "fireplacetimerenabled";
+
+    /**
+     * Programmable profile enabled
+     * Not sure if this is needed at all, Vallox modbus document does not list this.
+     */
+    // public static final String CHANNEL_EXTRA_ENABLED = "extraenabled";
+
+    /**
+     * Target temperature in programmable profile.
+     */
+    public static final String CHANNEL_EXTRA_AIR_TEMP_TARGET = "extraairtemptarget";
+
+    /**
+     * Programmable profile extract fan speed setting in % (0-100).
+     */
+    public static final String CHANNEL_EXTRA_EXTR_FAN = "extraextrfan";
+
+    /**
+     * Programmable profile supply fan speed setting in % (0-100).
+     */
+    public static final String CHANNEL_EXTRA_SUPP_FAN = "extrasuppfan";
+
+    /**
+     * Timer value setting in minutes of programmable profile (1-65535).
+     */
+    public static final String CHANNEL_EXTRA_TIME = "extratime";
+
+    /**
+     * Timer enabled setting in programmable profile (Enabled = 1, Disabled = 0).
+     */
+    public static final String CHANNEL_EXTRA_TIMER_ENABLED = "extratimerenabled";
+
+    /**
+     * Weekly Timer enabled setting (Enabled = 1, Disabled = 0).
+     */
+    public static final String CHANNEL_WEEKLY_TIMER_ENABLED = "weeklytimerenabled";
+
+    /**
+     * Set of writable channels that are Switches
+     */
+    public static final Set<String> WRITABLE_CHANNELS_SWITCHES = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_ONOFF, CHANNEL_BOOST_TIMER_ENABLED,
+                    CHANNEL_FIREPLACE_TIMER_ENABLED, CHANNEL_EXTRA_TIMER_ENABLED, CHANNEL_WEEKLY_TIMER_ENABLED)));
+
+    /**
+     *
      * Set of writable channels that are dimensionless
      */
-    public final static Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections.unmodifiableSet(
-            new HashSet<String>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,
-                    CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING, CHANNEL_BOOST_SPEED_SETTING)));
+    public static final Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,
+                    CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING, CHANNEL_BOOST_SPEED_SETTING,
+                    CHANNEL_BOOST_TIME, CHANNEL_BOOST_TIMER_ENABLED, CHANNEL_FIREPLACE_EXTR_FAN,
+                    CHANNEL_FIREPLACE_SUPP_FAN, CHANNEL_FIREPLACE_TIME, CHANNEL_FIREPLACE_TIMER_ENABLED,
+                    CHANNEL_EXTRA_EXTR_FAN, CHANNEL_EXTRA_SUPP_FAN, CHANNEL_EXTRA_TIME, CHANNEL_EXTRA_TIMER_ENABLED,
+                    CHANNEL_WEEKLY_TIMER_ENABLED)));
 
     /**
      * Set of writable channels that are temperatures
      */
-    public final static Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections.unmodifiableSet(new HashSet<String>(
-            Arrays.asList(CHANNEL_HOME_AIR_TEMP_TARGET, CHANNEL_AWAY_AIR_TEMP_TARGET, CHANNEL_BOOST_AIR_TEMP_TARGET)));
+    public static final Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_HOME_AIR_TEMP_TARGET, CHANNEL_AWAY_AIR_TEMP_TARGET,
+                    CHANNEL_BOOST_AIR_TEMP_TARGET, CHANNEL_EXTRA_AIR_TEMP_TARGET)));
 
     // Thing configuration
     /**

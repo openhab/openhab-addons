@@ -37,7 +37,7 @@ public class RioFavorite {
     /**
      * The favorite name
      */
-    private final AtomicReference<String> name = new AtomicReference<String>(null);
+    private final AtomicReference<String> name = new AtomicReference<>(null);
 
     /**
      * Simply creates the favorite from the given ID. The favorite will not be valid and the name will default to

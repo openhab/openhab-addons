@@ -134,7 +134,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         deviceHistoryHandler = new DeviceHistoryHandler(deviceRegistry, persistenceServiceRegistry);
 
         try {
-            Dictionary<String, String> servletParams = new Hashtable<String, String>();
+            Dictionary<String, String> servletParams = new Hashtable<>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
             logger.info("Started ImperiHome integration service at " + PATH);
         } catch (Exception e) {
