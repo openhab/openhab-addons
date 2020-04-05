@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class HostHandler extends APIConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
     private @NonNullByDefault({}) HostConfiguration config;
+    protected String ipAddress = "";
 
     public HostHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -65,6 +66,7 @@ public class HostHandler extends APIConsumerHandler {
         LanHost lanHost = getApiManager().execute(new APIRequests.LanHost(config.macAddress));
         updateChannelOnOff(CONNECTIVITY, REACHABLE, lanHost.isReachable());
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, lanHost.getLastSeen());
+        ipAddress = lanHost.getIpv4();
     }
 
     public void wol() {

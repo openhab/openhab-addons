@@ -16,6 +16,8 @@ import static org.eclipse.smarthome.core.audio.AudioFormat.*;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,11 +43,15 @@ import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.freebox.internal.action.PlayerActions;
 import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.AirMediaActionData.MediaAction;
@@ -69,6 +76,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PlayerHandler extends HostHandler implements AudioSink {
+    private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(300);
     private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Collections.singleton(AudioStream.class);
     private static final Set<AudioFormat> BASIC_FORMATS = Collections
             .unmodifiableSet(Stream.of(WAV, OGG).collect(Collectors.toSet()));
@@ -83,12 +91,18 @@ public class PlayerHandler extends HostHandler implements AudioSink {
                             new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 256000, null),
                             new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 320000, null))
                     .collect(Collectors.toSet()));
+    private static final Set<String> VALID_REMOTE_KEYS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList("red", "green", "blue", "yellow", "power", "list", "tv", "0",
+                    "1", "2", "3", "4", "5", "6", "7", "8", "9", "vol_inc", "vol_dec", "mute", "prgm_inc", "prgm_dec",
+                    "prev", "bwd", "play", "rec", "fwd", "next", "up", "right", "down", "left", "back", "swap", "info",
+                    "epg", "mail", "media", "help", "options", "pip", "ok", "home")));
 
     private final Logger logger = LoggerFactory.getLogger(PlayerHandler.class);
     private final AudioHTTPServer audioHTTPServer;
     private final @Nullable String callbackUrl;
     private final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
     private String playerName = "";
+    private String baseAddress = "";
     private @NonNullByDefault({}) PlayerConfiguration configuration;
 
     public PlayerHandler(Thing thing, TimeZoneProvider timeZoneProvider, AudioHTTPServer audioHTTPServer,
@@ -122,18 +136,30 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     }
 
     @Override
+    protected void internalPoll() throws FreeboxException {
+        super.internalPoll();
+        if (bridgeHandler.getNetworkMode() != NetworkMode.BRIDGE) {
+            AirMediaConfig response = bridgeHandler.getApiManager().execute(new APIRequests.GetAirMediaConfig());
+            updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, response.isEnabled());
+        } else {
+            updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, false);
+        }
+        baseAddress = String.format("http://%s/pub/remote_control?code=%s&key=", ipAddress, configuration.remoteCode);
+    }
+
+    @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
+        if (AIRMEDIA_STATUS.equals(channelUID.getIdWithoutGroup()) && (command instanceof OnOffType
+                || command instanceof OpenClosedType || command instanceof UpDownType)) {
             boolean enable = command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
                     || command.equals(OpenClosedType.OPEN);
-            switch (channelUID.getIdWithoutGroup()) {
-                case AIRMEDIA_STATUS:
-                    updateState(new ChannelUID(getThing().getUID(), PLAYER_ACTIONS, AIRMEDIA_STATUS),
-                            OnOffType.from(enableAirMedia(enable)));
-                    return true;
-            }
-
+            updateState(new ChannelUID(getThing().getUID(), PLAYER_ACTIONS, AIRMEDIA_STATUS),
+                    OnOffType.from(enableAirMedia(enable)));
+            return true;
+        } else if (KEY_CODE.equals(channelUID.getIdWithoutGroup()) && command instanceof StringType) {
+            sendKey(command.toString(), false, 1);
         }
+
         return super.internalHandleCommand(channelUID, command);
     }
 
@@ -225,15 +251,37 @@ public class PlayerHandler extends HostHandler implements AudioSink {
         logger.info("setVolume received but AirMedia does not have the capability - ignoring it.");
     }
 
-    @Override
-    protected void internalPoll() throws FreeboxException {
-        super.internalPoll();
-        if (bridgeHandler.getNetworkMode() != NetworkMode.BRIDGE) {
-            AirMediaConfig response = bridgeHandler.getApiManager().execute(new APIRequests.GetAirMediaConfig());
-            updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, response.isEnabled());
+    public void sendKey(String key, boolean longPress, int count) {
+        String aKey = key.toLowerCase();
+        if (VALID_REMOTE_KEYS.contains(aKey)) {
+            StringBuilder urlBuilder = new StringBuilder(baseAddress);
+            urlBuilder.append(aKey);
+            if (longPress) {
+                urlBuilder.append("&long=true");
+            }
+            if (count > 1) {
+                urlBuilder.append(String.format("&repeat=%d", count));
+            }
+            String url = urlBuilder.toString();
+            try {
+                HttpUtil.executeUrl("GET", url, null, null, null, HTTP_CALL_DEFAULT_TIMEOUT_MS);
+            } catch (IOException e) {
+                logger.warn("Error calling Player url {} : {}", url, e);
+            }
         } else {
-            updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, false);
+            logger.info("Key '{}' is not a valid key expression", key);
         }
+
+    }
+
+    public void sendMultipleKeys(String keys) {
+        String[] keyChain = keys.split(",");
+        Arrays.stream(keyChain).forEach(key -> sendKey(key, false, 1));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(PlayerActions.class);
     }
 
 }

@@ -110,6 +110,7 @@ public class FreeboxBindingConstants {
     // Freebox player channels
     public static final String AIRMEDIA_STATUS = "airmedia-status";
     public static final String UPNPAV_STATUS = "upnpav-status";
+    public static final String KEY_CODE = "key-code";
 
     // Virtual machine channels
     public static final String STATUS = "status";

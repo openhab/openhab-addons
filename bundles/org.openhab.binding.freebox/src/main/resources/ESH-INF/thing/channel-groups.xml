@@ -191,6 +191,7 @@
 		<label>Player settings</label>
 		<channels>
 			<channel id="airmedia-status" typeId="airmedia-status" />
+			<channel id="key-code" typeId="key-code" />
 		</channels>
 	</channel-group-type>
 

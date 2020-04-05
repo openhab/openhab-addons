@@ -231,70 +231,56 @@
 		<description>Triggers when an event related to the Freebox server has been detected</description>
 	</channel-type>
 
-	<channel-type id="keyCode">
+	<channel-type id="key-code">
 		<item-type>String</item-type>
 		<label>Remote Key Code</label>
 		<description>Simulates pushing a remote control button</description>
 		<state readOnly="false">
 			<options>
-				<option value="home">HOME</option>
-				<option value="MUTE">MUTE</option>
-				<option value="VOLUME_UP">VOLUME_UP</option>
-				<option value="PREV_TRACK">VOLUME_DOWN</option>
-				<option value="NEXT_TRACK">CHANNEL_UP</option>
-				<option value="THUMBS_UP">CHANNEL_DOWN</option>
-				<option value="THUMBS_DOWN">OK</option>
-				<option value="BOOKMARK">YELLOW</option>
-				<option value="POWER">Power</option>
-				<option value="MUTE">Mute</option>
-				<option value="VOLUME_UP">NUMBER_1</option>
-				<option value="VOLUME_DOWN">NUMBER_2</option>
-				<option value="PRESET_1">Preset 1</option>
-				<option value="PRESET_2">Preset 2</option>
-				<option value="PRESET_3">Preset 3</option>
-				<option value="PRESET_4">Preset 4</option>
-				<option value="PRESET_5">Preset 5</option>
-				<option value="PRESET_6">Preset 6</option>
-				<option value="AUX_INPUT">AUX Input</option>
-				<option value="SHUFFLE_OFF">Shuffle Off</option>
-				<option value="SHUFFLE_ON">Shuffle On</option>
-				<option value="REPEAT_OFF">Repeat Off</option>
-				<option value="REPEAT_ONE">Repeat One</option>
-				<option value="REPEAT_ALL">Repeat All</option>
-				<option value="PLAY_PAUSE">Play/Pause</option>
-				<option value="ADD_FAVORITE">Add Favorite</option>
-				<option value="REMOVE_FAVORITE">Remove Favorite</option>
+				<option value="red">Red</option>
+				<option value="green">Green</option>
+				<option value="blue">Blue</option>
+				<option value="yellow">Yellow</option>
+				<option value="power">On/Off</option>
+				<option value="list">List</option>
+				<option value="tv">TV</option>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="vol_inc">Volume Up</option>
+				<option value="vol_dec">Volume Down</option>
+				<option value="mute">Mute</option>
+				<option value="prgm_inc">Prog Up</option>
+				<option value="prgm_dec">Prog Down</option>
+				<option value="prev">Previous</option>
+				<option value="bwd">Backward</option>
+				<option value="play">Play/Pause</option>
+				<option value="rec">Record</option>
+				<option value="fwd">Forward</option>
+				<option value="next">Next</option>
+				<option value="up">Up</option>
+				<option value="right">Right</option>
+				<option value="down">Down</option>
+				<option value="left">Left</option>
+				<option value="back">Back</option>
+				<option value="swap">Swap</option>
+				<option value="info">Info</option>
+				<option value="epg">EPG</option>
+				<option value="mail">Mail</option>
+				<option value="media">Media</option>
+				<option value="help">Help</option>
+				<option value="options">Options</option>
+				<option value="pip">PIP</option>
+				<option value="ok">OK</option>
+				<option value="home">Home</option>
 			</options>
-    private static final String HOME = "home";
-    private static final String MUTE = "mute";
-    private static final String VOLUME_UP = "vol_inc";
-    private static final String VOLUME_DOWN = "vol_dec";
-    private static final String CHANNEL_UP = "prgm_inc";
-    private static final String CHANNEL_DOWN = "prgm_dec";
-    private static final String OK = "ok";
-    private static final String YELLOW = "yellow";
-    private static final String POWER = "power";
-    private static final String NUMBER_1 = "1";
-    private static final String NUMBER_2 = "2";
-    private static final String NUMBER_3 = "3";
-    private static final String NUMBER_4 = "4";
-    private static final String NUMBER_5 = "5";
-    private static final String NUMBER_6 = "6";
-    private static final String NUMBER_7 = "7";
-    private static final String NUMBER_8 = "8";
-    private static final String NUMBER_9 = "9";
-    private static final String NUMBER_0 = "0";
-    private static final String UP = "up";
-    private static final String DOWN = "down";
-    private static final String LEFT = "left";
-    private static final String RIGHT = "right";
-    private static final String RED = "red";
-    private static final String BLUE = "blue";
-    private static final String GREEN = "green";
-    private static final String RECORD = "rec";
-    private static final String BACKWARD = "bwd";
-    private static final String FORWARD = "fwd";
-    private static final String PLAYNPAUSE = "play";
 		</state>
 	</channel-type>
 

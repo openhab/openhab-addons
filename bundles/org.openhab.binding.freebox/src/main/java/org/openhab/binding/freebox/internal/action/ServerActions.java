@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {FreeboxServerActions } class is responsible to call corresponding
+ * The {ServerActions} class is responsible to call corresponding
  * actions on Freebox Server
  *
  * @author Gaël L'hopital - Initial contribution
