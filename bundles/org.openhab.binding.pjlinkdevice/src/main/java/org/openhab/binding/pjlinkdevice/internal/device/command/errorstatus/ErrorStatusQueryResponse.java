@@ -55,7 +55,7 @@ public class ErrorStatusQueryResponse extends
                 }
             }
 
-            throw new ResponseException("Cannot understand status: " + code);
+            throw new ResponseException("Cannot understand error status: " + code);
         }
     }
 
