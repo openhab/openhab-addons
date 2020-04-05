@@ -14,10 +14,10 @@ package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -116,7 +116,7 @@ public abstract class BluetoothDevice {
     /**
      * List of supported services
      */
-    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<>();
+    protected final Map<UUID, BluetoothService> supportedServices = new ConcurrentHashMap<>();
 
     /**
      * Last known RSSI
@@ -605,7 +605,10 @@ public abstract class BluetoothDevice {
      *
      * @param listener the {@link BluetoothDeviceListener} to remove
      */
-    public void removeListener(BluetoothDeviceListener listener) {
+    public void removeListener(@Nullable BluetoothDeviceListener listener) {
+        if (listener == null) {
+            return;
+        }
         eventListeners.remove(listener);
     }
 

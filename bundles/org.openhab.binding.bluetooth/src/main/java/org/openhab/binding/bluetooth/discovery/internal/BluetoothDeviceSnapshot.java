@@ -90,7 +90,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDevice {
     }
 
     @Override
-    public void removeListener(BluetoothDeviceListener listener) {
+    public void removeListener(@Nullable BluetoothDeviceListener listener) {
         delegate.removeListener(listener);
     }
 

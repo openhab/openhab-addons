@@ -176,12 +176,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     @Override
     public BD getDevice(BluetoothAddress address) {
         synchronized (devices) {
-            if (devices.containsKey(address)) {
-                return devices.get(address);
-            }
-            BD device = createDevice(address);
-            devices.put(address, device);
-            return device;
+            return devices.computeIfAbsent(address, this::createDevice);
         }
     }
 

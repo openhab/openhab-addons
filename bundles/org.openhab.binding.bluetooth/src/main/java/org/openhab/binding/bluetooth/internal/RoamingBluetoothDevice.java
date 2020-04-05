@@ -38,7 +38,7 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
 
     private Map<BluetoothDevice, Listener> devices = new ConcurrentHashMap<>();
 
-    private @Nullable BluetoothDevice currentDelegate = null;
+    private volatile @Nullable BluetoothDevice currentDelegate = null;
 
     protected RoamingBluetoothDevice(RoamingBluetoothBridgeHandler roamingAdapter, BluetoothAddress address) {
         super(roamingAdapter, address);
@@ -106,6 +106,18 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
         return delegate != null ? delegate.getRssi() : null;
     }
 
+    @Override
+    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null && delegate.readCharacteristic(characteristic);
+    }
+
+    @Override
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null && delegate.writeCharacteristic(characteristic);
+    }
+
     private @Nullable BluetoothDevice getDelegate() {
         BluetoothDevice newDelegate = null;
         int newRssi = Integer.MIN_VALUE;
@@ -163,6 +175,7 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
 
         @Override
         public void onServicesDiscovered() {
+            device.getServices().forEach(RoamingBluetoothDevice.this::addService);
             if (device == getDelegate()) {
                 notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
             }

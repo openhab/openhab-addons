@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -39,9 +40,7 @@ import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
  */
 @NonNullByDefault
 public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
-        implements BluetoothAdapter, BluetoothDiscoveryListener, RoamingBluetoothAdapter {
-
-    private static final BluetoothAddress ROAMING_ADAPTER_ADDRESS = new BluetoothAddress("FF:FF:FF:FF:FF:FF");
+        implements RoamingBluetoothAdapter, BluetoothDiscoveryListener {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
 
@@ -51,12 +50,22 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
      */
     private Map<BluetoothAddress, RoamingBluetoothDevice> devices = new HashMap<>();
 
+    // Our BT address
+    private @NonNullByDefault({}) BluetoothAddress adapterAddress;
+
     public RoamingBluetoothBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
     public void initialize() {
+        Object address = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
+        if (address != null) {
+            adapterAddress = new BluetoothAddress(address.toString());
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
+            return;
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -141,7 +150,7 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
 
     @Override
     public BluetoothAddress getAddress() {
-        return ROAMING_ADAPTER_ADDRESS;
+        return adapterAddress;
     }
 
     @Override
