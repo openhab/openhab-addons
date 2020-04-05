@@ -264,6 +264,8 @@ Example entry:
      <description>On/Off Dual-Band Outdoor Module</description>
      <feature name="switch">GenericSwitch</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
  </device>
  
  <device productKey="F00.00.10">
@@ -420,6 +422,8 @@ Example entry:
      <feature name="manualchange">ManualChange</feature>
      <feature name="fastonoff">FastOnOff</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
  </device>
 
  <device productKey="F00.00.1A">
@@ -434,6 +438,8 @@ Example entry:
      <description>On/Off Module</description>
      <feature name="switch">GenericSwitch</feature>
      <feature name="lastheardfrom">GenericLastTime</feature>
+     <feature name="ledonoff">LEDOnOff</feature>
+     <feature name="beep">Beep</feature>
  </device>
  
   <device productKey="F00.00.1C">
