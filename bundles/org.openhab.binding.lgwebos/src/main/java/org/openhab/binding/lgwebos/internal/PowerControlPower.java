@@ -50,10 +50,12 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
              * Therefore setting state to OFF
              */
             handler.postUpdate(channelId, OnOffType.OFF);
-        } else if (!powerOn && OnOffType.OFF == command) {
-            logger.debug("Received OFF - Ignored as the TV is already off.");
-        } else if (powerOn && OnOffType.OFF == command) {
-            handler.getSocket().powerOff(getDefaultResponseListener());
+        } else if (OnOffType.OFF == command) {
+            if (powerOn) {
+                handler.getSocket().powerOff(getDefaultResponseListener());
+            } else {
+                logger.debug("Received OFF - Ignored as the TV is already off.");
+            }
         } else {
             logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
