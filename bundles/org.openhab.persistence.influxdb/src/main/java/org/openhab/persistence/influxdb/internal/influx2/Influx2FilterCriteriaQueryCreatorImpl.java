@@ -47,7 +47,7 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
                 range = range.withStop(criteria.getEndDateZoned().toInstant());
             flux = range;
         } else {
-            flux = flux.range(-100L, ChronoUnit.YEARS); //Flux needs a mandatory range
+            flux = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory range
         }
 
         if (criteria.getItemName() != null) {

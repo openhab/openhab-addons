@@ -159,16 +159,17 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     private void setPointValue(@Nullable Object value, Point point) {
-        if (value instanceof String)
+        if (value instanceof String) {
             point.addField(FIELD_VALUE_NAME, (String) value);
-        else if (value instanceof Number)
+        } else if (value instanceof Number) {
             point.addField(FIELD_VALUE_NAME, (Number) value);
-        else if (value instanceof Boolean)
+        } else if (value instanceof Boolean) {
             point.addField(FIELD_VALUE_NAME, (Boolean) value);
-        else if (value == null)
+        } else if (value == null) {
             point.addField(FIELD_VALUE_NAME, (String) null);
-        else
+        } else {
             throw new UnnexpectedConditionException("Not expected value type");
+        }
     }
 
     /**
