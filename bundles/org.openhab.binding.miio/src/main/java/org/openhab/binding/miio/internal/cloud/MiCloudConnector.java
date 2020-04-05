@@ -485,7 +485,7 @@ public class MiCloudConnector {
                     logger.trace("Could not create URI from {}", url);
                 }
             } catch (IllegalArgumentException | NullPointerException e) {
-                logger.trace("Error dumping cookies from {}: ", url, e.getMessage(), e);
+                logger.trace("Error dumping cookies from {}: {}", url, e.getMessage(), e);
             }
         }
     }
