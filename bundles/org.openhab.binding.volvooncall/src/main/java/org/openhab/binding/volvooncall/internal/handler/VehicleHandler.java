@@ -184,7 +184,7 @@ public class VehicleHandler extends BaseThingHandler {
 
             logger.debug("Trips discovered : {}", newTrips.size());
 
-            if (newTrips.size() > 0) {
+            if (!newTrips.isEmpty()) {
                 Integer newTripId = newTrips.get(newTrips.size() - 1).id;
                 if (newTripId > lastTripId) {
                     updateProperty(LAST_TRIP_ID, newTripId.toString());

@@ -526,7 +526,7 @@ public class KM200SwitchProgramServiceHandler {
             Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
             if (week != null) {
                 List<Integer> daysList = week.get(getActiveDay());
-                if (daysList.size() > 0) {
+                if (!daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
                     if (cycl <= daysList.size()) {
                         return (daysList.get(getActiveCycle() - 1));
@@ -545,7 +545,7 @@ public class KM200SwitchProgramServiceHandler {
             Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {
                 List<Integer> daysList = week.get(getActiveDay());
-                if (daysList.size() > 0) {
+                if (!daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
                     if (cycl <= daysList.size()) {
                         return (daysList.get(getActiveCycle() - 1));

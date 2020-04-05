@@ -270,7 +270,7 @@ public class EnturNoHandler extends BaseThingHandler {
     private void updateStopPlaceChannel(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (processedData.size() > 0) {
+        if (!processedData.isEmpty()) {
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case EnturNoBindingConstants.CHANNEL_STOP_ID:

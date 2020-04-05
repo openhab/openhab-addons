@@ -76,7 +76,7 @@ public class LGWebOSTVKeyboardInput {
     }
 
     public void sendDel() {
-        if (toSend.size() == 0) {
+        if (toSend.isEmpty()) {
             toSend.add(DELETE);
             if (!waiting) {
                 sendData();
@@ -101,7 +101,7 @@ public class LGWebOSTVKeyboardInput {
             uri = "ssap://com.webos.service.ime/deleteCharacters";
 
             int count = 0;
-            while (toSend.size() > 0 && toSend.get(0).equals(DELETE)) {
+            while (!toSend.isEmpty() && toSend.get(0).equals(DELETE)) {
                 toSend.remove(0);
                 count++;
             }
@@ -111,7 +111,7 @@ public class LGWebOSTVKeyboardInput {
             uri = "ssap://com.webos.service.ime/insertText";
             StringBuilder sb = new StringBuilder();
 
-            while (toSend.size() > 0 && !(toSend.get(0).equals(DELETE) || toSend.get(0).equals(ENTER))) {
+            while (!toSend.isEmpty() && !(toSend.get(0).equals(DELETE) || toSend.get(0).equals(ENTER))) {
                 String text = toSend.get(0);
                 sb.append(text);
                 toSend.remove(0);
@@ -126,7 +126,7 @@ public class LGWebOSTVKeyboardInput {
             @Override
             public void onSuccess(JsonObject response) {
                 waiting = false;
-                if (toSend.size() > 0) {
+                if (!toSend.isEmpty()) {
                     sendData();
                 }
             }
@@ -134,7 +134,7 @@ public class LGWebOSTVKeyboardInput {
             @Override
             public void onError(String error) {
                 waiting = false;
-                if (toSend.size() > 0) {
+                if (!toSend.isEmpty()) {
                     sendData();
                 }
             }

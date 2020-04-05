@@ -235,7 +235,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
             }
 
             updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
-                    status.running.size() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    !status.running.isEmpty() ? OnOffType.ON : OnOffType.OFF);
         });
     }
 
