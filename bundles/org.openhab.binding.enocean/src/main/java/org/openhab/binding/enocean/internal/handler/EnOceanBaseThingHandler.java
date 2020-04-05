@@ -126,7 +126,6 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     abstract Collection<EEPType> getEEPTypes();
 
     protected void updateChannels() {
-
         @NonNull
         List<@NonNull Channel> channelList = new LinkedList<>(this.getThing().getChannels());
         Collection<EEPType> eeps = getEEPTypes();

@@ -228,7 +228,6 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 }
             }
             return expiryDate;
-
         }
 
         return null;

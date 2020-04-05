@@ -50,13 +50,6 @@ abstract class SinopeFrame {
     protected byte[] internal_payload;
 
     /**
-     * Instantiates a new sinope frame.
-     */
-    public SinopeFrame() {
-
-    }
-
-    /**
      * Gets the command.
      *
      * @return the command

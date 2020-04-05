@@ -20,7 +20,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeAuthenticationKeyRequest.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeAuthenticationKeyRequest extends SinopeRequest {
@@ -58,9 +58,7 @@ public class SinopeAuthenticationKeyRequest extends SinopeRequest {
      */
     @Override
     public SinopeAuthenticationKeyAnswer getReplyAnswer(InputStream r) throws IOException {
-
         return new SinopeAuthenticationKeyAnswer(r);
-
     }
 
     /**

@@ -157,7 +157,6 @@ public class DeviceDescriptorXML {
      * @param con
      */
     public void load(XMLConnection con) {
-
         // Get and store the Yamaha Description XML. This will be used to detect proper element naming in other areas.
         Node descNode = tryGetDescriptor(con);
 

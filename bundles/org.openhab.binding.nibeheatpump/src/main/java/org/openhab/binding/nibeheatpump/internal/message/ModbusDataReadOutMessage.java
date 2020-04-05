@@ -51,7 +51,6 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
     }
 
     private byte[] createDataReadOutPdu(List<ModbusValue> values) {
-
         byte datalen = (byte) (values.size() * 4);
         byte msglen = (byte) (6 + datalen);
 

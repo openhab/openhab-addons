@@ -163,13 +163,12 @@ public class HueLightEntry {
      */
     @NonNullByDefault({})
     public static class Serializer implements JsonSerializer<HueLightEntry> {
-        static class HueDeviceHelper extends HueLightEntry {
 
+        static class HueDeviceHelper extends HueLightEntry {
         }
 
         @Override
         public JsonElement serialize(HueLightEntry product, Type type, JsonSerializationContext context) {
-
             product.state = StateUtils.adjustedColorStateFromItemState(product.item.getState(), product.deviceType,
                     product.lastCommand, product.lastHueChange);
             String label = product.item.getLabel();
@@ -191,7 +190,7 @@ public class HueLightEntry {
     public void updateItem(GenericItem element) {
         item = element;
         state = StateUtils.colorStateFromItemState(item.getState(), deviceType);
-        
+
         lastCommand = null;
         lastHueChange = null;
 

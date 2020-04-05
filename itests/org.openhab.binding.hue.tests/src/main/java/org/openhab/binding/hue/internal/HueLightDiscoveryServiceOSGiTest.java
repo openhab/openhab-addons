@@ -150,7 +150,6 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
 
     @Test
     public void startSearchIsCalled() {
-
         final AtomicBoolean searchHasBeenTriggered = new AtomicBoolean(false);
 
         MockedHttpClient mockedHttpClient = new MockedHttpClient() {

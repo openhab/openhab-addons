@@ -124,7 +124,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         if (poller != null) {
             thingProvider.remove(poller.getUID());
         }
-
     }
 
     @Test
@@ -182,7 +181,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
             @Override
             public void describeTo(Description description) {
-
             }
         };
     }
@@ -236,7 +234,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
             protected boolean matchesSafely(PollTask item) {
                 callbackRef.set(item.getCallback());
                 return checkPollTask(item, ModbusReadFunctionCode.READ_COILS);
-
             }
         }), eq(150l), eq(0L));
         verifyNoMoreInteractions(mockedModbusManager);
@@ -258,12 +255,10 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
             protected boolean matchesSafely(PollTask item) {
                 assertThat(item.getCallback(), is(sameInstance(callbackRef.get())));
                 return checkPollTask(item, ModbusReadFunctionCode.READ_COILS);
-
             }
         }));
 
         verifyNoMoreInteractions(mockedModbusManager);
-
     }
 
     @Test
@@ -282,7 +277,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.BRIDGE_OFFLINE)));
 
         verifyNoMoreInteractions(mockedModbusManager);
-
     }
 
     @Test
@@ -715,6 +709,5 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verify(mockedModbusManager, never()).submitOneTimePoll(any());
         thingHandler.refresh();
         verify(mockedModbusManager).submitOneTimePoll(any());
-
     }
 }

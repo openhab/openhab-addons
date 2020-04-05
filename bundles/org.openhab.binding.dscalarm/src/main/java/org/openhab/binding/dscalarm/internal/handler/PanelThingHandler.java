@@ -413,7 +413,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
      * @param dscAlarmCode
      */
     private void restorePartitionsInAlarm(DSCAlarmCode dscAlarmCode) {
-
         logger.debug("restorePartitionsInAlarm(): DSC Alarm Code: {}!", dscAlarmCode.toString());
 
         ChannelUID channelUID = null;

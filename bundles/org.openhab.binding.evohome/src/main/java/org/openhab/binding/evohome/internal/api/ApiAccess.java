@@ -91,7 +91,6 @@ public class ApiAccess {
      */
     public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
             String contentType, Class<TOut> outClass) throws TimeoutException {
-
         TOut retVal = null;
         logger.debug("Requesting: [{}]", url);
 
@@ -166,7 +165,6 @@ public class ApiAccess {
      */
     private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
             Class<TOut> outClass) throws TimeoutException {
-
         String json = null;
         if (requestContainer != null) {
             json = this.gson.toJson(requestContainer);

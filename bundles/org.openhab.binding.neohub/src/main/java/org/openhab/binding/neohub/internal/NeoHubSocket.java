@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.neohub.internal;
 
-import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
-
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.TCP_SOCKET_TIMEOUT;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -29,10 +27,10 @@ import org.slf4j.LoggerFactory;
 /**
  * NeoHubConnector handles the ASCII based communication via TCP between openHAB
  * and NeoHub
- * 
+ *
  * @author Sebastian Prehn - Initial contribution
  * @author Andrew Fiddian-Green - Refactoring for openHAB v2.x
- * 
+ *
  */
 public class NeoHubSocket {
 
@@ -55,11 +53,11 @@ public class NeoHubSocket {
 
     /**
      * sends the message over the network to the NeoHub and returns its response
-     * 
+     *
      * @param request the message to be sent to the NeoHub
      * @return response received from NeoHub
      * @throws IOException, RuntimeException
-     * 
+     *
      */
     public String sendMessage(final String request) throws IOException, NeoHubException {
         try (Socket socket = new Socket()) {
@@ -70,13 +68,12 @@ public class NeoHubSocket {
             socket.setSoTimeout(TCP_SOCKET_TIMEOUT * 1000);
 
             try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
-                 OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
-
+                    OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("sending {} characters..", request.length());
                     logger.debug(">> {}", request);
                 }
-                
+
                 writer.write(request);
                 writer.write(0); // NULL terminate the command string
                 writer.flush();
@@ -84,7 +81,7 @@ public class NeoHubSocket {
                 if (logger.isTraceEnabled()) {
                     logger.trace("sent {} characters..", request.length());
                 }
-                
+
                 StringBuilder builder = new StringBuilder();
                 int inChar;
                 while ((inChar = reader.read()) > 0) { // NULL termination & end of stream (-1)

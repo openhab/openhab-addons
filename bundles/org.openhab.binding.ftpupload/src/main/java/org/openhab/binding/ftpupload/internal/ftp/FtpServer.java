@@ -87,7 +87,6 @@ public class FtpServer {
 
     public synchronized void addAuthenticationCredentials(String username, String password)
             throws IllegalArgumentException {
-
         FTPUserManager.addAuthenticationCredentials(username, password);
     }
 
@@ -191,7 +190,6 @@ public class FtpServer {
         @Override
         public FtpletResult onUploadEnd(final FtpSession session, final FtpRequest request)
                 throws FtpException, IOException {
-
             String userRoot = session.getUser().getHomeDirectory();
             String currDir = session.getFileSystemView().getWorkingDirectory().getAbsolutePath();
             String fileName = request.getArgument();

@@ -100,7 +100,6 @@ public class DeviceInspector {
             byte[] elements = getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.OBJECT_TYPE, 0, 1, false,
                     OPERATION_TIMEOUT);
             if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
-
                 Thread.sleep(OPERATION_INTERVAL);
                 String ManufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
                         DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));

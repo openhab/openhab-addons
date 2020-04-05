@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.junit.Test;
-import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
-import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import static org.junit.Assert.assertTrue;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertTrue;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
+import org.junit.Test;
+import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 
 /**
  * Unit test for {@link DeviceInformationXML}.
@@ -41,8 +41,8 @@ public class DeviceInformationXMLTest extends AbstractXMLProtocolTest {
     }
 
     @Test
-    public void when_HTR4069_then_detects_featureZoneB_and_addsZone2() throws IOException, ReceivedMessageParseException {
-
+    public void when_HTR4069_then_detects_featureZoneB_and_addsZone2()
+            throws IOException, ReceivedMessageParseException {
         // arrange
         ctx.prepareForModel("HTR-4069");
 
@@ -55,8 +55,8 @@ public class DeviceInformationXMLTest extends AbstractXMLProtocolTest {
     }
 
     @Test
-    public void when_RXV3900_then_detects_features_and_zones_from_descriptor() throws IOException, ReceivedMessageParseException {
-
+    public void when_RXV3900_then_detects_features_and_zones_from_descriptor()
+            throws IOException, ReceivedMessageParseException {
         // arrange
         ctx.prepareForModel("RX-V3900");
 
@@ -67,6 +67,5 @@ public class DeviceInformationXMLTest extends AbstractXMLProtocolTest {
         assertTrue("Zones detected", state.zones.containsAll(Arrays.asList(Main_Zone, Zone_2, Zone_3)));
         assertTrue("Features detected", state.features.containsAll(Arrays.asList(TUNER, BLUETOOTH)));
     }
-
 
 }

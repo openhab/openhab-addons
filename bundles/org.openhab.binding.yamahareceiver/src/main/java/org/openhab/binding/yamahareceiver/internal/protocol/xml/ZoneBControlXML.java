@@ -31,7 +31,6 @@ public class ZoneBControlXML extends ZoneControlXML {
 
     public ZoneBControlXML(AbstractConnection con, YamahaZoneConfig zoneSettings, ZoneControlStateListener observer,
             DeviceInformationState deviceInformationState, Supplier<InputConverter> inputConverterSupplier) {
-
         // Commands will need to be send to Main_Zone
         super(con, Zone.Main_Zone, zoneSettings, observer, deviceInformationState, inputConverterSupplier);
 

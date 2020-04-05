@@ -429,7 +429,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
-
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             Object[] args = new Object[4];
             args[0] = protocol + UID;

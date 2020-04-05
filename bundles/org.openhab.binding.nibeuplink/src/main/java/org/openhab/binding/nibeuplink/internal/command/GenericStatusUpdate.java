@@ -53,7 +53,6 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         Fields fields = new Fields();
         fields.add(DATA_API_FIELD_LAST_DATE, DATA_API_FIELD_LAST_DATE_DEFAULT_VALUE);
         fields.add(DATA_API_FIELD_ID, config.getNibeId());
@@ -93,9 +92,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
                 listener.update(getCommunicationStatus());
             }
             handler.getWebInterface().enqueueCommand(this);
-
         } else {
-
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);

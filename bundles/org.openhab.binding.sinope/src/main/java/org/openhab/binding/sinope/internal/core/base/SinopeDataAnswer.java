@@ -21,7 +21,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeDataAnswer.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public abstract class SinopeDataAnswer extends SinopeAnswer {
@@ -59,7 +59,6 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
         byte[] data = getData();
         this.appData = appData;
         this.appData.read(data);
-
     }
 
     /**

@@ -242,7 +242,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                     break;
             }
         }
-
     }
 
     private boolean isControl(ChannelUID channelUID) {

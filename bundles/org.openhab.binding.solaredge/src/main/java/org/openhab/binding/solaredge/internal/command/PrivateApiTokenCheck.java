@@ -34,7 +34,6 @@ public class PrivateApiTokenCheck extends AbstractCommandCallback implements Sol
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         // as a token is used no real login is to be done here. It is just checked if a protected page can be retrieved
         // and therefore the token is valid.
         requestToPrepare.followRedirects(false);

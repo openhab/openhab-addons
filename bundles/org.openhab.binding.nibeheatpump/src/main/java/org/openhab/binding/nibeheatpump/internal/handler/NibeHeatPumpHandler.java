@@ -81,7 +81,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private final Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-
             if (!configuration.enableReadCommands) {
                 logger.trace("All read commands denied, skip polling!");
                 return;
@@ -95,11 +94,9 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             for (int item : items) {
                 if (connector != null && connector.isConnected()
                         && getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
-
                     CacheObject oldValue = stateMap.get(item);
                     if (oldValue == null
                             || (oldValue.lastUpdateTime + refreshIntervalMillis()) < System.currentTimeMillis()) {
-
                         // it's time to refresh data
                         logger.debug("Time to refresh variable '{}' data", item);
 
@@ -450,7 +447,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private synchronized NibeHeatPumpCommandResult sendMessageToNibe(NibeHeatPumpMessage msg)
             throws NibeHeatPumpException {
-
         logger.debug("Sending message: {}", msg);
         connector.sendDatagram(msg);
         return new NibeHeatPumpCommandResult();

@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_HUMIDITY;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_TEMPERATURE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_FAN_LEVEL;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MASTER_SWITCH;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_SWING_MODE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TIMER;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -182,7 +175,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                         break;
                     default:
                         logger.debug("Received command on unknown channel {}, ignoring", channelUID.getId());
-
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -420,7 +412,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
      * Package private in order to be reachable from unit test
      */
     StateChange checkStateChangeValid(SensiboSky sensiboSky, String property, Object newPropertyValue) {
-
         StateChange stateChange = new StateChange(newPropertyValue);
 
         sensiboSky.getCurrentModeCapabilities().ifPresent(currentModeCapabilities -> {

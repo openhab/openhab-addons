@@ -108,7 +108,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
     private final Map<Class<? extends Type>, String> defaultDptMap;
 
     public KNXCoreTypeMapper() {
-
         @SuppressWarnings("unused")
         final List<Class<?>> xlators = Arrays.<Class<?>> asList(DPTXlator1BitControlled.class,
                 DPTXlator2ByteFloat.class, DPTXlator2ByteUnsigned.class, DPTXlator3BitControlled.class,
@@ -573,7 +572,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
     @Override
     public String toDPTValue(Type type, String dptID) {
-
         DPT dpt;
         int mainNumber = getMainNumber(dptID);
         if (mainNumber == -1) {

@@ -308,7 +308,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         // if this is a dynamic type, then we update the type
         ThingTypeUID typeID = thing.getThingTypeUID();
         if (!MqttBindingConstants.HOMEASSISTANT_MQTT_THING.equals(typeID)) {
-
             List<ChannelGroupDefinition> groupDefs;
             List<ChannelDefinition> channelDefs;
             synchronized (haComponents) { // sync whenever discoverComponents is started

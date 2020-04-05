@@ -144,7 +144,6 @@ public class HomieThingHandlerTests {
 
         // We are by default online
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
-
     }
 
     @Test

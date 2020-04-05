@@ -185,7 +185,6 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
-
     }
 
     protected YamahaBridgeHandler getBridgeHandler() {

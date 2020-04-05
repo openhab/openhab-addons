@@ -47,15 +47,12 @@ public class SmlFileDebugOutput {
      *            the SML file
      */
     public static void printFile(SmlFile smlFile, Consumer<String> consumer) {
-
         List<SmlMessage> smlMessages = smlFile.getMessages();
 
         for (SmlMessage smlMessage : smlMessages) {
-
             EMessageBody messageBody = smlMessage.getMessageBody().getTag();
 
             switch (messageBody) {
-
                 case OPEN_REQUEST:
                     parseOpenRequest(smlMessage, consumer);
                     break;

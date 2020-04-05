@@ -55,7 +55,6 @@ public class LiveDataResponseMeterless implements DataResponse {
         Map<Channel, State> valueMap = new HashMap<>();
 
         if (overview != null) {
-
             if (overview.currentPower != null) {
                 assignValue(valueMap, LiveDataChannels.PRODUCTION, overview.currentPower.power, SmartHomeUnits.WATT);
             } else {
@@ -85,7 +84,6 @@ public class LiveDataResponseMeterless implements DataResponse {
 
             // week production is not available
             assignValue(valueMap, AggregateDataChannels.WEEK_PRODUCTION, null, null);
-
         }
         return valueMap;
     }

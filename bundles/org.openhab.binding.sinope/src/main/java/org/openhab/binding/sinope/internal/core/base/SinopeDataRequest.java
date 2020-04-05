@@ -178,7 +178,6 @@ public abstract class SinopeDataRequest extends SinopeRequest {
         //
         // System.out.println(toString(bb.array()));
         return bb.array();
-
     }
 
     /**

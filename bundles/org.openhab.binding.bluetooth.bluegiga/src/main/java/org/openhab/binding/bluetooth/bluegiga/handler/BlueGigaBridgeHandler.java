@@ -648,7 +648,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
      */
     private <T extends BlueGigaResponse> T sendCommand(BlueGigaCommand command, Class<T> expectedResponse,
             boolean schedulePassiveScan) throws BlueGigaException {
-
         if (!initComplete) {
             throw new BlueGigaException("BlueGiga not initialized");
         }

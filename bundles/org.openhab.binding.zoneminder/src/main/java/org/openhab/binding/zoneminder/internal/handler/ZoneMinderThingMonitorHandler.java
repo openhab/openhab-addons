@@ -104,7 +104,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             return "";
         }
         return config.getZoneMinderId().toString();
-
     }
 
     @Override

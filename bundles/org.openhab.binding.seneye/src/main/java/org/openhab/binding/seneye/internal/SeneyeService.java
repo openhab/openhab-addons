@@ -62,7 +62,6 @@ public class SeneyeService {
                 throw new CommunicationException("Cannot start HttpClient!", e);
             }
         }
-
     }
 
     @Override
@@ -101,7 +100,6 @@ public class SeneyeService {
                 logger.debug("seneye '{}' read", this.seneyeId);
 
                 return readings;
-
             } catch (Exception se) {
                 // ok, this readout failed, swallow this error, this is a scheduled task and this is in a retry loop,
                 // so it will be retried.
@@ -110,7 +108,6 @@ public class SeneyeService {
         } while (currentTry++ < this.retry);
 
         return null;
-
     }
 
     public void initialize() throws CommunicationException, InvalidConfigurationException {

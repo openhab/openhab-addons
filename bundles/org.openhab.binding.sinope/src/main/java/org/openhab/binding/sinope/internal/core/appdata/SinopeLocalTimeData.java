@@ -14,7 +14,7 @@ package org.openhab.binding.sinope.internal.core.appdata;
 
 /**
  * The Class SinopeLocalTimeData.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeLocalTimeData extends SinopeAppData {
@@ -23,7 +23,6 @@ public class SinopeLocalTimeData extends SinopeAppData {
      * Instantiates a new sinope local time data.
      */
     public SinopeLocalTimeData() {
-
         super(new byte[] { 0x00, 0x00, 0x06, 0x00 }, new byte[] { 0, 0, 0 });
     }
 

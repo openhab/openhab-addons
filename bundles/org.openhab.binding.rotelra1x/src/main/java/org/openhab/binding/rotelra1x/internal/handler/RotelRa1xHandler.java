@@ -296,7 +296,6 @@ public class RotelRa1xHandler extends BaseThingHandler {
                 return;
             }
         }
-
     }
 
     private void sendIfPowerOn(String text) throws IOException {

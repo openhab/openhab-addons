@@ -37,14 +37,12 @@ public class NMessageTest {
 
     @Test
     public void getMessageTypeTest() {
-
         MessageType messageType = ((Message) message).getType();
         assertEquals(MessageType.N, messageType);
     }
 
     @Test
     public void getRFAddressTest() {
-
         String rfAddress = message.getRfAddress();
 
         assertEquals("0E15CC", rfAddress);

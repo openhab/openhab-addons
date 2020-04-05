@@ -57,7 +57,6 @@ public class SinopeThingsDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-
         logger.debug("Sinope Things starting scan");
         try {
             sinopeGatewayHandler.startSearch(this);

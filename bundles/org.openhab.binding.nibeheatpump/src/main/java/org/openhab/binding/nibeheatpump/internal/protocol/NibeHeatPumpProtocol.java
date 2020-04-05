@@ -43,10 +43,8 @@ public class NibeHeatPumpProtocol {
     public static final byte ADR_MODBUS40 = (byte) 0x20;
 
     public static boolean isModbus40DataReadOut(byte[] data) {
-
         if (data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40) {
-
             return data[OFFSET_CMD] == CMD_MODBUS_DATA_MSG && data[OFFSET_LEN] >= (byte) 0x50;
         }
 
@@ -54,10 +52,8 @@ public class NibeHeatPumpProtocol {
     }
 
     public static boolean isModbus40ReadResponse(byte[] data) {
-
         if (data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40) {
-
             return data[OFFSET_CMD] == CMD_MODBUS_READ_RESP && data[OFFSET_LEN] >= (byte) 0x06;
         }
 
@@ -65,9 +61,7 @@ public class NibeHeatPumpProtocol {
     }
 
     public static boolean isRmu40DataReadOut(byte[] data) {
-
         if (data[0] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00 && data[OFFSET_ADR] == ADR_RMU40) {
-
             return data[OFFSET_CMD] == CMD_RMU_DATA_MSG && data[OFFSET_LEN] >= (byte) 0x18;
         }
 
@@ -75,31 +69,26 @@ public class NibeHeatPumpProtocol {
     }
 
     public static boolean isModbus40WriteResponsePdu(byte[] data) {
-
         return data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40 && data[OFFSET_CMD] == CMD_MODBUS_WRITE_RESP;
     }
 
     public static boolean isModbus40WriteTokenPdu(byte[] data) {
-
         return data[0] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00 && data[OFFSET_ADR] == ADR_MODBUS40
                 && data[OFFSET_CMD] == CMD_MODBUS_WRITE_REQ && data[OFFSET_LEN] == 0x00;
     }
 
     public static boolean isModbus40ReadTokenPdu(byte[] data) {
-
         return data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40 && data[OFFSET_CMD] == CMD_MODBUS_READ_REQ
                 && data[OFFSET_LEN] == 0x00;
     }
 
     public static boolean isModbus40WriteRequestPdu(byte[] data) {
-
         return data[0] == FRAME_START_CHAR_TO_NIBE && data[1] == CMD_MODBUS_WRITE_REQ;
     }
 
     public static boolean isModbus40ReadRequestPdu(byte[] data) {
-
         return data[OFFSET_START] == FRAME_START_CHAR_TO_NIBE && data[1] == CMD_MODBUS_READ_REQ;
     }
 
@@ -150,7 +139,6 @@ public class NibeHeatPumpProtocol {
         // if checksum is 0x5C (start character), heat pump seems to send 0xC5 checksum
 
         if (checksum == msgChecksum || (checksum == FRAME_START_CHAR_FROM_NIBE && msgChecksum == (byte) 0xC5)) {
-
             // if data contains 0x5C (start character), data seems to contains double 0x5C characters
 
             // let's remove doubles

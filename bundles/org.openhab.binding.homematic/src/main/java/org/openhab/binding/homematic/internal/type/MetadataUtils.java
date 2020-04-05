@@ -75,7 +75,6 @@ public class MetadataUtils {
         Bundle bundle = FrameworkUtil.getBundle(MetadataUtils.class);
         try (InputStream stream = bundle.getResource("homematic/standard-datapoints.properties").openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-
             String line;
             while ((line = reader.readLine()) != null) {
                 if (StringUtils.trimToNull(line) != null && !StringUtils.startsWith(line, "#")) {

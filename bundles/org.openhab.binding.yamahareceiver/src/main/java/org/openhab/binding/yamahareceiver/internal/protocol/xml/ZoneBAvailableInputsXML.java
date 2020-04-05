@@ -29,7 +29,6 @@ public class ZoneBAvailableInputsXML extends ZoneAvailableInputsXML {
 
     public ZoneBAvailableInputsXML(AbstractConnection con, AvailableInputStateListener observer,
             Supplier<InputConverter> inputConverterSupplier) {
-
         super(con, Zone.Main_Zone, observer, inputConverterSupplier);
         this.logger = LoggerFactory.getLogger(ZoneBAvailableInputsXML.class);
     }

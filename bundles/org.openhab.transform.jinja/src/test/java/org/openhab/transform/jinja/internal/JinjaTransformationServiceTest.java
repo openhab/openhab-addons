@@ -31,7 +31,6 @@ public class JinjaTransformationServiceTest {
 
     @Test
     public void testTransformByJSon() throws TransformationException {
-
         String json = "{\"Time\":\"2019-01-05T22:45:12\",\"AM2301\":{\"Temperature\":4.7,\"Humidity\":99.9},\"TempUnit\":\"C\"}";
         // method under test
         String transformedResponse = processor.transform("{{value_json['AM2301'].Temperature}}", json);
@@ -42,7 +41,6 @@ public class JinjaTransformationServiceTest {
 
     @Test
     public void testStringOnly() throws TransformationException {
-
         String value = "world";
         // method under test
         String transformedResponse = processor.transform("Hello {{ value }}!", value);
@@ -53,7 +51,6 @@ public class JinjaTransformationServiceTest {
 
     @Test
     public void testQuotedStringOnly() throws TransformationException {
-
         String value = "\"world\"";
         // method under test
         String transformedResponse = processor.transform("Hello {{ value_json }}!", value);

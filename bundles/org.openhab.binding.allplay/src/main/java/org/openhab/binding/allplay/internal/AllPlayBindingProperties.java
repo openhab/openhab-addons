@@ -40,7 +40,6 @@ public class AllPlayBindingProperties {
     private static final String ZONE_MEMBER_SEPARATOR_DEFAULT_VALUE = ",";
 
     public AllPlayBindingProperties(Dictionary<String, Object> properties) {
-
         rewindSkipTimeInSec = getIntegerProperty(properties, REWIND_SKIP_TIME_PROPERTY, REWIND_SKIP_TIME_DEFAULT_VALUE);
         fastForwardSkipTimeInSec = getIntegerProperty(properties, FAST_FORWARD_SKIP_TIME_PROPERTY,
                 FAST_FORWARD_SKIP_TIME_DEFAULT_VALUE);

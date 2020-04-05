@@ -66,7 +66,6 @@ public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
 
     private void addMissingSettingParts(HotWaterZoneSetting setting, ZoneStateProvider zoneStateProvider,
             HotWaterCapabilities capabilities) throws IOException, ApiException {
-
         if (capabilities.isCanSetTemperature() && setting.getTemperature() == null) {
             TemperatureObject temperatureObject = getCurrentOrDefaultTemperature(zoneStateProvider);
             setting.setTemperature(temperatureObject);

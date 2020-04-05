@@ -91,7 +91,6 @@ public class SensorTests {
 
     @Test
     public void renameSensor() {
-
         assertThat(cs.ds.sensors.get("switch1").name, is("name1"));
 
         String body = "{'name':'name2'}";

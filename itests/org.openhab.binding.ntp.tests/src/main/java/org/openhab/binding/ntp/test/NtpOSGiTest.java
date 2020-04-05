@@ -209,7 +209,6 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     @Test
     public void testDateTimeChannelTimeZoneUpdate() {
-
         Configuration configuration = new Configuration();
         configuration.put(NtpBindingConstants.PROPERTY_TIMEZONE, TEST_TIME_ZONE_ID);
         initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null, null);
@@ -388,7 +387,6 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     private void initialize(Configuration configuration, String channelID, String acceptedItemType,
             Configuration channelConfiguration) {
-
         configuration.put(NtpBindingConstants.PROPERTY_NTP_SERVER_PORT, TEST_PORT);
         ThingUID ntpUid = new ThingUID(NtpBindingConstants.THING_TYPE_NTP, TEST_THING_ID);
 

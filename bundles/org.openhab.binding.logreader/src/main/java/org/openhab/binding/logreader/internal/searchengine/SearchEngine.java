@@ -84,7 +84,6 @@ public class SearchEngine {
         if (patterns != null && !patterns.isEmpty()) {
             String list[] = patterns.split("\\|");
             if (list.length > 0) {
-
                 for (String patternStr : list) {
                     patternsList.add(Pattern.compile(patternStr));
                 }

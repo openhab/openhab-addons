@@ -280,7 +280,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 builder -> builder.withConfiguration(dataConfig), context);
         assertThat(dataHandler.getThing().getStatusInfo().getDescription(), dataHandler.getThing().getStatus(),
                 is(equalTo(expectedStatus)));
-
     }
 
     @Test
@@ -804,7 +803,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
      */
     private void testInitGeneric(ModbusReadFunctionCode pollerFunctionCode, Configuration config,
             Consumer<ThingStatusInfo> statusConsumer) {
-
         int pollLength = 3;
 
         Bridge parent;
@@ -878,7 +876,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
-
     }
 
     @Test
@@ -1077,6 +1074,5 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "int16");
         dataConfig.put("writeTransform", "JS(myJsonTransform.js)");
         testInitGeneric(null, dataConfig, status -> assertThat(status.getStatus(), is(equalTo(ThingStatus.ONLINE))));
-
     }
 }

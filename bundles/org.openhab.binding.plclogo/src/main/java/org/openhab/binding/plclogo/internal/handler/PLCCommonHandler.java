@@ -246,7 +246,6 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             if ((handler != null) && (handler instanceof PLCBridgeHandler)) {
                 return (PLCBridgeHandler) handler;
             }
-
         }
         return null;
     }

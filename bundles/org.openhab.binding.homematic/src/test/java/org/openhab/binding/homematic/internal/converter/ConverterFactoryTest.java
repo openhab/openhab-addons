@@ -16,8 +16,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
-import org.openhab.binding.homematic.internal.converter.ConverterException;
-import org.openhab.binding.homematic.internal.converter.ConverterFactory;
 import org.openhab.binding.homematic.internal.converter.type.DecimalTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.OnOffTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.OpenClosedTypeConverter;
@@ -35,7 +33,6 @@ public class ConverterFactoryTest {
 
     @Test
     public void testTypesOfCreatedConverters() throws ConverterException {
-
         assertThat(ConverterFactory.createConverter("Switch"), instanceOf(OnOffTypeConverter.class));
         assertThat(ConverterFactory.createConverter("Rollershutter"), instanceOf(PercentTypeConverter.class));
         assertThat(ConverterFactory.createConverter("Dimmer"), instanceOf(PercentTypeConverter.class));
@@ -44,7 +41,6 @@ public class ConverterFactoryTest {
         assertThat(ConverterFactory.createConverter("Number"), instanceOf(DecimalTypeConverter.class));
         assertThat(ConverterFactory.createConverter("Number:Temperature"), instanceOf(QuantityTypeConverter.class));
         assertThat(ConverterFactory.createConverter("Number:Percent"), instanceOf(QuantityTypeConverter.class));
-
     }
 
 }

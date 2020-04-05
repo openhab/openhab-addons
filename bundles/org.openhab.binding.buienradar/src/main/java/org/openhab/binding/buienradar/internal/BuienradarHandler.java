@@ -74,7 +74,6 @@ public class BuienradarHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @SuppressWarnings("null")

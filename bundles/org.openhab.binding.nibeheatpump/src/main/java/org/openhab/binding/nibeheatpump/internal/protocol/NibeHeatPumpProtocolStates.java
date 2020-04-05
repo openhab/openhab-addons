@@ -175,7 +175,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                 byte msgChecksum = byteBuffer.get(datalen + 5);
 
                 if (calcChecksum != msgChecksum) {
-
                     // if checksum is 0x5C (start character), heat pump seems to
                     // send 0xC5 checksum
                     if (calcChecksum != 0x5C && msgChecksum != 0xC5) {

@@ -122,7 +122,6 @@ public class UsersAndConfigTests {
 
     @Test
     public void UnauthorizedAccessTest() {
-
         // Unauthorized config
         Response response;
         response = commonSetup.client.target(commonSetup.basePath + "/config").request().get();

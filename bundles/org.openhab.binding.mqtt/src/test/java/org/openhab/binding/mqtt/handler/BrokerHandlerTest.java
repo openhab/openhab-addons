@@ -102,7 +102,6 @@ public class BrokerHandlerTest {
     @Test
     public void handlerInit()
             throws InterruptedException, IllegalArgumentException, MqttException, ConfigurationException {
-
         assertThat(initializeHandlerWaitForTimeout(), is(true));
 
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
@@ -122,7 +121,6 @@ public class BrokerHandlerTest {
      */
     boolean initializeHandlerWaitForTimeout()
             throws InterruptedException, IllegalArgumentException, MqttException, ConfigurationException {
-
         MqttBrokerConnection c = connection;
 
         MqttConnectionObserverEx o = new MqttConnectionObserverEx();
