@@ -35,9 +35,9 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DWDPollenflug {
-    private final static SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
 
-    private final Date CREATED = new Date();
+    private final Date created = new Date();
 
     private final @Nullable Date nextUpdate;
 
@@ -63,12 +63,12 @@ public class DWDPollenflug {
         parseChannels(json);
     }
 
-    private Map<String, String> initProperties(DWDPollenflugJSON json) {
+    private synchronized Map<String, String> initProperties(DWDPollenflugJSON json) {
         Map<String, String> map = new HashMap<>();
 
         map.put(PROPERTY_NAME, json.getName());
         map.put(PROPERTY_SENDER, json.getSender());
-        map.put(PROPERTY_REFRESHED, FORMATTER.format(CREATED));
+        map.put(PROPERTY_REFRESHED, FORMATTER.format(created));
 
         if (nextUpdate != null) {
             map.put(PROPERTY_NEXT_UPDATE, FORMATTER.format(nextUpdate));
@@ -86,7 +86,7 @@ public class DWDPollenflug {
     }
 
     private void parseChannels(DWDPollenflugJSON json) {
-        createChannel(CHANNEL_REFRESHED, CREATED);
+        createChannel(CHANNEL_REFRESHED, created);
         createChannel(CHANNEL_NEXT_UPDATE, nextUpdate);
         createChannel(CHANNEL_LAST_UPDATE, lastUpdate);
     }
