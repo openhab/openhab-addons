@@ -123,6 +123,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void initialize() {
+        logger.debug("Initializing handler for thing {}", getThing().getUID());
         LGWebOSConfiguration c = getLGWebOSConfig();
         logger.trace("Handler initialized with config {}", c);
         String host = c.getHost();
@@ -135,11 +136,14 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         s.setListener(this);
         socket = s;
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
+
         startReconnectJob();
     }
 
     @Override
     public void dispose() {
+        logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopKeepAliveJob();
         stopReconnectJob();
 
@@ -149,6 +153,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             scheduler.execute(() -> s.disconnect()); // dispose should be none-blocking
         }
         socket = null;
+        config = null; // ensure config gets actually refreshed during re-initialization
         super.dispose();
     }
 
