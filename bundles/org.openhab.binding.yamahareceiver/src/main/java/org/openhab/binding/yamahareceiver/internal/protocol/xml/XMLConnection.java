@@ -76,8 +76,9 @@ public class XMLConnection extends AbstractConnection {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
 
-            connection.setConnectTimeout(CONNECTION_TIMEOUT_MS); // set a timeout in case the device is not reachable
-                                                                 // (went offline)
+            // Set a timeout in case the device is not reachable (went offline)
+            connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
+
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
