@@ -144,7 +144,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
             }
         }
 
-        if (items.size() > 0) {
+        if (!items.isEmpty()) {
             entry.lights = items;
         }
 

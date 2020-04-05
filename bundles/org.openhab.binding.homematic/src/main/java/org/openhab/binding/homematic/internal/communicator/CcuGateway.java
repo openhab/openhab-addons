@@ -117,7 +117,7 @@ public class CcuGateway extends AbstractHomematicGateway {
                     dpNames.add(dp.getName());
                 }
             }
-            if (dpNames.size() > 0) {
+            if (!dpNames.isEmpty()) {
                 HmDevice device = channel.getDevice();
                 String channelName = String.format("%s.%s:%s.", device.getHmInterface().getName(), device.getAddress(),
                         channel.getNumber());
