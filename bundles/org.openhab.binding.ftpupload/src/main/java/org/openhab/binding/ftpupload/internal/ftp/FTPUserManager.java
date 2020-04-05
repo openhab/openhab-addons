@@ -71,7 +71,6 @@ public class FTPUserManager implements UserManager {
 
     public synchronized void addAuthenticationCredentials(String username, String password)
             throws IllegalArgumentException {
-
         if (authenticationData.containsKey(username)) {
             throw new IllegalArgumentException("Credentials for user '" + username + "' already exists!");
         }

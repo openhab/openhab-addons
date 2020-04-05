@@ -262,7 +262,6 @@ public class AirQualityHandler extends BaseThingHandler {
                 errorMsg = "missing data sub-object";
                 logger.warn("Error in aqicn.org (Air Quality) response: {}", errorMsg);
             }
-
         } catch (MalformedURLException e) {
             errorMsg = e.getMessage();
             logger.warn("Constructed url is not valid: {}", errorMsg);

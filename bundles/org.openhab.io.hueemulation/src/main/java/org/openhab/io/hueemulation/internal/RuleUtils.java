@@ -360,7 +360,6 @@ public class RuleUtils {
 
         trigger = triggers.stream().filter(p -> p.getId().equals("timertrigger")).findFirst();
         if (trigger.isPresent()) {
-
             TimerConfig c = trigger.get().getConfiguration().as(TimerConfig.class);
             if (c.repeat == null) {
                 return String.format(c.randomizeTime.isEmpty() ? "PT%s" : "PT%sA%s", c.time, c.randomizeTime);

@@ -117,7 +117,6 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
         if (!onlineCheckTask.isDone()) {
             onlineCheckTask.cancel(false);
         }
-
     }
 
     @Override

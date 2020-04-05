@@ -30,6 +30,5 @@ public abstract class ResponseListenerIgnoringTimeouts<T extends Response> exten
 
     @Override
     public void responseTimeOut() {
-
     }
 }

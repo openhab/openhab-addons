@@ -71,7 +71,6 @@ public class DataResponseTransformer {
                 } else {
                     logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
                     result.put(channel, new DecimalType(value));
-
                 }
             }
         }

@@ -566,7 +566,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                     updateListener.partialDetectionResult(v);
                 }
             });
-
         } catch (IOException e) {
             logger.trace("Failed to execute a native ping for ip {}", hostname, e);
         } catch (InterruptedException e) {

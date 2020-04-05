@@ -72,7 +72,6 @@ public abstract class KNXChannelType {
         Matcher matcher = PATTERN.matcher(fancy.replace(" ", ""));
 
         if (matcher.matches()) {
-
             // Listen GAs
             String input = matcher.group("listenGAs");
             Matcher m2 = PATTERN_LISTEN.matcher(input);

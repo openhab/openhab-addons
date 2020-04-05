@@ -55,7 +55,6 @@ public abstract class AbstractConnection {
     }
 
     public void setProtocolSnifferEnable(boolean enable) {
-
         if (enable) {
             File pathWithoutFilename = new File(ConfigConstants.getUserDataFolder());
             pathWithoutFilename.mkdirs();

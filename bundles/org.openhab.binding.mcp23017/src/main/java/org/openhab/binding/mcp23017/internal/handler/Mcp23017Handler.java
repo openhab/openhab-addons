@@ -62,7 +62,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     public Mcp23017Handler(Thing thing) {
         super(thing);
-
     }
 
     @Override
