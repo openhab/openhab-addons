@@ -6,7 +6,7 @@
 
 	<thing-type id="smtp">
 		<label>SMTP Server</label>
-		<description>Used for sending mails via rule actions</description>
+		<description>Used for sending emails via rule actions</description>
 		<config-description>
 			<parameter name="sender" type="text" required="true">
 				<label>Sender</label>
@@ -41,7 +41,7 @@
 	</thing-type>
 	<thing-type id="imap" extensible="mailcount">
 		<label>IMAP Server</label>
-		<description>Used for receiving mails</description>
+		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Server Hostname</label>
@@ -76,7 +76,7 @@
 	</thing-type>
 	<thing-type id="pop3" extensible="mailcount">
 		<label>POP3 Server</label>
-		<description>Used for receiving mails</description>
+		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Server Hostname</label>
@@ -113,7 +113,7 @@
 	<channel-type id="mailcount">
 		<item-type>Number</item-type>
 		<label>Mail Count</label>
-		<description>Number of mails in folder</description>
+		<description>Number of emails in folder</description>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="folder" type="text" required="true">
