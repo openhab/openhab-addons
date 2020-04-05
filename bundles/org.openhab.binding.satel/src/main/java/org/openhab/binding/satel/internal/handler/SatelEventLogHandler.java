@@ -81,7 +81,6 @@ public class SatelEventLogHandler extends SatelThingHandler {
             this.cacheExpirationJob = scheduler.scheduleWithFixedDelay(deviceNameCache::clear, CACHE_CLEAR_INTERVAL,
                     CACHE_CLEAR_INTERVAL, TimeUnit.MILLISECONDS);
         }
-
     }
 
     @Override

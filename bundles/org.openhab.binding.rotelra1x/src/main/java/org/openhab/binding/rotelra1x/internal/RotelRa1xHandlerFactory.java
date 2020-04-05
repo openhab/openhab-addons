@@ -44,7 +44,6 @@ public class RotelRa1xHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AMP)) {

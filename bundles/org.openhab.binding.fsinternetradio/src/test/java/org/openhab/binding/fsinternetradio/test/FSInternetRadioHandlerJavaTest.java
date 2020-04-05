@@ -500,7 +500,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
      */
     @Test
     public void volumeChannelUpdatedPercIncDec() {
-
         /*
          * The volume is set through the CHANNEL_VOLUME_PERCENT in order to check if
          * the absolute volume will be updated properly.
@@ -532,7 +531,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
      */
     @Test
     public void volumeChannelUpdatedPercUpDown() {
-
         /*
          * The volume is set through the CHANNEL_VOLUME_PERCENT in order to check if
          * the absolute volume will be updated properly.
@@ -773,7 +771,6 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     }
 
     private Item initializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
-
         Item item = null;
 
         switch (acceptedItemType) {

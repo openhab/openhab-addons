@@ -27,7 +27,6 @@ public class ConnectorFactory {
 
     public static NibeHeatPumpConnector getConnector(ThingTypeUID type) throws NibeHeatPumpException {
         if (type != null) {
-
             if (THING_TYPE_F1X45_UDP.equals(type) || THING_TYPE_F1X55_UDP.equals(type)
                     || THING_TYPE_F750_UDP.equals(type) || THING_TYPE_F470_UDP.equals(type)) {
                 return new UDPConnector();

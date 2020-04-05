@@ -107,7 +107,6 @@ public class LGWebOSTVKeyboardInput {
             }
 
             payload.addProperty("count", count);
-
         } else {
             uri = "ssap://com.webos.service.ime/insertText";
             StringBuilder sb = new StringBuilder();
@@ -120,7 +119,6 @@ public class LGWebOSTVKeyboardInput {
 
             payload.addProperty("text", sb.toString());
             payload.addProperty("replace", 0);
-
         }
 
         ResponseListener<JsonObject> responseListener = new ResponseListener<JsonObject>() {

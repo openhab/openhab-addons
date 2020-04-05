@@ -272,7 +272,6 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         public BigDecimal getTotal(BigDecimal spoon) {
-
             removeOldEntries();
 
             int least = -1;
@@ -341,7 +340,6 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         public WindStats getStats() {
-
             removeOldEntries();
 
             double ewSum = 0;

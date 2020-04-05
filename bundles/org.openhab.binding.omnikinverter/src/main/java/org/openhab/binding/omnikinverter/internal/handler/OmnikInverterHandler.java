@@ -75,7 +75,6 @@ public class OmnikInverterHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Failed to initialize: " + e.getMessage());
         }
-
     }
 
     private void updateData() {

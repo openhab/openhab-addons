@@ -624,7 +624,6 @@ public abstract class BluetoothDevice {
      *
      */
     protected void dispose() {
-
     }
 
     /**

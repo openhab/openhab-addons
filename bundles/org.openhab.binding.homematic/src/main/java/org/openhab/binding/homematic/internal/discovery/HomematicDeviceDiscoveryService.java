@@ -183,7 +183,6 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
      * Waits for the discovery scan to finish and then returns.
      */
     public void waitForScanFinishing() {
-
         logger.debug("Waiting for finishing Homematic device discovery scan");
         try {
             waitForInstallModeFinished(DISCOVER_TIMEOUT_SECONDS * 1000);

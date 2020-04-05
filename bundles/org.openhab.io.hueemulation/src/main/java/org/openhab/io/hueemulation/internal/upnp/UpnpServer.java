@@ -17,7 +17,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketAddress;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.DatagramChannel;
@@ -412,11 +422,11 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         boolean hasIPv4 = false;
         boolean hasIPv6 = false;
 
-        try (   Selector selector = Selector.open();
+        try (Selector selector = Selector.open();
                 DatagramChannel channelV4 = createBoundDataGramChannelOrNull(StandardProtocolFamily.INET);
                 DatagramChannel channelV6 = createBoundDataGramChannelOrNull(StandardProtocolFamily.INET6)) {
-
-            // Set global config to thread local config. Otherwise upnpAnnouncementThreadRunning() will report wrong results.
+            // Set global config to thread local config. Otherwise upnpAnnouncementThreadRunning() will report wrong
+            // results.
             config = threadContext;
             threadContext.asyncIOselector = selector;
 
@@ -428,7 +438,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 if (address instanceof Inet4Address && channelV4 != null) {
                     channelV4.join(MULTI_ADDR_IPV4, networkInterface);
                     hasIPv4 = true;
-                } else if (channelV6 != null){
+                } else if (channelV6 != null) {
                     channelV6.join(MULTI_ADDR_IPV6, networkInterface);
                     hasIPv6 = true;
                 }
@@ -497,10 +507,8 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     @Nullable
     private DatagramChannel createBoundDataGramChannelOrNull(StandardProtocolFamily family) throws IOException {
         try {
-            return DatagramChannel.open(family)
-                                  .setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                                  .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true)
-                                  .bind(new InetSocketAddress(UPNP_PORT));
+            return DatagramChannel.open(family).setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                    .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true).bind(new InetSocketAddress(UPNP_PORT));
         } catch (UnsupportedOperationException uoe) {
             return null;
         }

@@ -13,7 +13,6 @@
 package org.openhab.binding.nibeheatpump.internal.message;
 
 import org.eclipse.smarthome.core.util.HexUtils;
-
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocol;
 
@@ -61,7 +60,6 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
     public byte msgId;
 
     public NibeHeatPumpBaseMessage() {
-
     }
 
     public NibeHeatPumpBaseMessage(byte[] data) throws NibeHeatPumpException {

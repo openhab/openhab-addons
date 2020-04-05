@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -27,7 +26,6 @@ public class SetAcStatePropertyResponseTest extends AbstractSerializationDeseria
 
     @Test
     public void testDeserialize() throws IOException {
-
         final SetAcStatePropertyReponse rsp = wireHelper.deSerializeResponse("/set_acstate_response.json",
                 SetAcStatePropertyReponse.class);
 

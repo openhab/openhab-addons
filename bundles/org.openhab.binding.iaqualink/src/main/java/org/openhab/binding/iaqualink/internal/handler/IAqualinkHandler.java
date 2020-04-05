@@ -303,7 +303,6 @@ public class IAqualinkHandler extends BaseThingHandler {
             }
 
             initPolling(COMMAND_REFRESH_SECONDS);
-
         } catch (IOException e) {
             logger.debug("Could not connect to service {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -527,7 +526,6 @@ public class IAqualinkHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     private @Nullable BigDecimal commandToRoundedTemperature(Command command, Unit<Temperature> unit)
             throws IllegalArgumentException {
-
         QuantityType<Temperature> quantity;
         if (command instanceof QuantityType) {
             quantity = (QuantityType<Temperature>) command;

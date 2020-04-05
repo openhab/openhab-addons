@@ -89,7 +89,6 @@ public class LiveDataResponse implements DataResponse {
         Map<Channel, State> valueMap = new HashMap<>();
 
         if (siteCurrentPowerFlow != null) {
-
             if (siteCurrentPowerFlow.pv != null) {
                 assignValue(valueMap, LiveDataChannels.PRODUCTION, siteCurrentPowerFlow.pv.currentPower,
                         siteCurrentPowerFlow.unit);
@@ -128,7 +127,6 @@ public class LiveDataResponse implements DataResponse {
                     } else if (con.to.equalsIgnoreCase(GRID)) {
                         assignValue(valueMap, LiveDataChannels.EXPORT, siteCurrentPowerFlow.grid.currentPower,
                                 siteCurrentPowerFlow.unit);
-
                     }
                     if (con.from.equalsIgnoreCase(STORAGE)) {
                         assignValue(valueMap, LiveDataChannels.BATTERY_DISCHARGE,
