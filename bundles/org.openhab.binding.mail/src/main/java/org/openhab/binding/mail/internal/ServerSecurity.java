@@ -21,5 +21,5 @@ package org.openhab.binding.mail.internal;
 public enum ServerSecurity {
     PLAIN,
     SSL,
-    TLS
+    STARTTLS
 }

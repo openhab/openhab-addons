@@ -188,7 +188,7 @@ public class SendMailActions implements ThingActions {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         } catch (EmailException e) {
-            logger.warn("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
     }
