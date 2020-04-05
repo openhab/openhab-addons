@@ -30,4 +30,23 @@ public interface FilterCriteriaQueryCreator {
      * @return Created query as an String
      */
     String createQuery(FilterCriteria criteria, String retentionPolicy);
+
+    default String getOperationSymbol(FilterCriteria.Operator operator, InfluxDBVersion version) {
+        switch (operator) {
+            case EQ:
+                return "=";
+            case LT:
+                return "<";
+            case LTE:
+                return "<=";
+            case GT:
+                return ">";
+            case GTE:
+                return ">=";
+            case NEQ:
+                return version == InfluxDBVersion.V1 ? "<>" : "!=";
+            default:
+                throw new UnnexpectedConditionException("Not expected operator " + operator);
+        }
+    }
 }

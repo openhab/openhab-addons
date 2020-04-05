@@ -12,14 +12,17 @@
  */
 package org.openhab.persistence.influxdb.internal.influx2;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToString;
+import static com.influxdb.query.dsl.functions.restriction.Restrictions.*;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V2;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
+
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
+import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 import com.influxdb.query.dsl.Flux;
 import com.influxdb.query.dsl.functions.RangeFlux;
@@ -43,24 +46,30 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
             if (criteria.getEndDateZoned() != null)
                 range = range.withStop(criteria.getEndDateZoned().toInstant());
             flux = range;
+        } else {
+            flux = flux.range(-100L, ChronoUnit.YEARS); //Flux needs a mandatory range
         }
 
-        if (criteria.getItemName() != null)
-            flux = flux.filter().withPropertyValue(TAG_ITEM_NAME, criteria.getItemName());
+        if (criteria.getItemName() != null) {
+            flux = flux.filter(measurement().equal(criteria.getItemName()));
+        }
 
         if (criteria.getState() != null && criteria.getOperator() != null) {
-            Restrictions restrictions = Restrictions.and(Restrictions.field().equal(COLUMN_VALUE_NAME),
-                    Restrictions.value().custom(criteria.getOperator().toString(), stateToString(criteria.getState())));
+            Restrictions restrictions = Restrictions.and(Restrictions.field().equal(FIELD_VALUE_NAME),
+                    Restrictions.value().custom(stateToObject(criteria.getState()),
+                            getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V2)));
             flux = flux.filter(restrictions);
         }
 
         if (criteria.getOrdering() != null) {
             boolean desc = criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING;
-            flux = flux.sort().withDesc(desc).withColumns(new String[] { COLUMN_TIME_NAME });
+            flux = flux.sort().withDesc(desc).withColumns(new String[] { COLUMN_TIME_NAME_V2 });
         }
 
-        flux.limit(criteria.getPageSize()).withPropertyValue("offset",
-                criteria.getPageNumber() * criteria.getPageSize());
+        if (criteria.getPageSize() != Integer.MAX_VALUE) {
+            flux = flux.limit(criteria.getPageSize()).withPropertyValue("offset",
+                    criteria.getPageNumber() * criteria.getPageSize());
+        }
 
         return flux.toString();
     }

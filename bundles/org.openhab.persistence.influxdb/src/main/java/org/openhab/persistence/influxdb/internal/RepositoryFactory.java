@@ -41,7 +41,7 @@ public class RepositoryFactory {
     public static FilterCriteriaQueryCreator createQueryCreator(InfluxDBConfiguration influxDBConfiguration) {
         switch (influxDBConfiguration.getVersion()) {
             case V1:
-                return new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration);
+                return new Influx1FilterCriteriaQueryCreatorImpl();
             case V2:
                 return new Influx2FilterCriteriaQueryCreatorImpl();
             default:

@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.influxdb.internal.influx1;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V1;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V1;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,12 +39,10 @@ import org.openhab.persistence.influxdb.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import retrofit.RetrofitError;
-
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Initial contribution. Most code has beenmoved from
+ * @author Joan Pujol Espinar - Initial contribution. Most code has been moved from
  *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService} where it was in previous version
  */
 @NonNullByDefault
@@ -66,6 +65,8 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     public boolean connect() {
         final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
                 configuration.getPassword());
+        createdClient.setDatabase(configuration.getDatabaseName());
+        createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
         createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
         this.client = createdClient;
         return checkConnectionStatus();
@@ -105,13 +106,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     private void handleDatabaseException(Exception e) {
-        if (e instanceof RetrofitError) {
-            // e.g. raised if influxdb is not running
-            logger.warn("database connection error {}", e.getMessage(), e);
-        } else if (e instanceof RuntimeException) {
-            // e.g. raised by authentication errors
-            logger.warn("database error: {}", e.getMessage(), e);
-        }
+        logger.warn("database error: {}", e.getMessage(), e);
     }
 
     @Override
@@ -130,19 +125,18 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                 TimeUnit.MILLISECONDS);
         setPointValue(point.getValue(), clientPoint);
         point.getTags().entrySet().forEach(e -> clientPoint.tag(e.getKey(), e.getValue()));
-        point.getFields().entrySet().forEach(e -> clientPoint.addField(e.getKey(), e.getValue()));
         return clientPoint.build();
     }
 
     private void setPointValue(@Nullable Object value, Point.Builder point) {
         if (value instanceof String)
-            point.addField(COLUMN_VALUE_NAME, (String) value);
+            point.addField(FIELD_VALUE_NAME, (String) value);
         else if (value instanceof Number)
-            point.addField(COLUMN_VALUE_NAME, (Number) value);
+            point.addField(FIELD_VALUE_NAME, (Number) value);
         else if (value instanceof Boolean)
-            point.addField(COLUMN_VALUE_NAME, (Boolean) value);
+            point.addField(FIELD_VALUE_NAME, (Boolean) value);
         else if (value == null)
-            point.addField(COLUMN_VALUE_NAME, (String) null);
+            point.addField(FIELD_VALUE_NAME, (String) null);
         else
             throw new UnnexpectedConditionException("Not expected value type");
     }
@@ -185,9 +179,9 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                             Integer valueColumn = null;
                             for (int i = 0; i < columns.size(); i++) {
                                 String columnName = columns.get(i);
-                                if (columnName.equals(COLUMN_TIME_NAME)) {
+                                if (columnName.equals(COLUMN_TIME_NAME_V1)) {
                                     timestampColumn = i;
-                                } else if (columnName.equals(COLUMN_VALUE_NAME)) {
+                                } else if (columnName.equals(COLUMN_VALUE_NAME_V1)) {
                                     valueColumn = i;
                                 }
                             }

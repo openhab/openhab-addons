@@ -12,113 +12,87 @@
  */
 package org.openhab.persistence.influxdb.internal.influx1;
 
-import java.time.ZonedDateTime;
+import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.asc;
+import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.desc;
+import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.select;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V1;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V1;
+import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.influxdb.dto.Query;
+import org.influxdb.querybuilder.Appender;
+import org.influxdb.querybuilder.BuiltQuery;
+import org.influxdb.querybuilder.Select;
+import org.influxdb.querybuilder.Where;
+import org.influxdb.querybuilder.clauses.SimpleClause;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
-import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
-import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
-import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Initial contribution. Most code has been moved from
- *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService} where it was in previous version
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
-    private final Logger logger = LoggerFactory.getLogger(Influx1FilterCriteriaQueryCreatorImpl.class);
-    private final InfluxDBConfiguration configuration;
-
-    public Influx1FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration) {
-        this.configuration = configuration;
-    }
 
     @Override
-    public String createQuery(FilterCriteria filter, String retentionPolicy) {
-        StringBuilder query = new StringBuilder();
-        query.append("select ").append(InfluxDBConstants.COLUMN_VALUE_NAME).append(' ').append("from \"")
-                .append(configuration.getRetentionPolicy()).append("\".");
+    public String createQuery(FilterCriteria criteria, String retentionPolicy) {
+        final String tableName;
+        boolean hasCriteriaName = criteria.getItemName() != null;
+        if (hasCriteriaName)
+            tableName = criteria.getItemName();
+        else
+            tableName = "/.*/";
 
-        if (filter.getItemName() != null) {
-            query.append('"').append(filter.getItemName()).append('"');
-        } else {
-            query.append("/.*/");
+        Select select = select(COLUMN_VALUE_NAME_V1).fromRaw(null,
+                fullQualifiedTableName(retentionPolicy, tableName, hasCriteriaName));
+
+        Where where = select.where();
+        if (criteria.getBeginDateZoned() != null) {
+            where = where.and(BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1,
+                    criteria.getBeginDateZoned().toInstant().toString()));
+        }
+        if (criteria.getEndDateZoned() != null) {
+            where = where.and(BuiltQuery.QueryBuilder.lte(COLUMN_TIME_NAME_V1,
+                    criteria.getEndDateZoned().toInstant().toString()));
         }
 
-        logger.trace(
-                "Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
-                filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
-                filter.getBeginDateZoned(), filter.getEndDateZoned(), filter.getPageSize(), filter.getPageNumber());
+        if (criteria.getState() != null && criteria.getOperator() != null) {
+            where = where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
+                    getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V1),
+                    stateToObject(criteria.getState())));
+        }
 
-        if ((filter.getState() != null && filter.getOperator() != null) || filter.getBeginDateZoned() != null
-                || filter.getEndDateZoned() != null) {
-            query.append(" where ");
-            boolean foundState = false;
-            boolean foundBeginDate = false;
-            if (filter.getState() != null && filter.getOperator() != null) {
-                String value = InfluxDBStateConvertUtils.stateToString(filter.getState());
-                foundState = true;
-                query.append(InfluxDBConstants.COLUMN_VALUE_NAME);
-                query.append(" ");
-                query.append(filter.getOperator().toString());
-                query.append(" ");
-                query.append(value);
-            }
+        if (criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
+            select = select.orderBy(desc());
+        } else if (criteria.getOrdering() == FilterCriteria.Ordering.ASCENDING) {
+            select = select.orderBy(asc());
+        }
 
-            if (filter.getBeginDateZoned() != null) {
-                foundBeginDate = true;
-                if (foundState) {
-                    query.append(" and");
-                }
-                query.append(" ");
-                query.append(InfluxDBConstants.COLUMN_TIME_NAME);
-                query.append(" > ");
-                query.append(getTimeFilter(filter.getBeginDateZoned()));
-                query.append(" ");
-            }
-
-            if (filter.getEndDateZoned() != null) {
-                if (foundState || foundBeginDate) {
-                    query.append(" and");
-                }
-                query.append(" ");
-                query.append(InfluxDBConstants.COLUMN_TIME_NAME);
-                query.append(" < ");
-                query.append(getTimeFilter(filter.getEndDateZoned()));
-                query.append(" ");
+        if (criteria.getPageSize() != Integer.MAX_VALUE) {
+            if (criteria.getPageNumber() != 0) {
+                select = select.limit(criteria.getPageSize(), criteria.getPageSize() * criteria.getPageNumber());
+            } else {
+                select = select.limit(criteria.getPageSize());
             }
         }
 
-        if (filter.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
-            query.append(String.format(" ORDER BY %s DESC", InfluxDBConstants.COLUMN_TIME_NAME));
-            logger.debug("descending ordering ");
-        }
-
-        int limit = (filter.getPageNumber() + 1) * filter.getPageSize();
-        query.append(" limit " + limit);
-        logger.trace("appending limit {}", limit);
-
-        int totalEntriesAffected = ((filter.getPageNumber() + 1) * filter.getPageSize());
-        int startEntryNum = totalEntriesAffected
-                - (totalEntriesAffected - (filter.getPageSize() * filter.getPageNumber()));
-        logger.trace("startEntryNum {}", startEntryNum);
-
-        final String queryString = query.toString();
-        logger.debug("query string: {}", queryString);
-
-        return queryString;
+        final Query query = (Query) select;
+        return query.getCommand();
     }
 
-    private String getTimeFilter(ZonedDateTime time) {
-        // for some reason we need to query using 'seconds' only
-        // passing milli seconds causes no results to be returned
-        long milliSeconds = time.toInstant().toEpochMilli();
-        long seconds = milliSeconds / 1000;
-        return seconds + "s";
+    private String fullQualifiedTableName(String retentionPolicy, String tableName, boolean escapeTableName) {
+        StringBuilder sb = new StringBuilder();
+        Appender.appendName(retentionPolicy, sb);
+        sb.append(".");
+        if (escapeTableName) {
+            Appender.appendName(tableName, sb);
+        } else {
+            sb.append(tableName);
+        }
+        return sb.toString();
     }
 }

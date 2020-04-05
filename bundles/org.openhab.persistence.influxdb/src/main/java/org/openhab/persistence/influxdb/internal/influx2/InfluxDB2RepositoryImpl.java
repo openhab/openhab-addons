@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.influxdb.internal.influx2;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V2;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V2;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
 
 import java.time.Instant;
@@ -154,19 +155,18 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
         setPointValue(point.getValue(), clientPoint);
         point.getTags().entrySet().forEach(e -> clientPoint.addTag(e.getKey(), e.getValue()));
-        point.getFields().entrySet().forEach(e -> clientPoint.addField(e.getKey(), e.getValue()));
         return clientPoint;
     }
 
     private void setPointValue(@Nullable Object value, Point point) {
         if (value instanceof String)
-            point.addField(COLUMN_VALUE_NAME, (String) value);
+            point.addField(FIELD_VALUE_NAME, (String) value);
         else if (value instanceof Number)
-            point.addField(COLUMN_VALUE_NAME, (Number) value);
+            point.addField(FIELD_VALUE_NAME, (Number) value);
         else if (value instanceof Boolean)
-            point.addField(COLUMN_VALUE_NAME, (Boolean) value);
+            point.addField(FIELD_VALUE_NAME, (Boolean) value);
         else if (value == null)
-            point.addField(COLUMN_VALUE_NAME, (String) null);
+            point.addField(FIELD_VALUE_NAME, (String) null);
         else
             throw new UnnexpectedConditionException("Not expected value type");
     }
@@ -196,9 +196,9 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     private Stream<InfluxRow> mapRawResultToHistoric(FluxTable rawRow) {
         return rawRow.getRecords().stream().map(r -> {
             String itemName = (String) r.getValueByKey(InfluxDBConstants.TAG_ITEM_NAME);
-            Object value = r.getValueByKey(COLUMN_VALUE_NAME);
-            Number time = (Number) r.getValueByKey(COLUMN_TIME_NAME);
-            return new InfluxRow(Instant.ofEpochMilli(time.longValue()), itemName, value);
+            Object value = r.getValueByKey(COLUMN_VALUE_NAME_V2);
+            Instant time = (Instant) r.getValueByKey(COLUMN_TIME_NAME_V2);
+            return new InfluxRow(time, itemName, value);
         });
     }
 

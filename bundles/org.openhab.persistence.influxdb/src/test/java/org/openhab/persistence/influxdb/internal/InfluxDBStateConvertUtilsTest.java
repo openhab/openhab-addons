@@ -41,18 +41,13 @@ public class InfluxDBStateConvertUtilsTest {
     @Test
     public void convertDecimalState() {
         DecimalType decimalType = new DecimalType(new BigDecimal("1.12"));
-        assertThat(InfluxDBStateConvertUtils.stateToString(decimalType), equalTo("1.12"));
         assertThat((Double) InfluxDBStateConvertUtils.stateToObject(decimalType), closeTo(1.12, 0.01));
     }
 
     @Test
     public void convertOnOffState() {
-        assertThat(InfluxDBStateConvertUtils.stateToString(OpenClosedType.OPEN),
-                equalTo(InfluxDBStateConvertUtils.DIGITAL_VALUE_ON));
-        assertThat(InfluxDBStateConvertUtils.stateToString(OnOffType.ON),
-                equalTo(InfluxDBStateConvertUtils.DIGITAL_VALUE_ON));
-        assertThat(InfluxDBStateConvertUtils.stateToObject(OpenClosedType.OPEN), equalTo(Boolean.TRUE));
-        assertThat(InfluxDBStateConvertUtils.stateToObject(OnOffType.ON), equalTo(Boolean.TRUE));
+        assertThat(InfluxDBStateConvertUtils.stateToObject(OpenClosedType.OPEN), equalTo(1));
+        assertThat(InfluxDBStateConvertUtils.stateToObject(OnOffType.ON), equalTo(1));
     }
 
     @Test
@@ -60,7 +55,6 @@ public class InfluxDBStateConvertUtilsTest {
         ZonedDateTime now = ZonedDateTime.now();
         long nowInMillis = now.toInstant().toEpochMilli();
         DateTimeType type = new DateTimeType(now);
-        assertThat(InfluxDBStateConvertUtils.stateToString(type), equalTo(String.valueOf(nowInMillis)));
         assertThat(InfluxDBStateConvertUtils.stateToObject(type), equalTo(nowInMillis));
     }
 

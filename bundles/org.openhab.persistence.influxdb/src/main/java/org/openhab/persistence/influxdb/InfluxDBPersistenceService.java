@@ -222,6 +222,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
             String query = RepositoryFactory.createQueryCreator(configuration).createQuery(filter,
                     configuration.getRetentionPolicy());
+            logger.trace("Query {}", query);
             List<InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());
         } else {

@@ -31,14 +31,12 @@ public class InfluxPoint {
     private Instant time;
     private Object value;
     private Map<String, String> tags;
-    private Map<String, String> fields;
 
     private InfluxPoint(Builder builder) {
         measurementName = builder.measurementName;
         time = builder.time;
         value = builder.value;
         tags = builder.tags;
-        fields = builder.fields;
     }
 
     public static Builder newBuilder(String measurementName) {
@@ -61,16 +59,11 @@ public class InfluxPoint {
         return Collections.unmodifiableMap(tags);
     }
 
-    public Map<String, String> getFields() {
-        return Collections.unmodifiableMap(fields);
-    }
-
     public static final class Builder {
         private String measurementName;
         private Instant time;
         private Object value;
         private Map<String, String> tags = new HashMap<>();
-        private Map<String, String> fields = new HashMap<>();
 
         private Builder(String measurementName) {
             this.measurementName = measurementName;
@@ -88,11 +81,6 @@ public class InfluxPoint {
 
         public Builder withTag(String name, String value) {
             tags.put(name, value);
-            return this;
-        }
-
-        public Builder withField(String name, String value) {
-            fields.put(name, value);
             return this;
         }
 

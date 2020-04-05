@@ -21,9 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InfluxDBConstants {
-    public static final String COLUMN_VALUE_NAME = "value";
-    public static final String COLUMN_TIME_NAME = "time";
+    public static final String COLUMN_VALUE_NAME_V1 = "value";
+    public static final String COLUMN_VALUE_NAME_V2 = "_value";
 
+    public static final String COLUMN_TIME_NAME_V1 = "time";
+    public static final String COLUMN_TIME_NAME_V2 = "_time";
+
+    public static final String FIELD_VALUE_NAME = "value";
     public static final String TAG_ITEM_NAME = "item";
     public static final String TAG_CATEGORY_NAME = "category";
     public static final String TAG_TYPE_NAME = "type";

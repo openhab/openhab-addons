@@ -40,6 +40,10 @@ public class ConfigurationTestHelper {
         return config;
     }
 
+    public static InfluxDBConfiguration createValidConfiguration() {
+        return new InfluxDBConfiguration(createValidConfigurationParameters());
+    }
+
     public static Map<String, @Nullable Object> createInvalidConfigurationParameters() {
         Map<String, @Nullable Object> config = createValidConfigurationParameters();
         config.remove(TOKEN_PARAM);

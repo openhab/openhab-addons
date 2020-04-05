@@ -52,35 +52,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InfluxDBStateConvertUtils {
-    static final String DIGITAL_VALUE_OFF = "false"; // Visible for testing
-    static final String DIGITAL_VALUE_ON = "true"; // Visible for testing
+    static final Number DIGITAL_VALUE_OFF = 0; // Visible for testing
+    static final Number DIGITAL_VALUE_ON = 1; // Visible for testing
     private static Logger logger = LoggerFactory.getLogger(InfluxDBStateConvertUtils.class);
-
-    /**
-     * Converts {@link State} to a String suitable for influxdb queries.
-     *
-     * @param state to be converted
-     * @return {@link String} equivalent of the {@link State}
-     */
-    public static String stateToString(State state) {
-        String value;
-        if (state instanceof DecimalType) {
-            value = ((DecimalType) state).toBigDecimal().toString();
-        } else if (state instanceof QuantityType<?>) {
-            value = ((QuantityType<?>) state).toBigDecimal().toString();
-        } else if (state instanceof PointType) {
-            value = point2String((PointType) state);
-        } else if (state instanceof OnOffType) {
-            value = state == OnOffType.ON ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
-        } else if (state instanceof OpenClosedType) {
-            value = state == OpenClosedType.OPEN ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
-        } else if (state instanceof DateTimeType) {
-            value = String.valueOf(((DateTimeType) state).getZonedDateTime().toInstant().toEpochMilli());
-        } else {
-            value = state.toString();
-        }
-        return value;
-    }
 
     /**
      * Converts {@link State} to objects fitting into influxdb values.
@@ -100,9 +74,9 @@ public class InfluxDBStateConvertUtils {
         } else if (state instanceof QuantityType<?>) {
             value = convertBigDecimalToNum(((QuantityType<?>) state).toBigDecimal());
         } else if (state instanceof OnOffType) {
-            value = state == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE;
+            value = state == OnOffType.ON ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
         } else if (state instanceof OpenClosedType) {
-            value = state == OpenClosedType.OPEN ? Boolean.TRUE : Boolean.FALSE;
+            value = state == OpenClosedType.OPEN ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
         } else if (state instanceof DateTimeType) {
             value = ((DateTimeType) state).getZonedDateTime().toInstant().toEpochMilli();
         } else {
