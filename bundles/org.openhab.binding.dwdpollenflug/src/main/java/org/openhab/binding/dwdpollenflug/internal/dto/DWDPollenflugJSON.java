@@ -33,9 +33,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DWDPollenflugJSON {
-    private final static String DATE_PATTERN = "yyyy-MM-dd HH:mm";
+    private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
-    private final static SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
 
     private String sender = EMPTY;
 
@@ -72,7 +72,7 @@ public class DWDPollenflugJSON {
         return parseDate(lastUpdate);
     }
 
-    private @Nullable Date parseDate(@Nullable String date) {
+    private synchronized @Nullable Date parseDate(@Nullable String date) {
         try {
             if (date == null) {
                 return null;
