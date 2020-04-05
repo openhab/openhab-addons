@@ -234,8 +234,10 @@ public class PJLinkDevice {
         if (response == null) {
             throw new ResponseException("Response to request '" + fullCommand.replaceAll("\r", "\\\\r") + "' was null");
         }
-        logger.debug("Got response '{}' ({}) for request '{}' from {}", response, Arrays.toString(response.getBytes()),
-                fullCommand.replaceAll("\r", "\\\\r"), ipAddress.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got response '{}' ({}) for request '{}' from {}", response,
+                    Arrays.toString(response.getBytes()), fullCommand.replaceAll("\r", "\\\\r"), ipAddress);
+        }
         return response;
     }
 
