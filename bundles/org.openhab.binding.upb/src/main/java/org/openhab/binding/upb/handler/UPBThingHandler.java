@@ -51,7 +51,6 @@ public class UPBThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(UPBThingHandler.class);
     private final @Nullable Byte defaultNetworkId;
 
-    protected volatile @Nullable PIMHandler controllerHandler;
     protected volatile byte networkId;
     protected volatile int unitId;
 
@@ -100,11 +99,6 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-
-    }
-
-    @Override
     public void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
         logger.debug("DEV {}: Controller status is {}", unitId, bridgeStatusInfo.getStatus());
 
@@ -126,20 +120,13 @@ public class UPBThingHandler extends BaseThingHandler {
             return;
         }
         updateDeviceStatus(bridgeHandler);
-
-        // If we already know the controller, then we don't want to initialise again
-        if (controllerHandler != null) {
-            logger.debug("DEV {}: Controller already initialised", unitId);
-        } else {
-            controllerHandler = bridgeHandler;
-        }
         pingDevice();
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command cmd) {
-        final PIMHandler controllerHandler = this.controllerHandler;
-        if (controllerHandler == null) {
+        final PIMHandler pimHandler = getPIMHandler();
+        if (pimHandler == null) {
             logger.info("DEV {}: received cmd {} but no bridge handler", unitId, cmd);
             return;
         }
@@ -160,7 +147,7 @@ public class UPBThingHandler extends BaseThingHandler {
         }
 
         message.network(networkId).destination(getUnitId());
-        controllerHandler.sendPacket(message).thenAccept(this::updateStatus);
+        pimHandler.sendPacket(message).thenAccept(this::updateStatus);
     }
 
     public void onMessageReceived(final UPBMessage msg) {
@@ -248,9 +235,9 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     protected void pingDevice() {
-        final PIMHandler controllerHandler = this.controllerHandler;
-        if (controllerHandler != null) {
-            controllerHandler.sendPacket(
+        final PIMHandler pimHandler = getPIMHandler();
+        if (pimHandler != null) {
+            pimHandler.sendPacket(
                     MessageBuilder.forCommand(NULL).ackMessage(true).network(networkId).destination((byte) unitId))
                     .thenAccept(this::updateStatus);
         }
@@ -270,12 +257,25 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     private void refreshDeviceState() {
-        final PIMHandler controllerHandler = this.controllerHandler;
-        if (controllerHandler != null) {
-            controllerHandler
-                    .sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
+        final PIMHandler pimHandler = getPIMHandler();
+        if (pimHandler != null) {
+            pimHandler.sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
                     .thenAccept(this::updateStatus);
         }
+    }
+
+    protected @Nullable PIMHandler getPIMHandler() {
+        final Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("DEV {}: bridge is null!", unitId);
+            return null;
+        }
+        final PIMHandler bridgeHandler = (PIMHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            logger.debug("DEV {}: bridge handler is null!", unitId);
+            return null;
+        }
+        return bridgeHandler;
     }
 
     public byte getNetworkId() {
