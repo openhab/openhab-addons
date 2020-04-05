@@ -236,7 +236,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     @Override
-    public synchronized void storeKey(@Nullable String key) {
+    public void storeKey(@Nullable String key) {
         if (!getKey().equals(key)) {
             logger.debug("store new key");
             // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
@@ -250,7 +250,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     @Override
-    public synchronized void storeProperties(Map<String, String> properties) {
+    public void storeProperties(Map<String, String> properties) {
         logger.debug("storeProperties {}", properties);
         Map<String, String> map = editProperties();
         map.putAll(properties);
