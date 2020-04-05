@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="mail"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="smtp">
 		<label>SMTP Server</label>
-		<description>Used for sending mail via rule-actions</description>
+		<description>Used for sending emails via rule actions</description>
 		<config-description>
 			<parameter name="sender" type="text" required="true">
 				<label>Sender</label>
@@ -16,15 +17,15 @@
 			</parameter>
 			<parameter name="port" type="text" required="false">
 				<label>Server Port</label>
-				<description>Default values are 25 for plain/TLS and 465 for SSL</description>
+				<description>Default values are 25 for plain/STARTTLS and 465 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="security" type="text" required="false">
 				<label>SMTP Server Security Protocol</label>
 				<options>
 					<option value="PLAIN">plain</option>
-					<option value="SSL">SSL</option>
-					<option value="TLS">TLS</option>
+					<option value="STARTTLS">STARTTLS</option>
+					<option value="SSL">SSL/TLS</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
@@ -40,22 +41,22 @@
 	</thing-type>
 	<thing-type id="imap" extensible="mailcount">
 		<label>IMAP Server</label>
-		<description>Used for receiving mail</description>
+		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Server Hostname</label>
 			</parameter>
 			<parameter name="port" type="text" required="false">
 				<label>Server Port</label>
-				<description>Default values are 143 for plain/TLS and 993 for SSL</description>
+				<description>Default values are 143 for plain/STARTTLS and 993 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="security" type="text" required="false">
 				<label>SMTP Server Security Protocol</label>
 				<options>
 					<option value="PLAIN">plain</option>
-					<option value="SSL">SSL</option>
-					<option value="TLS">TLS</option>
+					<option value="STARTTLS">STARTTLS</option>
+					<option value="SSL">SSL/TLS</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
@@ -75,22 +76,22 @@
 	</thing-type>
 	<thing-type id="pop3" extensible="mailcount">
 		<label>POP3 Server</label>
-		<description>Used for receiving mail</description>
+		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Server Hostname</label>
 			</parameter>
 			<parameter name="port" type="text" required="false">
 				<label>Server Port</label>
-				<description>Default values are 110 for plain/TLS and 995 for SSL</description>
+				<description>Default values are 110 for plain/STARTTLS and 995 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="security" type="text" required="false">
 				<label>SMTP Server Security Protocol</label>
 				<options>
 					<option value="PLAIN">plain</option>
-					<option value="SSL">SSL</option>
-					<option value="TLS">TLS</option>
+					<option value="STARTTLS">STARTTLS</option>
+					<option value="SSL">SSL/TLS</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
@@ -112,8 +113,8 @@
 	<channel-type id="mailcount">
 		<item-type>Number</item-type>
 		<label>Mail Count</label>
-		<description>Number of mails in folder</description>
-		<state readOnly="true" />
+		<description>Number of emails in folder</description>
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="folder" type="text" required="true">
 				<label>Folder Name</label>

@@ -82,7 +82,7 @@ public class SMTPHandler extends BaseThingHandler {
                     mail.setSSLOnConnect(true);
                     mail.setSslSmtpPort(config.port.toString());
                     break;
-                case TLS:
+                case STARTTLS:
                     mail.setStartTLSEnabled(true);
                     mail.setStartTLSRequired(true);
                     mail.setSmtpPort(config.port);
@@ -95,7 +95,10 @@ public class SMTPHandler extends BaseThingHandler {
             }
             mail.send();
         } catch (EmailException e) {
-            logger.warn("Trying to send mail but exception occured: {} ", e.getMessage());
+            logger.warn("{}", e.getMessage());
+            if (e.getCause() != null) {
+                logger.warn("{}", e.getCause().toString());
+            }
             return false;
         }
         return true;
