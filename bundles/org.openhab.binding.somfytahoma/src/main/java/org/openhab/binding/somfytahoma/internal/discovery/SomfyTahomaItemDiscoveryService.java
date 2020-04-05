@@ -31,7 +31,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
-import org.openhab.binding.somfytahoma.internal.model.*;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaGateway;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
@@ -135,7 +139,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 String oid = group.getOid();
                 String label = group.getLabel();
 
-                //actiongroups use oid as deviceURL
+                // actiongroups use oid as deviceURL
                 actionGroupDiscovered(label, oid, oid);
             }
         } else {
@@ -297,12 +301,13 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private boolean isStateLess(SomfyTahomaDevice device) {
-        return device.getStates().size() == 0 || (device.getStates().size() == 1 && hasState(device, STATUS_STATE));
+        return device.getStates().isEmpty() || (device.getStates().size() == 1 && hasState(device, STATUS_STATE));
     }
 
     private void logUnsupportedDevice(SomfyTahomaDevice device) {
         if (!isStateLess(device)) {
-            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(), device.getWidget());
+            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(),
+                    device.getWidget());
             logger.info("If you want to add the support, please create a new issue and attach the information below");
             logger.info("Device definition:\n{}", device.getDefinition());
 
@@ -343,7 +348,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID) {
-        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID, hasState(device, RSSI_LEVEL_STATE));
+        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID,
+                hasState(device, RSSI_LEVEL_STATE));
     }
 
     private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID, boolean rssi) {
@@ -357,9 +363,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         ThingUID thingUID = new ThingUID(thingTypeUID, bridge.getThing().getUID(), oid);
 
         logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withRepresentationProperty("url").withLabel(label)
-                .withBridge(bridge.getThing().getUID()).build());
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
+                .withRepresentationProperty("url").withLabel(label).withBridge(bridge.getThing().getUID()).build());
     }
 
     private void actionGroupDiscovered(String label, String deviceURL, String oid) {

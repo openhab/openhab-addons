@@ -101,7 +101,7 @@ final class ChannelBridgeCheck extends ChannelHandlerTemplate {
                 }
             }
             String result;
-            if (unusedScenes.size() > 0) {
+            if (!unusedScenes.isEmpty()) {
                 result = thisBridgeHandler.localization.getText("channelValue.check-integrity-failed")
                         .concat(unusedScenes.toString());
             } else {

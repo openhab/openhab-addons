@@ -132,7 +132,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private synchronized void poll() {
-        if (thermostatHandlers.size() > 0) {
+        if (!thermostatHandlers.isEmpty()) {
             logger.debug("Polling for state");
             try {
                 if (connectToBridge()) {
