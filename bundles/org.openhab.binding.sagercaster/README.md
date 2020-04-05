@@ -33,8 +33,8 @@ The binding will use some input channels, that can be configured directly with p
 
 | Name                | Group  |Type                 | Description                                                     |
 |---------------------|--------|---------------------|-----------------------------------------------------------------|
-| is-raining          | input  |Switch               | On if it is raining, else Off.                                  |
-| rain-qtty           | input  |Number               | Any value that give indication of a current rain volume         |
+| is-raining (*)      | input  |Switch               | On if it is raining, else Off.                                  |
+| rain-qtty  (*)      | input  |Number               | Any value that give indication of a current rain volume         |
 |                 or  | input  |Number:Speed         | Any value that give indication of a current rain volume eg mm/h |
 |                 or  | input  |Number:Length        | Any value that give indication of a current rain volume eg mm   |
 | cloudiness          | input  |Number:Dimensionless | Cloud cover percentage                                          |
@@ -49,6 +49,8 @@ The binding will use some input channels, that can be configured directly with p
 | wind-evolution      | output |String               | Wind orientation evolution over observation period              |
 | pressure-trend      | output |String               | Pressure evolution over observation period                      |
 | temperature-trend   | output |String               | Temperature evolution over observation period                   |
+
+(*) You may use either is-raining, either rain-qtty depending upon the data available in your system.
 
 ## Full Example
 
