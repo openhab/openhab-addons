@@ -242,17 +242,21 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void storeKey(@Nullable String key) {
-        // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
-        getLGWebOSConfig().key = key;
+        if (!getKey().equals(key)) {
+            logger.debug("store new key");
+            // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
+            getLGWebOSConfig().key = key;
 
-        // persist the configuration change
-        Configuration configuration = editConfiguration();
-        configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
-        updateConfiguration(configuration);
+            // persist the configuration change
+            Configuration configuration = editConfiguration();
+            configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
+            updateConfiguration(configuration);
+        }
     }
 
     @Override
     public void storeProperties(Map<String, String> properties) {
+        logger.debug("storeProperties {}", properties);
         Map<String, String> map = editProperties();
         map.putAll(properties);
         updateProperties(map);
