@@ -1040,7 +1040,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                         if (response != null) {
                             List<String> fields = SonosXMLParser.getRadioTimeFromXML(response);
 
-                            if (fields != null && fields.size() > 0) {
+                            if (fields != null && !fields.isEmpty()) {
                                 opmlUrlSucceeded = true;
 
                                 resultString = new String();
