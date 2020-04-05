@@ -66,7 +66,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
             if (handler == null) {
                 console.println("Bad thing id '" + args[0] + "'");
                 printUsage(console);
-            } else if (args[1] == REPORT) {
+            } else if (REPORT.equals(args[1])) {
                 LocalDate now = LocalDate.now();
                 LocalDate start = now.minusDays(7);
                 LocalDate end = now.minusDays(1);
@@ -102,6 +102,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                     separator = args[4];
                 }
                 handler.reportValues(start, end, separator).forEach(console::println);
+            } else {
+                printUsage(console);
             }
         } else {
             printUsage(console);
