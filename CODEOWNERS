@@ -45,6 +45,7 @@
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enturno/ @klocsson
+/bundles/org.openhab.binding.etherrain/ @dfad1469
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feed/ @svilenvul
@@ -154,6 +155,7 @@
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.rotelra1x/ @fa2k
 /bundles/org.openhab.binding.russound/ @tmrobert8
+/bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.seneye/ @nikotanghe

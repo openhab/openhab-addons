@@ -75,8 +75,8 @@ public class SensiboHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDeviceDiscoveryService(SensiboAccountHandler bridgeHandler) {
         SensiboDiscoveryService discoveryService = new SensiboDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private void unregisterDeviceDiscoveryService(ThingUID thingUID) {

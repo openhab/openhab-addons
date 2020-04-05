@@ -199,7 +199,6 @@ public class ESP2Packet {
     }
 
     private byte getStatus(BasePacket basePacket) {
-
         if (basePacket.getPacketType() == ESPPacketType.RADIO_ERP1) {
             ERP1Message message = (ERP1Message) basePacket;
             return message.getPayload(ESP2_ORG_LENGTH + message.getRORG().getDataLength() + ESP2_SENDERID_LENGTH,
@@ -210,7 +209,6 @@ public class ESP2Packet {
     }
 
     private byte calcCheckSum(byte data[], int offset, int length) {
-
         int checkSum = 0;
         for (int i = 0; i < length; i++) {
             checkSum += (data[offset + i] & 0xff);
@@ -221,7 +219,6 @@ public class ESP2Packet {
 
     public byte[] serialize() throws EnOceanException {
         try {
-
             byte[] result = new byte[ESP2_SYNC_BYTE_LENGTH + ESP2_HEADER_LENGTH + ESP2_ORG_LENGTH + ESP2_DATA_LENGTH
                     + ESP2_SENDERID_LENGTH + ESP2_STATUS_LENGTH + ESP2_CHECKSUM_LENGTH];
             Arrays.fill(result, ZERO);

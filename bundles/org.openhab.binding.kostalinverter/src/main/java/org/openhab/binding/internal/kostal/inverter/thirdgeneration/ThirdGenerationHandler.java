@@ -36,14 +36,6 @@ import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricCharge;
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Mass;
-import javax.measure.quantity.Power;
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -106,8 +98,8 @@ public class ThirdGenerationHandler extends BaseThingHandler {
     /**
      * Constructor of this class
      *
-     * @param thing        the thing
-     * @param httpClient   the httpClient used for communication
+     * @param thing the thing
+     * @param httpClient the httpClient used for communication
      * @param inverterType the type of the device
      */
     public ThirdGenerationHandler(Thing thing, HttpClient httpClient, ThirdGenerationInverterTypes inverterType) {
@@ -218,8 +210,8 @@ public class ThirdGenerationHandler extends BaseThingHandler {
      * The value is set to the matching data (SITypes etc)
      *
      * @param channeluid Channel to update
-     * @param dataType   target data type
-     * @param value      value
+     * @param dataType target data type
+     * @param value value
      */
     private void updateChannelValue(String channeluid, ThirdGenerationChannelDatatypes dataType, Double value) {
         switch (dataType) {
@@ -228,36 +220,36 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 break;
             }
             case PERCEMTAGE: {
-                updateState(channeluid, new QuantityType<Dimensionless>(value, SmartHomeUnits.PERCENT));
+                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.PERCENT));
                 break;
             }
             case KILOGRAM: {
-                updateState(channeluid, new QuantityType<Mass>(value / 1000, SIUnits.KILOGRAM));
+                updateState(channeluid, new QuantityType<>(value / 1000, SIUnits.KILOGRAM));
                 break;
             }
             case SECONDS: {
-                updateState(channeluid, new QuantityType<Time>(value, SmartHomeUnits.SECOND));
+                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.SECOND));
                 break;
             }
             case KILOWATT_HOUR: {
-                updateState(channeluid, new QuantityType<Energy>(value / 1000, SmartHomeUnits.KILOWATT_HOUR));
+                updateState(channeluid, new QuantityType<>(value / 1000, SmartHomeUnits.KILOWATT_HOUR));
                 break;
             }
             case WATT: {
-                updateState(channeluid, new QuantityType<Power>(value, SmartHomeUnits.WATT));
+                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.WATT));
                 break;
             }
             case AMPERE: {
-                updateState(channeluid, new QuantityType<ElectricCurrent>(value, SmartHomeUnits.AMPERE));
+                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.AMPERE));
                 break;
             }
             case AMPERE_HOUR: {
                 // Ampere hours are not supported by ESH, but 1 AH is equal tp 3600 coulomb...
-                updateState(channeluid, new QuantityType<ElectricCharge>(value * 3600, SmartHomeUnits.COULOMB));
+                updateState(channeluid, new QuantityType<>(value * 3600, SmartHomeUnits.COULOMB));
                 break;
             }
             case VOLT: {
-                updateState(channeluid, new QuantityType<ElectricPotential>(value, SmartHomeUnits.VOLT));
+                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.VOLT));
                 break;
             }
             default: {

@@ -100,7 +100,8 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
     }
 
     /**
-     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge JsonVeluxBridge}
+     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge
+     * JsonVeluxBridge}
      * for serializing.
      * <P>
      * Resulting JSON:
@@ -119,7 +120,7 @@ class JCgetScenes extends GetScenes implements JsonBridgeCommunicationProtocol {
 
         public Request() {
             this.action = "get";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 

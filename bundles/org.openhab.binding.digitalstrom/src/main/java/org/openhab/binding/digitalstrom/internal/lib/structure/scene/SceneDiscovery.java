@@ -50,7 +50,7 @@ public class SceneDiscovery {
     // fields: 0 = namedScenes, 1 = apartmentScenes, 2 = zoneScenes, 3 = reachableScenes
     private final char[] scenesGenerated = "0000".toCharArray();
 
-    private final List<InternalScene> namedScenes = new LinkedList<InternalScene>();
+    private final List<InternalScene> namedScenes = new LinkedList<>();
     private boolean genList = false;
     ScheduledFuture<?> generateReachableScenesScheduledFuture;
 
@@ -347,14 +347,14 @@ public class SceneDiscovery {
                 JsonObject resultJsonObj = JSONResponseHandler.getResultJsonObject(responsJsonObj);
                 if (resultJsonObj.get(JSONApiResponseKeysEnum.ZONES.getKey()) instanceof JsonArray) {
                     JsonArray zones = (JsonArray) resultJsonObj.get(JSONApiResponseKeysEnum.ZONES.getKey());
-                    reachableGroupsMap = new HashMap<Integer, List<Short>>(zones.size());
+                    reachableGroupsMap = new HashMap<>(zones.size());
                     List<Short> groupList;
                     for (int i = 0; i < zones.size(); i++) {
                         if (((JsonObject) zones.get(i))
                                 .get(JSONApiResponseKeysEnum.GROUPS.getKey()) instanceof JsonArray) {
                             JsonArray groups = (JsonArray) ((JsonObject) zones.get(i))
                                     .get(JSONApiResponseKeysEnum.GROUPS.getKey());
-                            groupList = new LinkedList<Short>();
+                            groupList = new LinkedList<>();
                             for (int k = 0; k < groups.size(); k++) {
                                 groupList.add(groups.get(k).getAsShort());
                             }

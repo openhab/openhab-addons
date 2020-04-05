@@ -78,6 +78,7 @@
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enturno</module>
+    <module>org.openhab.binding.etherrain</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
@@ -188,6 +189,7 @@
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.russound</module>
+    <module>org.openhab.binding.sagercaster</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.seneye</module>

@@ -214,7 +214,7 @@ public class LxControlLightControllerV2Test extends LxControlTest {
 
     private void testMoodList(List<StateOption> options, Integer offId) {
         assertEquals(options.size(), handler.extraControls.size());
-        if (options.size() == 0) {
+        if (options.isEmpty()) {
             return;
         }
         Integer min = null;

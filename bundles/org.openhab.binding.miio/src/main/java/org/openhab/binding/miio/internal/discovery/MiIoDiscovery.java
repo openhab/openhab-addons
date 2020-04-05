@@ -62,7 +62,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> miIoDiscoveryJob;
     protected @Nullable DatagramSocket clientSocket;
     private @Nullable Thread socketReceiveThread;
-    private Set<String> responseIps = new HashSet<String>();
+    private Set<String> responseIps = new HashSet<>();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
     private final CloudConnector cloudConnector;
@@ -123,8 +123,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     private void discover() {
         startReceiverThreat();
-        responseIps = new HashSet<String>();
-        HashSet<String> broadcastAddresses = new HashSet<String>();
+        responseIps = new HashSet<>();
+        HashSet<String> broadcastAddresses = new HashSet<>();
         broadcastAddresses.add("224.0.0.1");
         broadcastAddresses.add("224.0.0.50");
         broadcastAddresses.addAll(NetUtil.getAllBroadcastAddresses());

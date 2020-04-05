@@ -96,7 +96,6 @@ public class HueGroupEntry {
 
         @Override
         public JsonElement serialize(HueGroupEntry product, Type type, JsonSerializationContext context) {
-
             GroupItem item = product.groupItem;
             if (item != null) {
                 product.lights = item.getMembers().stream().map(gitem -> cs.mapItemUIDtoHueID(gitem))

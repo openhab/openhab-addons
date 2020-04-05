@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,7 +53,7 @@ public class OwserverTestServer {
             @Override
             public void run() {
                 OwserverPacket receivedPacket;
-                ArrayList<OwserverPacket> answerPackets;
+                List<OwserverPacket> answerPackets;
                 serverStarted.complete(true);
                 try {
                     while (isRunning) {
@@ -88,8 +89,8 @@ public class OwserverTestServer {
         serverSocket.close();
     }
 
-    private ArrayList<OwserverPacket> processPacket(OwserverPacket inputPacket) {
-        ArrayList<OwserverPacket> returnPackets = new ArrayList<OwserverPacket>();
+    private List<OwserverPacket> processPacket(OwserverPacket inputPacket) {
+        List<OwserverPacket> returnPackets = new ArrayList<>();
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
         switch (inputPacket.getMessageType()) {
             case NOP:

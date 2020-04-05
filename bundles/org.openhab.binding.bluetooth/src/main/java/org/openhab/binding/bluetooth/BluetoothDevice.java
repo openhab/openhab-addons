@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +115,7 @@ public abstract class BluetoothDevice {
     /**
      * List of supported services
      */
-    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<UUID, BluetoothService>();
+    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<>();
 
     /**
      * Last known RSSI
@@ -127,9 +128,14 @@ public abstract class BluetoothDevice {
     protected @Nullable Integer txPower = null;
 
     /**
+     * Last time when activity occurred on this device.
+     */
+    protected ZonedDateTime lastSeenTime;
+
+    /**
      * The event listeners will be notified of device updates
      */
-    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<BluetoothDeviceListener>();
+    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address
@@ -140,10 +146,29 @@ public abstract class BluetoothDevice {
     public BluetoothDevice(BluetoothAdapter adapter, BluetoothAddress address) {
         this.address = address;
         this.adapter = adapter;
+        this.lastSeenTime = ZonedDateTime.now();
     }
 
     /**
-     * Returns the the name of the Bluetooth device.
+     * Returns the last time this device was active
+     *
+     * @return The last time this device was active
+     */
+    public ZonedDateTime getLastSeenTime() {
+        return lastSeenTime;
+    }
+
+    /**
+     * Updates the last activity timestamp for this device.
+     * Should be called whenever activity occurs on this device.
+     *
+     */
+    public void updateLastSeenTime() {
+        lastSeenTime = ZonedDateTime.now();
+    }
+
+    /**
+     * Returns the name of the Bluetooth device.
      *
      * @return The devices name
      */
@@ -592,6 +617,13 @@ public abstract class BluetoothDevice {
      */
     public boolean hasListeners() {
         return !eventListeners.isEmpty();
+    }
+
+    /**
+     * Releases resources that this device is using.
+     *
+     */
+    protected void dispose() {
     }
 
     /**

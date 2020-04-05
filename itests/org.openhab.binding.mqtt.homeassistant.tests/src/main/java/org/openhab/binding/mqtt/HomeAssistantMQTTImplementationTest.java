@@ -154,7 +154,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     public void parseHATree() throws InterruptedException, ExecutionException, TimeoutException {
         MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
 
-        final Map<String, AbstractComponent<?>> haComponents = new HashMap<String, AbstractComponent<?>>();
+        final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);

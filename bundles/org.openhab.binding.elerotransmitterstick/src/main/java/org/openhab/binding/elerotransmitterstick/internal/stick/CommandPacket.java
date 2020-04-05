@@ -18,9 +18,9 @@ import org.eclipse.smarthome.core.util.HexUtils;
  * @author Volker Bier - Initial contribution
  */
 public class CommandPacket {
-    public final static byte EASY_CHECK = (byte) 0x4A;
-    public final static byte EASY_SEND = (byte) 0x4C;
-    public final static byte EASY_INFO = (byte) 0x4E;
+    public static final byte EASY_CHECK = (byte) 0x4A;
+    public static final byte EASY_SEND = (byte) 0x4C;
+    public static final byte EASY_INFO = (byte) 0x4E;
 
     byte[] data;
 

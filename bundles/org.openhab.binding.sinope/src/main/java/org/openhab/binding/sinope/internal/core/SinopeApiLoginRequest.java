@@ -21,7 +21,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeApiLoginRequest.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeApiLoginRequest extends SinopeRequest {
@@ -65,7 +65,6 @@ public class SinopeApiLoginRequest extends SinopeRequest {
 
         // System.out.println(toString(bb.array()));
         return bb.array();
-
     }
 
     /**

@@ -31,10 +31,10 @@ public class DeviceMapping {
 
     @SerializedName("id")
     @Expose
-    private List<String> id = new ArrayList<String>();
+    private List<String> id = new ArrayList<>();
     @SerializedName("channels")
     @Expose
-    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
     @SerializedName("propertyMethod")
     @Expose
     private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();

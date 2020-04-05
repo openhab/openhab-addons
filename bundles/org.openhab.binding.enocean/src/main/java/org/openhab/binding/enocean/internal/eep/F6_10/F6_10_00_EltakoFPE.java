@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.F6_10;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_CONTACT;
 
 import java.util.function.Function;
 
@@ -44,7 +44,6 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (channelId.equals(CHANNEL_CONTACT)) {
             EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
             if (c.inverted) {

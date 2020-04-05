@@ -46,7 +46,7 @@ public class Lib485BridgeHandler extends DmxBridgeHandler {
     public static final int DEFAULT_PORT = 9020;
 
     private final Logger logger = LoggerFactory.getLogger(Lib485BridgeHandler.class);
-    private final Map<IpNode, Socket> receiverNodes = new HashMap<IpNode, Socket>();
+    private final Map<IpNode, Socket> receiverNodes = new HashMap<>();
 
     public Lib485BridgeHandler(Bridge lib485Bridge) {
         super(lib485Bridge);

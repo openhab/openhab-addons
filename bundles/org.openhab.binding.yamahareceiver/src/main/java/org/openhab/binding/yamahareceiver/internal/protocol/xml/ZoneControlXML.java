@@ -81,9 +81,8 @@ public class ZoneControlXML implements ZoneControl {
     protected boolean dialogueLevelSupported = false;
 
     public ZoneControlXML(AbstractConnection con, Zone zone, YamahaZoneConfig zoneSettings,
-                          ZoneControlStateListener observer, DeviceInformationState deviceInformationState,
-                          Supplier<InputConverter> inputConverterSupplier) {
-
+            ZoneControlStateListener observer, DeviceInformationState deviceInformationState,
+            Supplier<InputConverter> inputConverterSupplier) {
         this.comReference = new WeakReference<>(con);
         this.zone = zone;
         this.zoneConfig = zoneSettings;
@@ -132,14 +131,17 @@ public class ZoneControlXML implements ZoneControl {
 
         try {
             // Note: Detection for RX-V3900, which has a different XML node for surround program
-            Node basicStatusNode = getZoneResponse(comReference.get(), getZone(), ZONE_BASIC_STATUS_CMD, ZONE_BASIC_STATUS_PATH);
+            Node basicStatusNode = getZoneResponse(comReference.get(), getZone(), ZONE_BASIC_STATUS_CMD,
+                    ZONE_BASIC_STATUS_PATH);
             String surroundProgram = getNodeContentOrEmpty(basicStatusNode, "Surr/Pgm_Sel/Pgm");
 
             if (StringUtils.isNotEmpty(surroundProgram)) {
-                surroundSelProgram = new CommandTemplate("<Surr><Pgm_Sel><Straight>Off</Straight><Pgm>%s</Pgm></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Pgm");
+                surroundSelProgram = new CommandTemplate(
+                        "<Surr><Pgm_Sel><Straight>Off</Straight><Pgm>%s</Pgm></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Pgm");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelProgram);
 
-                surroundSelStraight = new CommandTemplate("<Surr><Pgm_Sel><Straight>On</Straight></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Straight");
+                surroundSelStraight = new CommandTemplate("<Surr><Pgm_Sel><Straight>On</Straight></Pgm_Sel></Surr>",
+                        "Surr/Pgm_Sel/Straight");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelStraight);
             }
 

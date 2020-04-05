@@ -50,7 +50,6 @@ public class Room {
         Room room = (Room) o;
 
         return id != null ? id.equals(room.id) : room.id == null;
-
     }
 
     @Override

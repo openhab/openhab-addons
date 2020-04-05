@@ -79,7 +79,7 @@ public class DeviceDescriptorXML {
         return result;
     }
 
-    public static abstract class HasCommands {
+    public abstract static class HasCommands {
 
         public final Set<String> commands;
 
@@ -157,14 +157,13 @@ public class DeviceDescriptorXML {
      * @param con
      */
     public void load(XMLConnection con) {
-
         // Get and store the Yamaha Description XML. This will be used to detect proper element naming in other areas.
         Node descNode = tryGetDescriptor(con);
 
         unitName = descNode.getAttributes().getNamedItem("Unit_Name").getTextContent();
 
         system = buildFeatureLookup(descNode, "Unit", tag -> tag, (tag, e) -> new SystemDescriptor(e))
-                .getOrDefault("System", null); // there will be only one System entry
+                .getOrDefault("System", this.system); // there will be only one System entry
 
         zones = buildFeatureLookup(descNode, "Subunit", tag -> YamahaUtils.tryParseEnum(Zone.class, tag),
                 (zone, e) -> new ZoneDescriptor(zone, e));

@@ -15,11 +15,14 @@ package org.openhab.binding.insteon.internal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +47,7 @@ import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.driver.DriverListener;
 import org.openhab.binding.insteon.internal.driver.ModemDBEntry;
 import org.openhab.binding.insteon.internal.driver.Poller;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.driver.Port;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -306,10 +309,10 @@ public class InsteonBinding {
     private int checkIfInModemDatabase(InsteonDevice dev) {
         try {
             InsteonAddress addr = dev.getAddress();
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
             if (dbes.containsKey(addr)) {
                 if (!dev.hasModemDBEntry()) {
-                    logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr));
+                    logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr, true));
                     dev.setHasModemDBEntry(true);
                 }
             } else {
@@ -318,6 +321,21 @@ public class InsteonBinding {
                 }
             }
             return dbes.size();
+        } finally {
+            driver.unlockModemDBEntries();
+        }
+    }
+
+    public Map<String, String> getDatabaseInfo() {
+        try {
+            Map<String, String> databaseInfo = new HashMap<>();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            for (InsteonAddress addr : dbes.keySet()) {
+                String a = addr.toString();
+                databaseInfo.put(a, a + ": " + getLinkInfo(dbes, addr, false));
+            }
+
+            return databaseInfo;
         } finally {
             driver.unlockModemDBEntries();
         }
@@ -350,42 +368,55 @@ public class InsteonBinding {
         return (dev);
     }
 
-    private String getLinkInfo(HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a) {
+    private String getLinkInfo(Map<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
         ModemDBEntry dbe = dbes.get(a);
-        ArrayList<Byte> controls = dbe.getControls();
-        ArrayList<Byte> responds = dbe.getRespondsTo();
+        List<Byte> controls = dbe.getControls();
+        List<Byte> responds = dbe.getRespondsTo();
 
-        StringBuilder buf = new StringBuilder("the modem");
-        if (!controls.isEmpty()) {
-            buf.append(" controls groups [");
-            buf.append(toGroupString(controls));
-            buf.append("]");
-        }
-
-        if (!responds.isEmpty()) {
-            if (!controls.isEmpty()) {
-                buf.append(" and");
+        Port port = dbe.getPort();
+        String deviceName = port.getDeviceName();
+        String s = deviceName.startsWith("/hub") ? "hub" : "plm";
+        StringBuilder buf = new StringBuilder();
+        if (port.isModem(a)) {
+            if (prefix) {
+                buf.append("it is the ");
             }
-
-            buf.append(" responds to groups [");
+            buf.append(s);
+            buf.append(" (");
+            buf.append(Utils.redactPassword(deviceName));
+            buf.append(")");
+        } else {
+            if (prefix) {
+                buf.append("the ");
+            }
+            buf.append(s);
+            buf.append(" controls groups (");
+            buf.append(toGroupString(controls));
+            buf.append(") and responds to groups (");
             buf.append(toGroupString(responds));
-            buf.append("]");
+            buf.append(")");
         }
 
         return buf.toString();
     }
 
-    private String toGroupString(ArrayList<Byte> group) {
-        ArrayList<Byte> sorted = new ArrayList<>(group);
-        Collections.sort(sorted);
+    private String toGroupString(List<Byte> group) {
+        List<Byte> sorted = new ArrayList<>(group);
+        Collections.sort(sorted, new Comparator<Byte>() {
+            @Override
+            public int compare(Byte b1, Byte b2) {
+                int i1 = b1 & 0xFF;
+                int i2 = b2 & 0xFF;
+                return i1 < i2 ? -1 : i1 == i2 ? 0 : 1;
+            }
+        });
 
         StringBuilder buf = new StringBuilder();
         for (Byte b : sorted) {
             if (buf.length() > 0) {
                 buf.append(",");
             }
-            buf.append("0x");
-            buf.append(Utils.getHexString(b));
+            buf.append(b & 0xFF);
         }
 
         return buf.toString();
@@ -430,9 +461,9 @@ public class InsteonBinding {
 
         @Override
         public void driverCompletelyInitialized() {
-            List<String> missing = new ArrayList<String>();
+            List<String> missing = new ArrayList<>();
             try {
-                HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+                Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
                 logger.debug("modem database has {} entries!", dbes.size());
                 if (dbes.isEmpty()) {
                     logger.warn("the modem link database is empty!");
@@ -440,7 +471,7 @@ public class InsteonBinding {
                 for (InsteonAddress k : dbes.keySet()) {
                     logger.debug("modem db entry: {}", k);
                 }
-                HashSet<InsteonAddress> addrs = new HashSet<>();
+                Set<InsteonAddress> addrs = new HashSet<>();
                 for (InsteonDevice dev : devices.values()) {
                     InsteonAddress a = dev.getAddress();
                     if (!dbes.containsKey(a)) {
@@ -450,7 +481,8 @@ public class InsteonBinding {
                     } else {
                         if (!dev.hasModemDBEntry()) {
                             addrs.add(a);
-                            logger.debug("device {} found in the modem database and {}.", a, getLinkInfo(dbes, a));
+                            logger.debug("device {} found in the modem database and {}.", a,
+                                    getLinkInfo(dbes, a, true));
                             dev.setHasModemDBEntry(true);
                         }
                         if (dev.getStatus() != DeviceStatus.POLLING) {
@@ -462,7 +494,7 @@ public class InsteonBinding {
                 for (InsteonAddress k : dbes.keySet()) {
                     if (!addrs.contains(k) && !k.equals(dbes.get(k).getPort().getAddress())) {
                         logger.debug("device {} found in the modem database, but is not configured as a thing and {}.",
-                                k, getLinkInfo(dbes, k));
+                                k, getLinkInfo(dbes, k, true));
 
                         missing.add(k.toString());
                     }

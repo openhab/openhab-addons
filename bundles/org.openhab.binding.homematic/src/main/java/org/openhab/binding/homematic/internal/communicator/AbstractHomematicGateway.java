@@ -63,10 +63,10 @@ import org.openhab.binding.homematic.internal.communicator.virtual.StateContactV
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualGateway;
 import org.openhab.binding.homematic.internal.misc.DelayedExecuter;
+import org.openhab.binding.homematic.internal.misc.DelayedExecuter.DelayedExecuterCallback;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
-import org.openhab.binding.homematic.internal.misc.DelayedExecuter.DelayedExecuterCallback;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
@@ -91,8 +91,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
     private static final String GATEWAY_POOL_NAME = "homematicGateway";
 
-    private final Map<TransferMode, RpcClient<?>> rpcClients = new HashMap<TransferMode, RpcClient<?>>();
-    private final Map<TransferMode, RpcServer> rpcServers = new HashMap<TransferMode, RpcServer>();
+    private final Map<TransferMode, RpcClient<?>> rpcClients = new HashMap<>();
+    private final Map<TransferMode, RpcServer> rpcServers = new HashMap<>();
 
     protected HomematicConfig config;
     protected HttpClient httpClient;
@@ -100,12 +100,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private final HomematicGatewayAdapter gatewayAdapter;
     private final DelayedExecuter sendDelayedExecutor = new DelayedExecuter();
     private final DelayedExecuter receiveDelayedExecutor = new DelayedExecuter();
-    private final Set<HmDatapointInfo> echoEvents = Collections.synchronizedSet(new HashSet<HmDatapointInfo>());
+    private final Set<HmDatapointInfo> echoEvents = Collections.synchronizedSet(new HashSet<>());
     private ScheduledFuture<?> connectionTrackerFuture;
     private ConnectionTrackerThread connectionTrackerThread;
-    private final Map<String, HmDevice> devices = Collections.synchronizedMap(new HashMap<String, HmDevice>());
-    private final Map<HmInterface, TransferMode> availableInterfaces = new TreeMap<HmInterface, TransferMode>();
-    private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<VirtualDatapointHandler>();
+    private final Map<String, HmDevice> devices = Collections.synchronizedMap(new HashMap<>());
+    private final Map<HmInterface, TransferMode> availableInterfaces = new TreeMap<>();
+    private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<>();
     private boolean cancelLoadAllMetadata;
     private boolean initialized;
     private boolean newDeviceEventsEnabled;
@@ -372,8 +372,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         List<HmDevice> deviceDescriptions = getDeviceDescriptions();
 
         // loading datapoints for all channels
-        Set<String> loadedDevices = new HashSet<String>();
-        Map<String, Collection<HmDatapoint>> datapointsByChannelIdCache = new HashMap<String, Collection<HmDatapoint>>();
+        Set<String> loadedDevices = new HashSet<>();
+        Map<String, Collection<HmDatapoint>> datapointsByChannelIdCache = new HashMap<>();
         for (HmDevice device : deviceDescriptions) {
             if (!cancelLoadAllMetadata) {
                 try {
@@ -443,7 +443,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Loads all device descriptions from the gateway.
      */
     private List<HmDevice> getDeviceDescriptions() throws IOException {
-        List<HmDevice> deviceDescriptions = new ArrayList<HmDevice>();
+        List<HmDevice> deviceDescriptions = new ArrayList<>();
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             deviceDescriptions.addAll(getRpcClient(hmInterface).listDevices(hmInterface));
         }
