@@ -4,10 +4,11 @@ Binding for the Bosch Smart Home Controller:
 
 ## Supported Things
 
- - Bosch In-Wall switches (ON/OFF command and state only, no metering)
- - Bosch Smart Plugs (ON/OFF command and state only, no metering) - use "in-wall-switch" thing too.
+ - Bosch In-Wall switches
+ - Bosch Smart Plugs (use "in-wall-switch" thing too).
  - Bosch TwinGuard smoke detector
  - Bosch Window/Door contacts
+ - Bosch Motion Detector
 
 ## Limitations
 
@@ -32,9 +33,11 @@ Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
 
   Thing in-wall-switch coffeemachine "Coffee Machine" [ id="hdm:HomeMaticIP:3014F711A0000XXXXXXXXXXXX" ]
 
-  Thing twinguard      tg-corridor    "Twinguard Smoke Detector" [ id="hdm:ZigBee:000d6f000ef92555" ]
-  Thing window-contact window-kitchen "Window Kitchen"           [ id="hdm:HomeMaticIP:3014F711A000009A185B02DE" ]
-  Thing window-contact entrance       "Entrance door"            [ id="hdm:HomeMaticIP:3014F711A000009A185AFFDB" ]
+  Thing twinguard      tg-corridor    "Twinguard Smoke Detector" [ id="hdm:ZigBee:000d6f000XXXXXXX" ]
+  Thing window-contact window-kitchen "Window Kitchen"           [ id="hdm:HomeMaticIP:3014F711A00000XXXXXXXXXX" ]
+  Thing window-contact entrance       "Entrance door"            [ id="hdm:HomeMaticIP:3014F711A00000XXXXXXXXXX" ]
+
+  Thing motion-detector  motion-corridor "Bewegungsmelder"      [ id="hdm:ZigBee:000d6f000XXXXXXX" ]
 }
 ```
 
