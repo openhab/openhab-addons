@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
@@ -41,15 +40,16 @@ import com.daveoxley.cbus.Network;
 @NonNullByDefault
 public abstract class CBusGroupHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger;
     protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
     protected @Nullable Group group = null;
     protected int applicationId = -1;
     protected int groupId = -1;
 
-    public CBusGroupHandler(Thing thing, int applicationId) {
+    public CBusGroupHandler(Thing thing, int applicationId, Logger logger) {
         super(thing);
         this.applicationId = applicationId;
+        this.logger = logger;
     }
 
     @Override
@@ -58,23 +58,21 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     @SuppressWarnings({ "null", "unused" })
     @Override
     public void initialize() {
-        logger.debug("Initialise property group {} config group {}",
-                getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID),
-                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
         /*
          * Group Id has moved from config to property. Copy for backward compatibility
          */
         if (getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID) == null) {
-            updateProperty(CBusBindingConstants.PROPERTY_GROUP_ID,
-                    getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+            if (getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID) != null) {
+                updateProperty(CBusBindingConstants.PROPERTY_GROUP_ID,
+                        getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
+            }
         }
         if (getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_NAME) == null) {
-            updateProperty(CBusBindingConstants.PROPERTY_GROUP_NAME,
-                    getConfig().get(CBusBindingConstants.CONFIG_NAME).toString());
+            if (getConfig().get(CBusBindingConstants.CONFIG_NAME) != null) {
+                updateProperty(CBusBindingConstants.PROPERTY_GROUP_NAME,
+                        getConfig().get(CBusBindingConstants.CONFIG_NAME).toString());
+            }
         }
-        logger.debug("FixUp property group {} config group {}",
-                getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID),
-                getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
         groupId = Integer.parseInt(getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID));
         cBusNetworkHandler = getCBusNetworkHandler();
         if (cBusNetworkHandler == null) {
@@ -123,8 +121,9 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     private @Nullable Group getGroup(int groupID) {
         try {
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
-            if (networkHandler == null)
+            if (networkHandler == null) {
                 return null;
+            }
             Network network = networkHandler.getNetwork();
             if (network != null) {
                 Application application = network.getApplication(applicationId);

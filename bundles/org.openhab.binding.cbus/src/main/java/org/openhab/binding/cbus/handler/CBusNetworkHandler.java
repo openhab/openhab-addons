@@ -43,7 +43,7 @@ import com.daveoxley.cbus.Project;
 @NonNullByDefault
 public class CBusNetworkHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(CBusNetworkHandler.class);
     private @Nullable CBusCGateHandler bridgeHandler = null;
     private @Nullable Network network = null;
     private @Nullable Project projectObject = null;
@@ -113,14 +113,14 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             logger.debug("projectobject {}", projectObject);
             if (projectObject == null) {
                 CGateSession session = cbusCGateHandler.getCGateSession();
-                if (session != null)
+                if (session != null) {
                     try {
                         projectObject = (Project) session.getCGateObject("//" + project);
                         this.projectObject = projectObject;
                     } catch (CGateException e2) {
                         // We dont need to do anything other than stop this propagating
                     }
-
+                }
                 if (projectObject == null) {
                     logger.debug("Cant get projectobject");
                     return;
@@ -176,8 +176,9 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             if (network != null && network.isOnline()) {
                 logger.debug("Network is online");
                 ScheduledFuture<?> initNetwork = this.initNetwork;
-                if (initNetwork != null)
+                if (initNetwork != null) {
                     initNetwork.cancel(false);
+                }
                 updateStatus();
             } else {
                 ThingStatus lastStatus = getThing().getStatus();
@@ -224,8 +225,9 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 logger.debug("Schedule networkSync to start in {} seconds",
                         Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()));
             } else {
-                if (networkSync != null)
+                if (networkSync != null) {
                     networkSync.cancel(false);
+                }
             }
 
             for (Thing thing : getThing().getThings()) {

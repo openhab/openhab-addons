@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.CGateException;
@@ -37,10 +36,8 @@ import com.daveoxley.cbus.Group;
 @NonNullByDefault
 public class CBusLightHandler extends CBusGroupHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public CBusLightHandler(Thing thing) {
-        super(thing, CBusBindingConstants.CBUS_APPLICATION_LIGHTING);
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_LIGHTING, LoggerFactory.getLogger(CBusLightHandler.class));
     }
 
     @Override
@@ -51,42 +48,54 @@ public class CBusLightHandler extends CBusGroupHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Group group = this.group;
-        if (group == null)
+        if (group == null) {
             return;
-        if (command instanceof RefreshType) {
-            logger.debug("handleCommand got RefreshType for {}------------------", channelUID);
         }
+        if (command instanceof RefreshType) {
+            try {
+                int level = group.getLevel();
+                logger.debug("handle RefreshType Command for Chanell {} Group {} level {}", channelUID, groupId, level);
+                if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
+                    updateState(channelUID, (level > 0) ? OnOffType.ON : OnOffType.OFF);
+                } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
+                    updateState(channelUID, new PercentType((int) (level * 100 / 255.0)));
+                }
+            } catch (CGateException e) {
+                logger.debug("Failed to getLevel for group {}", groupId, e);
+            }
 
-        if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
-            logger.debug("Channel State command for {}: {}", channelUID, command);
-            if (command instanceof OnOffType) {
+        } else {
+            if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
+                logger.debug("Channel State command for {}: {}", channelUID, command);
+                if (command instanceof OnOffType) {
+                    try {
+                        if (command.equals(OnOffType.ON)) {
+                            group.on();
+                        } else if (command.equals(OnOffType.OFF)) {
+                            group.off();
+                        }
+                    } catch (CGateException e) {
+                        logger.debug("Failed to send command {} to {}", command, group, e);
+                    }
+                }
+            } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
+                logger.debug("Channel Level command for {}: {}", channelUID, command);
                 try {
-                    if (command.equals(OnOffType.ON)) {
-                        group.on();
-                    } else if (command.equals(OnOffType.OFF)) {
-                        group.off();
+                    if (command instanceof OnOffType) {
+                        if (command.equals(OnOffType.ON)) {
+                            group.on();
+                        } else if (command.equals(OnOffType.OFF)) {
+                            group.off();
+                        }
+                    } else if (command instanceof PercentType) {
+                        PercentType value = (PercentType) command;
+                        group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
+                    } else if (command instanceof IncreaseDecreaseType) {
+                        logger.debug("Increase/Decrease not implemented for {}", channelUID);
                     }
                 } catch (CGateException e) {
                     logger.warn("Failed to send command {} to {}", command, group, e);
                 }
-            }
-        } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
-            logger.debug("Channel Level command for {}: {}", channelUID, command);
-            try {
-                if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.ON)) {
-                        group.on();
-                    } else if (command.equals(OnOffType.OFF)) {
-                        group.off();
-                    }
-                } else if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
-                    group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    logger.warn("Increase/Decrease not implemented for {}", channelUID);
-                }
-            } catch (CGateException e) {
-                logger.warn("Failed to send command {} to {}", command, group, e);
             }
         }
     }
@@ -99,7 +108,7 @@ public class CBusLightHandler extends CBusGroupHandler {
             if (channel != null && channelLevel != null) {
                 ChannelUID channelUID = channel.getUID();
                 ChannelUID channelLevelUID = channelLevel.getUID();
-
+                logger.debug("channel UID {} level UID {}", channelUID, channelLevelUID);
                 if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
                     updateState(channelUID, OnOffType.ON);
                     updateState(channelLevelUID, new PercentType(100));

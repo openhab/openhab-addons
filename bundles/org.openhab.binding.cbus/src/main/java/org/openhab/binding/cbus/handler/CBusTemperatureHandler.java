@@ -20,9 +20,12 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Group;
 
 /**
  * The {@link CBusTemperatureHandler} is responsible for handling commands, which are
@@ -33,15 +36,30 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CBusTemperatureHandler extends CBusGroupHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public CBusTemperatureHandler(Thing thing) {
-        super(thing, CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE);
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE,
+                LoggerFactory.getLogger(CBusTemperatureHandler.class));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Read only thing - no commands to handle
+        if (command instanceof RefreshType) {
+            try {
+                Group group = this.group;
+                if (group != null) {
+                    int level = group.getLevel();
+                    logger.debug("handle RefreshType Command for Chanell {} Group {} level {}", channelUID, groupId,
+                            level);
+                    if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_TEMP)) {
+                        updateState(channelUID, new QuantityType<>(level, CELSIUS));
+                    }
+                }
+            } catch (CGateException e) {
+                logger.warn("Failed to getLevel for group {}", groupId, e);
+            }
+
+        }
     }
 
     public void updateGroup(int updateApplicationId, int updateGroupId, String value) {

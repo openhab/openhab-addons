@@ -18,8 +18,8 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.CGateException;
@@ -34,25 +34,32 @@ import com.daveoxley.cbus.Group;
 @NonNullByDefault
 public class CBusTriggerHandler extends CBusGroupHandler {
 
-    private Logger logger = LoggerFactory.getLogger(CBusTriggerHandler.class);
 
     public CBusTriggerHandler(Thing thing) {
-        super(thing, CBusBindingConstants.CBUS_APPLICATION_TRIGGER);
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_TRIGGER, LoggerFactory.getLogger(CBusTriggerHandler.class));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Group group = this.group;
-        if (group == null)
+        if (group == null) {
             return;
-        if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
-            logger.debug("Channel Value command for {}: {}", channelUID, command);
-            try {
-                if (command instanceof DecimalType) {
-                    group.TriggerEvent(((DecimalType) command).intValue());
+        }
+        if (command instanceof RefreshType) {
+            /*
+             * Cgate cant provide the current value for a trigger group
+             */
+            logger.debug("Refresh for Trigger group not implemented");
+        } else {
+            if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
+                logger.debug("Channel Value command for {}: {}", channelUID, command);
+                try {
+                    if (command instanceof DecimalType) {
+                        group.TriggerEvent(((DecimalType) command).intValue());
+                    }
+                } catch (CGateException e) {
+                    logger.warn("Failed to send trigger command {} to {}", command, group, e);
                 }
-            } catch (CGateException e) {
-                logger.warn("Failed to send trigger command {} to {}", command, group, e);
             }
         }
     }

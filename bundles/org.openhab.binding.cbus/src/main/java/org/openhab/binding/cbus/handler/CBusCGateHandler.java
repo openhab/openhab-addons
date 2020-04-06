@@ -102,7 +102,7 @@ final class CBusThreadPool extends CGateThreadPool {
 @NonNullByDefault
 public class CBusCGateHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
 
     private @Nullable InetAddress ipAddress = null;
 
@@ -190,8 +190,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     private void updateStatus() {
         ThingStatus lastStatus = getThing().getStatus();
         CGateSession cGateSession = this.cGateSession;
-        if (cGateSession == null)
+        if (cGateSession == null) {
             return;
+        }
         if (cGateSession.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -228,12 +229,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         @SuppressWarnings({ "null" })
         @Override
         public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
-            if (cGateSession == null || status == null)
+            if (cGateSession == null || status == null) {
                 return;
+            }
             if (status.startsWith("# ")) {
                 status = status.substring(2);
-                if (status == null)
+                if (status == null) {
                     return;
+                }
             }
             logger.debug("ProcessStatusChange {}", status);
             String contents[] = status.split("#");
@@ -348,8 +351,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         @Override
         public void processEvent(@Nullable CGateSession cgate_session, int eventCode,
                 @Nullable GregorianCalendar event_time, @Nullable String event) {
-            if (event == null)
+            if (event == null) {
                 return;
+            }
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
 
             if (eventCode == 701) {
@@ -368,8 +372,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     }
 
     private void updateGroup(@Nullable String address, @Nullable String value) {
-        if (address == null || value == null)
+        if (address == null || value == null) {
             return;
+        }
         String[] addressParts = address.trim().replace("//", "").split("/");
         int application = Integer.parseInt(addressParts[2]);
         int group = Integer.parseInt(addressParts[3]);
@@ -407,10 +412,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         ScheduledFuture<?> keepAliveFuture = this.keepAliveFuture;
-        if (keepAliveFuture != null)
+        if (keepAliveFuture != null) {
             keepAliveFuture.cancel(true);
+        }
         CGateSession cGateSession = this.cGateSession;
         if (cGateSession != null && cGateSession.isConnected()) {
             try {
@@ -420,6 +425,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             }
         } else
             logger.debug("no session or it is disconnected");
+        super.dispose();
     }
 
 }
