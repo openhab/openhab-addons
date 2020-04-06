@@ -69,7 +69,8 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         String password = (String) properties.get("password");
         @Nullable
         String country = (String) properties.get("country");
-        scheduler.submit(() -> cloudConnector.setCredentials(username, password, country));
+        cloudConnector.setCredentials(username, password, country);
+        scheduler.submit(() -> cloudConnector.isConnected());
     }
 
     @Override

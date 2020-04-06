@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,8 +37,6 @@ import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.slf4j.Logger;
 
-import com.google.gson.JsonElement;
-
 /**
  * The {@link CloudUtil} class is used for supporting functions for Xiaomi cloud access
  *
@@ -47,24 +46,22 @@ import com.google.gson.JsonElement;
 public class CloudUtil {
 
     private static final Random RANDOM = new Random();
+    private static final String DB_FOLDER_NAME = ConfigConstants.getUserDataFolder() + File.separator
+            + MiIoBindingConstants.BINDING_ID;
 
-    public static String getElementString(JsonElement jsonElement, String element, Logger logger) {
-        String value = "";
-        try {
-            value = jsonElement.getAsJsonObject().get(element).getAsString();
-        } catch (IllegalStateException | ClassCastException e) {
-            logger.debug("Json Element {} expected but missing", element);
-        }
-        return value;
-    }
-
-    public static void saveFile(String data, String country, Logger logger) {
-        String dbFolderName = ConfigConstants.getUserDataFolder() + File.separator + MiIoBindingConstants.BINDING_ID;
-        File folder = new File(dbFolderName);
+    /**
+     * Saves the Xiaomi cloud device info with tokens to file
+     *
+     * @param data file content
+     * @param country county server
+     * @param logger
+     */
+    public static void saveDeviceInfoFile(String data, String country, Logger logger) {
+        File folder = new File(DB_FOLDER_NAME);
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File dataFile = new File(dbFolderName + File.separator + "miioTokens-" + country + ".json");
+        File dataFile = new File(DB_FOLDER_NAME + File.separator + "miioTokens-" + country + ".json");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(data);
             logger.debug("Devices token info saved to {}", dataFile.getAbsolutePath());
@@ -115,7 +112,8 @@ public class CloudUtil {
             }
             sb.append(s);
         }
-        return CloudCrypto.hMacSha256Encode(Base64.getDecoder().decode(signedNonce), sb.toString().getBytes());
+        return CloudCrypto.hMacSha256Encode(Base64.getDecoder().decode(signedNonce),
+                sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     public static String generateNonce(long milli) throws IOException {
@@ -128,8 +126,8 @@ public class CloudUtil {
     }
 
     public static String signedNonce(String ssecret, String nonce) throws IOException, MiIoCryptoException {
-        byte[] byteArrayS = Base64.getDecoder().decode(ssecret.getBytes());
-        byte[] byteArrayN = Base64.getDecoder().decode(nonce.getBytes());
+        byte[] byteArrayS = Base64.getDecoder().decode(ssecret.getBytes(StandardCharsets.UTF_8));
+        byte[] byteArrayN = Base64.getDecoder().decode(nonce.getBytes(StandardCharsets.UTF_8));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         output.write(byteArrayS);
         output.write(byteArrayN);

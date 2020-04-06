@@ -81,7 +81,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> consumables;
     private ExpiringCache<String> dnd;
     private ExpiringCache<String> history;
-    private int inCleaning;
+    private int stateId;
     private ExpiringCache<String> map;
     private String lastHistoryId = "";
     private String lastMap = "";
@@ -229,12 +229,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int fanLevel = statusData.get("fan_power").getAsInt();
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
         updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
-        inCleaning = statusData.get("in_cleaning").getAsInt();
-        updateState(CHANNEL_IN_CLEANING, new DecimalType(inCleaning));
+        updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsInt()));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
-        updateState(CHANNEL_STATE_ID, new DecimalType(statusData.get("state").getAsInt()));
+        stateId = statusData.get("state").getAsInt();
+        updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
         State vacuum = OnOffType.OFF;
         String control;
         switch (state) {
@@ -391,7 +391,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             status.getValue();
             refreshNetwork();
             consumables.getValue();
-            if (lastMap.isEmpty() || inCleaning != 0) {
+            if (lastMap.isEmpty() || stateId != 8) {
                 if (isLinked(mapChannelUid)) {
                     map.getValue();
                 }

@@ -219,7 +219,7 @@ public class MiCloudConnector {
             resp = request(url, map);
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
-                CloudUtil.saveFile(resp, country, logger);
+                CloudUtil.saveDeviceInfoFile(resp, country, logger);
                 return resp;
             }
         } catch (MiCloudException e) {

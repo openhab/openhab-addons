@@ -27,7 +27,10 @@ Accept only one of the 2 discovery results, the alternate one can further be ign
 ## Tokens
 
 The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
-The binding can retrieve the needed tokens from the Xiaomi cloud. Go to the binding config page and enter your cloud username and password. The server(s) to which your devices are connected need to be entered as well. Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
+The binding can retrieve the needed tokens from the Xiaomi cloud. 
+Go to the binding config page and enter your cloud username and password. 
+The server(s) to which your devices are connected need to be entered as well. 
+Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
 
 ## Tokens without cloud access
 
@@ -46,7 +49,7 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter Xiaomi username, password and server(s)
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
 
 ## Thing Configuration
 

@@ -43,12 +43,16 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class CloudConnector {
 
-    protected static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(60);
-    private static final int FAILED = -1;
-    private static final int STARTING = 0;
-    private static final int REFRESHING = 1;
-    private static final int AVAILABLE = 2;
-    private volatile int deviceListState = STARTING;
+    private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(60);
+
+    private static enum DeviceListState {
+        FAILED,
+        STARTING,
+        REFRESHING,
+        AVAILABLE,
+    }
+
+    private volatile DeviceListState deviceListState = DeviceListState.STARTING;
 
     private String username = "";
     private String password = "";
@@ -64,14 +68,14 @@ public class CloudConnector {
     });
 
     private ExpiringCache<String> refreshDeviceList = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-        if (deviceListState == FAILED && !isConnected()) {
+        if (deviceListState == DeviceListState.FAILED && !isConnected()) {
             return ("Could not connect to Xiaomi cloud");
         }
         final @Nullable MiCloudConnector cl = this.cloudConnector;
         if (cl == null) {
             return ("Could not connect to Xiaomi cloud");
         }
-        deviceListState = REFRESHING;
+        deviceListState = DeviceListState.REFRESHING;
         deviceList.clear();
         for (String server : country.split(",")) {
             try {
@@ -80,7 +84,7 @@ public class CloudConnector {
                 logger.debug("Parsing error getting devices: {}", e.getMessage());
             }
         }
-        deviceListState = AVAILABLE;
+        deviceListState = DeviceListState.AVAILABLE;
         return "done";// deviceList;
     });
 
@@ -107,7 +111,7 @@ public class CloudConnector {
         if (c != null && c.booleanValue()) {
             return true;
         }
-        deviceListState = FAILED;
+        deviceListState = DeviceListState.FAILED;
         return false;
     }
 
@@ -150,7 +154,6 @@ public class CloudConnector {
         if (username != null && password != null) {
             this.username = username;
             this.password = password;
-            logon();
         }
     }
 
@@ -168,11 +171,11 @@ public class CloudConnector {
             if (connected) {
                 getDevicesList();
             } else {
-                deviceListState = FAILED;
+                deviceListState = DeviceListState.FAILED;
             }
         } catch (MiCloudException e) {
             connected = false;
-            deviceListState = FAILED;
+            deviceListState = DeviceListState.FAILED;
             logger.debug("Xiaomi cloud login failed: {}", e.getMessage());
         }
         return connected;
@@ -185,7 +188,7 @@ public class CloudConnector {
 
     public @Nullable CloudDeviceDTO getDeviceInfo(String id) {
         getDevicesList();
-        if (deviceListState < AVAILABLE) {
+        if (deviceListState != DeviceListState.AVAILABLE) {
             return null;
         }
         String did = Long.toString(Long.parseUnsignedLong(id, 16));
