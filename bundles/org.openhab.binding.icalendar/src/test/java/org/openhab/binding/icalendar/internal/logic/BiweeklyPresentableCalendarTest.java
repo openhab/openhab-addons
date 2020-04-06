@@ -242,8 +242,9 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T16:05:00Z"));
         assertNotNull(events);
         assertTrue(events.size() > 0);
-        assertTrue(events.get(0).commandTags.size() > 0);
-        CommandTag cmd = events.get(0).commandTags.get(0);
+        List<CommandTag> cmdTags = events.get(0).commandTags;
+        assertTrue(cmdTags.size() > 0);
+        CommandTag cmd = cmdTags.get(0);
         // accept correct, empty or null configuration codes
         assertTrue(cmd.isAuthorized("abc"));
         assertTrue(cmd.isAuthorized(""));
@@ -256,7 +257,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T19:35:00Z"));
         assertNotNull(events);
         assertEquals(1, events.size());
-        List<CommandTag> cmdTags = events.get(0).commandTags;
+        cmdTags = events.get(0).commandTags;
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:ON:abc
@@ -441,6 +442,53 @@ public class BiweeklyPresentableCalendarTest {
         cmd10 = cmdTags.get(10).getCommand();
         assertNotNull(cmd10);
         assertEquals(OnOffType.class, cmd10.getClass());
+
+        // test bad command tag syntax: Test Series #6
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:40:00Z"),
+                Instant.parse("2020-01-28T20:50:00Z"));
+        assertNotNull(events);
+        assertEquals(1, events.size());
+        cmdTags = events.get(0).commandTags;
+        // Test Series #6 contains only "bad" command tags as follows..
+        
+        // tags with wrong case prefix..
+        // begin
+        // Begin
+        // BEGIn
+
+        // tags that are missing ":" field delimiters..
+        // BEGIN
+
+        // tags with too few field delimiters..
+        // BEGIN:www
+
+        // tags with too many field delimiters..
+        // BEGIN:www:xxx:yyy:zzz
+
+        // tags with an invalid prefix..
+        // BEGINX:xxx:yyy:zzz
+        // ENDX:xxx:yyy:zzz
+        // BEGIN :xxx:yyy:zzz
+        // BEGIN   :xxx:yyy:zzz
+
+        // tags with an empty Item Name 
+        // BEGIN::yyy:zzz
+        // BEGIN: :yyy:zzz
+        // BEGIN:  :yyy:zzz
+
+        // tags with bad Item Name 
+        // BEGIN:!:yyy:zzz
+        // BEGIN:@:yyy:zzz
+        // BEGIN:£:yyy:zzz
+
+        // tags with an empty Target State value
+        // BEGIN:xxx::zzz
+        // BEGIN:xxx: :zzz
+        // BEGIN:xxx:  :zzz
+
+        // Note: All of the above tags must be rejected! => Assert cmdTags.size() == 0 !
+        
+        assertEquals(0, cmdTags.size());
 
     }
 
