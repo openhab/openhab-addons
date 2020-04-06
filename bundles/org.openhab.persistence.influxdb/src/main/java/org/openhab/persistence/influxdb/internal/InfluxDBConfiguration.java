@@ -77,7 +77,7 @@ public class InfluxDBConfiguration {
 
         if (object instanceof Boolean) {
             return (Boolean) object;
-        } else if (object != null) {
+        } else if (object instanceof String) {
             return "true".equalsIgnoreCase((String) object);
         } else {
             return defaultValue;
