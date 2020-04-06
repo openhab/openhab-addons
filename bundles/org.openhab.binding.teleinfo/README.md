@@ -54,23 +54,36 @@ _Here you should provide information about available channel types, what their m
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
 
-| channel  | type                        | description                                                    |
-|----------|-----------------------------|----------------------------------------------------------------|
-| ISOUSC   | `Number:ElectricCurrent` | Subscribed electric current                                    |
-| PTEC     | `String`                   | Current pricing period                                         |
-| IMAX     | `Number:ElectricCurrent` | Maximum electric current                                       |
-| ADPS     | `Number:ElectricCurrent` | Excess electric current warning                                |
-| IINST    | `Number:ElectricCurrent` | Instantaneous electric current                                 |
-| PAPP     | `Number`                   | Instantaneous apparent power (Unit: `VA`)            |
-| HHPHC    | `String`                   | Pricing schedule group (HCHP mode only)              | 
-| HCHC     | `Number:Energy`           | Meter reading for low rate pricing (HCHP mode only)  | 
-| HCHP     | `Number:Energy`           | Meter reading for high rate pricing (HCHP mode only) |
-| BASE     | `Number:Energy`           | Meter reading (Base mode only)                       |
+| channel  | type                      | description                                          |
+|----------|---------------------------|------------------------------------------------------|
+| isousc   | `Number:ElectricCurrent`  | Subscribed electric current                          |
+| ptec     | `String`                  | Current pricing period                               |
+| imax     | `Number:ElectricCurrent`  | Maximum electric current                             |
+| adps     | `Number:ElectricCurrent`  | Excess electric current warning                      |
+| iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                       |
+| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)            |
+| hhphc    | `String`                  | Pricing schedule group (HCHP mode only)              | 
+| hchc     | `Number:Energy`           | Meter reading for low rate pricing (HCHP mode only)  | 
+| hchp     | `Number:Energy`           | Meter reading for high rate pricing (HCHP mode only) |
+| base     | `Number:Energy`           | Meter reading (Base mode only)                       |
 
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+`teleinfo.things` for a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC:
+
+```
+Bridge teleinfo:bridge:serialcontroller [ serialport="/dev/ttyUSB0" ]{
+  Thing cbemm_evolution_icc_hc_electricitymeter teleinfo1 [ adco="031728832562"]
+}
+```
+
+`teleinfo.items`: 
+
+
+```
+Number:ElectricCurrent iSousc "iSousc" {channel="teleinfo:teleinfo1:isousc"}
+```
 
 ## Supported hardwares
 
