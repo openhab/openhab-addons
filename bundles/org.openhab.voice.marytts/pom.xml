@@ -96,6 +96,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>de.dfki.mary</groupId>
+      <artifactId>voice-cmu-rms-hsmm</artifactId>
+      <version>5.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>gov.nist.math</groupId>
       <artifactId>jama</artifactId>
       <version>1.0.3</version>

@@ -3,4 +3,5 @@ marytts.language.de.GermanConfig
 marytts.language.en.EnglishConfig
 marytts.voice.Bits1Hsmm.Config
 marytts.voice.Bits3Hsmm.Config
+marytts.voice.CmuRmsHsmm.Config
 marytts.voice.CmuSltHsmm.Config

@@ -12,10 +12,11 @@ There is no need to configure anything for this service.
 
 ## Voices
 
-MaryTTS comes with three packages voices, one for American English, two for German:
+MaryTTS comes with four packages voices, two for American English, two for German:
 
 ```
 > voice voices
+marytts:cmurmshsmm cmu-rms-hsmm (en_US)
 marytts:cmuslthsmm cmu-slt-hsmm (en_US)
 marytts:bits3hsmm bits3-hsmm (de)
 marytts:bits1hsmm bits1-hsmm (de)
