@@ -32,7 +32,7 @@
 			</parameter>
 			<parameter name="refreshTime" type="integer" required="true" min="1" unit="min" groupName="source">
 				<label>Refresh Time</label>
-				<description>Frequency to scan for changes</description>
+				<description>Frequency to scan for changes in minutes</description>
 				<unitLabel>minutes</unitLabel>
 			</parameter>
 			<parameter name="username" type="text" required="false" groupName="source">
@@ -46,9 +46,9 @@
 			</parameter>
 			<parameter name="maxSize" type="integer" required="true" min="1" groupName="source">
 				<label>Maximum Calendar Size</label>
-				<description>The maximum size of the calendar in Mebibytes.</description>
+				<description>The maximum size of the calendar in Megabytes</description>
 				<default>16</default>
-				<unitLabel>MiB</unitLabel>
+				<unitLabel>MB</unitLabel>
 			</parameter>
 			<parameter name="authorizationCode" type="text" required="false" groupName="parsing">
 				<label>Command Authorization Code</label>
