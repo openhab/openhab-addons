@@ -28,7 +28,7 @@ public class CloudDeviceListDTO {
     @Expose
     private List<CloudDeviceDTO> cloudDevices = null;
 
-    public java.util.List<CloudDeviceDTO> getCloudDevices() {
+    public List<CloudDeviceDTO> getCloudDevices() {
         return cloudDevices;
     }
 }

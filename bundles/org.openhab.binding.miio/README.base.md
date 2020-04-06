@@ -46,7 +46,7 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter Xiaomi username, password and server(s)
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
 
 ## Thing Configuration
 
