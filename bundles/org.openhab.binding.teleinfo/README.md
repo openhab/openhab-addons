@@ -1,6 +1,6 @@
 # Teleinfo Binding
 
-_The Teleinfo binding supports an interface to ENEDIS/ERDF Teleinfo protocol for (French) Electricity Meter._
+_The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](http://www.linuxembarque.free.fr/electro/compt_energie/specifications_techniques_edf_teleinfo.pdf) for (French) Electricity Meter._
 _Teleinfo is a protocol to read many electrical statistics of your electricity meter: TODO_
 
 
@@ -54,9 +54,19 @@ _Here you should provide information about available channel types, what their m
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| channel  | type                        | description                                                    |
+|----------|-----------------------------|----------------------------------------------------------------|
+| ISOUSC   | `Number:ElectricCurrent` | Subscribed electric current                                    |
+| PTEC     | `String`                   | Current pricing period                                         |
+| IMAX     | `Number:ElectricCurrent` | Maximum electric current                                       |
+| ADPS     | `Number:ElectricCurrent` | Excess electric current warning                                |
+| IINST    | `Number:ElectricCurrent` | Instantaneous electric current                                 |
+| PAPP     | `Number`                   | Instantaneous apparent power (Unit: `$V\cdot A$`)            |
+| HHPHC    | `String`                   | Pricing schedule group (HCHP pricing option only)              | 
+| HCHC     | `Number:Energy`           | Meter reading for low rate pricing (HCHP pricing option only)  | 
+| HCHP     | `Number:Energy`           | Meter reading for high rate pricing (HCHP pricing option only) |
+| BASE     | `Number:Energy`           | Meter reading (BASE pricing option only)                       |
+
 
 ## Full Example
 
@@ -69,5 +79,6 @@ _The Teleinfo binding has been successfully validated with below hardware config
 | Serial interface | Power Energy Meter model    | Mode                   |
 |----------|--------|------------------------------|
 | GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHC  |
+| Cartelectronic USB Teleinfo modem [more details](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Actaris A14C5 [ Single-Phase HCHP |
 
 
