@@ -490,6 +490,53 @@ public class BiweeklyPresentableCalendarTest {
         
         assertEquals(0, cmdTags.size());
 
+        // test HTML command tag syntax: Test Series #7
+        events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T20:55:00Z"),
+                Instant.parse("2020-01-28T21:05:00Z"));
+        assertNotNull(events);
+        assertEquals(1, events.size());
+        cmdTags = events.get(0).commandTags;
+        assertEquals(8, cmdTags.size());
+
+        // <p>BEGIN:Calendar_Test_Temperature:12.3°C:abc</p>
+        cmd0 = cmdTags.get(0).getCommand();
+        assertNotNull(cmd0);
+        assertEquals(QuantityType.class, cmd0.getClass());
+
+        // <p>END:Calendar_Test_Temperature:23.4°C:abc</p>
+        cmd1 = cmdTags.get(1).getCommand();
+        assertNotNull(cmd1);
+        assertEquals(QuantityType.class, cmd1.getClass());
+
+        // <p>BEGIN:Calendar_Test_Switch:ON:abc</p>
+        cmd2 = cmdTags.get(2).getCommand();
+        assertNotNull(cmd2);
+        assertEquals(OnOffType.class, cmd2.getClass());
+
+        // <p>END:Calendar_Test_Switch:OFF:abc</p>
+        cmd3 = cmdTags.get(3).getCommand();
+        assertNotNull(cmd3);
+        assertEquals(OnOffType.class, cmd3.getClass());
+
+        // <p>BEGIN:Calendar_Test_String:the quick:abc</p>
+        cmd4 = cmdTags.get(4).getCommand();
+        assertNotNull(cmd4);
+        assertEquals(StringType.class, cmd4.getClass());
+
+        // <p>END:Calendar_Test_String:brown fox:abc</p>
+        cmd5 = cmdTags.get(5).getCommand();
+        assertNotNull(cmd5);
+        assertEquals(StringType.class, cmd5.getClass());
+
+        // </p><p>BEGIN:Calendar_Test_Number:12.3:abc</p>
+        cmd6 = cmdTags.get(6).getCommand();
+        assertNotNull(cmd6);
+        assertEquals(QuantityType.class, cmd6.getClass());
+
+        // <p>END:Calendar_Test_Number:23.4:abc</p>
+        cmd7 = cmdTags.get(7).getCommand();
+        assertNotNull(cmd7);
+        assertEquals(QuantityType.class, cmd7.getClass());
     }
 
 }
