@@ -29,8 +29,6 @@ class NhcMessage2 {
         @Nullable
         List<NhcSystemInfo2> systemInfo;
         @Nullable
-        List<NhcProfile2> profiles;
-        @Nullable
         List<NhcService2> services;
         @Nullable
         List<NhcDevice2> devices;

@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
 public class NhcTimeInfo2 {
     @SerializedName(value = "GMTOffset")
     String gmtOffset = "";
-    String timeZone = "";
+    String timezone = "";
     String isDST = "";
     @SerializedName(value = "UTCTime")
     String utcTime = "";
@@ -40,8 +40,8 @@ public class NhcTimeInfo2 {
     /**
      * @return the timeZone
      */
-    public String getTimeZone() {
-        return timeZone;
+    public String getTimezone() {
+        return timezone;
     }
 
     /**
