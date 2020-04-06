@@ -36,7 +36,6 @@ public enum PumpModel {
     }
 
     public static PumpModel getPumpModel(String pumpModel) throws IllegalArgumentException {
-
         try {
             return PumpModel.valueOf(pumpModel.toUpperCase());
         } catch (Exception e) {

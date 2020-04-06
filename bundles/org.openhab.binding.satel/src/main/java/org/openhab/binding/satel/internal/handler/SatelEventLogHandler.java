@@ -15,6 +15,8 @@ package org.openhab.binding.satel.internal.handler;
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.nio.charset.Charset;
+import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +34,9 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.satel.action.SatelEventLogActions;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceType;
 import org.openhab.binding.satel.internal.command.ReadEventCommand;
@@ -63,6 +67,71 @@ public class SatelEventLogHandler extends SatelThingHandler {
     private @Nullable ScheduledFuture<?> cacheExpirationJob;
     private Charset encoding = Charset.defaultCharset();
 
+    /**
+     * Represents single record of the event log.
+     *
+     * @author Krzysztof Goworek
+     *
+     */
+    public static class EventLogEntry {
+
+        private final int index;
+        private final int prevIndex;
+        private final ZonedDateTime timestamp;
+        private final String description;
+        private final String details;
+
+        private EventLogEntry(int index, int prevIndex, ZonedDateTime timestamp, String description, String details) {
+            this.index = index;
+            this.prevIndex = prevIndex;
+            this.timestamp = timestamp;
+            this.description = description;
+            this.details = details;
+        }
+
+        /**
+         * @return index of this record entry
+         */
+        public int getIndex() {
+            return index;
+        }
+
+        /**
+         * @return index of the previous record entry in the log
+         */
+        public int getPrevIndex() {
+            return prevIndex;
+        }
+
+        /**
+         * @return date and time when the event occurred
+         */
+        public ZonedDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        /**
+         * @return description of the event
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * @return details about zones, partitions, users, etc
+         */
+        public String getDetails() {
+            return details;
+        }
+
+        @Override
+        public String toString() {
+            return "EventLogEntry [index=" + index + ", prevIndex=" + prevIndex + ", timestamp=" + timestamp
+                    + ", description=" + description + ", details=" + details + "]";
+        }
+
+    }
+
     public SatelEventLogHandler(Thing thing) {
         super(thing);
     }
@@ -81,7 +150,6 @@ public class SatelEventLogHandler extends SatelThingHandler {
             this.cacheExpirationJob = scheduler.scheduleWithFixedDelay(deviceNameCache::clear, CACHE_CLEAR_INTERVAL,
                     CACHE_CLEAR_INTERVAL, TimeUnit.MILLISECONDS);
         }
-
     }
 
     @Override
@@ -101,7 +169,14 @@ public class SatelEventLogHandler extends SatelThingHandler {
 
         if (CHANNEL_INDEX.equals(channelUID.getId()) && command instanceof DecimalType) {
             int eventIndex = ((DecimalType) command).intValue();
-            withBridgeHandlerPresent(bridgeHandler -> readEvent(eventIndex));
+            withBridgeHandlerPresent(bridgeHandler -> readEvent(eventIndex).ifPresent(entry -> {
+                // update items
+                updateState(CHANNEL_INDEX, new DecimalType(entry.getIndex()));
+                updateState(CHANNEL_PREV_INDEX, new DecimalType(entry.getPrevIndex()));
+                updateState(CHANNEL_TIMESTAMP, new DateTimeType(entry.getTimestamp()));
+                updateState(CHANNEL_DESCRIPTION, new StringType(entry.getDescription()));
+                updateState(CHANNEL_DETAILS, new StringType(entry.getDetails()));
+            }));
         }
     }
 
@@ -114,8 +189,19 @@ public class SatelEventLogHandler extends SatelThingHandler {
         }
     }
 
-    private void readEvent(int eventIndex) {
-        getEventDescription(eventIndex).ifPresent(eventDesc -> {
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SatelEventLogActions.class);
+    }
+
+    /**
+     * Reads one record from the event log.
+     *
+     * @param eventIndex record index
+     * @return record data or {@linkplain Optional#empty()} if there is no record under given index
+     */
+    public Optional<EventLogEntry> readEvent(int eventIndex) {
+        return getEventDescription(eventIndex).flatMap(eventDesc -> {
             ReadEventCommand readEventCmd = eventDesc.readEventCmd;
             int currentIndex = readEventCmd.getCurrentIndex();
             String eventText = eventDesc.getText();
@@ -192,13 +278,13 @@ public class SatelEventLogHandler extends SatelThingHandler {
                             + (readEventCmd.getObject() * 32 + readEventCmd.getUserControlNumber());
                     Optional<EventDescription> eventDescNext = getEventDescription(readEventCmd.getNextIndex());
                     if (!eventDescNext.isPresent()) {
-                        return;
+                        return Optional.empty();
                     }
                     final EventDescription eventDescNextItem = eventDescNext.get();
                     if (eventDescNextItem.getKind() != 30) {
                         logger.info("Unexpected event record kind {} at index {}", eventDescNextItem.getKind(),
                                 readEventCmd.getNextIndex());
-                        return;
+                        return Optional.empty();
                     }
                     readEventCmd = eventDescNextItem.readEventCmd;
                     eventText = eventDescNextItem.getText();
@@ -214,13 +300,8 @@ public class SatelEventLogHandler extends SatelThingHandler {
                             "object=" + readEventCmd.getObject(), "ucn=" + readEventCmd.getUserControlNumber());
             }
 
-            // update items
-            updateState(CHANNEL_INDEX, new DecimalType(currentIndex));
-            updateState(CHANNEL_PREV_INDEX, new DecimalType(readEventCmd.getNextIndex()));
-            updateState(CHANNEL_TIMESTAMP,
-                    new DateTimeType(readEventCmd.getTimestamp().atZone(getBridgeHandler().getZoneId())));
-            updateState(CHANNEL_DESCRIPTION, new StringType(eventText));
-            updateState(CHANNEL_DETAILS, new StringType(eventDetails));
+            return Optional.of(new EventLogEntry(currentIndex, readEventCmd.getNextIndex(),
+                    readEventCmd.getTimestamp().atZone(getBridgeHandler().getZoneId()), eventText, eventDetails));
         });
     }
 

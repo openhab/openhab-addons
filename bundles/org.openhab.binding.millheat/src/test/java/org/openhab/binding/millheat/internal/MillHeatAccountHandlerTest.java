@@ -71,7 +71,6 @@ public class MillHeatAccountHandlerTest {
 
     @Test
     public void testUpdateModel() throws InterruptedException, IOException, MillheatCommunicationException {
-
         final String getHomesResponse = IOUtils.toString(getClass().getResourceAsStream("/select_home_list_ok.json"));
         final String getRoomsByHomeResponse = IOUtils
                 .toString(getClass().getResourceAsStream("/get_rooms_by_home_ok.json"));

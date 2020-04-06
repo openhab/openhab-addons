@@ -200,13 +200,11 @@ public class EtherRainCommunication {
     }
 
     private static List<EtherRainUdpResponse> updBroadcast() {
-
         List<EtherRainUdpResponse> rList = new LinkedList<>();
 
         // Find the server using UDP broadcast
 
         try (DatagramSocket c = new DatagramSocket()) {
-
             c.setSoTimeout(BROADCAST_TIMEOUT);
             c.setBroadcast(true);
 

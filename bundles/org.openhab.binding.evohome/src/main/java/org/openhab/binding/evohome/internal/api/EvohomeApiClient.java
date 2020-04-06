@@ -189,7 +189,6 @@ public class EvohomeApiClient {
     }
 
     private boolean authenticate(String credentials, String grantType) {
-
         String data = credentials + "&" + "Host=rs.alarmnet.com%2F&" + "Pragma=no-cache&"
                 + "Cache-Control=no-store+no-cache&"
                 + "scope=EMEA-V1-Basic+EMEA-V1-Anonymous+EMEA-V1-Get-Current-User-Account&" + "grant_type=" + grantType

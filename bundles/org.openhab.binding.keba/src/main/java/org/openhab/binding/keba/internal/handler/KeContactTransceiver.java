@@ -173,7 +173,7 @@ class KeContactTransceiver {
                         handlers.size());
             }
 
-            if (handlers.size() == 0) {
+            if (handlers.isEmpty()) {
                 stop();
             }
         }

@@ -13,6 +13,7 @@
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,7 +55,8 @@ public abstract class PrefixedResponse<ResponseType> implements Response<Respons
         String fullPrefix = "%1" + this.prefix;
         if (!response.toUpperCase().startsWith(fullPrefix)) {
             throw new ResponseException(
-                    MessageFormat.format("Expected prefix ''{0}'', instead got ''{1}''", fullPrefix, response));
+                    MessageFormat.format("Expected prefix ''{0}'' ({1}), instead got ''{2}'' ({3})", fullPrefix,
+                            Arrays.toString(fullPrefix.getBytes()), response, Arrays.toString(response.getBytes())));
         }
         String result = response.substring(fullPrefix.length());
         ErrorCode.checkForErrorStatus(result, this.specifiedErrors);

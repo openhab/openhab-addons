@@ -60,17 +60,15 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
         DiscoveryResult result = null;
         ThingUID uid = getThingUID(info);
         if (uid != null) {
-
             // remove the domain from the name
             InetAddress[] addrs = info.getInetAddresses();
 
             Map<String, Object> properties = new HashMap<>(2);
-            
+
             String label = null;
             if (BST_10_THING_TYPE_UID.equals(uid.getThingTypeUID())) {
                 try {
-                    String group = DiscoveryUtil
-                            .executeUrl("http://" + addrs[0].getHostAddress() + ":8090/getGroup");
+                    String group = DiscoveryUtil.executeUrl("http://" + addrs[0].getHostAddress() + ":8090/getGroup");
                     label = DiscoveryUtil.getContentOfFirstElement(group, "name");
                 } catch (IOException e) {
                     logger.debug("Can't obtain label for group. Will use the default one");
@@ -80,7 +78,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             if (label == null || label.isEmpty()) {
                 label = info.getName();
             }
-            
+
             if (label == null || label.isEmpty()) {
                 label = "Bose SoundTouch";
             }
@@ -93,9 +91,10 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
             properties.put(BoseSoundTouchConfiguration.HOST, addrs[0].getHostAddress());
             if (getMacAddress(info) != null) {
-                properties.put(BoseSoundTouchConfiguration.MAC_ADDRESS, new String(getMacAddress(info), StandardCharsets.UTF_8));
+                properties.put(BoseSoundTouchConfiguration.MAC_ADDRESS,
+                        new String(getMacAddress(info), StandardCharsets.UTF_8));
             }
-            
+
             // Set manufacturer as thing property (if available)
             byte[] manufacturer = info.getPropertyBytes("MANUFACTURER");
             if (manufacturer != null) {

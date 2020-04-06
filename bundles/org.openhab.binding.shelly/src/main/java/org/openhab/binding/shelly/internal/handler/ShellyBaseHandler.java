@@ -392,8 +392,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (scheduledUpdates > 0) {
                 --scheduledUpdates;
                 logger.debug("{}: {} more updates requested", thingName, scheduledUpdates);
-            } else {
-
             }
             if ((skipUpdate >= cacheCount) && !channelCache) {
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,

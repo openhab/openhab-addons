@@ -220,7 +220,7 @@ public class DimmerThingHandler extends DmxThingHandler {
 
     @Override
     public void dispose() {
-        if (channels.size() != 0) {
+        if (!channels.isEmpty()) {
             channels.get(0).removeListener(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS));
 
             Bridge bridge = getBridge();

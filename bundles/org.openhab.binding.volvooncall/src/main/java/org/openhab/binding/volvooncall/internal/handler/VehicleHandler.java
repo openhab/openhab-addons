@@ -17,17 +17,30 @@ import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstan
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
@@ -37,7 +50,13 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.volvooncall.internal.action.VolvoOnCallActions;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
-import org.openhab.binding.volvooncall.internal.dto.*;
+import org.openhab.binding.volvooncall.internal.dto.Attributes;
+import org.openhab.binding.volvooncall.internal.dto.Position;
+import org.openhab.binding.volvooncall.internal.dto.Status;
+import org.openhab.binding.volvooncall.internal.dto.Trip;
+import org.openhab.binding.volvooncall.internal.dto.TripDetail;
+import org.openhab.binding.volvooncall.internal.dto.Trips;
+import org.openhab.binding.volvooncall.internal.dto.Vehicles;
 import org.openhab.binding.volvooncall.internal.wrapper.VehiclePositionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,7 +184,7 @@ public class VehicleHandler extends BaseThingHandler {
 
             logger.debug("Trips discovered : {}", newTrips.size());
 
-            if (newTrips.size() > 0) {
+            if (!newTrips.isEmpty()) {
                 Integer newTripId = newTrips.get(newTrips.size() - 1).id;
                 if (newTripId > lastTripId) {
                     updateProperty(LAST_TRIP_ID, newTripId.toString());
@@ -206,7 +225,6 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             }
         }
-
     }
 
     private State getTripValue(String channelId, TripDetail tripDetails) {

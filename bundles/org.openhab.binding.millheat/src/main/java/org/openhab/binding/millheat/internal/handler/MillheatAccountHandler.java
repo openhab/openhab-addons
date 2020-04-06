@@ -402,7 +402,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     public void updateIndependentHeaterProperties(@Nullable final String macAddress, @Nullable final Long heaterId,
             @Nullable final Command temperatureCommand, @Nullable final Command masterOnOffCommand,
             @Nullable final Command fanCommand) {
-
         model.findHeaterByMacOrId(macAddress, heaterId).ifPresent(heater -> {
             int setTemp = heater.getTargetTemp();
             if (temperatureCommand instanceof QuantityType<?>) {
@@ -429,7 +428,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     }
 
     public void updateVacationProperty(Home home, String property, Command command) {
-
         try {
             switch (property) {
                 case SetHolidayParameterRequest.PROP_START: {
