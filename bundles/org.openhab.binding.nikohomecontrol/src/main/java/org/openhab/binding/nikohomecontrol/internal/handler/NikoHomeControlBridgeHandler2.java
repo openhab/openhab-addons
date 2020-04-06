@@ -154,10 +154,6 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             if (!services.isEmpty()) {
                 properties.put("services", services);
             }
-            String profiles = comm.getProfiles();
-            if (!profiles.isEmpty()) {
-                properties.put("profiles", profiles);
-            }
 
             thing.setProperties(properties);
         }
