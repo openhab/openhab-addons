@@ -142,9 +142,9 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             if (!waterTariff.isEmpty()) {
                 properties.put("waterTariff", waterTariff);
             }
-            String timeZone = comm.getTimeInfo().getTimeZone();
-            if (!timeZone.isEmpty()) {
-                properties.put("timeZone", timeZone);
+            String timezone = comm.getTimeInfo().getTimezone();
+            if (!timezone.isEmpty()) {
+                properties.put("timezone", timezone);
             }
             String isDst = comm.getTimeInfo().getIsDst();
             if (!isDst.isEmpty()) {
