@@ -766,7 +766,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void processMessage(String topic, byte[] payload) {
         String message = new String(payload);
-        if ("public/system/evt".equals(topic) || (profile + "/system/evt").equals(topic)) {
+        if ((profile + "/system/evt").equals(topic)) {
             systemEvt(message);
         } else if ((profile + "/system/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
@@ -783,7 +783,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if ((profile + "/authentication/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             servicesListRsp(message);
-        } else if ("public/control/devices.error".equals(topic) || (profile + "/control/devices.error").equals(topic)) {
+        } else if ((profile + "/control/devices.error").equals(topic)) {
             logger.warn("Niko Home Control: received error {}", message);
         } else {
             logger.trace("Niko Home Control: not acted on received message topic {}, payload {}", topic, message);
