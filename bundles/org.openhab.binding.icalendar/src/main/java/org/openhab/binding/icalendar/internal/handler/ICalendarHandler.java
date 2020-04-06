@@ -198,23 +198,12 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.getFullTag());
                     continue;
                 }
-                String itemName = cmdTag.getItemName();
-                if (!itemName.matches("^\\w+$")) {
-                    logger.warn("Event: {}, Command Tag: {} => Bad syntax for Item name!", event.title,
-                            cmdTag.getFullTag());
-                    continue;
-                }
-                Command cmdState = cmdTag.getCommand();
-                if (cmdState == null) {
-                    logger.warn("Event: {}, Command Tag: {} => Invalid Target State!", event.title,
-                            cmdTag.getFullTag());
-                    continue;
-                }
 
                 // (try to) execute the command
                 try {
-                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(itemName, cmdState));
+                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdTag.getCommand()));
                     if (logger.isDebugEnabled()) {
+                        Command cmdState = cmdTag.getCommand();
                         String cmdType = cmdState.getClass().toString();
                         int index = cmdType.lastIndexOf(".") + 1;
                         if ((index > 0) && (index < cmdType.length())) {
