@@ -10,32 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miio.internal;
+package org.openhab.binding.miio.internal.cloud;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Will be thrown instead of the many possible errors in the crypto module
+ * Will be thrown for cloud errors
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-public class MiIoCryptoException extends Exception {
-
+public class MiCloudException extends Exception {
     /**
      * required variable to avoid IncorrectMultilineIndexException warning
      */
-    private static final long serialVersionUID = -1280858607995252320L;
+    private static final long serialVersionUID = -1280858607995252321L;
 
-    public MiIoCryptoException() {
+    public MiCloudException() {
         super();
     }
 
-    public MiIoCryptoException(String message) {
+    public MiCloudException(String message) {
         super(message);
     }
 
-    public MiIoCryptoException(String message, Exception e) {
+    public MiCloudException(String message, Exception e) {
         super(message, e);
     }
 }

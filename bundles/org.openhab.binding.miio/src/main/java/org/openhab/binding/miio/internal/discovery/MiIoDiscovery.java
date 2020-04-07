@@ -35,7 +35,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.Utils;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.cloud.CloudDeviceDTO;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,12 +62,15 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> miIoDiscoveryJob;
     protected @Nullable DatagramSocket clientSocket;
     private @Nullable Thread socketReceiveThread;
-    Set<String> responseIps = new HashSet<>();
+    private Set<String> responseIps = new HashSet<>();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
+    private final CloudConnector cloudConnector;
 
-    public MiIoDiscovery() throws IllegalArgumentException {
+    @Activate
+    public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
+        this.cloudConnector = cloudConnector;
     }
 
     @Override
@@ -117,7 +124,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private void discover() {
         startReceiverThreat();
         responseIps = new HashSet<>();
-        Set<String> broadcastAddresses = new HashSet<>();
+        HashSet<String> broadcastAddresses = new HashSet<>();
         broadcastAddresses.add("224.0.0.1");
         broadcastAddresses.add("224.0.0.50");
         broadcastAddresses.addAll(NetUtil.getAllBroadcastAddresses());
@@ -132,6 +139,19 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
         String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+        String country = "";
+        boolean isOnline = false;
+        if (cloudConnector.isConnected()) {
+            cloudConnector.getDevicesList();
+            CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
+            if (cloudInfo != null) {
+                logger.debug("Cloud Info: {}", cloudInfo);
+                token = cloudInfo.getToken();
+                label = cloudInfo.getName() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+                country = cloudInfo.getServer();
+                isOnline = cloudInfo.getIsOnline();
+            }
+        }
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
         logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
@@ -144,6 +164,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         } else {
             logger.debug("Discovered token for device {}: {}", id, token);
             dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id).withLabel(label + " with token");
+        }
+        if (!country.isEmpty() && isOnline) {
+            dr = dr.withProperty(PROPERTY_CLOUDSERVER, country);
         }
         thingDiscovered(dr.build());
     }
