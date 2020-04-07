@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.DefaultAbstractManagedProvider;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.core.automation.parser.Parser;
@@ -38,26 +40,29 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
+@NonNullByDefault
 @Component(service = { MarketplaceRuleTemplateProvider.class, RuleTemplateProvider.class })
 public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvider<RuleTemplate, String>
         implements RuleTemplateProvider {
 
     private final Logger logger = LoggerFactory.getLogger(MarketplaceRuleTemplateProvider.class);
 
-    private Parser<RuleTemplate> parser;
+    private final Parser<RuleTemplate> parser;
 
     @Activate
-    public MarketplaceRuleTemplateProvider(final @Reference StorageService storageService) {
+    public MarketplaceRuleTemplateProvider(final @Reference StorageService storageService,
+            final @Reference(target = "(&(format=json)(parser.type=parser.template))") Parser<RuleTemplate> parser) {
         super(storageService);
+        this.parser = parser;
     }
 
     @Override
-    public RuleTemplate getTemplate(String uid, Locale locale) {
+    public @Nullable RuleTemplate getTemplate(String uid, @Nullable Locale locale) {
         return get(uid);
     }
 
     @Override
-    public Collection<RuleTemplate> getTemplates(Locale locale) {
+    public Collection<RuleTemplate> getTemplates(@Nullable Locale locale) {
         return getAll();
     }
 
@@ -69,15 +74,6 @@ public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvi
     @Override
     protected String keyToString(String key) {
         return key;
-    }
-
-    @Reference(target = "(&(format=json)(parser.type=parser.template))")
-    protected void setParser(Parser<RuleTemplate> parser) {
-        this.parser = parser;
-    }
-
-    protected void unsetParser(Parser<RuleTemplate> parser) {
-        this.parser = null;
     }
 
     /**
