@@ -15,11 +15,11 @@ package org.openhab.binding.bsblan.internal.api.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link BsbLanApiParameter} is responsible for storing parameter info.
+ * The {@link BsbLanApiParameterDTO} is responsible for storing parameter info.
  *
  * @author Peter Schraffl - Initial contribution
  */
-public class BsbLanApiParameter {
+public class BsbLanApiParameterDTO {
 
     public enum DataType {
         @SerializedName("0")

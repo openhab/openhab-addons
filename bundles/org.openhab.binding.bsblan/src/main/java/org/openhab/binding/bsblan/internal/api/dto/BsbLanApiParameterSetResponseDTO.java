@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.bsblan.internal.api.dto;
 
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
 
 import java.util.HashMap;
 
 /**
- * The {@link BsbLanApiParameterSetResponse} reflects the response received
+ * The {@link BsbLanApiParameterSetResponseDTO} reflects the response received
  * when setting a parameter.
  *
  * @author Peter Schraffl - Initial contribution
  */
 @SuppressWarnings("serial")
-public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetResult> implements BsbLanApiContent {
+public class BsbLanApiParameterSetResponseDTO extends HashMap<Integer, BsbLanApiParameterSetResultDTO> implements BsbLanApiContentDTO {
 }

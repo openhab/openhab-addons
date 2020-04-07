@@ -18,10 +18,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest.Type;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO.Type;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
@@ -48,21 +48,21 @@ public class BsbLanApiContentConverterTests {
                 "}\r\n" +
             "}";
 
-        BsbLanApiParameterQueryResponse r = BsbLanApiContentConverter.fromJson(content, BsbLanApiParameterQueryResponse.class);
+        BsbLanApiParameterQueryResponseDTO r = BsbLanApiContentConverter.fromJson(content, BsbLanApiParameterQueryResponseDTO.class);
         assertNotNull(r);
         assertTrue(r.containsKey(700));
 
-        BsbLanApiParameter p = r.get(700);
+        BsbLanApiParameterDTO p = r.get(700);
         assertEquals("Betriebsart", p.name);
         assertEquals("0", p.value);
         assertEquals("", p.unit);
         assertEquals("Schutzbetrieb", p.description);
-        assertEquals(BsbLanApiParameter .DataType.DT_ENUM, p.dataType);
+        assertEquals(BsbLanApiParameterDTO .DataType.DT_ENUM, p.dataType);
     }
 
     @Test
     public void serializeBsbLanApiParameterSetRequest() {
-        BsbLanApiParameterSetRequest request = new BsbLanApiParameterSetRequest();
+        BsbLanApiParameterSetRequestDTO request = new BsbLanApiParameterSetRequestDTO();
         request.parameter = "1234";
         request.value = "Hello World";
         request.type = Type.SET;

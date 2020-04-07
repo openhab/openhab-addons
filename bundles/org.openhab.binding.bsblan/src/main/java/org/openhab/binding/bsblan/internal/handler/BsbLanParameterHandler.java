@@ -23,9 +23,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest.Type;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO.Type;
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 import org.openhab.binding.bsblan.internal.helper.BsbLanParameterConverter;
 
@@ -87,7 +87,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
      */
     @Override
     protected void updateChannel(String channelId) {
-        BsbLanApiParameterQueryResponse data = null;
+        BsbLanApiParameterQueryResponseDTO data = null;
         BsbLanBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             data = bridgeHandler.getCachedParameterQueryResponse();
@@ -95,7 +95,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         updateChannel(channelId, data);
     }
 
-    private void updateChannel(String channelId, @Nullable BsbLanApiParameterQueryResponse data) {
+    private void updateChannel(String channelId, @Nullable BsbLanApiParameterQueryResponseDTO data) {
         if (data == null) {
             logger.debug("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE,
@@ -103,7 +103,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
             return;
         }
 
-        BsbLanApiParameter parameter = data.getOrDefault(parameterConfig.id, null);
+        BsbLanApiParameterDTO parameter = data.getOrDefault(parameterConfig.id, null);
         if (parameter == null) {
             logger.debug("parameter {} is not part of response data while updating channel '{}' ", parameterConfig.id, channelId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -158,7 +158,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         }
 
         // refresh value
-        BsbLanApiParameterQueryResponse queryResponse = api.queryParameter(parameterConfig.id);
+        BsbLanApiParameterQueryResponseDTO queryResponse = api.queryParameter(parameterConfig.id);
         if (queryResponse == null) {
             logger.warn("Failed to refresh parameter {} after set request", parameterConfig.id);
             return;

@@ -12,16 +12,11 @@
  */
 package org.openhab.binding.bsblan.internal.api.dto;
 
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
-
-import java.util.HashMap;
-
 /**
- * The {@link BsbLanApiParameterQueryResponse} reflects the response received
- * when querying parameters.
+ * The {@link BsbLanApiContentDTO} reflects a request sent to the BSB-LAN device.
  *
  * @author Peter Schraffl - Initial contribution
  */
-@SuppressWarnings("serial")
-public class BsbLanApiParameterQueryResponse extends HashMap<Integer, BsbLanApiParameter> implements BsbLanApiContent {
+public interface BsbLanApiContentDTO {
+    // empty for now
 }

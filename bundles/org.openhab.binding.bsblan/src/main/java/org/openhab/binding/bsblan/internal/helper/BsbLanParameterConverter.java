@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class BsbLanParameterConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BsbLanParameterConverter.class);
 
-    public static @Nullable State getState(String channelId, BsbLanApiParameter parameter) {
+    public static @Nullable State getState(String channelId, BsbLanApiParameterDTO parameter) {
         switch (channelId) {
             case PARAMETER_CHANNEL_NAME:
                 return getStateForNameChannel(parameter);
@@ -67,25 +67,25 @@ public class BsbLanParameterConverter {
         return null;
     }
 
-    private static State getStateForNameChannel(BsbLanApiParameter parameter) {
+    private static State getStateForNameChannel(BsbLanApiParameterDTO parameter) {
         return new StringType(parameter.name);
     }
 
-    private static State getStateForDescriptionChannel(BsbLanApiParameter parameter) {
+    private static State getStateForDescriptionChannel(BsbLanApiParameterDTO parameter) {
         return new StringType(parameter.description);
     }
 
-    private static State getStateForUnitChannel(BsbLanApiParameter parameter) {
+    private static State getStateForUnitChannel(BsbLanApiParameterDTO parameter) {
         String value = StringEscapeUtils.unescapeHtml(parameter.unit);
         return new StringType(value);
     }
 
-    private static State getStateForDatatypeChannel(BsbLanApiParameter parameter) {
+    private static State getStateForDatatypeChannel(BsbLanApiParameterDTO parameter) {
         int value = parameter.dataType.getValue();
         return new DecimalType(value);
     }
 
-    private static @Nullable State getStateForNumberValueChannel(BsbLanApiParameter parameter) {
+    private static @Nullable State getStateForNumberValueChannel(BsbLanApiParameterDTO parameter) {
         try {
             switch (parameter.dataType) {
                 // parse enum data type as integer
@@ -102,11 +102,11 @@ public class BsbLanParameterConverter {
         return null;
     }
 
-    private static State getStateForStringValueChannel(BsbLanApiParameter parameter) {
+    private static State getStateForStringValueChannel(BsbLanApiParameterDTO parameter) {
         return new StringType(parameter.value);
     }
 
-    private static State getStateForSwitchValueChannel(BsbLanApiParameter parameter) {
+    private static State getStateForSwitchValueChannel(BsbLanApiParameterDTO parameter) {
         // treat "0" as OFF and everything else as ON
         return parameter.value.equals("0") ? OnOffType.OFF : OnOffType.ON;
     }

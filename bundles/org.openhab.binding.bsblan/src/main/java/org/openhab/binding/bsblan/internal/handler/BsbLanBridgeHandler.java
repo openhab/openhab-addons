@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     private BsbLanBridgeConfiguration bridgeConfig = new BsbLanBridgeConfiguration();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> debouncedInit;
-    private @Nullable BsbLanApiParameterQueryResponse cachedParameterQueryResponse;
+    private @Nullable BsbLanApiParameterQueryResponseDTO cachedParameterQueryResponse;
 
     public BsbLanBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -115,7 +115,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         things.clear();
     }
 
-    public @Nullable BsbLanApiParameterQueryResponse getCachedParameterQueryResponse() {
+    public @Nullable BsbLanApiParameterQueryResponseDTO getCachedParameterQueryResponse() {
         return cachedParameterQueryResponse;
     }
 

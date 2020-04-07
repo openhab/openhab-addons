@@ -15,12 +15,12 @@ package org.openhab.binding.bsblan.internal.api.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link BsbLanApiParameterSetResponse} reflects the response received
+ * The {@link BsbLanApiParameterSetResponseDTO} reflects the response received
  * when setting a parameter.
  *
  * @author Peter Schraffl - Initial contribution
  */
-public class BsbLanApiParameterSetResult {
+public class BsbLanApiParameterSetResultDTO {
 
     public enum Status {
         @SerializedName("0")

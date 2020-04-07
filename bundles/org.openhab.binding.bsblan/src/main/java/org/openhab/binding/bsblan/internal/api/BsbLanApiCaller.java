@@ -23,11 +23,11 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetResponse;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetResult;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetResponseDTO;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetResultDTO;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,37 +49,37 @@ public class BsbLanApiCaller {
         bridgeConfig = config;
     }
 
-    public @Nullable BsbLanApiParameterQueryResponse queryParameter(Integer parameterId) {
+    public @Nullable BsbLanApiParameterQueryResponseDTO queryParameter(Integer parameterId) {
         Set<Integer> parameters = new HashSet<Integer>();
         parameters.add(parameterId);
         return queryParameters(parameters);
     }
 
-    public @Nullable BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
+    public @Nullable BsbLanApiParameterQueryResponseDTO queryParameters(Set<Integer> parameterIds) {
         // make the request even if parameterIds is empty, thing OFFLINE/ONLINE detection relies on a response
         // if (parameterIds.size() == 0) {
         //     return null;
         // }
         String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
 
-        return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath, null);
+        return makeRestCall(BsbLanApiParameterQueryResponseDTO.class, "GET", apiPath, null);
     }
 
-    public boolean setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequest.Type type) {
+    public boolean setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequestDTO.Type type) {
         // prepare request content
-        BsbLanApiParameterSetRequest request = new BsbLanApiParameterSetRequest();
+        BsbLanApiParameterSetRequestDTO request = new BsbLanApiParameterSetRequestDTO();
         request.parameter = parameterId.toString();
         request.value = value;
         request.type = type;
 
         // make REST call and process response
-        BsbLanApiParameterSetResponse setResponse = makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", request);
+        BsbLanApiParameterSetResponseDTO setResponse = makeRestCall(BsbLanApiParameterSetResponseDTO.class, "POST", "/JS", request);
         if (setResponse == null) {
             logger.warn("Failed to set parameter {} to '{}': no response received", parameterId, value);
             return false;
         }
 
-        BsbLanApiParameterSetResult result = setResponse.getOrDefault(parameterId, null);
+        BsbLanApiParameterSetResultDTO result = setResponse.getOrDefault(parameterId, null);
         if (result == null) {
             logger.warn("Failed to set parameter {} to '{}'': result is null", parameterId, value);
             return false;
@@ -88,7 +88,7 @@ public class BsbLanApiCaller {
             logger.warn("Failed to set parameter {} to '{}': status is null", parameterId, value);
             return false;
         }
-        if (result.status != BsbLanApiParameterSetResult.Status.SUCCESS) {
+        if (result.status != BsbLanApiParameterSetResultDTO.Status.SUCCESS) {
             logger.info("Failed to set parameter {} to '{}': status = {}", parameterId, value, result.status);
             return false;
         }
@@ -123,7 +123,7 @@ public class BsbLanApiCaller {
      * @param content to add to request
      * @return the object representation of the json response
      */
-    private <T> @Nullable T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, @Nullable BsbLanApiContent request) {
+    private <T> @Nullable T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, @Nullable BsbLanApiContentDTO request) {
         try {
             String url = createApiBaseUrl() + apiPath;
             logger.debug("api request url = '{}'", url);

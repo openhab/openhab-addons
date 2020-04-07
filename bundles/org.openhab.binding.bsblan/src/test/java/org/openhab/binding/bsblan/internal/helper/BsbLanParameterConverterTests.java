@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 
 import org.junit.Test;
 
@@ -38,8 +38,8 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetStatesForStringParameter() {
-        BsbLanApiParameter parameter = new BsbLanApiParameter();
-        parameter.dataType = BsbLanApiParameter.DataType.DT_STRN;
+        BsbLanApiParameterDTO parameter = new BsbLanApiParameterDTO();
+        parameter.dataType = BsbLanApiParameterDTO.DataType.DT_STRN;
         parameter.description = "Test-Description";
         parameter.name = "Test-Name";
         parameter.unit = "Test-Unit";
@@ -49,7 +49,7 @@ public class BsbLanParameterConverterTests {
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DATATYPE, parameter);
         assertNotNull(state);
-        assertEquals(new DecimalType(BsbLanApiParameter.DataType.DT_STRN.getValue()), state.as(DecimalType.class));
+        assertEquals(new DecimalType(BsbLanApiParameterDTO.DataType.DT_STRN.getValue()), state.as(DecimalType.class));
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DESCRIPTION, parameter);
         assertNotNull(state);
@@ -77,8 +77,8 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetStatesForEnumParameterValue1() {
-        BsbLanApiParameter parameter = new BsbLanApiParameter();
-        parameter.dataType = BsbLanApiParameter.DataType.DT_ENUM;
+        BsbLanApiParameterDTO parameter = new BsbLanApiParameterDTO();
+        parameter.dataType = BsbLanApiParameterDTO.DataType.DT_ENUM;
         parameter.description = "Test-Description";
         parameter.name = "Test-Name";
         parameter.unit = "Test-Unit";
@@ -88,7 +88,7 @@ public class BsbLanParameterConverterTests {
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DATATYPE, parameter);
         assertNotNull(state);
-        assertEquals(new DecimalType(BsbLanApiParameter.DataType.DT_ENUM.getValue()), state.as(DecimalType.class));
+        assertEquals(new DecimalType(BsbLanApiParameterDTO.DataType.DT_ENUM.getValue()), state.as(DecimalType.class));
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DESCRIPTION, parameter);
         assertNotNull(state);
@@ -117,8 +117,8 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetStatesForEnumParameterValue0() {
-        BsbLanApiParameter parameter = new BsbLanApiParameter();
-        parameter.dataType = BsbLanApiParameter.DataType.DT_ENUM;
+        BsbLanApiParameterDTO parameter = new BsbLanApiParameterDTO();
+        parameter.dataType = BsbLanApiParameterDTO.DataType.DT_ENUM;
         parameter.description = "Test-Description";
         parameter.name = "Test-Name";
         parameter.unit = "Test-Unit";
@@ -128,7 +128,7 @@ public class BsbLanParameterConverterTests {
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DATATYPE, parameter);
         assertNotNull(state);
-        assertEquals(new DecimalType(BsbLanApiParameter.DataType.DT_ENUM.getValue()), state.as(DecimalType.class));
+        assertEquals(new DecimalType(BsbLanApiParameterDTO.DataType.DT_ENUM.getValue()), state.as(DecimalType.class));
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DESCRIPTION, parameter);
         assertNotNull(state);
@@ -157,8 +157,8 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetStatesForValueParameterValue() {
-        BsbLanApiParameter parameter = new BsbLanApiParameter();
-        parameter.dataType = BsbLanApiParameter.DataType.DT_VALS;
+        BsbLanApiParameterDTO parameter = new BsbLanApiParameterDTO();
+        parameter.dataType = BsbLanApiParameterDTO.DataType.DT_VALS;
         parameter.description = "Test-Description";
         parameter.name = "Test-Name";
         parameter.unit = "Test-Unit";
@@ -168,7 +168,7 @@ public class BsbLanParameterConverterTests {
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DATATYPE, parameter);
         assertNotNull(state);
-        assertEquals(new DecimalType(BsbLanApiParameter.DataType.DT_VALS.getValue()), state.as(DecimalType.class));
+        assertEquals(new DecimalType(BsbLanApiParameterDTO.DataType.DT_VALS.getValue()), state.as(DecimalType.class));
 
         state = BsbLanParameterConverter.getState(PARAMETER_CHANNEL_DESCRIPTION, parameter);
         assertNotNull(state);
@@ -197,8 +197,8 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetStatesEscapesHtml() {
-        BsbLanApiParameter parameter = new BsbLanApiParameter();
-        parameter.dataType = BsbLanApiParameter.DataType.DT_VALS;
+        BsbLanApiParameterDTO parameter = new BsbLanApiParameterDTO();
+        parameter.dataType = BsbLanApiParameterDTO.DataType.DT_VALS;
         parameter.description = "Test-Description";
         parameter.name = "Test-Name";
         parameter.unit = "&deg;C";

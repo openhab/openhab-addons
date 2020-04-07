@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.bsblan.internal.api.dto;
 
-import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link BsbLanApiParameterSetRequest} reflects the request sent
+ * The {@link BsbLanApiParameterSetRequestDTO} reflects the request sent
  * when setting a parameter.
  *
  * @author Peter Schraffl - Initial contribution
  */
-public class BsbLanApiParameterSetRequest implements BsbLanApiContent {
+public class BsbLanApiParameterSetRequestDTO implements BsbLanApiContentDTO {
 
     public enum Type {
         @SerializedName("0")
