@@ -98,7 +98,8 @@ public class BsbLanApiCaller {
         StringBuilder url = new StringBuilder();
         url.append("http://");
         if (StringUtils.trimToNull(bridgeConfig.username) != null && StringUtils.trimToNull(bridgeConfig.password) != null) {
-            url.append(bridgeConfig.username + ":" + bridgeConfig.password + "@");
+            url.append(bridgeConfig.username).append(":").append(bridgeConfig.password).append("@");
+
         }
         url.append(bridgeConfig.host);
         if (bridgeConfig.port != 80) {
