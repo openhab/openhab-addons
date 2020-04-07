@@ -27,7 +27,7 @@ Note, that the things will show up under the Modbus binding.
 | Thing                 | Description                                                           |
 |-----------------------|-----------------------------------------------------------------------|
 | inverter-single-phase | For simple, single phase inverters                                    |
-| inverter-split-phase  | Split phase inverters (Japanese grind and 240V grid in North America) |
+| inverter-split-phase  | Split phase inverters (Japanese grid and 240V grid in North America)  |
 | inverter-three-phase  | Three phase inverters                                                 |
 | meter-single-phase    | Single phase meters (AN or AB)                                        |
 | meter-split-phase     | Split single phase meters (ABN)                                       |

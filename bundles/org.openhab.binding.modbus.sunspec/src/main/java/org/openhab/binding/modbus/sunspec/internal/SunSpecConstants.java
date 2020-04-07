@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,10 +41,8 @@ public class SunSpecConstants {
     /**
      * Map of the supported thing type uids, with their block type id
      */
-    public static final Map<Integer, ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashMap<>();
-    static {
-        SUPPORTED_THING_TYPES_UIDS.put(INVERTER_SINGLE_PHASE, THING_TYPE_INVERTER_SINGLE_PHASE);
-    }
+    public static final Map<Integer, ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singletonMap(INVERTER_SINGLE_PHASE, THING_TYPE_INVERTER_SINGLE_PHASE);
 
     // properties
     public static final String PROPERTY_VENDOR = "vendor";

@@ -296,9 +296,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Remove the endpoint if exists
      */
     private void unregisterEndpoint() {
-        if (endpoint.isPresent()) {
-            endpoint = Optional.empty();
-        }
+        endpoint = Optional.empty();
     }
 
     /**
