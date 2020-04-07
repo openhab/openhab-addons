@@ -82,6 +82,7 @@
 			<channel id="last_clean_error" typeId="last_clean_error" />
 			<channel id="last_clean_finish" typeId="last_clean_finish" />
 			<channel id="last_clean_record" typeId="last_clean_record" />
+			<channel id="map" typeId="map" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="history">
@@ -313,6 +314,11 @@
 	<channel-type id="last_clean_record" advanced="true">
 		<item-type>String</item-type>
 		<label>Cleaning Record</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="map" advanced="false">
+		<item-type>Image</item-type>
+		<label>Cleaning Map</label>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

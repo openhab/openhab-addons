@@ -10,21 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miio.internal;
+package org.openhab.binding.miio.internal.cloud;
+
+import java.util.List;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MiIoBindingConfiguration} class defines variables which are
- * used for the binding configuration.
+ * This DTO class wraps the device list info json structure
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-@SuppressWarnings("null")
-public final class MiIoBindingConfiguration {
-    public String host;
-    public String token;
-    public String deviceId;
-    public String model;
-    public int refreshInterval;
-    public int timeout;
-    public String cloudServer;
+public class CloudDeviceListDTO {
+
+    @SerializedName("list")
+    @Expose
+    private List<CloudDeviceDTO> cloudDevices = null;
+
+    public List<CloudDeviceDTO> getCloudDevices() {
+        return cloudDevices;
+    }
 }
