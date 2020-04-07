@@ -16,6 +16,61 @@ The following things types are available:
 | miio:basic       | For several basic devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
 | miio:unsupported | For experimenting with other devices which use the Mi IO protocol                                                        |
 
+# Discovery
+
+The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
+
+The mDNS discovery method will discover your device type, but will not discover a (required) token.
+The basic discovery will not discovery the type, but will discover a token for models that support it.
+Accept only one of the 2 discovery results, the alternate one can further be ignored.
+
+## Tokens
+
+The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
+The binding can retrieve the needed tokens from the Xiaomi cloud. 
+Go to the binding config page and enter your cloud username and password. 
+The server(s) to which your devices are connected need to be entered as well. 
+Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
+
+## Tokens without cloud access
+
+Some devices provide the token upon discovery. This may depends on the firmware version.
+If the device does not discover your token, it needs to be retrieved from the Mi Home app.
+
+The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
+It seems that version was released with debug messages turned on by mistake. 
+An APK file with the old version can be easily found using one of the popular web search engines. 
+After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
+
+For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
+Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.
+
+Note. The Xiaomi devices change the token when inclusion is done. Hence if you get your token after reset and than include it with the Mi Home app, the token will change.
+
+## Binding Configuration
+
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
+
+## Thing Configuration
+
+Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
+The configuration for model is automatically retrieved from the device in normal operation. 
+However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
+
+| Parameter       | Type    | Required | Description                                                       |
+|-----------------|---------|----------|-------------------------------------------------------------------|
+| host            | text    | true     | Device IP address                                                 |
+| token           | text    | true     | Token for communication (in Hex)                                  |
+| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
+| model           | text    | false    | Device model string, used to determine the subtype                |
+| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
+| timeout         | integer | false    | Timeout time in milliseconds                                      |
+
+### Example Thing file
+
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx" ]` 
+
 ## Mi IO Devices
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
@@ -99,7 +154,20 @@ The following things types are available:
 | Mi Xiaowa Vacuum c1          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
 | Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |            |
 | Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |            |
-| Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
+| Mi Robot Vacuum S4           | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-s4) | Yes       |            |
+| Roborock Vacuum S4v2         | miio:vacuum      | [roborock.vacuum.s4v2](#roborock-vacuum-s4v2) | Yes       |            |
+| Roborock Vacuum T6           | miio:vacuum      | [roborock.vacuum.t6](#roborock-vacuum-t6) | Yes       |            |
+| Roborock Vacuum T6 v2        | miio:vacuum      | [roborock.vacuum.t6v2](#roborock-vacuum-t6v2) | Yes       |            |
+| Roborock Vacuum T6 v3        | miio:vacuum      | [roborock.vacuum.t6v3](#roborock-vacuum-t6v3) | Yes       |            |
+| Roborock Vacuum T4           | miio:vacuum      | [roborock.vacuum.t4](#roborock-vacuum-t4) | Yes       |            |
+| Roborock Vacuum T4 v2        | miio:vacuum      | [roborock.vacuum.t4v2](#roborock-vacuum-t4v2) | Yes       |            |
+| Roborock Vacuum T4 v3        | miio:vacuum      | [roborock.vacuum.t4v3](#roborock-vacuum-t4v3) | Yes       |            |
+| Roborock Vacuum T7           | miio:vacuum      | [roborock.vacuum.t7](#roborock-vacuum-t7) | Yes       |            |
+| Roborock Vacuum T7 v2        | miio:vacuum      | [roborock.vacuum.t7v2](#roborock-vacuum-t7v2) | Yes       |            |
+| Roborock Vacuum T7 v3        | miio:vacuum      | [roborock.vacuum.t7v3](#roborock-vacuum-t7v3) | Yes       |            |
+| Roborock Vacuum T7p          | miio:vacuum      | [roborock.vacuum.t7p](#roborock-vacuum-t7p) | Yes       |            |
+| Roborock Vacuum T7 v2        | miio:vacuum      | [roborock.vacuum.t7pv2](#roborock-vacuum-t7pv2) | Yes       |            |
+| Roborock Vacuum T7 v3        | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-t7pv3) | Yes       |            |
 | Roborock Vacuum S5 Max       | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |            |
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
@@ -155,7 +223,7 @@ The following things types are available:
 # Advanced: Unsupported devices
 
 Newer devices may not yet be supported.
-However, many devices share large similarties with existing devices.
+However, many devices share large similarities with existing devices.
 The binding allows to try/test if your new device is working with database files of older devices as well.
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
@@ -166,58 +234,9 @@ Look at the openhab forum, or the openhab github repository for the modelId of s
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The config/misc/miio (e.g. in Linux `/opt/openhab2/config/misc/miio/`) is scanned for database files and will be used for your devices. 
+The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in Openhab github.
-
-# Discovery
-
-The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
-
-The mDNS discovery method will discover your device type, but will not discover a (required) token.
-The basic discovery will not discovery the type, but will discover a token for models that support it.
-Accept only one of the 2 discovery results, the alternate one can further be ignored.
-
-## Tokens
-
-The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
-Some devices provide the token upon discovery. This may depends on the firmware version.
-If the device does not discover your token, it needs to be retrieved from the Mi Home app.
-
-The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
-It seems that version was released with debug messages turned on by mistake. 
-An APK file with the old version can be easily found using one of the popular web search engines. 
-After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
-
-For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
-Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.
-
-Note. The Xiaomi devices change the token when inclusion is done. Hence if you get your token after reset and than include it with the Mi Home app, the token will change.
-
-## Binding Configuration
-
-No binding configuration is required.
-
-## Thing Configuration
-
-Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
-Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
-The configuration for model is automatically retrieved from the device in normal operation. 
-However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
-
-| Parameter       | Type    | Required | Description                                                       |
-|-----------------|---------|----------|-------------------------------------------------------------------|
-| host            | text    | true     | Device IP address                                                 |
-| token           | text    | true     | Token for communication (in Hex)                                  |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
-| model           | text    | false    | Device model string, used to determine the subtype                |
-| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
-| timeout         | integer | false    | Timeout time in milliseconds                                      |
-
-
-### Example Thing file
-
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx" ]` 
 
 ## Channels
 
@@ -1480,6 +1499,7 @@ Group  gVacStat "Status Details"           <status> (gVac)
 Group  gVacCons "Consumables Usage"        <line-increase> (gVac)
 Group  gVacDND  "Do Not Disturb Settings"  <moon> (gVac)
 Group  gVacHist "Cleaning History"         <calendar> (gVac)
+Group  gVacLast "Last Cleaning Details"       <calendar> (gVac)
 
 String actionControl  "Vacuum Control"          {channel="miio:vacuum:034F0E45:actions#control" }
 String actionCommand  "Vacuum Command"          {channel="miio:vacuum:034F0E45:actions#commands" }
@@ -1505,8 +1525,19 @@ String dndEnd   "DND End Time [%s]"   <clock-on>  (gVacDND) {channel="miio:vacuu
 Number historyArea    "Total Cleaned Area [%1.0fm²]" <zoom>    (gVacHist) {channel="miio:vacuum:034F0E45:history#total_clean_area"}
 String historyTime    "Total Clean Time [%s]"   <clock>     (gVacHist) {channel="miio:vacuum:034F0E45:history#total_clean_time"}
 Number historyCount    "Total # Cleanings [%1.0f]"  <office>  (gVacHist) {channel="miio:vacuum:034F0E45:history#total_clean_count"}
+
+String lastStart   "Last Cleaning Start time [%s]" <clock> (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_start_time"}
+String lastEnd     "Last Cleaning End time [%s]" <clock> (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_end_time"}
+Number lastArea    "Last Cleaned Area [%1.0fm²]" <zoom>    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_area"}
+Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_duration"}
+Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_error" }
+Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_finish" }
+
+
+Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
+Note: cleaning map is only available with cloud access.
 
 ### Mi Air Monitor v1 (zhimi.airmonitor.v1) item file lines
 
