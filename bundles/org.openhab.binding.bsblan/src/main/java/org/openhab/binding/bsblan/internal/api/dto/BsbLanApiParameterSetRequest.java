@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bsblan.internal.api.models;
+package org.openhab.binding.bsblan.internal.api.dto;
 
-import org.openhab.binding.bsblan.internal.api.BsbLanApiContent;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
 
 import com.google.gson.annotations.SerializedName;
 

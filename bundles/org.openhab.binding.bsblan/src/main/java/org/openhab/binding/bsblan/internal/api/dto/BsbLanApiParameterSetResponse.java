@@ -10,13 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bsblan.internal.api;
+package org.openhab.binding.bsblan.internal.api.dto;
+
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
+
+import java.util.HashMap;
 
 /**
- * The {@link BsbLanApiContent} reflects a request sent to the BSB-LAN device.
+ * The {@link BsbLanApiParameterSetResponse} reflects the response received
+ * when setting a parameter.
  *
  * @author Peter Schraffl - Initial contribution
  */
-public interface BsbLanApiContent {
-    // empty for now
+@SuppressWarnings("serial")
+public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetResult> implements BsbLanApiContent {
 }

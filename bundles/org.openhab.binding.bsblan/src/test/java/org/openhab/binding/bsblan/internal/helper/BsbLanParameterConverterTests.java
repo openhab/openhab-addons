@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
 
 import org.junit.Test;
 

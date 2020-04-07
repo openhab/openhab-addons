@@ -23,9 +23,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest.Type;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest.Type;
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 import org.openhab.binding.bsblan.internal.helper.BsbLanParameterConverter;
 

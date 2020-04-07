@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

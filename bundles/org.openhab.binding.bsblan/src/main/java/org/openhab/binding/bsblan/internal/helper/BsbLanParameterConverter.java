@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

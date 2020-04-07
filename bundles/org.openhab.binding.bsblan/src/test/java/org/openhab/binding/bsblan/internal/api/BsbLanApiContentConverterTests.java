@@ -18,10 +18,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest.Type;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponse;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequest.Type;
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameter;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;

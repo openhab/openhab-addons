@@ -14,6 +14,9 @@ package org.openhab.binding.bsblan.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
