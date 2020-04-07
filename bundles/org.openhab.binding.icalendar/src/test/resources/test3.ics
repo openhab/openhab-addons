@@ -4,7 +4,7 @@ VERSION:2.0
 METHOD:PUBLISH
 X-CALSTART:20200128T160000Z
 X-CALEND:20200421T153000Z
-X-WR-RELCALID:{0000002E-E8F4-589F-A42B-47B2E6C79BAB}
+X-WR-RELCALID:{0000002E-56AD-5AD9-A42B-47B1E6C79BAB}
 X-WR-CALNAME:iCalendar Test Calendar (1)
 BEGIN:VTIMEZONE
 TZID:GMT Standard Time
@@ -23,7 +23,7 @@ END:DAYLIGHT
 END:VTIMEZONE
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191526Z
+CREATED:20200406T191653Z
 DESCRIPTION:BEGIN:Calendar_Test_Temperature:12.3°C:abc\nEND:Calendar_Test_
 	Temperature:23.4°C:abc\n \nBEGIN:Calendar_Test_Switch:ON:abc\nEND:Calenda
 	r_Test_Switch:OFF:abc\n \nBEGIN:Calendar_Test_String:the quick:abc\nEND:Ca
@@ -39,7 +39,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Temperature:12.3°C:abc\nEND:Calendar_Test_
 DTEND;TZID="GMT Standard Time":20200128T163000
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T160000
-LAST-MODIFIED:20200406T191527Z
+LAST-MODIFIED:20200407T001726Z
 LOCATION:Scotland
 PRIORITY:5
 RRULE:FREQ=DAILY;COUNT=85
@@ -587,7 +587,7 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191526Z
+CREATED:20200406T191653Z
 DESCRIPTION:BEGIN:Calendar_Test_Temperature:12.3°C:abc\nEND:Calendar_Test_
 	Temperature:23.4°C:abc\n \nBEGIN:Calendar_Test_Switch:ON:abc\nEND:Calenda
 	r_Test_Switch:OFF:abc\n \nBEGIN:Calendar_Test_String:the quick:abc\nEND:Ca
@@ -603,7 +603,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Temperature:12.3°C:abc\nEND:Calendar_Test_
 DTEND;TZID="GMT Standard Time":20200128T163000
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T160000
-LAST-MODIFIED:20200406T191530Z
+LAST-MODIFIED:20200407T001726Z
 LOCATION:Italy
 PRIORITY:5
 RRULE:FREQ=DAILY;COUNT=85
@@ -1151,7 +1151,7 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191527Z
+CREATED:20200406T191653Z
 DESCRIPTION:BEGIN:Calendar_Test_Color:ON:abc\nBEGIN:Calendar_Test_Contact:O
 	PEN:abc\nBEGIN:Calendar_Test_Dimmer:ON:abc \nBEGIN:Calendar_Test_Number:12
 	.3:abc\nBEGIN:Calendar_Test_Temperature:12.3°C:abc\nBEGIN:Calendar_Test_P
@@ -1162,7 +1162,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Color:ON:abc\nBEGIN:Calendar_Test_Contact:O
 DTEND;TZID="GMT Standard Time":20200128T194500
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T193000
-LAST-MODIFIED:20200406T191531Z
+LAST-MODIFIED:20200406T191654Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 1
@@ -1701,7 +1701,7 @@ X-MS-OLK-CONFTYPE:0
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191527Z
+CREATED:20200406T191654Z
 DESCRIPTION:BEGIN:Calendar_Test_Color:OFF:abc\nBEGIN:Calendar_Test_Contact:
 	CLOSED:abc\nBEGIN:Calendar_Test_Dimmer:OFF:abc\nBEGIN:Calendar_Test_Number
 	:0:abc\nBEGIN:Calendar_Test_Temperature:300.3K:abc\nBEGIN:Calendar_Test_Pr
@@ -1712,7 +1712,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Color:OFF:abc\nBEGIN:Calendar_Test_Contact:
 DTEND;TZID="GMT Standard Time":20200128T200000
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T194500
-LAST-MODIFIED:20200406T191531Z
+LAST-MODIFIED:20200406T191659Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 2
@@ -2252,7 +2252,7 @@ X-MS-OLK-CONFTYPE:0
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191528Z
+CREATED:20200406T191654Z
 DESCRIPTION:BEGIN:Calendar_Test_Color:100%:abc\nBEGIN:Calendar_Test_Contact
 	:OPEN:abc\nBEGIN:Calendar_Test_Dimmer:100%:abc\nBEGIN:Calendar_Test_Number
 	:1:abc\nBEGIN:Calendar_Test_Temperature:62.3°F:abc\nBEGIN:Calendar_Test_P
@@ -2263,7 +2263,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Color:100%:abc\nBEGIN:Calendar_Test_Contact
 DTEND;TZID="GMT Standard Time":20200128T201500
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T200000
-LAST-MODIFIED:20200406T191532Z
+LAST-MODIFIED:20200406T191700Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 3
@@ -2802,7 +2802,7 @@ X-MS-OLK-CONFTYPE:0
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191528Z
+CREATED:20200406T191654Z
 DESCRIPTION:BEGIN:Calendar_Test_Color:0%:abc\nBEGIN:Calendar_Test_Contact:C
 	LOSED:abc\nBEGIN:Calendar_Test_Dimmer:0%:abc\nBEGIN:Calendar_Test_Number:-
 	12.3:abc\nBEGIN:Calendar_Test_Temperature:-12.3°C:abc\nBEGIN:Calendar_Tes
@@ -2813,7 +2813,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Color:0%:abc\nBEGIN:Calendar_Test_Contact:C
 DTEND;TZID="GMT Standard Time":20200128T203000
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T201500
-LAST-MODIFIED:20200406T191532Z
+LAST-MODIFIED:20200406T191700Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 4
@@ -3353,7 +3353,7 @@ X-MS-OLK-CONFTYPE:0
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191529Z
+CREATED:20200406T191655Z
 DESCRIPTION:BEGIN:Calendar_Test_Color:240\,100\,100:abc\nBEGIN:Calendar_Tes
 	t_Contact:OPEN:abc\nBEGIN:Calendar_Test_Dimmer:50%:abc\nBEGIN:Calendar_Tes
 	t_Number:-0:abc\nBEGIN:Calendar_Test_Temperature:0K:abc\nBEGIN:Calendar_Te
@@ -3364,7 +3364,7 @@ DESCRIPTION:BEGIN:Calendar_Test_Color:240\,100\,100:abc\nBEGIN:Calendar_Tes
 DTEND;TZID="GMT Standard Time":20200128T204500
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T203000
-LAST-MODIFIED:20200406T191532Z
+LAST-MODIFIED:20200406T191700Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 5
@@ -3903,7 +3903,7 @@ X-MS-OLK-CONFTYPE:0
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191529Z
+CREATED:20200406T191655Z
 DESCRIPTION:Wrong case prefix..\nbegin\nBegin\nBEGIn\n \nMissing : delimite
 	rs..\nBEGIN\n \nToo few delimiter fields..\nBEGIN:www\n \nToo many delimit
 	er fields..\nBEGIN:www:xxx:yyy:zzz\n \nInvalid prefix..\nBEGINX:xxx:yyy:zz
@@ -3911,11 +3911,12 @@ DESCRIPTION:Wrong case prefix..\nbegin\nBegin\nBEGIn\n \nMissing : delimite
 	em name \nBEGIN::yyy:zzz\nBEGIN: :yyy:zzz\nBEGIN:  :yyy:zzz\n \nBad item n
 	ame \nBEGIN:!:yyy:zzz\nBEGIN:@:yyy:zzz\nBEGIN:£:yyy:zzz\n \nEmpty target 
 	state value\nBEGIN:xxx::zzz\nBEGIN:xxx: :zzz\nBEGIN:xxx:          :zzz\n \
-	n
+	nBad percent type target state value\nBEGIN:xxx:%:zzz\nBEGIN:xxx:a1%:zzz\n
+	 \n
 DTEND;TZID="GMT Standard Time":20200128T210000
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T204500
-LAST-MODIFIED:20200406T191532Z
+LAST-MODIFIED:20200407T121933Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 6
@@ -3929,7 +3930,7 @@ X-ALT-DESC;FMTTYPE=text/html:<html xmlns:v="urn:schemas-microsoft-com:vml"
 	ntent-Type content="text/html\; charset=utf-8"><meta name=ProgId content=W
 	ord.Document><meta name=Generator content="Microsoft Word 15"><meta name=O
 	riginator content="Microsoft Word 15"><link rel=File-List href="cid:fileli
-	st.xml@01D60C35.ED5D8F20"><!--[if gte mso 9]><xml>\n<o:OfficeDocumentSetti
+	st.xml@01D60CDF.2B5ACE60"><!--[if gte mso 9]><xml>\n<o:OfficeDocumentSetti
 	ngs>\n<o:AllowPNG/>\n</o:OfficeDocumentSettings>\n</xml><![endif]--><!--[i
 	f gte mso 9]><xml>\n<w:WordDocument>\n<w:Zoom>110</w:Zoom>\n<w:SpellingSta
 	te>Clean</w:SpellingState>\n<w:DocumentKind>DocumentEmail</w:DocumentKind>
@@ -4463,7 +4464,11 @@ X-ALT-DESC;FMTTYPE=text/html:<html xmlns:v="urn:schemas-microsoft-com:vml"
 	E>BEGIN:xxx</span>: :<span class=SpellE>zzz</span><o:p></o:p></p><p class=
 	MsoNormal><span class=SpellE>BEGIN:xxx</span>:<span style='mso-tab-count:1
 	'>          </span>:<span class=SpellE>zzz</span><o:p></o:p></p><
-	p class=MsoNormal><o:p>&nbsp\;</o:p></p></div></body></html>
+	p class=MsoNormal><o:p>&nbsp\;</o:p></p><p class=MsoNormal>Bad percent typ
+	e target state value<o:p></o:p></p><p class=MsoNormal><span class=SpellE>B
+	EGIN:xxx</span>:%:<span class=SpellE>zzz</span><o:p></o:p></p><p class=Mso
+	Normal>BEGIN:xxx:a1%:<span class=SpellE>zzz</span><o:p></o:p></p><p class=
+	MsoNormal><o:p>&nbsp\;</o:p></p></div></body></html>
 X-MICROSOFT-CDO-BUSYSTATUS:BUSY
 X-MICROSOFT-CDO-IMPORTANCE:1
 X-MICROSOFT-DISALLOW-COUNTER:FALSE
@@ -4471,7 +4476,7 @@ X-MS-OLK-CONFTYPE:0
 END:VEVENT
 BEGIN:VEVENT
 CLASS:PUBLIC
-CREATED:20200406T191529Z
+CREATED:20200406T191656Z
 DESCRIPTION:<p>BEGIN:Calendar_Test_Temperature:12.3°C:abc</p><p>END:Calend
 	ar_Test_Temperature:23.4°C:abc</p><p>&nbsp\;</p><p>BEGIN:Calendar_Test_Sw
 	itch:ON:abc</p><p>END:Calendar_Test_Switch:OFF:abc</p><p>&nbsp\;</p><p>BEG
@@ -4481,7 +4486,7 @@ DESCRIPTION:<p>BEGIN:Calendar_Test_Temperature:12.3°C:abc</p><p>END:Calend
 DTEND;TZID="GMT Standard Time":20200128T211500
 DTSTAMP:20200128T124950Z
 DTSTART;TZID="GMT Standard Time":20200128T210000
-LAST-MODIFIED:20200406T191621Z
+LAST-MODIFIED:20200406T191700Z
 PRIORITY:5
 SEQUENCE:0
 SUMMARY;LANGUAGE=en-gb:Test Series: 7
