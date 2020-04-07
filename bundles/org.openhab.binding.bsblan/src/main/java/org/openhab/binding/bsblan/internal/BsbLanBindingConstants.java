@@ -30,18 +30,14 @@ public class BsbLanBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_PARAMETER = new ThingTypeUID(BINDING_ID, "parameter");
 
-    // List of all Channel ids
-    public class Channels {
-        public class Parameter {
-            public static final String NAME = "name";
-            public static final String NUMBER_VALUE = "number-value";
-            public static final String STRING_VALUE = "string-value";
-            public static final String SWITCH_VALUE = "switch-value";
-            public static final String UNIT = "unit";
-            public static final String DESCRIPTION = "description";
-            public static final String DATATYPE = "datatype";
-        }
-    }
+    // List of all channel ids
+    public static final String PARAMETER_CHANNEL_NAME = "name";
+    public static final String PARAMETER_CHANNEL_NUMBER_VALUE = "number-value";
+    public static final String PARAMETER_CHANNEL_STRING_VALUE = "string-value";
+    public static final String PARAMETER_CHANNEL_SWITCH_VALUE = "switch-value";
+    public static final String PARAMETER_CHANNEL_UNIT = "unit";
+    public static final String PARAMETER_CHANNEL_DESCRIPTION = "description";
+    public static final String PARAMETER_CHANNEL_DATATYPE = "datatype";
 
     public static final int MIN_REFRESH_INTERVAL = 5;
     public static final int DEFAULT_REFRESH_INTERVAL = 60;

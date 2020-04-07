@@ -22,8 +22,9 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
-import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,25 +41,25 @@ public class BsbLanParameterConverter {
 
     public static @Nullable State getState(String channelId, BsbLanApiParameter parameter) {
         switch (channelId) {
-            case Channels.Parameter.NAME:
+            case PARAMETER_CHANNEL_NAME:
                 return getStateForNameChannel(parameter);
 
-            case Channels.Parameter.DESCRIPTION:
+            case PARAMETER_CHANNEL_DESCRIPTION:
                 return getStateForDescriptionChannel(parameter);
 
-            case Channels.Parameter.DATATYPE:
+            case PARAMETER_CHANNEL_DATATYPE:
                 return getStateForDatatypeChannel(parameter);
 
-            case Channels.Parameter.NUMBER_VALUE:
+            case PARAMETER_CHANNEL_NUMBER_VALUE:
                 return getStateForNumberValueChannel(parameter);
 
-            case Channels.Parameter.STRING_VALUE:
+            case PARAMETER_CHANNEL_STRING_VALUE:
                 return getStateForStringValueChannel(parameter);
 
-            case Channels.Parameter.SWITCH_VALUE:
+            case PARAMETER_CHANNEL_SWITCH_VALUE:
                 return getStateForSwitchValueChannel(parameter);
 
-            case Channels.Parameter.UNIT:
+            case PARAMETER_CHANNEL_UNIT:
                 return getStateForUnitChannel(parameter);
         }
 
@@ -118,13 +119,13 @@ public class BsbLanParameterConverter {
      */
     public static @Nullable String getValue(String channelId, Command command) {
         switch (channelId) {
-            case Channels.Parameter.NUMBER_VALUE:
+            case PARAMETER_CHANNEL_NUMBER_VALUE:
                 return getValueForNumberValueChannel(command);
 
-            case Channels.Parameter.STRING_VALUE:
+            case PARAMETER_CHANNEL_STRING_VALUE:
                 return getValueForStringValueChannel(command);
 
-            case Channels.Parameter.SWITCH_VALUE:
+            case PARAMETER_CHANNEL_SWITCH_VALUE:
                 return getValueForSwitchValueChannel(command);
 
             default:

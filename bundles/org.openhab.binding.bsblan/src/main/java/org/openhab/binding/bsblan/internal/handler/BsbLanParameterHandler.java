@@ -26,8 +26,9 @@ import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest.Type;
-import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 import org.openhab.binding.bsblan.internal.helper.BsbLanParameterConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,9 +135,9 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
     protected void setChannel(String channelId, Command command) {
         logger.debug("Received command '{}' for channel '{}'", command, channelId);
 
-        if (!channelId.equals(Channels.Parameter.NUMBER_VALUE)
-         && !channelId.equals(Channels.Parameter.STRING_VALUE)
-         && !channelId.equals(Channels.Parameter.SWITCH_VALUE)) {
+        if (!channelId.equals(PARAMETER_CHANNEL_NUMBER_VALUE)
+         && !channelId.equals(PARAMETER_CHANNEL_STRING_VALUE)
+         && !channelId.equals(PARAMETER_CHANNEL_SWITCH_VALUE)) {
             logger.debug("Channel '{}' is read only. Ignoring command", channelId);
             return;
         }
