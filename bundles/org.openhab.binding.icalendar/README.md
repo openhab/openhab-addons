@@ -1,10 +1,13 @@
 # iCalendar Binding
 
-This binding is intended to use a web-based iCal calendar as an event trigger or presence switch. It implements several Channels that indicate the current calendar event and the next event. Furthermore it is possible to embed Command Tags in the calendar event description to issue commands directly to other Items in the system, without the need to create special Rules. 
+This binding is intended to use a web-based iCal calendar as an event trigger or presence switch.
+It implements several Channels that indicate the current calendar event and upcoming calendar events.
+Furthermore it is possible to embed Command Tags in the calendar event description in order to issue commands directly to other Items in the system, without the need to create special Rules. 
 
 ## Supported Things
 
-The only thing type is the calendar. It is based on a single iCalendar file. There can be multiple Things having different properties representing different calendars.
+The only thing type is the calendar. It is based on a single iCalendar file.
+There can be multiple Things having different properties representing different calendars.
 
 ## Thing Configuration
 
@@ -35,29 +38,38 @@ The channels describe the current and the next event. They are all read-only.
 
 ## Command Tags
 
-Each calendar event may include one or more Command Tags in its description text. These Command Tags are used to issue commands directly to other Items in the system when the event begins or ends. A Command Tag must consist of at least three fields. A fourth field is optional. The syntax is as follows:
+Each calendar event may include one or more Command Tags in its description text.
+These Command Tags are used to issue commands directly to other Items in the system when the event begins or ends.
+A Command Tag must consist of at least three fields. A fourth field is optional. The syntax is as follows:
 
+```
 	BEGIN:Item_Name:New_State_Value
 	BEGIN:Item_Name:New_State_Value:Authorization_Code
 	END:Item_Name:New_State_Value
 	END:Item_Name:New_State_Value:Authorization_Code
+```
 
-The first field **must** be either `BEGIN` or `END`. If it is `BEGIN` then the command will be executed at the beginning of the calendar event. If it is `END` then the command will be executed at the end of the calendar event. A calendar event may contain multiple `BEGIN` or `END` tags. If an event contains both `BEGIN` and `END` tags, this Items (say) to be turned ON at the beginning of an event and turned OFF again at the end of the event.
+The first field **must** be either `BEGIN` or `END`.
+If it is `BEGIN` then the command will be executed at the beginning of the calendar event.
+If it is `END` then the command will be executed at the end of the calendar event.
+A calendar event may contain multiple `BEGIN` or `END` tags.
+If an event contains both `BEGIN` and `END` tags, the Item is (say) to be turned ON at the beginning of an event and turned OFF again at the end of the event.
  
 The `Item_Name` field must be the name of an Item.
 
-The `New_State_Value` is the state value that will be sent to the Item. It must be a value which is compatible with the Item type. See openHAB core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
+The `New_State_Value` is the state value that will be sent to the Item.
+It must be a value which is compatible with the Item type. See openHAB core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
 
 The `Authorization_Code` may *optionally* be used as follows:
 
-- When the Thing Configuration Parameter `authorizationCode` is a non-empty string, the binding will compare the `Authorization_Code` field to the `authorizationCode` Configuration Parameter, and it will only execute the command if the two strings are the same.
+- When the Thing Configuration Parameter `authorizationCode` is blank, the binding will compare the `Authorization_Code` field to the `authorizationCode` Configuration Parameter, and it will only execute the command if the two strings are the same.
 
-- When the Thing Configuration Parameter `authorizationCode` is an empty string, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
+- When the Thing Configuration Parameter `authorizationCode` is not blank, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
 
  
 ## Full Example
 
-Provide at least all required information into the Thing definition, either via UI or in the things file
+All required information must be provided in the Thing definition, either via UI or in the .things file..
 
 ```
 Thing icalendar:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]

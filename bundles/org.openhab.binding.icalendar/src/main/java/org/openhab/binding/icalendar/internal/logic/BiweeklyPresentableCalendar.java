@@ -330,18 +330,10 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         Event toEvent() {
             String title;
             Summary eventSummary = vEvent.getSummary();
-            if (eventSummary != null) {
-                title = eventSummary.getValue();
-            } else {
-                title = "-";
-            }
+            title = eventSummary != null ? eventSummary.getValue() : "-";
             String description;
             Description eventDescription = vEvent.getDescription();
-            if (eventDescription != null) {
-                description = eventDescription.getValue();
-            } else {
-                description = "";
-            }
+            description = eventDescription != null ? eventDescription.getValue() : "";
             return new Event(title, start, end, description);
         }
     }
