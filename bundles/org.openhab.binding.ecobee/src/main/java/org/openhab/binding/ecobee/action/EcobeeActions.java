@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.ecobee.action;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "ecobee")
 @NonNullByDefault
-public class EcobeeActions implements ThingActions {
+public class EcobeeActions implements ThingActions, IEcobeeActions {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EcobeeActions.class);
 
@@ -79,6 +80,22 @@ public class EcobeeActions implements ThingActions {
         return this.handler;
     }
 
+    private static IEcobeeActions tryCast(ThingActions actions) {
+        if (actions.getClass().getName().equals(EcobeeActions.class.getName())) {
+            if (actions instanceof IEcobeeActions) {
+                return (IEcobeeActions) actions;
+            } else {
+                return (IEcobeeActions) Proxy.newProxyInstance(IEcobeeActions.class.getClassLoader(),
+                        new Class[] { IEcobeeActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
+    }
+
     /**
      * The acknowledge function allows an alert to be acknowledged.
      *
@@ -86,10 +103,11 @@ public class EcobeeActions implements ThingActions {
      *      href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/Acknowledge.shtml">Acknowledge
      *      </a>
      */
+    @Override
     @RuleAction(label = "Acknowledge", description = "Acknowledges an alert.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean acknowledge(
             @ActionInput(name = "ackRef", description = "The acknowledge ref of alert") @Nullable String ackRef,
-            @ActionInput(name = "ackType", description = "The type of acknowledgement. Valid values: accept, decline, defer, unacknowledged") String ackType,
+            @ActionInput(name = "ackType", description = "The type of acknowledgement. Valid values: accept, decline, defer, unacknowledged") @Nullable String ackType,
             @ActionInput(name = "remindMeLater", description = "(opt) Whether to remind at a later date, if this is a defer acknowledgement") @Nullable Boolean remindMeLater) {
         LOGGER.debug("EcobeeActions: Action 'Acknowledge' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
@@ -107,15 +125,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) (actions.getClass()
-                    .getDeclaredMethod("acknowledge", String.class, String.class, Boolean.class)
-                    .invoke(actions, ackRef, ackType, remindMeLater));
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).acknowledge(ackRef, ackType, remindMeLater);
     }
 
     /**
@@ -124,6 +134,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/ControlPlug.shtml">Control
      *      Plug</a>
      */
+    @Override
     @RuleAction(label = "Control Plug", description = "Control the on/off state of a plug by setting a hold on the plug.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean controlPlug(
             @ActionInput(name = "plugName", description = "The name of the plug. Ensure each plug has a unique name.") @Nullable String plugName,
@@ -150,16 +161,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) (actions.getClass()
-                    .getDeclaredMethod("controlPlug", String.class, String.class, Date.class, Date.class, String.class,
-                            Number.class)
-                    .invoke(actions, plugName, plugState, startDateTime, endDateTime, holdType, holdHours));
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType, holdHours);
     }
 
     /**
@@ -168,6 +170,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/CreateVacation.shtml">Create
      *      Vacation</a>
      */
+    @Override
     @RuleAction(label = "Create Vacation", description = "The create vacation function creates a vacation event on the thermostat.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean createVacation(
             @ActionInput(name = "name", description = "The vacation event name. It must be unique.") @Nullable String name,
@@ -196,16 +199,8 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass()
-                    .getDeclaredMethod("createVacation", String.class, QuantityType.class, QuantityType.class,
-                            Date.class, Date.class, String.class, Number.class)
-                    .invoke(actions, name, coolHoldTemp, heatHoldTemp, startDateTime, endDateTime, fan, fanMinOnTime);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).createVacation(name, coolHoldTemp, heatHoldTemp, startDateTime, endDateTime, fan,
+                fanMinOnTime);
     }
 
     /**
@@ -214,6 +209,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/DeleteVacation.shtml">Delete
      *      Vacation</a>
      */
+    @Override
     @RuleAction(label = "Delete Vacation", description = "The delete vacation function deletes a vacation event from a thermostat.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean deleteVacation(
             @ActionInput(name = "name", description = "The vacation event name to delete.") @Nullable String name) {
@@ -231,13 +227,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("deleteVacation", String.class).invoke(actions, name);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).deleteVacation(name);
     }
 
     /**
@@ -246,6 +236,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/ResetPreferences.shtml">Reset
      *      Preferences</a>
      */
+    @Override
     @RuleAction(label = "Reset Preferences", description = "The reset preferences function sets all of the user configurable settings back to the factory default values.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean resetPreferences() {
         LOGGER.debug("EcobeeActions: Action 'Reset Preferences' called");
@@ -262,13 +253,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("resetPreferences").invoke(actions);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).resetPreferences();
     }
 
     /**
@@ -277,6 +262,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/ResumeProgram.shtml">Resume
      *      Program</a>
      */
+    @Override
     @RuleAction(label = "Resume Program", description = "Removes the currently running event providing the event is not a mandatory demand response event")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean resumeProgram(
             @ActionInput(name = "resumeAll", description = "(opt) Should the thermostat be resumed to next event (false) or to its program (true)") @Nullable Boolean resumeAll) {
@@ -294,14 +280,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("resumeProgram", Boolean.class).invoke(actions,
-                    resumeAll);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).resumeProgram(resumeAll);
     }
 
     /**
@@ -310,6 +289,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/SendMessage.shtml">Send
      *      Message</a>
      */
+    @Override
     @RuleAction(label = "Send Message", description = "The send message function allows an alert message to be sent to the thermostat.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "text", description = "The message text to send. Text will be truncated to 500 characters if longer") @Nullable String text) {
@@ -327,13 +307,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("sendMessage", String.class).invoke(actions, text);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).sendMessage(text);
     }
 
     /**
@@ -341,6 +315,7 @@ public class EcobeeActions implements ThingActions {
      *
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/SetHold.shtml">Set Hold</a>
      */
+    @Override
     @RuleAction(label = "Set Hold", description = "The set hold function sets the thermostat into a hold with the specified temperatures.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
@@ -359,19 +334,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("setHold", QuantityType.class, QuantityType.class)
-                    .invoke(actions, coolHoldTemp, heatHoldTemp);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setHold(coolHoldTemp, heatHoldTemp);
     }
 
     /**
      * Set a hold by providing the cool and heat temperatures and the number of hours.
      */
+    @Override
     @RuleAction(label = "Set Hold", description = "The set hold function sets the thermostat into a hold for the specified number of hours.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
@@ -396,20 +365,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass()
-                    .getDeclaredMethod("setHold", QuantityType.class, QuantityType.class, Number.class)
-                    .invoke(actions, coolHoldTemp, heatHoldTemp, holdHours);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setHold(coolHoldTemp, heatHoldTemp, holdHours);
     }
 
     /**
      * Set an indefinite hold using the supplied climateRef
      */
+    @Override
     @RuleAction(label = "Set Hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "holdClimateRef", description = "The holdClimateRef used to set the hold.") @Nullable String holdClimateRef) {
@@ -430,19 +392,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("setHold", String.class).invoke(actions,
-                    holdClimateRef);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setHold(holdClimateRef);
     }
 
     /**
      * Set a hold using the supplied climateRef for the supplied number of hours.
      */
+    @Override
     @RuleAction(label = "Set Hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "holdClimateRef", description = "The holdClimateRef used to set the hold.") @Nullable String holdClimateRef,
@@ -470,19 +426,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass().getDeclaredMethod("setHold", String.class, Number.class).invoke(actions,
-                    holdClimateRef, holdHours);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setHold(holdClimateRef, holdHours);
     }
 
     /**
      * Set a hold
      */
+    @Override
     @RuleAction(label = "Set Hold", description = "The set hold function sets the thermostat into a hold with the specified temperature or climate ref.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "coolHoldTemp", description = "(opt) The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
@@ -512,22 +462,14 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass()
-                    .getDeclaredMethod("setHold", QuantityType.class, QuantityType.class, String.class, Date.class,
-                            Date.class, String.class, Number.class)
-                    .invoke(actions, coolHoldTemp, heatHoldTemp, holdClimateRef, startDateTime, endDateTime, holdType,
-                            holdHours);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setHold(coolHoldTemp, heatHoldTemp, holdClimateRef, startDateTime, endDateTime,
+                holdType, holdHours);
     }
 
     /**
      * Set a hold by providing a parameter map
      */
+    @Override
     @RuleAction(label = "Set Hold", description = "The set hold function sets the thermostat into a hold with the specified event parameters.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "params", description = "The map of hold parameters.") @Nullable Map<String, Object> params,
@@ -609,15 +551,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass()
-                    .getDeclaredMethod("setHold", Map.class, String.class, Number.class, Date.class, Date.class)
-                    .invoke(actions, params, holdType, holdHours, startDateTime, endDateTime);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setHold(params, holdType, holdHours, startDateTime, endDateTime);
     }
 
     /**
@@ -627,6 +561,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/SetOccupied.shtml">Set
      *      Occupied</a>
      */
+    @Override
     @RuleAction(label = "Set Occupied", description = "The function switches a thermostat from occupied mode to unoccupied, or vice versa (EMS MODELS ONLY).")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setOccupied(
             @ActionInput(name = "occupied", description = "The climate to use for the temperature, occupied (true) or unoccupied (false).") @Nullable Boolean occupied,
@@ -652,15 +587,7 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass()
-                    .getDeclaredMethod("setOccupied", Boolean.class, Date.class, Date.class, String.class, Number.class)
-                    .invoke(actions, occupied, startDateTime, endDateTime, holdType, holdHours);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).setOccupied(occupied, startDateTime, endDateTime, holdType, holdHours);
     }
 
     /**
@@ -669,6 +596,7 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/UpdateSensor.shtml">Update
      *      Sensor</a>
      */
+    @Override
     @RuleAction(label = "Update Sensor", description = "The update sensor function allows the caller to update the name of an ecobee3 remote sensor.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean updateSensor(
             @ActionInput(name = "name", description = "The updated name to give the sensor. Has a max length of 32, but shorter is recommended.") @Nullable String name,
@@ -689,20 +617,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (Boolean) actions.getClass()
-                    .getDeclaredMethod("updateSensor", String.class, String.class, String.class)
-                    .invoke(actions, name, deviceId, sensorId);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return false;
-        }
+        return tryCast(actions).updateSensor(name, deviceId, sensorId);
     }
 
     /**
      * Get the alerts list. Returns a JSON string containing all the alerts.
      */
+    @Override
     @RuleAction(label = "Get Alerts", description = "Get the alerts list")
     public @ActionOutput(name = "alerts", type = "java.lang.String") @Nullable String getAlerts() {
         LOGGER.debug("EcobeeActions: Action 'Get Alerts' called");
@@ -718,18 +639,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (String) actions.getClass().getDeclaredMethod("getAlerts").invoke(actions);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return null;
-        }
+        return tryCast(actions).getAlerts();
     }
 
     /**
      * Get the events list. Returns a JSON string contains all events.
      */
+    @Override
     @RuleAction(label = "Get Events", description = "Get the events list")
     public @ActionOutput(name = "events", type = "java.lang.String") @Nullable String getEvents() {
         LOGGER.debug("EcobeeActions: Action 'Get Events' called");
@@ -745,18 +661,13 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (String) actions.getClass().getDeclaredMethod("getEvents").invoke(actions);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return null;
-        }
+        return tryCast(actions).getEvents();
     }
 
     /**
      * Get a list of climates. Returns a JSON string contains all climates.
      */
+    @Override
     @RuleAction(label = "Get Climates", description = "Get a list of climates")
     public @ActionOutput(name = "climates", type = "java.lang.String") @Nullable String getClimates() {
         LOGGER.debug("EcobeeActions: Action 'Get Climates' called");
@@ -772,12 +683,6 @@ public class EcobeeActions implements ThingActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        try {
-            return (String) actions.getClass().getDeclaredMethod("getClimates").invoke(actions);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.info("EcobeeActions: Exception getting or invoking method", e);
-            return null;
-        }
+        return tryCast(actions).getClimates();
     }
 }
