@@ -63,13 +63,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
 
     protected @Nullable ScheduledFuture<?> pollingJob;
-    // protected MiIoBindingConfiguration configuration;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
     protected JsonParser parser;
     protected byte[] token = new byte[0];
 
+    protected @Nullable MiIoBindingConfiguration configuration;
     protected @Nullable MiIoAsyncCommunication miioCom;
     protected int lastId;
 
@@ -101,6 +101,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         logger.debug("Initializing Mi IO device handler '{}' with thingType {}", getThing().getUID(),
                 getThing().getThingTypeUID());
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
+        this.configuration = configuration;
         if (!tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
