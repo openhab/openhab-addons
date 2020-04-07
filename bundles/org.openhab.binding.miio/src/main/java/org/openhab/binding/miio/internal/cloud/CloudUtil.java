@@ -61,7 +61,7 @@ public class CloudUtil {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File dataFile = new File(DB_FOLDER_NAME + File.separator + "miioTokens-" + country + ".json");
+        File dataFile = new File(folder, "miioTokens-" + country + ".json");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(data);
             logger.debug("Devices token info saved to {}", dataFile.getAbsolutePath());
