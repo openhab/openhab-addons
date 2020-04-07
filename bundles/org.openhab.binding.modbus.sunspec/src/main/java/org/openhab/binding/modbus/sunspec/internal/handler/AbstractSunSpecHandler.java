@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -83,7 +84,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * This is the task used to poll the device
      */
-    private volatile Optional<PollTask> pollTask = Optional.empty();
+    @Nullable
+    private volatile PollTask pollTask = null;
 
     /**
      * This is the slave endpoint we're connecting to
@@ -148,7 +150,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return;
         }
 
-        if (pollTask.isPresent()) {
+        if (pollTask != null) {
             return;
         }
 
@@ -304,7 +306,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * This is where we set up our regular poller
      */
     private synchronized void registerPollTask(ModelBlock mainBlock) {
-        if (pollTask.isPresent()) {
+        if (pollTask != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
         }
@@ -318,7 +320,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length,
                 config.get().maxTries);
 
-        pollTask = Optional.of(new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
+        pollTask = new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
 
             @Override
             public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
@@ -344,9 +346,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
                 // don't care, we don't expect this result
             }
-        }));
+        });
 
-        managerRef.registerRegularPoll(pollTask.get(), config.get().getRefreshMillis(), 1000);
+        long refreshMillis = config.get().getRefreshMillis();
+        if (pollTask != null) {
+            PollTask task = pollTask;
+            managerRef.registerRegularPoll(task, refreshMillis, 1000);
+        }
     }
 
     /**
@@ -373,15 +379,14 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * No-op in case no poll task is registered, or if the initialization is incomplete.
      */
     private synchronized void unregisterPollTask() {
-        logger.trace("unregisterPollTask()");
-        if (!pollTask.isPresent()) {
+        if (pollTask == null) {
             return;
         }
-
         logger.debug("Unregistering polling from ModbusManager");
-        managerRef.unregisterRegularPoll(pollTask.get());
+        PollTask task = (@NonNull PollTask) pollTask;
+        managerRef.unregisterRegularPoll(task);
 
-        pollTask = Optional.empty();
+        pollTask = null;
     }
 
     /**
