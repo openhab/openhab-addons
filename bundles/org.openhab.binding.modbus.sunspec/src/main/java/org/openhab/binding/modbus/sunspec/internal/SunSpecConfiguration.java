@@ -25,48 +25,24 @@ public class SunSpecConfiguration {
     /**
      * Refresh interval in seconds
      */
-    private long refresh;
+    public long refresh = 60;
 
-    private int maxTries = 3;// backwards compatibility and tests
+    public int maxTries = 3;// backwards compatibility and tests
 
     /**
      * Base address of the block to parse. Only used at manual setup
      */
-    private int address;
+    public int address;
 
     /**
      * Length of the block to parse. Only used at manual setup
      */
-    private int length;
-
-    public int getAddress() {
-        return address;
-    }
-
-    public void setAddress(int address) {
-        this.address = address;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
+    public int length;
 
     /**
      * Gets refresh period in milliseconds
      */
     public long getRefreshMillis() {
         return refresh * 1000;
-    }
-
-    public int getMaxTries() {
-        return maxTries;
-    }
-
-    public void setMaxTries(int maxTries) {
-        this.maxTries = maxTries;
     }
 }

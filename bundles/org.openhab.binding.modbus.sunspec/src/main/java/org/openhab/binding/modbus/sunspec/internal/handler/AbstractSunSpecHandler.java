@@ -172,8 +172,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return Optional.empty();
         }
         ModelBlock block = new ModelBlock();
-        block.address = config.get().getAddress();
-        block.length = config.get().getLength();
+        block.address = config.get().address;
+        block.length = config.get().length;
         return Optional.of(block);
     }
 
@@ -316,7 +316,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length,
-                config.get().getMaxTries());
+                config.get().maxTries);
 
         pollTask = Optional.of(new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
 
