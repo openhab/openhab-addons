@@ -59,7 +59,7 @@ public class CommandTag {
     private String itemName;
     private String targetState;
     private String authorizationCode;
-    private Command theCommand;
+    private @Nullable Command theCommand;
 
     public CommandTag(String inputLine) throws IllegalArgumentException {
         this.inputLine = inputLine.trim();
@@ -103,21 +103,27 @@ public class CommandTag {
         
         // string is in double quotes => force StringType
         if (targetState.startsWith("\"") && targetState.endsWith("\"")) {
+            // new StringType() should always succeed
             theCommand = new StringType(targetState.replaceAll("\"", ""));
         }
 
         // string is in single quotes => ditto
         else if (targetState.startsWith("'") && targetState.endsWith("'")) {
+            // new StringType() should always succeed
             theCommand = new StringType(targetState.replaceAll("'", ""));
         }
         
         // string ends with % => try PercentType
         else if (targetState.endsWith("%")) {
             theCommand = TypeParser.parseCommand(percentCommandType, targetState.substring(0, targetState.length() - 1));
+            if (theCommand == null) {
+                throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Invalid Target State percent value!", inputLine));
+            }
         }
 
         // try all other possible CommandTypes
-        else {
+        if (theCommand == null) {
+            // TypeParser.parseCommand(otherCommandTypes should always succeed (with new StringType())
             theCommand = TypeParser.parseCommand(otherCommandTypes, targetState);
         }
         
@@ -143,8 +149,8 @@ public class CommandTag {
         }
     }
 
-    public Command getCommand() {
-        return theCommand;
+    public @Nullable Command getCommand() {
+        return theCommand; 
     }
         
     public String getFullTag() {
