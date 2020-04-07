@@ -22,6 +22,7 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -232,7 +233,8 @@ public class PJLinkDevice {
                     fullCommand.replaceAll("\r", "\\\\r"));
         }
         if (response == null) {
-            throw new ResponseException("Response to request '" + fullCommand.replaceAll("\r", "\\\\r") + "' was null");
+            throw new ResponseException(MessageFormat.format("Response to request ''{0}'' was null",
+                    fullCommand.replaceAll("\r", "\\\\r")));
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Got response '{}' ({}) for request '{}' from {}", response,
