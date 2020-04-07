@@ -48,7 +48,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     private final LinkedList<SendQueueItem> sendQueue = new LinkedList<>();
     protected final ArrayBlockingQueue<Byte> buffer = new ArrayBlockingQueue<>(1024);
 
-    protected SerialPortManager portManager;
+    protected @Nullable SerialPortManager portManager;
     protected ScheduledExecutorService scheduler;
     protected @Nullable OutputStream outputStream;
     protected @Nullable InputStream inputStream;
@@ -60,7 +60,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     protected boolean waitForAckByte = false;
     protected boolean suspendTraffic = false;
 
-    public ValloxBaseConnector(SerialPortManager portManager, ScheduledExecutorService scheduler) {
+    public ValloxBaseConnector(@Nullable SerialPortManager portManager, ScheduledExecutorService scheduler) {
         this.portManager = portManager;
         this.scheduler = scheduler;
     }
