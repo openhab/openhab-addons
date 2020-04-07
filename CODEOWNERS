@@ -2,7 +2,7 @@
 # It should always list the active maintainers of certain add-ons.
 
 # As a fallback, if no specific maintainer is listed below, assign the PR to the repo maintainers team:
-*       @openhab/2-x-add-ons-maintainers
+*       @openhab/add-ons-maintainers
 
 # Add-on maintainers:
 /bundles/org.openhab.binding.adorne/ @theiding
@@ -219,15 +219,15 @@
 /bundles/org.openhab.io.transport.modbus/ @ssalonen
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
-/bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.javascript/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314
 /bundles/org.openhab.transform.jsonpath/ @clinique
-/bundles/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.map/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.regex/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.scale/ @clinique
-/bundles/org.openhab.transform.xpath/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.xslt/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.xpath/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.xslt/ @openhab/add-ons-maintainers
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
