@@ -195,15 +195,20 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     continue;
                 }
                 if (!cmdTag.isAuthorized(syncConfiguration.authorizationCode)) {
-                    logger.warn("Event: {}, Command Tag: {} => Not authorized!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Command not authorized!", event.title, cmdTag.getFullTag());
+                    continue;
+                }
+
+                Command cmdState = cmdTag.getCommand();
+                if (cmdState == null) {
+                    logger.warn("Event: {}, Command Tag: {} => Error creating Command State!", event.title, cmdTag.getFullTag());
                     continue;
                 }
 
                 // (try to) execute the command
                 try {
-                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdTag.getCommand()));
+                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
                     if (logger.isDebugEnabled()) {
-                        Command cmdState = cmdTag.getCommand();
                         String cmdType = cmdState.getClass().toString();
                         int index = cmdType.lastIndexOf(".") + 1;
                         if ((index > 0) && (index < cmdType.length())) {
@@ -213,9 +218,9 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                                 cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
                     }
                 } catch (IllegalArgumentException | IllegalStateException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Could not be pushed to target item.", event.title,
+                    logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
                             cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item.", e);
+                    logger.debug("Exception occured while pushing to item!", e);
                 }
             }
         }
