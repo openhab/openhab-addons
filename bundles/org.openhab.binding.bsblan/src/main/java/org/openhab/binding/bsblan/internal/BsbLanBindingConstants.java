@@ -42,7 +42,7 @@ public class BsbLanBindingConstants {
     public static final String PARAMETER_CHANNEL_DESCRIPTION = "description";
     public static final String PARAMETER_CHANNEL_DATATYPE = "datatype";
 
-    public static final Set<String> READONLY_CHANNELS = new HashSet<String>() {
+    public static final Set<String> WRITEABLE_CHANNELS = new HashSet<String>() {
 
         private static final long serialVersionUID = 1L;
         {
