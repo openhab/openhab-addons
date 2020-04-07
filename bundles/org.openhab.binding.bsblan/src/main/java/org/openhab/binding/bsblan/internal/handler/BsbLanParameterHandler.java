@@ -135,9 +135,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
     protected void setChannel(String channelId, Command command) {
         logger.debug("Received command '{}' for channel '{}'", command, channelId);
 
-        if (!channelId.equals(PARAMETER_CHANNEL_NUMBER_VALUE)
-         && !channelId.equals(PARAMETER_CHANNEL_STRING_VALUE)
-         && !channelId.equals(PARAMETER_CHANNEL_SWITCH_VALUE)) {
+        if (READONLY_CHANNELS.contains(channelId)) {
             logger.debug("Channel '{}' is read only. Ignoring command", channelId);
             return;
         }
