@@ -95,19 +95,22 @@ public class BsbLanApiCaller {
     }
 
     private String createApiBaseUrl() {
+        final String host = StringUtils.trimToEmpty(bridgeConfig.host);
+        final String username = StringUtils.trimToEmpty(bridgeConfig.username);
+        final String password = StringUtils.trimToEmpty(bridgeConfig.password);
+        final String passkey = StringUtils.trimToEmpty(bridgeConfig.passkey);
+
         StringBuilder url = new StringBuilder();
         url.append("http://");
-        if (StringUtils.trimToNull(bridgeConfig.username) != null && StringUtils.trimToNull(bridgeConfig.password) != null) {
-            url.append(bridgeConfig.username).append(":").append(bridgeConfig.password).append("@");
-
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            url.append(username).append(":").append(password).append("@");
         }
-        url.append(bridgeConfig.host);
+        url.append(host);
         if (bridgeConfig.port != 80) {
-            url.append(":").append(bridgeConfig.port));
-
+            url.append(":").append(bridgeConfig.port);
         }
-        if (StringUtils.trimToNull(bridgeConfig.passkey) != null) {
-            url.append("/" + bridgeConfig.passkey);
+        if (StringUtils.isNotBlank(passkey)) {
+            url.append("/").append(passkey);
         }
         return url.toString();
     }
@@ -129,7 +132,7 @@ public class BsbLanApiCaller {
             if (request != null) {
                 String content = BsbLanApiContentConverter.toJson(request);
                 logger.debug("api request content: '{}'", content);
-                if (StringUtils.trimToNull(content) != null) {
+                if (StringUtils.isNotBlank(content)) {
                     contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
                     contentType = "application/json";
                 }

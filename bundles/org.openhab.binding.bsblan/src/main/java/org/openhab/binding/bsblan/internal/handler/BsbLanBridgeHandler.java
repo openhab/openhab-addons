@@ -79,7 +79,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         bridgeConfig = getConfigAs(BsbLanBridgeConfiguration.class);
 
         // validate 'host' configuration
-        if (StringUtils.trimToNull(bridgeConfig.host) == null) {
+        if (StringUtils.isBlank(bridgeConfig.host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "Parameter 'host' is mandatory and must be configured");
             return;
