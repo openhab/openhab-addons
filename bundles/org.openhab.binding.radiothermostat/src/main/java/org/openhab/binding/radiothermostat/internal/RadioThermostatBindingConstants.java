@@ -37,6 +37,7 @@ public class RadioThermostatBindingConstants {
 
     public static final String BINDING_ID = "radiothermostat";
     public static final String LOCAL = "local";
+    public static final String PROPERTY_IP = "hostName";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RTHERM = new ThingTypeUID(BINDING_ID, "rtherm");
