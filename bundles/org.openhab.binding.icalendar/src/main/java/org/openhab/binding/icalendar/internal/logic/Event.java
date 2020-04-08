@@ -41,7 +41,7 @@ public class Event {
             return;
         }
 
-        String[] lines = description.replaceAll("<p>", "").replaceAll("</p>", "\n").split("\n");
+        String[] lines = description.replace("<p>", "").replace("</p>", "\n").split("\n");
         for (String line : lines) {
             CommandTag tag = CommandTag.createCommandTag(line);
             if (tag != null) {

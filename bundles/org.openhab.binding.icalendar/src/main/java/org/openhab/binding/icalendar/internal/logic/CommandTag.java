@@ -112,13 +112,13 @@ public class CommandTag {
         // string is in double quotes => force StringType
         if (targetState.startsWith("\"") && targetState.endsWith("\"")) {
             // new StringType() should always succeed
-            theCommand = new StringType(targetState.replaceAll("\"", ""));
+            theCommand = new StringType(targetState.replace("\"", ""));
         }
 
         // string is in single quotes => ditto
         else if (targetState.startsWith("'") && targetState.endsWith("'")) {
             // new StringType() should always succeed
-            theCommand = new StringType(targetState.replaceAll("'", ""));
+            theCommand = new StringType(targetState.replace("'", ""));
         }
 
         // string ends with % => try PercentType
