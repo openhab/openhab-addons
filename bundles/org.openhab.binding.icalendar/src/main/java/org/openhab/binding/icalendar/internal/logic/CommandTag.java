@@ -49,7 +49,7 @@ public class CommandTag {
     private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(QuantityType.class,
             OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class, PlayPauseType.class,
             RewindFastforwardType.class, StringType.class);
-    
+
     private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
 
     private static final Logger logger = LoggerFactory.getLogger(CommandTag.class);
@@ -65,42 +65,50 @@ public class CommandTag {
         this.inputLine = inputLine.trim();
 
         if (!CommandTagType.prefixValid(inputLine)) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Bad tag prefix!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Bad tag prefix!", inputLine));
         }
 
         if (!inputLine.contains(":")) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Missing \":\" delimiters!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Missing \":\" delimiters!", inputLine));
         }
 
         String[] fields = inputLine.split(":");
         if (fields.length < 3) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Not enough fields!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Not enough fields!", inputLine));
         }
-        
+
         if (fields.length > 4) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Too many fields!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Too many fields!", inputLine));
         }
-        
+
         try {
             tagType = CommandTagType.valueOf(fields[0]);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Invalid Tag Type!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Invalid Tag Type!", inputLine));
         }
 
         itemName = fields[1].trim();
         if (itemName.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Item name empty!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Item name empty!", inputLine));
         }
 
         if (!itemName.matches("^\\w+$")) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Bad syntax for Item name!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Bad syntax for Item name!", inputLine));
         }
 
         targetState = fields[2].trim();
         if (targetState.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Target State empty!", inputLine));
+            throw new IllegalArgumentException(
+                    String.format("Command Tag Exception \"%s\" => Target State empty!", inputLine));
         }
-        
+
         // string is in double quotes => force StringType
         if (targetState.startsWith("\"") && targetState.endsWith("\"")) {
             // new StringType() should always succeed
@@ -112,12 +120,14 @@ public class CommandTag {
             // new StringType() should always succeed
             theCommand = new StringType(targetState.replaceAll("'", ""));
         }
-        
+
         // string ends with % => try PercentType
         else if (targetState.endsWith("%")) {
-            theCommand = TypeParser.parseCommand(percentCommandType, targetState.substring(0, targetState.length() - 1));
+            theCommand = TypeParser.parseCommand(percentCommandType,
+                    targetState.substring(0, targetState.length() - 1));
             if (theCommand == null) {
-                throw new IllegalArgumentException(String.format("Command Tag Exception \"%s\" => Invalid Target State percent value!", inputLine));
+                throw new IllegalArgumentException(String
+                        .format("Command Tag Exception \"%s\" => Invalid Target State percent value!", inputLine));
             }
         }
 
@@ -126,7 +136,7 @@ public class CommandTag {
             // TypeParser.parseCommand(otherCommandTypes should always succeed (with new StringType())
             theCommand = TypeParser.parseCommand(otherCommandTypes, targetState);
         }
-        
+
         if (fields.length == 4) {
             authorizationCode = fields[3].trim();
         } else {
@@ -150,9 +160,9 @@ public class CommandTag {
     }
 
     public @Nullable Command getCommand() {
-        return theCommand; 
+        return theCommand;
     }
-        
+
     public String getFullTag() {
         return inputLine;
     }

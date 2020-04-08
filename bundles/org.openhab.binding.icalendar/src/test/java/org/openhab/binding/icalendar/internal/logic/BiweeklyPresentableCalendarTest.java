@@ -450,7 +450,7 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(1, events.size());
         cmdTags = events.get(0).commandTags;
         // Test Series #6 contains only "bad" command tags as follows..
-        
+
         // tags with wrong case prefix..
         // begin
         // Begin
@@ -469,14 +469,14 @@ public class BiweeklyPresentableCalendarTest {
         // BEGINX:xxx:yyy:zzz
         // ENDX:xxx:yyy:zzz
         // BEGIN :xxx:yyy:zzz
-        // BEGIN   :xxx:yyy:zzz
+        // BEGIN :xxx:yyy:zzz
 
-        // tags with an empty Item Name 
+        // tags with an empty Item Name
         // BEGIN::yyy:zzz
         // BEGIN: :yyy:zzz
-        // BEGIN:  :yyy:zzz
+        // BEGIN: :yyy:zzz
 
-        // tags with bad Item Name 
+        // tags with bad Item Name
         // BEGIN:!:yyy:zzz
         // BEGIN:@:yyy:zzz
         // BEGIN:£:yyy:zzz
@@ -484,10 +484,10 @@ public class BiweeklyPresentableCalendarTest {
         // tags with an empty Target State value
         // BEGIN:xxx::zzz
         // BEGIN:xxx: :zzz
-        // BEGIN:xxx:  :zzz
+        // BEGIN:xxx: :zzz
 
         // Note: All of the above tags must be rejected! => Assert cmdTags.size() == 0 !
-        
+
         assertEquals(0, cmdTags.size());
 
         // test HTML command tag syntax: Test Series #7

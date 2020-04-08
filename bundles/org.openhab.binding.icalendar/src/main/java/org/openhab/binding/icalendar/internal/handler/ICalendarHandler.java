@@ -195,13 +195,15 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     continue;
                 }
                 if (!cmdTag.isAuthorized(syncConfiguration.authorizationCode)) {
-                    logger.warn("Event: {}, Command Tag: {} => Command not authorized!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Command not authorized!", event.title,
+                            cmdTag.getFullTag());
                     continue;
                 }
 
                 Command cmdState = cmdTag.getCommand();
                 if (cmdState == null) {
-                    logger.warn("Event: {}, Command Tag: {} => Error creating Command State!", event.title, cmdTag.getFullTag());
+                    logger.warn("Event: {}, Command Tag: {} => Error creating Command State!", event.title,
+                            cmdTag.getFullTag());
                     continue;
                 }
 
@@ -242,9 +244,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn("Can't reload calendar when configuration is missing.");
             return false;
         }
-        try (FileInputStream fileStream = new FileInputStream(calendarFile)){
-            AbstractPresentableCalendar calendar = AbstractPresentableCalendar
-                    .create(fileStream);
+        try (FileInputStream fileStream = new FileInputStream(calendarFile)) {
+            AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
