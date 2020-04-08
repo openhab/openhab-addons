@@ -90,8 +90,9 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             network = null;
             projectObject = null;
             updateStatus();
-        } else
+        } else {
             cgateOnline();
+        }
     }
 
     private void cgateOnline() {
@@ -153,9 +154,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             if (!"ok".equals(state)) {
                 ScheduledFuture<?> initNetwork = this.initNetwork;
                 if (initNetwork == null || initNetwork.isCancelled()) {
-                    this.initNetwork = scheduler.scheduleWithFixedDelay(() -> {
-                        checkNetworkOnline();
-                    }, 30, 30, TimeUnit.SECONDS);
+                    this.initNetwork = scheduler.scheduleWithFixedDelay(this::checkNetworkOnline, 30, 30,
+                            TimeUnit.SECONDS);
                     logger.debug("Schedule a check every minute");
                 } else
                     logger.debug("initNetwork alreadys started");
@@ -218,9 +218,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             ScheduledFuture<?> networkSync = this.networkSync;
             if (lastStatus == ThingStatus.OFFLINE) {
                 if (networkSync == null || networkSync.isCancelled())
-                    this.networkSync = scheduler.scheduleWithFixedDelay(() -> {
-                        doNetworkSync();
-                    }, 10, Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()),
+                    this.networkSync = scheduler.scheduleWithFixedDelay(this::doNetworkSync, 10,
+                            Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()),
                             TimeUnit.SECONDS);
                 logger.debug("Schedule networkSync to start in {} seconds",
                         Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()));
@@ -251,7 +250,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         }
     }
 
-    public @Nullable synchronized CBusCGateHandler getCBusCGateHandler() {
+    public synchronized @Nullable CBusCGateHandler getCBusCGateHandler() {
         if (this.bridgeHandler == null) {
             logger.debug("getCBusCGateHandler --");
             Bridge bridge = getBridge();

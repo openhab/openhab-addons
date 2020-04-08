@@ -60,7 +60,6 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
             } catch (CGateException e) {
                 logger.warn("Failed to getLevel for group {}", groupId, e);
             }
-
         }
     }
 

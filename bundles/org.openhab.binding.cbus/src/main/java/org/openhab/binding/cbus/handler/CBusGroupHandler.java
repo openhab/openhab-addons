@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -55,25 +57,28 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     @Override
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
-    @SuppressWarnings({ "null", "unused" })
     @Override
     public void initialize() {
         /*
          * Group Id has moved from config to property. Copy for backward compatibility
          */
-        if (getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID) == null) {
+        /*
+         * Cast to Nullable in map to avoid compiler warnings
+         */
+        Map<String, @Nullable String> properties = (Map<String, @Nullable String>) getThing().getProperties();
+        if (properties.get(CBusBindingConstants.PROPERTY_GROUP_ID) == null) {
             if (getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID) != null) {
                 updateProperty(CBusBindingConstants.PROPERTY_GROUP_ID,
                         getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
             }
         }
-        if (getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_NAME) == null) {
+        if (properties.get(CBusBindingConstants.PROPERTY_GROUP_NAME) == null) {
             if (getConfig().get(CBusBindingConstants.CONFIG_NAME) != null) {
                 updateProperty(CBusBindingConstants.PROPERTY_GROUP_NAME,
                         getConfig().get(CBusBindingConstants.CONFIG_NAME).toString());
             }
         }
-        groupId = Integer.parseInt(getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID));
+        groupId = Integer.parseInt(properties.get(CBusBindingConstants.PROPERTY_GROUP_ID));
         cBusNetworkHandler = getCBusNetworkHandler();
         if (cBusNetworkHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -82,10 +87,10 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         updateStatus();
     }
 
-    @SuppressWarnings({ "null" })
     public void updateStatus() {
         try {
-            logger.debug("updateStatus {}", getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID));
+            Map<String, @Nullable String> properties = (Map<String, @Nullable String>) getThing().getProperties();
+            logger.debug("updateStatus {}", properties.get(CBusBindingConstants.PROPERTY_GROUP_ID));
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -93,7 +98,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                 Group group = this.group;
                 if (group == null) {
                     @Nullable
-                    Object groupId = getThing().getProperties().get(CBusBindingConstants.PROPERTY_GROUP_ID);
+                    Object groupId = properties.get(CBusBindingConstants.PROPERTY_GROUP_ID);
                     if (groupId != null) {
                         group = getGroup(Integer.parseInt(groupId.toString()));
                         this.group = group;

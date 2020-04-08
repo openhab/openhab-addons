@@ -19,7 +19,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -63,23 +62,21 @@ final class CBusThreadPool extends CGateThreadPool {
         private final ThreadPoolExecutor threadPool;
 
         public CBusThreadPoolExecutor(@Nullable String poolName) {
-            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool(poolName);
+            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool("org.openhab.binding.cbus-" + poolName);
         }
 
         @Override
         protected void execute(@Nullable Runnable runnable) {
-            threadPool.execute(runnable);
+            if (runnable != null) {
+                threadPool.execute(runnable);
+            }
         }
     }
 
-    public CBusThreadPool() {
-    }
-
-    private Map<@Nullable String, CGateThreadPoolExecutor> executorMap = new HashMap<@Nullable String, CGateThreadPoolExecutor>();
+    private Map<@Nullable String, @Nullable CGateThreadPoolExecutor> executorMap = new HashMap<>();
 
     @Override
-    @SuppressWarnings({ "unused", "null" }) /* map.get() can return null */
-    protected CGateThreadPoolExecutor CreateExecutor(@Nullable String name) {
+    protected synchronized CGateThreadPoolExecutor CreateExecutor(@Nullable String name) {
         @Nullable
         CGateThreadPoolExecutor executor = executorMap.get(name);
 
@@ -103,14 +100,9 @@ final class CBusThreadPool extends CGateThreadPool {
 public class CBusCGateHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
-
     private @Nullable InetAddress ipAddress = null;
-
     public @Nullable CGateSession cGateSession = null;
-
     private @Nullable ScheduledFuture<?> keepAliveFuture = null;
-
-    private final ExecutorService threadPool = ThreadPoolManager.getPool("CBusCGateHandler-Helper");
 
     public CBusCGateHandler(Bridge br) {
         super(br);
@@ -207,7 +199,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     }
 
     private void updateChildThings(boolean isOnline) {
-        threadPool.execute(() -> {
+        scheduler.execute(() -> {
             // now also re-initialize all network handlers
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
@@ -218,167 +210,23 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         });
     }
 
-    @NonNullByDefault
-    private class StatusChangeMonitor extends StatusChangeCallback {
-
-        @Override
-        public boolean isActive() {
-            return true;
-        }
-
-        @SuppressWarnings({ "null" })
-        @Override
-        public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
-            if (cGateSession == null || status == null) {
-                return;
-            }
-            if (status.startsWith("# ")) {
-                status = status.substring(2);
-                if (status == null) {
-                    return;
-                }
-            }
-            logger.debug("ProcessStatusChange {}", status);
-            String contents[] = status.split("#");
-            LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
-            LinkedList<String> commentTokenizer = new LinkedList<String>(Arrays.asList(contents[1].split("\\s+")));
-            if (cGateSession.getSessionID() != null
-                    && contents[1].contains("sessionId=" + cGateSession.getSessionID())) {
-                // We created this event - don't worry about processing it again...
-                return;
-            }
-            @Nullable
-            String firstToken = tokenizer.peek();
-            if (firstToken == null) {
-                logger.debug("ProcessStateChange: Cant tokenize status {}", status);
-                return;
-            }
-            switch (firstToken) {
-                case "lighting": {
-                    tokenizer.poll();
-                    @Nullable
-                    String state = tokenizer.poll();
-                    @Nullable
-                    String address = tokenizer.poll();
-                    if ("ramp".equals("ramp")) {
-                        state = tokenizer.poll();
-                    }
-                    updateGroup(address, state);
-                    break;
-                }
-                case "temperature": {
-                    tokenizer.poll();
-                    tokenizer.poll();
-                    @Nullable
-                    String address = tokenizer.poll();
-                    @Nullable
-                    String temp = tokenizer.poll();
-                    updateGroup(address, temp);
-                    break;
-                }
-                case "trigger": {
-                    tokenizer.poll();
-                    @Nullable
-                    String command = tokenizer.poll();
-                    @Nullable
-                    String address = tokenizer.poll();
-                    if ("event".equals(command)) {
-                        @Nullable
-                        String level = tokenizer.poll();
-                        updateGroup(address, level);
-                    } else if ("indicatorkill".equals(command)) {
-                        updateGroup(address, "-1");
-                    } else {
-                        logger.warn("Unhandled trigger command {} - status {}", command, status);
-                    }
-                    break;
-                }
-                case "clock": {
-                    tokenizer.poll();
-                    @Nullable
-                    String address = "";
-                    @Nullable
-                    String value = "";
-                    @Nullable
-                    String type = tokenizer.poll();
-                    if ("date".equals(type)) {
-                        address = tokenizer.poll() + "/1";
-                        value = tokenizer.poll();
-                    } else if ("time".equals(type)) {
-                        address = tokenizer.poll() + "/0";
-                        value = tokenizer.poll();
-                    } else if (!"request_refresh".equals(type)) {
-                        logger.warn("Received unknown clock event: {}", status);
-                    }
-                    if (value != null && !value.isEmpty()) {
-                        updateGroup(address, value);
-                    }
-                    break;
-                }
-                default:
-                    if ("lighting".equals(commentTokenizer.peek())) {
-                        commentTokenizer.poll();
-                        @Nullable
-                        String commentToken = commentTokenizer.peek();
-                        if ("SyncUpdate".equals(commentToken)) {
-                            commentTokenizer.poll();
-                            @Nullable
-                            String address = commentTokenizer.poll();
-
-                            @Nullable
-                            String level = commentTokenizer.poll();
-                            level.replace("level=", "");
-                            updateGroup(address, level);
-                        }
-                    } else {
-                        logger.warn("Received unparsed event: '{}'", status);
-                    }
-                    break;
-            }
-        }
-
-    }
-
-    @NonNullByDefault
-    private class EventMonitor extends EventCallback {
-
-        @Override
-        public boolean acceptEvent(int event_code) {
-            return true;
-        }
-
-        @SuppressWarnings({ "null" })
-        @Override
-        public void processEvent(@Nullable CGateSession cgate_session, int eventCode,
-                @Nullable GregorianCalendar event_time, @Nullable String event) {
-            if (event == null) {
-                return;
-            }
-            LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
-
-            if (eventCode == 701) {
-                @Nullable
-                String address = tokenizer.poll();
-                tokenizer.poll();
-                @Nullable
-                String value = tokenizer.poll();
-                if (value != null && value.startsWith("level=")) {
-                    String level = value.replace("level=", "");
-                    updateGroup(address, level);
-                }
-            }
-        }
-
-    }
-
     private void updateGroup(@Nullable String address, @Nullable String value) {
         if (address == null || value == null) {
             return;
         }
-        String[] addressParts = address.trim().replace("//", "").split("/");
-        int application = Integer.parseInt(addressParts[2]);
-        int group = Integer.parseInt(addressParts[3]);
-        updateGroup(addressParts[1], application, group, value);
+        logger.debug("updateGroup address {}", address);
+        // Address should be of the form //Project/network/application/group
+        if (!address.startsWith("//")) {
+            logger.debug("Address does not start with // so ignoring this update");
+            return;
+        }
+        String[] addressParts = address.substring(2).split("/");
+        if (addressParts.length != 4) {
+            logger.debug("Address is badly formed so ignoring this update length of parts is {} not 4",
+                    addressParts.length);
+            return;
+        }
+        updateGroup(addressParts[1], Integer.parseInt(addressParts[2]), Integer.parseInt(addressParts[3]), value);
     }
 
     private void updateGroup(String network, int application, int group, String value) {
@@ -405,8 +253,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         }
     }
 
-    @Nullable
-    public CGateSession getCGateSession() {
+    public @Nullable CGateSession getCGateSession() {
         return cGateSession;
     }
 
@@ -428,4 +275,153 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
+    @NonNullByDefault
+    private class EventMonitor extends EventCallback {
+
+        @Override
+        public boolean acceptEvent(int event_code) {
+            return true;
+        }
+
+        @Override
+        public void processEvent(@Nullable CGateSession cgate_session, int eventCode,
+                @Nullable GregorianCalendar event_time, @Nullable String event) {
+            if (event == null) {
+                return;
+            }
+
+            if (eventCode == 701) {
+                // By Marking this as Nullable it fools the static analyser into understanding that poll can return Null
+                LinkedList<@Nullable String> tokenizer = new LinkedList<>(Arrays.asList(event.trim().split("\\s+")));
+                @Nullable
+                String address = tokenizer.poll();
+                tokenizer.poll();
+                @Nullable
+                String value = tokenizer.poll();
+                if (value != null && value.startsWith("level=")) {
+                    String level = value.replace("level=", "");
+                    updateGroup(address, level);
+                }
+            }
+        }
+    }
+
+    @NonNullByDefault
+    private class StatusChangeMonitor extends StatusChangeCallback {
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
+
+        @SuppressWarnings({ "null" })
+        @Override
+        public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
+            if (cGateSession == null || status == null) {
+                return;
+            }
+            if (status.startsWith("# ")) {
+                status = status.substring(2);
+                if (status.isEmpty()) {
+                    return;
+                }
+            }
+            logger.debug("ProcessStatusChange {}", status);
+            String contents[] = status.split("#");
+            if (cGateSession.getSessionID() != null
+                    && contents[1].contains("sessionId=" + cGateSession.getSessionID())) {
+                // We created this event - don't worry about processing it again...
+                return;
+            }
+            // By Marking this as Nullable it fools the static analyser into understanding that poll can return Null
+            LinkedList<@Nullable String> tokenizer = new LinkedList<>(Arrays.asList(contents[0].split("\\s+")));
+            @Nullable
+            String firstToken = tokenizer.poll();
+            if (firstToken == null) {
+                logger.debug("ProcessStateChange: Cant tokenize status {}", status);
+                return;
+            }
+            switch (firstToken) {
+                case "lighting": {
+                    @Nullable
+                    String state = tokenizer.poll();
+                    @Nullable
+                    String address = tokenizer.poll();
+                    if ("ramp".equals(state)) {
+                        state = tokenizer.poll();
+                    }
+                    updateGroup(address, state);
+                    break;
+                }
+                case "temperature": {
+                    // For temperature we ignore the state
+                    tokenizer.poll();
+                    @Nullable
+                    String address = tokenizer.poll();
+                    @Nullable
+                    String temp = tokenizer.poll();
+                    updateGroup(address, temp);
+                    break;
+                }
+                case "trigger": {
+                    @Nullable
+                    String command = tokenizer.poll();
+                    @Nullable
+                    String address = tokenizer.poll();
+                    if ("event".equals(command)) {
+                        @Nullable
+                        String level = tokenizer.poll();
+                        updateGroup(address, level);
+                    } else if ("indicatorkill".equals(command)) {
+                        updateGroup(address, "-1");
+                    } else {
+                        logger.warn("Unhandled trigger command {} - status {}", command, status);
+                    }
+                    break;
+                }
+                case "clock": {
+                    @Nullable
+                    String address = "";
+                    @Nullable
+                    String value = "";
+                    @Nullable
+                    String type = tokenizer.poll();
+                    if ("date".equals(type)) {
+                        address = tokenizer.poll() + "/1";
+                        value = tokenizer.poll();
+                    } else if ("time".equals(type)) {
+                        address = tokenizer.poll() + "/0";
+                        value = tokenizer.poll();
+                    } else if (!"request_refresh".equals(type)) {
+                        logger.warn("Received unknown clock event: {}", status);
+                    }
+                    if (value != null && !value.isEmpty()) {
+                        updateGroup(address, value);
+                    }
+                    break;
+                }
+                default: {
+                    LinkedList<String> commentTokenizer = new LinkedList<>(Arrays.asList(contents[1].split("\\s+")));
+                    if ("lighting".equals(commentTokenizer.peek())) {
+                        commentTokenizer.poll();
+                        @Nullable
+                        String commentToken = commentTokenizer.peek();
+                        if ("SyncUpdate".equals(commentToken)) {
+                            commentTokenizer.poll();
+                            @Nullable
+                            String address = commentTokenizer.poll();
+
+                            @Nullable
+                            String level = commentTokenizer.poll();
+                            level.replace("level=", "");
+                            updateGroup(address, level);
+                        }
+                    } else {
+                        logger.warn("Received unparsed event: '{}'", status);
+                    }
+                }
+                    break;
+            }
+        }
+    }
 }

@@ -64,8 +64,9 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                         CBusBindingConstants.THING_TYPE_TRIGGER);
 
                 Network network = cbusNetworkHandler.getNetwork();
-                if (network == null)
+                if (network == null) {
                     return;
+                }
                 for (Map.Entry<Integer, ThingTypeUID> applicationItem : applications.entrySet()) {
                     Application application = network.getApplication(applicationItem.getKey());
                     if (application == null) {

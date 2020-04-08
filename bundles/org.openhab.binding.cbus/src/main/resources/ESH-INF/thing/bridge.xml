@@ -33,7 +33,7 @@
 				<description>Project name that contains the network</description>
 			</parameter>
 
-			<parameter name="syncInterval" type="integer" required="false" min="120">
+			<parameter name="syncInterval" type="integer" required="false" min="120" unit="s">
 				<label>Network Sync Interval</label>
 				<description>The sync interval in seconds used to get group states from the network</description>
 				<default>600</default>

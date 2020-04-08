@@ -44,11 +44,6 @@ public class CBusLightHandler extends CBusGroupHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Group group = this.group;
         if (group == null) {
@@ -66,7 +61,6 @@ public class CBusLightHandler extends CBusGroupHandler {
             } catch (CGateException e) {
                 logger.debug("Failed to getLevel for group {}", groupId, e);
             }
-
         } else {
             if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
                 logger.debug("Channel State command for {}: {}", channelUID, command);
