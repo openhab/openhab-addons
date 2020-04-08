@@ -124,7 +124,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     }
 
     private void doRefresh() {
-        logger.debug("Refreshing parameter values");
+        logger.trace("Refreshing parameter values");
 
         BsbLanApiCaller apiCaller = new BsbLanApiCaller(bridgeConfig);
 

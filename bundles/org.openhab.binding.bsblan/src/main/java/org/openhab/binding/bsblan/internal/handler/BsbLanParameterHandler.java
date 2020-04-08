@@ -133,34 +133,34 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
      */
     @Override
     protected void setChannel(String channelId, Command command) {
-        logger.debug("Received command '{}' for channel '{}'", command, channelId);
+        logger.trace("Received command '{}' for channel '{}'", command, channelId);
 
         if (!WRITEABLE_CHANNELS.contains(channelId)) {
-            logger.debug("Channel '{}' is read only. Ignoring command", channelId);
+            logger.warn("Channel '{}' is read only. Ignoring command", channelId);
             return;
         }
 
         String value = BsbLanParameterConverter.getValue(channelId, command);
         if (value == null) {
-            logger.debug("Channel '{}' is read only or conversion failed. Ignoring command", channelId);
+            logger.warn("Channel '{}' is read only or conversion failed. Ignoring command", channelId);
             return;
         }
 
         BsbLanApiCaller api = getApiCaller();
         if (api == null) {
-            logger.error("Failed to set parameter {} (API unavailable)", parameterConfig.setId);
+            logger.debug("Failed to set parameter {} (API unavailable)", parameterConfig.setId);
             return;
         }
 
         boolean success = api.setParameter(parameterConfig.setId, value, Type.getTypeWithFallback(parameterConfig.setType));
         if (!success) {
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}'", parameterConfig.setId, value, channelId);
+            logger.debug("Failed to set parameter {} to '{}' for channel '{}'", parameterConfig.setId, value, channelId);
         }
 
         // refresh value
         BsbLanApiParameterQueryResponseDTO queryResponse = api.queryParameter(parameterConfig.id);
         if (queryResponse == null) {
-            logger.warn("Failed to refresh parameter {} after set request", parameterConfig.id);
+            logger.debug("Failed to refresh parameter {} after set request", parameterConfig.id);
             return;
         }
 

@@ -62,7 +62,7 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
-        logger.debug("Initializing '{}' thing", getDescription());
+        logger.trace("Initializing '{}' thing", getDescription());
         bridgeHandler.registerThing(this);
     }
 

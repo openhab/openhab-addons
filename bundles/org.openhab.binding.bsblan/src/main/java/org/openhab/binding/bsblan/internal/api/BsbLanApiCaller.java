@@ -73,21 +73,21 @@ public class BsbLanApiCaller {
         // make REST call and process response
         BsbLanApiParameterSetResponseDTO setResponse = makeRestCall(BsbLanApiParameterSetResponseDTO.class, "POST", "/JS", request);
         if (setResponse == null) {
-            logger.warn("Failed to set parameter {} to '{}': no response received", parameterId, value);
+            logger.debug("Failed to set parameter {} to '{}': no response received", parameterId, value);
             return false;
         }
 
         BsbLanApiParameterSetResultDTO result = setResponse.getOrDefault(parameterId, null);
         if (result == null) {
-            logger.warn("Failed to set parameter {} to '{}'': result is null", parameterId, value);
+            logger.debug("Failed to set parameter {} to '{}'': result is null", parameterId, value);
             return false;
         }
         if (result.status == null) {
-            logger.warn("Failed to set parameter {} to '{}': status is null", parameterId, value);
+            logger.debug("Failed to set parameter {} to '{}': status is null", parameterId, value);
             return false;
         }
         if (result.status != BsbLanApiParameterSetResultDTO.Status.SUCCESS) {
-            logger.info("Failed to set parameter {} to '{}': status = {}", parameterId, value, result.status);
+            logger.debug("Failed to set parameter {} to '{}': status = {}", parameterId, value, result.status);
             return false;
         }
         return true;
@@ -124,13 +124,13 @@ public class BsbLanApiCaller {
     private <T> @Nullable T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, @Nullable BsbLanApiContentDTO request) {
         try {
             String url = createApiBaseUrl() + apiPath;
-            logger.debug("api request url = '{}'", url);
+            logger.trace("api request url = '{}'", url);
 
             InputStream contentStream = null;
             String contentType = null;
             if (request != null) {
                 String content = BsbLanApiContentConverter.toJson(request);
-                logger.debug("api request content: '{}'", content);
+                logger.trace("api request content: '{}'", content);
                 if (StringUtils.isNotBlank(content)) {
                     contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
                     contentType = "application/json";
@@ -143,7 +143,7 @@ public class BsbLanApiCaller {
                 return null;
             }
 
-            logger.debug("api response content: '{}'", response);
+            logger.trace("api response content: '{}'", response);
             return BsbLanApiContentConverter.fromJson(response, responseType);
         } catch (IOException | IllegalStateException e) {
             logger.debug("Error executing bsb-lan api request: {}", e.getMessage());

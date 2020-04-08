@@ -63,7 +63,7 @@ public class BsbLanParameterConverter {
                 return getStateForUnitChannel(parameter);
         }
 
-        LOGGER.warn("unsupported channel '{}' while updating state", channelId);
+        LOGGER.debug("unsupported channel '{}' while updating state", channelId);
         return null;
     }
 
@@ -139,7 +139,7 @@ public class BsbLanParameterConverter {
         if (command.toString().matches("-?\\d+(\\.\\d+)?")) {
             return command.toString();
         }
-        LOGGER.debug("Command '{}' is not a valid number value", command);
+        LOGGER.warn("Command '{}' is not a valid number value", command);
         return null;
     }
 
@@ -159,7 +159,7 @@ public class BsbLanParameterConverter {
         } else if (command.equals(OnOffType.OFF)) {
             return "0";
         }
-        LOGGER.debug("Command '{}' is not a valid switch value", command);
+        LOGGER.warn("Command '{}' is not a valid switch value", command);
         return null;
     }
 }
