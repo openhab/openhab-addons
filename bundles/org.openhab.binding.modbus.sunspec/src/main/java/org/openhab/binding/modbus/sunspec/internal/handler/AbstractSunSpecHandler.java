@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import javax.measure.Unit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -79,7 +78,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Configuration instance
      */
-    protected Optional<SunSpecConfiguration> config = Optional.empty();
+    @Nullable
+    protected SunSpecConfiguration config = null;
 
     /**
      * This is the task used to poll the device
@@ -90,7 +90,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * This is the slave endpoint we're connecting to
      */
-    protected volatile Optional<ModbusSlaveEndpoint> endpoint = Optional.empty();
+    @Nullable
+    protected volatile ModbusSlaveEndpoint endpoint = null;
 
     /**
      * This is the slave id, we store this once initialization is complete
@@ -129,7 +130,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        config = Optional.of(getConfigAs(SunSpecConfiguration.class));
+        config = getConfigAs(SunSpecConfiguration.class);
         logger.debug("Initializing thing with properties: {}", thing.getProperties());
 
         startUp();
@@ -145,7 +146,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         connectEndpoint();
 
-        if (!endpoint.isPresent() || !config.isPresent()) {
+        if (endpoint == null || config == null) {
             logger.debug("Invalid endpoint/config/manager ref for sunspec handler");
             return;
         }
@@ -170,12 +171,14 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Load configuration from main configuration
      */
     private Optional<ModelBlock> getAddressFromConfig() {
-        if (!config.isPresent()) {
+        @Nullable
+        SunSpecConfiguration myconfig = config;
+        if (myconfig == null) {
             return Optional.empty();
         }
         ModelBlock block = new ModelBlock();
-        block.address = config.get().address;
-        block.length = config.get().length;
+        block.address = myconfig.address;
+        block.length = myconfig.length;
         return Optional.of(block);
     }
 
@@ -255,7 +258,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Get a reference to the modbus endpoint
      */
     private void connectEndpoint() {
-        if (endpoint.isPresent()) {
+        if (endpoint != null) {
             return;
         }
 
@@ -272,19 +275,12 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         try {
             slaveId = slaveEndpointThingHandler.getSlaveId();
 
-            @Nullable
-            ModbusSlaveEndpoint optionalEndpoint = slaveEndpointThingHandler.asSlaveEndpoint();
-
-            if (optionalEndpoint == null) {
-                endpoint = Optional.empty();
-            } else {
-                endpoint = Optional.of(optionalEndpoint);
-            }
+            endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
         }
 
-        if (!endpoint.isPresent()) {
+        if (endpoint == null) {
             @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -298,7 +294,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Remove the endpoint if exists
      */
     private void unregisterEndpoint() {
-        endpoint = Optional.empty();
+        endpoint = null;
     }
 
     /**
@@ -310,17 +306,20 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
         }
-        if (!config.isPresent() || !endpoint.isPresent()) {
+        @Nullable
+        ModbusSlaveEndpoint myendpoint = endpoint;
+        @Nullable
+        SunSpecConfiguration myconfig = config;
+        if (myconfig == null || myendpoint == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
 
         logger.debug("Setting up regular polling");
 
         BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length,
-                config.get().maxTries);
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
-        pollTask = new BasicPollTaskImpl(endpoint.get(), request, new ModbusReadCallback() {
+        pollTask = new BasicPollTaskImpl(myendpoint, request, new ModbusReadCallback() {
 
             @Override
             public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
@@ -348,7 +347,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             }
         });
 
-        long refreshMillis = config.get().getRefreshMillis();
+        long refreshMillis = myconfig.getRefreshMillis();
         if (pollTask != null) {
             PollTask task = pollTask;
             managerRef.registerRegularPoll(task, refreshMillis, 1000);
@@ -379,11 +378,12 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * No-op in case no poll task is registered, or if the initialization is incomplete.
      */
     private synchronized void unregisterPollTask() {
-        if (pollTask == null) {
+        @Nullable
+        PollTask task = pollTask;
+        if (task == null) {
             return;
         }
         logger.debug("Unregistering polling from ModbusManager");
-        PollTask task = (@NonNull PollTask) pollTask;
         managerRef.unregisterRegularPoll(task);
 
         pollTask = null;
