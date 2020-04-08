@@ -292,7 +292,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return True if a counter event exists that matches uid and start, else false.
      */
     private boolean isCounteredBy(Instant startInstant, Uid eventUid, Collection<VEvent> counterEvents) {
-        boolean ignoreThis = false;
         for (VEvent counterEvent : counterEvents) {
             @Nullable
             Uid counterEventUid = counterEvent.getUid();
@@ -302,13 +301,12 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 if (counterStartDates.hasNext()) {
                     Instant counterStartInstant = counterStartDates.next().toInstant();
                     if (counterStartInstant.equals(startInstant)) {
-                        ignoreThis = true;
-                        break;
+                        return true;
                     }
                 }
             }
         }
-        return ignoreThis;
+        return false;
     }
 
     /**
