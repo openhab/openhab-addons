@@ -50,7 +50,8 @@ public class BsbLanApiCaller {
     }
 
     public @Nullable BsbLanApiParameterQueryResponseDTO queryParameter(Integer parameterId) {
-        Set<Integer> parameters = new HashSet<Integer>();
+        Set<Integer> parameters = new HashSet<>();
+
         parameters.add(parameterId);
         return queryParameters(parameters);
     }
