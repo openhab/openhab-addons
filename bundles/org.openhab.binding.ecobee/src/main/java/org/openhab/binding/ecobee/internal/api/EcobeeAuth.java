@@ -230,7 +230,6 @@ public class EcobeeAuth {
         request.method(method);
         EcobeeApi.HTTP_HEADERS.forEach((k, v) -> request.header((String) k, (String) v));
 
-        String errorMsg;
         try {
             ContentResponse contentResponse = request.send();
             switch (contentResponse.getStatus()) {
@@ -243,27 +242,25 @@ public class EcobeeAuth {
                     logger.debug("UNAUTHORIZED(401) response received: {}", contentResponse.getContentAsString());
                     return contentResponse.getContentAsString();
                 case HttpStatus.NO_CONTENT_204:
-                    errorMsg = "HTTP response 400: No content. Check configuration";
+                    logger.debug("HTTP response 204: No content. Check configuration");
                     break;
                 default:
-                    errorMsg = String.format("HTTP {} failed: %d, %s", method, contentResponse.getStatus(),
+                    logger.debug("HTTP {} failed: {}, {}", method, contentResponse.getStatus(),
                             contentResponse.getReason());
                     break;
             }
         } catch (TimeoutException e) {
-            errorMsg = "TimeoutException: Call to Ecobee API timed out";
+            logger.debug("TimeoutException: Call to Ecobee API timed out");
         } catch (ExecutionException e) {
             if (ExceptionUtils.getRootCause(e) instanceof HttpResponseException) {
-                logger.warn("Awaiting entry of PIN in Ecobee portal. Expires in {} minutes",
+                logger.info("Awaiting entry of PIN in Ecobee portal. Expires in {} minutes",
                         getMinutesUntilPinExpiration());
             } else {
-                logger.debug("ExecutionException on call to Ecobee authorization APIs", e);
+                logger.debug("ExecutionException on call to Ecobee authorization API", e);
             }
-            return null;
         } catch (InterruptedException e) {
-            errorMsg = String.format("InterruptedException: %s", e.getMessage());
+            logger.debug("InterruptedException on call to Ecobee authorization API: {}", e.getMessage());
         }
-        logger.debug("{}", errorMsg);
         return null;
     }
 }

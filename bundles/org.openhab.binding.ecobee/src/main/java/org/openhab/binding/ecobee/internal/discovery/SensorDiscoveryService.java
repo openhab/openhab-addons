@@ -44,7 +44,7 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
 
     private final Logger logger = LoggerFactory.getLogger(SensorDiscoveryService.class);
 
-    private @Nullable EcobeeThermostatBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) EcobeeThermostatBridgeHandler bridgeHandler;
 
     public SensorDiscoveryService() {
         super(30);
@@ -80,24 +80,13 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public void startBackgroundDiscovery() {
-        EcobeeThermostatBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler == null) {
-            logger.info("SensorDiscovery: Can't perform background discovery because bridgeHandler is null");
-            return;
-        }
-        logger.debug("SensorDiscovery: Performing background discovery scan for {}",
-                localBridgeHandler.getThing().getUID());
+        logger.debug("SensorDiscovery: Performing background discovery scan for {}", bridgeHandler.getThing().getUID());
         discoverSensors();
     }
 
     @Override
     public void startScan() {
-        EcobeeThermostatBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler == null) {
-            logger.info("SensorDiscovery: Can't perform discovery scan because bridgeHandler is null");
-            return;
-        }
-        logger.debug("SensorDiscovery: Starting discovery scan for {}", localBridgeHandler.getThing().getUID());
+        logger.debug("SensorDiscovery: Starting discovery scan for {}", bridgeHandler.getThing().getUID());
         discoverSensors();
     }
 
@@ -116,13 +105,8 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     private synchronized void discoverSensors() {
-        EcobeeThermostatBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler == null) {
-            logger.info("SensorDiscovery: Can't discover sensors because bridgeHandler is null");
-            return;
-        }
-        for (RemoteSensorDTO sensor : localBridgeHandler.getSensors()) {
-            ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
+        for (RemoteSensorDTO sensor : bridgeHandler.getSensors()) {
+            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingUID sensorUID = new ThingUID(UID_SENSOR_THING, bridgeUID, sensor.id.replace(":", "-"));
             thingDiscovered(createDiscoveryResult(sensorUID, bridgeUID, sensor));
             logger.trace("SensorDiscovery: Sensor with id '{}' and name '{}' added to Inbox with UID '{}'", sensor.id,
@@ -131,7 +115,7 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     private DiscoveryResult createDiscoveryResult(ThingUID sensorUID, ThingUID bridgeUID, RemoteSensorDTO sensor) {
-        Map<String, Object> properties = new HashMap<>(0);
+        Map<String, Object> properties = new HashMap<>(2);
         properties.put(CONFIG_SENSOR_ID, sensor.id);
         return DiscoveryResultBuilder.create(sensorUID).withProperties(properties).withRepresentationProperty(sensor.id)
                 .withBridge(bridgeUID).withLabel(buildLabel(sensor.name)).build();

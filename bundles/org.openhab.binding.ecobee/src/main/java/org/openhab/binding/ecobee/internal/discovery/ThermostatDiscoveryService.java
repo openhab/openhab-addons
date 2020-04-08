@@ -123,7 +123,7 @@ public class ThermostatDiscoveryService extends AbstractDiscoveryService
     }
 
     private DiscoveryResult createDiscoveryResult(ThingUID thermostatUID, String identifier, String name) {
-        Map<String, Object> properties = new HashMap<>(0);
+        Map<String, Object> properties = new HashMap<>(2);
         properties.put(CONFIG_THERMOSTAT_ID, identifier);
         return DiscoveryResultBuilder.create(thermostatUID).withProperties(properties)
                 .withRepresentationProperty(identifier).withBridge(bridgeHandler.getThing().getUID())

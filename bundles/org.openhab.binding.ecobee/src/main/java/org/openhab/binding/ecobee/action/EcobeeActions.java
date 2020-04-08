@@ -52,9 +52,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EcobeeActions} defines the thing actions for the Ecobee binding.
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethod</b> handles the case where
+ * the test <i>actions instanceof EcobeeActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link EcobeeActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author John Cocula - Initial contribution
  * @author Mark Hilbush - Adapted for OH2/3
+ * @author Connor Petty - Proxy method for invoking actions
  */
 @ThingActionsScope(name = "ecobee")
 @NonNullByDefault
@@ -80,7 +86,10 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
         return this.handler;
     }
 
-    private static IEcobeeActions tryCast(ThingActions actions) {
+    private static IEcobeeActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
         if (actions.getClass().getName().equals(EcobeeActions.class.getName())) {
             if (actions instanceof IEcobeeActions) {
                 return (IEcobeeActions) actions;
@@ -122,10 +131,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
 
     public static boolean acknowledge(@Nullable ThingActions actions, @Nullable String ackRef, @Nullable String ackType,
             @Nullable Boolean remindMeLater) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).acknowledge(ackRef, ackType, remindMeLater);
+        return invokeMethodOf(actions).acknowledge(ackRef, ackType, remindMeLater);
     }
 
     /**
@@ -158,10 +164,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     public static boolean controlPlug(@Nullable ThingActions actions, @Nullable String plugName,
             @Nullable String plugState, @Nullable Date startDateTime, @Nullable Date endDateTime,
             @Nullable String holdType, @Nullable Number holdHours) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType, holdHours);
+        return invokeMethodOf(actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType, holdHours);
     }
 
     /**
@@ -196,10 +199,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
             @Nullable QuantityType<Temperature> coolHoldTemp, @Nullable QuantityType<Temperature> heatHoldTemp,
             @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String fan,
             @Nullable Number fanMinOnTime) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).createVacation(name, coolHoldTemp, heatHoldTemp, startDateTime, endDateTime, fan,
+        return invokeMethodOf(actions).createVacation(name, coolHoldTemp, heatHoldTemp, startDateTime, endDateTime, fan,
                 fanMinOnTime);
     }
 
@@ -224,10 +224,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static boolean deleteVacation(@Nullable ThingActions actions, @Nullable String name) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).deleteVacation(name);
+        return invokeMethodOf(actions).deleteVacation(name);
     }
 
     /**
@@ -250,10 +247,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static boolean resetPreferences(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).resetPreferences();
+        return invokeMethodOf(actions).resetPreferences();
     }
 
     /**
@@ -277,10 +271,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static boolean resumeProgram(@Nullable ThingActions actions, @Nullable Boolean resumeAll) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).resumeProgram(resumeAll);
+        return invokeMethodOf(actions).resumeProgram(resumeAll);
     }
 
     /**
@@ -304,10 +295,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static boolean sendMessage(@Nullable ThingActions actions, @Nullable String text) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).sendMessage(text);
+        return invokeMethodOf(actions).sendMessage(text);
     }
 
     /**
@@ -331,10 +319,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
 
     public static boolean setHold(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
             @Nullable QuantityType<Temperature> heatHoldTemp) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setHold(coolHoldTemp, heatHoldTemp);
+        return invokeMethodOf(actions).setHold(coolHoldTemp, heatHoldTemp);
     }
 
     /**
@@ -362,10 +347,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
 
     public static boolean setHold(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
             @Nullable QuantityType<Temperature> heatHoldTemp, @Nullable Number holdHours) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setHold(coolHoldTemp, heatHoldTemp, holdHours);
+        return invokeMethodOf(actions).setHold(coolHoldTemp, heatHoldTemp, holdHours);
     }
 
     /**
@@ -389,10 +371,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static boolean setHold(@Nullable ThingActions actions, @Nullable String holdClimateRef) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setHold(holdClimateRef);
+        return invokeMethodOf(actions).setHold(holdClimateRef);
     }
 
     /**
@@ -423,10 +402,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
 
     public static boolean setHold(@Nullable ThingActions actions, @Nullable String holdClimateRef,
             @Nullable Number holdHours) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setHold(holdClimateRef, holdHours);
+        return invokeMethodOf(actions).setHold(holdClimateRef, holdHours);
     }
 
     /**
@@ -459,10 +435,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
             @Nullable QuantityType<Temperature> heatHoldTemp, @Nullable String holdClimateRef,
             @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String holdType,
             @Nullable Number holdHours) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setHold(coolHoldTemp, heatHoldTemp, holdClimateRef, startDateTime, endDateTime,
+        return invokeMethodOf(actions).setHold(coolHoldTemp, heatHoldTemp, holdClimateRef, startDateTime, endDateTime,
                 holdType, holdHours);
     }
 
@@ -548,10 +521,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     public static boolean setHold(@Nullable ThingActions actions, @Nullable Map<String, Object> params,
             @Nullable String holdType, @Nullable Number holdHours, @Nullable Date startDateTime,
             @Nullable Date endDateTime) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setHold(params, holdType, holdHours, startDateTime, endDateTime);
+        return invokeMethodOf(actions).setHold(params, holdType, holdHours, startDateTime, endDateTime);
     }
 
     /**
@@ -584,10 +554,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     public static boolean setOccupied(@Nullable ThingActions actions, @Nullable Boolean occupied,
             @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String holdType,
             @Nullable Number holdHours) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).setOccupied(occupied, startDateTime, endDateTime, holdType, holdHours);
+        return invokeMethodOf(actions).setOccupied(occupied, startDateTime, endDateTime, holdType, holdHours);
     }
 
     /**
@@ -614,10 +581,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
 
     public static boolean updateSensor(@Nullable ThingActions actions, @Nullable String name, @Nullable String deviceId,
             @Nullable String sensorId) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).updateSensor(name, deviceId, sensorId);
+        return invokeMethodOf(actions).updateSensor(name, deviceId, sensorId);
     }
 
     /**
@@ -636,10 +600,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static @Nullable String getAlerts(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).getAlerts();
+        return invokeMethodOf(actions).getAlerts();
     }
 
     /**
@@ -658,10 +619,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static @Nullable String getEvents(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).getEvents();
+        return invokeMethodOf(actions).getEvents();
     }
 
     /**
@@ -680,9 +638,6 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
     }
 
     public static @Nullable String getClimates(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        return tryCast(actions).getClimates();
+        return invokeMethodOf(actions).getClimates();
     }
 }

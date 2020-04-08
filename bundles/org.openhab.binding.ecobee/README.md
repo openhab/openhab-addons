@@ -534,7 +534,7 @@ heatHoldTemp and fan mode from that Climate are used in the creation of the hold
 The values from that Climate will take precedence over any coolHoldTemp, heatHoldTemp and fan mode 
 parameters passed into this function separately.
 
-To resume from a hold and return to the program, use the ResumeProgram function.
+To resume from a hold and return to the program, use the `resumeProgram` function.
 
 ##### setHold - Set an indefinite hold using the supplied coolHoldTemp and heatHoldTemp
 

@@ -22,7 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 
 /**
- * The {@link IEcobeeActions} is responsible for
+ * The {@link IEcobeeActions} defines the interface for all thing actions supported by the binding.
+ * These methods, parameters, and return types are explained in {@link EcobeeActions}.
  *
  * @author Mark Hilbush - Initial contribution
  */
