@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.CGateException;
@@ -36,8 +37,10 @@ import com.daveoxley.cbus.Group;
 @NonNullByDefault
 public class CBusDaliHandler extends CBusGroupHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(CBusDaliHandler.class);
+
     public CBusDaliHandler(Thing thing) {
-        super(thing, CBusBindingConstants.CBUS_APPLICATION_DALI, LoggerFactory.getLogger(CBusDaliHandler.class));
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_DALI);
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.CGateException;
@@ -34,9 +35,10 @@ import com.daveoxley.cbus.Group;
 @NonNullByDefault
 public class CBusTriggerHandler extends CBusGroupHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(CBusTriggerHandler.class);
 
     public CBusTriggerHandler(Thing thing) {
-        super(thing, CBusBindingConstants.CBUS_APPLICATION_TRIGGER, LoggerFactory.getLogger(CBusTriggerHandler.class));
+        super(thing, CBusBindingConstants.CBUS_APPLICATION_TRIGGER);
     }
 
     @Override

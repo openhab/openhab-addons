@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
@@ -40,16 +41,15 @@ import com.daveoxley.cbus.Network;
 @NonNullByDefault
 public abstract class CBusGroupHandler extends BaseThingHandler {
 
-    protected final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(CBusGroupHandler.class);
     protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
     protected @Nullable Group group = null;
     protected int applicationId = -1;
     protected int groupId = -1;
 
-    public CBusGroupHandler(Thing thing, int applicationId, Logger logger) {
+    public CBusGroupHandler(Thing thing, int applicationId) {
         super(thing);
         this.applicationId = applicationId;
-        this.logger = logger;
     }
 
     @Override
