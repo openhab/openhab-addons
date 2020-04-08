@@ -92,8 +92,9 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
     protected @Nullable BsbLanApiCaller getApiCaller() {
         // use a local variable to avoid the build warning "Potential null pointer access"
         BsbLanBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler == null)
+        if (localBridgeHandler == null) {
             return null;
+        }
         return new BsbLanApiCaller(localBridgeHandler.getBridgeConfiguration());
     }
 
