@@ -56,12 +56,10 @@ public class BsbLanApiCaller {
     }
 
     public @Nullable BsbLanApiParameterQueryResponseDTO queryParameters(Set<Integer> parameterIds) {
-        // make the request even if parameterIds is empty, thing OFFLINE/ONLINE detection relies on a response
-        // if (parameterIds.size() == 0) {
-        //     return null;
-        // }
-        String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
+        // note: make the request even if parameterIds is empty as
+        // thing OFFLINE/ONLINE detection relies on a response
 
+        String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
         return makeRestCall(BsbLanApiParameterQueryResponseDTO.class, "GET", apiPath, null);
     }
 
