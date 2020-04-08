@@ -83,6 +83,8 @@
 			<channel id="contact" typeId="contact-channel" />
 		</channels>
 
+		<representation-property>id</representation-property>
+
 		<config-description>
 			<parameter name="address" type="integer" required="true">
 				<label>Address</label>
@@ -125,6 +127,8 @@
 				<label>Loop 4</label>
 			</channel>
 		</channels>
+
+		<representation-property>serial</representation-property>
 
 		<config-description>
 			<parameter name="serial" type="integer" required="true">

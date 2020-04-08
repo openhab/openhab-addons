@@ -52,16 +52,19 @@ If you enable the *discovery* option on the bridge, as you fault zones (e.g. ope
 
 The **ipbridge** thing supports a TCP connection to an Alarm Decoder device such as *AD2PI* or *AD2PHAT*.
 
-* **hostname** (required) The hostname of the Alarm Decoder device
+* **hostname** (required) The hostname or IP address of the Alarm Decoder device
 * **tcpPort** (default = 10000) TCP port number for the Alarm Decoder connection
 * **discovery** (default = false) Enable automatic discovery of zones and RF zones
 * **reconnect** (1-60, default = 2) The period in minutes that the handler will wait between connection checks and connection attempts
 * **timeout** (0-60, default = 5) The period in minutes after which the connection will be reset if no valid messages have been received. Set to 0 to disable.
 
-Example:
+Thing config file example:
 
 ```
-TBD
+Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10003, discovery=true ] {
+  Thing ...
+  Thing ...
+}
 ```
 
 ### serialbridge
@@ -74,10 +77,13 @@ Parameters:
 * **bitrate** Speed of the serial connection
 * **discovery** (default=false) Enable automatic discovery of zones and RF zones
 
-Example:
+Thing config file example:
 
 ```
-TBD
+Bridge alarmdecoder:serialbridge:ad1 [ serialPort="/dev/ttyS1", bitrate=115200, discovery=true ] {
+  Thing ...
+  Thing ...
+}
 ```
 
 ### zone
@@ -89,10 +95,10 @@ Parameters:
 * **address** (required) Zone address
 * **channel** (required) Zone channel
 
-Example:
+Thing config file example:
 
 ```
-TBD
+  Thing zone frontdoor [ address=10, channel=1 ]
 ```
 
 ### rfzone
@@ -103,10 +109,10 @@ Parameters:
 
 * **serial** (required) Serial number of the RF zone
 
-Example:
+Thing config file example:
 
 ```
-TBD
+  Thing rfzone motion1 [ serial=0180010 ]
 ```
 
 ### keypad
@@ -127,10 +133,10 @@ Parameters:
 * **sendStar** (default = false) When disarmed/faulted, automatically send * character to obtain zone fault information.
 * **commandMapping** (optional) Comma separated list of key/value pairs mapping integers to command strings for intcommand channel.
 
-Example:
+Thing config file example:
 
 ```
-TBD
+  Thing keypad keypad1 [ addressMask=0, sendCommands=true ]
 ```
 
 ### lrr
@@ -141,10 +147,10 @@ For panels that support multiple partitions, the partition for which a given lrr
 
 * **partition** (default = 0) Partition for which to receive LRR events (0 = All)
 
-Example:
+Thing config file example:
 
 ```
-TBD
+  Thing lrr lrr [ partition=0 ]
 ```
 
 ## Channels
@@ -208,6 +214,18 @@ The default mapping is "0=0,1=1,2=2,3=3,4=4,5=5,6=6,7=7,8=8,9=9,10=*,11=#".
 ## Full Example
 
 TODO: Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap).
+
+Example ad.things file:
+
+```
+Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, discovery=true ] {
+    Thing zone frontdoor [ address=10, channel=1 ]
+    Thing zone backdoor [ address=11, channel=1 ]
+    Thing rfzone motion1 [ serial=0180010 ]
+    Thing keypad keypad1 [ addressMask=0, sendCommands=true ]
+    Thing lrr lrr [ partition=0 ]
+}
+```
 
 ## Thing Actions
 
