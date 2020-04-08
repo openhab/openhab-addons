@@ -64,15 +64,15 @@ public class Telegram {
     }
 
     private final Logger logger = LoggerFactory.getLogger(Telegram.class);
-    private static Map<String, State> channelsToUpdate = new HashMap<>();
-    public TelegramState state;
-    public byte[] bytes = new byte[6];
+    private final static Map<String, State> channelsToUpdate = new HashMap<>();
+    public final TelegramState state;
+    public final byte[] bytes;
 
     /**
      * Create new Telegram
      */
     public Telegram(TelegramState state) {
-        this.state = state;
+        this(state, new byte[6]);
     }
 
     /**
@@ -82,8 +82,7 @@ public class Telegram {
      * @param singleByte the single byte
      */
     public Telegram(TelegramState state, byte singleByte) {
-        this.state = state;
-        this.bytes[0] = singleByte;
+        this(state, new byte[] { singleByte, 0x00, 0x00, 0x00, 0x00, 0x00 });
     }
 
     /**

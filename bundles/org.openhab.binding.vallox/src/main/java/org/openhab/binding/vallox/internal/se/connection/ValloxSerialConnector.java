@@ -16,6 +16,7 @@ import static org.openhab.binding.vallox.internal.se.ValloxSEConstants.*;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -43,21 +44,23 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     private final Logger logger = LoggerFactory.getLogger(ValloxSerialConnector.class);
 
     private @Nullable SerialPort serialPort;
+    private final SerialPortManager serialPortManager;
 
-    public ValloxSerialConnector(SerialPortManager portManager, ScheduledExecutorService scheduler) {
-        super(portManager, scheduler);
+    public ValloxSerialConnector(SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+        super(scheduler);
+        this.serialPortManager = serialPortManager;
         logger.debug("Serial connector initialized");
     }
 
-    @SuppressWarnings("null") // After setting serial port parameters
     @Override
     public void connect(ValloxSEConfiguration config) throws IOException {
         if (isConnected()) {
             return;
         }
         try {
+            SerialPort serialPort = this.serialPort;
             logger.debug("Connecting to {}", config.serialPort);
-            SerialPortIdentifier portIdentifier = portManager.getIdentifier(config.serialPort);
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.serialPort);
             if (portIdentifier == null) {
                 throw new IOException("No such port " + config.serialPort);
             }
@@ -94,11 +97,10 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     /**
      * Closes the serial port.
      */
-    @SuppressWarnings("null") // serialPort.close()
     @Override
     public void close() {
         super.close();
-        connected = false;
+        SerialPort serialPort = this.serialPort;
         if (serialPort != null) {
             serialPort.removeEventListener();
             try {
@@ -150,8 +152,8 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     /**
      * Read available data from input stream if its not null
      */
-    @SuppressWarnings("null") // inputStream
     private void handleDataAvailable() {
+        InputStream inputStream = getInputStream();
         try {
             if (inputStream != null) {
                 while (inputStream.available() > 0) {

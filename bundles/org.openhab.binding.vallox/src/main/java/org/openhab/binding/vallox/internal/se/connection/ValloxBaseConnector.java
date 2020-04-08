@@ -15,17 +15,16 @@ package org.openhab.binding.vallox.internal.se.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.telegram.SendQueueItem;
 import org.openhab.binding.vallox.internal.se.telegram.Telegram;
@@ -44,11 +43,10 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxBaseConnector.class);
 
-    private final List<ValloxEventListener> listeners = new ArrayList<>();
+    private final List<ValloxEventListener> listeners = new CopyOnWriteArrayList<>();
     private final LinkedList<SendQueueItem> sendQueue = new LinkedList<>();
     protected final ArrayBlockingQueue<Byte> buffer = new ArrayBlockingQueue<>(1024);
 
-    protected @Nullable SerialPortManager portManager;
     protected ScheduledExecutorService scheduler;
     protected @Nullable OutputStream outputStream;
     protected @Nullable InputStream inputStream;
@@ -60,8 +58,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     protected boolean waitForAckByte = false;
     protected boolean suspendTraffic = false;
 
-    public ValloxBaseConnector(@Nullable SerialPortManager portManager, ScheduledExecutorService scheduler) {
-        this.portManager = portManager;
+    public ValloxBaseConnector(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
     }
 
@@ -71,7 +68,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * @param listener the listener to add
      */
     @Override
-    public synchronized void addListener(ValloxEventListener listener) {
+    public void addListener(ValloxEventListener listener) {
         if (!listeners.contains(listener)) {
             this.listeners.add(listener);
             logger.debug("Listener registered: {}", listener.toString());
@@ -84,7 +81,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * @param listner the listener to remove
      */
     @Override
-    public synchronized void removeListener(ValloxEventListener listener) {
+    public void removeListener(ValloxEventListener listener) {
         this.listeners.remove(listener);
         logger.debug("Listener removed: {}", listener.toString());
     }
@@ -98,6 +95,15 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     }
 
     /**
+     * Get this connectors {@link InputStream}
+     *
+     * @return {@link InputStream} of this connector
+     */
+    protected @Nullable InputStream getInputStream() {
+        return this.inputStream;
+    }
+
+    /**
      * Stop queue handler
      */
     @Override
@@ -105,6 +111,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
         if (sendQueueHandler != null) {
             sendQueueHandler.cancel(true);
             sendQueueHandler = null;
+            sendQueue.clear();
             logger.debug("Send queue handler stopped");
         }
     }
@@ -119,7 +126,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
             try {
                 listener.telegramReceived(telegram);
             } catch (Exception e) {
-                logger.error("Event listener invoking error: {}", e.getMessage(), e);
+                logger.debug("Event listener invoking error: {}", e.getMessage(), e);
             }
         }
     }
@@ -134,7 +141,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
             try {
                 listener.errorOccurred(error, exception);
             } catch (Exception e) {
-                logger.error("Event listener invoking error: {}", e.getMessage(), e);
+                logger.debug("Event listener invoking error: {}", e.getMessage(), e);
             }
         }
     }
@@ -247,13 +254,13 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      *
      * @param telegram the telegram to write
      */
-    @SuppressWarnings("null") // outputStream.flush()
     public void writeToOutputStream(Telegram telegram) {
+        OutputStream outputStream = this.outputStream;
         if (outputStream != null) {
             try {
                 outputStream.write(telegram.bytes);
                 outputStream.flush();
-                logger.debug("Wrote {}", telegram.toString());
+                logger.debug("Wrote {}", telegram);
             } catch (IOException e) {
                 sendErrorToListeners("Write to output stream failed, " + e.getMessage(), e);
             }

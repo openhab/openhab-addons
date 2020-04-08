@@ -29,7 +29,7 @@ public class IntegerChannel extends ValloxChannel {
      *
      * @param variable channel as byte
      */
-    public IntegerChannel(byte variable) {
+    public IntegerChannel(int variable) {
         super(variable);
     }
 
@@ -54,7 +54,7 @@ public class IntegerChannel extends ValloxChannel {
          *
          * @param variable channel as byte
          */
-        public Humidity(byte variable) {
+        public Humidity(int variable) {
             super(variable);
         }
 
@@ -84,7 +84,7 @@ public class IntegerChannel extends ValloxChannel {
          *
          * @param variable channel as byte
          */
-        public Counter(byte variable) {
+        public Counter(int variable) {
             super(variable);
         }
 

@@ -18,13 +18,13 @@
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
-				<label>Port</label>
+				<label>Serial Port</label>
 				<context>serial-port</context>
 				<description>Serial port to connect to</description>
 			</parameter>
 
 			<parameter name="panelNumber" type="integer" min="1" max="8" required="true">
-				<label>Panel number</label>
+				<label>Panel Number</label>
 				<description>This binding acts as control panel. Select a number for it from 1-8.</description>
 			</parameter>
 		</config-description>

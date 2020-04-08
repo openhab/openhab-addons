@@ -29,7 +29,7 @@
 			</parameter>
 
 			<parameter name="panelNumber" type="integer" min="1" max="8" required="true">
-				<label>Panel number</label>
+				<label>Panel Number</label>
 				<description>This binding acts as control panel. Select a number for it between 1-8.</description>
 			</parameter>
 		</config-description>

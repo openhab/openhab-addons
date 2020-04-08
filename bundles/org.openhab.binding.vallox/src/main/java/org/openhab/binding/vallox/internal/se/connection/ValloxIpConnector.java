@@ -13,12 +13,12 @@
 package org.openhab.binding.vallox.internal.se.connection;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.configuration.ValloxSEConfiguration;
 import org.slf4j.Logger;
@@ -33,12 +33,11 @@ import org.slf4j.LoggerFactory;
 public class ValloxIpConnector extends ValloxBaseConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxIpConnector.class);
-
-    private @Nullable Thread readerThread;
-    private Socket socket = new Socket();
+    private final Thread readerThread = new TelegramReader("binding.vallox.ValloxIpConnector");
+    private final Socket socket = new Socket();
 
     public ValloxIpConnector(ScheduledExecutorService scheduler) {
-        super(null, scheduler);
+        super(scheduler);
         logger.debug("Tcp Connection initialized");
     }
 
@@ -52,14 +51,13 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         }
         buffer.clear();
         panelNumber = config.getPanelAsByte();
-        socket = new Socket();
         socket.connect(new InetSocketAddress(config.tcpHost, config.tcpPort), ValloxSEConstants.CONNECTION_TIMEOUT);
         socket.setSoTimeout(ValloxSEConstants.SOCKET_READ_TIMEOUT);
         inputStream = socket.getInputStream();
         outputStream = socket.getOutputStream();
         logger.debug("Connected to {}:{}", config.tcpHost, config.tcpPort);
 
-        readerThread = new TelegramReader();
+        readerThread.setDaemon(true);
         readerThread.start();
         connected = true;
     }
@@ -67,38 +65,37 @@ public class ValloxIpConnector extends ValloxBaseConnector {
     /**
      * Close socket
      */
-    @SuppressWarnings("null") // readerThread .interrupt() and .join()
     @Override
     public void close() {
         super.close();
-        if (readerThread != null) {
-            logger.debug("Interrupting telegram listener");
-            readerThread.interrupt();
-            try {
-                readerThread.join();
-            } catch (InterruptedException e) {
-                // Do nothing
-            }
+        logger.debug("Interrupting telegram listener");
+        readerThread.interrupt();
+        try {
+            readerThread.join();
+        } catch (InterruptedException e) {
+            // Do nothing
         }
+
         try {
             socket.close();
         } catch (Exception e) {
             logger.debug("Exception closing connection: ", e);
         }
-        readerThread = null;
         connected = false;
-        logger.debug("Closed");
+        logger.debug("Connection closed");
     }
 
     /**
      * {@link Thread} implementation for reading telegrams
      *
-     * @author Miika Jukka
+     * @author Miika Jukka - Initial contribution
      */
-    @SuppressWarnings("null") // inputStream .available() and .read()
-    @NonNullByDefault
     private class TelegramReader extends Thread {
         boolean interrupted = false;
+
+        public TelegramReader(String name) {
+            super(name);
+        }
 
         @Override
         public void interrupt() {
@@ -109,6 +106,7 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         @Override
         public void run() {
             logger.debug("Data listener started");
+            InputStream inputStream = getInputStream();
             while (!interrupted && inputStream != null) {
                 try {
                     while (inputStream.available() > 0) {

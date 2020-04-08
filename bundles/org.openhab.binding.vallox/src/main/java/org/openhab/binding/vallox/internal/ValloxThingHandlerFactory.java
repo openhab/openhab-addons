@@ -28,6 +28,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.vallox.internal.se.handler.ValloxSEHandler;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -42,10 +44,17 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.vallox")
 public class ValloxThingHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_VALLOX_SE_IP, THING_TYPE_VALLOX_SE_SERIAL).collect(Collectors.toSet()));
+
+    @Activate
+    public ValloxThingHandlerFactory(@Reference SerialPortManager serialPortManager,
+            ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -59,14 +68,5 @@ public class ValloxThingHandlerFactory extends BaseThingHandlerFactory {
             return new ValloxSEHandler(thing, serialPortManager);
         }
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }

@@ -35,8 +35,8 @@ public class BooleanChannel extends ValloxChannel {
      * @param bitMask the bit mask
      * @param parentChannel the parent channel
      */
-    public BooleanChannel(byte bitMask, String parentChannel) {
-        this.bitMask = bitMask;
+    public BooleanChannel(int bitMask, String parentChannel) {
+        this.bitMask = (byte) bitMask;
         this.parentChannel = parentChannel;
     }
 
@@ -78,7 +78,7 @@ public class BooleanChannel extends ValloxChannel {
          * @param bitMask the bit mask
          * @param parentChannel the parent channel
          */
-        public AdjustmentInterval(byte bitMask, String parentChannel) {
+        public AdjustmentInterval(int bitMask, String parentChannel) {
             super(bitMask, parentChannel);
         }
 

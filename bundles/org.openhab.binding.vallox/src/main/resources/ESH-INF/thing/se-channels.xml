@@ -89,8 +89,8 @@
 		<channels>
 			<channel id="filterGuardIndicator" typeId="seFilterGuardIndicator" />
 			<channel id="serviceReminderIndicator" typeId="seServiceReminderIndicator" />
-			<channel id="maintenanceMonthCounter" typeId="seMaintenanceMonthCounter" />
-			<channel id="serviceReminder" typeId="seServiceReminder" />
+			<channel id="serviceMonthCounter" typeId="seServiceMonthCounter" />
+			<channel id="serviceReminderMonths" typeId="seServiceReminderMonths" />
 		</channels>
 	</channel-group-type>
 
@@ -115,21 +115,21 @@
 
 	<channel-type id="seFanSpeedMax">
 		<item-type>Number</item-type>
-		<label>Maximum fan speed</label>
+		<label>Maximum Fan Speed</label>
 		<category>Fan</category>
 		<state min="1" max="8" step="1" pattern="%d" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seFanSpeedMin">
 		<item-type>Number</item-type>
-		<label>Minimum fan speed</label>
+		<label>Minimum Fan Speed</label>
 		<category>Fan</category>
 		<state min="1" max="8" step="1" pattern="%d" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seTempInside">
 		<item-type>Number</item-type>
-		<label>Inside temperature</label>
+		<label>Inside Temperature</label>
 		<description>Current temperature inside the building.</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
@@ -137,7 +137,7 @@
 
 	<channel-type id="seTempOutside">
 		<item-type>Number</item-type>
-		<label>Outside temperature</label>
+		<label>Outside Temperature</label>
 		<description>Current temperature outside the building.</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
@@ -145,7 +145,7 @@
 
 	<channel-type id="seTempExhaust">
 		<item-type>Number</item-type>
-		<label>Exhaust temperature</label>
+		<label>Exhaust Temperature</label>
 		<description>Current temperature of the air flow exiting the building.</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
@@ -153,7 +153,7 @@
 
 	<channel-type id="seTempIncoming">
 		<item-type>Number</item-type>
-		<label>Incoming temperature</label>
+		<label>Incoming Temperature</label>
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
@@ -161,19 +161,19 @@
 
 	<channel-type id="seInEfficiency">
 		<item-type>Number</item-type>
-		<label>Incoming efficiency</label>
+		<label>Incoming Efficiency</label>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seOutEfficiency">
 		<item-type>Number</item-type>
-		<label>Outgoing efficiency</label>
+		<label>Outgoing Efficiency</label>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seAverageEfficiency">
 		<item-type>Number</item-type>
-		<label>Average efficiency</label>
+		<label>Average Efficiency</label>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 
@@ -183,13 +183,13 @@
 		<state readOnly="false"></state>
 	</channel-type>
 
-	<channel-type id="seCo2AdjustState">
+	<channel-type id="seCo2AdjustState" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Co2 Adjust State</label>
 		<state readOnly="false"></state>
 	</channel-type>
 
-	<channel-type id="seHumidityAdjustState">
+	<channel-type id="seHumidityAdjustState" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Humidity Adjust State</label>
 		<state readOnly="false"></state>
@@ -197,29 +197,27 @@
 
 	<channel-type id="sePostHeatingState">
 		<item-type>Switch</item-type>
-		<label>Post heating State</label>
+		<label>Post Heating State</label>
 		<state readOnly="false"></state>
 	</channel-type>
 
-	<!-- ADVANCED ================================================================ -->
-
 	<channel-type id="seDcFanInputAdjustment" advanced="true">
 		<item-type>Number</item-type>
-		<label>Input fan speed</label>
+		<label>Input Fan Speed</label>
 		<description>Adjust input fan speed in scale of 0-100%</description>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seDcFanOutputAdjustment" advanced="true">
 		<item-type>Number</item-type>
-		<label>Output fan speed</label>
+		<label>Output Fan Speed</label>
 		<description>Adjust output fan speed in scale of 0-100%</description>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seHrcBypassThreshold" advanced="true">
 		<item-type>Number</item-type>
-		<label>Heat recovery cell bypass threshold</label>
+		<label>Heat Recovery Cell Bypass Threshold</label>
 		<description>Heat recovery cell bypass set point temperature</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
@@ -227,7 +225,7 @@
 
 	<channel-type id="seInputFanStopThreshold" advanced="true">
 		<item-type>Number</item-type>
-		<label>Input fan Stopping threshold</label>
+		<label>Input Fan Stop Threshold</label>
 		<description>Input fan stops if incoming temperature falls below this.</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
@@ -235,14 +233,14 @@
 
 	<channel-type id="sePostHeatingSetPoint" advanced="false">
 		<item-type>Number</item-type>
-		<label>Post heating set point</label>
+		<label>Post Heating Set Point</label>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="sePreHeatingSetPoint" advanced="true">
 		<item-type>Number</item-type>
-		<label>Pre heating set point</label>
+		<label>Pre Heating Set Point</label>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="false"></state>
 	</channel-type>
@@ -250,24 +248,28 @@
 	<channel-type id="seFilterGuardIndicator" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Filter Guard Indicator</label>
+		<description>Indicate filter might be clogged. Check filter!</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="sePostHeatingIndicator" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Post heating indicator</label>
+		<label>Post Heating Indicator</label>
+		<description>Indicate that heating is active</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seFaultIndicator" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fault indicator</label>
+		<label>Fault Indicator</label>
+		<description>Indicate that fault is active</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="seServiceReminderIndicator" advanced="true">
+	<channel-type id="seServiceReminderIndicator">
 		<item-type>Switch</item-type>
-		<label>Service reminder indicator</label>
+		<label>Service Reminder Indicator</label>
+		<description>Indicate that maintenance is needed</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -280,21 +282,21 @@
 
 	<channel-type id="seBasicHumidityLevel" advanced="true">
 		<item-type>Number</item-type>
-		<label>Basic humidity level</label>
+		<label>Basic Humidity Level</label>
 		<description>When humidity adjust on ON, this is the target humidity what the machine tries to achieve</description>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seHumiditySensor1" advanced="true">
 		<item-type>Number</item-type>
-		<label>Humidity sensor 1</label>
+		<label>Humidity Sensor 1</label>
 		<description>Relative Humidity measured from sensor 1</description>
 		<state min="0" max="255" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seHumiditySensor2" advanced="true">
 		<item-type>Number</item-type>
-		<label>Humidity sensor 2</label>
+		<label>Humidity Sensor 2</label>
 		<description>Relative Humidity measured from sensor 2</description>
 		<state min="0" max="255" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
@@ -302,37 +304,15 @@
 	<channel-type id="seCo2" advanced="true">
 		<item-type>Number</item-type>
 		<label>Measured Co2</label>
+		<description>Highest measured Co2 value from sensor(s)</description>
 		<state min="0" max="2000" step="1" pattern="%d ppm" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="seCo2High" advanced="true">
-		<item-type>Number</item-type>
-		<label>High byte of Co2 value</label>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="seCo2Low" advanced="true">
-		<item-type>Number</item-type>
-		<label>Low byte of Co2 value</label>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seCo2SetPoint" advanced="true">
 		<item-type>Number</item-type>
-		<label>Set point for Co2 adjustment</label>
+		<label>Co2 Setpoint</label>
+		<description>Setpoint for Co2 adjustment</description>
 		<state min="0" max="2000" step="1" pattern="%d ppm" readOnly="false"></state>
-	</channel-type>
-
-	<channel-type id="seCo2SetPointHigh" advanced="true">
-		<item-type>Number</item-type>
-		<label>High byte of Co2 set point</label>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="seCo2SetPointLow" advanced="true">
-		<item-type>Number</item-type>
-		<label>Low byte of Co2 set point</label>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seAdjustmentInterval" advanced="true">
@@ -367,6 +347,7 @@
 	<channel-type id="seCascadeAdjust" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Cascade adjust</label>
+		<description>Adjust heating depending on exhaust air temperature instead of incoming air temperature</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
@@ -378,11 +359,11 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="seServiceReminder" advanced="true">
+	<channel-type id="seServiceReminderMonths" advanced="true">
 		<item-type>Number</item-type>
-		<label>Service reminder</label>
-		<description>Informs about the next maintenance time. Remaining months, descending.</description>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+		<label>Service Reminder</label>
+		<description>Set the time between service reminder. Months</description>
+		<state min="0" max="12" step="1" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="sePostHeatingOn" advanced="true">
@@ -393,7 +374,7 @@
 
 	<channel-type id="seDamperMotorPosition" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Damper motor position</label>
+		<label>Damper Motor Position</label>
 		<description>Indicate if heat recovery cell is bypassed</description>
 		<state readOnly="true">
 		</state>
@@ -401,46 +382,46 @@
 
 	<channel-type id="seFaultSignalRelayClosed" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fault signal relay</label>
+		<label>Fault Signal Relay</label>
 		<description>Fault signal relay closed</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seSupplyFanOff" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Stop supply fan</label>
+		<label>Stop Supply Fan</label>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="sePreHeatingOn" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Preheating state</label>
+		<label>Pre Heating State</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seExhaustFanOff" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Stop exhaust fan</label>
+		<label>Stop Exhaust Fan</label>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seFirePlaceBoosterSwitch" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fire place booster state</label>
+		<label>Fire Place Booster State</label>
 		<description>Indicates if fire booster switch is turned on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seIncomingCurrent" advanced="true">
 		<item-type>Number</item-type>
-		<label>Incoming current</label>
+		<label>Incoming Current</label>
 		<description>Incoming current message in mA if remote control is activated</description>
 		<state min="0" max="255" step="1" pattern="%d mA" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seLastErrorNumber" advanced="true">
 		<item-type>Number</item-type>
-		<label>Last error</label>
+		<label>Last Error Number</label>
 		<description>Number of the alarm type that occurred last</description>
 		<state readOnly="true">
 		</state>
@@ -448,20 +429,20 @@
 
 	<channel-type id="seInstalledCo2Sensors" advanced="true">
 		<item-type>String</item-type>
-		<label>Installed Co2 sensors</label>
+		<label>Installed Co2 Sensors</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="sePostHeatingOnCounter" advanced="true">
 		<item-type>Number</item-type>
-		<label>Post heating ON counter</label>
+		<label>Post Heating ON Counter</label>
 		<description>Time how long post heating will be ON. In seconds</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="sePostHeatingOffCounter" advanced="true">
 		<item-type>Number</item-type>
-		<label>Post heating OFF timer</label>
+		<label>Post Heating OFF Counter</label>
 		<description>Time how long post heating will be OFF. In seconds</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -496,7 +477,7 @@
 
 	<channel-type id="seSlaveMasterIndicator" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Slave/Master indicator</label>
+		<label>Slave/Master Indicator</label>
 		<description>Indicates if slave or master setting is used. OFF=Slave</description>
 		<state readOnly="true">
 		</state>
@@ -504,43 +485,43 @@
 
 	<channel-type id="sePreHeatingState" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Preheating State</label>
-		<description>Preheating On/Off</description>
+		<label>Pre Heating State</label>
+		<description>Pre heating On/Off</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seRemoteControlOn" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Remote control</label>
+		<label>Remote Control</label>
 		<description>Indicates if remote control is used</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seActivateFirePlaceBooster" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fire place booster</label>
+		<label>Fire Place Booster</label>
 		<description>Activate fire place booster</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seFirePlaceBoosterOn" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fire place booster state</label>
+		<label>Fireplace Booster State</label>
 		<description>Indicates fire place booster state</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seFirePlaceBoosterCounter" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fire place booster counter</label>
+		<label>Fireplace Booster Counter</label>
 		<description>How long fire place booster will be on. In minutes</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="seMaintenanceMonthCounter" advanced="true">
+	<channel-type id="seServiceMonthCounter" advanced="true">
 		<item-type>Number</item-type>
-		<label>Maintenance month counter</label>
-		<description>Indicates how many months to maintenance</description>
+		<label>Maintenance Month Counter</label>
+		<description>Informs about the next maintenance time. Remaining months, descending</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

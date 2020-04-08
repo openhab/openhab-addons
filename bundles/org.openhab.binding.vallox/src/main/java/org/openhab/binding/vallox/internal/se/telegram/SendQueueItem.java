@@ -24,7 +24,7 @@ import org.openhab.binding.vallox.internal.se.telegram.Telegram.TelegramState;
 @NonNullByDefault
 public class SendQueueItem {
 
-    private Telegram telegram;
+    private final Telegram telegram;
     private int retryCount;
 
     /**
@@ -39,7 +39,6 @@ public class SendQueueItem {
         } else {
             this.retryCount = 1;
         }
-        ;
     }
 
     /**
@@ -67,7 +66,7 @@ public class SendQueueItem {
         if (retryCount < 1) {
             return false;
         }
-        retryCount = retryCount - 1;
+        retryCount--;
         return true;
     }
 

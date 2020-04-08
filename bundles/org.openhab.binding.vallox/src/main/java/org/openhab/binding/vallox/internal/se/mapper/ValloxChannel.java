@@ -36,7 +36,7 @@ public abstract class ValloxChannel {
      * Create new instance with zero byte
      */
     public ValloxChannel() {
-        this((byte) 0x00);
+        this(0x00);
     }
 
     /**
@@ -44,8 +44,8 @@ public abstract class ValloxChannel {
      *
      * @param variable channels byte value
      */
-    public ValloxChannel(byte variable) {
-        this.variable = variable;
+    public ValloxChannel(int variable) {
+        this.variable = (byte) variable;
     }
 
     /**

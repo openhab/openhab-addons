@@ -29,7 +29,7 @@ public class StringChannel extends ValloxChannel {
      *
      * @param variable channel as byte
      */
-    public StringChannel(byte variable) {
+    public StringChannel(int variable) {
         super(variable);
     }
 

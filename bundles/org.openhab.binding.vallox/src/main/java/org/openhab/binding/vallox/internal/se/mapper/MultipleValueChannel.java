@@ -32,7 +32,7 @@ public class MultipleValueChannel extends ValloxChannel {
      * @param variable channel as byte
      * @param channelList the list of sub channels
      */
-    public MultipleValueChannel(byte variable, Collection<String> subChannels) {
+    public MultipleValueChannel(int variable, Collection<String> subChannels) {
         super(variable);
         this.subChannels = subChannels;
     }

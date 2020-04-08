@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vallox.internal.se.mapper;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
@@ -30,7 +32,7 @@ public class TemperatureChannel extends ValloxChannel {
      *
      * @param variable channel as byte
      */
-    public TemperatureChannel(byte variable) {
+    public TemperatureChannel(int variable) {
         super(variable);
     }
 
@@ -42,14 +44,6 @@ public class TemperatureChannel extends ValloxChannel {
 
     @Override
     public byte convertFromState(byte state) {
-        byte value = 100;
-        for (int i = 0; i < 255; i++) {
-            byte valueFromTable = ValloxSEConstants.TEMPERATURE_MAPPING[i];
-            if (valueFromTable >= state) {
-                value = (byte) i;
-                break;
-            }
-        }
-        return value;
+        return (byte) Arrays.binarySearch(ValloxSEConstants.TEMPERATURE_MAPPING, state);
     }
 }

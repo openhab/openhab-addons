@@ -30,7 +30,7 @@ public class FanChannel extends ValloxChannel {
      *
      * @param variable channel as byte
      */
-    public FanChannel(byte variable) {
+    public FanChannel(int variable) {
         super(variable);
     }
 
