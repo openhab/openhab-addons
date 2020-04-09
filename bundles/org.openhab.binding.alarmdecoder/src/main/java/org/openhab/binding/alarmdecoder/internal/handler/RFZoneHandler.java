@@ -111,7 +111,7 @@ public class RFZoneHandler extends ADThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Does not yet accept any commands
+        // Does not accept any commands
     }
 
     public void handleUpdate(int data) {
@@ -121,7 +121,6 @@ public class RFZoneHandler extends ADThingHandler {
         updateState(CHANNEL_RF_LOWBAT, (data & RFXMessage.BIT_LOWBAT) == 0 ? OnOffType.OFF : OnOffType.ON);
         updateState(CHANNEL_RF_SUPERVISION, (data & RFXMessage.BIT_SUPER) == 0 ? OnOffType.OFF : OnOffType.ON);
 
-        // TODO: confirm these don't have OPEN and CLOSED reversed
         updateState(CHANNEL_RF_LOOP1, (data & RFXMessage.BIT_LOOP1) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
         updateState(CHANNEL_RF_LOOP2, (data & RFXMessage.BIT_LOOP2) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
         updateState(CHANNEL_RF_LOOP3, (data & RFXMessage.BIT_LOOP3) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN);

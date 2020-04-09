@@ -61,7 +61,7 @@ The **ipbridge** thing supports a TCP connection to an Alarm Decoder device such
 Thing config file example:
 
 ```
-Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10003, discovery=true ] {
+Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, discovery=true ] {
   Thing ...
   Thing ...
 }

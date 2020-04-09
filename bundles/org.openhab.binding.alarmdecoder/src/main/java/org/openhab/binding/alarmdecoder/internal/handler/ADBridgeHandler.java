@@ -109,7 +109,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             }
         } catch (IOException e) {
             logger.info("Exception while sending command: {}", e.getMessage());
-            // TODO: close connection so it will be re-opened?
+            // TODO: close or flag connection so it will be re-opened?
             // disconnect();
         }
     }
