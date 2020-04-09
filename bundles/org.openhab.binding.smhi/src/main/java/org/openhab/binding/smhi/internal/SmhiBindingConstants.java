@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.smhi.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link SmhiBindingConstants} class defines common constants, which are
@@ -55,15 +55,16 @@ public class SmhiBindingConstants {
     public static final String PRECIPITATION_CATEGORY = "pcat";
     public static final String WEATHER_SYMBOL = "wsymb2";
 
-    public static final List<String> CHANNEL_IDS = Collections.unmodifiableList(
-            Stream.of(PRESSURE, TEMPERATURE, VISIBILITY, WIND_DIRECTION, WIND_SPEED, RELATIVE_HUMIDITY,
-                    THUNDER_PROBABILITY, TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER, HIGH_CLOUD_COVER,
-                    GUST, PRECIPITATION_MIN, PRECIPITATION_MAX, PRECIPITATION_MEAN, PRECIPITATION_MEDIAN,
-                    PERCENT_FROZEN, PRECIPITATION_CATEGORY, WEATHER_SYMBOL).collect(Collectors.toList())
-    );
+    public static final List<String> CHANNEL_IDS = Collections
+            .unmodifiableList(Stream
+                    .of(PRESSURE, TEMPERATURE, VISIBILITY, WIND_DIRECTION, WIND_SPEED, RELATIVE_HUMIDITY,
+                            THUNDER_PROBABILITY, TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER,
+                            HIGH_CLOUD_COVER, GUST, PRECIPITATION_MIN, PRECIPITATION_MAX, PRECIPITATION_MEAN,
+                            PRECIPITATION_MEDIAN, PERCENT_FROZEN, PRECIPITATION_CATEGORY, WEATHER_SYMBOL)
+                    .collect(Collectors.toList()));
 
     public static final String BASE_URL = "https://opendata-download-metfcst.smhi.se";
     public static final String APPROVED_TIME_URL = BASE_URL + "/api/category/pmp3g/version/2/approvedtime.json";
-    public static final String POINT_FORECAST_URL = BASE_URL +
-            "/api/category/pmp3g/version/2/geotype/point/lon/%.6f/lat/%.6f/data.json";
+    public static final String POINT_FORECAST_URL = BASE_URL
+            + "/api/category/pmp3g/version/2/geotype/point/lon/%.6f/lat/%.6f/data.json";
 }

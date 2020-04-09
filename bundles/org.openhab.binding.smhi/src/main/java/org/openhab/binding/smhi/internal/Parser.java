@@ -13,13 +13,14 @@
 
 package org.openhab.binding.smhi.internal;
 
-import com.google.gson.*;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.*;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.*;
 
 /**
  * Class with static methods for parsing json strings returned from Smhi
@@ -33,6 +34,7 @@ public class Parser {
 
     /**
      * Parse a json string received from Smhi containing forecasts.
+     *
      * @param json A json string
      * @return A {@link TimeSeries} object
      */
@@ -54,6 +56,7 @@ public class Parser {
 
     /**
      * Parse a json string containing the approved time and reference time of the latest forecast
+     *
      * @param json A json string
      * @return {@link ZonedDateTime} of the reference time
      */
@@ -65,6 +68,7 @@ public class Parser {
 
     /**
      * Parse a single forecast, i.e. a forecast for a specific time.
+     *
      * @param object
      * @return
      */

@@ -13,12 +13,12 @@
 
 package org.openhab.binding.smhi.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A collection class with utility methods to retrieve forecasts pertaining to a specified time.

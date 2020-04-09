@@ -13,13 +13,12 @@
 
 package org.openhab.binding.smhi.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A class containing a forecast for a specific point in time.
@@ -44,7 +43,9 @@ public class Forecast implements Comparable<Forecast> {
         return parameters;
     }
 
-    public @Nullable BigDecimal getParameter(String parameter) { return parameters.get(parameter); }
+    public @Nullable BigDecimal getParameter(String parameter) {
+        return parameters.get(parameter);
+    }
 
     @Override
     public int compareTo(Forecast o) {

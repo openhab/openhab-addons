@@ -13,18 +13,18 @@
 
 package org.openhab.binding.smhi.internal;
 
+import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
+
+import java.time.ZonedDateTime;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.ZonedDateTime;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
-import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 /**
  * Class for handling http requests to Smhi's API and return values.
@@ -46,6 +46,7 @@ public class SmhiConnector {
 
     /**
      * Get the reference time (the time when the forecast starts) of the latest published forecast
+     * 
      * @return A {@link ZonedDateTime} with the time of the latest forecast.
      */
     public ZonedDateTime getReferenceTime() {
@@ -63,6 +64,7 @@ public class SmhiConnector {
 
     /**
      * Get a forecast for the specified WGS84 coordinates.
+     * 
      * @param lat Latitude
      * @param lon Longitude
      * @return A {@link TimeSeries} object containing the published forecasts.

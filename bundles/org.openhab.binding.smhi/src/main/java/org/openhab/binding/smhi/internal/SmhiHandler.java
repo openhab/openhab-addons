@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.smhi.internal;
 
+import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
+
+import java.math.BigDecimal;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -27,15 +36,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 /**
  * The {@link SmhiHandler} is responsible for handling commands, which are
@@ -98,7 +98,7 @@ public class SmhiHandler extends BaseThingHandler {
         }
         connection = new SmhiConnector(httpClient);
 
-        //Check which channel groups are selected in the config.
+        // Check which channel groups are selected in the config.
         List<Channel> channels = new ArrayList<>();
         channels.addAll(createChannels());
         updateThing(editThing().withChannels(channels).build());
@@ -154,6 +154,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Update channels with new forecast data.
+     * 
      * @param timeSeries A {@link TimeSeries} object containing forecasts.
      */
     private void updateChannels(TimeSeries timeSeries) {
@@ -248,6 +249,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Checks if it is a new hour.
+     * 
      * @return true if the current time is more than one hour after currentHour, otherwise false.
      */
     private boolean isItNewHour() {
@@ -256,6 +258,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Call Smhi's endpoint to check for the time of the last forecast, to see if a new one is available.
+     * 
      * @return true if the time of the latest forecast is equal to or after currentHour, otherwise false
      */
     private boolean isForecastUpdated() {
@@ -279,6 +282,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Get the current time rounded down to hour
+     * 
      * @return A {@link ZonedDateTime} corresponding to the last even hour
      */
     private ZonedDateTime calculateCurrentHour() {
@@ -292,6 +296,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Get the current time rounded down to day
+     * 
      * @return A {@link ZonedDateTime} corresponding to the last even day.
      */
     private ZonedDateTime calculateCurrentDay() {
@@ -304,6 +309,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     /**
      * Creates channels based on selections in thing configuration
+     * 
      * @return
      */
     private List<Channel> createChannels() {
@@ -321,29 +327,24 @@ public class SmhiHandler extends BaseThingHandler {
             days.addAll(config.dailyForecasts);
         }
 
-
         for (int i : hours) {
             ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "hour_" + i);
             CHANNEL_IDS.forEach(id -> {
-                    ChannelUID channelUID = new ChannelUID(groupUID, id);
-                    Channel channel = ChannelBuilder.create(channelUID, "Number")
-                            .withType(new ChannelTypeUID(BINDING_ID, id))
-                            .build();
-                    channels.add(channel);
-                }
-            );
+                ChannelUID channelUID = new ChannelUID(groupUID, id);
+                Channel channel = ChannelBuilder.create(channelUID, "Number")
+                        .withType(new ChannelTypeUID(BINDING_ID, id)).build();
+                channels.add(channel);
+            });
         }
 
         for (int i : days) {
             ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "day_" + i);
             CHANNEL_IDS.forEach(id -> {
-                        ChannelUID channelUID = new ChannelUID(groupUID, id);
-                        Channel channel = ChannelBuilder.create(channelUID, "Number")
-                                .withType(new ChannelTypeUID(BINDING_ID, id))
-                                .build();
-                        channels.add(channel);
-                    }
-            );
+                ChannelUID channelUID = new ChannelUID(groupUID, id);
+                Channel channel = ChannelBuilder.create(channelUID, "Number")
+                        .withType(new ChannelTypeUID(BINDING_ID, id)).build();
+                channels.add(channel);
+            });
         }
         return channels;
     }

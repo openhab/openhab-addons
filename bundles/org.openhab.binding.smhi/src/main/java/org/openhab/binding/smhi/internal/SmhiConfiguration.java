@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.smhi.internal;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SmhiConfiguration} class contains fields mapping thing configuration parameters.
@@ -24,6 +24,8 @@ import java.util.List;
 public class SmhiConfiguration {
     public double latitude;
     public double longitude;
-    @Nullable public List<Integer> hourlyForecasts;
-    @Nullable public List<Integer> dailyForecasts;
+    @Nullable
+    public List<Integer> hourlyForecasts;
+    @Nullable
+    public List<Integer> dailyForecasts;
 }
