@@ -27,10 +27,13 @@ public class TeslaBindingConstants {
     // REST URI constants
     public static final String API_NAME = "Tesla Client API";
     public static final String API_VERSION = "api/1/";
+    public static final String BATTERY_ID = "battery_id";
     public static final String PATH_COMMAND = "command/{cmd}";
     public static final String PATH_DATA_REQUEST = "data_request/{cmd}";
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
+    public static final String POWERWALLS = "powerwalls";
+    public static final String PRODUCTS = "products";
     public static final String URI_ACCESS_TOKEN = "oauth/token";
     public static final String URI_EVENT = "https://streaming.vn.teslamotors.com/stream/";
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com/";
@@ -77,6 +80,7 @@ public class TeslaBindingConstants {
     public static final ThingTypeUID THING_TYPE_MODEL3 = new ThingTypeUID(BINDING_ID, "model3");
     public static final ThingTypeUID THING_TYPE_MODELX = new ThingTypeUID(BINDING_ID, "modelx");
     public static final ThingTypeUID THING_TYPE_MODELY = new ThingTypeUID(BINDING_ID, "modely");
+    public static final ThingTypeUID THING_TYPE_POWERWALL2 = new ThingTypeUID(BINDING_ID, "powerwall2");
 
     public enum EventKeys {
         timestamp,

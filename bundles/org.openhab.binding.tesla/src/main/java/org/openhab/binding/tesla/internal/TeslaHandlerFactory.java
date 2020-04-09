@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.TeslaVehicleHandler;
+import org.openhab.binding.tesla.internal.handler.TeslaPowerwallHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -40,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
 public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_ACCOUNT, THING_TYPE_MODELS, THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY)
+            .of(THING_TYPE_ACCOUNT, THING_TYPE_MODELS, THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY, THING_TYPE_POWERWALL2)
             .collect(Collectors.toSet());
 
     @Override
@@ -54,6 +55,8 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             return new TeslaAccountHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_POWERWALL2)) {
+            return new TeslaPowerwallHandler(thing);
         } else {
             return new TeslaVehicleHandler(thing);
         }

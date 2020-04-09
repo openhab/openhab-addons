@@ -54,6 +54,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.discovery.TeslaVehicleDiscoveryService;
+import org.openhab.binding.tesla.internal.protocol.Powerwall;
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
 import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
 import org.openhab.binding.tesla.internal.protocol.TokenRequestRefreshToken;
@@ -89,12 +90,13 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     private final Client teslaClient = ClientBuilder.newClient();
     private final WebTarget teslaTarget = teslaClient.target(URI_OWNERS);
     private final WebTarget tokenTarget = teslaTarget.path(URI_ACCESS_TOKEN);
+    final WebTarget productsTarget = teslaTarget.path(API_VERSION).path(PRODUCTS);    
     final WebTarget vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
     final WebTarget vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
     final WebTarget dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
     final WebTarget commandTarget = vehicleTarget.path(PATH_COMMAND);
     final WebTarget wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
-
+    final WebTarget powerwallsTarget = teslaTarget.path(API_VERSION).path(POWERWALLS);
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
 
@@ -203,19 +205,20 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         String authHeader = getAuthHeader();
 
         if (authHeader != null) {
-            // get a list of vehicles
-            Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+            // get a list of products
+            Response response = productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header("Authorization", authHeader).get();
 
-            logger.debug("Querying the vehicle: Response: {}:{}", response.getStatus(), response.getStatusInfo());
+            logger.debug("Querying the products: Response: {}:{}", response.getStatus(), response.getStatusInfo());
 
             if (!checkResponse(response, true)) {
-                logger.error("An error occurred while querying the vehicle");
+                logger.error("An error occurred while querying the products");
                 return null;
             }
 
             JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
             Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
+            Powerwall[] powerwallArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Powerwall[].class);
 
             for (Vehicle vehicle : vehicleArray) {
                 String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget);
@@ -514,6 +517,13 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             this.target = target;
         }
 
+        public Request(TeslaPowerwallHandler handler, String request, String payLoad, WebTarget target) {
+            this.handler = handler;
+            this.request = request;
+            this.payLoad = payLoad;
+            this.target = target;
+        }
+
         @Override
         public void run() {
             try {
@@ -535,6 +545,11 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad,
             WebTarget target) {
         return new Request(teslaVehicleHandler, command, payLoad, target);
+    }
+
+    public Request newRequest(TeslaPowerwallHandler teslaPowerwallHandler, String command, String payLoad,
+            WebTarget target) {
+        return new Request(teslaPowerwallHandler, command, payLoad, target);
     }
 
     @Override
