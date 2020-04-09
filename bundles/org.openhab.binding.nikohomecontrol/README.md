@@ -290,7 +290,7 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, password="
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
     blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
     thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
-    electricitymeter 5 [ electricityMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
+    electricitymeter 6 [ electricityMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
