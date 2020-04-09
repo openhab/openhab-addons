@@ -122,13 +122,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * @param telegram the telegram to send
      */
     public void sendTelegramToListeners(Telegram telegram) {
-        for (ValloxEventListener listener : listeners) {
-            try {
-                listener.telegramReceived(telegram);
-            } catch (Exception e) {
-                logger.debug("Event listener invoking error: {}", e.getMessage(), e);
-            }
-        }
+        listeners.forEach(listener -> listener.telegramReceived(telegram));
     }
 
     /**
@@ -137,13 +131,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * @param error the error to send
      */
     public void sendErrorToListeners(String error, @Nullable Exception exception) {
-        for (ValloxEventListener listener : listeners) {
-            try {
-                listener.errorOccurred(error, exception);
-            } catch (Exception e) {
-                logger.debug("Event listener invoking error: {}", e.getMessage(), e);
-            }
-        }
+        listeners.forEach(listener -> listener.errorOccurred(error, exception));
     }
 
     /**
@@ -206,11 +194,10 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      *
      * @param telegram the telegram to put to queue
      */
-    @SuppressWarnings("null") // sendQueueHandler.isCancelled()
     @Override
     public void sendTelegram(Telegram telegram) {
         sendQueue.add(new SendQueueItem(telegram));
-        if (sendQueueHandler == null || sendQueueHandler.isCancelled()) {
+        if (sendQueueHandler == null || (sendQueueHandler != null && sendQueueHandler.isCancelled())) {
             sendQueueHandler = scheduler.scheduleWithFixedDelay(this::handleSendQueue, 0, 500, TimeUnit.MILLISECONDS);
             logger.debug("Send queue handler started");
         }
@@ -254,7 +241,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      *
      * @param telegram the telegram to write
      */
-    public void writeToOutputStream(Telegram telegram) {
+    private void writeToOutputStream(Telegram telegram) {
         OutputStream outputStream = this.outputStream;
         if (outputStream != null) {
             try {
