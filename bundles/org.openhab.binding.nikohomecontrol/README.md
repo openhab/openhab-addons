@@ -290,7 +290,7 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, password="
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
     blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
     thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
-    electricitymeter 6 [ electricityMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
+    electricitymeter 6 [ energyMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
@@ -313,7 +313,7 @@ Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:mode"}      
 Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"}   # Get and set target temperature in °C
 Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime} # Get and set the overrule time
 Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand}       # Get the current heating/cooling demand
-Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:electricitymeter:nhc2:6:power"}   # Get current power consumption
+Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6:power"}   # Get current power consumption
 ```
 
 .sitemap:
