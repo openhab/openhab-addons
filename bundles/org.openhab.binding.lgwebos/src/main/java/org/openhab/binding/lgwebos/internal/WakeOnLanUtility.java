@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -26,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.net.exec.ExecUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +40,7 @@ public class WakeOnLanUtility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WakeOnLanUtility.class);
     private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
+    private static final int CMD_TIMEOUT_MS = 1000;
 
     private static String COMMAND;
     static {
@@ -63,42 +63,26 @@ public class WakeOnLanUtility {
      */
     public static @Nullable String getMACAddress(String hostName) {
         String cmd = String.format(COMMAND, hostName);
-        LOGGER.debug("cmd: {}", cmd);
-        try {
-            Process proc = Runtime.getRuntime().exec(cmd);
-            int returnCode = proc.waitFor();
-            String s;
-            StringBuilder builder = new StringBuilder();
-            BufferedReader input = new BufferedReader(
-                    new InputStreamReader(returnCode == 0 ? proc.getInputStream() : proc.getErrorStream()));
-            while ((s = input.readLine()) != null) {
-                builder.append(s);
+        String response = ExecUtil.executeCommandLineAndWaitResponse(cmd, CMD_TIMEOUT_MS);
+        Matcher matcher = MAC_REGEX.matcher(response);
+        String macAddress = null;
+
+        while (matcher.find()) {
+            String group = matcher.group();
+
+            if (group.length() == 17) {
+                macAddress = group;
+                break;
             }
-
-            if (returnCode != 0) {
-                LOGGER.debug("{} failed with error: {}", cmd, builder.toString());
-            } else {
-                Matcher matcher = MAC_REGEX.matcher(builder.toString());
-                String macAddress = null;
-
-                while (matcher.find()) {
-                    String group = matcher.group();
-
-                    if (group.length() == 17) {
-                        macAddress = group;
-                        break;
-                    }
-                }
-
-                if (macAddress != null) {
-                    LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
-                    return macAddress;
-                }
-            }
-        } catch (IOException | InterruptedException e) {
-            LOGGER.debug("Problem executing command {} to retrieve MAC address {}: {}", cmd, hostName, e.getMessage());
         }
-        return null;
+
+        if (macAddress != null) {
+            LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
+        } else {
+            LOGGER.debug("Problem executing command {} to retrieve MAC address for {}: {}", cmd, hostName, response);
+        }
+        return macAddress;
+
     }
 
     /**
