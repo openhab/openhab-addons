@@ -67,6 +67,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
     protected boolean discovery;
     protected boolean panelReadyReceived = false;
     protected volatile @Nullable Date lastReceivedTime;
+    protected volatile boolean writeException;
 
     protected @Nullable ScheduledFuture<?> connectionCheckJob;
     protected @Nullable ScheduledFuture<?> connectRetryJob;
@@ -110,8 +111,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             }
         } catch (IOException e) {
             logger.info("Exception while sending command: {}", e.getMessage());
-            // TODO: close or flag connection so it will be re-opened?
-            // disconnect();
+            writeException = true;
         }
     }
 

@@ -80,6 +80,7 @@ public class IPBridgeHandler extends ADBridgeHandler {
 
         try {
             disconnect(); // make sure we are disconnected
+            writeException = false;
             if (tcpHostName != null && tcpPort > 0 && tcpPort < 65536) {
                 socket = new Socket(tcpHostName, tcpPort);
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -117,13 +118,16 @@ public class IPBridgeHandler extends ADBridgeHandler {
         logger.trace("Connection check job running");
 
         if (msgReaderThread != null && !msgReaderThread.isAlive()) {
-            logger.info("Reader thread has exited abnormally. Restarting.");
+            logger.debug("Reader thread has exited abnormally. Restarting.");
+            scheduler.submit(this::connect);
+        } else if (writeException) {
+            logger.debug("Write exception encountered. Resetting connection.");
             scheduler.submit(this::connect);
         } else {
             Date now = new Date();
             if (lastReceivedTime != null && config.timeout > 0
                     && ((lastReceivedTime.getTime() + (config.timeout * 60 * 1000)) < now.getTime())) {
-                logger.info("Last valid message received at {}. Resetting connection.", lastReceivedTime);
+                logger.warn("Last valid message received at {}. Resetting connection.", lastReceivedTime);
                 scheduler.submit(this::connect);
             }
         }

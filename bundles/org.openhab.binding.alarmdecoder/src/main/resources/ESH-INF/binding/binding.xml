@@ -5,6 +5,6 @@
 
 	<name>Alarm Decoder Binding</name>
 	<description>This binding is for the Nu Tech Alarm Decoder, used for interfacing with Ademco/Honeywell and DSC alarm systems.</description>
-	<author>Bob Adair</author>
+	<author>Bob Adair, Bill Forsyth</author>
 
 </binding:binding>
