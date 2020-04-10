@@ -17,6 +17,7 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -43,17 +44,19 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSHandlerFactory.class);
 
     private final WebSocketClient webSocketClient;
-
+    private final DiscoveryServiceRegistry discoveryServiceRegistry;
     private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
     public LGWebOSHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
+            final @Reference DiscoveryServiceRegistry discoveryServiceRegistry,
             final @Reference LGWebOSStateDescriptionOptionProvider stateDescriptionProvider) {
         /*
          * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
          * change client settings.
          */
         this.webSocketClient = webSocketFactory.createWebSocketClient("lgwebos");
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -66,7 +69,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_WEBOSTV)) {
-            return new LGWebOSHandler(thing, webSocketClient, stateDescriptionProvider);
+            return new LGWebOSHandler(thing, webSocketClient, discoveryServiceRegistry, stateDescriptionProvider);
         }
         return null;
     }

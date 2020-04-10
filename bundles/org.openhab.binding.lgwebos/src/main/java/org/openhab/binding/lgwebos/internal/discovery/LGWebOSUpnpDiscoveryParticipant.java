@@ -24,6 +24,7 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.DeviceType;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,9 @@ import org.slf4j.LoggerFactory;
 public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(LGWebOSUpnpDiscoveryParticipant.class);
+
+    private static final DeviceType UPNP_MEDIARENDERER_DEVICE_TYPE = new DeviceType("schemas-upnp-org", "MediaRenderer",
+            1);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -58,7 +62,7 @@ public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant
                 .withProperty(PROPERTY_DEVICE_ID, device.getIdentity().getUdn().getIdentifierString())
                 .withProperty(CONFIG_HOST, device.getIdentity().getDescriptorURL().getHost())
                 .withLabel(device.getDetails().getFriendlyName())
-                .withProperty(PROPERTY_MODEL_NAME, device.getDetails().getModelDetails().getModelName())
+                .withProperty(PROPERTY_MODEL_NAME, device.getDetails().getFriendlyName())
                 .withProperty(PROPERTY_MANUFACTURER, device.getDetails().getManufacturerDetails().getManufacturer())
                 .withRepresentationProperty(PROPERTY_DEVICE_ID).withThingType(THING_TYPE_WEBOSTV).build();
     }
@@ -66,7 +70,12 @@ public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         logger.trace("Discovered remote device {}", device);
-        if (device.findService(UPNP_SERVICE_TYPE) != null) {
+        if (UPNP_MEDIARENDERER_DEVICE_TYPE.equals(device.getType())
+                && device.getDetails().getManufacturerDetails().getManufacturer() != null
+                && device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase()
+                        .contains("LG ELECTRONICS")
+                && device.getDetails().getModelDetails().getModelDescription() != null
+                && device.getDetails().getModelDetails().getModelDescription().toUpperCase().contains("WEBOSTV")) {
             logger.debug("Found LG WebOS TV: {}", device);
             return new ThingUID(THING_TYPE_WEBOSTV, device.getIdentity().getUdn().getIdentifierString());
         }

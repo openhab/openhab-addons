@@ -26,10 +26,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.discovery.DiscoveryListener;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -61,7 +67,8 @@ import org.slf4j.LoggerFactory;
  * @author Sebastian Prehn - initial contribution
  */
 @NonNullByDefault
-public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.ConfigProvider, WebOSTVSocketListener {
+public class LGWebOSHandler extends BaseThingHandler
+        implements LGWebOSTVSocket.ConfigProvider, WebOSTVSocketListener, DiscoveryListener {
 
     /*
      * constants for device polling
@@ -82,10 +89,9 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private final Map<String, ChannelHandler> channelHandlers;
 
     private final LauncherApplication appLauncher = new LauncherApplication();
-
     private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
-
+    private final DiscoveryServiceRegistry discoveryServiceRegistry;
     private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
@@ -93,10 +99,14 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     private @Nullable LGWebOSConfiguration config;
 
+    private String udn = "";
+
     public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient,
+            DiscoveryServiceRegistry discoveryServiceRegistry,
             LGWebOSStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
         this.webSocketClient = webSocketClient;
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
 
         Map<String, ChannelHandler> handlers = new HashMap<>();
@@ -138,6 +148,8 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
 
+        discoveryServiceRegistry.addDiscoveryListener(this);
+
         startReconnectJob();
     }
 
@@ -146,6 +158,8 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopKeepAliveJob();
         stopReconnectJob();
+
+        discoveryServiceRegistry.removeDiscoveryListener(this);
 
         LGWebOSTVSocket s = socket;
         if (s != null) {
@@ -322,6 +336,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     public void postUpdate(String channelId, State state) {
+        logger.debug("postUpdate channelId {} state {}", channelId, state);
         if (isLinked(channelId)) {
             updateState(channelId, state);
         }
@@ -336,4 +351,52 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(LGWebOSActions.class);
     }
+
+    @Override
+    public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+        if (THING_TYPE_WEBOSTV.equals(result.getThingTypeUID())) {
+            Map<String, Object> properties = result.getProperties();
+            String host = (String) properties.get(CONFIG_HOST);
+            if (host != null && host.equals(getLGWebOSConfig().getHost())) {
+                // Thing matching the discovery
+                logger.debug("thingDiscovered: discovery with UID {} matching thing {}", result.getThingUID(),
+                        getThing().getUID());
+
+                channelHandlers.get(CHANNEL_POWER).onDeviceReady(CHANNEL_POWER, this);
+
+                // Update the thing properties from the discovery result
+                Map<String, String> map = new HashMap<>();
+                String deviceId = (String) properties.get(PROPERTY_DEVICE_ID);
+                if (deviceId != null && !deviceId.isEmpty()) {
+                    udn = deviceId;
+                    logger.debug("UDN {} considered", udn);
+                    map.put(PROPERTY_DEVICE_ID, deviceId);
+                }
+                String manufacturer = (String) properties.get(PROPERTY_MANUFACTURER);
+                if (manufacturer != null && !manufacturer.isEmpty()) {
+                    map.put(PROPERTY_MANUFACTURER, manufacturer);
+                }
+                String modelName = (String) properties.get(PROPERTY_MODEL_NAME);
+                if (modelName != null && !modelName.isEmpty()) {
+                    map.put(PROPERTY_MODEL_NAME, modelName);
+                }
+                storeProperties(map);
+            }
+        }
+    }
+
+    @Override
+    public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+        if (!udn.isEmpty() && thingUID.getId().equals(udn)) {
+            logger.debug("thingRemoved: discovery with UID {} matching thing {}", thingUID, getThing().getUID());
+            channelHandlers.get(CHANNEL_POWER).onDeviceRemoved(CHANNEL_POWER, this);
+        }
+    }
+
+    @Override
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+        return null;
+    }
+
 }

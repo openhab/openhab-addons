@@ -45,7 +45,8 @@ public class LGWebOSConfiguration {
 
     @Override
     public String toString() {
-        return "WebOSConfiguration [host=" + host + ", port=" + port + ", key.length=" + getKey().length() + "]";
+        return "WebOSConfiguration [host=" + getHost() + ", port=" + getPort() + ", key.length=" + getKey().length()
+                + "]";
     }
 
 }
