@@ -21,11 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DWDPollenflugRegionConfiguration {
-    private int regionID;
-
-    public int getRegionID() {
-        return regionID;
-    }
+    public int regionID;
 
     public boolean isValid() {
         return regionID > 0;

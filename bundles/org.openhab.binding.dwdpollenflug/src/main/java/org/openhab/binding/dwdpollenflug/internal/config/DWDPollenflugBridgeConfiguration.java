@@ -22,11 +22,7 @@ import org.openhab.binding.dwdpollenflug.internal.handler.DWDPollenflugBridgeHan
  */
 @NonNullByDefault
 public class DWDPollenflugBridgeConfiguration {
-    private int refresh = 30;
-
-    public int getRefresh() {
-        return refresh;
-    }
+    public int refresh = 30;
 
     public boolean isValid() {
         return refresh >= 15;

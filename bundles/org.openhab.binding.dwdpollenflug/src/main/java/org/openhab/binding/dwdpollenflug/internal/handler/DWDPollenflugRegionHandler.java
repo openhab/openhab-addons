@@ -107,7 +107,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
 
     @Override
     public void notifyOnUpdate(DWDPollenflug pollenflug) {
-        DWDRegion region = pollenflug.getRegion(thingConfig.getRegionID());
+        DWDRegion region = pollenflug.getRegion(thingConfig.regionID);
         if (region == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Region not found");
             return;

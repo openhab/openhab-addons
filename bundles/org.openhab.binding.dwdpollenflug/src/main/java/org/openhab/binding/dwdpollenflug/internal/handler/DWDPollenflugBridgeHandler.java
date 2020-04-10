@@ -108,7 +108,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling.");
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY,
-                    bridgeConfig.getRefresh() * SECONDS_PER_MINUTE, TimeUnit.SECONDS);
+                    bridgeConfig.refresh * SECONDS_PER_MINUTE, TimeUnit.SECONDS);
         } else if (pollenflug != null) {
             notifyOnUpdate(pollenflug);
         }
