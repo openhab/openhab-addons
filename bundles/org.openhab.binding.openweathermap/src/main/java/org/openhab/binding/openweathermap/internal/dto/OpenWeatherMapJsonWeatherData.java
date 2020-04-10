@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model;
+package org.openhab.binding.openweathermap.internal.dto;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openweathermap.internal.model.base.Clouds;
-import org.openhab.binding.openweathermap.internal.model.base.Coord;
-import org.openhab.binding.openweathermap.internal.model.base.Rain;
-import org.openhab.binding.openweathermap.internal.model.base.Snow;
-import org.openhab.binding.openweathermap.internal.model.base.Weather;
-import org.openhab.binding.openweathermap.internal.model.base.Wind;
-import org.openhab.binding.openweathermap.internal.model.weather.Main;
-import org.openhab.binding.openweathermap.internal.model.weather.Sys;
+import org.openhab.binding.openweathermap.internal.dto.base.Clouds;
+import org.openhab.binding.openweathermap.internal.dto.base.Coord;
+import org.openhab.binding.openweathermap.internal.dto.base.Rain;
+import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.base.Weather;
+import org.openhab.binding.openweathermap.internal.dto.base.Wind;
+import org.openhab.binding.openweathermap.internal.dto.weather.Main;
+import org.openhab.binding.openweathermap.internal.dto.weather.Sys;
 
 /**
  * The {@link OpenWeatherMapJsonWeatherData} is the Java class used to map the JSON response to an OpenWeatherMap

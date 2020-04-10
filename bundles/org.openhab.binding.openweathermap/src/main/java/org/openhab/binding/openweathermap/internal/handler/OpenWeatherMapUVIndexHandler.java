@@ -33,7 +33,7 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapUVIndexC
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonUVIndexData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

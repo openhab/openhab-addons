@@ -40,12 +40,12 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapWeatherA
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonDailyForecastData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonHourlyForecastData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonWeatherData;
-import org.openhab.binding.openweathermap.internal.model.base.Rain;
-import org.openhab.binding.openweathermap.internal.model.base.Snow;
-import org.openhab.binding.openweathermap.internal.model.forecast.daily.FeelsLikeTemp;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
+import org.openhab.binding.openweathermap.internal.dto.base.Rain;
+import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeTemp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -335,7 +335,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapJsonHourlyForecastData localHourlyForecastData = hourlyForecastData;
         if (localHourlyForecastData != null && localHourlyForecastData.getList().size() > count) {
-            org.openhab.binding.openweathermap.internal.model.forecast.hourly.List forecastData = localHourlyForecastData
+            org.openhab.binding.openweathermap.internal.dto.forecast.hourly.List forecastData = localHourlyForecastData
                     .getList().get(count);
             State state = UnDefType.UNDEF;
             switch (channelId) {
@@ -420,7 +420,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapJsonDailyForecastData localDailyForecastData = dailyForecastData;
         if (localDailyForecastData != null && localDailyForecastData.getList().size() > count) {
-            org.openhab.binding.openweathermap.internal.model.forecast.daily.List forecastData = localDailyForecastData
+            org.openhab.binding.openweathermap.internal.dto.forecast.daily.List forecastData = localDailyForecastData
                     .getList().get(count);
             State state = UnDefType.UNDEF;
             switch (channelId) {

@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.forecast.daily;
+package org.openhab.binding.openweathermap.internal.dto.forecast.daily;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openweathermap.internal.model.base.Weather;
+import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 
 import com.google.gson.annotations.SerializedName;
 

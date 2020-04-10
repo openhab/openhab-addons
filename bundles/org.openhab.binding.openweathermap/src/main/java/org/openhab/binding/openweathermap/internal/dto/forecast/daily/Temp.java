@@ -10,15 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.forecast.daily;
+package org.openhab.binding.openweathermap.internal.dto.forecast.daily;
 
 /**
- * Generated Plain Old Java Objects class for {@link FeelsLikeTemp} from JSON.
+ * Generated Plain Old Java Objects class for {@link Temp} from JSON.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-public class FeelsLikeTemp {
+public class Temp {
     private Double day;
+    private Double min;
+    private Double max;
     private Double night;
     private Double eve;
     private Double morn;
@@ -29,6 +31,22 @@ public class FeelsLikeTemp {
 
     public void setDay(Double day) {
         this.day = day;
+    }
+
+    public Double getMin() {
+        return min;
+    }
+
+    public void setMin(Double min) {
+        this.min = min;
+    }
+
+    public Double getMax() {
+        return max;
+    }
+
+    public void setMax(Double max) {
+        this.max = max;
     }
 
     public Double getNight() {
