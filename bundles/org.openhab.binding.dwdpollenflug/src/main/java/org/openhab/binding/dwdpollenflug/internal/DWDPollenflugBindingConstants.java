@@ -25,8 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class DWDPollenflugBindingConstants {
-    public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
-
     public static final long INITIAL_DELAY = TimeUnit.SECONDS.toSeconds(1);
 
     public static final long SECONDS_PER_MINUTE = 60;
