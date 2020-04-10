@@ -150,7 +150,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         LGWebOSTVSocket s = socket;
         if (s != null) {
             s.setListener(null);
-            scheduler.execute(() -> s.disconnect()); // dispose should be none-blocking
+            s.disconnect();
         }
         socket = null;
         config = null; // ensure config gets actually refreshed during re-initialization
@@ -275,14 +275,15 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 stopKeepAliveJob();
                 startReconnectJob();
                 break;
-
-            case REGISTERING:
+            case CONNECTING:
                 stopReconnectJob();
-                startKeepAliveJob();
+                break;
+            case REGISTERING:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "Registering - You may need to confirm pairing on TV.");
                 break;
             case REGISTERED:
+                startKeepAliveJob();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
 
                 channelHandlers.forEach((k, v) -> {
@@ -307,6 +308,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         switch (getSocket().getState()) {
             case DISCONNECTED:
                 break;
+            case CONNECTING:
             case REGISTERING:
             case REGISTERED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
