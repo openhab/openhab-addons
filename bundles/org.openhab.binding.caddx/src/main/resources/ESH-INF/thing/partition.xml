@@ -209,11 +209,16 @@
 		</channels>
 
 		<config-description>
-			<parameter name="partitionNumber" type="integer" required="true" min="0" max="7">
-				<label>Partition Number</label>
-				<description>The Partition Number (0-7).</description>
-				<default>0</default>
-			</parameter>
+            <parameter name="partitionNumber" type="integer" required="true" min="1" max="8">
+                <label>Partition Number</label>
+                <description>The Partition Number.</description>
+                <default>1</default>
+            </parameter>
+            <parameter name="userNumber" type="integer" required="true" min="1" max="192">
+                <label>User Number</label>
+                <description>The User Number.</description>
+                <default>1</default>
+            </parameter>
 		</config-description>
 	</thing-type>
 

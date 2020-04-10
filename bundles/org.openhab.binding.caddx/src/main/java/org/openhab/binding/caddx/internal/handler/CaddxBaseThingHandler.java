@@ -55,6 +55,9 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     /** Partition Number. */
     private int partitionNumber;
 
+    /** User Number. */
+    private int userNumber;
+
     /** Zone Number. */
     private int zoneNumber;
 
@@ -178,6 +181,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
             case PARTITION:
                 CaddxPartitionConfiguration partitionConfiguration = getConfigAs(CaddxPartitionConfiguration.class);
                 setPartitionNumber(partitionConfiguration.getPartitionNumber().intValue());
+                setUserNumber(partitionConfiguration.getUserNumber().intValue());
                 break;
             case ZONE:
                 CaddxZoneConfiguration zoneConfiguration = getConfigAs(CaddxZoneConfiguration.class);
@@ -216,6 +220,24 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
      */
     public void setPartitionNumber(int partitionNumber) {
         this.partitionNumber = partitionNumber;
+    }
+
+    /**
+     * Get User Number.
+     *
+     * @return userNumber
+     */
+    public int getUserNumber() {
+        return userNumber;
+    }
+
+    /**
+     * Set User Number.
+     *
+     * @param userNumber
+     */
+    public void setUserNumber(int userNumber) {
+        this.userNumber = userNumber;
     }
 
     /**

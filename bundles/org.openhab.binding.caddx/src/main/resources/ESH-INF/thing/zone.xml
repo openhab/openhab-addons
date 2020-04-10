@@ -192,7 +192,7 @@
 		</channels>
 
 		<config-description>
-			<parameter name="zoneNumber" type="integer" required="true" min="0" max="255">
+			<parameter name="zoneNumber" type="integer" required="true" min="1" max="192">
 				<label>Zone Number</label>
 				<description>The Zone Number.</description>
 			</parameter>

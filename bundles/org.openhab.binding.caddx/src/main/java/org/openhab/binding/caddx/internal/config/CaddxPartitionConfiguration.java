@@ -30,11 +30,24 @@ public class CaddxPartitionConfiguration {
      */
     private @NonNullByDefault({}) Integer partitionNumber;
 
+    /**
+     * The User Number of the user that will execute commands against the partition.
+     */
+    private @NonNullByDefault({}) Integer userNumber;
+
     public Integer getPartitionNumber() {
         return partitionNumber;
     }
 
     public void setPartitionNumber(Integer partitionNumber) {
         this.partitionNumber = partitionNumber;
+    }
+
+    public Integer getUserNumber() {
+        return userNumber;
+    }
+
+    public void setUserNumber(Integer userNumber) {
+        this.userNumber = userNumber;
     }
 }
