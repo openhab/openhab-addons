@@ -7,13 +7,14 @@
 	<bridge-type id="bridge">
 		<label>DWD Pollen count index - Bridge</label>
 		<description>Bridge for accessing pollen count index data of the DWD</description>
-			
+
+		<channel-groups>
+			<channel-group id="updates" typeId="updates"/>
+		</channel-groups>
+
 		<properties>
 			<property name="sender"/>
 			<property name="name"/>
-			<property name="refreshed"/>
-			<property name="next_update"/>
-			<property name="last_update"/>
 		</properties>
 
 		<config-description>
@@ -23,5 +24,40 @@
 				<description>Time between two API requests in minutes. Minimum 15 minutes.</description>
 			</parameter>
 		</config-description>
+		
 	</bridge-type>
+	
+	<channel-group-type id="updates">
+		<label>Updates</label>
+		<description>Information about data state</description>
+		<channels>
+			<channel id="refreshed" typeId="update">
+				<label>Bridge refreshed</label>
+			</channel>
+			<channel id="last_update" typeId="update">
+				<label>Last update from DWD</label>
+			</channel>
+			<channel id="next_update" typeId="update">
+				<label>Next update from DWD</label>
+			</channel>
+			<channel id="updated" typeId="updated" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="update">
+		<item-type>DateTime</item-type>
+		<label>Update time</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="updated">
+		<kind>trigger</kind>
+		<label>Updated</label>
+		<description>Triggers REFRESHED if data changed></description>
+		<event>
+			<options>
+				<option value="REFRESHED">Refreshed</option>
+			</options>
+		</event>
+	</channel-type>
 </thing:thing-descriptions>

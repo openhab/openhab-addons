@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
-import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -33,13 +31,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DWDPollenflugJSON {
-    private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
+    private String sender = "";
 
-    private String sender = EMPTY;
-
-    private String name = EMPTY;
+    private String name = "";
 
     @SerializedName("next_update")
     private @Nullable String nextUpdate;

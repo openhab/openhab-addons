@@ -17,7 +17,6 @@ import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingCon
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,8 +52,6 @@ public class DWDRegion {
 
     private Map<String, String> initProperties(DWDRegionJSON json) {
         Map<String, String> map = new HashMap<>();
-        map.put(PROPERTY_REGION_ID, Integer.toString(regionID));
-
         String regionName = json.regionName;
         if (regionName != null) {
             map.put(PROPERTY_REGION_NAME, regionName);
@@ -73,13 +70,12 @@ public class DWDRegion {
             return;
         }
 
-        for (final Entry<String, DWDPollentypeJSON> entry : pollen.entrySet()) {
-            final String pollentype = CHANNELS_POLLEN_MAP.get(entry.getKey());
-            final DWDPollentypeJSON jsonType = entry.getValue();
+        pollen.forEach((k, jsonType) -> {
+            final String pollentype = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
             createChannel(pollentype, CHANNEL_TODAY, jsonType.today);
             createChannel(pollentype, CHANNEL_TOMORROW, jsonType.tomorrow);
             createChannel(pollentype, CHANNEL_DAYAFTER_TO, jsonType.dayafterTomorrow);
-        }
+        });
     }
 
     private void createChannel(final String pollentype, final String subchannel, @Nullable String value) {

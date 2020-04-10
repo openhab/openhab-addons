@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -47,11 +48,11 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_BRIDGE, THING_TYPE_REGION).collect(Collectors.toSet()));
 
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
     @Activate
     public DWDPollenflugHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -64,7 +65,7 @@ public class DWDPollenflugHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new DWDPollenflugBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
+            return new DWDPollenflugBridgeHandler((Bridge) thing, httpClient);
         } else if (THING_TYPE_REGION.equals(thingTypeUID)) {
             return new DWDPollenflugRegionHandler(thing);
         }

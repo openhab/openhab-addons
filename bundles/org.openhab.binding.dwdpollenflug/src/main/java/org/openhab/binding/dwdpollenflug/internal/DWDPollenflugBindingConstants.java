@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.dwdpollenflug.internal;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,8 +27,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class DWDPollenflugBindingConstants {
     public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
-    public static final String EMPTY = "";
-
     public static final long INITIAL_DELAY = TimeUnit.SECONDS.toSeconds(1);
 
     public static final long SECONDS_PER_MINUTE = 60;
@@ -43,22 +38,6 @@ public class DWDPollenflugBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_REGION = new ThingTypeUID(BINDING_ID, "region");
-
-    // Region channels Mapping
-    public static final Map<String, String> CHANNELS_POLLEN_MAP = initChannelMap();
-
-    private static Map<String, String> initChannelMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("Ambrosia", "ambrosia");
-        map.put("Beifuss", "mugwort");
-        map.put("Birke", "birch");
-        map.put("Erle", "alder");
-        map.put("Esche", "ash");
-        map.put("Graeser", "grasses");
-        map.put("Hasel", "hazel");
-        map.put("Roggen", "rye");
-        return Collections.unmodifiableMap(map);
-    }
 
     // Channels of pollen groups
     public static final String CHANNEL_TODAY = "today";
@@ -80,15 +59,11 @@ public class DWDPollenflugBindingConstants {
     // Bridge properties
     public static final String PROPERTY_SENDER = "sender";
     public static final String PROPERTY_NAME = "name";
-    public static final String PROPERTY_REFRESHED = "refreshed";
-    public static final String PROPERTY_NEXT_UPDATE = "next_update";
-    public static final String PROPERTY_LAST_UPDATE = "last_update";
 
     // Region config properties
     public static final String REGION_ID = "regionID";
 
     // Region properties
-    public static final String PROPERTY_REGION_ID = "region_id";
     public static final String PROPERTY_REGION_NAME = "region_name";
     public static final String PROPERTY_PARTREGION_NAME = "partregion_name";
 }

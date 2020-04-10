@@ -14,7 +14,6 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 
 import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
 
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -35,8 +34,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DWDPollenflug {
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_PATTERN);
-
     private final Date created = new Date();
 
     private final @Nullable Date nextUpdate;
@@ -60,7 +57,9 @@ public class DWDPollenflug {
             regions.put(region.getRegionID(), region);
         }
 
-        parseChannels(json);
+        createChannel(CHANNEL_REFRESHED, created);
+        createChannel(CHANNEL_NEXT_UPDATE, nextUpdate);
+        createChannel(CHANNEL_LAST_UPDATE, lastUpdate);
     }
 
     private synchronized Map<String, String> initProperties(DWDPollenflugJSON json) {
@@ -68,27 +67,12 @@ public class DWDPollenflug {
 
         map.put(PROPERTY_NAME, json.getName());
         map.put(PROPERTY_SENDER, json.getSender());
-        map.put(PROPERTY_REFRESHED, FORMATTER.format(created));
-
-        if (nextUpdate != null) {
-            map.put(PROPERTY_NEXT_UPDATE, FORMATTER.format(nextUpdate));
-        }
-
-        if (lastUpdate != null) {
-            map.put(PROPERTY_LAST_UPDATE, FORMATTER.format(lastUpdate));
-        }
 
         return Collections.unmodifiableMap(map);
     }
 
     public Map<String, String> getProperties() {
         return properties;
-    }
-
-    private void parseChannels(DWDPollenflugJSON json) {
-        createChannel(CHANNEL_REFRESHED, created);
-        createChannel(CHANNEL_NEXT_UPDATE, nextUpdate);
-        createChannel(CHANNEL_LAST_UPDATE, lastUpdate);
     }
 
     private void createChannel(String subchannel, @Nullable Date date) {

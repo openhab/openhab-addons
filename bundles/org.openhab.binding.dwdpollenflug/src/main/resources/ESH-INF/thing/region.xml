@@ -45,7 +45,6 @@
 				<label>Rye</label>
 				<description>Information for rye</description>
 			</channel-group>
-			<channel-group id="updates" typeId="updates"/>
 		</channel-groups>
 		
 		<properties>
@@ -95,68 +94,21 @@
 		<label>Pollen type group</label>
 		<description>For each pollen type there are three channels for today, tomorrow and day after tomorrow</description>
 		<channels>
-			<channel id="today" typeId="today" />
-			<channel id="tomorrow" typeId="tomorrow" />
-			<channel id="dayafter_to" typeId="dayafter_to" />
-		</channels>
-	</channel-group-type>
-	
-	<channel-type id="today">
-		<item-type>String</item-type>
-		<label>Today</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="tomorrow">
-		<item-type>String</item-type>
-		<label>Tomorrow</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dayafter_to">
-		<item-type>String</item-type>
-		<label>Day after tomorrow</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-group-type id="updates">
-		<label>Updates</label>
-		<description>Information about data state</description>
-		<channels>
-			<channel id="refreshed" typeId="refreshed" />
-			<channel id="last_update" typeId="last_update" />
-			<channel id="next_update" typeId="next_update" />
-			<channel id="updated" typeId="updated" />
+			<channel id="today" typeId="pollencount">
+				<label>Today</label>
+			</channel>
+			<channel id="tomorrow" typeId="pollencount">
+				<label>Tomorrow</label>
+			</channel>
+			<channel id="dayafter_to" typeId="pollencount">
+				<label>Day after tomorrow</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="refreshed">
-		<item-type>DateTime</item-type>
-		<label>Bridge refreshed</label>
+	<channel-type id="pollencount">
+		<item-type>String</item-type>
+		<label>Pollen count</label>
 		<state readOnly="true"/>
 	</channel-type>
-
-	<channel-type id="updated">
-		<kind>trigger</kind>
-		<label>Updated</label>
-		<description>Triggers REFRESHED if data changed></description>
-		<event>
-			<options>
-				<option value="REFRESHED">Refreshed</option>
-			</options>
-		</event>
-	</channel-type>
-
-	<channel-type id="last_update">
-		<item-type>DateTime</item-type>
-		<label>Last update from DWD</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="next_update">
-		<item-type>DateTime</item-type>
-		<label>Next update from DWD</label>
-		<state readOnly="true"/>
-	</channel-type>
-
 </thing:thing-descriptions>

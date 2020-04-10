@@ -15,8 +15,6 @@ package org.openhab.binding.dwdpollenflug.internal.handler;
 import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
 
 import java.util.Date;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +26,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugRegionConfiguration;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
@@ -45,11 +42,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
 
     private final Logger logger = LoggerFactory.getLogger(DWDPollenflugRegionHandler.class);
 
-    private @NonNullByDefault({}) DWDPollenflugRegionConfiguration thingConfig = null;
-
-    private @Nullable DWDPollenflugBridgeHandler bridgeHandler;
-
-    private boolean ignoreConfigurationUpdate;
+    private DWDPollenflugRegionConfiguration thingConfig = new DWDPollenflugRegionConfiguration();
 
     private @Nullable Date lastUpdate;
 
@@ -67,6 +60,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
             if (handler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge handler missing");
             } else {
+                handler.registerRegionListener(this);
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
@@ -75,37 +69,24 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     }
 
     private synchronized @Nullable DWDPollenflugBridgeHandler syncToBridge() {
-        if (bridgeHandler == null) {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                return null;
-            }
+        Bridge bridge = getBridge();
+        if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof DWDPollenflugBridgeHandler) {
-                bridgeHandler = (DWDPollenflugBridgeHandler) handler;
-                bridgeHandler.registerRegionListener(this);
-            } else {
-                return null;
+                DWDPollenflugBridgeHandler bridgeHandler = (DWDPollenflugBridgeHandler) handler;
+                return bridgeHandler;
             }
         }
 
-        return bridgeHandler;
+        return null;
     }
 
     @Override
     public void dispose() {
         logger.debug("DWDPollenflug region handler disposes. Unregistering listener.");
-        DWDPollenflugBridgeHandler handler = syncToBridge();
-        if (handler != null) {
-            handler.unregisterRegionListener(this);
-            bridgeHandler = null;
-        }
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        if (!ignoreConfigurationUpdate) {
-            super.handleConfigurationUpdate(configurationParameters);
+        DWDPollenflugBridgeHandler bridgeHandler = syncToBridge();
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterRegionListener(this);
         }
     }
 
@@ -134,29 +115,16 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
 
         updateStatus(ThingStatus.ONLINE);
 
-        ignoreConfigurationUpdate = true;
         updateProperties(region.getProperties());
-        ignoreConfigurationUpdate = false;
 
-        updateChannels(region.getChannels());
-
-        updateChannels(pollenflug.getChannels());
+        region.getChannels().forEach((channelID, value) -> {
+            logger.debug("Updating channel {} to {}", channelID, value);
+            updateState(channelID, value);
+        });
 
         if (lastUpdate == null || !lastUpdate.equals(pollenflug.getLastUpdate())) {
             triggerChannel(CHANNEL_UPDATES + "#" + CHANNEL_UPDATED, TRIGGER_REFRESHED);
             lastUpdate = pollenflug.getLastUpdate();
-        }
-    }
-
-    private void updateChannels(Map<String, State> channels) {
-        for (Entry<String, State> entry : channels.entrySet()) {
-            String channelID = entry.getKey();
-            if (isLinked(channelID)) {
-                logger.debug("Updating channel {} to {}", channelID, entry.getValue());
-                updateState(channelID, entry.getValue());
-            } else {
-                logger.debug("Channel {} not linked to an item", channelID);
-            }
         }
     }
 }
