@@ -49,9 +49,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     /** Caddx Alarm Thing type. */
     private CaddxThingType caddxThingType;// = null;
 
-    /** Caddx Properties. */
-    private boolean thingHandlerInitialized = false;
-
     /** Partition Number. */
     private int partitionNumber;
 
@@ -79,32 +76,12 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    @Override
-    public void dispose() {
-        logger.trace("Thing {} disposed.", getThing().getUID());
-
-        this.setThingHandlerInitialized(false);
-
-        super.dispose();
-    }
-
-    /**
-     * Method to Initialize Thing Handler.
-     */
-    public void initializeThingHandler() {
-        logger.trace("initializeThingHandler()");
-
-        if (getCaddxBridgeHandler() != null) {
-            this.setThingHandlerInitialized(true);
-        }
-    }
-
     /**
      * Get the Bridge Handler for the Caddx system.
      *
      * @return CaddxBridgeHandler
      */
-    public @Nullable synchronized CaddxBridgeHandler getCaddxBridgeHandler() {
+    public @Nullable CaddxBridgeHandler getCaddxBridgeHandler() {
         if (this.caddxBridgeHandler == null) {
             Bridge bridge = getBridge();
 
@@ -155,15 +132,12 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
         switch (bridgeStatus) {
             case ONLINE:
                 updateStatus(bridgeStatus);
-                this.initializeThingHandler();
                 break;
             case OFFLINE:
                 updateStatus(bridgeStatus, ThingStatusDetail.BRIDGE_OFFLINE);
-                this.setThingHandlerInitialized(false);
                 break;
             default:
                 updateStatus(bridgeStatus);
-                this.setThingHandlerInitialized(false);
                 break;
         }
 
@@ -294,23 +268,5 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
         }
 
         return channel;
-    }
-
-    /**
-     * Get Thing Handler refresh status.
-     *
-     * @return thingRefresh
-     */
-    public boolean isThingHandlerInitialized() {
-        return thingHandlerInitialized;
-    }
-
-    /**
-     * Set Thing Handler status.
-     *
-     * @param deviceInitialized
-     */
-    public void setThingHandlerInitialized(boolean deviceInitialized) {
-        this.thingHandlerInitialized = deviceInitialized;
     }
 }

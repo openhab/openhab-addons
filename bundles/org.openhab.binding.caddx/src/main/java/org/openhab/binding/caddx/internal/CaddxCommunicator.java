@@ -360,6 +360,16 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
         } while (b != byteToRead);
     }
 
+    private void offerCaddxMessage() throws InterruptedException {
+        logger.trace("Offering received message");
+
+        // Full message received in data byte array
+        CaddxMessage caddxMessage = new CaddxMessage(message, true);
+        if (!exchanger.offer(caddxMessage, 3, TimeUnit.SECONDS)) {
+            logger.debug("Offered message was not received");
+        }
+    }
+
     private void receiveInBinaryProtocol(SerialPortEvent serialPortEvent) {
         try {
             // Read the start byte
@@ -398,33 +408,21 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
 
                 messageBufferIndex++;
             } while (messageBufferIndex < messageBufferLength);
+
+            // Offer the message
+            offerCaddxMessage();
+
             logger.trace("CaddxCommunicator.handleBinaryProtocol() Got message {}", message[0]);
         } catch (EOFException e) {
             return;
         } catch (IOException e) {
-            // Discard the bytes received so far to start reception of a new package
-            inMessage = false;
-            messageBufferLength = 0;
-            messageBufferIndex = 0;
-            unStuff = false;
-            return;
-        }
 
-        // Received data
-        CaddxMessage caddxMessage = new CaddxMessage(message, true);
-
-        try {
-            logger.trace("CaddxCommunicator.handleBinaryProtocol() Exchanging");
-
-            if (!exchanger.offer(caddxMessage, 3, TimeUnit.SECONDS)) {
-                logger.debug("Offered message was not received");
-            }
         } catch (InterruptedException e) {
-            logger.trace("CaddxCommunicator.handleBinaryProtocol() InterruptedException caught.");
+            logger.trace("InterruptedException caught.");
             Thread.currentThread().interrupt();
         }
 
-        // Initialize state for next reception
+        // Initialize state for a new reception
         inMessage = false;
         messageBufferLength = 0;
         messageBufferIndex = 0;
@@ -457,31 +455,21 @@ public class CaddxCommunicator implements Runnable, SerialPortEventListener {
                 message[messageBufferIndex] = (byte) b;
                 messageBufferIndex++;
             } while (messageBufferIndex < messageBufferLength);
+
+            // Offer the message
+            offerCaddxMessage();
+
             logger.trace("CaddxCommunicator.handleAsciiProtocol() Got message {}", message[0]);
         } catch (EOFException e) {
             return;
         } catch (IOException e) {
-            // Discard the bytes received so far to start reception of a new package
-            inMessage = false;
-            messageBufferLength = 0;
-            messageBufferIndex = 0;
-        }
 
-        // Received data
-        CaddxMessage caddxMessage = new CaddxMessage(message, true);
-
-        try {
-            logger.trace("CaddxCommunicator.serialEvent() Exchanging");
-
-            if (!exchanger.offer(caddxMessage, 3, TimeUnit.SECONDS)) {
-                logger.debug("Offered message was not received");
-            }
         } catch (InterruptedException e) {
-            logger.trace("CaddxCommunicator.handleAsciiProtocol() InterruptedException caught.");
+            logger.trace("InterruptedException caught.");
             Thread.currentThread().interrupt();
         }
 
-        // Initialize state for next reception
+        // Initialize state for a new reception
         inMessage = false;
         messageBufferLength = 0;
         messageBufferIndex = 0;

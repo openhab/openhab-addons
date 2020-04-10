@@ -118,7 +118,6 @@ public class CaddxBridgeDiscovery extends AbstractDiscoveryService implements Ca
         }
 
         caddxCommunicator.stop();
-        caddxCommunicator = null;
         return bridgeFound;
     }
 
