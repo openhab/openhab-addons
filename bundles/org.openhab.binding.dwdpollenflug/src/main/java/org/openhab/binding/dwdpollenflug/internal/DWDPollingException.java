@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 @NonNullByDefault
-public class DWDPollingException extends RuntimeException {
+public class DWDPollingException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
