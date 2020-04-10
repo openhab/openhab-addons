@@ -276,14 +276,14 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 startReconnectJob();
                 break;
             case CONNECTING:
+                stopReconnectJob();
                 break;
             case REGISTERING:
-                stopReconnectJob();
-                startKeepAliveJob();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "Registering - You may need to confirm pairing on TV.");
                 break;
             case REGISTERED:
+                startKeepAliveJob();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
 
                 channelHandlers.forEach((k, v) -> {
