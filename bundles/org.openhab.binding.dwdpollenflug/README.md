@@ -8,7 +8,7 @@ https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.ht
 
 ## Supported Things
 
-This binding supports a bridge thing (`dwdpollenflug`), which polls the dataset for Germany in an adjustable interval. 
+This binding supports a bridge thing (`bridge`), which polls the dataset for Germany in an adjustable interval. 
 And it supports a region thing (`region`), representing the data for all pollen types of a region or partregion.
 
 ## Thing Configuration

@@ -79,7 +79,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            startPolling();
+            poll();
         }
     }
 
@@ -108,7 +108,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling.");
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY,
-                    bridgeConfig.refresh * SECONDS_PER_MINUTE, TimeUnit.SECONDS);
+                    TimeUnit.MINUTES.toSeconds(bridgeConfig.refresh), TimeUnit.SECONDS);
         } else if (pollenflug != null) {
             notifyOnUpdate(localPollenflug);
         }

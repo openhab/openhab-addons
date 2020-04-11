@@ -25,8 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class DWDPollenflugBindingConstants {
     public static final long INITIAL_DELAY = 1; // second
 
-    public static final long SECONDS_PER_MINUTE = 60;
-
     private static final String BINDING_ID = "dwdpollenflug";
 
     // bridge
