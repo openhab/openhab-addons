@@ -88,13 +88,13 @@ class PullJob implements Runnable {
 
     @Override
     public void run() {
-        Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
-        Authentication.@Nullable Result currentAuthentication = authentication;
+        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
+        final Authentication.@Nullable Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
         }
 
-        InputStreamResponseListener asyncListener = new InputStreamResponseListener();
+        final InputStreamResponseListener asyncListener = new InputStreamResponseListener();
         request.send(asyncListener);
 
         Response response;
@@ -112,7 +112,7 @@ class PullJob implements Runnable {
             return;
         }
 
-        String responseLength = response.getHeaders().get(HttpHeader.CONTENT_LENGTH);
+        final String responseLength = response.getHeaders().get(HttpHeader.CONTENT_LENGTH);
         if (responseLength != null) {
             try {
                 if (Integer.parseInt(responseLength) > maxSize) {
@@ -137,9 +137,9 @@ class PullJob implements Runnable {
             return;
         }
 
-        try (FileOutputStream tmpOutStream = new FileOutputStream(tmpTargetFile);
-                InputStream httpInputStream = asyncListener.getInputStream()) {
-            byte[] buffer = new byte[1024];
+        try (final FileOutputStream tmpOutStream = new FileOutputStream(tmpTargetFile);
+                final InputStream httpInputStream = asyncListener.getInputStream()) {
+            final byte[] buffer = new byte[1024];
             int readBytesTotal = 0;
             int currentReadBytes = -1;
             while ((currentReadBytes = httpInputStream.read(buffer)) > -1) {
@@ -159,7 +159,7 @@ class PullJob implements Runnable {
             return;
         }
 
-        try (FileInputStream tmpInput = new FileInputStream(tmpTargetFile)) {
+        try (final FileInputStream tmpInput = new FileInputStream(tmpTargetFile)) {
             AbstractPresentableCalendar.create(tmpInput);
         } catch (IOException | CalendarException e) {
             logger.warn(

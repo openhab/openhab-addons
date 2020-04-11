@@ -65,7 +65,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (!supportsThingType(thingTypeUID)) {
             return null;

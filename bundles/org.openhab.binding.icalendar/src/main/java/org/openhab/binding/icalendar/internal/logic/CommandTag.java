@@ -149,7 +149,7 @@ public class CommandTag {
             return null;
         }
         try {
-            CommandTag tag = new CommandTag(inputLine);
+            final CommandTag tag = new CommandTag(inputLine);
             logger.trace("Command Tag Trace: \"{}\" => Fully valid Command Tag!", inputLine);
             return tag;
         } catch (IllegalArgumentException e) {

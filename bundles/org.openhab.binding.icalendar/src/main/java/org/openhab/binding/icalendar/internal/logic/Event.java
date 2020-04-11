@@ -55,7 +55,7 @@ public class Event {
         if (other == null || other.getClass() != this.getClass()) {
             return false;
         }
-        Event otherEvent = (Event) other;
+        final Event otherEvent = (Event) other;
         return (this.title.equals(otherEvent.title) && this.start.equals(otherEvent.start)
                 && this.end.equals(otherEvent.end));
     }

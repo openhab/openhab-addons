@@ -117,13 +117,13 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
+        final ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
         configuration = currentConfiguration;
 
         if ((currentConfiguration.username == null && currentConfiguration.password != null)
                 || (currentConfiguration.username != null && currentConfiguration.password == null)) {
-            logger.warn("Only one of username and password was set. This is invalid.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Only one of username and password was set. This is invalid.");
             return;
         }
 
@@ -198,7 +198,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                     continue;
                 }
 
-                Command cmdState = cmdTag.getCommand();
+                final Command cmdState = cmdTag.getCommand();
                 if (cmdState == null) {
                     logger.warn("Event: {}, Command Tag: {} => Error creating Command State!", event.title,
                             cmdTag.getFullTag());
@@ -237,13 +237,13 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn("Local file for loading calendar is missing.");
             return false;
         }
-        ICalendarConfiguration config = configuration;
+        final ICalendarConfiguration config = configuration;
         if (config == null) {
             logger.warn("Can't reload calendar when configuration is missing.");
             return false;
         }
         try (FileInputStream fileStream = new FileInputStream(calendarFile)) {
-            AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
+            final AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
@@ -257,20 +257,20 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
      * Reschedules the next update of the states.
      */
     private void rescheduleCalendarStateUpdate() {
-        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
+        final ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
         if (currentUpdateJobFuture != null) {
             if (!(currentUpdateJobFuture.isCancelled() || currentUpdateJobFuture.isDone())) {
                 currentUpdateJobFuture.cancel(true);
             }
             updateJobFuture = null;
         }
-        AbstractPresentableCalendar currentCalendar = runtimeCalendar;
+        final AbstractPresentableCalendar currentCalendar = runtimeCalendar;
         if (currentCalendar == null) {
             return;
         }
-        Instant now = Instant.now();
+        final Instant now = Instant.now();
         if (currentCalendar.isEventPresent(now)) {
-            Event currentEvent = currentCalendar.getCurrentEvent(now);
+            final Event currentEvent = currentCalendar.getCurrentEvent(now);
             if (currentEvent == null) {
                 logger.debug(
                         "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
@@ -281,8 +281,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
             }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
         } else {
-            Event nextEvent = currentCalendar.getNextEvent(now);
-            ICalendarConfiguration currentConfig = this.configuration;
+            final Event nextEvent = currentCalendar.getNextEvent(now);
+            final ICalendarConfiguration currentConfig = this.configuration;
             if (currentConfig == null) {
                 logger.debug("Something is broken, the configuration is not available.");
                 return;
@@ -304,7 +304,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
      * Updates the states of the Thing and its channels.
      */
     private void updateStates() {
-        AbstractPresentableCalendar calendar = runtimeCalendar;
+        final AbstractPresentableCalendar calendar = runtimeCalendar;
         if (calendar == null) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
@@ -324,7 +324,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 return;
             }
 
-            Instant now = Instant.now();
+            final Instant now = Instant.now();
             if (calendar.isEventPresent(now)) {
                 updateState(eventPresenceChannel.getUID(), OnOffType.ON);
                 Event currentEvent = calendar.getCurrentEvent(now);

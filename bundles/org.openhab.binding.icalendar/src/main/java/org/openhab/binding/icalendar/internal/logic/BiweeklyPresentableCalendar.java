@@ -52,8 +52,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     private final ICalendar usedCalendar;
 
     BiweeklyPresentableCalendar(InputStream streamed) throws IOException, CalendarException {
-        try (ICalReader reader = new ICalReader(streamed)) {
-            ICalendar currentCalendar = reader.readNext();
+        try (final ICalReader reader = new ICalReader(streamed)) {
+            final ICalendar currentCalendar = reader.readNext();
             if (currentCalendar == null) {
                 throw new CalendarException("No calendar was parsed.");
             }
@@ -63,7 +63,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getCurrentEvent(Instant instant) {
-        VEventWPeriod currentComponentWPeriod = this.getCurrentComponentWPeriod(instant);
+        final VEventWPeriod currentComponentWPeriod = this.getCurrentComponentWPeriod(instant);
         if (currentComponentWPeriod == null) {
             return null;
         }
@@ -73,13 +73,13 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
-        List<Event> eventList = new ArrayList<>();
+        final List<Event> eventList = new ArrayList<>();
         // process all the events in the iCalendar
-        for (VEvent event : usedCalendar.getEvents()) {
+        for (final VEvent event : usedCalendar.getEvents()) {
             // iterate over all begin dates
-            DateIterator begDates = getRecurredEventDateIterator(event);
+            final DateIterator begDates = getRecurredEventDateIterator(event);
             while (begDates.hasNext()) {
-                Instant begInst = begDates.next().toInstant();
+                final Instant begInst = begDates.next().toInstant();
                 if (begInst.isBefore(frameBegin)) {
                     continue;
                 } else if (begInst.isAfter(frameEnd)) {
@@ -99,18 +99,18 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
-        List<Event> eventList = new ArrayList<>();
+        final List<Event> eventList = new ArrayList<>();
         // process all the events in the iCalendar
-        for (VEvent event : usedCalendar.getEvents()) {
-            Duration duration = getEventLength(event);
+        for (final VEvent event : usedCalendar.getEvents()) {
+            final Duration duration = getEventLength(event);
             if (duration == null) {
                 continue;
             }
             // iterate over all begin dates
-            DateIterator begDates = getRecurredEventDateIterator(event);
+            final DateIterator begDates = getRecurredEventDateIterator(event);
             while (begDates.hasNext()) {
-                Instant begInst = begDates.next().toInstant();
-                Instant endInst = begInst.plus(duration);
+                final Instant begInst = begDates.next().toInstant();
+                final Instant endInst = begInst.plus(duration);
                 if (endInst.isBefore(frameBegin)) {
                     continue;
                 } else if (endInst.isAfter(frameEnd)) {
@@ -126,22 +126,22 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getNextEvent(Instant instant) {
-        Collection<VEventWPeriod> candidates = new ArrayList<VEventWPeriod>();
-        Collection<VEvent> negativeEvents = new ArrayList<VEvent>();
-        Collection<VEvent> positiveEvents = new ArrayList<VEvent>();
+        final Collection<VEventWPeriod> candidates = new ArrayList<VEventWPeriod>();
+        final Collection<VEvent> negativeEvents = new ArrayList<VEvent>();
+        final Collection<VEvent> positiveEvents = new ArrayList<VEvent>();
         classifyEvents(positiveEvents, negativeEvents);
-        for (VEvent currentEvent : positiveEvents) {
-            DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
-            Duration duration = getEventLength(currentEvent);
+        for (final VEvent currentEvent : positiveEvents) {
+            final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
+            final Duration duration = getEventLength(currentEvent);
             if (duration == null) {
                 continue;
             }
             startDates.advanceTo(Date.from(instant));
             while (startDates.hasNext()) {
-                Instant startInstant = startDates.next().toInstant();
+                final Instant startInstant = startDates.next().toInstant();
                 if (startInstant.isAfter(instant)) {
                     @Nullable
-                    Uid currentEventUid = currentEvent.getUid();
+                    final Uid currentEventUid = currentEvent.getUid();
                     if (currentEventUid == null || !isCounteredBy(startInstant, currentEventUid, negativeEvents)) {
                         candidates.add(new VEventWPeriod(currentEvent, startInstant, startInstant.plus(duration)));
                         break;
@@ -150,7 +150,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             }
         }
         VEventWPeriod earliestNextEvent = null;
-        for (VEventWPeriod positiveCandidate : candidates) {
+        for (final VEventWPeriod positiveCandidate : candidates) {
             if (earliestNextEvent == null || earliestNextEvent.start.isAfter(positiveCandidate.start)) {
                 earliestNextEvent = positiveCandidate;
             }
@@ -174,11 +174,11 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @param negativeEvents A List where to add negative ones.
      */
     private void classifyEvents(Collection<VEvent> positiveEvents, Collection<VEvent> negativeEvents) {
-        for (VEvent currentEvent : usedCalendar.getEvents()) {
+        for (final VEvent currentEvent : usedCalendar.getEvents()) {
             @Nullable
-            Status eventStatus = currentEvent.getStatus();
+            final Status eventStatus = currentEvent.getStatus();
             boolean positive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
-            Collection<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
+            final Collection<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
             positiveOrNegativeEvents.add(currentEvent);
         }
     }
@@ -190,23 +190,23 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return A VEventWPeriod describing the event or null if there is none.
      */
     private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant) {
-        List<VEvent> negativeEvents = new ArrayList<VEvent>();
-        List<VEvent> positiveEvents = new ArrayList<VEvent>();
+        final List<VEvent> negativeEvents = new ArrayList<VEvent>();
+        final List<VEvent> positiveEvents = new ArrayList<VEvent>();
         classifyEvents(positiveEvents, negativeEvents);
 
-        for (VEvent currentEvent : positiveEvents) {
-            DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
-            Duration duration = getEventLength(currentEvent);
+        for (final VEvent currentEvent : positiveEvents) {
+            final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
+            final Duration duration = getEventLength(currentEvent);
             if (duration == null) {
                 continue;
             }
             startDates.advanceTo(Date.from(instant.minus(duration)));
             while (startDates.hasNext()) {
-                Instant startInstant = startDates.next().toInstant();
-                Instant endInstant = startInstant.plus(duration);
+                final Instant startInstant = startDates.next().toInstant();
+                final Instant endInstant = startInstant.plus(duration);
                 if (startInstant.isBefore(instant) && endInstant.isAfter(instant)) {
                     @Nullable
-                    Uid eventUid = currentEvent.getUid();
+                    final Uid eventUid = currentEvent.getUid();
                     if (eventUid == null || !isCounteredBy(startInstant, eventUid, negativeEvents)) {
                         return new VEventWPeriod(currentEvent, startInstant, endInstant);
                     }
@@ -227,13 +227,13 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return Either a Duration describing the events length or null, if no information is available.
      */
     private static @Nullable Duration getEventLength(VEvent vEvent) {
-        DurationProperty duration = vEvent.getDuration();
+        final DurationProperty duration = vEvent.getDuration();
         if (duration != null) {
-            biweekly.util.Duration eventDuration = duration.getValue();
+            final biweekly.util.Duration eventDuration = duration.getValue();
             return Duration.ofMillis(eventDuration.toMillis());
         }
-        DateStart start = vEvent.getDateStart();
-        DateEnd end = vEvent.getDateEnd();
+        final DateStart start = vEvent.getDateStart();
+        final DateEnd end = vEvent.getDateEnd();
         if (start == null || end == null) {
             return null;
         }
@@ -247,14 +247,14 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return The DateIterator for {@link VEvent}
      */
     private DateIterator getRecurredEventDateIterator(VEvent vEvent) {
-        TimezoneInfo tzinfo = this.usedCalendar.getTimezoneInfo();
+        final TimezoneInfo tzinfo = this.usedCalendar.getTimezoneInfo();
 
-        DateStart firstStart = vEvent.getDateStart();
+        final DateStart firstStart = vEvent.getDateStart();
         TimeZone tz;
         if (tzinfo.isFloating(firstStart)) {
             tz = TimeZone.getDefault();
         } else {
-            TimezoneAssignment startAssignment = tzinfo.getTimezone(firstStart);
+            final TimezoneAssignment startAssignment = tzinfo.getTimezone(firstStart);
             tz = (startAssignment == null ? TimeZone.getTimeZone("UTC") : startAssignment.getTimeZone());
         }
         return vEvent.getDateIterator(tz);
@@ -269,14 +269,14 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return True if a counter event exists that matches uid and start, else false.
      */
     private boolean isCounteredBy(Instant startInstant, Uid eventUid, Collection<VEvent> counterEvents) {
-        for (VEvent counterEvent : counterEvents) {
+        for (final VEvent counterEvent : counterEvents) {
             @Nullable
-            Uid counterEventUid = counterEvent.getUid();
+            final Uid counterEventUid = counterEvent.getUid();
             if (counterEventUid != null && eventUid.getValue().contentEquals(counterEventUid.getValue())) {
-                DateIterator counterStartDates = getRecurredEventDateIterator(counterEvent);
+                final DateIterator counterStartDates = getRecurredEventDateIterator(counterEvent);
                 counterStartDates.advanceTo(Date.from(startInstant));
                 if (counterStartDates.hasNext()) {
-                    Instant counterStartInstant = counterStartDates.next().toInstant();
+                    final Instant counterStartInstant = counterStartDates.next().toInstant();
                     if (counterStartInstant.equals(startInstant)) {
                         return true;
                     }
@@ -303,12 +303,10 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         }
 
         Event toEvent() {
-            String title;
-            Summary eventSummary = vEvent.getSummary();
-            title = eventSummary != null ? eventSummary.getValue() : "-";
-            String description;
-            Description eventDescription = vEvent.getDescription();
-            description = eventDescription != null ? eventDescription.getValue() : "";
+            final Summary eventSummary = vEvent.getSummary();
+            final String title = eventSummary != null ? eventSummary.getValue() : "-";
+            final Description eventDescription = vEvent.getDescription();
+            final String description = eventDescription != null ? eventDescription.getValue() : "";
             return new Event(title, start, end, description);
         }
     }
