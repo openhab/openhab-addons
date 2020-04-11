@@ -50,7 +50,7 @@ If you enable the *discovery* option on the bridge, as you fault zones (e.g. ope
 
 ### ipbridge
 
-The **ipbridge** thing supports a TCP connection to an Alarm Decoder device such as *AD2PI* or *AD2PHAT*.
+The **ipbridge** thing supports a TCP/IP connection to an Alarm Decoder device such as *AD2PI* or *AD2PHAT*.
 
 * **hostname** (required) The hostname or IP address of the Alarm Decoder device
 * **tcpPort** (default = 10000) TCP port number for the Alarm Decoder connection
@@ -224,6 +224,34 @@ Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, disc
     Thing lrr lrr [ partition=0 ]
 }
 ```
+
+Example ad.items file:
+
+```
+Number KeypadZone "Zone [%d]"  {channel="alarmdecoder:keypad:ad1:keypad1:zone"}
+String KeypadText "Message" {channel="alarmdecoder:keypad:ad1:keypad1:text"}
+Switch KeypadArmedAway "Armed Away" {channel="alarmdecoder:keypad:ad1:keypad1:armedaway"}
+Switch KeypadArmedHome  "Armed Home" {channel="alarmdecoder:keypad:ad1:keypad1:armedhome"}
+Switch KeypadAlarm "Alarm" {channel="alarmdecoder:keypad:ad1:keypad1:alarm"}
+Switch KeypadFire "Fire" {channel="alarmdecoder:keypad:ad1:keypad1:fire"}
+String KeypadCmd "Command" {channel="alarmdecoder:keypad:ad1:keypad1:command"}
+
+Contact FrontDoorContact "Front Door Zone" {channel="alarmdecoder:zone:ad1:frontdoor:contact"}
+
+Switch Motion1Lowbat "Low Battery" {channel="alarmdecoder:rfzone:ad1:motion1:lowbat"}
+Switch Motion1Supervision "Supervision Warning" {channel="alarmdecoder:rfzone:ad1:motion1:supervision"}
+Contact Motion1Loop1 "Loop 1" {channel="alarmdecoder:rfzone:ad1:motion1:loop1"}
+Contact Motion1Loop2 "Loop 2" {channel="alarmdecoder:rfzone:ad1:motion1:loop2"}
+Contact Motion1Loop3 "Loop 3" {channel="alarmdecoder:rfzone:ad1:motion1:loop3"}
+Contact Motion1Loop4 "Loop 4" {channel="alarmdecoder:rfzone:ad1:motion1:loop4"}
+
+Number LrrPartition "Partition Number [%d]" {channel="alarmdecoder:lrr:ad1:lrr:partition"}
+Number LrrEventData "CID Event Data [%d]" {channel="alarmdecoder:lrr:ad1:lrr:eventdata"}
+String LrrMessage "CID Message" {channel="alarmdecoder:lrr:ad1:lrr:cidmessage"}
+String LrrReportCode "CID Report Code" {channel="alarmdecoder:lrr:ad1:lrr:reportcode"}
+```
+
+*Note: For brevity, not every possible keypad channel is linked to an item in the above example.*
 
 ## Thing Actions
 
