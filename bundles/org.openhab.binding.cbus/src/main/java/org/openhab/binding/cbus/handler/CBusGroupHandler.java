@@ -120,8 +120,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         }
     }
 
-    public void updateGroup(int application, int group, String value) {
-    }
+    public abstract void updateGroup(int application, int group, String value);
 
     private @Nullable Group getGroup(int groupID) {
         try {

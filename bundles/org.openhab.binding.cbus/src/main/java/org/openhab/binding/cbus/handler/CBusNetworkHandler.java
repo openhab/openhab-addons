@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.cbus.handler;
 
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.CBusNetworkConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusNetworkHandler.class);
     private @Nullable CBusCGateHandler bridgeHandler = null;
+    private CBusNetworkConfiguration configuration = new CBusNetworkConfiguration();
     private @Nullable Network network = null;
     private @Nullable Project projectObject = null;
     private @Nullable ScheduledFuture<?> initNetwork = null;
@@ -61,14 +64,21 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initialize --");
-        CBusCGateHandler bridgeHandler = getCBusCGateHandler();
-        if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.debug("bridge not online");
-            updateStatus(ThingStatus.OFFLINE);
-            return;
+        Optional<CBusNetworkConfiguration> cfg = Optional.of(getConfigAs(CBusNetworkConfiguration.class));
+        if (cfg.isPresent()) {
+            configuration = cfg.get();
+            logger.debug("Using configuration {}", configuration);
+            CBusCGateHandler bridgeHandler = getCBusCGateHandler();
+            if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                logger.debug("bridge not online");
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
+            logger.debug("Bridge online so init properly");
+            scheduler.execute(this::cgateOnline);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
         }
-        logger.debug("Bridge online so init properly");
-        scheduler.execute(this::cgateOnline);
     }
 
     @Override
@@ -98,8 +108,9 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     private void cgateOnline() {
         ThingStatus lastStatus = getThing().getStatus();
         logger.debug("cgateOnline {}", lastStatus);
-        String networkID = getConfig().get(CBusBindingConstants.CONFIG_NETWORK_ID).toString();
-        String project = getConfig().get(CBusBindingConstants.CONFIG_NETWORK_PROJECT).toString();
+
+        Integer networkID = configuration.id;
+        String project = configuration.project;
         logger.debug("cgateOnline netid {} project {}", networkID, project);
         Project projectObject = getProjectObject();
         Network network = getNetwork();
@@ -219,8 +230,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             if (lastStatus == ThingStatus.OFFLINE) {
                 if (networkSync == null || networkSync.isCancelled())
                     this.networkSync = scheduler.scheduleWithFixedDelay(this::doNetworkSync, 10,
-                            Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()),
-                            TimeUnit.SECONDS);
+                            configuration.syncInterval, TimeUnit.SECONDS);
                 logger.debug("Schedule networkSync to start in {} seconds",
                         Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()));
             } else {

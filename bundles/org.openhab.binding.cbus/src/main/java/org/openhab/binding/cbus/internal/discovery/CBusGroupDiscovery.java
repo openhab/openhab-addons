@@ -76,7 +76,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     for (Group group : groups) {
                         logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
                                 group.getName());
-                        Map<String, Object> properties = new HashMap<>(4);
+                        Map<String, Object> properties = new HashMap<>();
                         properties.put(CBusBindingConstants.PROPERTY_APPLICATION_ID,
                                 Integer.toString(applicationItem.getKey()));
                         properties.put(CBusBindingConstants.PROPERTY_GROUP_ID, Integer.toString(group.getGroupID()));
