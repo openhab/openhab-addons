@@ -1,4 +1,4 @@
-#C-Bus Binding
+# C-Bus Binding
 
 This is the binding for the [Clipsal C-Bus System](http://www2.clipsal.com/cis/technical/product_groups/cbus).
 This binding allows you to view and control groups on C-Bus networks from openHAB2.
