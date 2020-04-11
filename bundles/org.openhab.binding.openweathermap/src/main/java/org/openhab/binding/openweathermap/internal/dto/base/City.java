@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.base;
+package org.openhab.binding.openweathermap.internal.dto.base;
 
 /**
  * Generated Plain Old Java Objects class for {@link City} from JSON.

@@ -27,6 +27,7 @@
 			<channel id="icon" typeId="condition-icon" />
 			<channel id="icon-id" typeId="condition-icon-id" />
 			<channel id="temperature" typeId="system.outdoor-temperature" />
+			<channel id="apparent-temperature" typeId="apparent-temperature" />
 			<channel id="pressure" typeId="system.barometric-pressure" />
 			<channel id="humidity" typeId="system.atmospheric-humidity" />
 			<channel id="wind-speed" typeId="system.wind-speed" />
@@ -51,6 +52,7 @@
 			<channel id="temperature" typeId="forecasted-outdoor-temperature" />
 			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature" />
 			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature" />
+			<channel id="apparent-temperature" typeId="forecasted-apparent-temperature" />
 			<channel id="pressure" typeId="forecasted-barometric-pressure" />
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity" />
 			<channel id="wind-speed" typeId="forecasted-wind-speed" />
@@ -73,6 +75,7 @@
 			<channel id="icon-id" typeId="condition-icon-id" />
 			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature" />
 			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature" />
+			<channel id="apparent-temperature" typeId="forecasted-apparent-temperature" />
 			<channel id="pressure" typeId="forecasted-barometric-pressure" />
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity" />
 			<channel id="wind-speed" typeId="forecasted-wind-speed" />
@@ -198,6 +201,22 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Maximum Temperature</label>
 		<description>Maximum forecasted outdoor temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="apparent-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Apparent Temperature</label>
+		<description>Current apparent temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecasted-apparent-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Forecasted Apparent Temperature</label>
+		<description>Forecasted apparent temperature.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>

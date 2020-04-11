@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.weather;
+package org.openhab.binding.openweathermap.internal.dto.weather;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,6 +23,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Main {
     private Double temp;
+    @SerializedName("feels_like")
+    private @Nullable Double feelsLikeTemp;
     private Double pressure;
     private Integer humidity;
     @SerializedName("temp_min")
@@ -34,6 +38,14 @@ public class Main {
 
     public void setTemp(Double temp) {
         this.temp = temp;
+    }
+
+    public @Nullable Double getFeelsLikeTemp() {
+        return feelsLikeTemp;
+    }
+
+    public void setFeelsLikeTemp(Double feelsLikeTemp) {
+        this.feelsLikeTemp = feelsLikeTemp;
     }
 
     public Double getPressure() {

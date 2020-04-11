@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.forecast.hourly;
+package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
 
 /**
  * Generated Plain Old Java Objects class for {@link Sys} from JSON.

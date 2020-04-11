@@ -33,7 +33,7 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapUVIndexC
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonUVIndexData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,8 +182,9 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     private void updateUVIndexForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (uvindexForecastData != null && uvindexForecastData.size() >= count) {
-            OpenWeatherMapJsonUVIndexData forecastData = uvindexForecastData.get(count - 1);
+        List<OpenWeatherMapJsonUVIndexData> localUVIndexForecastData = uvindexForecastData;
+        if (localUVIndexForecastData != null && localUVIndexForecastData.size() >= count) {
+            OpenWeatherMapJsonUVIndexData forecastData = localUVIndexForecastData.get(count - 1);
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:

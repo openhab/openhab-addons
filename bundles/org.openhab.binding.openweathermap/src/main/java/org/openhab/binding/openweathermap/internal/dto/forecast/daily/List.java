@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.forecast.daily;
+package org.openhab.binding.openweathermap.internal.dto.forecast.daily;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openweathermap.internal.model.base.Weather;
+import org.openhab.binding.openweathermap.internal.dto.base.Weather;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Generated Plain Old Java Objects class for {@link List} from JSON.
@@ -23,6 +25,8 @@ import org.openhab.binding.openweathermap.internal.model.base.Weather;
 public class List {
     private Integer dt;
     private Temp temp;
+    @SerializedName("feels_like")
+    private @Nullable FeelsLikeTemp feelsLikeTemp;
     private Double pressure;
     private Integer humidity;
     private java.util.List<Weather> weather;
@@ -47,6 +51,14 @@ public class List {
 
     public void setTemp(Temp temp) {
         this.temp = temp;
+    }
+
+    public @Nullable FeelsLikeTemp getFeelsLikeTemp() {
+        return feelsLikeTemp;
+    }
+
+    public void setFeelsLikeTemp(FeelsLikeTemp feelsLikeTemp) {
+        this.feelsLikeTemp = feelsLikeTemp;
     }
 
     public Double getPressure() {
