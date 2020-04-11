@@ -24,6 +24,7 @@
     <module>org.openhab.persistence.mapdb</module>
     <module>org.openhab.persistence.mongodb</module>
     <module>org.openhab.persistence.rrd4j</module>
+    <module>org.openhab.voice.googletts</module>
   </modules>
 
   <dependencies>
