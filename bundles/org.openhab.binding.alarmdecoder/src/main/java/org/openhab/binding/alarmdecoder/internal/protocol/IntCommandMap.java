@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class IntCommandMap {
     private final Map<Integer, String> commandMap;
-    private final Pattern validCommandPattern = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
+    private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
 
     public IntCommandMap(String mappingString) throws IllegalArgumentException {
         commandMap = new HashMap<Integer, String>();
@@ -41,7 +41,7 @@ public class IntCommandMap {
                 throw new IllegalArgumentException("Invalid key-value pair format");
             }
 
-            Matcher matcher = validCommandPattern.matcher(kvPair[1]);
+            Matcher matcher = VALID_COMMAND_PATTERN.matcher(kvPair[1]);
             if (!matcher.matches()) {
                 throw new IllegalArgumentException("Invalid command characters in mapping");
             }
@@ -49,7 +49,7 @@ public class IntCommandMap {
             try {
                 commandMap.put(Integer.parseInt(kvPair[0]), kvPair[1]);
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Unable to parse integer in mapping");
+                throw new IllegalArgumentException("Unable to parse integer in mapping", e);
             }
         }
     }

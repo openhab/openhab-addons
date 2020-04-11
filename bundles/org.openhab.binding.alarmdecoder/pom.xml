@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.binding.alarmdecoder</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: alarmdecoder Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Alarm Decoder Binding</name>
 
 </project>

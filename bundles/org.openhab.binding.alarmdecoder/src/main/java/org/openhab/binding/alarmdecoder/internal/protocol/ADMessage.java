@@ -39,7 +39,7 @@ public abstract class ADMessage {
 
     @Override
     public String toString() {
-        return new String(message);
+        return message;
     }
 
     /** Utility routine to split an AD message into its component parts */

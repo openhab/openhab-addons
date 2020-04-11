@@ -48,7 +48,7 @@ public class KeypadHandler extends ADThingHandler {
 
     private @NonNullByDefault({}) KeypadConfig config;
     private boolean singleAddress;
-    private Pattern validCommandPattern = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
+    private static final Pattern VALID_COMMAND_PATTERN = Pattern.compile(ADCommand.KEYPAD_COMMAND_REGEX);
     private @Nullable IntCommandMap intCommandMap;
     private @Nullable KeypadMessage previousMessage;
 
@@ -143,7 +143,7 @@ public class KeypadHandler extends ADThingHandler {
             }
 
             // check that received command is valid
-            Matcher matcher = validCommandPattern.matcher(cmd);
+            Matcher matcher = VALID_COMMAND_PATTERN.matcher(cmd);
             if (!matcher.matches()) {
                 logger.info("Invalid characters in command. Ignoring command: {}", cmd);
                 return;

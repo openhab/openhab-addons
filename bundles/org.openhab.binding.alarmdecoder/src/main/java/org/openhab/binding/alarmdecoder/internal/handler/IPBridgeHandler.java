@@ -45,10 +45,6 @@ public class IPBridgeHandler extends ADBridgeHandler {
 
     private @NonNullByDefault({}) IPBridgeConfig config;
 
-    /** hostname for the alarmdecoder process */
-    private @Nullable String tcpHostName = null;
-    /** port for the alarmdecoder process */
-    private int tcpPort;
     private @Nullable Socket socket = null;
 
     public IPBridgeHandler(Bridge bridge) {
@@ -65,8 +61,6 @@ public class IPBridgeHandler extends ADBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname parameter not supplied");
             return;
         }
-        tcpHostName = config.hostname;
-        tcpPort = config.tcpPort;
 
         // set the thing status to UNKNOWN temporarily and let the background connect task decide the real status.
         updateStatus(ThingStatus.UNKNOWN);
@@ -76,41 +70,36 @@ public class IPBridgeHandler extends ADBridgeHandler {
 
     @Override
     protected synchronized void connect() {
-        boolean connectionSuccess = false;
-
+        disconnect(); // make sure we are disconnected
+        writeException = false;
         try {
-            disconnect(); // make sure we are disconnected
-            writeException = false;
-            if (tcpHostName != null && tcpPort > 0 && tcpPort < 65536) {
-                socket = new Socket(tcpHostName, tcpPort);
+            if (config.hostname != null && config.tcpPort > 0 && config.tcpPort < 65536) {
+                socket = new Socket(config.hostname, config.tcpPort);
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                logger.debug("connected to {}:{}", tcpHostName, tcpPort);
+                logger.debug("connected to {}:{}", config.hostname, config.tcpPort);
                 panelReadyReceived = false;
                 startMsgReader();
                 updateStatus(ThingStatus.ONLINE);
-                connectionSuccess = true;
+
+                // Start connection check job
+                logger.debug("Scheduling connection check job with interval {} minutes.", config.reconnect);
+                lastReceivedTime = new Date();
+                connectionCheckJob = scheduler.scheduleWithFixedDelay(this::connectionCheck, config.reconnect,
+                        config.reconnect, TimeUnit.MINUTES);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "invalid hostname/tcpPort configured");
             }
         } catch (UnknownHostException e) {
-            logger.debug("unknown hostname: {}", tcpHostName);
+            logger.debug("unknown hostname: {}", config.hostname);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unknown host");
             disconnect();
         } catch (IOException e) {
-            logger.debug("cannot open connection to {}:{} error: {}", tcpHostName, tcpPort, e.getMessage());
+            logger.debug("cannot open connection to {}:{} error: {}", config.hostname, config.tcpPort, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
             scheduleConnectRetry(config.reconnect); // Possibly a retryable error. Try again later.
-        }
-
-        // Start connection check job
-        if (connectionSuccess) {
-            logger.debug("Scheduling connection check job with interval {} minutes.", config.reconnect);
-            lastReceivedTime = new Date();
-            connectionCheckJob = scheduler.scheduleWithFixedDelay(this::connectionCheck, config.reconnect,
-                    config.reconnect, TimeUnit.MINUTES);
         }
     }
 

@@ -84,7 +84,7 @@ public class KeypadMessage extends ADMessage {
             this.status = ((upper & 0x1F) << 13) | ((nbeeps & 0x3) << 10) | lower;
 
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("keypad msg contains invalid number: " + e.getMessage());
+            throw new IllegalArgumentException("keypad msg contains invalid number: " + e.getMessage(), e);
         }
     }
 

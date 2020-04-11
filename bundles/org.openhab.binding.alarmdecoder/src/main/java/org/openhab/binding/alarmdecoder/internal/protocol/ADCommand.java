@@ -54,7 +54,7 @@ public final class ADCommand {
 
     @Override
     public String toString() {
-        return new String(command);
+        return command;
     }
 
     public static ADCommand reboot() {

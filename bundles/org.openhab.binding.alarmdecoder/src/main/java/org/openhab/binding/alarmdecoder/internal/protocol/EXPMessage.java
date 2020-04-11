@@ -56,7 +56,7 @@ public class EXPMessage extends ADMessage {
             channel = Integer.parseInt(parts.get(1));
             data = Integer.parseInt(parts.get(2));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("EXP message contains invalid number: " + e.getMessage());
+            throw new IllegalArgumentException("EXP message contains invalid number: " + e.getMessage(), e);
         }
 
         if ((data & ~0x1) != 0) {

@@ -154,7 +154,6 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         if (writer != null) {
             logger.trace("Closing writer");
             try {
-                // writer.flush();
                 writer.close();
             } catch (IOException e) {
                 logger.info("IO Exception closing writer: {}", e.getMessage());

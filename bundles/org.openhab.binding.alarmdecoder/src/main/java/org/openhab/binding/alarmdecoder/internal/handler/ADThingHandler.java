@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public abstract class ADThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ADThingHandler.class);
-    protected AtomicBoolean firstUpdateReceived = new AtomicBoolean(false);
+    protected final AtomicBoolean firstUpdateReceived = new AtomicBoolean(false);
 
     public ADThingHandler(Thing thing) {
         super(thing);
@@ -60,7 +60,6 @@ public abstract class ADThingHandler extends BaseThingHandler {
 
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            // thingOfflineNotify();
         }
     }
 

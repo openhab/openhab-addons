@@ -72,7 +72,7 @@ public class LRRMessage extends ADMessage {
             }
             partition = p;
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("LRR msg contains invalid number: " + e.getMessage());
+            throw new IllegalArgumentException("LRR msg contains invalid number: " + e.getMessage(), e);
         }
     }
 }

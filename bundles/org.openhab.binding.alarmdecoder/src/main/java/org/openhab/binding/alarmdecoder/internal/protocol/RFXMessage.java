@@ -58,7 +58,7 @@ public class RFXMessage extends ADMessage {
             serial = Integer.parseInt(parts.get(0));
             data = Integer.parseInt(parts.get(1), 16);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("RFX message contains invalid number: " + e.getMessage());
+            throw new IllegalArgumentException("RFX message contains invalid number: " + e.getMessage(), e);
         }
     }
 }
