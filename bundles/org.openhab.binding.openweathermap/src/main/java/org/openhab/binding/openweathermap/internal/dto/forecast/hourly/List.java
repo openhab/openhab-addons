@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.forecast.hourly;
+package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openweathermap.internal.model.base.Clouds;
-import org.openhab.binding.openweathermap.internal.model.base.Rain;
-import org.openhab.binding.openweathermap.internal.model.base.Snow;
-import org.openhab.binding.openweathermap.internal.model.base.Weather;
-import org.openhab.binding.openweathermap.internal.model.base.Wind;
-import org.openhab.binding.openweathermap.internal.model.weather.Main;
+import org.openhab.binding.openweathermap.internal.dto.base.Clouds;
+import org.openhab.binding.openweathermap.internal.dto.base.Rain;
+import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.base.Weather;
+import org.openhab.binding.openweathermap.internal.dto.base.Wind;
+import org.openhab.binding.openweathermap.internal.dto.weather.Main;
 
 import com.google.gson.annotations.SerializedName;
 
