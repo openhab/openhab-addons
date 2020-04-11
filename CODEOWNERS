@@ -212,6 +212,7 @@
 /bundles/org.openhab.io.transport.modbus/ @ssalonen
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
+/bundles/org.openhab.persistence.influxdb/ @lujop
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.javascript/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314 

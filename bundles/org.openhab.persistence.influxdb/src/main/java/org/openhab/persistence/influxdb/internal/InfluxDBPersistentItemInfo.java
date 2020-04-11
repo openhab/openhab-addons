@@ -12,30 +12,25 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import java.text.DateFormat;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.types.State;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.persistence.PersistenceItemInfo;
 
 /**
- * This is a Java bean used to return historic items from Influxdb.
+ * Java bean used to return information about stored items
  *
- * @author Theo Weiss - Initial Contribution
- *
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
-public class InfluxdbItem implements HistoricItem {
-
+public class InfluxDBPersistentItemInfo implements PersistenceItemInfo {
     private final String name;
-    private final State state;
-    private final Date timestamp;
+    private final Integer count;
 
-    public InfluxdbItem(String name, State state, Date timestamp) {
+    public InfluxDBPersistentItemInfo(String name, Integer count) {
         this.name = name;
-        this.state = state;
-        this.timestamp = timestamp;
+        this.count = count;
     }
 
     @Override
@@ -44,18 +39,20 @@ public class InfluxdbItem implements HistoricItem {
     }
 
     @Override
-    public State getState() {
-        return state;
+    @Nullable
+    public Integer getCount() {
+        return count;
     }
 
     @Override
-    public Date getTimestamp() {
-        return timestamp;
+    @Nullable
+    public Date getEarliest() {
+        return null;
     }
 
     @Override
-    public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+    @Nullable
+    public Date getLatest() {
+        return null;
     }
-
 }
