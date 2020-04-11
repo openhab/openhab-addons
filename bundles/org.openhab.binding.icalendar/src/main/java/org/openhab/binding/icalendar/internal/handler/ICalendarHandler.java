@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -310,51 +309,35 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         } else {
             updateStatus(ThingStatus.ONLINE);
 
-            Channel eventPresenceChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_PRESENT);
-            Channel currentEventTitleChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_TITLE);
-            Channel currentEventStartChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_START);
-            Channel currentEventEndChannel = thing.getChannel(CHANNEL_CURRENT_EVENT_END);
-            Channel nextEventTitleChannel = thing.getChannel(CHANNEL_NEXT_EVENT_TITLE);
-            Channel nextEventStartChannel = thing.getChannel(CHANNEL_NEXT_EVENT_START);
-            Channel nextEventEndChannel = thing.getChannel(CHANNEL_NEXT_EVENT_END);
-            if (eventPresenceChannel == null || currentEventTitleChannel == null || currentEventStartChannel == null
-                    || currentEventEndChannel == null || nextEventTitleChannel == null || nextEventStartChannel == null
-                    || nextEventEndChannel == null) {
-                logger.warn("Could not retrieve one or more calendar channels. Not updating.");
-                return;
-            }
-
             final Instant now = Instant.now();
             if (calendar.isEventPresent(now)) {
-                updateState(eventPresenceChannel.getUID(), OnOffType.ON);
+                updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.ON);
                 Event currentEvent = calendar.getCurrentEvent(now);
                 if (currentEvent == null) {
                     logger.warn("Unexpected inconsistency of internal API. Not Updating event details.");
                 } else {
-                    updateState(currentEventTitleChannel.getUID(), new StringType(currentEvent.title));
-                    updateState(currentEventStartChannel.getUID(),
+                    updateState(CHANNEL_CURRENT_EVENT_TITLE, new StringType(currentEvent.title));
+                    updateState(CHANNEL_CURRENT_EVENT_START,
                             new DateTimeType(currentEvent.start.atZone(ZoneId.systemDefault())));
-                    updateState(currentEventEndChannel.getUID(),
+                    updateState(CHANNEL_CURRENT_EVENT_END,
                             new DateTimeType(currentEvent.end.atZone(ZoneId.systemDefault())));
                 }
             } else {
-                updateState(eventPresenceChannel.getUID(), OnOffType.OFF);
-                updateState(currentEventTitleChannel.getUID(), UnDefType.NULL);
-                updateState(currentEventStartChannel.getUID(), UnDefType.NULL);
-                updateState(currentEventEndChannel.getUID(), UnDefType.NULL);
+                updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
+                updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.NULL);
+                updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.NULL);
+                updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.NULL);
             }
 
             Event nextEvent = calendar.getNextEvent(now);
             if (nextEvent != null) {
-                updateState(nextEventTitleChannel.getUID(), new StringType(nextEvent.title));
-                updateState(nextEventStartChannel.getUID(),
-                        new DateTimeType(nextEvent.start.atZone(ZoneId.systemDefault())));
-                updateState(nextEventEndChannel.getUID(),
-                        new DateTimeType(nextEvent.end.atZone(ZoneId.systemDefault())));
+                updateState(CHANNEL_NEXT_EVENT_TITLE, new StringType(nextEvent.title));
+                updateState(CHANNEL_NEXT_EVENT_START, new DateTimeType(nextEvent.start.atZone(ZoneId.systemDefault())));
+                updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(ZoneId.systemDefault())));
             } else {
-                updateState(nextEventTitleChannel.getUID(), UnDefType.NULL);
-                updateState(nextEventStartChannel.getUID(), UnDefType.NULL);
-                updateState(nextEventEndChannel.getUID(), UnDefType.NULL);
+                updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.NULL);
+                updateState(CHANNEL_NEXT_EVENT_START, UnDefType.NULL);
+                updateState(CHANNEL_NEXT_EVENT_END, UnDefType.NULL);
             }
 
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
