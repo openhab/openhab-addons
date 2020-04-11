@@ -200,12 +200,14 @@ public class BiweeklyPresentableCalendarTest {
         // test outside of window: begun events, too early
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:50:00Z"),
                 Instant.parse("2020-01-28T15:55:00Z"));
-        assertNull(events);
+        assertNotNull(events);
+        assertEquals(0, events.size());
 
         // test outside of window: begun events, too late
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T16:05:00Z"),
                 Instant.parse("2020-01-28T16:10:00Z"));
-        assertNull(events);
+        assertNotNull(events);
+        assertEquals(0, events.size());
 
         // test just ended events: first in the series
         events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:25:00Z"),
@@ -230,12 +232,14 @@ public class BiweeklyPresentableCalendarTest {
         // test outside of window: ended events, too early
         events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:20:00Z"),
                 Instant.parse("2020-01-28T16:25:00Z"));
-        assertNull(events);
+        assertNotNull(events);
+        assertEquals(0, events.size());
 
         // test outside of window: ended events, too late
         events = calendar3.getJustEndedEvents(Instant.parse("2020-01-28T16:35:00Z"),
                 Instant.parse("2020-01-28T16:40:00Z"));
-        assertNull(events);
+        assertNotNull(events);
+        assertEquals(0, events.size());
 
         // test a valid just begun event with both good and bad authorization codes
         events = calendar3.getJustBegunEvents(Instant.parse("2020-01-28T15:55:00Z"),
