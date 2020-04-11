@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model.forecast.hourly;
+package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,6 +23,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Main {
     private Double temp;
+    @SerializedName("feels_like")
+    private @Nullable Double feelsLikeTemp;
     @SerializedName("temp_min")
     private Double tempMin;
     @SerializedName("temp_max")
@@ -40,6 +44,14 @@ public class Main {
 
     public void setTemp(Double temp) {
         this.temp = temp;
+    }
+
+    public @Nullable Double getFeelsLikeTemp() {
+        return feelsLikeTemp;
+    }
+
+    public void setFeelsLikeTemp(Double feelsLikeTemp) {
+        this.feelsLikeTemp = feelsLikeTemp;
     }
 
     public Double getTempMin() {

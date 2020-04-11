@@ -10,31 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.model;
+package org.openhab.binding.openweathermap.internal.dto;
 
-import org.openhab.binding.openweathermap.internal.model.base.City;
-import org.openhab.binding.openweathermap.internal.model.forecast.daily.List;
+import org.openhab.binding.openweathermap.internal.dto.base.City;
+import org.openhab.binding.openweathermap.internal.dto.forecast.hourly.List;
 
 /**
- * The {@link OpenWeatherMapJsonDailyForecastData} is the Java class used to map the JSON response to an OpenWeatherMap
+ * The {@link OpenWeatherMapJsonHourlyForecastData} is the Java class used to map the JSON response to an OpenWeatherMap
  * request.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-public class OpenWeatherMapJsonDailyForecastData {
-    private City city;
+public class OpenWeatherMapJsonHourlyForecastData {
     private String cod;
     private Double message;
     private Integer cnt;
     private java.util.List<List> list;
-
-    public City getCity() {
-        return city;
-    }
-
-    public void setCity(City city) {
-        this.city = city;
-    }
+    private City city;
 
     public String getCod() {
         return cod;
@@ -66,5 +58,13 @@ public class OpenWeatherMapJsonDailyForecastData {
 
     public void setList(java.util.List<List> list) {
         this.list = list;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
     }
 }
