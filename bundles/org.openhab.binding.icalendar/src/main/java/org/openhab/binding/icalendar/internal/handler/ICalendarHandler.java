@@ -144,9 +144,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 updateStates();
                 rescheduleCalendarStateUpdate();
             } else {
-                logger.warn(
-                        "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded. Going offline.");
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
             }
             pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime.longValue(),
                     currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
@@ -241,7 +240,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             logger.warn("Can't reload calendar when configuration is missing.");
             return false;
         }
-        try (FileInputStream fileStream = new FileInputStream(calendarFile)) {
+        try (final FileInputStream fileStream = new FileInputStream(calendarFile)) {
             final AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
@@ -283,7 +282,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             final Event nextEvent = currentCalendar.getNextEvent(now);
             final ICalendarConfiguration currentConfig = this.configuration;
             if (currentConfig == null) {
-                logger.debug("Something is broken, the configuration is not available.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Something is broken, the configuration is not available.");
                 return;
             }
             if (nextEvent == null) {
@@ -312,7 +312,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
             final Instant now = Instant.now();
             if (calendar.isEventPresent(now)) {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.ON);
-                Event currentEvent = calendar.getCurrentEvent(now);
+                final Event currentEvent = calendar.getCurrentEvent(now);
                 if (currentEvent == null) {
                     logger.warn("Unexpected inconsistency of internal API. Not Updating event details.");
                 } else {
@@ -324,20 +324,20 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
                 }
             } else {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
-                updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.NULL);
-                updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.NULL);
-                updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.NULL);
+                updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.UNDEF);
             }
 
-            Event nextEvent = calendar.getNextEvent(now);
+            final Event nextEvent = calendar.getNextEvent(now);
             if (nextEvent != null) {
                 updateState(CHANNEL_NEXT_EVENT_TITLE, new StringType(nextEvent.title));
                 updateState(CHANNEL_NEXT_EVENT_START, new DateTimeType(nextEvent.start.atZone(ZoneId.systemDefault())));
                 updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(ZoneId.systemDefault())));
             } else {
-                updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.NULL);
-                updateState(CHANNEL_NEXT_EVENT_START, UnDefType.NULL);
-                updateState(CHANNEL_NEXT_EVENT_END, UnDefType.NULL);
+                updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
             }
 
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called

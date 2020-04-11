@@ -102,7 +102,6 @@ class PullJob implements Runnable {
             response = asyncListener.get(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         } catch (InterruptedException | TimeoutException | ExecutionException e1) {
             logger.warn("Response for calendar request could not be retrieved. Error message is: {}", e1.getMessage());
-            logger.debug("Response retrieval failed.", e1);
             return;
         }
 
@@ -155,7 +154,6 @@ class PullJob implements Runnable {
             }
         } catch (IOException e) {
             logger.warn("Not able to write temporary file with downloaded iCal. Error Message is: {}", e.getMessage());
-            logger.debug("Failed to write out downloaded iCal", e);
             return;
         }
 
