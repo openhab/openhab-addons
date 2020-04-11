@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - EventPublisher code
- *
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)

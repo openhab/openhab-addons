@@ -46,7 +46,6 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
- *
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {

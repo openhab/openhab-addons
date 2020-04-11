@@ -58,9 +58,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Michael Wodniok - Initial contribution
- *
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
- *
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseThingHandler implements CalendarUpdateListener {

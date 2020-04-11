@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
  * END:<itemName>:<targetState>:<authorizationCode>
  *
  * @author Andrew Fiddian-Green - Initial contribution
- *
  */
 @NonNullByDefault
 public class CommandTag {

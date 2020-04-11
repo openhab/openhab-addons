@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
- *
  */
 @NonNullByDefault
 public abstract class AbstractPresentableCalendar {

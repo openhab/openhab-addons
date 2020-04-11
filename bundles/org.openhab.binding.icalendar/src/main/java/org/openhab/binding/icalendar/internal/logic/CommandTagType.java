@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * END:<item_name>:<new_state>
  *
  * @author Andrew Fiddian-Green - Initial contribution
- *
  */
 @NonNullByDefault
 public enum CommandTagType {
