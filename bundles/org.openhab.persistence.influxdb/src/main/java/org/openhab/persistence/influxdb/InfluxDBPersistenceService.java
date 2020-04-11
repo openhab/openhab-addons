@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
         QueryablePersistenceService.class }, configurationPid = "org.openhab.influxdb", property = {
                 Constants.SERVICE_PID + "=org.openhab.influxdb",
                 ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=persistence:influxdb",
-                ConfigurableService.SERVICE_PROPERTY_LABEL + "=InfluxDB persistence layer",
+                ConfigurableService.SERVICE_PROPERTY_LABEL + "=InfluxDB Persistence Service",
                 ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=persistence" })
 public class InfluxDBPersistenceService implements QueryablePersistenceService {
     public static final String SERVICE_NAME = "influxdb";
