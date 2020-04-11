@@ -8,22 +8,22 @@ https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.ht
 
 ## Supported Things
 
-This binding supports a bridge thing (dwdpollenflug), which polls the dataset for Germany in an adjustable interval. 
-And it supports a region thing (region), representing the data for all pollen types of a region or partregion.
+This binding supports a bridge thing (`dwdpollenflug`), which polls the dataset for Germany in an adjustable interval. 
+And it supports a region thing (`region`), representing the data for all pollen types of a region or partregion.
 
 ## Thing Configuration
 
 ### Bridge
 
-| Property | Default | Required | Description                                                                          |
-| -------- | :-----: | :------: | ------------------------------------------------------------------------------------ |
-| refresh  |   30    |    no    | Define the interval for polling the data from DWD in minutes. Minimum is 15 minutes. |
+| Property  | Default | Required | Description                                                                          |
+| --------- | :-----: | :------: | ------------------------------------------------------------------------------------ |
+| `refresh` |   30    |    no    | Define the interval for polling the data from DWD in minutes. Minimum is 15 minutes. |
 
 ### Region
 
-| Property | Default | Required | Description                                                                                              |
-| -------- | :-----: | :------: | -------------------------------------------------------------------------------------------------------- |
-| regionID |    -    |   yes    | In PaperUI just select the region you want to display data for. For files-configuration see table below. |
+| Property   | Default | Required | Description                                                                                              |
+| ---------- | :-----: | :------: | -------------------------------------------------------------------------------------------------------- |
+| `regionID` |    -    |   yes    | In PaperUI just select the region you want to display data for. For files-configuration see table below. |
 
 #### Manual region or partregion selection ####
 
@@ -64,40 +64,40 @@ You can refer to the following table.
 
 The bridge thing has following channels:
 
-| channel             | description                                    |
-| ------------------- | ---------------------------------------------- |
-| updates#refreshed   | Hold the time of the bridge's last refresh     |
-| updates#last_update | The time when data was last updated by DWD     |
-| updates#next_update | The time when data will be updated next by DWD |
+| channel               | description                                    |
+| --------------------- | ---------------------------------------------- |
+| `updates#refreshed`   | Hold the time of the bridge's last refresh     |
+| `updates#last_update` | The time when data was last updated by DWD     |
+| `updates#next_update` | The time when data will be updated next by DWD |
 
 For each of the eight pollen types reported by DWD the region thing has three channels for today, tomorrow and the day after tomorrow.
 
-| channels             | pollen type | german name |
-| -------------------- | ----------- | ----------- |
-| alder#today          | alder       | Erle        |
-| alder#tomorrow       |             |             |
-| alder#dayafter_to    |             |             |
-| ambrosia#today       | ambrosia    | Ambrosia    |
-| ambrosia#tomorrow    |             |             |
-| ambrosia#dayafter_to |             |             |
-| ash#today            | ash-tree    | Esche       |
-| ash#tomorrow         |             |             |
-| ash#dayafter_to      |             |             |
-| birch#today          | birch       | Birke       |
-| birch#tomorrow       |             |             |
-| birch#dayafter_to    |             |             |
-| grasses#today        | grasses     | Gräser      |
-| grasses#tomorrow     |             |             |
-| grasses#dayafter_to  |             |             |
-| hazel#today          | hazel       | Hasel       |
-| hazel#tomorrow       |             |             |
-| hazel#dayafter_to    |             |             |
-| mugwort#today        | mugwort     | Beifuß      |
-| mugwort#tomorrow     |             |             |
-| mugwort#dayafter_to  |             |             |
-| rye#today            | rye         | Roggen      |
-| rye#tomorrow         |             |             |
-| rye#dayafter_to      |             |             |
+| channels               | pollen type | german name |
+| ---------------------- | ----------- | ----------- |
+| `alder#today`          | alder       | Erle        |
+| `alder#tomorrow`       |             |             |
+| `alder#dayafter_to`    |             |             |
+| `ambrosia#today`       | ambrosia    | Ambrosia    |
+| `ambrosia#tomorrow`    |             |             |
+| `ambrosia#dayafter_to` |             |             |
+| `ash#today`            | ash-tree    | Esche       |
+| `ash#tomorrow`         |             |             |
+| `ash#dayafter_to`      |             |             |
+| `birch#today`          | birch       | Birke       |
+| `birch#tomorrow`       |             |             |
+| `birch#dayafter_to`    |             |             |
+| `grasses#today`        | grasses     | Gräser      |
+| `grasses#tomorrow`     |             |             |
+| `grasses#dayafter_to`  |             |             |
+| `hazel#today`          | hazel       | Hasel       |
+| `hazel#tomorrow`       |             |             |
+| `hazel#dayafter_to`    |             |             |
+| `mugwort#today`        | mugwort     | Beifuß      |
+| `mugwort#tomorrow`     |             |             |
+| `mugwort#dayafter_to`  |             |             |
+| `rye#today`            | rye         | Roggen      |
+| `rye#tomorrow`         |             |             |
+| `rye#dayafter_to`      |             |             |
 
 There are the following possible string values:
 
