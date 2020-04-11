@@ -86,11 +86,11 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
+        final ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
         if (currentUpdateJobFuture != null) {
             currentUpdateJobFuture.cancel(true);
         }
-        ScheduledFuture<?> currentPullJobFuture = pullJobFuture;
+        final ScheduledFuture<?> currentPullJobFuture = pullJobFuture;
         if (currentPullJobFuture != null) {
             currentPullJobFuture.cancel(true);
         }
