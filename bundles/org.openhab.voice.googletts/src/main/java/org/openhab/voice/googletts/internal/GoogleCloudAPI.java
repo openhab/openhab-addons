@@ -145,19 +145,18 @@ class GoogleCloudAPI {
         String clientSecret = config.clientSecret;
         if (clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty()) {
             try {
-                final OAuthClientService localOAuthService = oAuthFactory.createOAuthClientService(
+                final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(
                         GoogleTTSService.SERVICE_PID, GCP_TOKEN_URI, GCP_AUTH_URI, clientId, clientSecret, GCP_SCOPE,
                         false);
-                oAuthService = localOAuthService;
-
-                if (checkOnAuthCode()) {
-                    initialized = true;
-                    initVoices();
-                }
+                this.oAuthService = oAuthService;
+                getAccessToken();
+                initialized = true;
+                initVoices();
             } catch (AuthenticationException | IOException ex) {
                 logger.warn("Error initializing Google Cloud TTS service: {}", ex.getMessage());
                 oAuthService = null;
                 initialized = false;
+                voices.clear();
             }
         } else {
             oAuthService = null;
@@ -166,7 +165,7 @@ class GoogleCloudAPI {
         }
 
         // maintain cache
-        if (config.purgeCache != null && config.purgeCache) {
+        if (config.purgeCache) {
             File[] files = cacheFolder.listFiles();
             if (files != null && files.length > 0) {
                 Arrays.stream(files).forEach(File::delete);
@@ -178,11 +177,8 @@ class GoogleCloudAPI {
     /**
      * Fetches the OAuth2 tokens from Google Cloud Platform if the auth-code is set in the configuration. If successful
      * the auth-code will be removed from the configuration.
-     *
-     * @return true if the auth-code was not set or if the auth-code was successfully used to get a new refresh and
-     *         access token
      */
-    private boolean checkOnAuthCode() throws AuthenticationException, IOException {
+    private void getAccessToken() throws AuthenticationException, IOException {
         String authcode = config.authcode;
         if (authcode != null && !authcode.isEmpty()) {
             logger.debug("Trying to get access and refresh tokens.");
@@ -209,7 +205,6 @@ class GoogleCloudAPI {
                         "Failed to update configuration for Google Cloud TTS service. Please clear the 'authcode' configuration parameter manualy.");
             }
         }
-        return true;
     }
 
     private String getAuthorizationHeader() throws AuthenticationException, IOException {
@@ -345,6 +340,7 @@ class GoogleCloudAPI {
             logger.warn("Error initializing Google Cloud TTS service: {}", ex.getMessage());
             oAuthService = null;
             initialized = false;
+            voices.clear();
             return null;
         } catch (FileNotFoundException ex) {
             logger.warn("Could not write {} to cache", audioFileInCache, ex);
@@ -447,13 +443,7 @@ class GoogleCloudAPI {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] bytesOfMessage = (config.toConfigString() + text).getBytes(StandardCharsets.UTF_8);
-            byte[] md5Hash = md.digest(bytesOfMessage);
-            BigInteger bigInt = new BigInteger(1, md5Hash);
-            String fileNameHash = bigInt.toString(16);
-            // Now we need to zero pad it if you actually want the full 32 chars
-            while (fileNameHash.length() < 32) {
-                fileNameHash = "0" + fileNameHash;
-            }
+            String fileNameHash = String.format("%032x", new BigInteger(1, md.digest(bytesOfMessage)));
             return voiceName + "_" + fileNameHash;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
