@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.handler;
 
-import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
-
-import java.util.Date;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -44,8 +40,6 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     private final Logger logger = LoggerFactory.getLogger(DWDPollenflugRegionHandler.class);
 
     private DWDPollenflugRegionConfiguration thingConfig = new DWDPollenflugRegionConfiguration();
-
-    private @Nullable Date lastUpdate;
 
     public DWDPollenflugRegionHandler(Thing thing) {
         super(thing);
@@ -129,10 +123,5 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
             logger.debug("Updating channel {} to {}", channelID, value);
             updateState(channelID, value);
         });
-
-        if (lastUpdate == null || !lastUpdate.equals(pollenflug.getLastUpdate())) {
-            triggerChannel(CHANNEL_UPDATES + "#" + CHANNEL_UPDATED, TRIGGER_REFRESHED);
-            lastUpdate = pollenflug.getLastUpdate();
-        }
     }
 }

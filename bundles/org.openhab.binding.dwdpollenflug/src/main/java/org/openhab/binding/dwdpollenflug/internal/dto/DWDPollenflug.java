@@ -14,12 +14,17 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 
 import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import com.google.gson.annotations.SerializedName;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,66 +39,73 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DWDPollenflug {
+    private String sender = "";
+
+    private String name = "";
+
     private final Date created = new Date();
 
-    private final @Nullable Date nextUpdate;
+    @SerializedName("next_update")
+    private @Nullable String nextUpdate;
 
-    private final @Nullable Date lastUpdate;
+    @SerializedName("last_update")
+    private @Nullable String lastUpdate;
 
-    private final Map<String, String> properties;
+    @SerializedName("content")
+    private @Nullable Set<DWDRegion> regions;
 
-    private final Map<String, State> channels = new HashMap<>();
-
-    private final Map<Integer, DWDRegion> regions = new HashMap<>();
-
-    public DWDPollenflug(DWDPollenflugJSON json) {
-        nextUpdate = json.getNextUpdate();
-        lastUpdate = json.getLastUpdate();
-
-        properties = initProperties(json);
-
-        for (DWDRegionJSON regionJSON : json.getRegions()) {
-            DWDRegion region = new DWDRegion(regionJSON);
-            regions.put(region.getRegionID(), region);
-        }
-
-        createChannel(CHANNEL_REFRESHED, created);
-        createChannel(CHANNEL_NEXT_UPDATE, nextUpdate);
-        createChannel(CHANNEL_LAST_UPDATE, lastUpdate);
-    }
-
-    private Map<String, String> initProperties(DWDPollenflugJSON json) {
+    public Map<String, String> getProperties() {
         Map<String, String> map = new HashMap<>();
 
-        map.put(PROPERTY_NAME, json.getName());
-        map.put(PROPERTY_SENDER, json.getSender());
+        map.put(PROPERTY_NAME, name);
+        map.put(PROPERTY_SENDER, sender);
 
         return Collections.unmodifiableMap(map);
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public Map<String, State> getChannels() {
+        Map<String, State> map = new HashMap<>();
+
+        map.put(CHANNEL_UPDATES + "#" + CHANNEL_REFRESHED, parseDate(created));
+        map.put(CHANNEL_UPDATES + "#" + CHANNEL_LAST_UPDATE, parseDate(lastUpdate));
+        map.put(CHANNEL_UPDATES + "#" + CHANNEL_NEXT_UPDATE, parseDate(nextUpdate));
+
+        return Collections.unmodifiableMap(map);
     }
 
-    private void createChannel(String subchannel, @Nullable Date date) {
-        final String channelName = CHANNEL_UPDATES + "#" + subchannel;
-        if (date == null) {
-            channels.put(channelName, UnDefType.NULL);
-        } else {
-            ZonedDateTime zoned = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-            channels.put(channelName, new DateTimeType(zoned));
+    private State parseDate(final @Nullable String dateString) {
+        try {
+            if (dateString != null) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Date date = formatter.parse(dateString.replace("Uhr", "").trim());
+                return parseDate(date);
+            }
+
+            return UnDefType.NULL;
+        } catch (ParseException e) {
+            return UnDefType.NULL;
         }
     }
 
-    public Map<String, State> getChannels() {
-        return Collections.unmodifiableMap(channels);
+    private State parseDate(final @Nullable Date date) {
+        if (date == null) {
+            return UnDefType.NULL;
+        } else {
+            ZonedDateTime zoned = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            return new DateTimeType(zoned);
+        }
     }
 
-    public @Nullable Date getLastUpdate() {
-        return lastUpdate;
-    }
+    public @Nullable DWDRegion getRegion(int key) {
+        final Set<DWDRegion> localRegions = regions;
+        if (localRegions != null) {
+            for (DWDRegion region : localRegions) {
+                if (region.getRegionID() == key) {
+                    return region;
+                }
+            }
+        }
 
-    public @Nullable DWDRegion getRegion(int regionID) {
-        return regions.get(regionID);
+        return null;
     }
 }

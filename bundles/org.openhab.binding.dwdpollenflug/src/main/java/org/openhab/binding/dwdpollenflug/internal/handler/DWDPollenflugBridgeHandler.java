@@ -44,7 +44,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugBridgeConfiguration;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
-import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflugJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,8 +150,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         });
     }
 
-    private CompletableFuture<DWDPollenflug> requestRefresh() {
-        CompletableFuture<DWDPollenflug> f = new CompletableFuture<>();
+    private CompletableFuture<@Nullable DWDPollenflug> requestRefresh() {
+        CompletableFuture<@Nullable DWDPollenflug> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(DWD_URL));
 
         request.method(HttpMethod.GET).timeout(2000, TimeUnit.SECONDS).send(new BufferingResponseListener() {
@@ -171,8 +170,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
                     f.completeExceptionally(new DWDPollingException(getContentAsString()));
                 } else {
                     try {
-                        DWDPollenflugJSON pollenflugJSON = gson.fromJson(getContentAsString(), DWDPollenflugJSON.class);
-                        f.complete(new DWDPollenflug(pollenflugJSON));
+                        DWDPollenflug pollenflugJSON = gson.fromJson(getContentAsString(), DWDPollenflug.class);
+                        f.complete(pollenflugJSON);
                     } catch (JsonSyntaxException ex2) {
                         f.completeExceptionally(new DWDPollingException("Parsing of response failed"));
                     }

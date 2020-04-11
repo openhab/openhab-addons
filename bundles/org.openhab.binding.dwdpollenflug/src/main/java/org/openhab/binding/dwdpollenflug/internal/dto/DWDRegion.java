@@ -18,7 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 
@@ -29,46 +32,49 @@ import org.eclipse.smarthome.core.types.State;
  */
 @NonNullByDefault
 public class DWDRegion {
+    @SerializedName("region_id")
+    public int regionID = 0;
 
-    private int regionID;
+    @SerializedName("region_name")
+    public String regionName = "";
 
-    private final Map<String, String> properties;
+    @SerializedName("partregion_id")
+    public int partRegionID = 0;
 
-    private final Map<String, StringType> channels = new HashMap<>();
+    @SerializedName("partregion_name")
+    public String partRegionName = "";
 
-    public DWDRegion(final DWDRegionJSON json) {
-        regionID = json.regionID;
+    @SerializedName("Pollen")
+    private @Nullable Map<String, DWDPollentypeJSON> pollen;
 
-        if (json.partRegionID > 0) {
-            regionID = json.partRegionID;
-        }
-
-        properties = initProperties(json);
-
-        json.getPollen().forEach((k, jsonType) -> {
-            final String pollenType = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
-            channels.put(pollenType + "#" + CHANNEL_TODAY, new StringType(jsonType.today));
-            channels.put(pollenType + "#" + CHANNEL_TOMORROW, new StringType(jsonType.tomorrow));
-            channels.put(pollenType + "#" + CHANNEL_DAYAFTER_TO, new StringType(jsonType.dayAfterTomorrow));
-        });
-    }
-
-    private Map<String, String> initProperties(DWDRegionJSON json) {
+    public Map<String, String> getProperties() {
         Map<String, String> map = new HashMap<>();
-        map.put(PROPERTY_REGION_NAME, json.regionName);
-        map.put(PROPERTY_PARTREGION_NAME, json.partRegionName);
+        map.put(PROPERTY_REGION_NAME, regionName);
+        map.put(PROPERTY_PARTREGION_NAME, partRegionName);
         return Collections.unmodifiableMap(map);
     }
 
     public int getRegionID() {
+        if (partRegionID > 0) {
+            return partRegionID;
+        }
         return regionID;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
     public Map<String, State> getChannels() {
-        return Collections.unmodifiableMap(channels);
+        final Map<String, DWDPollentypeJSON> localPollen = pollen;
+        if (localPollen != null) {
+            Map<String, State> map = new HashMap<>();
+            localPollen.forEach((k, jsonType) -> {
+                final String pollenType = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
+                map.put(pollenType + "#" + CHANNEL_TODAY, new StringType(jsonType.today));
+                map.put(pollenType + "#" + CHANNEL_TOMORROW, new StringType(jsonType.tomorrow));
+                map.put(pollenType + "#" + CHANNEL_DAYAFTER_TO, new StringType(jsonType.dayAfterTomorrow));
+            });
+
+            return Collections.unmodifiableMap(map);
+        }
+
+        return Collections.emptyMap();
     }
 }

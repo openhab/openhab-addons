@@ -40,7 +40,6 @@
 			<channel id="next_update" typeId="update">
 				<label>Next update from DWD</label>
 			</channel>
-			<channel id="updated" typeId="updated" />
 		</channels>
 	</channel-group-type>
 
@@ -48,16 +47,5 @@
 		<item-type>DateTime</item-type>
 		<label>Update time</label>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="updated">
-		<kind>trigger</kind>
-		<label>Updated</label>
-		<description>Triggers REFRESHED if data changed></description>
-		<event>
-			<options>
-				<option value="REFRESHED">Refreshed</option>
-			</options>
-		</event>
 	</channel-type>
 </thing:thing-descriptions>
