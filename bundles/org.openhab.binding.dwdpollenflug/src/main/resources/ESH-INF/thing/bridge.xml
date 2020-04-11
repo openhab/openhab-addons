@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>DWD Pollen count index - Bridge</label>
+		<label>DWD Pollen Count Index - Bridge</label>
 		<description>Bridge for accessing pollen count index data of the DWD</description>
 
 		<channel-groups>
@@ -20,7 +20,7 @@
 		<config-description>
 			<parameter name="refresh" type="integer" unit="min" min="15">
 				<default>30</default>
-				<label>Refresh in Minutes</label>
+				<label>Refresh Interval</label>
 				<description>Time between two API requests in minutes. Minimum 15 minutes.</description>
 			</parameter>
 		</config-description>
@@ -32,20 +32,20 @@
 		<description>Information about data state</description>
 		<channels>
 			<channel id="refreshed" typeId="update">
-				<label>Bridge refreshed</label>
+				<label>Bridge Refreshed</label>
 			</channel>
 			<channel id="last_update" typeId="update">
-				<label>Last update from DWD</label>
+				<label>Last Update From DWD</label>
 			</channel>
 			<channel id="next_update" typeId="update">
-				<label>Next update from DWD</label>
+				<label>Next Update From DWD</label>
 			</channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="update">
 		<item-type>DateTime</item-type>
-		<label>Update time</label>
+		<label>Update Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

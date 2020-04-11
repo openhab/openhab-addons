@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		
-		<label>DWD Pollen count index - Region</label>
+		<label>DWD Pollen Count Index - Region</label>
 		<description>Pollen count index for a region or partregion</description>
 
 		<channel-groups>
@@ -91,7 +91,7 @@
 	</thing-type>
 	
 	<channel-group-type id="pollentype">
-		<label>Pollen type group</label>
+		<label>Pollen Type Group</label>
 		<description>For each pollen type there are three channels for today, tomorrow and day after tomorrow</description>
 		<channels>
 			<channel id="today" typeId="pollencount">
@@ -101,14 +101,14 @@
 				<label>Tomorrow</label>
 			</channel>
 			<channel id="dayafter_to" typeId="pollencount">
-				<label>Day after tomorrow</label>
+				<label>Day After Tomorrow</label>
 			</channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="pollencount">
 		<item-type>String</item-type>
-		<label>Pollen count</label>
+		<label>Pollen Count</label>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
