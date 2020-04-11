@@ -72,6 +72,7 @@ Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_a
 String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
 String DaikinACUnit_HomekitMode { channel="daikin:ac_unit:living_room_ac:homekitmode" }
 String DaikinACUnit_Fan { channel="daikin:ac_unit:living_room_ac:fanspeed" }
+String DaikinACUnit_Fan_Movement { channel="daikin:ac_unit:living_room_ac:fandir" }
 Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:ac_unit:living_room_ac:indoortemp" }
 Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:ac_unit:living_room_ac:outdoortemp" }
 # Additional items for BRP1B61
