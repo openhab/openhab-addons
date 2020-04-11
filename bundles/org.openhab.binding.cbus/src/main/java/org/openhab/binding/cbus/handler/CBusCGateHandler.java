@@ -19,13 +19,13 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.CBusCGateConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,21 @@ import com.daveoxley.cbus.status.StatusChangeCallback;
 @NonNullByDefault
 final class CBusThreadPool extends CGateThreadPool {
 
+    private final Map<@Nullable String, @Nullable CGateThreadPoolExecutor> executorMap = new HashMap<>();
+
+    @Override
+    protected synchronized CGateThreadPoolExecutor CreateExecutor(@Nullable String name) {
+        @Nullable
+        CGateThreadPoolExecutor executor = executorMap.get(name);
+
+        if (executor != null) {
+            return executor;
+        }
+        CGateThreadPoolExecutor newExecutor = new CBusThreadPoolExecutor(name);
+        executorMap.put(name, newExecutor);
+        return newExecutor;
+    }
+
     @NonNullByDefault
     public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor {
         private final ThreadPoolExecutor threadPool;
@@ -72,21 +88,6 @@ final class CBusThreadPool extends CGateThreadPool {
             }
         }
     }
-
-    private Map<@Nullable String, @Nullable CGateThreadPoolExecutor> executorMap = new HashMap<>();
-
-    @Override
-    protected synchronized CGateThreadPoolExecutor CreateExecutor(@Nullable String name) {
-        @Nullable
-        CGateThreadPoolExecutor executor = executorMap.get(name);
-
-        if (executor != null) {
-            return executor;
-        }
-        CGateThreadPoolExecutor newExecutor = new CBusThreadPoolExecutor(name);
-        executorMap.put(name, newExecutor);
-        return newExecutor;
-    }
 }
 
 /**
@@ -100,6 +101,7 @@ final class CBusThreadPool extends CGateThreadPool {
 public class CBusCGateHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
+    private CBusCGateConfiguration configuration = new CBusCGateConfiguration();
     private @Nullable InetAddress ipAddress = null;
     public @Nullable CGateSession cGateSession = null;
     private @Nullable ScheduledFuture<?> keepAliveFuture = null;
@@ -117,27 +119,31 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.OFFLINE);
         logger.debug("Initializing CGate Bridge handler.");
-        Configuration config = getThing().getConfiguration();
-        String ipAddress = (String) config.get(CBusBindingConstants.CONFIG_CGATE_IP_ADDRESS);
-
-        if ("127.0.0.1".equals(ipAddress) || "localhost".equals(ipAddress)) {
-            this.ipAddress = InetAddress.getLoopbackAddress();
-        } else {
-            try {
-                this.ipAddress = InetAddress.getByName(ipAddress);
-            } catch (UnknownHostException e1) {
-                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "IP Address not resolvable");
-                return;
+        Optional<CBusCGateConfiguration> cfg = Optional.of(getConfigAs(CBusCGateConfiguration.class));
+        if (cfg.isPresent()) {
+            configuration = cfg.get();
+            logger.debug("Using configuration {}", configuration);
+            if ("127.0.0.1".equals(configuration.ipAddress) || "localhost".equals(configuration.ipAddress)) {
+                this.ipAddress = InetAddress.getLoopbackAddress();
+            } else {
+                try {
+                    this.ipAddress = InetAddress.getByName(configuration.ipAddress);
+                } catch (UnknownHostException e1) {
+                    updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            "IP Address not resolvable");
+                    return;
+                }
             }
-        }
-        InetAddress address = this.ipAddress;
-        if (address != null)
-            logger.debug("CGate IP         {}.", address.getHostAddress());
+            InetAddress address = this.ipAddress;
+            if (address != null)
+                logger.debug("CGate IP         {}.", address.getHostAddress());
 
-        keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
-            keepAlive();
-        }, 0, 100, TimeUnit.SECONDS);
+            keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
+                keepAlive();
+            }, 0, 100, TimeUnit.SECONDS);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+        }
     }
 
     private void keepAlive() {

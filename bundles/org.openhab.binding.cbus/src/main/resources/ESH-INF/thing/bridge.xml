@@ -12,7 +12,7 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>CGate Server IP</label>
-				<description>The IP address of the CGate Server</description>
+				<description>The IP address of the CGate Server.</description>
 			</parameter>
 		</config-description>
 
@@ -25,17 +25,17 @@
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>C-Bus Network ID</label>
-				<description>Network number of C-Bus Network</description>
+				<description>Network number of C-Bus Network.</description>
 			</parameter>
 
 			<parameter name="project" type="text" required="true">
 				<label>C-Bus Project Name</label>
-				<description>Project name that contains the network</description>
+				<description>Project name that contains the network.</description>
 			</parameter>
 
 			<parameter name="syncInterval" type="integer" required="false" min="120" unit="s">
 				<label>Network Sync Interval</label>
-				<description>The sync interval in seconds used to get group states from the network</description>
+				<description>The interval in seconds between fetching current group states from the network.</description>
 				<default>600</default>
 			</parameter>
 		</config-description>
