@@ -202,6 +202,7 @@
     <module>org.openhab.binding.sinope</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
+    <module>org.openhab.binding.smarther</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
