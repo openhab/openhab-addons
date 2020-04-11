@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.dto;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
@@ -27,17 +28,26 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class DWDRegionJSON {
     @SerializedName("region_id")
-    public @Nullable Integer regionID;
+    public int regionID = 0;
 
     @SerializedName("region_name")
-    public @Nullable String regionName;
+    public String regionName = "";
 
     @SerializedName("partregion_id")
-    public @Nullable Integer partRegionID;
+    public int partRegionID = 0;
 
     @SerializedName("partregion_name")
-    public @Nullable String partRegionName;
+    public String partRegionName = "";
 
     @SerializedName("Pollen")
-    public @Nullable Map<String, DWDPollentypeJSON> pollen;
+    private @Nullable Map<String, DWDPollentypeJSON> pollen;
+
+    public Map<String, DWDPollentypeJSON> getPollen() {
+        final Map<String, DWDPollentypeJSON> localPollen = pollen;
+        if (localPollen == null) {
+            return Collections.emptyMap();
+        }
+
+        return localPollen;
+    }
 }

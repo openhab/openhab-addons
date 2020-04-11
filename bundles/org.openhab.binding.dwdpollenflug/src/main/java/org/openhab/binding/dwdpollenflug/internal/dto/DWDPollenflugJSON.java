@@ -54,8 +54,13 @@ public class DWDPollenflugJSON {
         return sender;
     }
 
-    public @Nullable Set<DWDRegionJSON> getRegions() {
-        return regions;
+    public Set<DWDRegionJSON> getRegions() {
+        final Set<DWDRegionJSON> localRegions = regions;
+        if (localRegions == null) {
+            return Collections.emptySet();
+        }
+
+        return Collections.unmodifiableSet(localRegions);
     }
 
     public @Nullable Date getNextUpdate() {
@@ -80,10 +85,11 @@ public class DWDPollenflugJSON {
     }
 
     public Map<String, String> getLegend() {
-        if (legend == null) {
+        final Map<String, String> localLegend = legend;
+        if (localLegend == null) {
             return Collections.emptyMap();
         }
 
-        return Collections.unmodifiableMap(legend);
+        return Collections.unmodifiableMap(localLegend);
     }
 }

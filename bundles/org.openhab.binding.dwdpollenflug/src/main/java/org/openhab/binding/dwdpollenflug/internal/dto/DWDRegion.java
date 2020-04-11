@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 
@@ -38,56 +37,27 @@ public class DWDRegion {
     private final Map<String, StringType> channels = new HashMap<>();
 
     public DWDRegion(final DWDRegionJSON json) {
-        if (json.regionID == null) {
-            regionID = 0;
-        } else {
-            regionID = json.regionID;
-        }
+        regionID = json.regionID;
 
-        Integer partRegionID = json.partRegionID;
-        if (partRegionID > 0) {
-            regionID = partRegionID;
+        if (json.partRegionID > 0) {
+            regionID = json.partRegionID;
         }
 
         properties = initProperties(json);
 
-        parseChannels(json.pollen);
+        json.getPollen().forEach((k, jsonType) -> {
+            final String pollenType = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
+            channels.put(pollenType + "#" + CHANNEL_TODAY, new StringType(jsonType.today));
+            channels.put(pollenType + "#" + CHANNEL_TOMORROW, new StringType(jsonType.tomorrow));
+            channels.put(pollenType + "#" + CHANNEL_DAYAFTER_TO, new StringType(jsonType.dayAfterTomorrow));
+        });
     }
 
     private Map<String, String> initProperties(DWDRegionJSON json) {
         Map<String, String> map = new HashMap<>();
-        String regionName = json.regionName;
-        if (regionName != null) {
-            map.put(PROPERTY_REGION_NAME, regionName);
-        }
-
-        String partRegionName = json.partRegionName;
-        if (partRegionName != null) {
-            map.put(PROPERTY_PARTREGION_NAME, partRegionName);
-        }
-
+        map.put(PROPERTY_REGION_NAME, json.regionName);
+        map.put(PROPERTY_PARTREGION_NAME, json.partRegionName);
         return Collections.unmodifiableMap(map);
-    }
-
-    private void parseChannels(@Nullable final Map<String, DWDPollentypeJSON> pollen) {
-        if (pollen == null) {
-            return;
-        }
-
-        pollen.forEach((k, jsonType) -> {
-            final String pollenType = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
-            createChannel(pollenType, CHANNEL_TODAY, jsonType.today);
-            createChannel(pollenType, CHANNEL_TOMORROW, jsonType.tomorrow);
-            createChannel(pollenType, CHANNEL_DAYAFTER_TO, jsonType.dayafterTomorrow);
-        });
-    }
-
-    private void createChannel(final String pollenType, final String subchannel, @Nullable String value) {
-        final String channelName = pollenType + "#" + subchannel;
-        if (value == null) {
-            value = "-1";
-        }
-        channels.put(channelName, new StringType(value));
     }
 
     public int getRegionID() {

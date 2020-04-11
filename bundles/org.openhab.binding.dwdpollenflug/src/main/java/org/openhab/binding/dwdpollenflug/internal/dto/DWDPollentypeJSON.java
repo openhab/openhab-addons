@@ -15,7 +15,6 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * DTO for data per pollen type
@@ -24,10 +23,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DWDPollentypeJSON {
-    public @Nullable String today;
+    public String today = "-1";
 
-    public @Nullable String tomorrow;
+    public String tomorrow = "-1";
 
     @SerializedName("dayafter_to")
-    public @Nullable String dayafterTomorrow;
+    public String dayAfterTomorrow = "-1";
 }
