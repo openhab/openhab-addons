@@ -64,12 +64,11 @@ You can refer to the following table.
 
 The bridge thing has following channels:
 
-| channel             | description                                               |
-| ------------------- | --------------------------------------------------------- |
-| updates#refreshed   | Hold the time of the bridge's last refresh                |
-| updates#last_update | The time when data was last updated by DWD                |
-| updates#next_update | The time when data will be updated next by DWD            |
-| updates#updated     | Triggers event "REFRESHED" when data was refreshed by DWD |
+| channel             | description                                    |
+| ------------------- | ---------------------------------------------- |
+| updates#refreshed   | Hold the time of the bridge's last refresh     |
+| updates#last_update | The time when data was last updated by DWD     |
+| updates#next_update | The time when data will be updated next by DWD |
 
 For each of the eight pollen types reported by DWD the region thing has three channels for today, tomorrow and the day after tomorrow.
 
