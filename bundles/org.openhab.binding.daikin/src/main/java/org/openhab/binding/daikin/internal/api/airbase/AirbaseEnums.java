@@ -60,6 +60,7 @@ public class AirbaseEnums {
 
     public enum AirbaseFanSpeed {
         // level,f_auto,f_airside
+        AUTO         (0, false, false),
         LEVEL_1      (1, false, false),
         LEVEL_2      (2, false, false),
         LEVEL_3      (3, false, false),
@@ -99,6 +100,9 @@ public class AirbaseEnums {
             if (airside) {
                 return "Airside";
             }
+            if (level == 0) {
+                return "Auto";
+            }
             String label = "";
             if (auto) {
                 label = "Auto ";
@@ -109,6 +113,9 @@ public class AirbaseEnums {
         public static AirbaseFanSpeed fromValue(int rate, boolean auto, boolean airside) { // convert from f_rate, f_auto, f_airside
             if (airside) {
                 return AIRSIDE;
+            }
+            if (rate == 0) {
+                return AirbaseFanSpeed.AUTO;
             }
             for (AirbaseFanSpeed m : AirbaseFanSpeed.values()) {
                 if (m.getLevel() == rate && m.getAuto() == auto && m.getAirside() == airside) {

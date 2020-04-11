@@ -144,7 +144,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
         AirbaseFanSpeed newFanSpeed = AirbaseFanSpeed.valueOf(speed);
         if (EnumSet.range(AirbaseFanSpeed.AUTO_LEVEL_1, AirbaseFanSpeed.AUTO_LEVEL_5).contains(newFanSpeed)
                 && !airbaseModelInfo.features.contains(AirbaseFeature.FRATE_AUTO)) {
-            logger.warn("Auto fan levels are not supported by your controller");
+            logger.warn("Fan AUTO_LEVEL_X is not supported by your controller");
             return;
         }
         if (newFanSpeed == AirbaseFanSpeed.AIRSIDE && !airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
@@ -174,6 +174,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
 
     protected void updateAirbaseFanSpeedChannelStateDescription() {
         List<StateOption> options = new ArrayList<>();
+        options.add(new StateOption(AirbaseFanSpeed.AUTO.name(), AirbaseFanSpeed.AUTO.getLabel()));
         if (airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
             options.add(new StateOption(AirbaseFanSpeed.AIRSIDE.name(), AirbaseFanSpeed.AIRSIDE.getLabel()));
         }

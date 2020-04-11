@@ -44,7 +44,7 @@ For the BRP15B61:
 | outdoortemp     | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | mode            | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
 | homekit mode    | A mode that is compatible with homekit/alexa/google home (off, auto, heat, cool)              | 
-| airbasefanspeed | The fan speed set for the unit (AIRSIDE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, AUTO_LEVEL_1, AUTO_LEVEL_2, AUTO_LEVEL_3, AUTO_LEVEL_4, AUTO_LEVEL_5)  |
+| airbasefanspeed | The fan speed set for the unit (AUTO, AIRSIDE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, AUTO_LEVEL_1, AUTO_LEVEL_2, AUTO_LEVEL_3, AUTO_LEVEL_4, AUTO_LEVEL_5)  |
 | zone1           | Turns zone 1 on/off for the air conditioning unit (if a zone controller is installed.)      |
 | zone2           | Turns zone 2 on/off for the air conditioning unit.                                          |
 | zone3           | Turns zone 3 on/off for the air conditioning unit.                                          |
