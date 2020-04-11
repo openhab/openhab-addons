@@ -29,7 +29,6 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.alarmdecoder.internal.config.SerialBridgeConfig;
-import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,6 @@ public class SerialBridgeHandler extends ADBridgeHandler {
     private @NonNullByDefault({}) SerialPort serialPort = null;
     private int serialPortSpeed = 115200;
 
-    @Activate
     public SerialBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
