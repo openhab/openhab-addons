@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugBridgeConfiguration;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
@@ -77,6 +78,13 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            onUpdate();
+        }
+    }
+
+    @Override
     public void initialize() {
         logger.debug("Initializing DWD Pollenflug bridge handler");
         bridgeConfig = getConfigAs(DWDPollenflugBridgeConfiguration.class);
@@ -105,12 +113,13 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     public void startPolling() {
         final ScheduledFuture<?> localPollingJob = this.pollingJob;
+        final DWDPollenflug localPollenflug = this.pollenflug;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling.");
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY,
                     bridgeConfig.refresh * SECONDS_PER_MINUTE, TimeUnit.SECONDS);
         } else if (pollenflug != null) {
-            notifyOnUpdate(pollenflug);
+            notifyOnUpdate(localPollenflug);
         }
     }
 
@@ -125,12 +134,13 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     public void poll() {
         logger.debug("Polling");
-        requestRefresh().handle((pollenflug, e) -> {
+        requestRefresh().handle((pollenflug, pollException) -> {
             if (pollenflug == null) {
-                if (e == null) {
+                if (pollException == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            pollException.getMessage());
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);
@@ -205,10 +215,6 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
                 regionListener.notifyOnUpdate(newState);
             }
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     public @Nullable DWDPollenflug getPollenflug() {

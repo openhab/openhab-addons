@@ -38,7 +38,11 @@ public class DWDRegion {
     private final Map<String, StringType> channels = new HashMap<>();
 
     public DWDRegion(final DWDRegionJSON json) {
-        regionID = json.regionID;
+        if (json.regionID == null) {
+            regionID = 0;
+        } else {
+            regionID = json.regionID;
+        }
 
         Integer partRegionID = json.partRegionID;
         if (partRegionID > 0) {
@@ -71,15 +75,15 @@ public class DWDRegion {
         }
 
         pollen.forEach((k, jsonType) -> {
-            final String pollentype = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
-            createChannel(pollentype, CHANNEL_TODAY, jsonType.today);
-            createChannel(pollentype, CHANNEL_TOMORROW, jsonType.tomorrow);
-            createChannel(pollentype, CHANNEL_DAYAFTER_TO, jsonType.dayafterTomorrow);
+            final String pollenType = DWDPollenflugPollen.valueOf(k.toUpperCase()).getChannelName();
+            createChannel(pollenType, CHANNEL_TODAY, jsonType.today);
+            createChannel(pollenType, CHANNEL_TOMORROW, jsonType.tomorrow);
+            createChannel(pollenType, CHANNEL_DAYAFTER_TO, jsonType.dayafterTomorrow);
         });
     }
 
-    private void createChannel(final String pollentype, final String subchannel, @Nullable String value) {
-        final String channelName = pollentype + "#" + subchannel;
+    private void createChannel(final String pollenType, final String subchannel, @Nullable String value) {
+        final String channelName = pollenType + "#" + subchannel;
         if (value == null) {
             value = "-1";
         }

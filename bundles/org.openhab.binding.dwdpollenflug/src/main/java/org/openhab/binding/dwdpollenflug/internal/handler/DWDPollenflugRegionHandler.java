@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugRegionConfiguration;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDPollenflug;
 import org.openhab.binding.dwdpollenflug.internal.dto.DWDRegion;
@@ -91,7 +92,18 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            refresh();
+        }
+    }
+
+    @Override
     public void channelLinked(ChannelUID channelUID) {
+        refresh();
+    }
+
+    private void refresh() {
         DWDPollenflugBridgeHandler handler = syncToBridge();
         if (handler != null) {
             DWDPollenflug pollenflug = handler.getPollenflug();
@@ -99,10 +111,6 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
                 notifyOnUpdate(pollenflug);
             }
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     @Override

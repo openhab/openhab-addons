@@ -62,7 +62,7 @@ public class DWDPollenflug {
         createChannel(CHANNEL_LAST_UPDATE, lastUpdate);
     }
 
-    private synchronized Map<String, String> initProperties(DWDPollenflugJSON json) {
+    private Map<String, String> initProperties(DWDPollenflugJSON json) {
         Map<String, String> map = new HashMap<>();
 
         map.put(PROPERTY_NAME, json.getName());

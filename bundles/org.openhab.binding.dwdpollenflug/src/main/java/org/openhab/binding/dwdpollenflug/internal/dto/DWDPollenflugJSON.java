@@ -31,8 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DWDPollenflugJSON {
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
     private String sender = "";
 
     private String name = "";
@@ -68,19 +66,24 @@ public class DWDPollenflugJSON {
         return parseDate(lastUpdate);
     }
 
-    private synchronized @Nullable Date parseDate(@Nullable String date) {
+    private @Nullable Date parseDate(@Nullable String date) {
         try {
             if (date == null) {
                 return null;
             }
 
-            return FORMATTER.parse(date.replace("Uhr", "").trim());
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return formatter.parse(date.replace("Uhr", "").trim());
         } catch (ParseException e) {
             return null;
         }
     }
 
-    public @Nullable Map<String, String> getLegend() {
+    public Map<String, String> getLegend() {
+        if (legend == null) {
+            return Collections.emptyMap();
+        }
+
         return Collections.unmodifiableMap(legend);
     }
 }
