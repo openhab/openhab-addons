@@ -72,8 +72,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public @Nullable List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
-        List<Event> eventList = null;
+    public List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
+        List<Event> eventList = new ArrayList<>();
         // process all the events in the iCalendar
         for (VEvent event : usedCalendar.getEvents()) {
             // iterate over all begin dates
@@ -90,9 +90,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 if (duration == null) {
                     duration = Duration.ofMinutes(1);
                 }
-                if (eventList == null) {
-                    eventList = new ArrayList<Event>();
-                }
                 eventList.add(new VEventWPeriod(event, begInst, begInst.plus(duration)).toEvent());
                 break;
             }
@@ -101,8 +98,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public @Nullable List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
-        List<Event> eventList = null;
+    public List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
+        List<Event> eventList = new ArrayList<>();
         // process all the events in the iCalendar
         for (VEvent event : usedCalendar.getEvents()) {
             Duration duration = getEventLength(event);
@@ -120,9 +117,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                     break;
                 }
                 // fall through => means we are within the time frame
-                if (eventList == null) {
-                    eventList = new ArrayList<Event>();
-                }
                 eventList.add(new VEventWPeriod(event, begInst, endInst).toEvent());
                 break;
             }

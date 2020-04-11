@@ -169,9 +169,9 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         }
     }
 
-    private void executeEventCommands(@Nullable List<Event> events, CommandTagType execTime) {
+    private void executeEventCommands(List<Event> events, CommandTagType execTime) {
         // no begun or ended events => exit quietly as there is nothing to do
-        if ((events == null) || (events.isEmpty())) {
+        if (events.isEmpty()) {
             return;
         }
 
