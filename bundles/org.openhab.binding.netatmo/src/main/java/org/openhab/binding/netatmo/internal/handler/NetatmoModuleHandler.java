@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
  * module device accessed through the Netatmo Device
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
+ *
  */
 public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
@@ -98,6 +100,9 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             updateProperties(this.module);
             super.updateChannels();
         }
+    }
+
+    public void updateMeasurements() {
     }
 
     protected void invalidateParentCacheAndRefresh() {

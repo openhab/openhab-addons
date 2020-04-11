@@ -121,19 +121,71 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
 | Co2                 | Number:Dimensionless | Air quality                                              |
+| MinCo2              | Number:Dimensionless | Minimum CO2 on current day                               |
+| MinCo2ThisWeek      | Number:Dimensionless | Minimum CO2 this week                                    |
+| MinCo2ThisMonth     | Number:Dimensionless | Minimum CO2 this month                                   |
+| MaxCo2              | Number:Dimensionless | Maximum CO2 on current day                               |
+| MaxCo2ThisWeek      | Number:Dimensionless | Maximum CO2 this week                                    |
+| MaxCo2ThisMonth     | Number:Dimensionless | Maximum CO2 this month                                   |
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
 | Noise               | Number:Dimensionless | Current noise level                                      |
+| MinNoise            | Number:Dimensionless | Minimum noise on current day                             |
+| MinNoiseThisWeek    | Number:Dimensionless | Minimum noise this week                                  |
+| MinNoiseThisMonth   | Number:Dimensionless | Minimum noise this month                                 |
+| MaxNoise            | Number:Dimensionless | Maximum noise on current day                             |
+| MaxNoiseThisWeek    | Number:Dimensionless | Maximum noise this week                                  |
+| MaxNoiseThisMonth   | Number:Dimensionless | Maximum noise this month                                 |
+| DateMinNoise        | DateTime             | Date when minimum noise was reached on current day       |
+| DateMinNoiseThisWeek| DateTime             | Date when minimum noise was reached this week            |
+| DateMinNoiseThisMonth| DateTime            | Date when minimum noise was reached this month           |
+| DateMaxNoise        | DateTime             | Date when maximum noise was reached on current day       |
+| DateMaxNoiseThisWeek| DateTime             | Date when maximum noise was reached this week            |
+| DateMaxNoiseThisMonth| DateTime            | Date when maximum noise was reached this month           |
 | Pressure            | Number:Pressure      | Current pressure                                         |
+| MinPressure         | Number:Pressure      | Minimum pressure on current day                          |
+| MinPressureThisWeek | Number:Pressure      | Minimum pressure this week                               |
+| MinPressureThisMonth| Number:Pressure      | Minimum pressure this month                              |
+| MaxPressure         | Number:Pressure      | Maximum pressure on current day                          |
+| MaxPressureThisWeek | Number:Pressure      | Maximum pressure this week                               |
+| MaxPressureThisMonth| Number:Pressure      | Maximum pressure this month                              |
+| DateMinPressure     | DateTime             | Date when minimum pressure was reached on current day    |
+| DateMinPressureThisWeek | DateTime         | Date when minimum pressure was reached this week         |
+| DateMinPressureThisMonth| DateTime         | Date when minimum pressure was reached this month        |
+| DateMaxPressure     | DateTime             | Date when maximum pressure was reached on current day    |
+| DateMaxPressureThisWeek | DateTime         | Date when maximum pressure was reached this week         |
+| DateMaxPressureThisMonth| DateTime         | Date when maximum pressure was reached this month        |
 | PressTrend          | String               | Pressure evolution trend for last 12h (up, down, stable) |
 | AbsolutePressure    | Number:Pressure      | Absolute pressure                                        |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
+| MinHumidity         | Number:Dimensionless | Minimum humidity on current day                          |
+| MinHumidityThisWeek | Number:Dimensionless | Minimum humidity this week                               |
+| MinHumidityThisMonth| Number:Dimensionless | Minimum humidity this month                              |
+| MaxHumidity         | Number:Dimensionless | Maximum humidity on current day                          |
+| MaxHumidityThisWeek | Number:Dimensionless | Maximum humidity this week                               |
+| MaxHumidityThisMonth| Number:Dimensionless | Maximum humidity this month                              |
+| DateMinHumidity     | DateTime             | Date when minimum humidity was reached on current day    |
+| DateMinHumidityThisWeek | DateTime         | Date when minimum humidity was reached this week         |
+| DateMinHumidityThisMonth| DateTime         | Date when minimum humidity was reached this month        |
+| DateMaxHumidity     | DateTime             | Date when maximum humidity was reached on current day    |
+| DateMaxHumidityThisWeek | DateTime         | Date when maximum humidity was reached this week         |
+| DateMaxHumidityThisMonth| DateTime         | Date when maximum humidity was reached this month        |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
 | Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
 | DewpointDepression  | Number:Temperature   | Computed dewpoint depression                             |
 | MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MinTempThisWeek     | Number:Temperature   | Minimum temperature this week                            |
+| MinTempThisMonth    | Number:Temperature   | Minimum temperature this month                           |
 | MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
+| MaxTempThisWeek     | Number:Temperature   | Maximum temperature this week                            |
+| MaxTempThisMonth    | Number:Temperature   | Maximum temperature this month                           |
+| DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMinTempThisWeek | DateTime             | Date when minimum temperature was reached this week      |
+| DateMinTempThisMonth| DateTime             | Date when minimum temperature was reached this month     |
+| DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| DateMaxTempThisWeek | DateTime             | Date when maximum temperature was reached this week      |
+| DateMaxTempThisMonth| DateTime             | Date when maximum temperature was reached this month     |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
@@ -159,14 +211,34 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
+| MinHumidity         | Number:Dimensionless | Minimum humidity on current day                          |
+| MinHumidityThisWeek | Number:Dimensionless | Minimum humidity this week                               |
+| MinHumidityThisMonth| Number:Dimensionless | Minimum humidity this month                              |
+| MaxHumidity         | Number:Dimensionless | Maximum humidity on current day                          |
+| MaxHumidityThisWeek | Number:Dimensionless | Maximum humidity this week                               |
+| MaxHumidityThisMonth| Number:Dimensionless | Maximum humidity this month                              |
+| DateMinHumidity     | DateTime             | Date when minimum humidity was reached on current day    |
+| DateMinHumidityThisWeek | DateTime         | Date when minimum humidity was reached this week         |
+| DateMinHumidityThisMonth| DateTime         | Date when minimum humidity was reached this month        |
+| DateMaxHumidity     | DateTime             | Date when maximum humidity was reached on current day    |
+| DateMaxHumidityThisWeek | DateTime         | Date when maximum humidity was reached this week         |
+| DateMaxHumidityThisMonth| DateTime         | Date when maximum humidity was reached this month        |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
 | Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
 | DewpointDepression  | Number:Temperature   | Computed dewpoint depression                             |
 | MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MinTempThisWeek     | Number:Temperature   | Minimum temperature this week                            |
+| MinTempThisMonth    | Number:Temperature   | Minimum temperature this month                           |
 | MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
+| MaxTempThisWeek     | Number:Temperature   | Maximum temperature this week                            |
+| MaxTempThisMonth    | Number:Temperature   | Maximum temperature this month                           |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMinTempThisWeek | DateTime             | Date when minimum temperature was reached this week      |
+| DateMinTempThisMonth| DateTime             | Date when minimum temperature was reached this month     |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| DateMaxTempThisWeek | DateTime             | Date when maximum temperature was reached this week      |
+| DateMaxTempThisMonth| DateTime             | Date when maximum temperature was reached this month     |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
 | LastMessage         | DateTime             | Last message emitted by the module                       |
 | LowBattery          | Switch               | Low battery                                              |
@@ -189,17 +261,43 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 | Channel ID          | Item Type            | Description                                              |
 |---------------------|----------------------|----------------------------------------------------------|
 | Co2                 | Number:Dimensionless | Air quality                                              |
+| MinCo2              | Number:Dimensionless | Minimum CO2 on current day                               |
+| MinCo2ThisWeek      | Number:Dimensionless | Minimum CO2 this week                                    |
+| MinCo2ThisMonth     | Number:Dimensionless | Minimum CO2 this month                                   |
+| MaxCo2              | Number:Dimensionless | Maximum CO2 on current day                               |
+| MaxCo2ThisWeek      | Number:Dimensionless | Maximum CO2 this week                                    |
+| MaxCo2ThisMonth     | Number:Dimensionless | Maximum CO2 this month                                   |
 | Temperature         | Number:Temperature   | Current temperature                                      |
 | TempTrend           | String               | Temperature evolution trend (up, down, stable)           |
 | Humidity            | Number:Dimensionless | Current humidity                                         |
+| MinHumidity         | Number:Dimensionless | Minimum humidity on current day                          |
+| MinHumidityThisWeek | Number:Dimensionless | Minimum humidity this week                               |
+| MinHumidityThisMonth| Number:Dimensionless | Minimum humidity this month                              |
+| MaxHumidity         | Number:Dimensionless | Maximum humidity on current day                          |
+| MaxHumidityThisWeek | Number:Dimensionless | Maximum humidity this week                               |
+| MaxHumidityThisMonth| Number:Dimensionless | Maximum humidity this month                              |
+| DateMinHumidity     | DateTime             | Date when minimum humidity was reached on current day    |
+| DateMinHumidityThisWeek | DateTime         | Date when minimum humidity was reached this week         |
+| DateMinHumidityThisMonth| DateTime         | Date when minimum humidity was reached this month        |
+| DateMaxHumidity     | DateTime             | Date when maximum humidity was reached on current day    |
+| DateMaxHumidityThisWeek | DateTime         | Date when maximum humidity was reached this week         |
+| DateMaxHumidityThisMonth| DateTime         | Date when maximum humidity was reached this month        |
 | Humidex             | Number               | Computed Humidex index                                   |
 | HeatIndex           | Number:Temperature   | Computed Heat Index                                      |
 | Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
 | DewpointDepression  | Number:Temperature   | Computed dewpoint depression                             |
 | MinTemp             | Number:Temperature   | Minimum temperature on current day                       |
+| MinTempThisWeek     | Number:Temperature   | Minimum temperature this week                            |
+| MinTempThisMonth    | Number:Temperature   | Minimum temperature this month                           |
 | MaxTemp             | Number:Temperature   | Maximum temperature on current day                       |
+| MaxTempThisWeek     | Number:Temperature   | Maximum temperature this week                            |
+| MaxTempThisMonth    | Number:Temperature   | Maximum temperature this month                           |
 | DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
+| DateMinTempThisWeek | DateTime             | Date when minimum temperature was reached this week      |
+| DateMinTempThisMonth| DateTime             | Date when minimum temperature was reached this month     |
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
+| DateMaxTempThisWeek | DateTime             | Date when maximum temperature was reached this week      |
+| DateMaxTempThisMonth| DateTime             | Date when maximum temperature was reached this month     |
 | TimeStamp           | DateTime             | Timestamp when data was measured                         |
 | LastMessage         | DateTime             | Last message emitted by the module                       |
 | LowBattery          | Switch               | Low battery                                              |
@@ -224,6 +322,8 @@ Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home
 | Rain                | Number:Length | Quantity of water                                        |
 | SumRain1            | Number:Length | Quantity of water on last hour                           |
 | SumRain24           | Number:Length | Quantity of water on last day                            |
+| SumRainThisWeek     | Number:Length | Quantity of water this week                              |
+| SumRainThisMonth    | Number:Length | Quantity of water this month                             |
 | TimeStamp           | DateTime      | Timestamp when data was measured                         |
 | LastMessage         | DateTime      | Last message emitted by the module                       |
 | LowBattery          | Switch        | Low battery                                              |
