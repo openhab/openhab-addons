@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dwdpollenflug.internal;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -25,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class DWDPollenflugBindingConstants {
-    public static final long INITIAL_DELAY = TimeUnit.SECONDS.toSeconds(1);
+    public static final long INITIAL_DELAY = 1; // second
 
     public static final long SECONDS_PER_MINUTE = 60;
 

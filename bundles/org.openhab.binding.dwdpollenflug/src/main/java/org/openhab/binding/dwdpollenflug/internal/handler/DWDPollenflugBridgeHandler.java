@@ -79,7 +79,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            onUpdate();
+            startPolling();
         }
     }
 
@@ -89,18 +89,10 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         bridgeConfig = getConfigAs(DWDPollenflugBridgeConfiguration.class);
 
         if (bridgeConfig.isValid()) {
-            onUpdate();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        }
-    }
-
-    private synchronized void onUpdate() {
-        if (regionListeners.isEmpty()) {
-            stopPolling();
+            startPolling();
             updateStatus(ThingStatus.ONLINE);
         } else {
-            startPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
 
@@ -110,7 +102,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         stopPolling();
     }
 
-    public void startPolling() {
+    private void startPolling() {
         final ScheduledFuture<?> localPollingJob = this.pollingJob;
         final DWDPollenflug localPollenflug = this.pollenflug;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
@@ -122,7 +114,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void stopPolling() {
+    private void stopPolling() {
         final ScheduledFuture<?> localPollingJob = this.pollingJob;
         if (localPollingJob != null && !localPollingJob.isCancelled()) {
             logger.debug("Stop polling.");
@@ -131,7 +123,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void poll() {
+    private void poll() {
         logger.debug("Polling");
         requestRefresh().handle((pollenflug, pollException) -> {
             if (pollenflug == null) {
@@ -194,9 +186,6 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     public synchronized boolean unregisterRegionListener(DWDPollenflugRegionListener regionListener) {
         logger.debug("Unregister region listener");
         boolean result = regionListeners.remove(regionListener);
-        if (result && regionListeners.isEmpty()) {
-            stopPolling();
-        }
         return result;
     }
 
@@ -204,15 +193,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         pollenflug = newState;
         if (newState != null) {
             updateProperties(newState.getProperties());
-
-            newState.getChannels().forEach((channelID, value) -> {
-                logger.debug("Updating channel {} to {}", channelID, value);
-                updateState(channelID, value);
-            });
-
-            for (DWDPollenflugRegionListener regionListener : regionListeners) {
-                regionListener.notifyOnUpdate(newState);
-            }
+            regionListeners.forEach(listener -> listener.notifyOnUpdate(newState));
+            newState.getChannelsStateMap().forEach(this::updateState);
         }
     }
 

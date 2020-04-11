@@ -63,7 +63,7 @@ public class DWDPollenflug {
         return Collections.unmodifiableMap(map);
     }
 
-    public Map<String, State> getChannels() {
+    public Map<String, State> getChannelsStateMap() {
         Map<String, State> map = new HashMap<>();
 
         map.put(CHANNEL_UPDATES + "#" + CHANNEL_REFRESHED, parseDate(created));

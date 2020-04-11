@@ -51,7 +51,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
         thingConfig = getConfigAs(DWDPollenflugRegionConfiguration.class);
 
         if (thingConfig.isValid()) {
-            DWDPollenflugBridgeHandler handler = syncToBridge();
+            DWDPollenflugBridgeHandler handler = getBridgeHandler();
             if (handler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge handler missing");
             } else {
@@ -63,7 +63,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
         }
     }
 
-    private synchronized @Nullable DWDPollenflugBridgeHandler syncToBridge() {
+    private synchronized @Nullable DWDPollenflugBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
@@ -79,7 +79,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
     @Override
     public void dispose() {
         logger.debug("DWDPollenflug region handler disposes. Unregistering listener.");
-        DWDPollenflugBridgeHandler bridgeHandler = syncToBridge();
+        DWDPollenflugBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             bridgeHandler.unregisterRegionListener(this);
         }
@@ -92,13 +92,8 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
         }
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        refresh();
-    }
-
     private void refresh() {
-        DWDPollenflugBridgeHandler handler = syncToBridge();
+        DWDPollenflugBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             DWDPollenflug pollenflug = handler.getPollenflug();
             if (pollenflug != null) {
@@ -116,12 +111,8 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
         }
 
         updateStatus(ThingStatus.ONLINE);
-
         updateProperties(region.getProperties());
 
-        region.getChannels().forEach((channelID, value) -> {
-            logger.debug("Updating channel {} to {}", channelID, value);
-            updateState(channelID, value);
-        });
+        region.getChannelsStateMap().forEach(this::updateState);
     }
 }

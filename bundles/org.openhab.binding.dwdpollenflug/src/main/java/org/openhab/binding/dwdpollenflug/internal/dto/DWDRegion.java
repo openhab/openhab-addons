@@ -61,7 +61,7 @@ public class DWDRegion {
         return regionID;
     }
 
-    public Map<String, State> getChannels() {
+    public Map<String, State> getChannelsStateMap() {
         final Map<String, DWDPollentypeJSON> localPollen = pollen;
         if (localPollen != null) {
             Map<String, State> map = new HashMap<>();
