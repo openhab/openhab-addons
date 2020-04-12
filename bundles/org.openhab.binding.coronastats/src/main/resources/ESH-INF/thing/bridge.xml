@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="coronastats"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Corona Stats Online - Bridge</label>
+		<description>Bridge for accessing data from https://corona-stats.online/ website.</description>
+
+		<channels>
+			<channel id="refreshed" typeId="refreshed"/>
+		</channels>
+
+		<config-description>
+			<parameter name="refresh" type="integer" unit="min" min="30">
+				<default>30</default>
+				<label>Refresh Interval</label>
+				<description>Time between two API requests in minutes. Minimum 30 minutes.</description>
+			</parameter>
+		</config-description>
+		
+	</bridge-type>
+
+	<channel-type id="refreshed">
+		<item-type>DateTime</item-type>
+		<label>Bridge Refreshed</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
