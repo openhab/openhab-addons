@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dwdpollenflug"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>DWD Pollen Count Index - Bridge</label>
+		<description>Bridge for accessing pollen count index data of the DWD</description>
+
+		<channel-groups>
+			<channel-group id="updates" typeId="updates"/>
+		</channel-groups>
+
+		<properties>
+			<property name="sender"/>
+			<property name="name"/>
+		</properties>
+
+		<config-description>
+			<parameter name="refresh" type="integer" unit="min" min="15">
+				<default>30</default>
+				<label>Refresh Interval</label>
+				<description>Time between two API requests in minutes. Minimum 15 minutes.</description>
+			</parameter>
+		</config-description>
+		
+	</bridge-type>
+	
+	<channel-group-type id="updates">
+		<label>Updates</label>
+		<description>Information about data state</description>
+		<channels>
+			<channel id="refreshed" typeId="update">
+				<label>Bridge Refreshed</label>
+			</channel>
+			<channel id="last_update" typeId="update">
+				<label>Last Update From DWD</label>
+			</channel>
+			<channel id="next_update" typeId="update">
+				<label>Next Update From DWD</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="update">
+		<item-type>DateTime</item-type>
+		<label>Update Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
