@@ -27,15 +27,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="groupSeEfficiency">
-		<label>Efficiency</label>
-		<channels>
-			<channel id="inEfficiency" typeId="seInEfficiency" />
-			<channel id="outEfficiency" typeId="seOutEfficiency" />
-			<channel id="averageEfficiency" typeId="seAverageEfficiency" />
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="groupSeSetting">
 		<label>Setting</label>
 		<channels>
@@ -157,24 +148,6 @@
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
 		<state min="-20" max="40" step="1" pattern="%d °C" readOnly="true" />
-	</channel-type>
-
-	<channel-type id="seInEfficiency">
-		<item-type>Number</item-type>
-		<label>Incoming Efficiency</label>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="seOutEfficiency">
-		<item-type>Number</item-type>
-		<label>Outgoing Efficiency</label>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="seAverageEfficiency">
-		<item-type>Number</item-type>
-		<label>Average Efficiency</label>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="sePowerState">

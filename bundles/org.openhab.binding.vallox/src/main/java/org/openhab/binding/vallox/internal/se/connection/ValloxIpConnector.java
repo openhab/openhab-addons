@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
@@ -33,12 +32,11 @@ import org.slf4j.LoggerFactory;
 public class ValloxIpConnector extends ValloxBaseConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxIpConnector.class);
-    private final Thread readerThread = new TelegramReader("binding.vallox.ValloxIpConnector");
-    private final Socket socket = new Socket();
+    private final Thread readerThread = new TelegramReader("Vallox Telegram Reader");
+    private Socket socket = new Socket();
 
-    public ValloxIpConnector(ScheduledExecutorService scheduler) {
-        super(scheduler);
-        logger.debug("Tcp Connection initialized");
+    public ValloxIpConnector() {
+        logger.debug("Ip connector initialized");
     }
 
     /**
@@ -51,38 +49,57 @@ public class ValloxIpConnector extends ValloxBaseConnector {
         }
         buffer.clear();
         panelNumber = config.getPanelAsByte();
+        socket = new Socket();
         socket.connect(new InetSocketAddress(config.tcpHost, config.tcpPort), ValloxSEConstants.CONNECTION_TIMEOUT);
-        socket.setSoTimeout(ValloxSEConstants.SOCKET_READ_TIMEOUT);
+        socket.setSoTimeout(0); // Don't fail if there's nothing to read. Machine is powered down.
         inputStream = socket.getInputStream();
         outputStream = socket.getOutputStream();
         logger.debug("Connected to {}:{}", config.tcpHost, config.tcpPort);
 
-        readerThread.setDaemon(true);
-        readerThread.start();
-        connected = true;
+        startTelegramReaderThread();
+        startProcessorThreads();
+        connected.set(true);
     }
 
     /**
-     * Close socket
+     * Start threads for receiving and processing telegrams
+     */
+    private void startTelegramReaderThread() {
+        if (!readerThread.isAlive()) {
+            readerThread.setDaemon(true);
+            readerThread.start();
+        }
+    }
+
+    /**
+     * Start threads for receiving and processing telegrams
+     */
+    private void stopTelegramReaderThread() {
+        readerThread.interrupt();
+        try {
+            readerThread.join(2000);
+        } catch (InterruptedException e) {
+            // Do nothing
+        }
+    }
+
+    /**
+     * Close socket and stop threads.
      */
     @Override
     public void close() {
         super.close();
-        logger.debug("Interrupting telegram listener");
-        readerThread.interrupt();
-        try {
-            readerThread.join();
-        } catch (InterruptedException e) {
-            // Do nothing
-        }
-
+        connected.set(false);
+        logger.debug("Stopping threads and closing socket");
+        stopTelegramReaderThread();
+        stopProcessorThreads();
         try {
             socket.close();
-        } catch (Exception e) {
-            logger.debug("Exception closing connection: ", e);
+        } catch (IOException e) {
+            logger.debug("Closing socket failed: ", e);
         }
-        connected = false;
-        logger.debug("Connection closed");
+
+        logger.debug("Ip connection closed");
     }
 
     /**
@@ -105,27 +122,23 @@ public class ValloxIpConnector extends ValloxBaseConnector {
 
         @Override
         public void run() {
-            logger.debug("Data listener started");
+            logger.trace("Telegram reader thread started");
             InputStream inputStream = getInputStream();
             while (!interrupted && inputStream != null) {
                 try {
-                    while (inputStream.available() > 0) {
+                    int data = inputStream.read();
+                    while (data != -1) {
                         buffer.add((byte) inputStream.read());
                     }
-                    handleBuffer();
-                    Thread.sleep(200); // Avoid high CPU usage by sleeping between loops
                 } catch (IOException e) {
                     sendErrorToListeners(e.getMessage(), e);
                     interrupt();
                 } catch (IllegalStateException e) {
                     logger.warn("Read buffer full. Cleaning.");
                     buffer.clear();
-                } catch (InterruptedException e) {
-                    sendErrorToListeners("Buffer handling interrupted", e);
-                    interrupt();
                 }
             }
-            logger.debug("Telegram listener stopped");
+            logger.trace("Telegram reader thread stopped");
         }
     }
 }

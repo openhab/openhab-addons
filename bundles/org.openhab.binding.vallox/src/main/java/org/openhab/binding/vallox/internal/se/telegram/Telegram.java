@@ -21,12 +21,9 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.core.util.HexUtils;
-import org.openhab.binding.vallox.internal.se.ValloxSEConstants;
 import org.openhab.binding.vallox.internal.se.cache.ValloxExpiringCacheMap;
 import org.openhab.binding.vallox.internal.se.mapper.ChannelDescriptor;
 import org.openhab.binding.vallox.internal.se.mapper.MultipleValueChannel;
-import org.openhab.binding.vallox.internal.se.mapper.TemperatureChannel;
-import org.openhab.binding.vallox.internal.se.mapper.ValloxChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +44,6 @@ public class Telegram {
         OK("Telegram received OK"),
         ACK("ACK byte received"),
         CRC_ERROR("CRC checksum failed"),
-        CORRUPTED("Telegram is corrupted"),
-        NOT_DOMAIN("First byte is not domain byte"),
         SUSPEND("Stop all traffic"),
         RESUME("Resume normal use"),
 
@@ -56,7 +51,7 @@ public class Telegram {
         POLL("Poll"),
         COMMAND("Command");
 
-        public final String stateDetails;
+        private final String stateDetails;
 
         private TelegramState(String stateDetails) {
             this.stateDetails = stateDetails;
@@ -64,7 +59,7 @@ public class Telegram {
     }
 
     private final Logger logger = LoggerFactory.getLogger(Telegram.class);
-    private final static Map<String, State> channelsToUpdate = new HashMap<>();
+    private final Map<String, State> channelsToUpdate = new HashMap<>();
     public final TelegramState state;
     public final byte[] bytes;
 
@@ -76,16 +71,6 @@ public class Telegram {
     }
 
     /**
-     * Create new Telegram with single byte. For Acknowledged telegrams.
-     *
-     * @param state the internal state of the telegram
-     * @param singleByte the single byte
-     */
-    public Telegram(TelegramState state, byte singleByte) {
-        this(state, new byte[] { singleByte, 0x00, 0x00, 0x00, 0x00, 0x00 });
-    }
-
-    /**
      * Create new Telegram.
      *
      * @param state the internal state of the telegram
@@ -94,24 +79,6 @@ public class Telegram {
     public Telegram(TelegramState state, byte[] telegram) {
         this.state = state;
         this.bytes = telegram;
-    }
-
-    /**
-     * Get sender of this telegram
-     *
-     * @return sender
-     */
-    public byte getSender() {
-        return bytes[1];
-    }
-
-    /**
-     * Get receiver of this telegram
-     *
-     * @return receiver
-     */
-    public byte getReceiver() {
-        return bytes[2];
     }
 
     /**
@@ -160,79 +127,42 @@ public class Telegram {
      * Process telegram and return a map of channels to update
      */
     public Map<String, State> parse(ChannelDescriptor descriptor, ValloxExpiringCacheMap cache) {
-        channelsToUpdate.clear();
-        ValloxChannel valloxChannel = descriptor.getValloxChannel();
-        if (valloxChannel instanceof MultipleValueChannel) {
-            Collection<String> subchannels = valloxChannel.getSubChannels();
+        if (descriptor.valloxChannel instanceof MultipleValueChannel) {
+            Collection<String> subchannels = descriptor.getSubChannels();
             for (String channel : subchannels) {
                 ChannelDescriptor subChannelDescriptor = ChannelDescriptor.get(channel);
                 State state = subChannelDescriptor.convertToState(getValue());
                 channelsToUpdate.put(channel, state);
             }
-        } else if (valloxChannel instanceof TemperatureChannel) {
-            State state = descriptor.convertToState(getValue());
-            channelsToUpdate.put(descriptor.channelID(), state);
-            calculateEfficiencies(cache);
-        } else if (descriptor.equals(ChannelDescriptor.CO2)) {
+        } else if (descriptor.equals(ChannelDescriptor.CO2_LOW)) {
             calculateCO2(cache);
-        } else if (descriptor.equals(ChannelDescriptor.CO2_SETPOINT)) {
+        } else if (descriptor.equals(ChannelDescriptor.CO2_SETPOINT_LOW)) {
             calculateCO2SetPoint(cache);
         } else {
             State state = descriptor.convertToState(getValue());
-            channelsToUpdate.put(descriptor.channelID(), state);
+            channelsToUpdate.put(descriptor.channelID, state);
         }
-        logger.debug("Channels parsed from telegram {}", channelsToUpdate);
+        logger.trace("Channels parsed from telegram {}", channelsToUpdate);
         return channelsToUpdate;
     }
 
     /**
-     * Calculate efficiencies from measured temperatures. This is specified by Vallox.
-     *
-     * @param cache the cache where temperatures are fetched
-     */
-    public void calculateEfficiencies(ValloxExpiringCacheMap cache) {
-        if (!cache.containsTemperatures()) {
-            return;
-        }
-        int tempInside = ValloxSEConstants.TEMPERATURE_MAPPING[Byte
-                .toUnsignedInt(cache.getValue(ChannelDescriptor.TEMPERATURE_INSIDE))];
-        int tempOutside = ValloxSEConstants.TEMPERATURE_MAPPING[Byte
-                .toUnsignedInt(cache.getValue(ChannelDescriptor.TEMPERATURE_OUTSIDE))];
-        int tempExhaust = ValloxSEConstants.TEMPERATURE_MAPPING[Byte
-                .toUnsignedInt(cache.getValue(ChannelDescriptor.TEMPERATURE_EXHAUST))];
-        int tempIncoming = ValloxSEConstants.TEMPERATURE_MAPPING[Byte
-                .toUnsignedInt(cache.getValue(ChannelDescriptor.TEMPERATURE_INCOMING))];
-        int maxPossible = tempInside - tempOutside;
-        if (maxPossible <= 0) {
-            channelsToUpdate.put("efficiency#inEfficiency", new DecimalType(100));
-            channelsToUpdate.put("efficiency#outEfficiency", new DecimalType(100));
-            channelsToUpdate.put("efficiency#averageEfficiency", new DecimalType(100));
-        }
-        if (maxPossible > 0) {
-            int inEfficiency = (tempIncoming - tempOutside) * 100 / maxPossible;
-            channelsToUpdate.put("efficiency#inEfficiency", new DecimalType(inEfficiency));
-            int outEfficiency = (tempInside - tempExhaust) * 100 / maxPossible;
-            channelsToUpdate.put("efficiency#outEfficiency", new DecimalType(outEfficiency));
-            int averageEfficiency = (inEfficiency + outEfficiency) / 2;
-            channelsToUpdate.put("efficiency#averageEfficiency", new DecimalType(averageEfficiency));
-        }
-    }
-
-    /**
-     * Calculate measure CO2 value from 2 bytes. Both needs to be in cache.
+     * Calculate measured CO2 value from 2 bytes. Both needs to be in cache.
      *
      * @param cache the cache where values are fetched.
      */
     private void calculateCO2(ValloxExpiringCacheMap cache) {
-        if (!cache.containsCO2()) {
+        Byte co2HighByte = cache.getValue(ChannelDescriptor.CO2_HIGH);
+        Byte co2LowByte = cache.getValue(ChannelDescriptor.CO2_LOW);
+
+        if (co2HighByte == null || co2LowByte == null) {
             logger.debug("Skipping CO2 calculation. Not enough values in cache.");
-            channelsToUpdate.put("status#co2", UnDefType.UNDEF);
+            channelsToUpdate.put(ChannelDescriptor.CO2.channelID, UnDefType.UNDEF);
             return;
         }
-        byte co2HighByte = cache.getValue(ChannelDescriptor.CO2_HIGH);
-        byte co2LowByte = cache.getValue(ChannelDescriptor.CO2_LOW);
-        channelsToUpdate.put(ChannelDescriptor.CO2.channelID(),
-                new DecimalType((short) ((co2HighByte << 8) | (co2LowByte & 0xFF))));
+        int value = ((co2HighByte << 8) | (co2LowByte & 0xFF));
+        channelsToUpdate.put(ChannelDescriptor.CO2.channelID, new DecimalType(value));
+        cache.put(ChannelDescriptor.CO2);
     }
 
     /**
@@ -241,15 +171,16 @@ public class Telegram {
      * @param cache the cache where values are fetched.
      */
     private void calculateCO2SetPoint(ValloxExpiringCacheMap cache) {
-        if (!cache.containsCO2SetPoint()) {
+        Byte co2SetPointHighByte = cache.getValue(ChannelDescriptor.CO2_SETPOINT_HIGH);
+        Byte co2SetPointLowByte = cache.getValue(ChannelDescriptor.CO2_SETPOINT_LOW);
+
+        if (co2SetPointHighByte == null || co2SetPointLowByte == null) {
             logger.debug("Skipping CO2 set point calculation. Not enough values in cache.");
-            channelsToUpdate.put("status#co2SetPoint", UnDefType.UNDEF);
+            channelsToUpdate.put(ChannelDescriptor.CO2_SETPOINT.channelID, UnDefType.UNDEF);
             return;
         }
-        byte co2SetPointHighByte = cache.getValue(ChannelDescriptor.CO2_SETPOINT_HIGH);
-        byte co2SetPointLowByte = cache.getValue(ChannelDescriptor.CO2_SETPOINT_LOW);
-        channelsToUpdate.put(ChannelDescriptor.CO2_SETPOINT.channelID(),
-                new DecimalType((short) ((co2SetPointHighByte << 8) | (co2SetPointLowByte & 0xFF))));
-
+        int value = ((co2SetPointHighByte << 8) | (co2SetPointLowByte & 0xFF));
+        channelsToUpdate.put(ChannelDescriptor.CO2_SETPOINT.channelID, new DecimalType(value));
+        cache.put(ChannelDescriptor.CO2_SETPOINT);
     }
 }

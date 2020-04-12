@@ -16,6 +16,8 @@ import static org.openhab.binding.vallox.internal.se.ValloxSEConstants.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.State;
@@ -29,7 +31,10 @@ import org.eclipse.smarthome.core.types.State;
 public enum ChannelDescriptor {
 
     // @formatter:off
-    // Null descriptor for error situations
+    /**
+     * "Null" {@link ChannelDescriptor} for error situations.
+     * Contains {@link IntegerChannel} constructed with 0x00 byte
+     */
     NULL ("Null", new IntegerChannel(0x00)),
 
     // FanControls
@@ -38,19 +43,14 @@ public enum ChannelDescriptor {
     FAN_SPEED_MIN           (CHANNEL_GROUP_FAN + "fanSpeedMin", new FanChannel(0xA9)),
     DC_FAN_INPUT_ADJUSTMENT (CHANNEL_GROUP_FAN + "dcFanInputAdjustment", new IntegerChannel(0xB0)),
     DC_FAN_OUTPUT_ADJUSTMENT(CHANNEL_GROUP_FAN + "dcFanOutputAdjustment", new IntegerChannel(0xB1)),
-    SUPPLY_FAN_STATE        (CHANNEL_GROUP_FAN + "supplyFanState", new BooleanChannel(0x08, "ioPortMultiPurpose2")),
-    EXHAUST_FAN_STATE       (CHANNEL_GROUP_FAN + "exhaustFanState", new BooleanChannel(0x20, "ioPortMultiPurpose2")),
+    SUPPLY_FAN_OFF        (CHANNEL_GROUP_FAN + "supplyFanOff", new BooleanChannel(0x08, "ioPortMultiPurpose2")),
+    EXHAUST_FAN_OFF       (CHANNEL_GROUP_FAN + "exhaustFanOff", new BooleanChannel(0x20, "ioPortMultiPurpose2")),
 
     // Temperatures
     TEMPERATURE_INSIDE  (CHANNEL_GROUP_TEMPERATURE + "tempInside", new TemperatureChannel(0x34)),
     TEMPERATURE_OUTSIDE (CHANNEL_GROUP_TEMPERATURE + "tempOutside", new TemperatureChannel(0x32)),
     TEMPERATURE_EXHAUST (CHANNEL_GROUP_TEMPERATURE + "tempExhaust", new TemperatureChannel(0x33)),
     TEMPERATURE_INCOMING(CHANNEL_GROUP_TEMPERATURE + "tempIncoming", new TemperatureChannel(0x35)),
-
-    // Efficiencies
-    EFFICIENCY_IN       (CHANNEL_GROUP_EFFICIENCY + "inEfficiency", new IntegerChannel(0x00)),
-    EFFICIENCY_OUT      (CHANNEL_GROUP_EFFICIENCY + "outEfficiency", new IntegerChannel(0x00)),
-    EFFICIENCY_AVERAGE  (CHANNEL_GROUP_EFFICIENCY + "averageEfficiency", new IntegerChannel(0x00)),
 
     // Settings
     POWER_STATE             (CHANNEL_GROUP_SETTINGS + "powerState", new BooleanChannel(0x01, "select")),
@@ -77,7 +77,7 @@ public enum ChannelDescriptor {
     PRE_HEATING_STATE                       (CHANNEL_GROUP_SETTINGS + "preHeatingState", new BooleanChannel(0x80, "flags5")),
 
     // Status
-    HIMIDITY            (CHANNEL_GROUP_STATUS + "humidity", new IntegerChannel.Humidity(0x2A)),
+    HUMIDITY            (CHANNEL_GROUP_STATUS + "humidity", new IntegerChannel.Humidity(0x2A)),
     HUMIDITY_SENSOR_1   (CHANNEL_GROUP_STATUS + "humiditySensor1", new IntegerChannel.Humidity(0x2F)),
     HUMIDITY_SENSOR_2   (CHANNEL_GROUP_STATUS + "humiditySensor2", new IntegerChannel.Humidity(0x30)),
     CO2                 (CHANNEL_GROUP_STATUS + "co2", new IntegerChannel(0x00)),
@@ -114,100 +114,122 @@ public enum ChannelDescriptor {
     IO_MULTIPURPOSE_1("ioPortMultiPurpose1", new MultipleValueChannel(0x07, Arrays.asList(CHANNEL_GROUP_STATUS + "postHeatingOn"))),
 
     IO_MULTIPURPOSE_2("ioPortMultiPurpose2", new MultipleValueChannel(0x08, Arrays.asList(CHANNEL_GROUP_STATUS + "damperMotorPosition",
-                                                                                                 CHANNEL_GROUP_ALARM  + "faultSignalRelayClosed",
-                                                                                                 CHANNEL_GROUP_FAN    + "supplyFanState",
-                                                                                                 CHANNEL_GROUP_STATUS + "preHeatingOn",
-                                                                                                 CHANNEL_GROUP_FAN    + "exhaustFanState",
-                                                                                                 CHANNEL_GROUP_STATUS + "firePlaceBoosterSwitch"))),
+                                                                                          CHANNEL_GROUP_ALARM  + "faultSignalRelayClosed",
+                                                                                          CHANNEL_GROUP_FAN    + "supplyFanOff",
+                                                                                          CHANNEL_GROUP_STATUS + "preHeatingOn",
+                                                                                          CHANNEL_GROUP_FAN    + "exhaustFanOff",
+                                                                                          CHANNEL_GROUP_STATUS + "firePlaceBoosterSwitch"))),
     FLAGS_2("flags2", new MultipleValueChannel(0x6D, Arrays.asList(CHANNEL_GROUP_ALARM + "co2Alarm",
-                                                                          CHANNEL_GROUP_ALARM + "hrcFreezingAlarm"))),
+                                                                   CHANNEL_GROUP_ALARM + "hrcFreezingAlarm"))),
 
     FLAGS_4("flags4", new MultipleValueChannel(0x6F, Arrays.asList(CHANNEL_GROUP_ALARM  + "waterRadiatorFreezingAlarm",
-                                                                          CHANNEL_GROUP_STATUS + "slaveMasterIndicator"))),
+                                                                   CHANNEL_GROUP_STATUS + "slaveMasterIndicator"))),
 
     FLAGS_5("flags5", new MultipleValueChannel(0x70, Arrays.asList(CHANNEL_GROUP_SETTINGS + "preHeatingState"))),
 
     FLAGS_6("flags6", new MultipleValueChannel(0x71, Arrays.asList(CHANNEL_GROUP_STATUS   + "remoteControlOn",
-                                                                          CHANNEL_GROUP_SETTINGS + "activateFirePlaceBooster",
-                                                                          CHANNEL_GROUP_STATUS   + "firePlaceBoosterOn"))),
+                                                                   CHANNEL_GROUP_SETTINGS + "activateFirePlaceBooster",
+                                                                   CHANNEL_GROUP_STATUS   + "firePlaceBoosterOn"))),
 
     SELECT("select", new MultipleValueChannel(0xA3, Arrays.asList(CHANNEL_GROUP_SETTINGS + "powerState",
-                                                                          CHANNEL_GROUP_SETTINGS + "co2AdjustState",
-                                                                          CHANNEL_GROUP_SETTINGS + "humidityAdjustState",
-                                                                          CHANNEL_GROUP_SETTINGS + "postHeatingState",
-                                                                          CHANNEL_GROUP_MAINTENANCE + "filterGuardIndicator",
-                                                                          CHANNEL_GROUP_STATUS      + "postHeatingIndicator",
-                                                                          CHANNEL_GROUP_ALARM       + "faultIndicator",
-                                                                          CHANNEL_GROUP_MAINTENANCE + "serviceReminderIndicator"))),
+                                                                  CHANNEL_GROUP_SETTINGS + "co2AdjustState",
+                                                                  CHANNEL_GROUP_SETTINGS + "humidityAdjustState",
+                                                                  CHANNEL_GROUP_SETTINGS + "postHeatingState",
+                                                                  CHANNEL_GROUP_MAINTENANCE + "filterGuardIndicator",
+                                                                  CHANNEL_GROUP_STATUS      + "postHeatingIndicator",
+                                                                  CHANNEL_GROUP_ALARM       + "faultIndicator",
+                                                                  CHANNEL_GROUP_MAINTENANCE + "serviceReminderIndicator"))),
 
-    PROGRAM_1("program1", new MultipleValueChannel(0xAA, Arrays.asList(CHANNEL_GROUP_SETTINGS + "adjustmentIntervalMinutes",
-                                                                              CHANNEL_GROUP_SETTINGS + "automaticHumidityLevelSeekerState",
-                                                                              CHANNEL_GROUP_SETTINGS + "boostSwitchMode",
-                                                                              CHANNEL_GROUP_SETTINGS + "radiatorType",
-                                                                              CHANNEL_GROUP_SETTINGS + "cascadeAdjust"))),
+    PROGRAM_1("program1", new MultipleValueChannel(0xAA, Arrays.asList(CHANNEL_GROUP_SETTINGS + "adjustmentInterval",
+                                                                       CHANNEL_GROUP_SETTINGS + "automaticHumidityLevelSeekerState",
+                                                                       CHANNEL_GROUP_SETTINGS + "boostSwitchMode",
+                                                                       CHANNEL_GROUP_SETTINGS + "radiatorType",
+                                                                       CHANNEL_GROUP_SETTINGS + "cascadeAdjust"))),
 
     PROGRAM_2("program2", new MultipleValueChannel(0xB5, Arrays.asList(CHANNEL_GROUP_SETTINGS + "maxSpeedLimitMode")));
     // @formatter:on
 
-    private final String channelID;
-    private final ValloxChannel valloxChannel;
+    private static final Map<String, ChannelDescriptor> DESCRIPTORS_BY_VALUE = new HashMap<>();
+    private static final Map<Byte, ChannelDescriptor> DESCRIPTORS_BY_VARIABLE = new HashMap<>();
+    public final String channelID;
+    public final ValloxChannel valloxChannel;
+
+    static {
+        for (ChannelDescriptor descriptor : ChannelDescriptor.values()) {
+            DESCRIPTORS_BY_VALUE.put(descriptor.channelID, descriptor);
+            DESCRIPTORS_BY_VARIABLE.put(descriptor.getVariable(), descriptor);
+        }
+    }
 
     private ChannelDescriptor(String channelID, ValloxChannel valloxChannel) {
         this.channelID = channelID;
         this.valloxChannel = valloxChannel;
     }
 
-    public String channelID() {
-        return channelID;
+    /**
+     * Get {@link ChannelDescriptor} mapped with the key
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value associated with the given key, or <code>ChannelDescriptor.NULL</code> if there is no value
+     */
+    public static ChannelDescriptor get(String key) {
+        return DESCRIPTORS_BY_VALUE.getOrDefault(key, ChannelDescriptor.NULL);
     }
 
-    public ValloxChannel getValloxChannel() {
-        return valloxChannel;
+    /**
+     * Get {@link ChannelDescriptor} mapped with the key
+     *
+     * @param channelAsByte the key whose associated value is to be returned
+     * @return the value associated with the given key, or <code>ChannelDescriptor.NULL</code> if there is no value
+     */
+    public static ChannelDescriptor get(byte key) {
+        return DESCRIPTORS_BY_VARIABLE.getOrDefault(key, ChannelDescriptor.NULL);
     }
 
-    public static ChannelDescriptor get(String channelID) {
-        for (ChannelDescriptor channelDescriptor : values()) {
-            if (channelDescriptor.channelID.equals(channelID)) {
-                return channelDescriptor;
-            }
-        }
-        return ChannelDescriptor.NULL;
+    /**
+     * Get {@link ChannelDescriptor}'s parent channel
+     *
+     * @param descriptor the key whose associated value is to be returned
+     * @return the value associated with the given key, or the key itself if there is no value associated
+     */
+    public static ChannelDescriptor getParentOrReturn(ChannelDescriptor descriptor) {
+        return DESCRIPTORS_BY_VALUE.getOrDefault(descriptor.valloxChannel.getParentChannel(), descriptor);
     }
 
-    public static ChannelDescriptor get(byte channelAsByte) {
-        for (ChannelDescriptor channelDescriptor : values()) {
-            if (channelDescriptor.valloxChannel.variable == channelAsByte) {
-                return channelDescriptor;
-            }
-        }
-        return ChannelDescriptor.NULL;
-    }
-
-    public static ChannelDescriptor getParentChannel(ChannelDescriptor descriptor) {
-        for (ChannelDescriptor channelDescriptor : values()) {
-            if (channelDescriptor.equals(descriptor)) {
-                return ChannelDescriptor.get(channelDescriptor.getParentChannel());
-            }
-        }
-        return ChannelDescriptor.NULL;
-    }
-
+    /**
+     * Get channels byte value
+     *
+     * @return channel as byte
+     */
     public byte getVariable() {
         return valloxChannel.getVariable();
     }
 
+    /**
+     * Convert channel value to state
+     *
+     * @param value the value to convert
+     * @return converted value
+     */
     public State convertToState(byte value) {
         return valloxChannel.convertToState(value);
     }
 
-    public String getParentChannel() {
-        return valloxChannel.getParentChannel();
-    }
-
+    /**
+     * Convert channel state to byte.
+     *
+     * @param value the value to convert
+     * @return converted value
+     */
     public byte convertFromState(byte value) {
         return valloxChannel.convertFromState(value);
     }
 
+    /**
+     * Get collection of sub channels.
+     *
+     * @return collection of sub channels
+     */
     public Collection<String> getSubChannels() {
         return valloxChannel.getSubChannels();
     }

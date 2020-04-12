@@ -14,12 +14,11 @@ package org.openhab.binding.vallox.internal.se.connection;
 
 import static org.openhab.binding.vallox.internal.se.ValloxSEConstants.*;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.TooManyListenersException;
-import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
@@ -46,8 +45,7 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     private @Nullable SerialPort serialPort;
     private final SerialPortManager serialPortManager;
 
-    public ValloxSerialConnector(SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
-        super(scheduler);
+    public ValloxSerialConnector(SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
         logger.debug("Serial connector initialized");
     }
@@ -68,10 +66,10 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
             serialPort.setSerialPortParams(SERIAL_BAUDRATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
 
-            inputStream = new BufferedInputStream(serialPort.getInputStream());
+            inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
             panelNumber = config.getPanelAsByte();
-            connected = true;
+            connected.set(true);
 
             serialPort.addEventListener(this);
 
@@ -81,16 +79,17 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
             serialPort.notifyOnOverrunError(true);
             serialPort.notifyOnParityError(true);
 
-            serialPort.enableReceiveThreshold(1);
-            serialPort.enableReceiveTimeout(2000);
+            serialPort.enableReceiveThreshold(SERIAL_RECEIVE_THRESHOLD_BYTES);
+            serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MILLISECONDS);
 
             logger.debug("Connected to {}", config.serialPort);
+            startProcessorThreads();
         } catch (TooManyListenersException e) {
             throw new IOException("Too many listeners", e);
         } catch (PortInUseException e) {
             throw new IOException("Port in use", e);
-        } catch (UnsupportedCommOperationException | IOException e) {
-            throw new IOException("Unsupported com operation -> " + e.getMessage(), e);
+        } catch (UnsupportedCommOperationException e) {
+            throw new IOException("Unsupported comm operation", e);
         }
     }
 
@@ -103,17 +102,12 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
         SerialPort serialPort = this.serialPort;
         if (serialPort != null) {
             serialPort.removeEventListener();
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException ioe) {
-                logger.debug("Failed to close serial port inputstream", ioe);
-            }
+            IOUtils.closeQuietly(getInputStream());
+            IOUtils.closeQuietly(getOutputStream());
             serialPort.close();
+            serialPort = null;
         }
-        serialPort = null;
-        connected = false;
+        connected.set(false);
         logger.debug("Serial connection closed");
     }
 
@@ -155,13 +149,10 @@ public class ValloxSerialConnector extends ValloxBaseConnector implements Serial
     private void handleDataAvailable() {
         InputStream inputStream = getInputStream();
         try {
-            if (inputStream != null) {
-                while (inputStream.available() > 0) {
-                    buffer.add((byte) inputStream.read());
-                }
-                handleBuffer();
+            while (inputStream != null && inputStream.available() > 0) {
+                buffer.add((byte) inputStream.read());
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.debug("Exception while handling available data ", e);
         } catch (IllegalStateException e) {
             logger.warn("Read buffer full. Cleaning.");

@@ -30,7 +30,7 @@ public abstract class ValloxChannel {
     /**
      * Channel as byte
      */
-    public byte variable;
+    private byte variable;
 
     /**
      * Create new instance with zero byte

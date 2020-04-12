@@ -17,11 +17,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,23 +42,53 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxBaseConnector.class);
 
+    private final Thread telegramProcessorThread = new TelegramProcessor("Vallox Telegram Processor");
+    private final Thread sendQueueHandlerThread = new SendQueueHandler("Vallox Send Queue Processor");
+
     private final List<ValloxEventListener> listeners = new CopyOnWriteArrayList<>();
     private final LinkedList<SendQueueItem> sendQueue = new LinkedList<>();
     protected final ArrayBlockingQueue<Byte> buffer = new ArrayBlockingQueue<>(1024);
 
-    protected ScheduledExecutorService scheduler;
     protected @Nullable OutputStream outputStream;
     protected @Nullable InputStream inputStream;
-    protected @Nullable ScheduledFuture<?> sendQueueHandler;
 
-    protected byte ackByte;
+    protected final AtomicBoolean connected = new AtomicBoolean(false);
+    protected final AtomicBoolean waitForAckByte = new AtomicBoolean(false);
+    protected final AtomicBoolean suspendTraffic = new AtomicBoolean(false);
+
+    private volatile byte ackByte;
     protected byte panelNumber;
-    protected boolean connected = false;
-    protected boolean waitForAckByte = false;
-    protected boolean suspendTraffic = false;
 
-    public ValloxBaseConnector(ScheduledExecutorService scheduler) {
-        this.scheduler = scheduler;
+    /**
+     * Start threads for receiving and processing telegrams
+     */
+    protected void startProcessorThreads() {
+        if (!telegramProcessorThread.isAlive()) {
+            telegramProcessorThread.setDaemon(true);
+            telegramProcessorThread.start();
+        }
+        if (!sendQueueHandlerThread.isAlive()) {
+            sendQueueHandlerThread.setDaemon(true);
+            sendQueueHandlerThread.start();
+        }
+    }
+
+    /**
+     * Stop telegram receive and process threads
+     */
+    protected void stopProcessorThreads() {
+        telegramProcessorThread.interrupt();
+        try {
+            telegramProcessorThread.join(2000);
+        } catch (InterruptedException e) {
+            // Do nothing
+        }
+        sendQueueHandlerThread.interrupt();
+        try {
+            sendQueueHandlerThread.join(2000);
+        } catch (InterruptedException e) {
+            // Do nothing
+        }
     }
 
     /**
@@ -91,7 +120,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      */
     @Override
     public boolean isConnected() {
-        return connected;
+        return connected.get();
     }
 
     /**
@@ -104,16 +133,20 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     }
 
     /**
-     * Stop queue handler
+     * Get this connectors {@link InputStream}
+     *
+     * @return {@link InputStream} of this connector
+     */
+    protected @Nullable OutputStream getOutputStream() {
+        return this.outputStream;
+    }
+
+    /**
+     * Stop telegram processing threads
      */
     @Override
     public void close() {
-        if (sendQueueHandler != null) {
-            sendQueueHandler.cancel(true);
-            sendQueueHandler = null;
-            sendQueue.clear();
-            logger.debug("Send queue handler stopped");
-        }
+        stopProcessorThreads();
     }
 
     /**
@@ -141,24 +174,22 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * @param buffer byte array to parse into telegrams
      * @throws InterruptedException
      */
-    protected void handleBuffer() throws InterruptedException {
-        while (buffer.size() > 6) {
-            byte[] localBuffer = new byte[6];
-            localBuffer[0] = buffer.take();
+    private void handleBuffer() throws InterruptedException {
+        byte[] localBuffer = new byte[6];
+        localBuffer[0] = buffer.take();
 
-            if (localBuffer[0] != ValloxSEConstants.DOMAIN) {
-                if (waitForAckByte) {
-                    ackByte = localBuffer[0];
-                    waitForAckByte = false;
-                    return;
-                }
+        if (localBuffer[0] != ValloxSEConstants.DOMAIN) {
+            if (waitForAckByte.get()) {
+                ackByte = localBuffer[0];
+                waitForAckByte.set(false);
                 return;
             }
-            for (int i = 1; i < localBuffer.length; i++) {
-                localBuffer[i] = buffer.take();
-            }
-            createTelegramForListeners(localBuffer);
+            return;
         }
+        for (int i = 1; i < localBuffer.length; i++) {
+            localBuffer[i] = buffer.take();
+        }
+        createTelegramForListeners(localBuffer);
     }
 
     /**
@@ -173,12 +204,12 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
         }
         if (localBuffer[3] == ValloxSEConstants.SUSPEND_BYTE) {
             sendTelegramToListeners(new Telegram(TelegramState.SUSPEND));
-            suspendTraffic = true;
+            suspendTraffic.set(true);
             return;
         }
         if (localBuffer[3] == ValloxSEConstants.RESUME_BYTE) {
             sendTelegramToListeners(new Telegram(TelegramState.RESUME));
-            suspendTraffic = false;
+            suspendTraffic.set(false);
             return;
         }
         if (localBuffer[2] == panelNumber || localBuffer[2] == ValloxSEConstants.ADDRESS_ALL_PANELS
@@ -190,16 +221,14 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
     }
 
     /**
-     * Put telegram into send queue and make sure job is scheduled to handle send queue.
+     * Put telegram into send queue for further processing if we're connected.
      *
      * @param telegram the telegram to put to queue
      */
     @Override
     public void sendTelegram(Telegram telegram) {
-        sendQueue.add(new SendQueueItem(telegram));
-        if (sendQueueHandler == null || (sendQueueHandler != null && sendQueueHandler.isCancelled())) {
-            sendQueueHandler = scheduler.scheduleWithFixedDelay(this::handleSendQueue, 0, 500, TimeUnit.MILLISECONDS);
-            logger.debug("Send queue handler started");
+        if (connected.get()) {
+            sendQueue.add(new SendQueueItem(telegram));
         }
     }
 
@@ -207,7 +236,7 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
      * Send one command or poll telegram from send queue
      */
     private void handleSendQueue() {
-        if (suspendTraffic || sendQueue.isEmpty()) {
+        if (suspendTraffic.get() || sendQueue.isEmpty()) {
             return;
         }
         SendQueueItem queueItem = sendQueue.removeFirst();
@@ -219,10 +248,10 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
             case COMMAND:
                 if (queueItem.retry()) {
                     if (telegram.getCheksum() == ackByte) {
-                        waitForAckByte = false;
-                        sendTelegramToListeners(new Telegram(TelegramState.ACK, ackByte));
+                        waitForAckByte.set(false);
+                        sendTelegramToListeners(new Telegram(TelegramState.ACK, telegram.bytes));
                     } else {
-                        waitForAckByte = true;
+                        waitForAckByte.set(true);
                         writeToOutputStream(telegram);
                         sendQueue.addFirst(queueItem);
                     }
@@ -250,9 +279,81 @@ public abstract class ValloxBaseConnector implements ValloxConnector {
                 logger.debug("Wrote {}", telegram);
             } catch (IOException e) {
                 sendErrorToListeners("Write to output stream failed, " + e.getMessage(), e);
+                sendQueue.clear();
             }
         } else {
             logger.debug("Output stream is null");
+        }
+    }
+
+    /**
+     * {@link Thread} implementation for processing telegrams
+     *
+     * @author Miika Jukka - Initial contribution
+     */
+    private class TelegramProcessor extends Thread {
+        boolean interrupted = false;
+
+        public TelegramProcessor(String name) {
+            super(name);
+            setDaemon(true);
+        }
+
+        @Override
+        public void interrupt() {
+            interrupted = true;
+            super.interrupt();
+        }
+
+        @Override
+        public void run() {
+            logger.trace("Telegram processor thread started");
+            while (!interrupted) {
+                try {
+                    handleBuffer();
+                } catch (InterruptedException e) {
+                    sendErrorToListeners("Buffer handling interrupted", e);
+                    interrupt();
+                }
+            }
+            logger.trace("Telegram processor thread stopped");
+        }
+    }
+
+    /**
+     * Handle send queue in own thread
+     *
+     * @author Miika Jukka - Initial contribution
+     */
+    private class SendQueueHandler extends Thread {
+        boolean interrupted = false;
+
+        public SendQueueHandler(String name) {
+            super(name);
+            setDaemon(true);
+        }
+
+        @Override
+        public void interrupt() {
+            interrupted = true;
+            super.interrupt();
+        }
+
+        @Override
+        public void run() {
+            logger.trace("Send queue handler thread started");
+            while (!interrupted) {
+                try {
+                    handleSendQueue();
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    // Time to stop
+                    interrupt();
+                } catch (NoSuchElementException e) {
+                    logger.debug("Send queue handler exception ", e);
+                }
+            }
+            logger.trace("Send queue handler thread stopped");
         }
     }
 }

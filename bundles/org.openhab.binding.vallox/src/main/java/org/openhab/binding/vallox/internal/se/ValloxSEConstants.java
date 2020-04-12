@@ -67,8 +67,8 @@ public class ValloxSEConstants {
     public static final String PARAMETER_PANEL_NUMBER = "panelNumber";
     public static final int SERIAL_PORT_READ_TIMEOUT = 3000;
     public static final int SERIAL_TIMEOUT_MILLISECONDS = 1000;
-    public static final int SERIAL_RECEIVE_THRESHOLD_MILLISECONDS = 1000;
-    public static final int SERIAL_RECEIVE_TIMEOUT_MILLISECONDS = 1000;
+    public static final int SERIAL_RECEIVE_THRESHOLD_BYTES = 1;
+    public static final int SERIAL_RECEIVE_TIMEOUT_MILLISECONDS = 2000;
 
     /**
      * Connection parameters

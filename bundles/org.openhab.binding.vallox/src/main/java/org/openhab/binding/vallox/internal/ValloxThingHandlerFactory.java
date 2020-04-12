@@ -27,6 +27,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.openhab.binding.vallox.internal.se.connection.ValloxIpConnector;
+import org.openhab.binding.vallox.internal.se.connection.ValloxSerialConnector;
 import org.openhab.binding.vallox.internal.se.handler.ValloxSEHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -64,8 +66,10 @@ public class ValloxThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_VALLOX_SE_IP.equals(thingTypeUID) || THING_TYPE_VALLOX_SE_SERIAL.equals(thingTypeUID)) {
-            return new ValloxSEHandler(thing, serialPortManager);
+        if (THING_TYPE_VALLOX_SE_IP.equals(thingTypeUID)) {
+            return new ValloxSEHandler(thing, new ValloxIpConnector());
+        } else if (THING_TYPE_VALLOX_SE_SERIAL.equals(thingTypeUID)) {
+            return new ValloxSEHandler(thing, new ValloxSerialConnector(serialPortManager));
         }
         return null;
     }

@@ -9,7 +9,6 @@
 		<channel-groups>
 			<channel-group id="fanControl" typeId="groupSeFanControl" />
 			<channel-group id="temperature" typeId="groupSeTemperature" />
-			<channel-group id="efficiency" typeId="groupSeEfficiency" />
 			<channel-group id="setting" typeId="groupSeSetting" />
 			<channel-group id="status" typeId="groupSeStatus" />
 			<channel-group id="maintenance" typeId="groupSeMaintenance" />
