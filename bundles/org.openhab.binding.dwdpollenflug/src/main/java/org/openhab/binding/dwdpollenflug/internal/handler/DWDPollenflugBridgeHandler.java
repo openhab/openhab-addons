@@ -13,10 +13,10 @@
 package org.openhab.binding.dwdpollenflug.internal.handler;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Set;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -63,7 +63,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable DWDPollenflug pollenflug;
 
-    private final List<DWDPollenflugRegionListener> regionListeners = new CopyOnWriteArrayList<>();
+    private final Set<DWDPollenflugRegionListener> regionListeners = ConcurrentHashMap.newKeySet();
 
     private final HttpClient client;
 
