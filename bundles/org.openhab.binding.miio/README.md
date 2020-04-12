@@ -170,6 +170,7 @@ However, for devices that are unsupported, you may override the value and try to
 | Roborock Vacuum T7 v3        | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-t7pv3) | Yes       |            |
 | Roborock Vacuum S5 Max       | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |            |
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
+| Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:unsupported | viomi.vacuum.v6        | No        |            |
 | Xiaomi Mijia vacuum STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
@@ -831,7 +832,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | ambientPower     | Switch  | Ambient Power                       |
 | ambientBrightness | Number  | Ambient Brightness                  |
 | illumination     | Number  | Ambient Illumination                |
@@ -842,7 +843,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | switchscene      | Switch  | Switch Scene                        |
@@ -853,7 +854,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | switchscene      | Switch  | Switch Scene                        |
@@ -864,7 +865,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -877,7 +878,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | delayoff         | Switch  | Delay Off                           |
@@ -888,7 +889,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -901,7 +902,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -914,7 +915,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | delayoff         | Switch  | Delay Off                           |
@@ -925,7 +926,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -938,7 +939,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -951,7 +952,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -964,7 +965,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
+| brightness       | Dimmer  | Brightness                          |
 | cct              | Number  | Correlated Color Temperature        |
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
@@ -2203,7 +2204,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips Eyecare Smart Lamp 2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number illumination "Ambient Illumination" (G_light) {channel="miio:basic:light:illumination"}
@@ -2217,7 +2218,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips LED Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
@@ -2231,7 +2232,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips LED Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
@@ -2245,7 +2246,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
@@ -2261,7 +2262,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
@@ -2275,7 +2276,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips Downlight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
@@ -2291,7 +2292,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi Philips ZhiRui bedside lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
@@ -2307,7 +2308,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
@@ -2321,7 +2322,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.mono1" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
@@ -2337,7 +2338,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.virtual" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
@@ -2353,7 +2354,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.zysread" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
@@ -2369,7 +2370,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 ```java
 Group G_light "philips.light.zystrip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
