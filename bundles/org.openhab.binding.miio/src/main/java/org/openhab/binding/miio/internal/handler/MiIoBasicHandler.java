@@ -406,7 +406,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
                     break;
                 case "dimmer":
-                case "percent":
                     updateState(basicChannel.getChannel(), new PercentType(val.getAsBigDecimal()));
                     break;
                 case "string":
