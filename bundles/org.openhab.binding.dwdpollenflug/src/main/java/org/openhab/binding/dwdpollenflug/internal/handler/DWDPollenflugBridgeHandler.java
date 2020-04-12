@@ -54,21 +54,15 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
-
     private final Logger logger = LoggerFactory.getLogger(DWDPollenflugBridgeHandler.class);
 
     private static final String DWD_URL = "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json";
 
     private DWDPollenflugBridgeConfiguration bridgeConfig = new DWDPollenflugBridgeConfiguration();
-
     private @Nullable ScheduledFuture<?> pollingJob;
-
     private @Nullable DWDPollenflug pollenflug;
-
     private final Set<DWDPollenflugRegionHandler> regionListeners = ConcurrentHashMap.newKeySet();
-
     private final HttpClient client;
-
     private final Gson gson = new Gson();
 
     public DWDPollenflugBridgeHandler(Bridge bridge, HttpClient client) {
