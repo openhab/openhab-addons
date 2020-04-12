@@ -59,7 +59,7 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
-        Object address = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
+        Object address = getConfig().get(BluetoothBindingConstants.CONFIGURATION_ADDRESS);
         if (address != null) {
             adapterAddress = new BluetoothAddress(address.toString());
         } else {
@@ -85,7 +85,15 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
+    public @Nullable String getLabel() {
+        return getThing().getLabel();
+    }
+
+    @Override
     public boolean isDiscoveryEnabled() {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return false;
+        }
         Object discovery = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
         if (discovery != null && discovery.toString().equalsIgnoreCase(Boolean.FALSE.toString())) {
             return false;

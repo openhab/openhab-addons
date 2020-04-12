@@ -84,6 +84,14 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
     String getLocation();
 
     /**
+     * Gets the label for this adapter, as specified in Thing.getLabel()
+     *
+     * @return the location of this adapter
+     */
+    @Nullable
+    String getLabel();
+
+    /**
      * Checks if this adapter has a device with the given {@link BluetoothAddress}.
      *
      * @param address the {@link BluetoothAddress} to check for

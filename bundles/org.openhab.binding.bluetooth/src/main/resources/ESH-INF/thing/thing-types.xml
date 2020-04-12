@@ -8,6 +8,10 @@
 		<label>Roaming Bluetooth Controller</label>
 		<description>A virtual Bluetooth adapter that handles roaming between other adapters</description>
 		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The unique Bluetooth address of the device</description>
+			</parameter>
 			<parameter name="discovery" type="boolean">
 				<label>Device Discovery</label>
 				<description>Whether this adapter actively participates in Bluetooth device discovery</description>

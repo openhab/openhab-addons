@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -52,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Introduced BluetoothAdapters and BluetoothDiscoveryParticipants
  * @author Connor Petty - Introduced connection based discovery and added roaming support
  */
+@NonNullByDefault
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
 
@@ -61,6 +63,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
     private final Set<BluetoothDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
+    @NonNullByDefault({})
     private final Map<BluetoothAddress, DiscoveryCache> discoveryCaches = new ConcurrentHashMap<>();
 
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
@@ -75,20 +78,21 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     @Activate
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
-        thingDiscovered(createRoamingAdapterDiscoveryResult());
     }
 
     private DiscoveryResult createRoamingAdapterDiscoveryResult() {
         return DiscoveryResultBuilder.create(new ThingUID(BluetoothBindingConstants.THING_TYPE_ROAMING, "ctrl"))
+                .withProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS, "FF:FF:FF:FF:FF:FF")
+                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
                 .withLabel("Bluetooth Roaming Controller").build();
     }
 
     @Override
     @Modified
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -146,6 +150,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void startScan() {
+        thingDiscovered(createRoamingAdapterDiscoveryResult());
         for (BluetoothAdapter adapter : adapters) {
             adapter.scanStart();
         }
@@ -177,24 +182,25 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private static DiscoveryResult copyWithNewBridge(DiscoveryResult result, BluetoothAdapter adapter) {
-        return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter)).withBridge(adapter.getUID())
-                .withProperties(result.getProperties()).withRepresentationProperty(result.getRepresentationProperty())
-                .withTTL(result.getTimeToLive()).withLabel(result.getLabel()).build();
-    }
-
-    private static DiscoveryResult adaptResult(DiscoveryResult result, BluetoothAdapter adapter) {
-        if (adapter.getUID().equals(result.getBridgeUID())) {
-            // the bridges match so we can publish as is
-            return result;
-        } else {
-            // this discovery was from a different bridge, we can reuse it
-            return copyWithNewBridge(result, adapter);
+        String label = result.getLabel();
+        String adapterLabel = adapter.getLabel();
+        if (adapterLabel != null) {
+            label = adapterLabel + " - " + label;
         }
+
+        return DiscoveryResultBuilder.create(createThingUIDWithBridge(result, adapter))//
+                .withBridge(adapter.getUID())//
+                .withProperties(result.getProperties())//
+                .withRepresentationProperty(result.getRepresentationProperty())//
+                .withTTL(result.getTimeToLive())//
+                .withLabel(label)//
+                .build();
     }
 
     private class DiscoveryCache {
 
-        private Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
+        private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
+        private final Map<BluetoothAdapter, DiscoveryResult> roamingDiscoveryResults = new HashMap<>();
 
         private @Nullable BluetoothDeviceSnapshot latestSnapshot;
 
@@ -204,12 +210,12 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
          * @param device the device to remove from this cache
          * @return this DiscoveryCache if there are still snapshots, null otherwise
          */
-        public synchronized DiscoveryCache removeDiscoveries(final BluetoothDevice device) {
+        public synchronized @Nullable DiscoveryCache removeDiscoveries(final BluetoothDevice device) {
             // we remove any discoveries that have been published for this device
-            discoveryFutures.computeIfPresent(device.getAdapter(), (adapter, snapshotFuture) -> {
-                snapshotFuture.future.thenAccept(result -> thingRemoved(result.getThingUID()));
-                return null;
-            });
+            BluetoothAdapter adapter = device.getAdapter();
+            if (discoveryFutures.containsKey(adapter)) {
+                discoveryFutures.remove(adapter).future.thenAccept(result -> retractDiscoveryResult(adapter, result));
+            }
             if (discoveryFutures.isEmpty()) {
                 return null;
             }
@@ -256,7 +262,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                             // make sure that we only get futures for the current snapshot
                             .filter(sf -> sf.snapshot.equals(latestSnapshot)).findAny().map(sf -> sf.future);
                     if (otherFuture.isPresent()) {
-                        future = otherFuture.get().thenApply(result -> adaptResult(result, adapter));
+                        future = otherFuture.get();
                     }
                 }
             }
@@ -275,7 +281,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                 future = oldSF.future.thenCombine(future, (oldResult, newResult) -> {
                     logger.trace("\n old: {}\n new: {}", oldResult, newResult);
                     if (!oldResult.getThingUID().equals(newResult.getThingUID())) {
-                        thingRemoved(oldResult.getThingUID());
+                        retractDiscoveryResult(adapter, oldResult);
                     }
                     return newResult;
                 });
@@ -289,7 +295,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
              * in the 'removeDiscoveries' method above can be sure that it is running after the 'thingDiscovered'
              */
             future = future.thenApply(result -> {
-                thingDiscovered(result);
+                publishDiscoveryResult(adapter, result);
                 return result;
             });
 
@@ -297,6 +303,34 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             // BluetoothDiscoveryDevice snapshot = new BluetoothDiscoveryDevice(currentSnapshot);
             // now save it for later
             discoveryFutures.put(adapter, new SnapshotFuture(snapshot, future));
+        }
+
+        private void publishDiscoveryResult(BluetoothAdapter adapter, DiscoveryResult result) {
+            thingDiscovered(copyWithNewBridge(result, adapter));
+
+            // we create a roaming version of every discoveryResult.
+            roamingAdapter.ifPresent(roamingAdapter -> {
+                if (roamingAdapter.isDiscoveryEnabled()) {
+                    DiscoveryResult roamingResult = copyWithNewBridge(result, roamingAdapter);
+                    synchronized (roamingDiscoveryResults) {
+                        roamingDiscoveryResults.put(adapter, roamingResult);
+                    }
+                    thingDiscovered(roamingResult);
+                }
+            });
+        }
+
+        private void retractDiscoveryResult(BluetoothAdapter adapter, DiscoveryResult result) {
+            thingRemoved(createThingUIDWithBridge(result, adapter));
+            DiscoveryResult roamingResult = null;
+            synchronized (roamingDiscoveryResults) {
+                if (roamingDiscoveryResults.containsKey(adapter)) {
+                    roamingResult = roamingDiscoveryResults.remove(adapter);
+                }
+            }
+            if (roamingResult != null) {
+                thingRemoved(roamingResult.getThingUID());
+            }
         }
 
         private CompletableFuture<DiscoveryResult> startDiscoveryProcess(BluetoothDevice device) {
@@ -315,18 +349,6 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             this.future = future;
         }
 
-    }
-
-    @Override
-    protected void thingDiscovered(DiscoveryResult discoveryResult) {
-        super.thingDiscovered(discoveryResult);
-
-        roamingAdapter.ifPresent(adapter -> {
-            if (adapter.isDiscoveryEnabled()) {
-                // we create a roaming version of every discoveryResult.
-                super.thingDiscovered(copyWithNewBridge(discoveryResult, adapter));
-            }
-        });
     }
 
 }

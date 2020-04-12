@@ -80,6 +80,11 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     }
 
     @Override
+    public @Nullable String getLabel() {
+        return getThing().getLabel();
+    }
+
+    @Override
     public void initialize() {
         config = getConfigAs(BaseBluetoothBridgeHandlerConfiguration.class);
 
