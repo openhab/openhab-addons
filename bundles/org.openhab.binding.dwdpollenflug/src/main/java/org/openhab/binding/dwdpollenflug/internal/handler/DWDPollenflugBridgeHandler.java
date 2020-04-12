@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dwdpollenflug.internal.handler;
 
-import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingConstants.*;
-
 import java.net.URI;
 import java.util.List;
 import java.net.SocketTimeoutException;
@@ -107,8 +105,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         final DWDPollenflug localPollenflug = this.pollenflug;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling.");
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY,
-                    TimeUnit.MINUTES.toSeconds(bridgeConfig.refresh), TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, bridgeConfig.refresh, TimeUnit.MINUTES);
         } else if (pollenflug != null) {
             notifyOnUpdate(localPollenflug);
         }
