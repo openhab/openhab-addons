@@ -153,6 +153,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     public void scanForVehicles() {
         scheduler.execute(() -> queryVehicles());
+        scheduler.execute(() -> queryPowerwalls());
     }
 
     public void addVehicleListener(VehicleListener listener) {
@@ -218,26 +219,27 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
             JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
             Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
-            Powerwall[] powerwallArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Powerwall[].class);
 
             for (Vehicle vehicle : vehicleArray) {
-                String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget);
-                if (StringUtils.isBlank(responseString)) {
-                    continue;
-                }
-                VehicleConfig vehicleConfig = gson.fromJson(responseString, VehicleConfig.class);
-                for (VehicleListener listener : vehicleListeners) {
-                    listener.vehicleFound(vehicle, vehicleConfig);
-                }
-                for (Thing vehicleThing : getThing().getThings()) {
-                    if (vehicle.vin.equals(vehicleThing.getConfiguration().get(VIN))) {
-                        TeslaVehicleHandler vehicleHandler = (TeslaVehicleHandler) vehicleThing.getHandler();
-                        if (vehicleHandler != null) {
-                            logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
-                            String vehicleJSON = gson.toJson(vehicle);
-                            vehicleHandler.parseAndUpdate("queryVehicle", null, vehicleJSON);
-                            logger.trace("Vehicle is id {}/vehicle_id {}/tokens {}", vehicle.id, vehicle.vehicle_id,
-                                    vehicle.tokens);
+                if (vehicle.vehicle_id != null) {
+                    String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget);
+                    if (StringUtils.isBlank(responseString)) {
+                        continue;
+                    }
+                    VehicleConfig vehicleConfig = gson.fromJson(responseString, VehicleConfig.class);
+                    for (VehicleListener listener : vehicleListeners) {
+                        listener.vehicleFound(vehicle, vehicleConfig);
+                    }
+                    for (Thing vehicleThing : getThing().getThings()) {
+                        if (vehicle.vin.equals(vehicleThing.getConfiguration().get(VIN))) {
+                            TeslaVehicleHandler vehicleHandler = (TeslaVehicleHandler) vehicleThing.getHandler();
+                            if (vehicleHandler != null) {
+                                logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
+                                String vehicleJSON = gson.toJson(vehicle);
+                                vehicleHandler.parseAndUpdate("queryVehicle", null, vehicleJSON);
+                                logger.trace("Vehicle is id {}/vehicle_id {}/tokens {}", vehicle.id, vehicle.vehicle_id,
+                                        vehicle.tokens);
+                            }
                         }
                     }
                 }
@@ -245,6 +247,34 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             return vehicleArray;
         } else {
             return new Vehicle[0];
+        }
+    }
+
+    protected Powerwall[] queryPowerwalls() {
+
+        String authHeader = getAuthHeader();
+
+        if (authHeader != null) {
+            // get a list of products
+            Response response = productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                    .header("Authorization", authHeader).get();
+
+            logger.debug("Querying the products: Response: {}:{}", response.getStatus(), response.getStatusInfo());
+
+            if (!checkResponse(response, true)) {
+                logger.error("An error occurred while querying the products");
+                return null;
+            }
+
+            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+            Powerwall[] powerwallArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Powerwall[].class);
+
+            for (Powerwall powerwall : powerwallArray) {
+                logger.debug("Powerwall is id {}/site_name {}", powerwall.id, powerwall.site_name);
+            }
+            return powerwallArray;
+        } else {
+            return new Powerwall[0];
         }
     }
 
@@ -433,38 +463,77 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                         authenticationResult.getDescription());
 
                 if (authenticationResult.getStatus() == ThingStatus.ONLINE) {
-                    // get a list of vehicles
-                    Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                    // get a list of products
+                    Response response = productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
                             .header("Authorization", "Bearer " + logonToken.access_token).get();
 
                     if (response != null && response.getStatus() == 200 && response.hasEntity()) {
                         updateStatus(ThingStatus.ONLINE);
+                        // Check for vehicles
                         for (Vehicle vehicle : queryVehicles()) {
-                            Bridge bridge = getBridge();
-                            if (bridge != null) {
-                                List<Thing> things = bridge.getThings();
-                                for (int i = 0; i < things.size(); i++) {
-                                    Thing thing = things.get(i);
-                                    TeslaVehicleHandler handler = (TeslaVehicleHandler) thing.getHandler();
-                                    if (handler != null) {
-                                        if (vehicle.vin.equals(thing.getConfiguration().get(VIN))) {
-                                            logger.debug(
-                                                    "Found the vehicle with VIN '{}' in the list of vehicles you own",
-                                                    getConfig().get(VIN));
-                                            apiIntervalErrors = 0;
-                                            apiIntervalTimestamp = System.currentTimeMillis();
-                                        } else {
-                                            logger.warn(
-                                                    "Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
-                                                    getConfig().get(VIN));
-                                            handler.updateStatus(ThingStatus.OFFLINE,
-                                                    ThingStatusDetail.CONFIGURATION_ERROR,
-                                                    "Vin is not available through this account.");
+                            if (vehicle.vin != null) {
+                                Bridge bridge = getBridge();
+                                if (bridge != null) {
+                                    List<Thing> things = bridge.getThings();
+                                    for (int i = 0; i < things.size(); i++) {
+                                        Thing thing = things.get(i);
+                                        TeslaVehicleHandler handler = (TeslaVehicleHandler) thing.getHandler();
+                                        if (handler != null) {
+                                            if (vehicle.vin.equals(thing.getConfiguration().get(VIN))) {
+                                                logger.debug(
+                                                        "Found the vehicle with VIN '{}' in the list of vehicles you own",
+                                                        getConfig().get(VIN));
+                                                apiIntervalErrors = 0;
+                                                apiIntervalTimestamp = System.currentTimeMillis();
+                                            } else {
+                                                logger.warn(
+                                                        "Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
+                                                        getConfig().get(VIN));
+                                                handler.updateStatus(ThingStatus.OFFLINE,
+                                                        ThingStatusDetail.CONFIGURATION_ERROR,
+                                                        "Vin is not available through this account.");
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        // Check for powerwalls
+                        for (Powerwall powerwall : queryPowerwalls()) {
+                            logger.debug("PS here");
+                            if (powerwall.site_name != null) {
+                            logger.debug("PS here2");
+                                Bridge bridge = getBridge();
+                            logger.debug("PS here2a, bridge {}",bridge);
+                                if (bridge != null) {
+                            logger.debug("PS here3");
+                                    List<Thing> things = bridge.getThings();
+                                    for (int i = 0; i < things.size(); i++) {
+                            logger.debug("PS here4");
+                                        Thing thing = things.get(i);
+                                        TeslaVehicleHandler handler = (TeslaVehicleHandler) thing.getHandler();
+                                        if (handler != null) {
+                            logger.debug("PS here5");
+                                            if (powerwall.id.equals(thing.getConfiguration().get(BATTERY_ID))) {
+                                                logger.debug(
+                                                        "Found the vehicle with battery_id '{}' in the list of powerwalls you own",
+                                                        getConfig().get(BATTERY_ID));
+                                                apiIntervalErrors = 0;
+                                                apiIntervalTimestamp = System.currentTimeMillis();
+                                            } else {
+                                                logger.warn(
+                                                        "Unable to find the powerwall with battery_id '{}' in the list of powerwalls you own",
+                                                        getConfig().get(BATTERY_ID));
+                                                handler.updateStatus(ThingStatus.OFFLINE,
+                                                        ThingStatusDetail.CONFIGURATION_ERROR,
+                                                        "battery_id is not available through this account.");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     } else {
                         if (response != null) {
                             logger.error("Error fetching the list of vehicles : {}:{}", response.getStatus(),
@@ -517,13 +586,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             this.target = target;
         }
 
-        public Request(TeslaPowerwallHandler handler, String request, String payLoad, WebTarget target) {
-            this.handler = handler;
-            this.request = request;
-            this.payLoad = payLoad;
-            this.target = target;
-        }
-
         @Override
         public void run() {
             try {
@@ -545,11 +607,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad,
             WebTarget target) {
         return new Request(teslaVehicleHandler, command, payLoad, target);
-    }
-
-    public Request newRequest(TeslaPowerwallHandler teslaPowerwallHandler, String command, String payLoad,
-            WebTarget target) {
-        return new Request(teslaPowerwallHandler, command, payLoad, target);
     }
 
     @Override

@@ -84,7 +84,7 @@ import com.google.gson.JsonParser;
  *
  * @author Paul Smedley - Initial contribution
  */
-public class TeslaPowerwallHandler extends BaseThingHandler {
+public class TeslaPowerwallHandler extends TeslaVehicleHandler {
 
     private static final int EVENT_STREAM_CONNECT_TIMEOUT = 3000;
     private static final int EVENT_STREAM_READ_TIMEOUT = 200000;
@@ -125,15 +125,16 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.trace("Initializing the Tesla handler for {}", getThing().getUID());
+        logger.debug("Initializing the Tesla handler for {}", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
         updateStatus(ThingStatus.ONLINE);
+        logger.debug("We don't do anything yet but we got here!");
         account = (TeslaAccountHandler) getBridge().getHandler();
     }
 
     @Override
     public void dispose() {
-        logger.trace("Disposing the Tesla handler for {}", getThing().getUID());
+        logger.debug("Disposing the Tesla handler for {}", getThing().getUID());
         try {
             if (fastStateJob != null && !fastStateJob.isCancelled()) {
                 fastStateJob.cancel(true);

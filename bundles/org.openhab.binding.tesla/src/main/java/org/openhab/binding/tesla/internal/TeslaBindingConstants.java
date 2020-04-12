@@ -30,6 +30,7 @@ public class TeslaBindingConstants {
     public static final String BATTERY_ID = "battery_id";
     public static final String PATH_COMMAND = "command/{cmd}";
     public static final String PATH_DATA_REQUEST = "data_request/{cmd}";
+    public static final String PATH_POWERWALL_ID = "/{id}/";
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
     public static final String POWERWALLS = "powerwalls";
