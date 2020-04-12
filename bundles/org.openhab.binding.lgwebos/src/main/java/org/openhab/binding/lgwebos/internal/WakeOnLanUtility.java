@@ -69,7 +69,7 @@ public class WakeOnLanUtility {
      */
     public static @Nullable String getMACAddress(String hostName) {
         if (COMMAND.isEmpty()) {
-            LOGGER.debug("MAC address detection not possible. Now command to identify MAC found.");
+            LOGGER.debug("MAC address detection not possible. No command to identify MAC found.");
             return null;
         }
 
