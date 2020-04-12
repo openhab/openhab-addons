@@ -41,6 +41,7 @@
 /bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
+/bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.enocean/ @fruggy83

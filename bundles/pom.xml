@@ -74,6 +74,7 @@
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
+    <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.enocean</module>
