@@ -113,7 +113,6 @@
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Humidity" typeId="humidity" />
-			<channel id="Humidex" typeId="humidex" />
 			<channel id="MinHumidity" typeId="minHumidity" />
 			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
 			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
@@ -126,6 +125,7 @@
 			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
 			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
 			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
+			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
 			<channel id="DewpointDepression" typeId="dewPointDepression" />

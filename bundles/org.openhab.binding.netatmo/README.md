@@ -547,12 +547,12 @@ DateTime             Indoor_Max_Temp_TS                "Max Temperature Today [%
 DateTime             Indoor_Max_Temp_This_Week_TS      "Max Temperature This Week  [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" <calendar>         { channel = "netatmo:NAMain:home:inside:DateMaxTempThisWeek" }
 DateTime             Indoor_Max_Temp_This_Month_TS     "Max Temperature This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" <calendar>         { channel = "netatmo:NAMain:home:inside:DateMaxTempThisMonth" }
 Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:NAMain:home:inside:Humidity" }
-Number:Dimensionless Indoor_Min_Humidity_This          "Min Humidity Today [%d %unit%]"                             <humidity>         { channel = "netatmo:NAMain:home:inside:MinHumidity" }
+Number:Dimensionless Indoor_Min_Humidity               "Min Humidity Today [%d %unit%]"                             <humidity>         { channel = "netatmo:NAMain:home:inside:MinHumidity" }
 Number:Dimensionless Indoor_Min_Humidity_This_Week     "Min Humidity This Week [%d %unit%]"                         <humidity>         { channel = "netatmo:NAMain:home:inside:MinHumidityThisWeek" }
 Number:Dimensionless Indoor_Min_Humidity_This_Month    "Min Humidity This Month [%d %unit%]"                        <humidity>         { channel = "netatmo:NAMain:home:inside:MinHumidityThisMonth" }
-Number:Dimensionless Indoor_Max_Humidity_This          "Min Humidity Today [%d %unit%]"                             <humidity>         { channel = "netatmo:NAMain:home:inside:MaxHumidity" }
-Number:Dimensionless Indoor_Max_Humidity_This_Week     "Min Humidity This Week [%d %unit%]"                         <humidity>         { channel = "netatmo:NAMain:home:inside:MaxHumidityThisWeek" }
-Number:Dimensionless Indoor_Max_Humidity_This_Month    "Min Humidity This Month [%d %unit%]"                        <humidity>         { channel = "netatmo:NAMain:home:inside:MaxHumidityThisMonth" }
+Number:Dimensionless Indoor_Max_Humidity               "Max Humidity Today [%d %unit%]"                             <humidity>         { channel = "netatmo:NAMain:home:inside:MaxHumidity" }
+Number:Dimensionless Indoor_Max_Humidity_This_Week     "Max Humidity This Week [%d %unit%]"                         <humidity>         { channel = "netatmo:NAMain:home:inside:MaxHumidityThisWeek" }
+Number:Dimensionless Indoor_Max_Humidity_This_Month    "Max Humidity This Month [%d %unit%]"                        <humidity>         { channel = "netatmo:NAMain:home:inside:MaxHumidityThisMonth" }
 DateTime             Indoor_Min_Humidity_TS            "Min Humidity Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinHumidity" }
 DateTime             Indoor_Min_Humidity_This_Week_TS  "Min Humidity This Week [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"     <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinHumidityThisWeek" }
 DateTime             Indoor_Min_Humidity_This_Month_TS "Min Humidity This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"    <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinHumidityThisMonth" }
@@ -577,12 +577,12 @@ DateTime             Indoor_Max_Co2_TS                 "Max CO2 Today [%1$td.%1$
 DateTime             Indoor_Max_Co2_This_Week_TS       "Max CO2 This Week [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"          <calendar>         { channel = "netatmo:NAMain:home:inside:DateMaxCo2ThisWeek" }
 DateTime             Indoor_Max_Co2_This_Month_TS      "Max CO2 This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:NAMain:home:inside:DateMaxCo2ThisMonth" }
 Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:NAMain:home:inside:Pressure" }
-Number:Pressure      Indoor_Min_Pressure_This          "Min Pressure Today [%d %unit%]"                             <pressure>         { channel = "netatmo:NAMain:home:inside:MinPressure" }
+Number:Pressure      Indoor_Min_Pressure               "Min Pressure Today [%d %unit%]"                             <pressure>         { channel = "netatmo:NAMain:home:inside:MinPressure" }
 Number:Pressure      Indoor_Min_Pressure_This_Week     "Min Pressure This Week [%d %unit%]"                         <pressure>         { channel = "netatmo:NAMain:home:inside:MinPressureThisWeek" }
 Number:Pressure      Indoor_Min_Pressure_This_Month    "Min Pressure This Month [%d %unit%]"                        <pressure>         { channel = "netatmo:NAMain:home:inside:MinPressureThisMonth" }
-Number:Pressure      Indoor_Max_Pressure_This          "Min Pressure Today [%d %unit%]"                             <pressure>         { channel = "netatmo:NAMain:home:inside:MaxPressure" }
-Number:Pressure      Indoor_Max_Pressure_This_Week     "Min Pressure This Week [%d %unit%]"                         <pressure>         { channel = "netatmo:NAMain:home:inside:MaxPressureThisWeek" }
-Number:Pressure      Indoor_Max_Pressure_This_Month    "Min Pressure This Month [%d %unit%]"                        <pressure>         { channel = "netatmo:NAMain:home:inside:MaxPressureThisMonth" }
+Number:Pressure      Indoor_Max_Pressure               "Max Pressure Today [%d %unit%]"                             <pressure>         { channel = "netatmo:NAMain:home:inside:MaxPressure" }
+Number:Pressure      Indoor_Max_Pressure_This_Week     "Max Pressure This Week [%d %unit%]"                         <pressure>         { channel = "netatmo:NAMain:home:inside:MaxPressureThisWeek" }
+Number:Pressure      Indoor_Max_Pressure_This_Month    "Max Pressure This Month [%d %unit%]"                        <pressure>         { channel = "netatmo:NAMain:home:inside:MaxPressureThisMonth" }
 DateTime             Indoor_Min_Pressure_TS            "Min Pressure Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinPressure" }
 DateTime             Indoor_Min_Pressure_This_Week_TS  "Min Pressure This Week [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"     <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinPressureThisWeek" }
 DateTime             Indoor_Min_Pressure_This_Month_TS "Min Pressure This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"    <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinPressureThisMonth" }
@@ -596,7 +596,7 @@ Number:Dimensionless Indoor_Min_Noise_This_Week        "Min Noise This Week [%.1
 Number:Dimensionless Indoor_Min_Noise_This_Month       "Min Noise This Month [%.1f %unit%]"                         <soundvolume>      { channel = "netatmo:NAMain:home:inside:MinNoiseThisMonth" }
 Number:Dimensionless Indoor_Max_Noise                  "Max Noise Today [%.1f %unit%]"                              <soundvolume>      { channel = "netatmo:NAMain:home:inside:MaxNoise" }
 Number:Dimensionless Indoor_Max_Noise_This_Week        "Max Noise This Week [%.1f %unit%]"                          <soundvolume>      { channel = "netatmo:NAMain:home:inside:MaxNoiseThisWeek" }
-Number:Dimensionless Indoor_Max_Noise_This_Month       "Max Noise This Week[%.1f %unit%]"                           <soundvolume>      { channel = "netatmo:NAMain:home:inside:MaxNoiseThisMonth" }
+Number:Dimensionless Indoor_Max_Noise_This_Month       "Max Noise This Month [%.1f %unit%]"                         <soundvolume>      { channel = "netatmo:NAMain:home:inside:MaxNoiseThisMonth" }
 DateTime             Indoor_Min_Noise_TS               "Min Noise Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinNoise" }
 DateTime             Indoor_Min_Noise_This_Week_TS     "Min Noise This Week [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"        <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinNoiseThisWeek" }
 DateTime             Indoor_Min_Noise_This_Month_TS    "Min Noise This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"       <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinNoiseThisMonth" }
@@ -623,10 +623,10 @@ DateTime             Outdoor_TimeStamp                 "TimeStamp [%1$td.%1$tm.%
 DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:NAModule1:home:outside:LastMessage" }
 
 # Rain Module
-Number:Length        Rain_Hour                         "Rain Last Hour [%.03f\"]"                                   <rain>             {channel="netatmo:NAModule3:home:rain:SumRain1"}
-Number:Length        Rain_Today                        "Rain Today [%.03f\"]"                                       <rain>             {channel="netatmo:NAModule3:home:rain:SumRain24"}
-Number:Length        Rain_Week                         "Rain This Week [%.03f\"]"                                   <rain>             {channel="netatmo:NAModule3:home:rain:SumRainThisWeek"}
-Number:Length        Rain_Month                        "Rain This Month [%.03f\"]"                                  <rain>             {channel="netatmo:NAModule3:home:rain:SumRainThisMonth"}
+Number:Length        Rain_Hour                         "Rain Last Hour [%.02f %unit%]"                              <rain>             {channel="netatmo:NAModule3:home:rain:SumRain1"}
+Number:Length        Rain_Today                        "Rain Today [%.02f %unit%]"                                  <rain>             {channel="netatmo:NAModule3:home:rain:SumRain24"}
+Number:Length        Rain_Week                         "Rain This Week [%.02f %unit%]"                              <rain>             {channel="netatmo:NAModule3:home:rain:SumRainThisWeek"}
+Number:Length        Rain_Month                        "Rain This Month [%.02f %unit%]"                             <rain>             {channel="netatmo:NAModule3:home:rain:SumRainThisMonth"}
 Number               Rain_BatteryVP                    "Rain battery status [%d%%]"                                 <battery>          {channel="netatmo:NAModule3:home:rain:BatteryVP"}
 ```
 
@@ -636,101 +636,101 @@ Number               Rain_BatteryVP                    "Rain battery status [%d%
 ```
 sitemap netatmo label="Netatmo"
     Frame label="Indoor" {
-        Item=Indoor_Temp
-        Item=Indoor_Min_Temp
-        Item=Indoor_Min_Temp_This_Week
-        Item=Indoor_Min_Temp_This_Month
-        Item=Indoor_Max_Temp
-        Item=Indoor_Max_Temp_This_Week
-        Item=Indoor_Max_Temp_This_Month
-        Item=Indoor_Min_Temp_TS
-        Item=Indoor_Min_Temp_This_Week_TS
-        Item=Indoor_Min_Temp_This_Month_TS
-        Item=Indoor_Max_Temp_TS
-        Item=Indoor_Max_Temp_This_Week_TS
-        Item=Indoor_Max_Temp_This_Month_TS
-        Item=Indoor_Humidity
-        Item=Indoor_Min_Humidity_This
-        Item=Indoor_Min_Humidity_This_Week
-        Item=Indoor_Min_Humidity_This_Month
-        Item=Indoor_Max_Humidity_This
-        Item=Indoor_Max_Humidity_This_Week
-        Item=Indoor_Max_Humidity_This_Month
-        Item=Indoor_Min_Humidity_TS
-        Item=Indoor_Min_Humidity_This_Week_TS
-        Item=Indoor_Min_Humidity_This_Month_TS
-        Item=Indoor_Max_Humidity_TS
-        Item=Indoor_Max_Humidity_This_Week_TS
-        Item=Indoor_Max_Humidity_This_Month_TS
-        Item=Indoor_Humidex                     valuecolor=[<20.1="green",<29.1="blue",<28.1="yellow",<45.1="orange",<54.1="red",>54.1="maroon"]
-        Item=Indoor_HeatIndex
-        Item=Indoor_Dewpoint
-        Item=Indoor_DewpointDepression
-        Item=Indoor_Co2                        valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Min_Co2                    valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Min_Co2_This_Week          valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Min_Co2_This_Month         valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Max_Co2                    valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Max_Co2_This_Week          valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Max_Co2_This_Month         valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
-        Item=Indoor_Min_Co2_TS
-        Item=Indoor_Min_Co2_This_Week_TS
-        Item=Indoor_Min_Co2_This_Month_TS
-        Item=Indoor_Max_Co2_TS
-        Item=Indoor_Max_Co2_This_Week_TS
-        Item=Indoor_Max_Co2_This_Month_TS
-        Item=Indoor_Pressure
-        Item=Indoor_Min_Pressure_This
-        Item=Indoor_Min_Pressure_This_Week
-        Item=Indoor_Min_Pressure_This_Month
-        Item=Indoor_Max_Pressure_This
-        Item=Indoor_Max_Pressure_This_Week
-        Item=Indoor_Max_Pressure_This_Month
-        Item=Indoor_Min_Pressure_TS
-        Item=Indoor_Min_Pressure_This_Week_TS
-        Item=Indoor_Min_Pressure_This_Month_TS
-        Item=Indoor_Max_Pressure_TS
-        Item=Indoor_Max_Pressure_This_Week_TS
-        Item=Indoor_Max_Pressure_This_Month_TS
-        Item=Indoor_AbsolutePressure
-        Item=Indoor_Noise
-        Item=Indoor_Min_Noise
-        Item=Indoor_Min_Noise_This_Week
-        Item=Indoor_Min_Noise_This_Month
-        Item=Indoor_Max_Noise
-        Item=Indoor_Max_Noise_This_Week
-        Item=Indoor_Max_Noise_This_Month
-        Item=Indoor_Min_Noise_TS
-        Item=Indoor_Min_Noise_This_Week_TS
-        Item=Indoor_Min_Noise_This_Month_TS
-        Item=Indoor_Max_Noise_TS
-        Item=Indoor_Max_Noise_This_Week_TS
-        Item=Indoor_Max_Noise_This_Month_TS
-        Item=Indoor_WifiStatus
-        Item=Indoor_TimeStamp
-        Item=Indoor_Location
-        Item=Indoor_LastStatusStore
+        Text item=Indoor_Temp
+        Text item=Indoor_Min_Temp
+        Text item=Indoor_Min_Temp_This_Week
+        Text item=Indoor_Min_Temp_This_Month
+        Text item=Indoor_Max_Temp
+        Text item=Indoor_Max_Temp_This_Week
+        Text item=Indoor_Max_Temp_This_Month
+        Text item=Indoor_Min_Temp_TS
+        Text item=Indoor_Min_Temp_This_Week_TS
+        Text item=Indoor_Min_Temp_This_Month_TS
+        Text item=Indoor_Max_Temp_TS
+        Text item=Indoor_Max_Temp_This_Week_TS
+        Text item=Indoor_Max_Temp_This_Month_TS
+        Text item=Indoor_Humidity
+        Text item=Indoor_Min_Humidity
+        Text item=Indoor_Min_Humidity_This_Week
+        Text item=Indoor_Min_Humidity_This_Month
+        Text item=Indoor_Max_Humidity
+        Text item=Indoor_Max_Humidity_This_Week
+        Text item=Indoor_Max_Humidity_This_Month
+        Text item=Indoor_Min_Humidity_TS
+        Text item=Indoor_Min_Humidity_This_Week_TS
+        Text item=Indoor_Min_Humidity_This_Month_TS
+        Text item=Indoor_Max_Humidity_TS
+        Text item=Indoor_Max_Humidity_This_Week_TS
+        Text item=Indoor_Max_Humidity_This_Month_TS
+        Text item=Indoor_Humidex                     valuecolor=[<20.1="green",<29.1="blue",<28.1="yellow",<45.1="orange",<54.1="red",>54.1="maroon"]
+        Text item=Indoor_HeatIndex
+        Text item=Indoor_Dewpoint
+        Text item=Indoor_DewpointDepression
+        Text item=Indoor_Co2                        valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Min_Co2                    valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Min_Co2_This_Week          valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Min_Co2_This_Month         valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Max_Co2                    valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Max_Co2_This_Week          valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Max_Co2_This_Month         valuecolor=[<800="green",<1000="orange",<1400="red",>1399="maroon"]
+        Text item=Indoor_Min_Co2_TS
+        Text item=Indoor_Min_Co2_This_Week_TS
+        Text item=Indoor_Min_Co2_This_Month_TS
+        Text item=Indoor_Max_Co2_TS
+        Text item=Indoor_Max_Co2_This_Week_TS
+        Text item=Indoor_Max_Co2_This_Month_TS
+        Text item=Indoor_Pressure
+        Text item=Indoor_Min_Pressure
+        Text item=Indoor_Min_Pressure_This_Week
+        Text item=Indoor_Min_Pressure_This_Month
+        Text item=Indoor_Max_Pressure
+        Text item=Indoor_Max_Pressure_This_Week
+        Text item=Indoor_Max_Pressure_This_Month
+        Text item=Indoor_Min_Pressure_TS
+        Text item=Indoor_Min_Pressure_This_Week_TS
+        Text item=Indoor_Min_Pressure_This_Month_TS
+        Text item=Indoor_Max_Pressure_TS
+        Text item=Indoor_Max_Pressure_This_Week_TS
+        Text item=Indoor_Max_Pressure_This_Month_TS
+        Text item=Indoor_AbsolutePressure
+        Text item=Indoor_Noise
+        Text item=Indoor_Min_Noise
+        Text item=Indoor_Min_Noise_This_Week
+        Text item=Indoor_Min_Noise_This_Month
+        Text item=Indoor_Max_Noise
+        Text item=Indoor_Max_Noise_This_Week
+        Text item=Indoor_Max_Noise_This_Month
+        Text item=Indoor_Min_Noise_TS
+        Text item=Indoor_Min_Noise_This_Week_TS
+        Text item=Indoor_Min_Noise_This_Month_TS
+        Text item=Indoor_Max_Noise_TS
+        Text item=Indoor_Max_Noise_This_Week_TS
+        Text item=Indoor_Max_Noise_This_Month_TS
+        Text item=Indoor_WifiStatus
+        Text item=Indoor_TimeStamp
+        Text item=Indoor_Location
+        Text item=Indoor_LastStatusStore
     }
     Frame label="Outdoor" { 
-        Item=Outdoor_Temperature
-        Item=Outdoor_TempTrend
-        Item=Outdoor_Humidity
-        Item=Outdoor_Humidex                    valuecolor=[<20.1="green",<29.1="blue",<28.1="yellow",<45.1="orange",<54.1="red",>54.1="maroon"]
-        Item=Outdoor_HeatIndex
-        Item=Outdoor_Dewpoint
-        Item=Outdoor_DewpointDepression
-        Item=Outdoor_RfStatus
-        Item=Outdoor_LowBattery
-        Item=Outdoor_BatteryVP
-        Item=Outdoor_TimeStamp
-        Item=Outdoor_LastMessage
+        Text item=Outdoor_Temperature
+        Text item=Outdoor_TempTrend
+        Text item=Outdoor_Humidity
+        Text item=Outdoor_Humidex                    valuecolor=[<20.1="green",<29.1="blue",<28.1="yellow",<45.1="orange",<54.1="red",>54.1="maroon"]
+        Text item=Outdoor_HeatIndex
+        Text item=Outdoor_Dewpoint
+        Text item=Outdoor_DewpointDepression
+        Text item=Outdoor_RfStatus
+        Text item=Outdoor_LowBattery
+        Text item=Outdoor_BatteryVP
+        Text item=Outdoor_TimeStamp
+        Text item=Outdoor_LastMessage
     }
     Frame label="Rain" {
-        Item=Rain_Hour
-        Item=Rain_Today
-        Item=Rain_Week
-        Item=Rain_Month
-        Item=Rain_BatteryVP
+        Text item=Rain_Hour
+        Text item=Rain_Today
+        Text item=Rain_Week
+        Text item=Rain_Month
+        Text item=Rain_BatteryVP
     }
 }
 ```
