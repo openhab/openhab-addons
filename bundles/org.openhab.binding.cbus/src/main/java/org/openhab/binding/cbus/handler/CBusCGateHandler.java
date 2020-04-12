@@ -19,7 +19,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +77,7 @@ final class CBusThreadPool extends CGateThreadPool {
         private final ThreadPoolExecutor threadPool;
 
         public CBusThreadPoolExecutor(@Nullable String poolName) {
-            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool("org.openhab.binding.cbus-" + poolName);
+            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool("binding.cbus-" + poolName);
         }
 
         @Override
@@ -101,7 +100,6 @@ final class CBusThreadPool extends CGateThreadPool {
 public class CBusCGateHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
-    private CBusCGateConfiguration configuration = new CBusCGateConfiguration();
     private @Nullable InetAddress ipAddress = null;
     public @Nullable CGateSession cGateSession = null;
     private @Nullable ScheduledFuture<?> keepAliveFuture = null;
@@ -119,31 +117,25 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.OFFLINE);
         logger.debug("Initializing CGate Bridge handler.");
-        Optional<CBusCGateConfiguration> cfg = Optional.of(getConfigAs(CBusCGateConfiguration.class));
-        if (cfg.isPresent()) {
-            configuration = cfg.get();
-            logger.debug("Using configuration {}", configuration);
-            if ("127.0.0.1".equals(configuration.ipAddress) || "localhost".equals(configuration.ipAddress)) {
-                this.ipAddress = InetAddress.getLoopbackAddress();
-            } else {
-                try {
-                    this.ipAddress = InetAddress.getByName(configuration.ipAddress);
-                } catch (UnknownHostException e1) {
-                    updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "IP Address not resolvable");
-                    return;
-                }
-            }
-            InetAddress address = this.ipAddress;
-            if (address != null)
-                logger.debug("CGate IP         {}.", address.getHostAddress());
-
-            keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
-                keepAlive();
-            }, 0, 100, TimeUnit.SECONDS);
+        CBusCGateConfiguration configuration = getConfigAs(CBusCGateConfiguration.class);
+        logger.debug("Using configuration {}", configuration);
+        if ("127.0.0.1".equals(configuration.ipAddress) || "localhost".equals(configuration.ipAddress)) {
+            this.ipAddress = InetAddress.getLoopbackAddress();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+            try {
+                this.ipAddress = InetAddress.getByName(configuration.ipAddress);
+            } catch (UnknownHostException e1) {
+                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "IP Address not resolvable");
+                return;
+            }
         }
+        InetAddress address = this.ipAddress;
+        if (address != null) {
+            logger.debug("CGate IP         {}.", address.getHostAddress());
+        }
+
+        keepAliveFuture = scheduler.scheduleWithFixedDelay(this::keepAlive, 0, 100, TimeUnit.SECONDS);
     }
 
     private void keepAlive() {
@@ -174,7 +166,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 updateStatus();
             } catch (CGateConnectException e) {
                 updateStatus();
-                logger.warn("Failed to connect to CGate: {}", e.getMessage());
+                logger.debug("Failed to connect to CGate: {}", e.getMessage());
                 try {
                     cGateSession.close();
                 } catch (CGateException e2) {
@@ -232,20 +224,20 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                     addressParts.length);
             return;
         }
-        updateGroup(addressParts[1], Integer.parseInt(addressParts[2]), Integer.parseInt(addressParts[3]), value);
+        updateGroup(Integer.parseInt(addressParts[1]), Integer.parseInt(addressParts[2]),
+                Integer.parseInt(addressParts[3]), value);
     }
 
-    private void updateGroup(String network, int application, int group, String value) {
+    private void updateGroup(int network, int application, int group, String value) {
         for (Thing networkThing : getThing().getThings()) {
             // Is this networkThing from the network we are looking for...
-            if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
-                    .getConfiguration().get(CBusBindingConstants.CONFIG_NETWORK_ID).toString().equals(network)) {
-                ThingHandler netThingHandler = networkThing.getHandler();
-                if (netThingHandler == null) {
+            if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK)) {
+                CBusNetworkHandler netThingHandler = (CBusNetworkHandler) networkThing.getHandler();
+                if (netThingHandler == null || netThingHandler.getNetworkId() != network) {
                     continue;
                 }
                 // Loop through all the things on this network and see if they match the application / group
-                for (Thing thing : ((CBusNetworkHandler) netThingHandler).getThing().getThings()) {
+                for (Thing thing : netThingHandler.getThing().getThings()) {
                     ThingHandler thingThingHandler = thing.getHandler();
                     if (thingThingHandler == null) {
                         continue;
@@ -333,7 +325,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 }
             }
             logger.debug("ProcessStatusChange {}", status);
-            String contents[] = status.split("#");
+            String[] contents = status.split("#");
             if (cGateSession.getSessionID() != null
                     && contents[1].contains("sessionId=" + cGateSession.getSessionID())) {
                 // We created this event - don't worry about processing it again...
@@ -399,7 +391,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                         address = tokenizer.poll() + "/0";
                         value = tokenizer.poll();
                     } else if (!"request_refresh".equals(type)) {
-                        logger.warn("Received unknown clock event: {}", status);
+                        // We dont handle request_refresh as we are not a clock master
+                        logger.debug("Received unknown clock event: {}", status);
                     }
                     if (value != null && !value.isEmpty()) {
                         updateGroup(address, value);
@@ -419,14 +412,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
                             @Nullable
                             String level = commentTokenizer.poll();
-                            level.replace("level=", "");
+                            level = level.replace("level=", "");
                             updateGroup(address, level);
                         }
                     } else {
-                        logger.warn("Received unparsed event: '{}'", status);
+                        logger.debug("Received unparsed event: '{}'", status);
                     }
-                }
                     break;
+                }
             }
         }
     }

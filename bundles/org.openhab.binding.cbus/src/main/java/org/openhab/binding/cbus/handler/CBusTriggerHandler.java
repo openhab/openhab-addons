@@ -17,6 +17,8 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
@@ -60,7 +62,8 @@ public class CBusTriggerHandler extends CBusGroupHandler {
                         group.TriggerEvent(((DecimalType) command).intValue());
                     }
                 } catch (CGateException e) {
-                    logger.warn("Failed to send trigger command {} to {}", command, group, e);
+                    logger.debug("Failed to send trigger command {} to {}", command, group, e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
                 }
             }
         }

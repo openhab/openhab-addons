@@ -89,20 +89,15 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     public void updateStatus() {
         try {
-            Map<String, @Nullable String> properties = (Map<String, @Nullable String>) getThing().getProperties();
-            logger.debug("updateStatus {}", properties.get(CBusBindingConstants.PROPERTY_GROUP_ID));
+            logger.debug("updateStatus {} {}", applicationId, groupId);
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
                 Group group = this.group;
                 if (group == null) {
-                    @Nullable
-                    Object groupId = properties.get(CBusBindingConstants.PROPERTY_GROUP_ID);
-                    if (groupId != null) {
-                        group = getGroup(Integer.parseInt(groupId.toString()));
-                        this.group = group;
-                    }
+                    group = getGroup();
+                    this.group = group;
                 }
                 if (group == null) {
                     logger.debug("Set state to configuration error -no group");
@@ -115,14 +110,14 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                 }
             }
         } catch (CGateException e) {
-            logger.warn("Problem checking network state for network {}", e.getMessage());
+            logger.debug("Problem checking network state for network {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
     public abstract void updateGroup(int application, int group, String value);
 
-    private @Nullable Group getGroup(int groupID) {
+    private @Nullable Group getGroup() {
         try {
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null) {
@@ -131,16 +126,16 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
             Network network = networkHandler.getNetwork();
             if (network != null) {
                 Application application = network.getApplication(applicationId);
-                logger.debug("GetGroup for id {}", groupID);
-                return application.getGroup(groupID);
+                logger.debug("GetGroup for id {}", groupId);
+                return application.getGroup(groupId);
             }
         } catch (CGateException e) {
-            logger.debug("GetGroup for id {} faile {}", groupID, e.getMessage());
+            logger.debug("GetGroup for id {} failed {}", groupId, e.getMessage());
         }
         return null;
     }
 
-    private synchronized @Nullable CBusNetworkHandler getCBusNetworkHandler() {
+    private @Nullable CBusNetworkHandler getCBusNetworkHandler() {
         CBusNetworkHandler bridgeHandler = null;
         Bridge bridge = getBridge();
         if (bridge == null) {

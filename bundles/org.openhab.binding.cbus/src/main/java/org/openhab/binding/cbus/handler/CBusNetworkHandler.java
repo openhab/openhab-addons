@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.cbus.handler;
 
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.internal.CBusNetworkConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +45,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusNetworkHandler.class);
     private @Nullable CBusCGateHandler bridgeHandler = null;
-    private CBusNetworkConfiguration configuration = new CBusNetworkConfiguration();
+    private @Nullable CBusNetworkConfiguration configuration = null;
     private @Nullable Network network = null;
     private @Nullable Project projectObject = null;
     private @Nullable ScheduledFuture<?> initNetwork = null;
@@ -64,21 +62,16 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initialize --");
-        Optional<CBusNetworkConfiguration> cfg = Optional.of(getConfigAs(CBusNetworkConfiguration.class));
-        if (cfg.isPresent()) {
-            configuration = cfg.get();
-            logger.debug("Using configuration {}", configuration);
-            CBusCGateHandler bridgeHandler = getCBusCGateHandler();
-            if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                logger.debug("bridge not online");
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
-            logger.debug("Bridge online so init properly");
-            scheduler.execute(this::cgateOnline);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+        configuration = getConfigAs(CBusNetworkConfiguration.class);
+        logger.debug("Using configuration {}", configuration);
+        CBusCGateHandler bridgeHandler = getCBusCGateHandler();
+        if (bridgeHandler == null || !bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("bridge not online");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
         }
+        logger.debug("Bridge online so init properly");
+        scheduler.execute(this::cgateOnline);
     }
 
     @Override
@@ -106,6 +99,11 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
     }
 
     private void cgateOnline() {
+        CBusNetworkConfiguration configuration = this.configuration;
+        if (configuration == null) {
+            logger.debug("cgateOnline - NetworkHandler not initialised");
+            return;
+        }
         ThingStatus lastStatus = getThing().getStatus();
         logger.debug("cgateOnline {}", lastStatus);
 
@@ -116,13 +114,11 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         Network network = getNetwork();
         logger.debug("network {}", network);
         CBusCGateHandler cbusCGateHandler = getCBusCGateHandler();
-        logger.debug("cgateHandler {}", cbusCGateHandler);
         if (cbusCGateHandler == null) {
             logger.debug("NoCGateHandler");
             return;
         }
         try {
-            logger.debug("projectobject {}", projectObject);
             if (projectObject == null) {
                 CGateSession session = cbusCGateHandler.getCGateSession();
                 if (session != null) {
@@ -138,7 +134,6 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                     return;
                 }
             }
-            logger.debug("projectobject {}", projectObject);
             if (network == null) {
                 CGateSession session = cbusCGateHandler.getCGateSession();
                 if (session != null) {
@@ -168,8 +163,9 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                     this.initNetwork = scheduler.scheduleWithFixedDelay(this::checkNetworkOnline, 30, 30,
                             TimeUnit.SECONDS);
                     logger.debug("Schedule a check every minute");
-                } else
+                } else {
                     logger.debug("initNetwork alreadys started");
+                }
                 updateStatus();
                 return;
             }
@@ -189,21 +185,24 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 ScheduledFuture<?> initNetwork = this.initNetwork;
                 if (initNetwork != null) {
                     initNetwork.cancel(false);
+                    initNetwork = null;
                 }
-                updateStatus();
             } else {
                 ThingStatus lastStatus = getThing().getStatus();
                 logger.debug("Network still not online {}", lastStatus);
-                updateStatus();
             }
         } catch (CGateException e) {
             logger.warn("Cannot check if network is online {} ", network.getNetworkID());
-            updateStatus();
         }
+        updateStatus();
     }
 
     private void updateStatus() {
-        logger.debug("updateStatus");
+        CBusNetworkConfiguration configuration = this.configuration;
+        if (configuration == null) {
+            logger.debug("updateStatus - NetworkHandler not initialised");
+            return;
+        }
         ThingStatus lastStatus = getThing().getStatus();
         Network network = getNetwork();
         CBusCGateHandler cbusCGateHandler = getCBusCGateHandler();
@@ -214,10 +213,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 logger.debug("No network - set configuration error");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             } else if (network.isOnline()) {
-                logger.debug("Network is online");
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.debug("Network is offline");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Network is not reporting online");
             }
@@ -228,17 +225,15 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         if (!getThing().getStatus().equals(lastStatus)) {
             ScheduledFuture<?> networkSync = this.networkSync;
             if (lastStatus == ThingStatus.OFFLINE) {
-                if (networkSync == null || networkSync.isCancelled())
+                if (networkSync == null || networkSync.isCancelled()) {
                     this.networkSync = scheduler.scheduleWithFixedDelay(this::doNetworkSync, 10,
                             configuration.syncInterval, TimeUnit.SECONDS);
-                logger.debug("Schedule networkSync to start in {} seconds",
-                        Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_NETWORK_SYNC).toString()));
+                }
             } else {
                 if (networkSync != null) {
                     networkSync.cancel(false);
                 }
             }
-
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
                 if (handler instanceof CBusGroupHandler) {
@@ -282,6 +277,15 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     public @Nullable Network getNetwork() {
         return network;
+    }
+
+    public int getNetworkId() {
+        CBusNetworkConfiguration configuration = this.configuration;
+        if (configuration == null) {
+            logger.debug("getNetworkId - NetworkHandler not initialised");
+            return -1;
+        }
+        return configuration.id;
     }
 
     private @Nullable Project getProjectObject() {

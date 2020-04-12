@@ -41,7 +41,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);
 
-    private CBusCGateHandler cBusCGateHandler;
+    private final CBusCGateHandler cBusCGateHandler;
 
     public CBusNetworkDiscovery(CBusCGateHandler cBusCGateHandler) {
         super(CBusBindingConstants.NETWORK_DISCOVERY_THING_TYPES_UIDS, 60, false);

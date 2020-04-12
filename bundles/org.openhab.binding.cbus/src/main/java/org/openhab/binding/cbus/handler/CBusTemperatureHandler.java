@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
@@ -58,7 +60,8 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
                     }
                 }
             } catch (CGateException e) {
-                logger.warn("Failed to getLevel for group {}", groupId, e);
+                logger.debug("Failed to getLevel for group {}", groupId, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
             }
         }
     }

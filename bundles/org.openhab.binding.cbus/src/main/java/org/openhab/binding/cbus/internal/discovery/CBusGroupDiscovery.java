@@ -44,16 +44,20 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
 
-    private CBusNetworkHandler cbusNetworkHandler;
+    private final CBusNetworkHandler cbusNetworkHandler;
 
     public CBusGroupDiscovery(CBusNetworkHandler cbusNetworkHandler) {
-        super(CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS, 300, false);
+        super(CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS, 0, false);
         this.cbusNetworkHandler = cbusNetworkHandler;
     }
 
     @Override
     protected void startScan() {
         if (cbusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            ThingUID bridgeUid = cbusNetworkHandler.getThing().getBridgeUID();
+            if (bridgeUid == null) {
+                return;
+            }
             try {
                 Map<Integer, ThingTypeUID> applications = new HashMap<Integer, ThingTypeUID>();
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_LIGHTING, CBusBindingConstants.THING_TYPE_LIGHT);
@@ -84,16 +88,12 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                         properties.put(CBusBindingConstants.PROPERTY_NETWORK_ID,
                                 Integer.toString(network.getNetworkID()));
 
-                        ThingUID bridgeUid = cbusNetworkHandler.getThing().getBridgeUID();
-                        if (bridgeUid != null) {
-                            ThingUID uid = new ThingUID(applicationItem.getValue(),
-                                    Integer.toString(group.getGroupID()), bridgeUid.getId(),
-                                    cbusNetworkHandler.getThing().getUID().getId());
-                            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                    .withLabel("CBUS " + group.getName() + "(" + group.getGroupID() + ")")
-                                    .withBridge(cbusNetworkHandler.getThing().getUID()).build();
-                            thingDiscovered(result);
-                        }
+                        ThingUID uid = new ThingUID(applicationItem.getValue(), Integer.toString(group.getGroupID()),
+                                bridgeUid.getId(), cbusNetworkHandler.getThing().getUID().getId());
+                        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                .withLabel("CBUS " + group.getName() + "(" + group.getGroupID() + ")")
+                                .withBridge(cbusNetworkHandler.getThing().getUID()).build();
+                        thingDiscovered(result);
                     }
                 }
             } catch (CGateException e) {
@@ -101,5 +101,4 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
             }
         }
     }
-
 }

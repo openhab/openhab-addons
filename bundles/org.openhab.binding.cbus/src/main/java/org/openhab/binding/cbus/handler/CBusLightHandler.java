@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.cbus.CBusBindingConstants;
@@ -60,6 +62,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                 }
             } catch (CGateException e) {
                 logger.debug("Failed to getLevel for group {}", groupId, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
             }
         } else {
             if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
@@ -73,6 +76,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                         }
                     } catch (CGateException e) {
                         logger.debug("Failed to send command {} to {}", command, group, e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
                     }
                 }
             } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
@@ -88,10 +92,18 @@ public class CBusLightHandler extends CBusGroupHandler {
                         PercentType value = (PercentType) command;
                         group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
                     } else if (command instanceof IncreaseDecreaseType) {
-                        logger.debug("Increase/Decrease not implemented for {}", channelUID);
+                        int level = group.getLevel();
+                        if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                            level = Math.max(level - 1, 0);
+                        } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                            level = Math.min(level + 1, 255);
+                        }
+                        group.ramp(level, 0);
+                        logger.debug("Change group level to {}", level);
                     }
                 } catch (CGateException e) {
-                    logger.warn("Failed to send command {} to {}", command, group, e);
+                    logger.debug("Failed to send command {} to {}", command, group, e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
                 }
             }
         }
