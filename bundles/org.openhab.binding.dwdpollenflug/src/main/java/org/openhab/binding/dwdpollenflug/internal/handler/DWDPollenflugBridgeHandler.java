@@ -54,9 +54,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(DWDPollenflugBridgeHandler.class);
-
     private static final String DWD_URL = "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json";
+
+    private final Logger logger = LoggerFactory.getLogger(DWDPollenflugBridgeHandler.class);
 
     private DWDPollenflugBridgeConfiguration bridgeConfig = new DWDPollenflugBridgeConfiguration();
     private @Nullable ScheduledFuture<?> pollingJob;
