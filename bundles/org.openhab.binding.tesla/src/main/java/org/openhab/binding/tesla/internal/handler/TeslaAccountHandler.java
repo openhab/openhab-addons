@@ -280,7 +280,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
             for (Powerwall powerwall : powerwallArray) {
                 for (PowerwallListener listener2 : powerwallListeners) {
-                    logger.debug("PSX here");
                     listener2.powerwallFound(powerwall);
                 }
                 logger.debug("Powerwall is id {}/site_name {}", powerwall.id, powerwall.site_name);
