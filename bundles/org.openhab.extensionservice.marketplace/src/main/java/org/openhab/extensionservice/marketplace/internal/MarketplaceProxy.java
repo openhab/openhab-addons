@@ -14,6 +14,7 @@ package org.openhab.extensionservice.marketplace.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,9 +23,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.xml.util.XmlDocumentReader;
-import org.openhab.extensionservice.marketplace.internal.MarketplaceProxy;
-import org.openhab.extensionservice.marketplace.internal.MarketplaceXMLReader;
 import org.openhab.extensionservice.marketplace.internal.model.Marketplace;
 import org.openhab.extensionservice.marketplace.internal.model.Node;
 import org.slf4j.Logger;
@@ -40,17 +41,19 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
+@NonNullByDefault
 public class MarketplaceProxy {
+
+    private static final String MP_URL = "https://marketplace.eclipse.org/taxonomy/term/4988%2C4396/api/p?client=org.eclipse.smarthome";
+    private static final long REFRESH_INTERVAL = 3600;
+    private static final long RETRY_DELAY = 60;
 
     private final Logger logger = LoggerFactory.getLogger(MarketplaceProxy.class);
 
-    private static final String MP_URL = "https://marketplace.eclipse.org/taxonomy/term/4988%2C4396/api/p?client=org.eclipse.smarthome";
     private final URL url;
-    private Node[] cachedNodes = null;
-    private long refresh_interval = 3600;
-    private long retry_delay = 60;
-    private ScheduledExecutorService executorService;
-    private ScheduledFuture<?> refreshJob;
+    private final List<Node> cachedNodes = new ArrayList<>();
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledFuture<?> refreshJob;
 
     /**
      * Creates a new instance, which immediately schedules a synchronization with the marketplace content.
@@ -58,9 +61,7 @@ public class MarketplaceProxy {
     public MarketplaceProxy() {
         try {
             url = new URL(MP_URL);
-            this.executorService = Executors.newSingleThreadScheduledExecutor();
-            this.refreshJob = this.executorService.scheduleWithFixedDelay(() -> refresh(), 0, refresh_interval,
-                    TimeUnit.SECONDS);
+            refreshJob = executorService.scheduleWithFixedDelay(this::refresh, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Something is very wrong - cannot instantiate URL " + MP_URL);
         }
@@ -72,7 +73,7 @@ public class MarketplaceProxy {
      * @return list of marketplace nodes
      */
     public List<Node> getNodes() {
-        return cachedNodes != null ? Arrays.asList(cachedNodes) : Collections.emptyList();
+        return Collections.unmodifiableList(cachedNodes);
     }
 
     /**
@@ -81,13 +82,17 @@ public class MarketplaceProxy {
     public synchronized void refresh() {
         XmlDocumentReader<Marketplace> reader = new MarketplaceXMLReader();
         try {
+            @Nullable
             Marketplace result = reader.readFromXML(url);
-            cachedNodes = result.categories[0].nodes;
+            if (result != null) {
+                cachedNodes.clear();
+                cachedNodes.addAll(Arrays.asList(result.categories[0].nodes));
+            }
         } catch (Exception e) {
-            if (cachedNodes == null) {
+            if (cachedNodes.isEmpty()) {
                 logger.warn("Failed downloading Marketplace entries: {}", e.getMessage());
                 logger.warn("Retrying again in a minute");
-                this.executorService.schedule(() -> refresh(), retry_delay, TimeUnit.SECONDS);
+                executorService.schedule(this::refresh, RETRY_DELAY, TimeUnit.SECONDS);
             } else {
                 logger.debug("Cannot access IoT Marketplace - will continue to use cached results: {}", e.getMessage());
             }
@@ -95,10 +100,9 @@ public class MarketplaceProxy {
     }
 
     public void dispose() {
-        if (this.refreshJob != null && !this.refreshJob.isCancelled()) {
-            this.refreshJob.cancel(true);
-            this.refreshJob = null;
+        if (!refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
         }
-        this.executorService.shutdown();
+        executorService.shutdown();
     }
 }
