@@ -42,7 +42,7 @@ public class WakeOnLanUtility {
     private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
     private static final int CMD_TIMEOUT_MS = 1000;
 
-    private static String COMMAND;
+    private static final String COMMAND;
     static {
         String os = System.getProperty("os.name").toLowerCase();
         LOGGER.debug("os: {}", os);
@@ -50,8 +50,14 @@ public class WakeOnLanUtility {
             COMMAND = "arp -a %s";
         } else if ((os.indexOf("mac") >= 0)) {
             COMMAND = "arp %s";
-        } else { // linux, docker
-            COMMAND = "arping -r -c 1 -C 1 %s";
+        } else { // linux
+            if (checkIfLinuxCommandExists("arp")) {
+                COMMAND = "arp %s";
+            } else if (checkIfLinuxCommandExists("arping")) { // typically OH provided docker image
+                COMMAND = "arping -r -c 1 -C 1 %s";
+            } else {
+                COMMAND = "";
+            }
         }
     }
 
@@ -62,6 +68,11 @@ public class WakeOnLanUtility {
      * @return MAC address
      */
     public static @Nullable String getMACAddress(String hostName) {
+        if (COMMAND.isEmpty()) {
+            LOGGER.debug("MAC address detection not possible. Now command to identify MAC found.");
+            return null;
+        }
+
         String cmd = String.format(COMMAND, hostName);
         String response = ExecUtil.executeCommandLineAndWaitResponse(cmd, CMD_TIMEOUT_MS);
         Matcher matcher = MAC_REGEX.matcher(response);
@@ -151,6 +162,15 @@ public class WakeOnLanUtility {
         }
 
         return bytes;
+    }
+
+    private static boolean checkIfLinuxCommandExists(String cmd) {
+        try {
+            return 0 == Runtime.getRuntime().exec(String.format("which %s", cmd)).waitFor();
+        } catch (InterruptedException | IOException e) {
+            LOGGER.debug("Error trying to check if command {} exists: {}", cmd, e.getMessage());
+        }
+        return false;
     }
 
 }
