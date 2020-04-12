@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="coronastats"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="country">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		
+		<label>Corona Stats Online - Country</label>
+		<description>Corona stats for a specific country</description>
+
+		<channels>
+			<channel id="cases" typeId="count">
+				<label>Total Cases</label>
+			</channel>
+			<channel id="today_cases" typeId="count">
+				<label>New Cases</label>
+			</channel>
+			<channel id="deaths" typeId="count">
+				<label>Total Deaths</label>
+			</channel>
+			<channel id="today_deaths" typeId="count">
+				<label>New Deaths</label>
+			</channel>
+			<channel id="recovered" typeId="count">
+				<label>Recovered</label>
+			</channel>
+			<channel id="active" typeId="count">
+				<label>Active</label>
+			</channel>
+			<channel id="critical" typeId="count">
+				<label>Critical</label>
+			</channel>
+			<channel id="tests" typeId="count">
+				<label>Tests</label>
+			</channel>
+		</channels>
+		
+		<properties>
+			<property name="country"/>
+		</properties>
+		
+		<config-description>
+			<parameter name="countryCode" type="text" required="true">
+				<label>Country Code</label>
+				<description>2-letter Country Code</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="count">
+		<item-type>Number</item-type>
+		<label>Cases Count</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

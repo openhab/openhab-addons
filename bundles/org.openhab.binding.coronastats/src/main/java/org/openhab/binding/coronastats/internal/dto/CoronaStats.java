@@ -52,4 +52,17 @@ public class CoronaStats {
 
         return Collections.unmodifiableMap(map);
     }
+
+    public @Nullable CoronaStatsCountry getCountry(String countryCodeKey) {
+        final Set<CoronaStatsCountry> localCountries = countries;
+        if (localCountries != null) {
+            for (CoronaStatsCountry country : localCountries) {
+                if (country.countryCode.equals(countryCodeKey)) {
+                    return country;
+                }
+            }
+        }
+
+        return null;
+    }
 }

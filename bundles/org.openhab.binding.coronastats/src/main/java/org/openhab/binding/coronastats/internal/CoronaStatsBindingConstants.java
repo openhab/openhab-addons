@@ -26,9 +26,25 @@ public class CoronaStatsBindingConstants {
 
     private static final String BINDING_ID = "coronastats";
 
-    // List of all Thing Type UIDs
+    // Bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    // List of all Channel ids
+    // Bridge channels
     public static final String CHANNEL_REFRESHED = "refreshed";
+
+    // Country
+    public static final ThingTypeUID THING_TYPE_COUNTRY = new ThingTypeUID(BINDING_ID, "country");
+
+    // Properties country
+    public static final String PROPERTY_COUNTRY = "country";
+
+    // Channels world/country
+    public static final String CHANNEL_CASES = "cases";
+    public static final String CHANNEL_NEW_CASES = "today_cases";
+    public static final String CHANNEL_DEATHS = "deaths";
+    public static final String CHANNEL_NEW_DEATHS = "today_deaths";
+    public static final String CHANNEL_RECOVERED = "recovered";
+    public static final String CHANNEL_ACTIVE = "active";
+    public static final String CHANNEL_CRITICAL = "critical";
+    public static final String CHANNEL_TESTS = "test";
 }

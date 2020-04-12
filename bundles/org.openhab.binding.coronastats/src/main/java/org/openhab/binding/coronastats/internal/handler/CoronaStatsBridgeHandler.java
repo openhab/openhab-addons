@@ -158,7 +158,8 @@ public class CoronaStatsBridgeHandler extends BaseBridgeHandler {
                     try {
                         CoronaStats coronaStatsJSON = gson.fromJson(getContentAsString(), CoronaStats.class);
                         f.complete(coronaStatsJSON);
-                    } catch (JsonSyntaxException ex2) {
+                    } catch (JsonSyntaxException parseException) {
+                        logger.error("Parsing failed: {}", parseException.getMessage());
                         f.completeExceptionally(new CoronaStatsPollingException("Parsing of response failed"));
                     }
                 }
