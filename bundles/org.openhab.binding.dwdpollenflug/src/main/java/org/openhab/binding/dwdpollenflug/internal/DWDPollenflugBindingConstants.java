@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link DWDPollenflugBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 public class DWDPollenflugBindingConstants {

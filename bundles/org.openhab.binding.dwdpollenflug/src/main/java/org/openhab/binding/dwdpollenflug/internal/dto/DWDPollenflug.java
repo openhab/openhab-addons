@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 /**
  * The {@link DWDPollenflug} class is internal DWD data structure.
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 public class DWDPollenflug {

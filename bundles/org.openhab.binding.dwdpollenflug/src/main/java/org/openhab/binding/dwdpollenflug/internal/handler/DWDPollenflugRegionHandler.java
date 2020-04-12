@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link DWDPollenflugRegionHandler} is the handler for bridge thing
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 public class DWDPollenflugRegionHandler extends BaseThingHandler {

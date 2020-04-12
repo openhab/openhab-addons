@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Configuration for the {@link DWDPollenflugRegionHandler}
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 public class DWDPollenflugRegionConfiguration {

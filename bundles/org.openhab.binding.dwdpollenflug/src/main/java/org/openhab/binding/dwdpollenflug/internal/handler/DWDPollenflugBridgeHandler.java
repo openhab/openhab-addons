@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link DWDPollenflugBridgeHandler} is the handler for bridge thing
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
@@ -177,9 +177,11 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof DWDPollenflugRegionHandler) {
             logger.debug("Register region listener.");
-            boolean result = regionListeners.add((DWDPollenflugRegionHandler) childHandler);
-            if (result) {
+            if (regionListeners.add((DWDPollenflugRegionHandler) childHandler)) {
                 startPolling();
+            } else {
+                logger.warn("Tried to add listener {} but it was already present. This is probably an error.",
+                        childHandler);
             }
         }
     }
@@ -188,11 +190,14 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof DWDPollenflugRegionHandler) {
             logger.debug("Unregister region listener.");
-            regionListeners.remove((DWDPollenflugRegionHandler) childHandler);
+            if (!regionListeners.remove((DWDPollenflugRegionHandler) childHandler)) {
+                logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
+                        childHandler);
+            }
         }
     }
 
-    public synchronized void notifyOnUpdate(@Nullable DWDPollenflug newState) {
+    public void notifyOnUpdate(@Nullable DWDPollenflug newState) {
         if (newState != null) {
             pollenflug = newState;
             updateProperties(newState.getProperties());

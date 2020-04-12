@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.types.State;
 /**
  * The {@link DWDRegion} class holds the internal data representation of each Region
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 public class DWDRegion {

@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link DWDPollenflugHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.dwdpollenflug", service = ThingHandlerFactory.class)

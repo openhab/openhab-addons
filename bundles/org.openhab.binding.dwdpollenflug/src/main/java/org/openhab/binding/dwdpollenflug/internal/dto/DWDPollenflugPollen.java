@@ -15,7 +15,7 @@ package org.openhab.binding.dwdpollenflug.internal.dto;
 /**
  * The {@link DWDPollenflug} class is internal DWD data structure.
  *
- * @author Johannes DerOetzi Ott - Initial contribution
+ * @author Johannes Ott - Initial contribution
  */
 public enum DWDPollenflugPollen {
     AMBROSIA("ambrosia"),
