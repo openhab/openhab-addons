@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -46,7 +45,7 @@ import io.swagger.client.model.NAStationDataBody;
  *
  */
 public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
-    private Set<String> channelIds = new ConcurrentHashSet<>();
+    private Set<String> channelIds = ConcurrentHashMap.newKeySet();
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAMainHandler(Thing thing) {

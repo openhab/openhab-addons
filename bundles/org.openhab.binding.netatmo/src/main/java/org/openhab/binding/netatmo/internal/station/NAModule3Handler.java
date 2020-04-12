@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -41,7 +40,7 @@ import io.swagger.client.model.NAStationModule;
  *
  */
 public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
-    private Set<String> channels = new ConcurrentHashSet<>();
+    private Set<String> channelsIds = ConcurrentHashMap.newKeySet();
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAModule3Handler(Thing thing) {
@@ -57,12 +56,12 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     public void updateMeasurements() {
         List<@NonNull String> types = Arrays.asList(SUM_RAIN);
 
-        if (channels.contains(CHANNEL_SUM_RAIN_THIS_WEEK)) {
+        if (channelsIds.contains(CHANNEL_SUM_RAIN_THIS_WEEK)) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types,
                     Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK), channelMeasurements);
         }
 
-        if (channels.contains(CHANNEL_SUM_RAIN_THIS_MONTH)) {
+        if (channelsIds.contains(CHANNEL_SUM_RAIN_THIS_MONTH)) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types,
                     Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH), channelMeasurements);
         }
@@ -97,14 +96,14 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        channels.add(channelUID.getId());
+        channelsIds.add(channelUID.getId());
 
         super.channelLinked(channelUID);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        channels.remove(channelUID.getId());
+        channelsIds.remove(channelUID.getId());
 
         super.channelUnlinked(channelUID);
     }

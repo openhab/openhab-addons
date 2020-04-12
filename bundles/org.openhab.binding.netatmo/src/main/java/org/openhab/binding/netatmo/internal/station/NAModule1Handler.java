@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -41,7 +40,7 @@ import io.swagger.client.model.NAStationModule;
  *
  */
 public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
-    private Set<String> channelIds = new ConcurrentHashSet<>();
+    private Set<String> channelIds = ConcurrentHashMap.newKeySet();
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAModule1Handler(Thing thing) {

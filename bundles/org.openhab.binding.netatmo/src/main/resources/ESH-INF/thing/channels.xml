@@ -61,7 +61,7 @@
 	<channel-type id="maxTempThisWeek" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Temp This Week</label>
-		<description>Minimum Temperature this week</description>
+		<description>Maximum Temperature this week</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
@@ -422,7 +422,7 @@
 	<channel-type id="maxCo2ThisWeek" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Co2 This Week</label>
-		<description>Minimum CO2 this week</description>
+		<description>Maximum CO2 this week</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
@@ -476,7 +476,7 @@
 	<channel-type id="maxNoiseThisWeek" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max Noise This Week</label>
-		<description>Minimum Noise this week</description>
+		<description>Maximum Noise this week</description>
 		<category>Noise</category>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
@@ -547,7 +547,7 @@
 	<channel-type id="maxPressureThisWeek" advanced="true">
 		<item-type>Number:Pressure</item-type>
 		<label>Max Pressure This Week</label>
-		<description>Minimum Pressure this week</description>
+		<description>Maximum Pressure this week</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.3f %unit%" />
 	</channel-type>

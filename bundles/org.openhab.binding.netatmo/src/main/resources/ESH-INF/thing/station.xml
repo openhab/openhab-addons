@@ -57,6 +57,18 @@
 			<channel id="PressTrend" typeId="pressureTrend" />
 			<channel id="AbsolutePressure" typeId="absolutePressure" />
 			<channel id="Humidity" typeId="humidity" />
+			<channel id="MinHumidity" typeId="minHumidity" />
+			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
+			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
+			<channel id="MaxHumidity" typeId="maxHumidity" />
+			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
+			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
+			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
+			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
+			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
+			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
+			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
+			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
@@ -73,18 +85,6 @@
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
 			<channel id="DateMaxTempThisWeek" typeId="dateMaxTempThisWeek" />
 			<channel id="DateMaxTempThisMonth" typeId="dateMaxTempThisMonth" />
-			<channel id="MinHumidity" typeId="minHumidity" />
-			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
-			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
-			<channel id="MaxHumidity" typeId="maxHumidity" />
-			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
-			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
-			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
-			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
-			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
-			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
-			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
-			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<!-- Common to all devices -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastStatusStore" typeId="lastStatusStore" />
@@ -114,6 +114,18 @@
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Humidity" typeId="humidity" />
 			<channel id="Humidex" typeId="humidex" />
+			<channel id="MinHumidity" typeId="minHumidity" />
+			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
+			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
+			<channel id="MaxHumidity" typeId="maxHumidity" />
+			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
+			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
+			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
+			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
+			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
+			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
+			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
+			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
 			<channel id="DewpointDepression" typeId="dewPointDepression" />
@@ -129,18 +141,6 @@
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
 			<channel id="DateMaxTempThisWeek" typeId="dateMaxTempThisWeek" />
 			<channel id="DateMaxTempThisMonth" typeId="dateMaxTempThisMonth" />
-			<channel id="MinHumidity" typeId="minHumidity" />
-			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
-			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
-			<channel id="MaxHumidity" typeId="maxHumidity" />
-			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
-			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
-			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
-			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
-			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
-			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
-			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
-			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<!-- Common to all modules -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
@@ -246,6 +246,18 @@
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Humidity" typeId="humidity" />
+			<channel id="MinHumidity" typeId="minHumidity" />
+			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
+			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
+			<channel id="MaxHumidity" typeId="maxHumidity" />
+			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
+			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
+			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
+			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
+			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
+			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
+			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
+			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
@@ -262,18 +274,6 @@
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
 			<channel id="DateMaxTempThisWeek" typeId="dateMaxTempThisWeek" />
 			<channel id="DateMaxTempThisMonth" typeId="dateMaxTempThisMonth" />
-			<channel id="MinHumidity" typeId="minHumidity" />
-			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
-			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
-			<channel id="MaxHumidity" typeId="maxHumidity" />
-			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
-			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
-			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
-			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
-			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
-			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
-			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
-			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<!-- Common to all modules -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />

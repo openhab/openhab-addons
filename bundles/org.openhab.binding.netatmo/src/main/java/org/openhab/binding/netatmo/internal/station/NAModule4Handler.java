@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
@@ -40,7 +40,7 @@ import io.swagger.client.model.NAStationModule;
  *
  */
 public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
-    private Set<String> channelIds = new ConcurrentHashSet<>();
+    private Set<String> channelIds = ConcurrentHashMap.newKeySet();
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAModule4Handler(Thing thing) {
@@ -200,5 +200,19 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
         }
 
         return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        channelIds.add(channelUID.getId());
+
+        super.channelLinked(channelUID);
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        channelIds.remove(channelUID.getId());
+
+        super.channelUnlinked(channelUID);
     }
 }
