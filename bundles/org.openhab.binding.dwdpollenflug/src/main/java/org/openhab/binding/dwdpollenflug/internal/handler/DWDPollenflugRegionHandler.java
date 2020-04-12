@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes DerOetzi Ott - Initial contribution
  */
 @NonNullByDefault
-public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDPollenflugRegionListener {
+public class DWDPollenflugRegionHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DWDPollenflugRegionHandler.class);
 
@@ -55,7 +55,6 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
             if (handler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge handler missing");
             } else {
-                handler.registerRegionListener(this);
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
@@ -78,11 +77,7 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
 
     @Override
     public void dispose() {
-        logger.debug("DWDPollenflug region handler disposes. Unregistering listener.");
-        DWDPollenflugBridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterRegionListener(this);
-        }
+        logger.debug("DWDPollenflug region handler disposes.");
     }
 
     @Override
@@ -102,7 +97,6 @@ public class DWDPollenflugRegionHandler extends BaseThingHandler implements DWDP
         }
     }
 
-    @Override
     public void notifyOnUpdate(DWDPollenflug pollenflug) {
         DWDRegion region = pollenflug.getRegion(thingConfig.regionID);
         if (region == null) {

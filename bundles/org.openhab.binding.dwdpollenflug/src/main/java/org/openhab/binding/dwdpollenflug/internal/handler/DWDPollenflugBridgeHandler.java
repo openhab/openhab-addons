@@ -34,9 +34,11 @@ import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
@@ -63,7 +65,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable DWDPollenflug pollenflug;
 
-    private final Set<DWDPollenflugRegionListener> regionListeners = ConcurrentHashMap.newKeySet();
+    private final Set<DWDPollenflugRegionHandler> regionListeners = ConcurrentHashMap.newKeySet();
 
     private final HttpClient client;
 
@@ -77,7 +79,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            poll();
+            startPolling();
         }
     }
 
@@ -171,24 +173,28 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         return f;
     }
 
-    public synchronized boolean registerRegionListener(DWDPollenflugRegionListener regionListener) {
-        logger.debug("Register region listener");
-        boolean result = regionListeners.add(regionListener);
-        if (result) {
-            startPolling();
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof DWDPollenflugRegionHandler) {
+            logger.debug("Register region listener.");
+            boolean result = regionListeners.add((DWDPollenflugRegionHandler) childHandler);
+            if (result) {
+                startPolling();
+            }
         }
-        return result;
     }
 
-    public synchronized boolean unregisterRegionListener(DWDPollenflugRegionListener regionListener) {
-        logger.debug("Unregister region listener");
-        boolean result = regionListeners.remove(regionListener);
-        return result;
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof DWDPollenflugRegionHandler) {
+            logger.debug("Unregister region listener.");
+            regionListeners.remove((DWDPollenflugRegionHandler) childHandler);
+        }
     }
 
     public synchronized void notifyOnUpdate(@Nullable DWDPollenflug newState) {
-        pollenflug = newState;
         if (newState != null) {
+            pollenflug = newState;
             updateProperties(newState.getProperties());
             regionListeners.forEach(listener -> listener.notifyOnUpdate(newState));
             newState.getChannelsStateMap().forEach(this::updateState);
