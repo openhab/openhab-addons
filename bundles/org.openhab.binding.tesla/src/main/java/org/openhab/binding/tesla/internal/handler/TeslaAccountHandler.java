@@ -112,6 +112,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     private TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
+    private final Set<PowerwallListener> powerwallListeners = new HashSet<>();
 
     public TeslaAccountHandler(Bridge bridge) {
         super(bridge);
@@ -162,6 +163,14 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     public void removeVehicleListener(VehicleListener listener) {
         this.vehicleListeners.remove(listener);
+    }
+
+    public void addPowerwallListener(PowerwallListener listener2) {
+        this.powerwallListeners.add(listener2);
+    }
+
+    public void removePowerwallListener(PowerwallListener listener2) {
+        this.powerwallListeners.remove(listener2);
     }
 
     @Override
@@ -270,6 +279,10 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             Powerwall[] powerwallArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Powerwall[].class);
 
             for (Powerwall powerwall : powerwallArray) {
+                for (PowerwallListener listener2 : powerwallListeners) {
+                    logger.debug("PSX here");
+                    listener2.powerwallFound(powerwall);
+                }
                 logger.debug("Powerwall is id {}/site_name {}", powerwall.id, powerwall.site_name);
             }
             return powerwallArray;

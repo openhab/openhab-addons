@@ -62,12 +62,7 @@ import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy.TeslaChannelSelector;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler.Authenticator;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler.Request;
-//import org.openhab.binding.tesla.internal.protocol.ChargeState;
-//import org.openhab.binding.tesla.internal.protocol.ClimateState;
-//import org.openhab.binding.tesla.internal.protocol.DriveState;
-//import org.openhab.binding.tesla.internal.protocol.GUIState;
-//import org.openhab.binding.tesla.internal.protocol.Vehicle;
-//import org.openhab.binding.tesla.internal.protocol.VehicleState;
+import org.openhab.binding.tesla.internal.protocol.Powerwall;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
 //import org.openhab.binding.tesla.internal.throttler.Rate;
 import org.slf4j.Logger;
@@ -103,7 +98,7 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
     protected WebTarget eventTarget;
 
     // Vehicle state variables
-//    protected Powerwall powerwall;
+    protected Powerwall powerwall;
     protected String powerwallJSON;
     protected TeslaAccountHandler account;
 
@@ -125,9 +120,8 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.debug("Initializing the Tesla handler for {}", getThing().getUID());
+        logger.debug("Initializing the Tesla Powerwall handler for {}", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
-        updateStatus(ThingStatus.ONLINE);
         logger.debug("We don't do anything yet but we got here!");
         account = (TeslaAccountHandler) getBridge().getHandler();
     }
