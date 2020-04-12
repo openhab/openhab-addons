@@ -79,7 +79,10 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            startPolling();
+            final DWDPollenflug localPollenflug = pollenflug;
+            if (localPollenflug != null) {
+                notifyOnUpdate(localPollenflug);
+            }
         }
     }
 
@@ -105,12 +108,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     private void startPolling() {
         final ScheduledFuture<?> localPollingJob = this.pollingJob;
-        final DWDPollenflug localPollenflug = this.pollenflug;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling.");
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, bridgeConfig.refresh, TimeUnit.MINUTES);
-        } else if (pollenflug != null) {
-            notifyOnUpdate(localPollenflug);
         }
     }
 
@@ -125,8 +125,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     private void poll() {
         logger.debug("Polling");
-        requestRefresh().handle((pollenflug, pollException) -> {
-            if (pollenflug == null) {
+        requestRefresh().handle((resultPollenflug, pollException) -> {
+            if (resultPollenflug == null) {
                 if (pollException == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 } else {
@@ -135,7 +135,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);
-                notifyOnUpdate(pollenflug);
+                notifyOnUpdate(resultPollenflug);
             }
 
             return null;
@@ -178,8 +178,12 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof DWDPollenflugRegionHandler) {
             logger.debug("Register region listener.");
-            if (regionListeners.add((DWDPollenflugRegionHandler) childHandler)) {
-                startPolling();
+            final DWDPollenflugRegionHandler regionListener = (DWDPollenflugRegionHandler) childHandler;
+            if (regionListeners.add(regionListener)) {
+                final DWDPollenflug localPollenflug = pollenflug;
+                if (localPollenflug != null) {
+                    regionListener.notifyOnUpdate(localPollenflug);
+                }
             } else {
                 logger.warn("Tried to add listener {} but it was already present. This is probably an error.",
                         childHandler);
@@ -198,12 +202,12 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void notifyOnUpdate(@Nullable DWDPollenflug newState) {
-        if (newState != null) {
-            pollenflug = newState;
-            updateProperties(newState.getProperties());
-            regionListeners.forEach(listener -> listener.notifyOnUpdate(newState));
-            newState.getChannelsStateMap().forEach(this::updateState);
+    public void notifyOnUpdate(@Nullable DWDPollenflug newPollenflug) {
+        if (newPollenflug != null) {
+            pollenflug = newPollenflug;
+            updateProperties(newPollenflug.getProperties());
+            regionListeners.forEach(listener -> listener.notifyOnUpdate(newPollenflug));
+            newPollenflug.getChannelsStateMap().forEach(this::updateState);
         }
     }
 
