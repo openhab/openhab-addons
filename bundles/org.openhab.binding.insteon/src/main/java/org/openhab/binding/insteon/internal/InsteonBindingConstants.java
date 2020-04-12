@@ -55,6 +55,10 @@ public class InsteonBindingConstants {
     public static final String FAST_ON_OFF_BUTTON_B = "fastOnOffButtonB";
     public static final String FAST_ON_OFF_BUTTON_C = "fastOnOffButtonC";
     public static final String FAST_ON_OFF_BUTTON_D = "fastOnOffButtonD";
+    public static final String FAST_ON_OFF_BUTTON_E = "fastOnOffButtonE";
+    public static final String FAST_ON_OFF_BUTTON_F = "fastOnOffButtonF";
+    public static final String FAST_ON_OFF_BUTTON_G = "fastOnOffButtonG";
+    public static final String FAST_ON_OFF_BUTTON_H = "fastOnOffButtonH";
     public static final String HEAT_SET_POINT = "heatSetPoint";
     public static final String HUMIDITY = "humidity";
     public static final String HUMIDITY_HIGH = "humidityHigh";
@@ -86,6 +90,10 @@ public class InsteonBindingConstants {
     public static final String MANUAL_CHANGE_BUTTON_B = "manualChangeButtonB";
     public static final String MANUAL_CHANGE_BUTTON_C = "manualChangeButtonC";
     public static final String MANUAL_CHANGE_BUTTON_D = "manualChangeButtonD";
+    public static final String MANUAL_CHANGE_BUTTON_E = "manualChangeButtonE";
+    public static final String MANUAL_CHANGE_BUTTON_F = "manualChangeButtonF";
+    public static final String MANUAL_CHANGE_BUTTON_G = "manualChangeButtonG";
+    public static final String MANUAL_CHANGE_BUTTON_H = "manualChangeButtonH";
     public static final String NOTIFICATION = "notification";
     public static final String ON_LEVEL = "onLevel";
     public static final String RAMP_DIMMER = "rampDimmer";

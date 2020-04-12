@@ -182,6 +182,26 @@
 		<label>Fast On/Off Button D</label>
 	</channel-type>
 
+	<channel-type id="fastOnOffButtonE">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button E</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonF">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button F</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonG">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button G</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonH">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button H</label>
+	</channel-type>
+
 	<channel-type id="heatSetPoint">
 		<item-type>Number</item-type>
 		<label>Heat Set Point</label>
@@ -335,6 +355,26 @@
 	<channel-type id="manualChangeButtonD">
 		<item-type>Number</item-type>
 		<label>Manual Change Button D</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonE">
+		<item-type>Number</item-type>
+		<label>Manual Change Button E</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonF">
+		<item-type>Number</item-type>
+		<label>Manual Change Button F</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonG">
+		<item-type>Number</item-type>
+		<label>Manual Change Button G</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonH">
+		<item-type>Number</item-type>
+		<label>Manual Change Button H</label>
 	</channel-type>
 
 	<channel-type id="notification">

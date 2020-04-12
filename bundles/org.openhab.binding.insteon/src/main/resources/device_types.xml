@@ -345,6 +345,18 @@ Example entry:
      	<feature name="keypadbuttonc">KeyPadButton5</feature>
      	<feature name="keypadbuttond">KeyPadButton6</feature>
      </feature_group>
+     <feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
+        <feature name="fastonoffbuttona">FastOnOffButton3</feature>
+        <feature name="fastonoffbuttonb">FastOnOffButton4</feature>
+        <feature name="fastonoffbuttonc">FastOnOffButton5</feature>
+        <feature name="fastonoffbuttond">FastOnOffButton6</feature>
+     </feature_group>
+     <feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
+        <feature name="manualchangebuttona">ManualChangeButton3</feature>
+        <feature name="manualchangebuttonb">ManualChangeButton4</feature>
+        <feature name="manualchangebuttonc">ManualChangeButton5</feature>
+        <feature name="manualchangebuttond">ManualChangeButton6</feature>
+     </feature_group>
      <feature_group name="ext_group" type="ExtStatusGroup">
         <feature name="ledbrightness">LEDBrightness</feature>
         <feature name="ramprate">RampRate</feature>
@@ -369,6 +381,24 @@ Example entry:
      	<feature name="keypadbuttonf">KeyPadButton6</feature>
      	<feature name="keypadbuttong">KeyPadButton7</feature>
      	<feature name="keypadbuttonh">KeyPadButton8</feature>
+     </feature_group>
+        <feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
+        <feature name="fastonoffbuttonb">FastOnOffButton2</feature>
+        <feature name="fastonoffbuttonc">FastOnOffButton3</feature>
+        <feature name="fastonoffbuttond">FastOnOffButton4</feature>
+        <feature name="fastonoffbuttone">FastOnOffButton5</feature>
+        <feature name="fastonoffbuttonf">FastOnOffButton6</feature>
+        <feature name="fastonoffbuttong">FastOnOffButton7</feature>
+        <feature name="fastonoffbuttonh">FastOnOffButton8</feature>
+     </feature_group>
+     <feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
+        <feature name="manualchangebuttonb">ManualChangeButton2</feature>
+        <feature name="manualchangebuttonc">ManualChangeButton3</feature>
+        <feature name="manualchangebuttond">ManualChangeButton4</feature>
+        <feature name="manualchangebuttone">ManualChangeButton5</feature>
+        <feature name="manualchangebuttonf">ManualChangeButton6</feature>
+        <feature name="manualchangebuttong">ManualChangeButton7</feature>
+        <feature name="manualchangebuttonh">ManualChangeButton8</feature>
      </feature_group>
      <feature_group name="ext_group" type="ExtStatusGroup">
         <feature name="ledbrightness">LEDBrightness</feature>
@@ -507,6 +537,42 @@ Example entry:
    <description>Insteon Smoke Bridge</description>
    <feature name="notification">ReceiveBroadcast</feature>
    <feature name="lastheardfrom">GenericLastTime</feature>
+ </device>
+
+ <device productKey="F00.00.23">
+     <model>2487S</model>
+     <description>KeypadLinc On/Off 8-Button Scene Control </description>
+     <feature name="loadswitch">LoadSwitchButton</feature>
+     <feature name="loadswitchmanualchange">LoadSwitchManualChange</feature>
+     <feature name="loadswitchfastonoff">LoadSwitchFastOnOff</feature>
+     <feature_group name="button_group" type="KeyPadButtonGroup">
+     	<feature name="keypadbuttonb">KeyPadButton2</feature>
+     	<feature name="keypadbuttonc">KeyPadButton3</feature>
+     	<feature name="keypadbuttond">KeyPadButton4</feature>
+     	<feature name="keypadbuttone">KeyPadButton5</feature>
+     	<feature name="keypadbuttonf">KeyPadButton6</feature>
+     	<feature name="keypadbuttong">KeyPadButton7</feature>
+     	<feature name="keypadbuttonh">KeyPadButton8</feature>
+     </feature_group>
+     <feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
+        <feature name="fastonoffbuttonb">FastOnOffButton2</feature>
+        <feature name="fastonoffbuttonc">FastOnOffButton3</feature>
+        <feature name="fastonoffbuttond">FastOnOffButton4</feature>
+        <feature name="fastonoffbuttone">FastOnOffButton5</feature>
+        <feature name="fastonoffbuttonf">FastOnOffButton6</feature>
+        <feature name="fastonoffbuttong">FastOnOffButton7</feature>
+        <feature name="fastonoffbuttonh">FastOnOffButton8</feature>
+     </feature_group>
+     <feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
+        <feature name="manualchangebuttonb">ManualChangeButton2</feature>
+        <feature name="manualchangebuttonc">ManualChangeButton3</feature>
+        <feature name="manualchangebuttond">ManualChangeButton4</feature>
+        <feature name="manualchangebuttone">ManualChangeButton5</feature>
+        <feature name="manualchangebuttonf">ManualChangeButton6</feature>
+        <feature name="manualchangebuttong">ManualChangeButton7</feature>
+        <feature name="manualchangebuttonh">ManualChangeButton8</feature>
+     </feature_group>
+     <feature name="lastheardfrom">GenericLastTime</feature>
  </device>
 
 </xml>

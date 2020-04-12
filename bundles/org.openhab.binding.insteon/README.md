@@ -96,6 +96,7 @@ These have been tested and should work out of the box:
 | 2342-222 | Mini Remote (8 Button) | F00.00.20 | Bernd Pfrommer |
 | 2441V | Insteon Thermostat Adaptor for Venstar | F00.00.21 | Bernd Pfrommer |
 | 2982-222 | Insteon Smoke Bridge | F00.00.22 | Bernd Pfrommer |
+| 2487S | KeypadLinc On/Off 8-Button | F00.00.23 | Tom Weichmann |
 | 2450 | IO Link | 0x00001A | Bernd Pfrommer |
 | 2486D | KeypadLinc Dimmer | 0x000037 | Patrick Giasson, Joe Barnum |
 | 2484DWH8 | KeypadLinc Countdown Timer | 0x000041 | Rob Nielsen |
