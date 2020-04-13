@@ -58,11 +58,11 @@ public class SenecHomeHandler extends BaseThingHandler {
     private final static String VALUE_TYPE_FLOAT = "fl";
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) SenecHomeConfigurationDTO config;
     private @Nullable PowerLimitationStatusDTO limitationStatus = null;
-    private  @Nullable SenecHomeApi senecHomeApi;
+    private @Nullable SenecHomeApi senecHomeApi;
     private Gson gson;
     private SenecHomeApiFactory apiFactory;
+    private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
 
     public SenecHomeHandler(Thing thing, Gson gson, SenecHomeApiFactory apiFactory) {
         super(thing);
@@ -88,9 +88,10 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     protected void stopJobIfRunning() {
+    	final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
     }
 

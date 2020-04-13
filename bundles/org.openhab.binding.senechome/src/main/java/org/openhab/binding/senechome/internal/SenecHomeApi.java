@@ -23,6 +23,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 
@@ -36,7 +37,6 @@ import com.google.gson.Gson;
  *
  */
 public class SenecHomeApi {
-    private static final int HTTP_OK_CODE = 200;
     private static final String HTTP_PROTO_PREFIX = "http://";
 
     private String hostname;
@@ -70,7 +70,7 @@ public class SenecHomeApi {
                 .content(new StringContentProvider(gson.toJson(new SenecHomeResponse())))
                 .send();
         
-        if (response.getStatus() == HTTP_OK_CODE) {
+        if (response.getStatus() == HttpStatus.OK_200) {
             return gson.fromJson(response.getContentAsString(), SenecHomeResponse.class);
         } else {
             throw new IOException("Got unexpected response code "+response.getStatus());
