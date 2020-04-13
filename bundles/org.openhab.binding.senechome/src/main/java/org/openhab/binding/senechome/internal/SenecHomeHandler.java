@@ -110,56 +110,42 @@ public class SenecHomeHandler extends BaseThingHandler {
                     .setScale(0, RoundingMode.HALF_UP);
 
             Channel channelLimitation = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_LIMITATION);
-            if (channelLimitation != null) {
-                updateState(channelLimitation.getUID(),
-                        new QuantityType<Dimensionless>(pvLimitation, SmartHomeUnits.PERCENT));
-            }
+            updateState(channelLimitation.getUID(),
+            		new QuantityType<Dimensionless>(pvLimitation, SmartHomeUnits.PERCENT));
 
             Channel channelLimitationState = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_LIMITATION_STATE);
-            if (channelLimitationState != null) {
-                updatePowerLimitationStatus(channelLimitationState,
-                        (100 - pvLimitation.intValue()) <= config.limitationTresholdValue, config.limitationDuration);
-            }
+            updatePowerLimitationStatus(channelLimitationState,
+                    (100 - pvLimitation.intValue()) <= config.limitationTresholdValue, config.limitationDuration);
 
             Channel channelConsumption = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_CONSUMPTION);
-            if (channelConsumption != null) {
-                updateState(channelConsumption.getUID(),
-                        new QuantityType<Power>(
-                                getSenecValue(response.energy.homePowerConsumption).setScale(2, RoundingMode.HALF_UP),
-                                SmartHomeUnits.WATT));
-            }
+            updateState(channelConsumption.getUID(),
+                    new QuantityType<Power>(
+                            getSenecValue(response.energy.homePowerConsumption).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT));
 
             Channel channelEnergyProduction = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_ENERGY_PRODUCTION);
-            if (channelEnergyProduction != null) {
-                updateState(channelEnergyProduction.getUID(), new QuantityType<Power>(
-                        getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
-                        SmartHomeUnits.WATT));
-            }
+            updateState(channelEnergyProduction.getUID(), new QuantityType<Power>(
+                    getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
+                    SmartHomeUnits.WATT));
 
             Channel channelBatteryPower = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_POWER);
-            if (channelBatteryPower != null) {
-                updateState(channelBatteryPower.getUID(),
-                        new QuantityType<Power>(
-                                getSenecValue(response.energy.batteryPower).setScale(2, RoundingMode.HALF_UP),
-                                SmartHomeUnits.WATT));
-            }
+            updateState(channelBatteryPower.getUID(),
+                    new QuantityType<Power>(
+                            getSenecValue(response.energy.batteryPower).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT));
 
             Channel channelBatteryFuelCharge = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_FUEL_CHARGE);
-            if (channelBatteryFuelCharge != null) {
-                updateState(channelBatteryFuelCharge.getUID(),
-                        new QuantityType<Dimensionless>(
-                                getSenecValue(response.energy.batteryFuelCharge).setScale(0, RoundingMode.HALF_UP),
-                                SmartHomeUnits.PERCENT));
-            }
+            updateState(channelBatteryFuelCharge.getUID(),
+                    new QuantityType<Dimensionless>(
+                            getSenecValue(response.energy.batteryFuelCharge).setScale(0, RoundingMode.HALF_UP),
+                            SmartHomeUnits.PERCENT));
 
             Channel channelBatteryState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE);
-            if (channelBatteryState != null) {
-                updateBatteryState(channelBatteryState, getSenecValue(response.energy.batteryState).intValue());
-            }
+            updateBatteryState(channelBatteryState, getSenecValue(response.energy.batteryState).intValue());
 
             updateGridPowerValues(getThing(), getSenecValue(response.grid.currentGridValue));
 

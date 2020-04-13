@@ -42,7 +42,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
 
-    private SenecHomeApiFactory apiFactory;
+    private final SenecHomeApiFactory apiFactory;
 
     @Activate
     public SenecHomeHandlerFactory(@Reference SenecHomeApiFactory apiFactory) {
