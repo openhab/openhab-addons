@@ -18,10 +18,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
@@ -39,7 +37,6 @@ import io.swagger.client.model.NAStationModule;
  *
  */
 public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
-    private Set<String> channelIds = ConcurrentHashMap.newKeySet();
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAModule4Handler(Thing thing) {
@@ -61,14 +58,14 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
     private void updateDayMeasurements() {
         List<String> channels = new ArrayList<>();
         List<String> types = new ArrayList<>();
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_CO2, MIN_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_CO2, MAX_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_HUMIDITY, MIN_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_HUMIDITY, MAX_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_CO2, DATE_MIN_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_CO2, DATE_MAX_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_HUMIDITY, DATE_MIN_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_HUMIDITY, DATE_MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_MIN_CO2, MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_MAX_CO2, MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_MIN_HUMIDITY, MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_MAX_HUMIDITY, MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_CO2, DATE_MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_CO2, DATE_MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY, DATE_MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY, DATE_MAX_HUM);
         if (!channels.isEmpty()) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_DAY, types, channels, channelMeasurements);
         }
@@ -77,18 +74,18 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
     private void updateWeekMeasurements() {
         List<String> channels = new ArrayList<>();
         List<String> types = new ArrayList<>();
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_CO2_THIS_WEEK, MIN_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_CO2_THIS_WEEK, MAX_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_HUMIDITY_THIS_WEEK, MIN_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_HUMIDITY_THIS_WEEK, MAX_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_TEMP_THIS_WEEK, MIN_TEMP);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_TEMP_THIS_WEEK, MAX_TEMP);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_CO2_THIS_WEEK, DATE_MIN_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_CO2_THIS_WEEK, DATE_MAX_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_HUMIDITY_THIS_WEEK, DATE_MIN_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_HUMIDITY_THIS_WEEK, DATE_MAX_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
+        addMeasurement(channels, types, CHANNEL_MIN_CO2_THIS_WEEK, MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_MAX_CO2_THIS_WEEK, MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_MIN_HUMIDITY_THIS_WEEK, MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_MAX_HUMIDITY_THIS_WEEK, MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_MIN_TEMP_THIS_WEEK, MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_MAX_TEMP_THIS_WEEK, MAX_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_CO2_THIS_WEEK, DATE_MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_CO2_THIS_WEEK, DATE_MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY_THIS_WEEK, DATE_MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY_THIS_WEEK, DATE_MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types, channels, channelMeasurements);
         }
@@ -97,18 +94,18 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
     private void updateMonthMeasurements() {
         List<String> channels = new ArrayList<>();
         List<String> types = new ArrayList<>();
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_CO2_THIS_MONTH, MIN_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_CO2_THIS_MONTH, MAX_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_HUMIDITY_THIS_MONTH, MIN_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_HUMIDITY_THIS_MONTH, MAX_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_MIN_TEMP_THIS_MONTH, MIN_TEMP);
-        addMeasurement(channelIds, channels, types, CHANNEL_MAX_TEMP_THIS_MONTH, MAX_TEMP);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_CO2_THIS_MONTH, DATE_MIN_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_CO2_THIS_MONTH, DATE_MAX_CO2);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_HUMIDITY_THIS_MONTH, DATE_MIN_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_HUMIDITY_THIS_MONTH, DATE_MAX_HUM);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
-        addMeasurement(channelIds, channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
+        addMeasurement(channels, types, CHANNEL_MIN_CO2_THIS_MONTH, MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_MAX_CO2_THIS_MONTH, MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_MIN_HUMIDITY_THIS_MONTH, MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_MAX_HUMIDITY_THIS_MONTH, MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_MIN_TEMP_THIS_MONTH, MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_MAX_TEMP_THIS_MONTH, MAX_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_CO2_THIS_MONTH, DATE_MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_CO2_THIS_MONTH, DATE_MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY_THIS_MONTH, DATE_MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY_THIS_MONTH, DATE_MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types, channels,
                     channelMeasurements);
@@ -199,19 +196,5 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
         }
 
         return super.getNAThingProperty(channelId);
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        channelIds.add(channelUID.getId());
-
-        super.channelLinked(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        channelIds.remove(channelUID.getId());
-
-        super.channelUnlinked(channelUID);
     }
 }

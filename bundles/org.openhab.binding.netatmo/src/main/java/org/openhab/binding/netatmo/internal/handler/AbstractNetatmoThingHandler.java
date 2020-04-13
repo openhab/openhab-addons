@@ -18,7 +18,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
@@ -199,9 +198,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         }
     }
 
-    public void addMeasurement(Set<String> channelIds, List<String> channels, List<String> types, String channel,
-            String type) {
-        if (channelIds.contains(channel)) {
+    public void addMeasurement(List<String> channels, List<String> types, String channel, String type) {
+        if (isLinked(channel)) {
             channels.add(channel);
             types.add(type);
         }

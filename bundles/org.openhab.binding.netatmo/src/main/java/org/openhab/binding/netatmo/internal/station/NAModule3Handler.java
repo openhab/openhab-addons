@@ -18,11 +18,9 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
@@ -39,7 +37,6 @@ import io.swagger.client.model.NAStationModule;
  *
  */
 public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
-    private Set<String> channelsIds = ConcurrentHashMap.newKeySet();
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAModule3Handler(Thing thing) {
@@ -55,12 +52,12 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     public void updateMeasurements() {
         List<@NonNull String> types = Arrays.asList(SUM_RAIN);
 
-        if (channelsIds.contains(CHANNEL_SUM_RAIN_THIS_WEEK)) {
+        if (isLinked(CHANNEL_SUM_RAIN_THIS_WEEK)) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types,
                     Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK), channelMeasurements);
         }
 
-        if (channelsIds.contains(CHANNEL_SUM_RAIN_THIS_MONTH)) {
+        if (isLinked(CHANNEL_SUM_RAIN_THIS_MONTH)) {
             getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types,
                     Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH), channelMeasurements);
         }
@@ -91,19 +88,5 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
         }
 
         return super.getNAThingProperty(channelId);
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        channelsIds.add(channelUID.getId());
-
-        super.channelLinked(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        channelsIds.remove(channelUID.getId());
-
-        super.channelUnlinked(channelUID);
     }
 }
