@@ -2,7 +2,7 @@
 	"deviceMapping": {
 		"id": [
 			"philips.light.moonlight"
-			],
+		],
 		"channels": [
 			{
 				"property": "pow",
@@ -69,7 +69,7 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						
+						"parameterType": "EMPTY"
 					}
 				]
 			},

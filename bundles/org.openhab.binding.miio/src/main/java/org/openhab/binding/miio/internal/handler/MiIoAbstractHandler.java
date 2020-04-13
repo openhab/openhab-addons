@@ -16,6 +16,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -41,6 +42,7 @@ import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCrypto;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoDevices;
+import org.openhab.binding.miio.internal.MiIoInfoDTO;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
@@ -49,6 +51,8 @@ import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -61,12 +65,13 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public abstract class MiIoAbstractHandler extends BaseThingHandler implements MiIoMessageListener {
     protected static final int MAX_QUEUE = 5;
+    protected static final Gson GSON = new GsonBuilder().create();
 
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
-    protected JsonParser parser;
+    protected final JsonParser parser = new JsonParser();
     protected byte[] token = new byte[0];
 
     protected @Nullable MiIoBindingConfiguration configuration;
@@ -74,6 +79,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected int lastId;
 
     protected Map<Integer, String> cmds = new ConcurrentHashMap<>();
+    protected Map<String, Object> deviceVariables = new HashMap<>();
     protected final ExpiringCache<String> network = new ExpiringCache<>(CACHE_EXPIRY_NETWORK, () -> {
         int ret = sendCommand(MiIoCommand.MIIO_INFO);
         if (ret != 0) {
@@ -89,7 +95,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     public MiIoAbstractHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing);
-        parser = new JsonParser();
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
     }
 
@@ -350,15 +355,22 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     private void updateProperties(JsonObject miioInfo) {
+        final MiIoInfoDTO info = GSON.fromJson(miioInfo, MiIoInfoDTO.class);
         Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_MODEL_ID, miioInfo.get("model").getAsString());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, miioInfo.get("fw_ver").getAsString());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, miioInfo.get("hw_ver").getAsString());
-        if (miioInfo.get("wifi_fw_ver") != null) {
-            properties.put("wifiFirmware", miioInfo.get("wifi_fw_ver").getAsString());
+        if (info.model != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, info.model);
         }
-        if (miioInfo.get("mcu_fw_ver") != null) {
-            properties.put("mcuFirmware", miioInfo.get("mcu_fw_ver").getAsString());
+        if (info.fwVer != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, info.fwVer);
+        }
+        if (info.hwVer != null) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, info.hwVer);
+        }
+        if (info.wifiFwVer != null) {
+            properties.put("wifiFirmware", info.wifiFwVer);
+        }
+        if (info.mcuFwVer != null) {
+            properties.put("mcuFirmware", info.mcuFwVer);
         }
         updateProperties(properties);
     }
@@ -380,7 +392,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         if (miDevice.getThingType().equals(getThing().getThingTypeUID())
                 && !(miDevice.getThingType().equals(THING_TYPE_UNSUPPORTED)
                         && miIoDatabaseWatchService.getDatabaseUrl(model) != null)) {
-            logger.info("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
+            logger.debug("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
             return true;
         } else {
@@ -388,7 +400,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     || getThing().getThingTypeUID().equals(THING_TYPE_UNSUPPORTED)) {
                 changeType(model);
             } else {
-                logger.warn(
+                logger.info(
                         "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless manual override.",
                         miDevice.toString(), miDevice.getThingType(), getThing().getThingTypeUID().toString(),
                         miDevice.getThingType().toString());

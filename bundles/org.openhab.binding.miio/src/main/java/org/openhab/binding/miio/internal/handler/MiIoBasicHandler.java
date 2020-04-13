@@ -61,6 +61,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -130,53 +131,65 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         logger.debug("Locating action for channel {}: {}", channelUID.getId(), command);
         if (!actions.isEmpty()) {
             if (actions.containsKey(channelUID.getId())) {
-                String preCommandPara1 = actions.get(channelUID.getId()).getPreCommandParameter1();
-                preCommandPara1 = ((preCommandPara1 != null && !preCommandPara1.isEmpty()) ? preCommandPara1 + ","
-                        : "");
-                String para1 = actions.get(channelUID.getId()).getParameter1();
-                String para2 = actions.get(channelUID.getId()).getParameter2();
-                String para3 = actions.get(channelUID.getId()).getParameter3();
-                String para = "" + (para1 != null ? "," + para1 : "") + (para2 != null ? "," + para2 : "")
-                        + (para3 != null ? "," + para3 : "");
+                int valuePos = 0;
+                @Nullable
+                JsonElement value = null;
+                MiIoDeviceAction action = actions.get(channelUID.getId());
+                JsonArray parameters = actions.get(channelUID.getId()).getParameters();
+                for (int i = 0; i < action.getParameters().size(); i++) {
+                    JsonElement p = action.getParameters().get(i);
+                    if (p.isJsonPrimitive() && p.getAsString().toLowerCase().contains("$value$")) {
+                        valuePos = i;
+                    }
+                }
                 String cmd = actions.get(channelUID.getId()).getCommand();
                 CommandParameterType paramType = actions.get(channelUID.getId()).getparameterType();
-                if (paramType == CommandParameterType.EMPTY) {
-                    cmd = cmd + "[]";
-                } else if (paramType == CommandParameterType.NONE) {
-                    logger.trace("NONE command type");
-                } else if (paramType == CommandParameterType.COLOR) {
+                if (paramType == CommandParameterType.COLOR) {
                     if (command instanceof HSBType) {
                         HSBType hsb = (HSBType) command;
                         Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
                                 hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
-                        cmd = cmd + "[" + preCommandPara1
-                                + ((color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue()) + para + "]";
+                        value = new JsonPrimitive(
+                                (color.getRed() * 65536) + (color.getGreen() * 256) + color.getBlue());
                     } else if (command instanceof DecimalType) {
                         // actually brightness is being set instead of a color
-                        cmd = "set_bright" + "[" + command.toString().toLowerCase() + "]";
+                        cmd = "set_bright";
+                        value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
                     } else {
                         logger.debug("Unsupported command for COLOR: {}", command);
                     }
-
                 } else if (command instanceof OnOffType) {
                     if (paramType == CommandParameterType.ONOFF) {
-                        cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString().toLowerCase() + "\"" + para + "]";
+                        value = new JsonPrimitive(command == OnOffType.ON ? "on" : "off");
                     } else if (paramType == CommandParameterType.ONOFFPARA) {
-                        cmd = cmd.replace("*", command.toString().toLowerCase()) + "[]";
+                        cmd = cmd.replace("*", command == OnOffType.ON ? "on" : "off");
                     } else if (paramType == CommandParameterType.ONOFFBOOL) {
                         boolean boolCommand = command == OnOffType.ON;
-                        cmd = cmd + "[" + preCommandPara1 + "\"" + boolCommand + "\"" + para + "]";
-                    } else {
-                        cmd = cmd + "[]";
-                    }
-                } else if (command instanceof StringType) {
-                    if (paramType == CommandParameterType.STRING) {
-                        cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString() + "\"" + para + "]";
-                    } else if (paramType == CommandParameterType.CUSTOMSTRING) {
-                        cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString() + para + "]";
+                        value = new JsonPrimitive(boolCommand);
+                    } else if (paramType == CommandParameterType.ONOFFBOOLSTRING) {
+                        value = new JsonPrimitive(command == OnOffType.ON ? "true" : "false");
                     }
                 } else if (command instanceof DecimalType) {
-                    cmd = cmd + "[" + preCommandPara1 + command.toString().toLowerCase() + para + "]";
+                    value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
+                } else if (command instanceof StringType) {
+                    if (paramType == CommandParameterType.STRING) {
+                        value = new JsonPrimitive(command.toString().toLowerCase());
+                    } else if (paramType == CommandParameterType.CUSTOMSTRING) {
+                        value = new JsonPrimitive(parameters.get(valuePos).getAsString().replace("$value",
+                                command.toString().toLowerCase()));
+                    }
+                } else {
+                    value = new JsonPrimitive(command.toString().toLowerCase());
+                }
+                if (paramType != CommandParameterType.NONE && value != null) {
+                    if (parameters.size() > 0) {
+                        parameters.set(valuePos, value);
+                    } else {
+                        parameters.add(value);
+                    }
+                }
+                if (paramType != CommandParameterType.EMPTY) {
+                    cmd = cmd + parameters.toString();
                 }
                 logger.debug("Sending command {}", cmd);
                 sendCommand(cmd);
