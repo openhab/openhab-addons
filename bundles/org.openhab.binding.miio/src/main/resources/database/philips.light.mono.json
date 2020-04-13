@@ -1,0 +1,51 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.mono1"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "scene_num",
+				"friendlyName": "Scene",
+				"channel": "scene",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_user_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		]
+	}
+}

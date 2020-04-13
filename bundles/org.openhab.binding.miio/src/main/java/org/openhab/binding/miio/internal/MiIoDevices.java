@@ -120,6 +120,7 @@ public enum MiIoDevices {
     VACUUMST7PV3("roborock.vacuum.t7pv3", "Roborock Vacuum T7 v3", THING_TYPE_VACUUM),
     VACUUMS5MAX("roborock.vacuum.s5e", "Roborock Vacuum S5 Max", THING_TYPE_VACUUM),
     VACUUMSS6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
+    VACUUMSS62("roborock.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     VACUUME2("roborock.vacuum.e2", "Rockrobo Xiaowa Vacuum v2", THING_TYPE_UNSUPPORTED),
     VACUUME_V6("viomi.vacuum.v6", "Xiaomi Mijia vacuum V-RVCLM21B", THING_TYPE_UNSUPPORTED),
     VACUUME_V7("viomi.vacuum.v7", "Xiaomi Mijia vacuum STYJ02YM", THING_TYPE_UNSUPPORTED),
