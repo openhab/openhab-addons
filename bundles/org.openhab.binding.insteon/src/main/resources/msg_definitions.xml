@@ -120,6 +120,17 @@
 		</header>
 		<byte name = "statusByte"/>
 	</msg>
+	<msg name = "UnknownMessage5C" length = "11" direction = "FROM_MODEM">
+		<header length="9">
+			<byte>0x02</byte>
+			<byte name = "Cmd">0x5c</byte>
+			<address name = "fromAddress"/>
+			<address name = "toAddress"/>
+			<byte name = "messageFlags"/>
+		</header>
+		<byte name = "command1"/>
+		<byte name = "command2"/>
+	</msg>
 
 	<msg name = "GetIMInfo" length="2" direction = "TO_MODEM">
 		<header length="2">
@@ -281,7 +292,7 @@
 		</header>
 		<byte name = "DeviceCategory"/>
 		<byte name = "DeviceSubcategory"/>
-		<byte name = "FirmwareVersion"/>		
+		<byte name = "FirmwareVersion"/>
 	</msg>
 	<msg name = "SetHostDeviceCategoryReply" length="6" direction = "FROM_MODEM">
 		<header length="2">

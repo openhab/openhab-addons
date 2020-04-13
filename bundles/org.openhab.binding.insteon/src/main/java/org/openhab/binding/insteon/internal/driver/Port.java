@@ -300,21 +300,23 @@ public class Port {
         }
 
         private void processMessages() {
-            try {
-                // must call processData() until we get a null pointer back
-                for (Msg m = msgFactory.processData(); m != null; m = msgFactory.processData()) {
-                    toAllListeners(m);
-                    notifyWriter(m);
-                }
-            } catch (IOException e) {
-                // got bad data from modem,
-                // unblock those waiting for ack
-                logger.warn("bad data received: {}", e.getMessage());
-                synchronized (getRequestReplyLock()) {
-                    if (reply == ReplyType.WAITING_FOR_ACK) {
-                        logger.warn("got bad data back, must assume message was acked.");
-                        reply = ReplyType.GOT_ACK;
-                        getRequestReplyLock().notify();
+            // must call processData() until msgFactory done fully processing buffer
+            while (!msgFactory.isDone()) {
+                try {
+                    Msg msg = msgFactory.processData();
+                    if (msg != null) {
+                        toAllListeners(msg);
+                        notifyWriter(msg);
+                    }
+                } catch (IOException e) {
+                    // got bad data from modem,
+                    // unblock those waiting for ack
+                    synchronized (getRequestReplyLock()) {
+                        if (reply == ReplyType.WAITING_FOR_ACK) {
+                            logger.debug("got bad data back, must assume message was acked.");
+                            reply = ReplyType.GOT_ACK;
+                            getRequestReplyLock().notify();
+                        }
                     }
                 }
             }

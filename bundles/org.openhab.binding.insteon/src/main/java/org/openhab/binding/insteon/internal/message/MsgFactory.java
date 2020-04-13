@@ -40,11 +40,21 @@ public class MsgFactory {
     private static final int MAX_MSG_LEN = 4096;
     private byte[] buf = new byte[MAX_MSG_LEN];
     private int end = 0; // offset of end of buffer
+    private boolean done = true; // done fully processing buffer flag
 
     /**
      * Constructor
      */
     public MsgFactory() {
+    }
+
+    /**
+     * Indicates if no more complete message available in the buffer to be processed
+     *
+     * @return buffer data fully processed flag
+     */
+    public boolean isDone() {
+        return done;
     }
 
     /**
@@ -56,8 +66,12 @@ public class MsgFactory {
     public void addData(byte[] data, int len) {
         int l = len;
         if (l + end > MAX_MSG_LEN) {
-            logger.warn("warn: truncating excessively long message!");
+            logger.warn("truncating excessively long message!");
             l = MAX_MSG_LEN - end;
+        }
+        // indicate new data can be processed if length > 0
+        if (l > 0) {
+            done = false;
         }
         // append the new data to the one we already have
         System.arraycopy(data, 0, buf, end, l);
@@ -75,13 +89,14 @@ public class MsgFactory {
      * @throws IOException if data was received with unknown command codes
      */
     public @Nullable Msg processData() throws IOException {
+        Msg msg = null;
         // handle the case where we get a pure nack
         if (end > 0 && buf[0] == 0x15) {
             logger.trace("got pure nack!");
             removeFromBuffer(1);
             try {
-                Msg m = Msg.makeMessage("PureNACK");
-                return m;
+                msg = Msg.makeMessage("PureNACK");
+                return msg;
             } catch (InvalidMessageTypeException e) {
                 return null;
             }
@@ -93,36 +108,40 @@ public class MsgFactory {
         // Now see if we have enough data for a complete message.
         // If not, we return null, and expect this method to be called again
         // when more data has come in.
-        int msgLen = -1;
-        boolean isExtended = false;
         if (end > 1) {
             // we have some data, but do we have enough to read the entire header?
             int headerLength = Msg.getHeaderLength(buf[1]);
-            isExtended = Msg.isExtended(buf, end, headerLength);
+            boolean isExtended = Msg.isExtended(buf, end, headerLength);
             logger.trace("header length expected: {} extended: {}", headerLength, isExtended);
             if (headerLength < 0) {
                 removeFromBuffer(1); // get rid of the leading 0x02 so draining works
-                bail("got unknown command code " + Utils.getHexByte(buf[1]));
+                bail("got unknown command code " + Utils.getHexByte(buf[0]));
             } else if (headerLength >= 2) {
                 if (end >= headerLength) {
                     // only when the header is complete do we know that isExtended is correct!
-                    msgLen = Msg.getMessageLength(buf[1], isExtended);
+                    int msgLen = Msg.getMessageLength(buf[1], isExtended);
+                    logger.trace("msgLen expected: {}", msgLen);
                     if (msgLen < 0) {
                         // Cannot make sense out of the combined command code & isExtended flag.
                         removeFromBuffer(1);
-                        bail("unknown command code/ext flag: " + Utils.getHexByte(buf[1]));
+                        bail("got unknown command code/ext flag " + Utils.getHexByte(buf[0]));
+                    } else if (msgLen > 0) {
+                        if (end >= msgLen) {
+                            msg = Msg.createMessage(buf, msgLen, isExtended);
+                            removeFromBuffer(msgLen);
+                        }
+                    } else { // should never happen
+                        logger.warn("invalid message length, internal error!");
                     }
                 }
             } else { // should never happen
                 logger.warn("invalid header length, internal error!");
-                msgLen = -1;
             }
         }
-        logger.trace("msgLen expected: {}", msgLen);
-        Msg msg = null;
-        if (msgLen > 0 && end >= msgLen) {
-            msg = Msg.createMessage(buf, msgLen, isExtended);
-            removeFromBuffer(msgLen);
+        // indicate no more messages available in buffer if empty or undefined message
+        if (end == 0 || msg == null) {
+            logger.trace("done processing current buffer data");
+            done = true;
         }
         logger.trace("keeping buffer len {} data: {}", end, Utils.getHexString(buf, end));
         return msg;
@@ -130,7 +149,7 @@ public class MsgFactory {
 
     private void bail(String txt) throws IOException {
         drainBuffer(); // this will drain until end or it finds the next 0x02
-        logger.warn("{}", txt);
+        logger.debug("bad data received: {}", txt);
         throw new IOException(txt);
     }
 
