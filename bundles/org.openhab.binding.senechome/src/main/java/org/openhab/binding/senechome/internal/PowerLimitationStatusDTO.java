@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,13 @@ package org.openhab.binding.senechome.internal;
 import java.util.Date;
 
 /**
- * The {@link PowerLimitationStatus} class is used as a POJO to
+ * The {@link PowerLimitationStatusDTO} class is used as a POJO to
  * in-memory persist the last limitation state change.
  *
  * @author Steven.Schwarznau - Initial contribution
  *
  */
-public class PowerLimitationStatus {
+public class PowerLimitationStatusDTO {
 
     public boolean state = false;
 

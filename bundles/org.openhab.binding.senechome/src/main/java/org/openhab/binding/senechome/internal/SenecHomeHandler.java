@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,8 +58,8 @@ public class SenecHomeHandler extends BaseThingHandler {
     private final static String VALUE_TYPE_FLOAT = "fl";
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) SenecHomeConfiguration config;
-    private @Nullable PowerLimitationStatus limitationStatus = null;
+    private @NonNullByDefault({}) SenecHomeConfigurationDTO config;
+    private @Nullable PowerLimitationStatusDTO limitationStatus = null;
     private  @Nullable SenecHomeApi senecHomeApi;
     private Gson gson;
     private SenecHomeApiFactory apiFactory;
@@ -96,7 +96,7 @@ public class SenecHomeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SenecHomeConfiguration.class);
+        config = getConfigAs(SenecHomeConfigurationDTO.class);
         senecHomeApi = apiFactory.getHttpApi(config, gson);
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
@@ -242,7 +242,7 @@ public class SenecHomeHandler extends BaseThingHandler {
                 return;
             }
         } else {
-            this.limitationStatus = new PowerLimitationStatus();
+            this.limitationStatus = new PowerLimitationStatusDTO();
             this.limitationStatus.state = status;
         }
 
