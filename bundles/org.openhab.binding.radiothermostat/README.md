@@ -52,7 +52,7 @@ The thermostat information that is retrieved is available as these channels:
 | status                | Number               | Indicates the current running status of the HVAC system                   |
 | fan_status            | Number               | Indicates the current fan status of the HVAC system                       |
 | override              | Number               | Indicates if the normal program set-point has been manually overridden    |
-| hold                  | Number               | Indicates if the current set point temperature is to be held indefinitely |
+| hold                  | Switch               | Indicates if the current set point temperature is to be held indefinitely |
 | day                   | Number               | The current day of the week reported by the thermostat (0 = Monday)       |
 | hour                  | Number               | The current hour of the day reported by the thermostat  (24 hr)           |
 | minute                | Number               | The current minute past the hour reported by the thermostat               |
@@ -109,11 +109,6 @@ NULL_over=-
 -_over=-
 0_over=No
 1_over=Yes
-UNDEF_hold=-
-NULL_hold=-
--_hold=-
-0_hold=Off
-1_hold=On
 
 ```
 
@@ -142,7 +137,7 @@ Number:Temperature  Therm_Setpt "Set Point [%d °F]" <temperature>              
 Number Therm_Status             "Status [MAP(radiotherm.map):%s_stus]"          { channel="radiothermostat:rtherm:mytherm1:status" }
 Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
-Number Therm_Hold               "Hold [MAP(radiotherm.map):%s_hold]"            { channel="radiothermostat:rtherm:mytherm1:hold" }
+Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
 
 Number Therm_Day       "Thermostat Day [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
 Number Therm_Hour      "Thermostat Hour [%s]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
@@ -164,34 +159,34 @@ radiotherm.sitemap:
 
 ```perl
 sitemap radiotherm label="My Thermostat" {
-	Frame label="My 1st floor thermostat" {
-		Text item=Therm_Name
-		Text item=Therm_Model
-		
-		Text item=Therm_Temp icon="temperature" valuecolor=[>76="orange",>67.5="green",<=67.5="blue"]
-		Text item=Therm_Hum icon="humidity"
-		Setpoint item=Therm_Setpt label="Target temperature [%d °F]" visibility=[Therm_Mode==1,Therm_Mode==2] icon="temperature" minValue=60 maxValue=85 step=1
-		Switch item=Therm_Mode icon="climate"
-		Switch item=Therm_Fmode icon="fan"
-		Switch item=Therm_Pmode icon="smoke"
-		Text item=Therm_Status icon="climate"
-		Text item=Therm_FanStatus icon="flow"
-		Text item=Therm_Override icon="smoke"
-		Switch item=Therm_Hold icon="smoke"
-		
-		Text item=Therm_Day
-		Text item=Therm_Hour
-		Text item=Therm_Minute
-		Text item=Therm_Dstmp
-		Text item=Therm_Lastupd
-		
-		Text item=Therm_thh
-		Text item=Therm_thm
-		Text item=Therm_tch
-		Text item=Therm_tcm
-		Text item=Therm_yhh
-		Text item=Therm_yhm
-		Text item=Therm_ych
+    Frame label="My 1st floor thermostat" {
+        Text item=Therm_Name
+        Text item=Therm_Model
+
+        Text item=Therm_Temp icon="temperature" valuecolor=[>76="orange",>67.5="green",<=67.5="blue"]
+        Text item=Therm_Hum icon="humidity"
+        Setpoint item=Therm_Setpt label="Target temperature [%d °F]" visibility=[Therm_Mode==1,Therm_Mode==2] icon="temperature" minValue=60 maxValue=85 step=1
+        Selection item=Therm_Mode icon="climate"
+        Selection item=Therm_Fmode icon="fan"
+        Selection item=Therm_Pmode icon="smoke"
+        Text item=Therm_Status icon="climate"
+        Text item=Therm_FanStatus icon="flow"
+        Text item=Therm_Override icon="smoke"
+        Switch item=Therm_Hold icon="smoke"
+
+        Text item=Therm_Day
+        Text item=Therm_Hour
+        Text item=Therm_Minute
+        Text item=Therm_Dstmp
+        Text item=Therm_Lastupd
+
+        Text item=Therm_thh
+        Text item=Therm_thm
+        Text item=Therm_tch
+        Text item=Therm_tcm
+        Text item=Therm_yhh
+        Text item=Therm_yhm
+        Text item=Therm_ych
     }
 }
 ```

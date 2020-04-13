@@ -147,15 +147,9 @@
 	</channel-type>
 	
 	<channel-type id="hold">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Hold</label>
 		<description>Indicates if the current set point temperature is to be held indefinitely</description>
-		<state>
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
-		</state>
 	</channel-type>
 	
 	<channel-type id="status">

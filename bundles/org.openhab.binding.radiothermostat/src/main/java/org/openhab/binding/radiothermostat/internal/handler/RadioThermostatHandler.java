@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -255,9 +256,12 @@ public class RadioThermostatHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             updateChannel(channelUID.getId(), rthermData);
         } else {
+            Integer cmdInt = -1;
             // remove all non-numeric characters except negative '-'
             String cmdStr = command.toString().replaceAll("[^\\d-]", "");
-            Integer cmdInt =  Integer.parseInt(cmdStr);
+            if (!StringUtils.isEmpty(cmdStr) && StringUtils.isNumeric(cmdStr)) {
+                cmdInt = Integer.parseInt(cmdStr);
+            }
             
             switch (channelUID.getId()) {
             case MODE:
@@ -294,9 +298,15 @@ public class RadioThermostatHandler extends BaseThingHandler {
                 sendCommand("program_mode", cmdStr);
                 break;
             case HOLD:
-                rthermData.getThermostatData().setHold(cmdInt);
-                updateChannel(channelUID.getId(), rthermData);
-                sendCommand("hold", cmdStr);
+                if (command instanceof OnOffType && command == OnOffType.ON) {
+                    rthermData.getThermostatData().setHold(1);
+                    updateChannel(channelUID.getId(), rthermData);
+                    sendCommand("hold", "1");
+                } else if (command instanceof OnOffType && command == OnOffType.OFF) {
+                    rthermData.getThermostatData().setHold(0);
+                    updateChannel(channelUID.getId(), rthermData);
+                    sendCommand("hold", "0");
+                }
                 break;
             case SET_POINT:
                 String cmdKey = null;
@@ -349,6 +359,8 @@ public class RadioThermostatHandler extends BaseThingHandler {
                 state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
             } else if (value instanceof String) {
                 state = new StringType(value.toString());
+            } else if (value instanceof OnOffType) {
+                state = (OnOffType) value;
             } else {
                 logger.warn("Update channel {}: Unsupported value type {}", channelId,
                         value.getClass().getSimpleName());
@@ -374,7 +386,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
         String hostName = StringUtils.trimToEmpty(config.hostName);
 
         String urlStr = URL.replace("%hostName%", hostName);
-        urlStr = urlStr.replace("%resource%", resource);     
+        urlStr = urlStr.replace("%resource%", resource);
 
         return urlStr;
     }
@@ -512,7 +524,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
      * @throws Exception
      */
     public static Object getValue(String channelId, RadioThermostatData data) throws Exception {
-        String[] fields = StringUtils.split(channelId, "#");        
+        String[] fields = StringUtils.split(channelId, "#");
         
         if (data != null) {
             switch (fields[0]) {
@@ -547,7 +559,11 @@ public class RadioThermostatHandler extends BaseThingHandler {
                 case OVERRIDE:
                     return data.getThermostatData().getOverride();
                 case HOLD:
-                    return data.getThermostatData().getHold();
+                    if (data.getThermostatData().getHold() == 1) {
+                        return OnOffType.ON;
+                    } else {
+                        return OnOffType.OFF;
+                    }
                 case STATUS:
                     return data.getThermostatData().getStatus();
                 case FAN_STATUS:
@@ -577,7 +593,7 @@ public class RadioThermostatHandler extends BaseThingHandler {
                 case YESTERDAY_COOL_HOUR:
                     return data.getRuntime().getYesterday().getCoolTime().getHour();
                 case YESTERDAY_COOL_MINUTE:
-                    return data.getRuntime().getYesterday().getCoolTime().getMinute();       
+                    return data.getRuntime().getYesterday().getCoolTime().getMinute();
             }
         }
 
