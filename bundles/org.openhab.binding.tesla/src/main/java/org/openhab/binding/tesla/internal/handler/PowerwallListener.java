@@ -26,7 +26,7 @@ public interface PowerwallListener {
     /**
      * This method is called by the {@link TeslaAccountHandler}, if a powerwall is identified.
      *
-     * @param vehicle a vehicle that was found within an account.
+     * @param powerwall a vehicle that was found within an account.
      */
     void powerwallFound(Powerwall powerwall);
 }

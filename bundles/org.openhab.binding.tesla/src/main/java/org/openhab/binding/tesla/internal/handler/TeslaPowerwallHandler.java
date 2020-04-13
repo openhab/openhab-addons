@@ -124,6 +124,7 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("We don't do anything yet but we got here!");
         account = (TeslaAccountHandler) getBridge().getHandler();
+        logger.debug("Initializing the Tesla Powerwall handler - account = {}", account);
     }
 
     @Override
@@ -232,5 +233,176 @@ public class TeslaPowerwallHandler extends TeslaVehicleHandler {
         requestData(command, null);
     }
 
+    public void queryPowerwall(String parameter) {
+        WebTarget target = account.powerwallTarget.path(parameter);
+        sendCommand(parameter, null, target);
+    }
+
+    public void requestAllData() {
+        requestData(DRIVE_STATE);
+    }
+
+    protected Powerwall queryPowerwall() {
+        String authHeader = account.getAuthHeader();
+
+        if (authHeader != null) {
+            try {
+                // get a list of powerwalls
+                Response response = account.productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                        .header("Authorization", authHeader).get();
+
+                logger.debug("Querying the products : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+
+                if (!checkResponse(response, true)) {
+                    logger.error("An error occurred while querying the product");
+                    return null;
+                }
+
+                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                Powerwall[] powerwallArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Powerwall[].class);
+
+                for (Powerwall powerwall : powerwallArray) {
+                    logger.debug("Querying the powerwall: ID {}", powerwall.id);
+                    if (powerwall.id.equals(getConfig().get(BATTERY_ID))) {
+                        powerwallJSON = gson.toJson(powerwall);
+                        parseAndUpdate("queryPowerwall", null, powerwallJSON);
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Powerwall sitename is {}/battery_id {}", powerwall.site_name, powerwall.id);
+                        }
+                        return powerwall;
+                    }
+                }
+            } catch (ProcessingException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    protected void queryPowerwallAndUpdate() {
+        powerwall = queryPowerwall();
+        if (powerwall != null) {
+            parseAndUpdate("queryPowerwall", null, powerwallJSON);
+        }
+    }
+
+    public void parseAndUpdate(String request, String payLoad, String result) {
+        final Double LOCATION_THRESHOLD = .0000001;
+
+        JsonObject jsonObject = null;
+
+        try {
+            if (request != null && result != null && !"null".equals(result)) {
+                updateStatus(ThingStatus.ONLINE);
+                // first, update state objects
+                switch (request) {
+                    case "queryPowerwall": {
+                        if (powerwall != null ) {
+                            // in case powerwall changed to awake, refresh all data
+                                logger.debug("Powerwall is now awake, updating all data");
+                                requestAllData();
+                        }
+
+                        break;
+                    }
+                }
+                // secondly, reformat the response string to a JSON compliant
+                // object for some specific non-JSON compatible requests
+                switch (request) {
+                    case MOBILE_ENABLED_STATE: {
+                        jsonObject = new JsonObject();
+                        jsonObject.addProperty(MOBILE_ENABLED_STATE, result);
+                        break;
+                    }
+                    default: {
+                        jsonObject = parser.parse(result).getAsJsonObject();
+                        break;
+                    }
+                }
+            }
+
+            // process the result
+            if (jsonObject != null && result != null && !"null".equals(result)) {
+                // deal with responses for "set" commands, which get confirmed
+                // positively, or negatively, in which case a reason for failure
+                // is provided
+                if (jsonObject.get("reason") != null && jsonObject.get("reason").getAsString() != null) {
+                    boolean requestResult = jsonObject.get("result").getAsBoolean();
+                    logger.debug("The request ({}) execution was {}, and reported '{}'", new Object[] { request,
+                            requestResult ? "successful" : "not successful", jsonObject.get("reason").getAsString() });
+                } else {
+                    Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
+
+                    long resultTimeStamp = 0;
+                    for (Map.Entry<String, JsonElement> entry : entrySet) {
+                        if ("timestamp".equals(entry.getKey())) {
+                            resultTimeStamp = Long.valueOf(entry.getValue().getAsString());
+                            if (logger.isTraceEnabled()) {
+                                Date date = new Date(resultTimeStamp);
+                                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                logger.trace("The request result timestamp is {}", dateFormatter.format(date));
+                            }
+                            break;
+                        }
+                    }
+
+                    try {
+                        lock.lock();
+
+                        boolean proceed = true;
+                        if (resultTimeStamp < lastTimeStamp && request == DRIVE_STATE) {
+                            proceed = false;
+                        }
+
+                        if (proceed) {
+                            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                                try {
+                                    TeslaChannelSelector selector = TeslaChannelSelector
+                                            .getValueSelectorFromRESTID(entry.getKey());
+                                    if (!selector.isProperty()) {
+                                        if (!entry.getValue().isJsonNull()) {
+                                            updateState(selector.getChannelID(), teslaChannelSelectorProxy.getState(
+                                                    entry.getValue().getAsString(), selector, editProperties()));
+                                            if (logger.isTraceEnabled()) {
+                                                logger.trace(
+                                                        "The variable/value pair '{}':'{}' is successfully processed",
+                                                        entry.getKey(), entry.getValue());
+                                            }
+                                        } else {
+                                            updateState(selector.getChannelID(), UnDefType.UNDEF);
+                                        }
+                                    } else {
+                                        if (!entry.getValue().isJsonNull()) {
+                                            Map<String, String> properties = editProperties();
+                                            properties.put(selector.getChannelID(), entry.getValue().getAsString());
+                                            updateProperties(properties);
+                                            if (logger.isTraceEnabled()) {
+                                                logger.trace(
+                                                        "The variable/value pair '{}':'{}' is successfully used to set property '{}'",
+                                                        entry.getKey(), entry.getValue(), selector.getChannelID());
+                                            }
+                                        }
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    logger.trace("The variable/value pair '{}':'{}' is not (yet) supported",
+                                            entry.getKey(), entry.getValue());
+                                } catch (ClassCastException | IllegalStateException e) {
+                                    logger.trace("An exception occurred while converting the JSON data : '{}'",
+                                            e.getMessage(), e);
+                                }
+                            }
+                        } else {
+                            logger.warn("The result for request '{}' is discarded due to an out of sync timestamp",
+                                    request);
+                        }
+                    } finally {
+                        lock.unlock();
+                    }
+                }
+            }
+        } catch (Exception p) {
+            logger.error("An exception occurred while parsing data received from the powerwall: '{}'", p.getMessage());
+        }
+    }
 
 }

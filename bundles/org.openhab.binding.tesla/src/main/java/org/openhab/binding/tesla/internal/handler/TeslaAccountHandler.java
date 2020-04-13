@@ -97,6 +97,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     final WebTarget commandTarget = vehicleTarget.path(PATH_COMMAND);
     final WebTarget wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     final WebTarget powerwallsTarget = teslaTarget.path(API_VERSION).path(POWERWALLS);
+    final WebTarget powerwallTarget = powerwallsTarget.path(PATH_POWERWALL_ID);
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
 
@@ -512,30 +513,25 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                         }
                         // Check for powerwalls
                         for (Powerwall powerwall : queryPowerwalls()) {
-                            logger.debug("PS here");
                             if (powerwall.site_name != null) {
-                            logger.debug("PS here2");
-                                Bridge bridge = getBridge();
-                            logger.debug("PS here2a, bridge {}",bridge);
+//                                Bridge bridge = getBridge();
+                                Bridge bridge = getThing();
                                 if (bridge != null) {
-                            logger.debug("PS here3");
                                     List<Thing> things = bridge.getThings();
                                     for (int i = 0; i < things.size(); i++) {
-                            logger.debug("PS here4");
                                         Thing thing = things.get(i);
                                         TeslaVehicleHandler handler = (TeslaVehicleHandler) thing.getHandler();
                                         if (handler != null) {
-                            logger.debug("PS here5");
                                             if (powerwall.id.equals(thing.getConfiguration().get(BATTERY_ID))) {
                                                 logger.debug(
-                                                        "Found the vehicle with battery_id '{}' in the list of powerwalls you own",
-                                                        getConfig().get(BATTERY_ID));
+                                                        "Found the powerwall with battery_id '{}' in the list of powerwalls you own",
+                                                        thing.getConfiguration().get(BATTERY_ID));
                                                 apiIntervalErrors = 0;
                                                 apiIntervalTimestamp = System.currentTimeMillis();
                                             } else {
                                                 logger.warn(
                                                         "Unable to find the powerwall with battery_id '{}' in the list of powerwalls you own",
-                                                        getConfig().get(BATTERY_ID));
+                                                        thing.getConfiguration().get(BATTERY_ID));
                                                 handler.updateStatus(ThingStatus.OFFLINE,
                                                         ThingStatusDetail.CONFIGURATION_ERROR,
                                                         "battery_id is not available through this account.");
@@ -548,7 +544,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
                     } else {
                         if (response != null) {
-                            logger.error("Error fetching the list of vehicles : {}:{}", response.getStatus(),
+                            logger.error("Error fetching the list of powerwalls : {}:{}", response.getStatus(),
                                     response.getStatusInfo());
                             updateStatus(ThingStatus.OFFLINE);
                         }
