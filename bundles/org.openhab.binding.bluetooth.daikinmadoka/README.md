@@ -48,10 +48,6 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | outdoorTemperature  | Number:Temperature | R | Outdoor temperature from the external unit. Not always supported/reported.
 | commCtrlVersion  | String | R | Communication Controller Firmware Version
 | remoteCtrlVersion  | String | R | Remote Controller Firmware Version
-| heatingFanSpeed  | Number | R | Because the device implements a separate fan speed setting for each mode, this channel reports this settings from a pure informational perspective. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5).
-| coolingFanSpeed  | Number | R | Because the device implements a separate fan speed setting for each mode, this channel reports this settings from a pure informational perspective. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5).
-| heatingSetpoint  | Number:Temperature | R | This is the setpoint for HEAT mode.
-| coolingSetpoint  | Number:Temperature | R | This is the setpoint for COOL mode
 | operationMode  | String | R/W | The operation mode of the AC unit. Currently supported values: HEAT, COOL.  
 | fanSpeed  | Number | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the fan speed, whatever the current mode is. Fan speed are from 1 to 5. On BRC1H, the device supports 3 speeds: LOW (1), MEDIUM (2-4), MAX (5).
 | setpoint  | Number:Temperature | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the setpoint, whatever the current mode is.
@@ -76,7 +72,6 @@ Thing bluetooth:brc1h:hci0:salon (bluetooth:dbusbluez:hci0)     [ address="00:CC
 
 Group g_climSalon "Salon" [ "Thermostat" ]
 
-Number climSalon_rssi "RSSI"                                   (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:rssi" }
 Switch climSalon_onOff "Climatisation Salon"                   (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:onOffStatus" }
 Number climSalon_indoorTemperature "Température Intérieure"    (g_climSalon) [ "CurrentTemperature" ] { channel="bluetooth:brc1h:hci0:salon:indoorTemperature" }
 Number climSalon_outdoorTemperature "Température Extérieure"   (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:outdoorTemperature" }
@@ -84,12 +79,8 @@ Number climSalon_outdoorTemperature "Température Extérieure"   (g_climSalon) {
 String climSalon_commCtrlVersion                               (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:commCtrlVersion" }
 String climSalon_remoteCtrlVersion                             (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:remoteCtrlVersion" }
 
-Number climSalon_heatingFanSpeed                               (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:heatingFanSpeed" }
-Number climSalon_coolingFanSpeed                               (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:coolingFanSpeed" }
 Number climSalon_fanSpeed                                      (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:fanSpeed" }
 
-Number climSalon_heatingSetpoint                               (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:heatingSetpoint" }
-Number climSalon_coolingSetpoint                               (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:coolingSetpoint" }
 Number climSalon_setpoint                                      (g_climSalon) [ "homekit:TargetTemperature" ] { channel="bluetooth:brc1h:hci0:salon:setpoint" }
 
 String climSalon_operationMode                                 (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:operationMode" }
