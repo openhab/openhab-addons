@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -403,6 +404,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (basicChannel.getType().toLowerCase()) {
                 case "number":
                     updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
+                    break;
+                case "dimmer":
+                    updateState(basicChannel.getChannel(), new PercentType(val.getAsBigDecimal()));
                     break;
                 case "string":
                     updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
