@@ -48,6 +48,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -92,6 +95,7 @@ public class LGWebOSTVSocket {
     private static final Gson GSON = new GsonBuilder().create();
 
     public enum State {
+        DISCONNECTING,
         DISCONNECTED,
         CONNECTING,
         REGISTERING,
@@ -114,6 +118,11 @@ public class LGWebOSTVSocket {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSTVSocket.class);
     private int nextRequestId = 0;
 
+    private final ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> disconnectingJob;
+
+    private static final int DISCONNECTING_DELAY_SECONDS = 5;
+
     private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
     // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
     // private static final String APP_STATE = "ssap://system.launcher/getAppState";
@@ -126,7 +135,8 @@ public class LGWebOSTVSocket {
     // private static final String CURRENT_PROGRAM = "ssap://tv/getChannelCurrentProgramInfo";
     // private static final String THREED_STATUS = "ssap://com.webos.service.tv.display/get3DStatus";
 
-    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port) {
+    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port,
+            ScheduledExecutorService scheduler) {
         this.config = config;
         this.client = client;
         this.keyboardInput = new LGWebOSTVKeyboardInput(this);
@@ -136,6 +146,8 @@ public class LGWebOSTVSocket {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("IP address or hostname provided is invalid: " + host);
         }
+
+        this.scheduler = scheduler;
     }
 
     public State getState() {
@@ -143,6 +155,7 @@ public class LGWebOSTVSocket {
     }
 
     private void setState(State state) {
+        logger.debug("setState new {} - current {}", state, this.state);
         State oldState = this.state;
         if (oldState != state) {
             this.state = state;
@@ -171,6 +184,29 @@ public class LGWebOSTVSocket {
         Optional.ofNullable(this.session).ifPresent(s -> s.close());
         setState(State.DISCONNECTED);
     }
+
+    private void scheduleDisconectingJob() {
+        logger.debug("Schedule disconecting job");
+        ScheduledFuture<?> job = disconnectingJob;
+        if (job == null || job.isCancelled()) {
+            disconnectingJob = scheduler.schedule(() -> {
+                logger.debug("Run disconecting job");
+                if (state == State.REGISTERED) {
+                    setState(State.DISCONNECTING);
+                }
+            }, DISCONNECTING_DELAY_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopDisconnectingJob() {
+        ScheduledFuture<?> job = disconnectingJob;
+        if (job != null && !job.isCancelled()) {
+            logger.debug("Stop disconnecting job");
+            job.cancel(true);
+        }
+        disconnectingJob = null;
+    }
+
     /*
      * WebSocket Callbacks
      */
@@ -298,6 +334,7 @@ public class LGWebOSTVSocket {
                 break;
             case CONNECTING:
             case REGISTERING:
+            case DISCONNECTING:
             case DISCONNECTED:
                 logger.warn("Skipping {} command {} for {} in state {}", command.getType(), command,
                         command.getTarget(), state);
@@ -595,8 +632,24 @@ public class LGWebOSTVSocket {
     // POWER
     public void powerOff(ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system/turnOff";
+
+        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<CommandConfirmation>() {
+
+            @Override
+            public void onSuccess(CommandConfirmation confirmation) {
+                if (confirmation.getReturnValue() && state == State.REGISTERED) {
+                    setState(State.DISCONNECTING);
+                }
+                listener.onSuccess(confirmation);
+            }
+
+            @Override
+            public void onError(String message) {
+                listener.onError(message);
+            }
+        };
         ServiceCommand<CommandConfirmation> request = new ServiceCommand<>(uri, null,
-                x -> GSON.fromJson(x, CommandConfirmation.class), listener);
+                x -> GSON.fromJson(x, CommandConfirmation.class), interceptor);
         sendCommand(request);
     }
 
@@ -756,8 +809,28 @@ public class LGWebOSTVSocket {
     }
 
     public ServiceSubscription<AppInfo> subscribeRunningApp(ResponseListener<AppInfo> listener) {
+        ResponseListener<AppInfo> interceptor = new ResponseListener<AppInfo>() {
+
+            @Override
+            public void onSuccess(AppInfo appInfo) {
+                if (appInfo.getId().isEmpty()) {
+                    scheduleDisconectingJob();
+                } else {
+                    stopDisconnectingJob();
+                    if (state == State.DISCONNECTING) {
+                        setState(State.REGISTERED);
+                    }
+                }
+                listener.onSuccess(appInfo);
+            }
+
+            @Override
+            public void onError(String message) {
+                listener.onError(message);
+            }
+        };
         ServiceSubscription<AppInfo> request = new ServiceSubscription<>(FOREGROUND_APP, null,
-                jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), listener);
+                jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), interceptor);
         sendCommand(request);
         return request;
 
