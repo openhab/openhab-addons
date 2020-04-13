@@ -14,9 +14,7 @@ package org.openhab.extensionservice.marketplace.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,10 +48,10 @@ public class MarketplaceProxy {
 
     private final Logger logger = LoggerFactory.getLogger(MarketplaceProxy.class);
 
-    private final URL url;
-    private final List<Node> cachedNodes = new ArrayList<>();
+    private Node[] cachedNodes = new Node[0];
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledFuture<?> refreshJob;
+    private final URL url;
 
     /**
      * Creates a new instance, which immediately schedules a synchronization with the marketplace content.
@@ -73,7 +71,7 @@ public class MarketplaceProxy {
      * @return list of marketplace nodes
      */
     public List<Node> getNodes() {
-        return Collections.unmodifiableList(cachedNodes);
+        return Arrays.asList(cachedNodes);
     }
 
     /**
@@ -85,11 +83,10 @@ public class MarketplaceProxy {
             @Nullable
             Marketplace result = reader.readFromXML(url);
             if (result != null) {
-                cachedNodes.clear();
-                cachedNodes.addAll(Arrays.asList(result.categories[0].nodes));
+                cachedNodes = result.categories[0].nodes;
             }
         } catch (Exception e) {
-            if (cachedNodes.isEmpty()) {
+            if (cachedNodes.length == 0) {
                 logger.warn("Failed downloading Marketplace entries: {}", e.getMessage());
                 logger.warn("Retrying again in a minute");
                 executorService.schedule(this::refresh, RETRY_DELAY, TimeUnit.SECONDS);
