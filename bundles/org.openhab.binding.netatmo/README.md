@@ -634,7 +634,7 @@ Number               Rain_BatteryVP                    "Rain battery status [%d%
 ## sitemaps/netatmo.sitemap
 
 ```
-sitemap netatmo label="Netatmo"
+sitemap netatmo label="Netatmo" {
     Frame label="Indoor" {
         Text item=Indoor_Temp
         Text item=Indoor_Min_Temp
