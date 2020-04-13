@@ -28,7 +28,7 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.eclipse.smarthome.config.core.ConfigDescription;
+import org.eclipse.smarthome.config.core.ConfigDescriptionBuilder;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameterBuilder;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameterGroup;
@@ -42,14 +42,14 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeBuilder;
 import org.eclipse.smarthome.core.types.EventDescription;
 import org.eclipse.smarthome.core.types.EventOption;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -273,7 +273,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 });
             }
 
-            StateDescription state = null;
+            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
@@ -282,18 +282,18 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 if (step == null) {
                     step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L));
                 }
-                state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
-                        options);
+                stateFragment.withMinimum(min).withMaximum(max).withStep(step)
+                        .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
             } else {
-                state = new StateDescription(null, null, null, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
-                        options);
+                stateFragment.withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
+            }
+            if (options != null) {
+                stateFragment.withOptions(options);
             }
 
-            ChannelKind channelKind = ChannelKind.STATE;
+            ChannelTypeBuilder channelTypeBuilder;
             EventDescription eventDescription = null;
             if (dp.isTrigger()) {
-                itemType = null;
-                channelKind = ChannelKind.TRIGGER;
                 eventDescription = new EventDescription(
                         MetadataUtils.generateOptions(dp, new OptionsBuilder<EventOption>() {
                             @Override
@@ -301,11 +301,14 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                 return new EventOption(value, description);
                             }
                         }));
-
+                channelTypeBuilder = ChannelTypeBuilder.trigger(channelTypeUID, label)
+                        .withEventDescription(eventDescription);
+            } else {
+                channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                        .withStateDescription(stateFragment.build().toStateDescription());
             }
-            channelType = new ChannelType(channelTypeUID, !MetadataUtils.isStandard(dp), itemType, channelKind, label,
-                    description, category, null, state, eventDescription, configDescriptionUriChannel);
-
+            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).withDescription(description)
+                    .withCategory(category).withConfigDescriptionURI(configDescriptionUriChannel).build();
         }
         return channelType;
     }
@@ -353,9 +356,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 }
             }
         }
-
-        configDescriptionProvider.addConfigDescription(new ConfigDescription(configDescriptionURI, parms, groups));
-
+        configDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
+                .withParameters(parms).withParameterGroups(groups).build());
     }
 
     private URI getConfigDescriptionURI(HmDevice device) {
