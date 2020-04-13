@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.station;
 
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.station.StationUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +80,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         updateProperties(deviceData.getFirmware(), deviceData.getType());
     }
 
+    @Override
     public void updateMeasurements() {
         updateDayMeasurements();
         updateWeekMeasurements();

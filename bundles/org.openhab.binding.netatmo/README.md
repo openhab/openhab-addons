@@ -539,7 +539,7 @@ Number:Temperature   Indoor_Min_Temp_This_Week         "Min Temperature This Wee
 Number:Temperature   Indoor_Min_Temp_This_Month        "Min Temperature This Month [%.1f %unit%]"                   <temperature>      { channel = "netatmo:NAMain:home:inside:MinTempThisMonth" }
 Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:NAMain:home:inside:MaxTemp" }
 Number:Temperature   Indoor_Max_Temp_This_Week         "Max Temperature This Week [%.1f %unit%]"                    <temperature>      { channel = "netatmo:NAMain:home:inside:MaxTempThisWeek" }
-Number:Temperature   Indoor_Max_Temp_This_Month        "Max Temperature This Week[%.1f %unit%]"                     <temperature>      { channel = "netatmo:NAMain:home:inside:MaxTempThisMonth" }
+Number:Temperature   Indoor_Max_Temp_This_Month        "Max Temperature This Month [%.1f %unit%]"                     <temperature>      { channel = "netatmo:NAMain:home:inside:MaxTempThisMonth" }
 DateTime             Indoor_Min_Temp_TS                "Min Temperature Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"      <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinTemp" }
 DateTime             Indoor_Min_Temp_This_Week_TS      "Min Temperature This Week  [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinTempThisWeek" }
 DateTime             Indoor_Min_Temp_This_Month_TS     "Min Temperature This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinTempThisMonth" }
@@ -569,7 +569,7 @@ Number:Dimensionless Indoor_Min_Co2_This_Week          "Min CO2 This Week [%.1f 
 Number:Dimensionless Indoor_Min_Co2_This_Month         "Min CO2 This Month [%.1f %unit%]"                           <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MinCo2ThisMonth" }
 Number:Dimensionless Indoor_Max_Co2                    "Max CO2 Today [%.1f %unit%]"                                <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MaxCo2" }
 Number:Dimensionless Indoor_Max_Co2_This_Week          "Max CO2 This Week [%.1f %unit%]"                            <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MaxCo2ThisWeek" }
-Number:Dimensionless Indoor_Max_Co2_This_Month         "Max CO2 This Week[%.1f %unit%]"                             <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MaxCo2ThisMonth" }
+Number:Dimensionless Indoor_Max_Co2_This_Month         "Max CO2 This Month [%.1f %unit%]"                             <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MaxCo2ThisMonth" }
 DateTime             Indoor_Min_Co2_TS                 "Min CO2 Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"              <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinCo2" }
 DateTime             Indoor_Min_Co2_This_Week_TS       "Min CO2 This Week [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"          <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinCo2ThisWeek" }
 DateTime             Indoor_Min_Co2_This_Month_TS      "Min CO2 This Month [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:NAMain:home:inside:DateMinCo2ThisMonth" }

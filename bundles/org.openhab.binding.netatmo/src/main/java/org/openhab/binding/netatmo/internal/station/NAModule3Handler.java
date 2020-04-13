@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.station;
 
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.station.StationUtils.getMeasurements;
 
 import java.util.Arrays;
 import java.util.List;
