@@ -26,4 +26,5 @@ public final class MiIoBindingConfiguration {
     public String model;
     public int refreshInterval;
     public int timeout;
+    public String cloudServer;
 }

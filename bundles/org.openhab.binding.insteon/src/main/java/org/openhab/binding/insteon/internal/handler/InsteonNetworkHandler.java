@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.insteon.internal.handler;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,9 +26,11 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
@@ -41,7 +47,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @SuppressWarnings("null")
 public class InsteonNetworkHandler extends BaseBridgeHandler {
-
     private static final int LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS = 600;
     private static final int SETTLE_TIME_IN_SECONDS = 5;
 
@@ -54,6 +59,8 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
     private @Nullable SerialPortManager serialPortManager;
+    private Map<String, String> deviceInfo = new ConcurrentHashMap<>();
+    private Map<String, String> channelInfo = new ConcurrentHashMap<>();
 
     public static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -119,7 +126,13 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
             settleJob = null;
         }
 
-        insteonBinding.shutdown();
+        if (insteonBinding != null) {
+            insteonBinding.shutdown();
+            insteonBinding = null;
+        }
+
+        deviceInfo.clear();
+        channelInfo.clear();
 
         super.dispose();
     }
@@ -145,5 +158,43 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         scheduler.execute(() -> {
             insteonDeviceDiscoveryService.addInsteonDevices(missing, getThing().getUID());
         });
+    }
+
+    public void displayDevices(Console console) {
+        display(console, deviceInfo);
+    }
+
+    public void displayChannels(Console console) {
+        display(console, channelInfo);
+    }
+
+    public void displayLocalDatabase(Console console) {
+        Map<String, String> databaseInfo = insteonBinding.getDatabaseInfo();
+        console.println("local database contains " + databaseInfo.size() + " entries");
+        display(console, databaseInfo);
+    }
+
+    public void initialized(ThingUID uid, String msg) {
+        deviceInfo.put(uid.getAsString(), msg);
+    }
+
+    public void disposed(ThingUID uid) {
+        deviceInfo.remove(uid.getAsString());
+    }
+
+    public void linked(ChannelUID uid, String msg) {
+        channelInfo.put(uid.getAsString(), msg);
+    }
+
+    public void unlinked(ChannelUID uid) {
+        channelInfo.remove(uid.getAsString());
+    }
+
+    private void display(Console console, Map<String, String> info) {
+        ArrayList<String> ids = new ArrayList<>(info.keySet());
+        Collections.sort(ids);
+        for (String id : ids) {
+            console.println(info.get(id));
+        }
     }
 }

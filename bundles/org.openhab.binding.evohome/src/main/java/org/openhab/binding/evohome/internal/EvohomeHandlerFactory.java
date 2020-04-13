@@ -72,8 +72,8 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
     private void registerEvohomeDiscoveryService(EvohomeAccountBridgeHandler evohomeBridgeHandler) {
         EvohomeDiscoveryService discoveryService = new EvohomeDiscoveryService(evohomeBridgeHandler);
 
-        this.discoveryServiceRegs.put(evohomeBridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(evohomeBridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

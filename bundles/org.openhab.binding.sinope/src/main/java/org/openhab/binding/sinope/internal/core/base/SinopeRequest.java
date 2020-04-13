@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 public abstract class SinopeRequest extends SinopeFrame {
 
     /** The Constant HEADER_COMMAND_CRC_SIZE. */
-    final static protected int HEADER_COMMAND_CRC_SIZE = SinopeFrame.PREAMBLE_SIZE + SinopeFrame.FRAME_CTL_SIZE
+    protected static final int HEADER_COMMAND_CRC_SIZE = SinopeFrame.PREAMBLE_SIZE + SinopeFrame.FRAME_CTL_SIZE
             + SinopeFrame.SIZE_SIZE + SinopeFrame.COMMAND_SIZE + SinopeFrame.CRC_SIZE;
 
     /** The Constant logger. */
-    final static private Logger logger = LoggerFactory.getLogger(SinopeRequest.class);
+    private static final Logger logger = LoggerFactory.getLogger(SinopeRequest.class);
 
     /**
      * @see org.openhab.binding.sinope.internal.core.base.SinopeFrame#getPayload()

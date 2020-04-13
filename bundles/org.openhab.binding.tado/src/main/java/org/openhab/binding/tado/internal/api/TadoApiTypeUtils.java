@@ -59,7 +59,6 @@ public class TadoApiTypeUtils {
 
     public static OverlayTerminationCondition terminationConditionTemplateToTerminationCondition(
             OverlayTerminationConditionTemplate template) {
-
         Integer timerDuration = template.getType() == OverlayTerminationConditionType.TIMER
                 ? ((TimerTerminationConditionTemplate) template).getDurationInSeconds()
                 : null;

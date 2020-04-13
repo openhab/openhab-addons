@@ -43,7 +43,7 @@ public class SamsungTvUtils {
      *            added to hash map.
      */
     public static HashMap<String, String> buildHashMap(String... data) {
-        HashMap<String, String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<>();
 
         if (data.length % 2 != 0) {
             throw new IllegalArgumentException("Odd number of arguments");

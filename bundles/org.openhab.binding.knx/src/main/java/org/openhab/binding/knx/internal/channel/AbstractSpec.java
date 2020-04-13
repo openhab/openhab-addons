@@ -38,7 +38,6 @@ public abstract class AbstractSpec {
         } else {
             this.dpt = defaultDPT;
         }
-
     }
 
     /**

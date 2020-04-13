@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link ApartmentSceneEnum} lists all group independent scenes from digitalSTROM which are callable at the
@@ -51,7 +52,7 @@ public enum ApartmentSceneEnum implements Scene {
     NO_HAIL((short) 91);
 
     private final short sceneNumber;
-    static final HashMap<Short, ApartmentSceneEnum> APARTAMENT_SCENES = new HashMap<Short, ApartmentSceneEnum>();
+    static final Map<Short, ApartmentSceneEnum> APARTAMENT_SCENES = new HashMap<>();
 
     static {
         for (ApartmentSceneEnum as : ApartmentSceneEnum.values()) {

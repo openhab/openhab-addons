@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 
@@ -82,7 +80,7 @@ public enum CosemObjectType {
     EMETER_POWER_FAILURE_LOG(new OBISIdentifier(1, 0, 99, 97, 0, null), 2, new CosemDecimal("entries"),
             new CosemString("obisId"),
             /* Next 2 descriptors are repeating */
-            CosemDate.INSTANCE, new CosemQuantity<Time>(SmartHomeUnits.SECOND, "duration")),
+            CosemDate.INSTANCE, new CosemQuantity<>(SmartHomeUnits.SECOND, "duration")),
     EMETER_VOLTAGE_SAGS_L1(new OBISIdentifier(1, 0, 32, 32, 0, null), CosemDecimal.INSTANCE),
     EMETER_VOLTAGE_SAGS_L2(new OBISIdentifier(1, 0, 52, 32, 0, null), CosemDecimal.INSTANCE),
     EMETER_VOLTAGE_SAGS_L3(new OBISIdentifier(1, 0, 72, 32, 0, null), CosemDecimal.INSTANCE),

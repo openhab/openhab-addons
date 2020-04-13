@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,8 +48,8 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 public class FeatureTemplateLoader {
-    public static ArrayList<FeatureTemplate> readTemplates(InputStream input) throws IOException, ParsingException {
-        ArrayList<FeatureTemplate> features = new ArrayList<>();
+    public static List<FeatureTemplate> readTemplates(InputStream input) throws IOException, ParsingException {
+        List<FeatureTemplate> features = new ArrayList<>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -109,7 +111,7 @@ public class FeatureTemplateLoader {
         }
 
         NamedNodeMap attributes = e.getAttributes();
-        HashMap<String, @Nullable String> params = new HashMap<String, @Nullable String>();
+        Map<String, @Nullable String> params = new HashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
             Node n = attributes.item(i);
             params.put(n.getNodeName(), n.getNodeValue());

@@ -33,7 +33,6 @@ public class JSonPathTransformationServiceTest {
 
     @Test
     public void testTransformByJSon() throws TransformationException {
-
         String json = "{'store':{'book':[{'category':'reference','author':'Nigel Rees','title': 'Sayings of the Century', 'price': 8.95  } ],  'bicycle': { 'color': 'red',  'price': 19.95} }}";
         // method under test
         String transformedResponse = processor.transform("$.store.book[0].author", json);

@@ -382,7 +382,6 @@ public class WebSocketConnection {
                 sendMessage(
                         "0xa6f6a951 0x0000009c {\"protocolName\":\"A:H\",\"parameters\":{\"AlphaProtocolHandler.receiveWindowSize\":\"16\",\"AlphaProtocolHandler.maxFragmentSize\":\"16000\"}}TUNE");
                 sendMessage(encodeGWHandshake());
-
             } else if (this.msgCounter == 1) {
                 sendMessage(encodeGWRegister());
                 sendPing();
@@ -395,7 +394,6 @@ public class WebSocketConnection {
                     Message message = parseIncomingMessage(buffer);
                     if (message.service.equals("FABE") && message.content.messageType.equals("PON")
                             && message.content.payloadData.length > 0) {
-
                         logger.debug("Pong received");
                         WebSocketConnection.this.clearPongTimeoutTimer();
                         return;
@@ -416,7 +414,6 @@ public class WebSocketConnection {
 
         @Override
         public void onWebSocketText(@Nullable String message) {
-
         }
 
         @Override
@@ -464,7 +461,6 @@ public class WebSocketConnection {
         }
 
         long toUnsignedInt(long value) {
-
             long result = value;
             if (0 > value) {
                 result = 4294967295L + value + 1;
@@ -559,7 +555,6 @@ public class WebSocketConnection {
         }
 
         byte[] encodePing() {
-
             // MSG 0x00000065 0x0e414e47 f 0x00000001 0xbc2fbb5f 0x00000062 PIN    � ��� ��    R e g u l a rFABE
             this.messageId++;
             String msg = "MSG 0x00000065 "; // Message-type and Channel = CHANNEL_FOR_HEARTBEAT;

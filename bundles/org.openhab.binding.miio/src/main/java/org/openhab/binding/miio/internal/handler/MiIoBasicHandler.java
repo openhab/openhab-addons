@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -79,10 +80,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return true;
     });
 
-    List<MiIoBasicChannel> refreshList = new ArrayList<MiIoBasicChannel>();
+    List<MiIoBasicChannel> refreshList = new ArrayList<>();
 
     private @Nullable MiIoBasicDevice miioDevice;
-    private Map<String, MiIoDeviceAction> actions = new HashMap<String, MiIoDeviceAction>();
+    private Map<String, MiIoDeviceAction> actions = new HashMap<>();
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
         super(thing, miIoDatabaseWatchService);
@@ -93,7 +94,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         super.initialize();
         hasChannelStructure = false;
         isIdentified = false;
-        refreshList = new ArrayList<MiIoBasicChannel>();
+        refreshList = new ArrayList<>();
     }
 
     @Override
@@ -194,21 +195,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
-        final MiIoAsyncCommunication miioCom = this.miioCom;
+        final MiIoAsyncCommunication miioCom = getConnection();
         try {
-            if (!hasConnection() || skipUpdate()) {
+            if (!hasConnection() || skipUpdate() || miioCom == null) {
                 return;
-            }
-            if (miioCom == null || !initializeData()) {
-                return;
-            }
-            try {
-                miioCom.startReceiver();
-                miioCom.sendPing(configuration.host);
-            } catch (Exception e) {
-                // ignore
             }
             checkChannelStructure();
             if (!isIdentified) {
@@ -252,26 +243,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    @Override
-    protected boolean initializeData() {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
-        final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                Utils.hexStringToByteArray(configuration.deviceId), lastId, configuration.timeout);
-        miioCom.registerListener(this);
-        try {
-            miioCom.sendPing(configuration.host);
-        } catch (IOException e) {
-            logger.debug("ping {} failed", configuration.host);
-        }
-        this.miioCom = miioCom;
-        return true;
-    }
-
     /**
      * Checks if the channel structure has been build already based on the model data. If not build it.
      */
     private void checkChannelStructure() {
-        final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
+        final MiIoBindingConfiguration configuration = this.configuration;
+        if (configuration == null) {
+            return;
+        }
         if (!hasChannelStructure) {
             if (configuration.model == null || configuration.model.isEmpty()) {
                 logger.debug("Model needs to be determined");
@@ -280,7 +259,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
         }
         if (hasChannelStructure) {
-            refreshList = new ArrayList<MiIoBasicChannel>();
+            refreshList = new ArrayList<>();
             final MiIoBasicDevice miioDevice = this.miioDevice;
             if (miioDevice != null) {
                 for (MiIoBasicChannel miChannel : miioDevice.getDevice().getChannels()) {
@@ -312,7 +291,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             int channelsAdded = 0;
 
             // make a map of the actions
-            actions = new HashMap<String, MiIoDeviceAction>();
+            actions = new HashMap<>();
             final MiIoBasicDevice device = this.miioDevice;
             if (device != null) {
                 for (MiIoBasicChannel miChannel : device.getDevice().getChannels()) {
@@ -332,10 +311,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 updateThing(thingBuilder.build());
             }
             return true;
-        } catch (JsonIOException e) {
-            logger.warn("Error reading database Json", e);
-        } catch (JsonSyntaxException e) {
-            logger.warn("Error reading database Json", e);
+        } catch (JsonIOException | JsonSyntaxException e) {
+            logger.warn("Error parsing database Json", e);
         } catch (IOException e) {
             logger.warn("Error reading database file", e);
         } catch (Exception e) {
@@ -427,6 +404,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (basicChannel.getType().toLowerCase()) {
                 case "number":
                     updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
+                    break;
+                case "dimmer":
+                    updateState(basicChannel.getChannel(), new PercentType(val.getAsBigDecimal()));
                     break;
                 case "string":
                     updateState(basicChannel.getChannel(), new StringType(val.getAsString()));

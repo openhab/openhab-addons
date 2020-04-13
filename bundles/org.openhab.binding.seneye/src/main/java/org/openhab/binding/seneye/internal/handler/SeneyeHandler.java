@@ -54,7 +54,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (seneyeService == null || seneyeService.isInitialized() == false) {
+        if (seneyeService == null || !seneyeService.isInitialized()) {
             return;
         }
 
@@ -145,7 +145,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         }
 
         // ok, initialization succeeded
-        cachedSeneyeDeviceReading = new ExpiringCache<SeneyeDeviceReading>(TimeUnit.SECONDS.toMillis(10), () -> {
+        cachedSeneyeDeviceReading = new ExpiringCache<>(TimeUnit.SECONDS.toMillis(10), () -> {
             return seneyeService.getDeviceReadings();
         });
 

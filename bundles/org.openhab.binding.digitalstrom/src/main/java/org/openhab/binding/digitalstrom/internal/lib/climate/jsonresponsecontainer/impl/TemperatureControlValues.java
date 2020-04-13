@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.climate.constants.OperationModes;
@@ -31,7 +32,7 @@ import com.google.gson.JsonObject;
  */
 public class TemperatureControlValues extends BaseZoneIdentifier {
 
-    private HashMap<OperationModes, Float> temperatureControlValues;
+    private Map<OperationModes, Float> temperatureControlValues;
     private String controlDSUID;
     private Boolean isConfigured;
 
@@ -69,7 +70,7 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
             if (jObject.get(JSONApiResponseKeysEnum.CONTROL_DSUID.getKey()) != null) {
                 this.controlDSUID = jObject.get(JSONApiResponseKeysEnum.CONTROL_DSUID.getKey()).getAsString();
             }
-            temperatureControlValues = new HashMap<OperationModes, Float>(OperationModes.values().length);
+            temperatureControlValues = new HashMap<>(OperationModes.values().length);
             for (OperationModes opMode : OperationModes.values()) {
                 if (jObject.get(opMode.getKey()) != null) {
                     temperatureControlValues.put(opMode, jObject.get(opMode.getKey()).getAsFloat());
@@ -114,11 +115,11 @@ public class TemperatureControlValues extends BaseZoneIdentifier {
     }
 
     /**
-     * Returns a {@link HashMap} that maps the available operation modes to the set values.
+     * Returns a {@link Map} that maps the available operation modes to the set values.
      *
-     * @return HashMap with operation modes and their values
+     * @return Map with operation modes and their values
      */
-    public HashMap<OperationModes, Float> getTemperatureControlValues() {
+    public Map<OperationModes, Float> getTemperatureControlValues() {
         return temperatureControlValues;
     }
 

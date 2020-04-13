@@ -74,7 +74,7 @@ public class ShellyDeviceProfile {
     public Boolean isSensor = false; // true for HT & Smoke
     public Boolean isSmoke = false; // true for Smoke
 
-    public Map<String, String> irCodes = new HashMap<String, String>(); // Sense: list of stored IR codes
+    public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
 
     public Boolean supportsButtonUrls = false; // true if the btn_xxx urls are supported
     public Boolean supportsOutUrls = false; // true if the out_xxx urls are supported

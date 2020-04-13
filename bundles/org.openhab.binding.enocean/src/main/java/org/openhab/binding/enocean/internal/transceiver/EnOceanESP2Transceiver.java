@@ -52,13 +52,11 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
 
     @Override
     protected void processMessage(byte firstByte) {
-
         byte[] readingBuffer = new byte[ENOCEAN_MAX_DATA];
         int bytesRead = -1;
         byte _byte;
 
         try {
-
             readingBuffer[0] = firstByte;
 
             bytesRead = this.inputStream.read(readingBuffer, 1, inputStream.available());

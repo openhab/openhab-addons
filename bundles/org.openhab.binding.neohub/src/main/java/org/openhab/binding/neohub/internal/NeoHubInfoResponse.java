@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
@@ -28,29 +29,30 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Refactoring for openHAB v2.x
  * 
  */
-class NeoHubInfoResponse {
+public class NeoHubInfoResponse {
 
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(NeohubBool.class, new NeohubBoolDeserializer()).create();
 
     @SerializedName("devices")
     private List<DeviceInfo> deviceInfos;
 
     static class StatMode {
         @SerializedName("MANUAL_OFF")
-        private Boolean manualOff;
+        private NeohubBool manualOff;
         @SerializedName("MANUAL_ON")
-        private Boolean manualOn;
+        private NeohubBool manualOn;
 
         private Boolean stateManualOn() {
-            return (manualOn != null && manualOn);
+            return (manualOn == null ? false : manualOn.value);
         }
 
         private Boolean stateManualOff() {
-            return (manualOff != null && manualOff);
+            return (manualOff == null ? false : manualOff.value);
         }
     }
 
-    static class DeviceInfo {
+    public static class DeviceInfo {
 
         @SerializedName("device")
         private String deviceName;
@@ -61,28 +63,28 @@ class NeoHubInfoResponse {
         @SerializedName("CURRENT_FLOOR_TEMPERATURE")
         private BigDecimal currentFloorTemperature;
         @SerializedName("AWAY")
-        private Boolean away;
+        private NeohubBool away;
         @SerializedName("HOLIDAY")
-        private Boolean holiday;
+        private NeohubBool holiday;
         @SerializedName("HOLIDAY_DAYS")
         private BigDecimal holidayDays;
         @SerializedName("STANDBY")
-        private Boolean standby;
+        private NeohubBool standby;
         @SerializedName("HEATING")
-        private Boolean heating;
+        private NeohubBool heating;
         @SerializedName("PREHEAT")
-        private Boolean preHeat;
+        private NeohubBool preHeat;
         @SerializedName("TIMER")
-        private Boolean timerOn;
+        private NeohubBool timerOn;
         @SerializedName("DEVICE_TYPE")
         private BigDecimal deviceType;
         @SerializedName("OFFLINE")
-        private Boolean offline;
+        private NeohubBool offline;
         @SerializedName("STAT_MODE")
         private StatMode statMode = new StatMode();
 
-        protected Boolean safeBoolean(Boolean value) {
-            return (value != null && value);
+        protected Boolean safeBoolean(NeohubBool value) {
+            return (value == null ? false : value.value);
         }
 
         protected BigDecimal safeBigDecimal(BigDecimal value) {
@@ -163,7 +165,7 @@ class NeoHubInfoResponse {
      * @throws JsonSyntaxException
      * 
      */
-    static @Nullable NeoHubInfoResponse createInfoResponse(String response) throws JsonSyntaxException {
+    public static @Nullable NeoHubInfoResponse createInfoResponse(String response) throws JsonSyntaxException {
         return GSON.fromJson(response, NeoHubInfoResponse.class);
     }
 

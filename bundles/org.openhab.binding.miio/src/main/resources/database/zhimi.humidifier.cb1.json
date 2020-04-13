@@ -20,7 +20,7 @@
 			},
 			{
 				"property": "mode",
-				"friendlyName": "Mode",
+				"friendlyName": "Humidifier Mode",
 				"channel": "humidifierMode",
 				"type": "String",
 				"refresh": true,

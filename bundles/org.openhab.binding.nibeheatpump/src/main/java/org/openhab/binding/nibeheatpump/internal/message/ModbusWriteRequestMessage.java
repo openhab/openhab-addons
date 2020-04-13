@@ -68,7 +68,6 @@ public class ModbusWriteRequestMessage extends NibeHeatPumpBaseMessage {
     }
 
     private byte[] createModbus40WritePdu(int coildAddress, int value) {
-
         byte[] data = new byte[10];
 
         data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_TO_NIBE;

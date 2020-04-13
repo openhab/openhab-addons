@@ -46,7 +46,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
 
-    private Set<String> pendingUpdates = new HashSet<String>();
+    private Set<String> pendingUpdates = new HashSet<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
