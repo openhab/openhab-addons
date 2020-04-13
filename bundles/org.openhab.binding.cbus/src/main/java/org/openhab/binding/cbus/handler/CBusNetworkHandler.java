@@ -61,7 +61,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initialize --");
+        logger.debug("initialize ");
         configuration = getConfigAs(CBusNetworkConfiguration.class);
         logger.debug("Using configuration {}", configuration);
         CBusCGateHandler bridgeHandler = getCBusCGateHandler();
@@ -185,7 +185,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 ScheduledFuture<?> initNetwork = this.initNetwork;
                 if (initNetwork != null) {
                     initNetwork.cancel(false);
-                    initNetwork = null;
+                    this.initNetwork = null;
                 }
             } else {
                 ThingStatus lastStatus = getThing().getStatus();
@@ -211,7 +211,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "CGate connection offline");
             } else if (network == null) {
                 logger.debug("No network - set configuration error");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No Network object available");
             } else if (network.isOnline()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {

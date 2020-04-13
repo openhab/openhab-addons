@@ -81,7 +81,8 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         groupId = Integer.parseInt(properties.get(CBusBindingConstants.PROPERTY_GROUP_ID));
         cBusNetworkHandler = getCBusNetworkHandler();
         if (cBusNetworkHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "No CBusNetworkHandler Bridge available");
             return;
         }
         updateStatus();
@@ -101,7 +102,8 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                 }
                 if (group == null) {
                     logger.debug("Set state to configuration error -no group");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "No Group object available");
                 } else if (group.getNetwork().isOnline()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {

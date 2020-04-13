@@ -268,8 +268,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             } catch (CGateException e) {
                 logger.warn("Cannot close CGate session", e);
             }
-        } else
+        } else {
             logger.debug("no session or it is disconnected");
+        }
         super.dispose();
     }
 
