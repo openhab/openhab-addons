@@ -13,33 +13,89 @@
 		<description>This represents the main indoor module capable of reporting temperature,humidity,pressure,air quality and sound level</description>
 
 		<channels>
-			<channel id="Co2" typeId="co2"/>
+			<channel id="Co2" typeId="co2" />
+			<channel id="MinCo2" typeId="minCo2" />
+			<channel id="MinCo2ThisWeek" typeId="minCo2ThisWeek" />
+			<channel id="MinCo2ThisMonth" typeId="minCo2ThisMonth" />
+			<channel id="MaxCo2" typeId="maxCo2" />
+			<channel id="MaxCo2ThisWeek" typeId="maxCo2ThisWeek" />
+			<channel id="MaxCo2ThisMonth" typeId="maxCo2ThisMonth" />
+			<channel id="DateMinCo2" typeId="dateMinCo2" />
+			<channel id="DateMinCo2ThisWeek" typeId="dateMinCo2ThisWeek" />
+			<channel id="DateMinCo2ThisMonth" typeId="dateMinCo2ThisMonth" />
+			<channel id="DateMaxCo2" typeId="dateMaxCo2" />
+			<channel id="DateMaxCo2ThisWeek" typeId="dateMaxCo2ThisWeek" />
+			<channel id="DateMaxCo2ThisMonth" typeId="dateMaxCo2ThisMonth" />
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Noise" typeId="noise" />
+			<channel id="MinNoise" typeId="minNoise" />
+			<channel id="MinNoiseThisWeek" typeId="minNoiseThisWeek" />
+			<channel id="MinNoiseThisMonth" typeId="minNoiseThisMonth" />
+			<channel id="MaxNoise" typeId="maxNoise" />
+			<channel id="MaxNoiseThisWeek" typeId="maxNoiseThisWeek" />
+			<channel id="MaxNoiseThisMonth" typeId="maxNoiseThisMonth" />
+			<channel id="DateMinNoise" typeId="dateMinNoise" />
+			<channel id="DateMinNoiseThisWeek" typeId="dateMinNoiseThisWeek" />
+			<channel id="DateMinNoiseThisMonth" typeId="dateMinNoiseThisMonth" />
+			<channel id="DateMaxNoise" typeId="dateMaxNoise" />
+			<channel id="DateMaxNoiseThisWeek" typeId="dateMaxNoiseThisWeek" />
+			<channel id="DateMaxNoiseThisMonth" typeId="dateMaxNoiseThisMonth" />
 			<channel id="Pressure" typeId="pressure" />
+			<channel id="MinPressure" typeId="minPressure" />
+			<channel id="MinPressureThisWeek" typeId="minPressureThisWeek" />
+			<channel id="MinPressureThisMonth" typeId="minPressureThisMonth" />
+			<channel id="MaxPressure" typeId="maxPressure" />
+			<channel id="MaxPressureThisWeek" typeId="maxPressureThisWeek" />
+			<channel id="MaxPressureThisMonth" typeId="maxPressureThisMonth" />
+			<channel id="DateMinPressure" typeId="dateMinPressure" />
+			<channel id="DateMinPressureThisWeek" typeId="dateMinPressureThisWeek" />
+			<channel id="DateMinPressureThisMonth" typeId="dateMinPressureThisMonth" />
+			<channel id="DateMaxPressure" typeId="dateMaxPressure" />
+			<channel id="DateMaxPressureThisWeek" typeId="dateMaxPressureThisWeek" />
+			<channel id="DateMaxPressureThisMonth" typeId="dateMaxPressureThisMonth" />
 			<channel id="PressTrend" typeId="pressureTrend" />
 			<channel id="AbsolutePressure" typeId="absolutePressure" />
 			<channel id="Humidity" typeId="humidity" />
+			<channel id="MinHumidity" typeId="minHumidity" />
+			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
+			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
+			<channel id="MaxHumidity" typeId="maxHumidity" />
+			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
+			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
+			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
+			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
+			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
+			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
+			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
+			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
 			<channel id="DewpointDepression" typeId="dewPointDepression" />
 			<channel id="MinTemp" typeId="minTemp" />
+			<channel id="MinTempThisWeek" typeId="minTempThisWeek" />
+			<channel id="MinTempThisMonth" typeId="minTempThisMonth" />
 			<channel id="MaxTemp" typeId="maxTemp" />
+			<channel id="MaxTempThisWeek" typeId="maxTempThisWeek" />
+			<channel id="MaxTempThisMonth" typeId="maxTempThisMonth" />
 			<channel id="DateMinTemp" typeId="dateMinTemp" />
+			<channel id="DateMinTempThisWeek" typeId="dateMinTempThisWeek" />
+			<channel id="DateMinTempThisMonth" typeId="dateMinTempThisMonth" />
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
-			<!--  Common to all devices -->
+			<channel id="DateMaxTempThisWeek" typeId="dateMaxTempThisWeek" />
+			<channel id="DateMaxTempThisMonth" typeId="dateMaxTempThisMonth" />
+			<!-- Common to all devices -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastStatusStore" typeId="lastStatusStore" />
 			<channel id="WifiStatus" typeId="system.signal-strength" />
-			<channel id="Location" typeId="location" />	 
+			<channel id="Location" typeId="location" />
 		</channels>
 
 		<properties>
 			<property name="signalLevels">86,71,56</property>
 			<property name="refreshPeriod">auto</property>
-		</properties>		 
+		</properties>
 
 		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:station" />
@@ -57,15 +113,35 @@
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Humidity" typeId="humidity" />
+			<channel id="MinHumidity" typeId="minHumidity" />
+			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
+			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
+			<channel id="MaxHumidity" typeId="maxHumidity" />
+			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
+			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
+			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
+			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
+			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
+			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
+			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
+			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
 			<channel id="DewpointDepression" typeId="dewPointDepression" />
 			<channel id="MinTemp" typeId="minTemp" />
+			<channel id="MinTempThisWeek" typeId="minTempThisWeek" />
+			<channel id="MinTempThisMonth" typeId="minTempThisMonth" />
 			<channel id="MaxTemp" typeId="maxTemp" />
+			<channel id="MaxTempThisWeek" typeId="maxTempThisWeek" />
+			<channel id="MaxTempThisMonth" typeId="maxTempThisMonth" />
 			<channel id="DateMinTemp" typeId="dateMinTemp" />
+			<channel id="DateMinTempThisWeek" typeId="dateMinTempThisWeek" />
+			<channel id="DateMinTempThisMonth" typeId="dateMinTempThisMonth" />
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
-			<!--  Common to all modules -->
+			<channel id="DateMaxTempThisWeek" typeId="dateMaxTempThisWeek" />
+			<channel id="DateMaxTempThisMonth" typeId="dateMaxTempThisMonth" />
+			<!-- Common to all modules -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
@@ -76,7 +152,7 @@
 		<properties>
 			<property name="signalLevels">90,80,70,60</property>
 			<property name="batteryLevels">3600,4500,6000</property>
-		</properties> 
+		</properties>
 
 		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
@@ -95,9 +171,9 @@
 			<channel id="WindStrength" typeId="WindStrength" />
 			<channel id="MaxWindStrength" typeId="MaxWindStrength" />
 			<channel id="DateMaxWindStrength" typeId="DateMaxWindStrength" />
-			<channel id="GustAngle" typeId="GustAngle" />	  
+			<channel id="GustAngle" typeId="GustAngle" />
 			<channel id="GustStrength" typeId="GustStrength" />
-			<!--  Common to all modules -->
+			<!-- Common to all modules -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
@@ -108,7 +184,7 @@
 		<properties>
 			<property name="signalLevels">90,80,70,60</property>
 			<property name="batteryLevels">3950,4770,6000</property>
-		</properties>		 
+		</properties>
 
 		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
@@ -123,10 +199,12 @@
 		<description>This represents the Rain Gauge capable of measuring precipitation</description>
 
 		<channels>
-			<channel id="Rain" typeId="rain"/> 
-			<channel id="SumRain1" typeId="rain1"/> 
-			<channel id="SumRain24" typeId="rain24"/> 
-			<!--  Common to all modules -->
+			<channel id="Rain" typeId="rain" />
+			<channel id="SumRain1" typeId="rain1" />
+			<channel id="SumRain24" typeId="rain24" />
+			<channel id="SumRainThisWeek" typeId="rainThisWeek" />
+			<channel id="SumRainThisMonth" typeId="rainThisMonth" />
+			<!-- Common to all modules -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />
@@ -137,7 +215,7 @@
 		<properties>
 			<property name="signalLevels">90,80,70,60</property>
 			<property name="batteryLevels">3600,4500,6000</property>
-		</properties>		   
+		</properties>
 
 		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:netatmo:module" />
@@ -152,19 +230,51 @@
 		<description>This represents an additional indoor module capable of reporting temperature, humidity and CO2 level</description>
 
 		<channels>
-			<channel id="Co2" typeId="co2"/>
+			<channel id="Co2" typeId="co2" />
+			<channel id="MinCo2" typeId="minCo2" />
+			<channel id="MinCo2ThisWeek" typeId="minCo2ThisWeek" />
+			<channel id="MinCo2ThisMonth" typeId="minCo2ThisMonth" />
+			<channel id="MaxCo2" typeId="maxCo2" />
+			<channel id="MaxCo2ThisWeek" typeId="maxCo2ThisWeek" />
+			<channel id="MaxCo2ThisMonth" typeId="maxCo2ThisMonth" />
+			<channel id="DateMinCo2" typeId="dateMinCo2" />
+			<channel id="DateMinCo2ThisWeek" typeId="dateMinCo2ThisWeek" />
+			<channel id="DateMinCo2ThisMonth" typeId="dateMinCo2ThisMonth" />
+			<channel id="DateMaxCo2" typeId="dateMaxCo2" />
+			<channel id="DateMaxCo2ThisWeek" typeId="dateMaxCo2ThisWeek" />
+			<channel id="DateMaxCo2ThisMonth" typeId="dateMaxCo2ThisMonth" />
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="TempTrend" typeId="temperatureTrend" />
 			<channel id="Humidity" typeId="humidity" />
+			<channel id="MinHumidity" typeId="minHumidity" />
+			<channel id="MinHumidityThisWeek" typeId="minHumidityThisWeek" />
+			<channel id="MinHumidityThisMonth" typeId="minHumidityThisMonth" />
+			<channel id="MaxHumidity" typeId="maxHumidity" />
+			<channel id="MaxHumidityThisWeek" typeId="maxHumidityThisWeek" />
+			<channel id="MaxHumidityThisMonth" typeId="maxHumidityThisMonth" />
+			<channel id="DateMinHumidity" typeId="dateMinHumidity" />
+			<channel id="DateMinHumidityThisWeek" typeId="dateMinHumidityThisWeek" />
+			<channel id="DateMinHumidityThisMonth" typeId="dateMinHumidityThisMonth" />
+			<channel id="DateMaxHumidity" typeId="dateMaxHumidity" />
+			<channel id="DateMaxHumidityThisWeek" typeId="dateMaxHumidityThisWeek" />
+			<channel id="DateMaxHumidityThisMonth" typeId="dateMaxHumidityThisMonth" />
 			<channel id="Humidex" typeId="humidex" />
 			<channel id="HeatIndex" typeId="heatIndex" />
 			<channel id="Dewpoint" typeId="dewPoint" />
 			<channel id="DewpointDepression" typeId="dewPointDepression" />
 			<channel id="MinTemp" typeId="minTemp" />
+			<channel id="MinTempThisWeek" typeId="minTempThisWeek" />
+			<channel id="MinTempThisMonth" typeId="minTempThisMonth" />
 			<channel id="MaxTemp" typeId="maxTemp" />
+			<channel id="MaxTempThisWeek" typeId="maxTempThisWeek" />
+			<channel id="MaxTempThisMonth" typeId="maxTempThisMonth" />
 			<channel id="DateMinTemp" typeId="dateMinTemp" />
+			<channel id="DateMinTempThisWeek" typeId="dateMinTempThisWeek" />
+			<channel id="DateMinTempThisMonth" typeId="dateMinTempThisMonth" />
 			<channel id="DateMaxTemp" typeId="dateMaxTemp" />
-			<!--  Common to all modules -->
+			<channel id="DateMaxTempThisWeek" typeId="dateMaxTempThisWeek" />
+			<channel id="DateMaxTempThisMonth" typeId="dateMaxTempThisMonth" />
+			<!-- Common to all modules -->
 			<channel id="TimeStamp" typeId="timeUtc" />
 			<channel id="LastMessage" typeId="lastMessage" />
 			<channel id="LowBattery" typeId="system.low-battery" />

@@ -25,6 +25,8 @@ import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent.EventTy
  * across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
+ *
  */
 @NonNullByDefault
 public class NetatmoBindingConstants {
@@ -40,6 +42,37 @@ public class NetatmoBindingConstants {
     public static final String SETPOINT_DEFAULT_DURATION = "setpointDefaultDuration";
 
     public static final String WEBHOOK_APP = "app_security";
+
+    // Scale for Weather Station /getmeasure
+    public static final String THIRTY_MINUTES = "30min";
+    public static final String ONE_HOUR = "1hour";
+    public static final String THREE_HOURS = "3hours";
+    public static final String ONE_DAY = "1day";
+    public static final String ONE_WEEK = "1week";
+    public static final String ONE_MONTH = "1month";
+
+    // Type for Weather Station /getmeasure
+    public static final String DATE_MIN_CO2 = "date_min_co2";
+    public static final String DATE_MAX_CO2 = "date_max_co2";
+    public static final String DATE_MIN_HUM = "date_min_hum";
+    public static final String DATE_MAX_HUM = "date_max_hum";
+    public static final String DATE_MIN_NOISE = "date_min_noise";
+    public static final String DATE_MAX_NOISE = "date_max_noise";
+    public static final String DATE_MIN_PRESSURE = "date_min_pressure";
+    public static final String DATE_MAX_PRESSURE = "date_max_pressure";
+    public static final String DATE_MIN_TEMP = "date_min_temp";
+    public static final String DATE_MAX_TEMP = "date_max_temp";
+    public static final String MIN_CO2 = "min_co2";
+    public static final String MAX_CO2 = "max_co2";
+    public static final String MIN_HUM = "min_hum";
+    public static final String MAX_HUM = "max_hum";
+    public static final String MIN_NOISE = "min_noise";
+    public static final String MAX_NOISE = "max_noise";
+    public static final String MIN_PRESSURE = "min_pressure";
+    public static final String MAX_PRESSURE = "max_pressure";
+    public static final String MIN_TEMP = "min_temp";
+    public static final String MAX_TEMP = "max_temp";
+    public static final String SUM_RAIN = "sum_rain";
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "netatmoapi");
@@ -67,6 +100,12 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "Temperature";
     public static final String CHANNEL_TEMP_TREND = "TempTrend";
     public static final String CHANNEL_HUMIDITY = "Humidity";
+    public static final String CHANNEL_MAX_HUMIDITY = "MaxHumidity";
+    public static final String CHANNEL_MAX_HUMIDITY_THIS_WEEK = "MaxHumidityThisWeek";
+    public static final String CHANNEL_MAX_HUMIDITY_THIS_MONTH = "MaxHumidityThisMonth";
+    public static final String CHANNEL_MIN_HUMIDITY = "MinHumidity";
+    public static final String CHANNEL_MIN_HUMIDITY_THIS_WEEK = "MinHumidityThisWeek";
+    public static final String CHANNEL_MIN_HUMIDITY_THIS_MONTH = "MinHumidityThisMonth";
     public static final String CHANNEL_HUMIDEX = "Humidex";
     public static final String CHANNEL_TIMEUTC = "TimeStamp";
     public static final String CHANNEL_DEWPOINT = "Dewpoint";
@@ -75,18 +114,70 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LAST_STATUS_STORE = "LastStatusStore";
     public static final String CHANNEL_LAST_MESSAGE = "LastMessage";
     public static final String CHANNEL_LOCATION = "Location";
+    public static final String CHANNEL_DATE_MAX_CO2 = "DateMaxCo2";
+    public static final String CHANNEL_DATE_MAX_CO2_THIS_WEEK = "DateMaxCo2ThisWeek";
+    public static final String CHANNEL_DATE_MAX_CO2_THIS_MONTH = "DateMaxCo2ThisMonth";
+    public static final String CHANNEL_DATE_MIN_CO2 = "DateMinCo2";
+    public static final String CHANNEL_DATE_MIN_CO2_THIS_WEEK = "DateMinCo2ThisWeek";
+    public static final String CHANNEL_DATE_MIN_CO2_THIS_MONTH = "DateMinCo2ThisMonth";
+    public static final String CHANNEL_DATE_MAX_HUMIDITY = "DateMaxHumidity";
+    public static final String CHANNEL_DATE_MAX_HUMIDITY_THIS_WEEK = "DateMaxHumidityThisWeek";
+    public static final String CHANNEL_DATE_MAX_HUMIDITY_THIS_MONTH = "DateMaxHumidityThisMonth";
+    public static final String CHANNEL_DATE_MIN_HUMIDITY = "DateMinHumidity";
+    public static final String CHANNEL_DATE_MIN_HUMIDITY_THIS_WEEK = "DateMinHumidityThisWeek";
+    public static final String CHANNEL_DATE_MIN_HUMIDITY_THIS_MONTH = "DateMinHumidityThisMonth";
+    public static final String CHANNEL_DATE_MAX_NOISE = "DateMaxNoise";
+    public static final String CHANNEL_DATE_MAX_NOISE_THIS_WEEK = "DateMaxNoiseThisWeek";
+    public static final String CHANNEL_DATE_MAX_NOISE_THIS_MONTH = "DateMaxNoiseThisMonth";
+    public static final String CHANNEL_DATE_MIN_NOISE = "DateMinNoise";
+    public static final String CHANNEL_DATE_MIN_NOISE_THIS_WEEK = "DateMinNoiseThisWeek";
+    public static final String CHANNEL_DATE_MIN_NOISE_THIS_MONTH = "DateMinNoiseThisMonth";
+    public static final String CHANNEL_DATE_MAX_PRESSURE = "DateMaxPressure";
+    public static final String CHANNEL_DATE_MAX_PRESSURE_THIS_WEEK = "DateMaxPressureThisWeek";
+    public static final String CHANNEL_DATE_MAX_PRESSURE_THIS_MONTH = "DateMaxPressureThisMonth";
+    public static final String CHANNEL_DATE_MIN_PRESSURE = "DateMinPressure";
+    public static final String CHANNEL_DATE_MIN_PRESSURE_THIS_WEEK = "DateMinPressureThisWeek";
+    public static final String CHANNEL_DATE_MIN_PRESSURE_THIS_MONTH = "DateMinPressureThisMonth";
     public static final String CHANNEL_DATE_MAX_TEMP = "DateMaxTemp";
+    public static final String CHANNEL_DATE_MAX_TEMP_THIS_WEEK = "DateMaxTempThisWeek";
+    public static final String CHANNEL_DATE_MAX_TEMP_THIS_MONTH = "DateMaxTempThisMonth";
     public static final String CHANNEL_DATE_MIN_TEMP = "DateMinTemp";
+    public static final String CHANNEL_DATE_MIN_TEMP_THIS_WEEK = "DateMinTempThisWeek";
+    public static final String CHANNEL_DATE_MIN_TEMP_THIS_MONTH = "DateMinTempThisMonth";
     public static final String CHANNEL_MAX_TEMP = "MaxTemp";
+    public static final String CHANNEL_MAX_TEMP_THIS_WEEK = "MaxTempThisWeek";
+    public static final String CHANNEL_MAX_TEMP_THIS_MONTH = "MaxTempThisMonth";
     public static final String CHANNEL_MIN_TEMP = "MinTemp";
+    public static final String CHANNEL_MIN_TEMP_THIS_WEEK = "MinTempThisWeek";
+    public static final String CHANNEL_MIN_TEMP_THIS_MONTH = "MinTempThisMonth";
     public static final String CHANNEL_ABSOLUTE_PRESSURE = "AbsolutePressure";
     public static final String CHANNEL_CO2 = "Co2";
+    public static final String CHANNEL_MAX_CO2 = "MaxCo2";
+    public static final String CHANNEL_MAX_CO2_THIS_WEEK = "MaxCo2ThisWeek";
+    public static final String CHANNEL_MAX_CO2_THIS_MONTH = "MaxCo2ThisMonth";
+    public static final String CHANNEL_MIN_CO2 = "MinCo2";
+    public static final String CHANNEL_MIN_CO2_THIS_WEEK = "MinCo2ThisWeek";
+    public static final String CHANNEL_MIN_CO2_THIS_MONTH = "MinCo2ThisMonth";
     public static final String CHANNEL_NOISE = "Noise";
+    public static final String CHANNEL_MAX_NOISE = "MaxNoise";
+    public static final String CHANNEL_MAX_NOISE_THIS_WEEK = "MaxNoiseThisWeek";
+    public static final String CHANNEL_MAX_NOISE_THIS_MONTH = "MaxNoiseThisMonth";
+    public static final String CHANNEL_MIN_NOISE = "MinNoise";
+    public static final String CHANNEL_MIN_NOISE_THIS_WEEK = "MinNoiseThisWeek";
+    public static final String CHANNEL_MIN_NOISE_THIS_MONTH = "MinNoiseThisMonth";
     public static final String CHANNEL_PRESSURE = "Pressure";
+    public static final String CHANNEL_MAX_PRESSURE = "MaxPressure";
+    public static final String CHANNEL_MAX_PRESSURE_THIS_WEEK = "MaxPressureThisWeek";
+    public static final String CHANNEL_MAX_PRESSURE_THIS_MONTH = "MaxPressureThisMonth";
+    public static final String CHANNEL_MIN_PRESSURE = "MinPressure";
+    public static final String CHANNEL_MIN_PRESSURE_THIS_WEEK = "MinPressureThisWeek";
+    public static final String CHANNEL_MIN_PRESSURE_THIS_MONTH = "MinPressureThisMonth";
     public static final String CHANNEL_PRESS_TREND = "PressTrend";
     public static final String CHANNEL_RAIN = "Rain";
     public static final String CHANNEL_SUM_RAIN1 = "SumRain1";
     public static final String CHANNEL_SUM_RAIN24 = "SumRain24";
+    public static final String CHANNEL_SUM_RAIN_THIS_WEEK = "SumRainThisWeek";
+    public static final String CHANNEL_SUM_RAIN_THIS_MONTH = "SumRainThisMonth";
     public static final String CHANNEL_WIND_ANGLE = "WindAngle";
     public static final String CHANNEL_WIND_STRENGTH = "WindStrength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "MaxWindStrength";

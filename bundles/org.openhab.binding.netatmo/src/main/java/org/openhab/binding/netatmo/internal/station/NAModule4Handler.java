@@ -15,6 +15,11 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
@@ -28,8 +33,11 @@ import io.swagger.client.model.NAStationModule;
  * indoor module capable of reporting temperature, humidity and CO2 level
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
+ *
  */
 public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
+    private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
     public NAModule4Handler(Thing thing) {
         super(thing);
@@ -38,6 +46,70 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
     @Override
     protected void updateProperties(NAStationModule moduleData) {
         updateProperties(moduleData.getFirmware(), moduleData.getType());
+    }
+
+    @Override
+    public void updateMeasurements() {
+        updateDayMeasurements();
+        updateWeekMeasurements();
+        updateMonthMeasurements();
+    }
+
+    private void updateDayMeasurements() {
+        List<String> channels = new ArrayList<>();
+        List<String> types = new ArrayList<>();
+        addMeasurement(channels, types, CHANNEL_MIN_CO2, MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_MAX_CO2, MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_MIN_HUMIDITY, MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_MAX_HUMIDITY, MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_CO2, DATE_MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_CO2, DATE_MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY, DATE_MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY, DATE_MAX_HUM);
+        if (!channels.isEmpty()) {
+            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_DAY, types, channels, channelMeasurements);
+        }
+    }
+
+    private void updateWeekMeasurements() {
+        List<String> channels = new ArrayList<>();
+        List<String> types = new ArrayList<>();
+        addMeasurement(channels, types, CHANNEL_MIN_CO2_THIS_WEEK, MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_MAX_CO2_THIS_WEEK, MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_MIN_HUMIDITY_THIS_WEEK, MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_MAX_HUMIDITY_THIS_WEEK, MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_MIN_TEMP_THIS_WEEK, MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_MAX_TEMP_THIS_WEEK, MAX_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_CO2_THIS_WEEK, DATE_MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_CO2_THIS_WEEK, DATE_MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY_THIS_WEEK, DATE_MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY_THIS_WEEK, DATE_MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
+        if (!channels.isEmpty()) {
+            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types, channels, channelMeasurements);
+        }
+    }
+
+    private void updateMonthMeasurements() {
+        List<String> channels = new ArrayList<>();
+        List<String> types = new ArrayList<>();
+        addMeasurement(channels, types, CHANNEL_MIN_CO2_THIS_MONTH, MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_MAX_CO2_THIS_MONTH, MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_MIN_HUMIDITY_THIS_MONTH, MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_MAX_HUMIDITY_THIS_MONTH, MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_MIN_TEMP_THIS_MONTH, MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_MAX_TEMP_THIS_MONTH, MAX_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_CO2_THIS_MONTH, DATE_MIN_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_CO2_THIS_MONTH, DATE_MAX_CO2);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY_THIS_MONTH, DATE_MIN_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY_THIS_MONTH, DATE_MAX_HUM);
+        addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
+        addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
+        if (!channels.isEmpty()) {
+            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types, channels,
+                    channelMeasurements);
+        }
     }
 
     @Override
@@ -83,6 +155,46 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
                 }
             }
         }
+
+        switch (channelId) {
+            case CHANNEL_MIN_CO2:
+            case CHANNEL_MIN_CO2_THIS_WEEK:
+            case CHANNEL_MIN_CO2_THIS_MONTH:
+            case CHANNEL_MAX_CO2:
+            case CHANNEL_MAX_CO2_THIS_WEEK:
+            case CHANNEL_MAX_CO2_THIS_MONTH:
+                return toQuantityType(channelMeasurements.get(channelId), API_CO2_UNIT);
+            case CHANNEL_MIN_HUMIDITY:
+            case CHANNEL_MIN_HUMIDITY_THIS_WEEK:
+            case CHANNEL_MIN_HUMIDITY_THIS_MONTH:
+            case CHANNEL_MAX_HUMIDITY:
+            case CHANNEL_MAX_HUMIDITY_THIS_WEEK:
+            case CHANNEL_MAX_HUMIDITY_THIS_MONTH:
+                return toQuantityType(channelMeasurements.get(channelId), API_HUMIDITY_UNIT);
+            case CHANNEL_MIN_TEMP_THIS_WEEK:
+            case CHANNEL_MIN_TEMP_THIS_MONTH:
+            case CHANNEL_MAX_TEMP_THIS_WEEK:
+            case CHANNEL_MAX_TEMP_THIS_MONTH:
+                return toQuantityType(channelMeasurements.get(channelId), API_TEMPERATURE_UNIT);
+            case CHANNEL_DATE_MIN_CO2:
+            case CHANNEL_DATE_MIN_CO2_THIS_WEEK:
+            case CHANNEL_DATE_MIN_CO2_THIS_MONTH:
+            case CHANNEL_DATE_MAX_CO2:
+            case CHANNEL_DATE_MAX_CO2_THIS_WEEK:
+            case CHANNEL_DATE_MAX_CO2_THIS_MONTH:
+            case CHANNEL_DATE_MIN_HUMIDITY:
+            case CHANNEL_DATE_MIN_HUMIDITY_THIS_WEEK:
+            case CHANNEL_DATE_MIN_HUMIDITY_THIS_MONTH:
+            case CHANNEL_DATE_MAX_HUMIDITY:
+            case CHANNEL_DATE_MAX_HUMIDITY_THIS_WEEK:
+            case CHANNEL_DATE_MAX_HUMIDITY_THIS_MONTH:
+            case CHANNEL_DATE_MIN_TEMP_THIS_WEEK:
+            case CHANNEL_DATE_MIN_TEMP_THIS_MONTH:
+            case CHANNEL_DATE_MAX_TEMP_THIS_WEEK:
+            case CHANNEL_DATE_MAX_TEMP_THIS_MONTH:
+                return toDateTimeType(channelMeasurements.get(channelId));
+        }
+
         return super.getNAThingProperty(channelId);
     }
 }

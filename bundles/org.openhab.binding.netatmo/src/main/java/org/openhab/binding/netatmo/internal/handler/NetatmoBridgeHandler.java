@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.squareup.okhttp.OkHttpClient;
 
 import io.swagger.client.ApiClient;
+import io.swagger.client.CollectionFormats.CSVParams;
 import io.swagger.client.api.HealthyhomecoachApi;
 import io.swagger.client.api.PartnerApi;
 import io.swagger.client.api.StationApi;
@@ -54,6 +56,7 @@ import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.auth.OAuth;
 import io.swagger.client.auth.OAuthFlow;
 import io.swagger.client.model.NAHealthyHomeCoachDataBody;
+import io.swagger.client.model.NAMeasureBodyElem;
 import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAThermostatDataBody;
 import io.swagger.client.model.NAWelcomeHomeData;
@@ -67,6 +70,7 @@ import retrofit.RetrofitError.Kind;
  * {@link NetatmoBridgeHandler} to request informations about their status
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
 public class NetatmoBridgeHandler extends BaseBridgeHandler {
@@ -255,6 +259,15 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         NAStationDataBody data = getStationApi().getstationsdata(equipmentId).getBody();
         updateStatus(ThingStatus.ONLINE);
         return data;
+    }
+
+    public List<Float> getStationMeasureResponses(String equipmentId, String moduleId, String scale,
+            List<@NonNull String> types) {
+        List<NAMeasureBodyElem> data = getStationApi()
+                .getmeasure(equipmentId, scale, new CSVParams(types), moduleId, null, "last", 1, true, false).getBody();
+        updateStatus(ThingStatus.ONLINE);
+        NAMeasureBodyElem element = data.get(0);
+        return element != null ? element.getValue().get(0) : Collections.emptyList();
     }
 
     public NAHealthyHomeCoachDataBody getHomecoachDataBody(String equipmentId) {
