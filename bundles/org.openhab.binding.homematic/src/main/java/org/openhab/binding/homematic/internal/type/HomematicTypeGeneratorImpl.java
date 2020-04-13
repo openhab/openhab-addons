@@ -42,8 +42,8 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeBuilder;
@@ -291,11 +291,9 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 stateFragment.withOptions(options);
             }
 
-            ChannelKind channelKind = ChannelKind.STATE;
+            ChannelTypeBuilder channelTypeBuilder;
             EventDescription eventDescription = null;
             if (dp.isTrigger()) {
-                itemType = null;
-                channelKind = ChannelKind.TRIGGER;
                 eventDescription = new EventDescription(
                         MetadataUtils.generateOptions(dp, new OptionsBuilder<EventOption>() {
                             @Override
@@ -303,10 +301,14 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                 return new EventOption(value, description);
                             }
                         }));
+                channelTypeBuilder = ChannelTypeBuilder.trigger(channelTypeUID, label)
+                        .withEventDescription(eventDescription);
+            } else {
+                channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                        .withStateDescription(stateFragment.build().toStateDescription());
             }
-            channelType = new ChannelType(channelTypeUID, !MetadataUtils.isStandard(dp), itemType, channelKind, label,
-                    description, category, null, stateFragment.build().toStateDescription(), eventDescription,
-                    configDescriptionUriChannel, null);
+            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).withDescription(description)
+                    .withCategory(category).withConfigDescriptionURI(configDescriptionUriChannel).build();
         }
         return channelType;
     }
