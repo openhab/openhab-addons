@@ -225,8 +225,8 @@ public class SenecHomeHandler extends BaseThingHandler {
 
     protected void updatePowerLimitationStatus(Channel channel, boolean status, int duration) {
         if (this.limitationStatus != null) {
-            if (this.limitationStatus.isState() == status) {
-                long stateSince = new Date().getTime() - this.limitationStatus.getTime();
+            if (this.limitationStatus.state == status) {
+                long stateSince = new Date().getTime() - this.limitationStatus.time;
 
                 if (((int) (stateSince / 1000)) < duration) {
                     // skip updating state (possible flapping state)
@@ -235,14 +235,15 @@ public class SenecHomeHandler extends BaseThingHandler {
                     logger.debug("{} longer than required duration {}", status, duration);
                 }
             } else {
-                this.limitationStatus.setState(status);
-                this.limitationStatus.setTime(new Date().getTime());
+                this.limitationStatus.state = status;
+                this.limitationStatus.time = new Date().getTime();
 
                 // skip updating state (state changed, possible flapping state)
                 return;
             }
         } else {
-            this.limitationStatus = new PowerLimitationStatus(status, new Date().getTime());
+            this.limitationStatus = new PowerLimitationStatus();
+            this.limitationStatus.state = status;
         }
 
         logger.debug("Updating power limitation state {}", status);

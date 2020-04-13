@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.senechome.internal;
 
+import java.util.Date;
+
 /**
  * The {@link PowerLimitationStatus} class is used as a POJO to
  * in-memory persist the last limitation state change.
@@ -21,29 +23,8 @@ package org.openhab.binding.senechome.internal;
  */
 public class PowerLimitationStatus {
 
-    private boolean state = false;
+    public boolean state = false;
 
-    private long time = 0L;
-
-    public PowerLimitationStatus(boolean state, long time) {
-        this.setState(state);
-        this.setTime(time);
-    }
-
-    public boolean isState() {
-        return state;
-    }
-
-    public void setState(boolean state) {
-        this.state = state;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
-    }
+    public long time = new Date().getTime();
 
 }
