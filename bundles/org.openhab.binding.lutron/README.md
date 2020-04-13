@@ -52,7 +52,7 @@ Discovered repeaters/processors will be accessed using the default integration c
 These can be changed in the bridge thing configuration.
 Discovered keypad devices should now have their model parameters automatically set to the correct value.
 
-Caseta Smart Bridge PRO 2 hubs should now be discovered automatically via mDNS.
+Caseta Smart Bridge PRO 2 hubs and RA2 Select main repeaters should now be discovered automatically via mDNS.
 Devices attached to them still need to be configured manually.
 
 Other supported Lutron systems must be configured manually.
