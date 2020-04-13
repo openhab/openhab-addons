@@ -102,9 +102,6 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
         }
     }
 
-    public void updateMeasurements() {
-    }
-
     protected void invalidateParentCacheAndRefresh() {
         setRefreshRequired(true);
         // Leave a bit of time to Netatmo Server to get in sync with new values sent
