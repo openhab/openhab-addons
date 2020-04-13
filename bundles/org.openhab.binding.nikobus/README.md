@@ -229,7 +229,7 @@ In addition to the status requests triggered by button presses, there is also a 
 
 ### Rules
 
-When a Thing has been created for a button it is also possible to trigger a rule when the physical button is pressed. In the below example the rule is triggered when the Button Event Channel `nikobus:push-button:b6e47184:button` fires. An `ON` command is then sent to the kitchen light.
+When a Thing has been created for a button it is also possible to trigger a rule when the physical button is pressed. In the example below, the rule is triggered when the Button Event Channel `nikobus:push-button:b6e47184:button` fires. An `ON` command is then sent to the kitchen light.
 
 ```
 rule "LivingRoomActivateKitchenLight"
