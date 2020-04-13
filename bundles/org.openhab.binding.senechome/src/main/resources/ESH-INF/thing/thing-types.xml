@@ -52,7 +52,7 @@
 
 	<channel-type id="powerLimitation">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Power limitation</label>
+		<label>Power Limitation</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
