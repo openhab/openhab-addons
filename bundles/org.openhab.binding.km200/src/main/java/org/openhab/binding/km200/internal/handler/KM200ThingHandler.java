@@ -440,7 +440,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                         state = StateDescriptionFragmentBuilder.create().withPattern("%s").withReadOnly(readOnly)
                                 .build();
                         newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
-                                channelUID, root, CoreItemFactory.NUMBER, null, "Error message", "Text", true, false,
+                                channelUID, root, CoreItemFactory.STRING, null, "Error message", "Text", true, false,
                                 state, unitOfMeasure);
                     }
                     break;
