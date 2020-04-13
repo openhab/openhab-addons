@@ -99,7 +99,6 @@ public class XMLProtocolService {
      */
     public static Collection<InputDto> getInputs(AbstractConnection con, Zone zone)
             throws IOException, ReceivedMessageParseException {
-
         Node inputSelItem = getZoneResponse(con, zone, ZONE_INPUT_QUERY, ZONE_INPUT_PATH);
 
         List<InputDto> inputs = new LinkedList<>();

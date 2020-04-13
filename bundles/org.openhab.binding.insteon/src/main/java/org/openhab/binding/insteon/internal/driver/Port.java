@@ -14,7 +14,7 @@ package org.openhab.binding.insteon.internal.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -102,6 +102,10 @@ public class Port {
         this.mdbb = new ModemDBBuilder(this);
     }
 
+    public boolean isModem(InsteonAddress a) {
+        return modem.getAddress().equals(a);
+    }
+
     public synchronized boolean isModemDBComplete() {
         return (modemDBComplete);
     }
@@ -147,7 +151,7 @@ public class Port {
      */
     public void clearModemDB() {
         logger.debug("clearing modem db!");
-        HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
+        Map<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
         dbes.clear();
         getDriver().unlockModemDBEntries();
     }
@@ -296,21 +300,23 @@ public class Port {
         }
 
         private void processMessages() {
-            try {
-                // must call processData() until we get a null pointer back
-                for (Msg m = msgFactory.processData(); m != null; m = msgFactory.processData()) {
-                    toAllListeners(m);
-                    notifyWriter(m);
-                }
-            } catch (IOException e) {
-                // got bad data from modem,
-                // unblock those waiting for ack
-                logger.warn("bad data received: {}", e.getMessage());
-                synchronized (getRequestReplyLock()) {
-                    if (reply == ReplyType.WAITING_FOR_ACK) {
-                        logger.warn("got bad data back, must assume message was acked.");
-                        reply = ReplyType.GOT_ACK;
-                        getRequestReplyLock().notify();
+            // must call processData() until msgFactory done fully processing buffer
+            while (!msgFactory.isDone()) {
+                try {
+                    Msg msg = msgFactory.processData();
+                    if (msg != null) {
+                        toAllListeners(msg);
+                        notifyWriter(msg);
+                    }
+                } catch (IOException e) {
+                    // got bad data from modem,
+                    // unblock those waiting for ack
+                    synchronized (getRequestReplyLock()) {
+                        if (reply == ReplyType.WAITING_FOR_ACK) {
+                            logger.debug("got bad data back, must assume message was acked.");
+                            reply = ReplyType.GOT_ACK;
+                            getRequestReplyLock().notify();
+                        }
                     }
                 }
             }

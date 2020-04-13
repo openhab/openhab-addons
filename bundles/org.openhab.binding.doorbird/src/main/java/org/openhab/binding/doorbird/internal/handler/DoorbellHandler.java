@@ -434,7 +434,7 @@ public class DoorbellHandler extends BaseThingHandler {
     private void updateMontage(String channelId) {
         logger.debug("Update montage for channel '{}'", channelId);
         ArrayList<BufferedImage> images = getImages(channelId);
-        if (images.size() > 0) {
+        if (!images.isEmpty()) {
             State state = createMontage(images);
             if (state != null) {
                 logger.debug("Got a montage. Updating channel '{}' with image montage", channelId);

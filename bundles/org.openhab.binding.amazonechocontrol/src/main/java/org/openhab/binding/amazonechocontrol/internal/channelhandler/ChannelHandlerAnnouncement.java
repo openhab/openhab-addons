@@ -66,10 +66,10 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                             }
                             Boolean sound = request.sound;
                             if (sound != null) {
-                                if (sound == false && !speak.startsWith("<speak>")) {
+                                if (!sound && !speak.startsWith("<speak>")) {
                                     speak = "<speak>" + StringEscapeUtils.escapeXml(speak) + "</speak>";
                                 }
-                                if (sound == true && speak.startsWith("<speak>")) {
+                                if (sound && speak.startsWith("<speak>")) {
                                     body = "Error: The combination of sound and speak in SSML syntax is not allowed";
                                     title = "Error";
                                     speak = "<speak><lang xml:lang=\"en-UK\">Error: The combination of sound and speak in <prosody rate=\"x-slow\"><say-as interpret-as=\"characters\">SSML</say-as></prosody> syntax is not allowed</lang></speak>";

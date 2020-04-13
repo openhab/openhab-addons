@@ -58,7 +58,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         } else if (zoneStatus == null) {
             updateEvohomeThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Status not found, check the zone id");
-        } else if (handleActiveFaults(zoneStatus) == false) {
+        } else if (!handleActiveFaults(zoneStatus)) {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
 
             updateState(EvohomeBindingConstants.ZONE_TEMPERATURE_CHANNEL,
@@ -72,7 +72,6 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command == RefreshType.REFRESH) {
             update(tcsStatus, zoneStatus);
         } else {

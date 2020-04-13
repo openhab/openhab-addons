@@ -23,14 +23,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Converts a unit from IEC62056-21 protocol to a {@link Unit}
- * 
+ *
  * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class Iec62056_21UnitConversion {
 
-    private final static Logger logger = LoggerFactory.getLogger(Iec62056_21UnitConversion.class);
+    private static final Logger logger = LoggerFactory.getLogger(Iec62056_21UnitConversion.class);
 
     @SuppressWarnings("unchecked")
     public static @Nullable <Q extends Quantity<Q>> Unit<Q> getUnit(String unit) {

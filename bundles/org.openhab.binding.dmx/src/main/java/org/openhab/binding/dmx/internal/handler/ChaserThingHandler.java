@@ -54,8 +54,8 @@ public class ChaserThingHandler extends DmxThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ChaserThingHandler.class);
 
-    private final List<DmxChannel> channels = new ArrayList<DmxChannel>();
-    private List<ValueSet> values = new ArrayList<ValueSet>();
+    private final List<DmxChannel> channels = new ArrayList<>();
+    private List<ValueSet> values = new ArrayList<>();
 
     private boolean resumeAfter = false;
     private OnOffType isRunning = OnOffType.OFF;
@@ -186,7 +186,7 @@ public class ChaserThingHandler extends DmxThingHandler {
 
     @Override
     public void dispose() {
-        if (channels.size() != 0) {
+        if (!channels.isEmpty()) {
             Bridge bridge = getBridge();
             if (bridge != null) {
                 DmxBridgeHandler bridgeHandler = (DmxBridgeHandler) bridge.getHandler();

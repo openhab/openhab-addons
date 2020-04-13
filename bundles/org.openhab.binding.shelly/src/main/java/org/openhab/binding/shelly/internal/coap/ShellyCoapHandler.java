@@ -77,8 +77,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
     private int lastSerial = -1;
     private String lastPayload = "";
-    private Map<String, CoIotDescrBlk> blockMap = new HashMap<String, CoIotDescrBlk>();
-    private Map<String, CoIotDescrSen> sensorMap = new HashMap<String, CoIotDescrSen>();
+    private Map<String, CoIotDescrBlk> blockMap = new HashMap<>();
+    private Map<String, CoIotDescrSen> sensorMap = new HashMap<>();
 
     public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
             @Nullable ShellyCoapServer coapServer) {
@@ -310,7 +310,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private void handleStatusUpdate(String devId, String payload, int serial) throws IOException {
         // payload = StringUtils.substringBefore(payload, "]]}") + "]]}";
         logger.debug("{}: CoIoT Sensor data {}", thingName, payload);
-        if (blockMap.size() == 0) {
+        if (blockMap.isEmpty()) {
             // send discovery packet
             resetSerial();
             reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
@@ -330,7 +330,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Parse Json,
         CoIotGenericSensorList list = gson.fromJson(payload, CoIotGenericSensorList.class);
         Validate.notNull(list, "sensor list must not be empty!");
-        Map<String, State> updates = new HashMap<String, State>();
+        Map<String, State> updates = new HashMap<>();
 
         if (list.generic == null) {
             logger.debug("{}: Sensor list is empty! Payload: {}", devId, payload);
@@ -497,7 +497,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         }
 
-        if (updates.size() > 0) {
+        if (!updates.isEmpty()) {
             logger.debug("{}: Process {} CoIoT channel updates", thingName, updates.size());
             int i = 0;
             for (Map.Entry<String, State> u : updates.entrySet()) {

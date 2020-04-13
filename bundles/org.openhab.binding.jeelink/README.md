@@ -159,14 +159,14 @@ The available init commands depend on the sketch that is running on the USB stic
 A typical thing configuration for PCA301 looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
+Bridge jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
 Thing jeelink:pca301:1-160-236 "ec3k 1" (jeelink:jeelinkUsb:pca301)  @ "home" [ sensorId="1-160-236"]
 ```
 
 A typical thing configuration for EC3000 looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
+Bridge jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
 Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="0E3D"]
 Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="14E7"]
 ```
@@ -174,7 +174,7 @@ Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId=
 A typical Thing configuration for lacrosse looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
+Bridge jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
 Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="16", minTemp=10, maxTemp=32]
 Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="18", minTemp=10, maxTemp=32]
 ```
@@ -182,7 +182,7 @@ Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse
 A typical thing configuration for Revolt looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:revolt "Jeelink revolt" @ "home" [ serialPort="COM4" ]
+Bridge jeelink:jeelinkUsb:revolt "Jeelink revolt" @ "home" [ serialPort="COM4" ]
 Thing jeelink:revolt:4F1B "revolt 1" (jeelink:jeelinkUsb:revolt)  @ "home" [ sensorId="4F1B"]
 ```
 

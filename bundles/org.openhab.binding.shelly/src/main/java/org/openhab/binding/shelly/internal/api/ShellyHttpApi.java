@@ -310,7 +310,7 @@ public class ShellyHttpApi {
         String json = "{\"key_codes\" : [" + keyList + "] }";
 
         ShellySendKeyList codes = gson.fromJson(json, ShellySendKeyList.class);
-        Map<String, String> list = new HashMap<String, String>();
+        Map<String, String> list = new HashMap<>();
         for (ShellySenseKeyCode key : codes.keyCodes) {
             list.put(key.id, key.name);
         }
@@ -478,8 +478,7 @@ public class ShellyHttpApi {
                 timeoutErrors++;
                 retry = true;
             } else {
-                throw new IOException(
-                        thingName + ": Shelly API call failed (" + type + "), uri=" + uri);
+                throw new IOException(thingName + ": Shelly API call failed (" + type + "), uri=" + uri);
             }
         }
         if (retry && !profile.hasBattery) {
@@ -492,11 +491,9 @@ public class ShellyHttpApi {
                 String type = StringUtils.substringAfterLast(e.getCause().toString(), ".");
                 if (e.getMessage().contains("Timeout") || type.toLowerCase().contains("timeout")
                         || e.getMessage().contains("Connection reset")) {
-                    throw new IOException(
-                            thingName + ": Shelly API timeout (" + type + "), uri=" + uri);
+                    throw new IOException(thingName + ": Shelly API timeout (" + type + "), uri=" + uri);
                 } else {
-                    throw new IOException(
-                            thingName + ": Shelly API call failed: " + type + ", uri=" + uri);
+                    throw new IOException(thingName + ": Shelly API call failed: " + type + ", uri=" + uri);
                 }
             }
         }

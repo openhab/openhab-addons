@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public abstract class SinopeAnswer extends SinopeRequest {
 
     /** The Constant logger. */
-    final static private Logger logger = LoggerFactory.getLogger(SinopeAnswer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SinopeAnswer.class);
 
     /**
      * Instantiates a new sinope answer.
@@ -39,7 +39,6 @@ public abstract class SinopeAnswer extends SinopeRequest {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public SinopeAnswer(InputStream r) throws IOException {
-        ;
         byte[] header = new byte[SinopeFrame.PREAMBLE_SIZE + SinopeFrame.FRAME_CTL_SIZE + SinopeFrame.SIZE_SIZE];
 
         r.read(header, 0, header.length);
@@ -105,7 +104,6 @@ public abstract class SinopeAnswer extends SinopeRequest {
         int headerSize = SinopeFrame.PREAMBLE_SIZE + SinopeFrame.FRAME_CTL_SIZE + SinopeFrame.COMMAND_SIZE
                 + SinopeFrame.SIZE_SIZE;
         return Arrays.copyOfRange(b, headerSize, b.length - SinopeFrame.CRC_SIZE);
-
     }
 
     /**

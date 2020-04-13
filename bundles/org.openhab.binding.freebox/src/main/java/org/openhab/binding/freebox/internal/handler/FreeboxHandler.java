@@ -140,7 +140,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
 
         // Update the discovery configuration
-        Map<String, Object> configDiscovery = new HashMap<String, Object>();
+        Map<String, Object> configDiscovery = new HashMap<>();
         configDiscovery.put(FreeboxServerConfiguration.DISCOVER_PHONE, configuration.discoverPhone);
         configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
         configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);

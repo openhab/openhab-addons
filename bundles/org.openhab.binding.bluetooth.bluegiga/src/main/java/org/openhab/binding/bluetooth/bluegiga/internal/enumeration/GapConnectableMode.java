@@ -64,7 +64,7 @@ public enum GapConnectableMode {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, GapConnectableMode>();
+        codeMapping = new HashMap<>();
         for (GapConnectableMode s : values()) {
             codeMapping.put(s.key, s);
         }

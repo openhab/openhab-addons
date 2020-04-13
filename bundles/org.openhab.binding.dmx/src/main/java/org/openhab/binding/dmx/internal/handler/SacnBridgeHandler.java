@@ -73,7 +73,7 @@ public class SacnBridgeHandler extends DmxOverEthernetHandler {
                 }
             }
         } else {
-            receiverNodes = new ArrayList<IpNode>();
+            receiverNodes = new ArrayList<>();
             receiverNodes.add(SacnNode.getBroadcastNode(universe.getUniverseId()));
             logger.debug("using multicast mode to {} for {}", receiverNodes, this.thing.getUID());
         }

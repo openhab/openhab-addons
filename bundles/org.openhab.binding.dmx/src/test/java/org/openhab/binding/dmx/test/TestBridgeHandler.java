@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
  */
 
 public class TestBridgeHandler extends DmxBridgeHandler {
-    public final static ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "test-bridge");
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TEST_BRIDGE);
+    public static final ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "test-bridge");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TEST_BRIDGE);
     public static final int MIN_UNIVERSE_ID = 0;
     public static final int MAX_UNIVERSE_ID = 0;
 
@@ -83,7 +83,6 @@ public class TestBridgeHandler extends DmxBridgeHandler {
      * calc buffer for timestamp after timespam
      *
      * @param time UNIX timestamp of calculation time
-     *
      * @return new timestamp
      */
     public long calcBuffer(long time, long timespan) {

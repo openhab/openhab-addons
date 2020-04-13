@@ -375,7 +375,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                     int num2 = val / 10 % 10;
                     int num1 = val % 10;
 
-                    List<KeyCode> commands = new ArrayList<KeyCode>();
+                    List<KeyCode> commands = new ArrayList<>();
 
                     if (num4 > 0) {
                         commands.add(KeyCode.valueOf("KEY_" + num4));

@@ -14,18 +14,14 @@ package org.openhab.binding.sinope.internal.core.base;
 
 import org.openhab.binding.sinope.internal.util.ByteUtil;
 import org.openhab.binding.sinope.internal.util.CRC8;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class SinopeFrame.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 abstract class SinopeFrame {
 
-    /** The Constant logger. */
-    final static Logger logger = LoggerFactory.getLogger(SinopeFrame.class);
     /** The Constant PREAMBLE. */
     protected static final byte PREAMBLE = 0x55;
 
@@ -48,17 +44,10 @@ abstract class SinopeFrame {
     protected static final byte COMMAND_SIZE = 2;
 
     /** The crc 8. */
-    final private CRC8 crc8 = new CRC8();
+    private final CRC8 crc8 = new CRC8();
 
     /** The internal payload. */
     protected byte[] internal_payload;
-
-    /**
-     * Instantiates a new sinope frame.
-     */
-    public SinopeFrame() {
-
-    }
 
     /**
      * Gets the command.

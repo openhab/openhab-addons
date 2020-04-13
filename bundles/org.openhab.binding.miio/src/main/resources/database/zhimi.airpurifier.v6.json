@@ -2,7 +2,6 @@
 	"deviceMapping": {
 		"id": [
 			"zhimi.airpurifier.v6",
-			"zhimi.airpurifier.v7",
 			"zhimi.airpurifier.ma2"
 		],
 		"channels": [

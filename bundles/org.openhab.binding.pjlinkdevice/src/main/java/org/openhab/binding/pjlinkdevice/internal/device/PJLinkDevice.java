@@ -24,6 +24,7 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,8 +78,7 @@ public class PJLinkDevice {
     private final Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
     private String prefixForNextCommand = "";
     private @Nullable Instant socketCreatedOn;
-    private CachedCommand<LampStatesResponse> cachedLampHoursCommand = new CachedCommand<LampStatesResponse>(
-            new LampStatesCommand(this));
+    private CachedCommand<LampStatesResponse> cachedLampHoursCommand = new CachedCommand<>(new LampStatesCommand(this));
 
     public PJLinkDevice(int tcpPort, InetAddress ipAddress, @Nullable String adminPassword, int timeout) {
         this.tcpPort = tcpPort;
@@ -231,10 +231,12 @@ public class PJLinkDevice {
             logger.debug("Got empty string response for request '{}' from {}, waiting for another line", response,
                     fullCommand.replaceAll("\r", "\\\\r"));
         }
-        logger.debug("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
-                ipAddress.toString());
         if (response == null) {
             throw new ResponseException("Response to request '" + fullCommand.replaceAll("\r", "\\\\r") + "' was null");
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got response '{}' ({}) for request '{}' from {}", response,
+                    Arrays.toString(response.getBytes()), fullCommand.replaceAll("\r", "\\\\r"), ipAddress);
         }
         return response;
     }

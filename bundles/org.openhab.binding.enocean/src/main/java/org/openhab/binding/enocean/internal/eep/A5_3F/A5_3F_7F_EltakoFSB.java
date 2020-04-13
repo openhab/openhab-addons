@@ -51,7 +51,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         int shutTime = 0xFF;
         if (config != null) {
             shutTime = Math.min(255, config.as(EnOceanChannelRollershutterConfig.class).shutTime);

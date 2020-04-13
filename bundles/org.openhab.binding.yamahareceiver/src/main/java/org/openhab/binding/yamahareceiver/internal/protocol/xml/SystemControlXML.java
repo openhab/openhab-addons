@@ -65,7 +65,6 @@ public class SystemControlXML implements SystemControl {
 
     public SystemControlXML(AbstractConnection xml, SystemControlStateListener observer,
             DeviceInformationState deviceInformationState) {
-
         this.comReference = new WeakReference<>(xml);
         this.observer = observer;
         this.descriptorXML = DeviceDescriptorXML.getAttached(deviceInformationState);

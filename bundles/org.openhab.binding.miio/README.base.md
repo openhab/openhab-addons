@@ -16,28 +16,6 @@ The following things types are available:
 | miio:basic       | For several basic devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
 | miio:unsupported | For experimenting with other devices which use the Mi IO protocol                                                        |
 
-## Mi IO Devices
-
-!!!devices
-
-# Advanced: Unsupported devices
-
-Newer devices may not yet be supported.
-However, many devices share large similarties with existing devices.
-The binding allows to try/test if your new device is working with database files of older devices as well.
-For this, first remove your unsupported thing. Manually add a miio:basic thing. 
-Besides the regular configuration (like ip address, token) the modelId needs to be provided.
-Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
-
-# Advanced: adding local database files to support new devices
-
-Things using the basic handler (miio:basic things) are driven by json 'database' files.
-This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The config/misc/miio (e.g. in Linux `/opt/openhab2/config/misc/miio/`) is scanned for database files and will be used for your devices. 
-Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
-For format, please check the current database files in Openhab github.
-
 # Discovery
 
 The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
@@ -49,6 +27,13 @@ Accept only one of the 2 discovery results, the alternate one can further be ign
 ## Tokens
 
 The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
+The binding can retrieve the needed tokens from the Xiaomi cloud. 
+Go to the binding config page and enter your cloud username and password. 
+The server(s) to which your devices are connected need to be entered as well. 
+Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
+
+## Tokens without cloud access
+
 Some devices provide the token upon discovery. This may depends on the firmware version.
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
 
@@ -64,7 +49,7 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required.
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
 
 ## Thing Configuration
 
@@ -82,10 +67,31 @@ However, for devices that are unsupported, you may override the value and try to
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
 | timeout         | integer | false    | Timeout time in milliseconds                                      |
 
-
 ### Example Thing file
 
 `Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx" ]` 
+
+## Mi IO Devices
+
+!!!devices
+
+# Advanced: Unsupported devices
+
+Newer devices may not yet be supported.
+However, many devices share large similarities with existing devices.
+The binding allows to try/test if your new device is working with database files of older devices as well.
+For this, first remove your unsupported thing. Manually add a miio:basic thing. 
+Besides the regular configuration (like ip address, token) the modelId needs to be provided.
+Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
+Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
+
+# Advanced: adding local database files to support new devices
+
+Things using the basic handler (miio:basic things) are driven by json 'database' files.
+This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
+The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
+For format, please check the current database files in Openhab github.
 
 ## Channels
 
@@ -116,6 +122,7 @@ Group  gVacStat "Status Details"           <status> (gVac)
 Group  gVacCons "Consumables Usage"        <line-increase> (gVac)
 Group  gVacDND  "Do Not Disturb Settings"  <moon> (gVac)
 Group  gVacHist "Cleaning History"         <calendar> (gVac)
+Group  gVacLast "Last Cleaning Details"       <calendar> (gVac)
 
 String actionControl  "Vacuum Control"          {channel="miio:vacuum:034F0E45:actions#control" }
 String actionCommand  "Vacuum Command"          {channel="miio:vacuum:034F0E45:actions#commands" }
@@ -141,7 +148,18 @@ String dndEnd   "DND End Time [%s]"   <clock-on>  (gVacDND) {channel="miio:vacuu
 Number historyArea    "Total Cleaned Area [%1.0fm²]" <zoom>    (gVacHist) {channel="miio:vacuum:034F0E45:history#total_clean_area"}
 String historyTime    "Total Clean Time [%s]"   <clock>     (gVacHist) {channel="miio:vacuum:034F0E45:history#total_clean_time"}
 Number historyCount    "Total # Cleanings [%1.0f]"  <office>  (gVacHist) {channel="miio:vacuum:034F0E45:history#total_clean_count"}
+
+String lastStart   "Last Cleaning Start time [%s]" <clock> (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_start_time"}
+String lastEnd     "Last Cleaning End time [%s]" <clock> (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_end_time"}
+Number lastArea    "Last Cleaned Area [%1.0fm²]" <zoom>    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_area"}
+Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_duration"}
+Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_error" }
+Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_finish" }
+
+
+Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
+Note: cleaning map is only available with cloud access.
 
 !!!itemFileExamples

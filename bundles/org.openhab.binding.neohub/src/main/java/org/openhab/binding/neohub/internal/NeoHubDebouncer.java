@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.neohub.internal;
 
-import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
+import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.DEBOUNCE_DELAY;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class NeoHubDebouncer {
 
-    private final Map<String, DebounceDelay> channels = new HashMap<String, DebounceDelay>();
+    private final Map<String, DebounceDelay> channels = new HashMap<>();
 
     static class DebounceDelay {
 

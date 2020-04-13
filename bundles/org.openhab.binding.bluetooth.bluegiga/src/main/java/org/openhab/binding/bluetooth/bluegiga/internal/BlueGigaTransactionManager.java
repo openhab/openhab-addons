@@ -65,7 +65,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
      */
     private final Set<BlueGigaEventListener> eventListeners = new CopyOnWriteArraySet<>();
 
-    private final Queue<BlueGigaUniqueCommand> sendQueue = new LinkedList<BlueGigaUniqueCommand>();
+    private final Queue<BlueGigaUniqueCommand> sendQueue = new LinkedList<>();
     private final ScheduledExecutorService executor;
     private final BlueGigaSerialHandler serialHandler;
 

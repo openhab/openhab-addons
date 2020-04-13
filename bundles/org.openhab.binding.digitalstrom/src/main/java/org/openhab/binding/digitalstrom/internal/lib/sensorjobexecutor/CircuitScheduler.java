@@ -43,7 +43,7 @@ public class CircuitScheduler {
 
     private final DSID meterDSID;
     private long nextExecutionTime = System.currentTimeMillis();
-    private final PriorityQueue<SensorJob> sensorJobQueue = new PriorityQueue<SensorJob>(10, new SensorJobComparator());
+    private final PriorityQueue<SensorJob> sensorJobQueue = new PriorityQueue<>(10, new SensorJobComparator());
     private final Config config;
 
     /**

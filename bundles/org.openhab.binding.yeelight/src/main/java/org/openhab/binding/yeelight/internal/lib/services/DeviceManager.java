@@ -14,13 +14,26 @@ package org.openhab.binding.yeelight.internal.lib.services;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.yeelight.internal.lib.device.*;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceWithAmbientLight;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceWithNightlight;
 import org.openhab.binding.yeelight.internal.lib.enums.DeviceAction;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
 import org.slf4j.Logger;
@@ -110,7 +123,6 @@ public class DeviceManager {
 
                 executorService.execute(() -> {
                     try (MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT)) {
-
                         multiSocket.setSoTimeout(TIMEOUT);
                         multiSocket.setNetworkInterface(networkInterface);
                         multiSocket.joinGroup(multicastAddress);

@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SelfTestReport {
-    final public String address;
-    final public boolean reachable;
-    final public boolean isOurs;
+    public final String address;
+    public final boolean reachable;
+    public final boolean isOurs;
 
     SelfTestReport(String address, boolean testReport, boolean isOurs) {
         this.address = address;
