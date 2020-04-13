@@ -33,6 +33,9 @@ public class CoronaStatsBindingConstants {
     public static final String CHANNEL_REFRESHED = "refreshed";
 
     // Country
+    public static final ThingTypeUID THING_TYPE_WORLD = new ThingTypeUID(BINDING_ID, "world");
+
+    // Country
     public static final ThingTypeUID THING_TYPE_COUNTRY = new ThingTypeUID(BINDING_ID, "country");
 
     // Properties country
@@ -46,5 +49,6 @@ public class CoronaStatsBindingConstants {
     public static final String CHANNEL_RECOVERED = "recovered";
     public static final String CHANNEL_ACTIVE = "active";
     public static final String CHANNEL_CRITICAL = "critical";
-    public static final String CHANNEL_TESTS = "test";
+    public static final String CHANNEL_TESTS = "tests";
+    public static final String CHANNEL_UPDATED = "updated";
 }

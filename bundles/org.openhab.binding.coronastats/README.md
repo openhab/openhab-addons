@@ -1,56 +1,134 @@
 # CoronaStats Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding provides the statistic about cases of COVID-19 from the website https://corona-stats.online/.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+This binding supports a `bridge` thing, which polls the dataset in an adjustable interval. 
+The `world` thing provides the statistics for the whole world.
+The `country` thing, representing the statistics for a specified country.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+### Bridge
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| Property  | Default | Required | Description                                                                              |
+| --------- | :-----: | :------: | ---------------------------------------------------------------------------------------- |
+| `refresh` |   30    |    no    | Define the interval for polling the data from website in minutes. Minimum is 15 minutes. |
+
+### World
+
+There is no configuration needed.
+
+### Country
+
+| Property      | Default | Required | Description                                       |
+| ------------- | :-----: | :------: | ------------------------------------------------- |
+| `countryCode` |    -    |   yes    | 2-letter code for the country you want to display |
+
+For the correct 2-letter country Code have a look at the website https://corona-stats.online/
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### Bridge
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| channel     | type     | description                                |
+| ----------- | -------- | ------------------------------------------ |
+| `refreshed` | DateTime | Hold the time of the bridge's last refresh |
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+### World and Country
+
+| channels       | type                 | description                                  |
+| -------------- | -------------------- | -------------------------------------------- |
+| `cases`        | Number:Dimensionless | Total cases                                  |
+| `today_cases`  | Number:Dimensionless | Increase of total cases today                |
+| `deaths`       | Number:Dimensionless | Deaths                                       |
+| `today_deaths` | Number:Dimensionless | Increase of deaths                           |
+| `recovered`    | Number:Dimensionless | Recovered cases                              |
+| `active`       | Number:Dimensionless | Active cases                                 |
+| `critical`     | Number:Dimensionless | Critical cases                               |
+| `tests`        | Number:Dimensionless | Count of reported tests (country thing only) |
+| `updated`      | Number:Dimensionless | Data last update time (country thing only)   |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### Things
 
-## Any custom content here!
+```
+Bridge coronastats:bridge:stats "Corona Stats Bridge" @ "Corona" [refresh=15] {
+    Thing world all "Corona Stats World" @ "Corona"
+    Thing country usa "Corona Stats USA" @ "Corona" [countryCode="US"]
+    Thing country germany "Corona Stats Germany" @ "Corona" [countryCode="DE"]
+    Thing country austria "Corona Stats Austria" @ "Corona" [countryCode="AT"]
+    Thing country italy "Corona Stats Italy" @ "Corona" [countryCode="IT"]
+    Thing country spain "Corona Stats Spain" @ "Corona" [countryCode="ES"]
+    Thing country uk "Corona Stats United Kingdom" @ "Corona" [countryCode="GB"]
+}
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### Items
+
+```
+Number:Dimensionless coronaCasesWorld "Total Cases World [%,d]"
+    {channel="coronastats:world:stats:all:cases"}
+
+Number:Dimensionless coronaDeathsWorld "Deaths World [%,d]"
+    {channel="coronastats:world:stats:all:deaths"}
+
+Number:Dimensionless coronaRecoveredWorld "Recovered Cases World [%,d]"
+    {channel="coronastats:world:stats:all:recovered"}
+
+Number:Dimensionless coronaActiveWorld "Active Cases World [%,d]"
+    {channel="coronastats:world:stats:all:active"}
+
+Number:Dimensionless coronaCriticalWorld "Critical Cases World [%,d]"
+    {channel="coronastats:world:stats:all:critical"}
+
+Number:Dimensionless coronaCasesUSA "Total Cases USA [%,d]"
+    {channel="coronastats:country:stats:usa:cases"}
+
+Number:Dimensionless coronaDeathsUSA "Deaths USA [%,d]"
+    {channel="coronastats:country:stats:usa:deaths"}
+
+Number:Dimensionless coronaRecoveredUSA "Recovered Cases USA [%,d]"
+    {channel="coronastats:country:stats:usa:recovered"}
+
+Number:Dimensionless coronaActiveUSA "Active Cases USA [%,d]"
+    {channel="coronastats:country:stats:usa:active"}
+
+Number:Dimensionless coronaCriticalUSA "Critical Cases USA [%,d]"
+    {channel="coronastats:country:stats:usa:critical"}
+
+Number:Dimensionless coronaTestsUSA "Tests USA [%d]"
+    {channel="coronastats:country:stats:usa:cases"}
+
+DateTime coronaUpdatedUSA "Updated USA [%1$tA, %1$td.%1$tm.%1$tY %1$tH:%1$tM]"
+    {channel="coronastats:country:stats:usa:updated"}
+```
+
+### Sitemap
+
+```
+Text label="Corona" {
+    Frame label="World" {
+        Text item=coronaCasesWorld
+        Text item=coronaActiveWorld
+        Text item=coronaRecoveredWorld
+        Text item=coronaDeathsWorld
+        Text item=coronaCriticalWorld
+        Text item=coronaTestUSA
+    }
+
+    Frame label="USA" {
+        Text item=coronaCasesUSA
+        Text item=coronaActiveUSA
+        Text item=coronaRecoveredUSA
+        Text item=coronaDeathsUSA
+        Text item=coronaCriticalUSA
+        Text item=coronaTestsUSA
+        Text item=coronaUpdatedUSA
+    }
+}
+
+```

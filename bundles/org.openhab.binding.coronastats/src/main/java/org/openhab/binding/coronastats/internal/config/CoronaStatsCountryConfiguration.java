@@ -21,7 +21,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CoronaStatsCountryConfiguration {
-    public String countryCode = "";
+    private String countryCode = "";
+
+    public String getCountryCode() {
+        return countryCode.toUpperCase();
+    }
 
     public boolean isValid() {
         return !"".equals(countryCode);

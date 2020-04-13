@@ -13,16 +13,9 @@
 package org.openhab.binding.coronastats.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.coronastats.internal.config.CoronaStatsCountryConfiguration;
 import org.openhab.binding.coronastats.internal.dto.CoronaStats;
 import org.openhab.binding.coronastats.internal.dto.CoronaStatsCountry;
@@ -35,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
-public class CoronaStatsCountryHandler extends BaseThingHandler {
+public class CoronaStatsCountryHandler extends CoronaStatsThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CoronaStatsCountryHandler.class);
 
@@ -48,7 +41,7 @@ public class CoronaStatsCountryHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         thingConfig = getConfigAs(CoronaStatsCountryConfiguration.class);
-        logger.debug("Initializing Corona Stats country handler for country code {}", thingConfig.countryCode);
+        logger.debug("Initializing Corona Stats country handler for country code {}", thingConfig.getCountryCode());
 
         if (thingConfig.isValid()) {
             CoronaStatsBridgeHandler handler = getBridgeHandler();
@@ -62,42 +55,14 @@ public class CoronaStatsCountryHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized @Nullable CoronaStatsBridgeHandler getBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof CoronaStatsBridgeHandler) {
-                return (CoronaStatsBridgeHandler) handler;
-            }
-        }
-
-        return null;
-    }
-
     @Override
     public void dispose() {
         logger.debug("CoronaStats country handler disposes.");
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            refresh();
-        }
-    }
-
-    private void refresh() {
-        CoronaStatsBridgeHandler handler = getBridgeHandler();
-        if (handler != null) {
-            CoronaStats coronaStats = handler.getCoronaStats();
-            if (coronaStats != null) {
-                notifyOnUpdate(coronaStats);
-            }
-        }
-    }
-
     public void notifyOnUpdate(CoronaStats coronaStats) {
-        CoronaStatsCountry country = coronaStats.getCountry(thingConfig.countryCode);
+        CoronaStatsCountry country = coronaStats.getCountry(thingConfig.getCountryCode());
         if (country == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Country not found");
             return;

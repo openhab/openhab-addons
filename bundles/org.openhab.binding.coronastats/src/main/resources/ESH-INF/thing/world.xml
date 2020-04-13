@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="country">
+	<thing-type id="world">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		
-		<label>Corona Stats Online - Country</label>
-		<description>Corona stats for a specific country</description>
+		<label>Corona Stats Online - World</label>
+		<description>Corona stats for whole world</description>
 
 		<channels>
 			<channel id="cases" typeId="count">
@@ -34,21 +34,6 @@
 			<channel id="critical" typeId="count">
 				<label>Critical</label>
 			</channel>
-			<channel id="tests" typeId="count">
-				<label>Tests</label>
-			</channel>
-			<channel id="updated" typeId="updated"/>
 		</channels>
-		
-		<properties>
-			<property name="country"/>
-		</properties>
-		
-		<config-description>
-			<parameter name="countryCode" type="text" required="true">
-				<label>Country Code</label>
-				<description>2-letter Country Code</description>
-			</parameter>
-		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

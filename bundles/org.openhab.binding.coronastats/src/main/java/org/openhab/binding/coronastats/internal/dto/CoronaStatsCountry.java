@@ -14,12 +14,15 @@ package org.openhab.binding.coronastats.internal.dto;
 
 import static org.openhab.binding.coronastats.internal.CoronaStatsBindingConstants.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 
@@ -29,28 +32,18 @@ import org.eclipse.smarthome.core.types.UnDefType;
  * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
-public class CoronaStatsCountry {
-    public String country = "";
+public class CoronaStatsCountry extends CoronaStatsCases {
+    private String country = "";
 
-    public String countryCode = "";
+    private String countryCode = "";
 
-    public int cases = -1;
+    private int tests = -1;
 
-    public int todayCases = -1;
+    private long updated = -1;
 
-    public int deaths = -1;
-
-    public int todayDeaths = -1;
-
-    public int recovered = -1;
-
-    public int active = -1;
-
-    public int critical = -1;
-
-    public int tests = -1;
-
-    public long updated = -1;
+    public String getCountryCode() {
+        return countryCode;
+    }
 
     public Map<String, String> getProperties() {
         Map<String, String> map = new HashMap<>();
@@ -59,28 +52,18 @@ public class CoronaStatsCountry {
     }
 
     public Map<String, State> getChannelsStateMap() {
-        Map<String, State> map = new HashMap<>();
+        Map<String, State> map = super.getCaseChannelsStateMap();
 
-        map.put(CHANNEL_CASES, parseToState(cases));
-        map.put(CHANNEL_NEW_CASES, parseToState(todayCases));
-        map.put(CHANNEL_DEATHS, parseToState(deaths));
-        map.put(CHANNEL_NEW_DEATHS, parseToState(todayDeaths));
-        map.put(CHANNEL_RECOVERED, parseToState(recovered));
-        map.put(CHANNEL_ACTIVE, parseToState(active));
-        map.put(CHANNEL_CRITICAL, parseToState(critical));
+        map.put(CHANNEL_TESTS, parseToState(tests));
 
-        if (!"World".equals(countryCode)) {
-            map.put(CHANNEL_TESTS, parseToState(cases));
+        if (updated == -1) {
+            map.put(CHANNEL_UPDATED, UnDefType.NULL);
+        } else {
+            Date date = new Date(updated);
+            ZonedDateTime zoned = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            map.put(CHANNEL_UPDATED, new DateTimeType(zoned));
         }
 
         return Collections.unmodifiableMap(map);
-    }
-
-    private State parseToState(int count) {
-        if (count == -1) {
-            return UnDefType.NULL;
-        } else {
-            return new DecimalType(count);
-        }
     }
 }

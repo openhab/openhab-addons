@@ -61,7 +61,7 @@ public class CoronaStatsBridgeHandler extends BaseBridgeHandler {
     private CoronaStatsBridgeConfiguration bridgeConfig = new CoronaStatsBridgeConfiguration();
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable CoronaStats coronaStats;
-    private final Set<CoronaStatsCountryHandler> listeners = ConcurrentHashMap.newKeySet();
+    private final Set<CoronaStatsThingHandler> listeners = ConcurrentHashMap.newKeySet();
     private final HttpClient client;
     private final Gson gson = new Gson();
 
@@ -90,7 +90,7 @@ public class CoronaStatsBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Refresh interval has to be at least 30 minutes.");
+                    "Refresh interval has to be at least 15 minutes.");
         }
     }
 
@@ -171,9 +171,9 @@ public class CoronaStatsBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler) {
+        if (childHandler instanceof CoronaStatsThingHandler) {
             logger.debug("Register thing listener.");
-            final CoronaStatsCountryHandler listener = (CoronaStatsCountryHandler) childHandler;
+            final CoronaStatsThingHandler listener = (CoronaStatsThingHandler) childHandler;
             if (listeners.add(listener)) {
                 final CoronaStats localCoronaStats = coronaStats;
                 if (localCoronaStats != null) {
@@ -188,9 +188,9 @@ public class CoronaStatsBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler) {
+        if (childHandler instanceof CoronaStatsThingHandler) {
             logger.debug("Unregister thing listener.");
-            if (!listeners.remove((CoronaStatsCountryHandler) childHandler)) {
+            if (!listeners.remove((CoronaStatsThingHandler) childHandler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

@@ -42,7 +42,7 @@ public class CoronaStats {
     private @Nullable Set<CoronaStatsCountry> countries;
 
     @SerializedName("worldStats")
-    private @Nullable CoronaStatsCountry world;
+    private @Nullable CoronaStatsWorld world;
 
     public Map<String, State> getChannelsStateMap() {
         Map<String, State> map = new HashMap<>();
@@ -57,12 +57,16 @@ public class CoronaStats {
         final Set<CoronaStatsCountry> localCountries = countries;
         if (localCountries != null) {
             for (CoronaStatsCountry country : localCountries) {
-                if (country.countryCode.equals(countryCodeKey)) {
+                if (country.getCountryCode().equals(countryCodeKey)) {
                     return country;
                 }
             }
         }
 
         return null;
+    }
+
+    public @Nullable CoronaStatsWorld getWorld() {
+        return world;
     }
 }

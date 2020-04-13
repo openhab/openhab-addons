@@ -24,6 +24,6 @@ public class CoronaStatsBridgeConfiguration {
     public int refresh = 30;
 
     public boolean isValid() {
-        return refresh >= 30;
+        return refresh >= 15;
     }
 }
