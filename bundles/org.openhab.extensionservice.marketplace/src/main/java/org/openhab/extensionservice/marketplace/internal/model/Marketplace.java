@@ -12,17 +12,18 @@
  */
 package org.openhab.extensionservice.marketplace.internal.model;
 
-import org.openhab.extensionservice.marketplace.internal.model.Category;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This is the parent object that holds the category of the market.
  *
  * @author Kai Kreuzer - Initial contribution and API
  */
+@NonNullByDefault
 public class Marketplace {
 
     /**
      * The category of the marketplace
      */
-    public Category[] categories;
+    public Category[] categories = new Category[0];
 }
