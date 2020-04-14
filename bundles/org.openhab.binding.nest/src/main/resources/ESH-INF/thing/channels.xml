@@ -155,7 +155,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-group-type id="CameraEvent" advanced="true">
+	<channel-group-type id="CameraEvent">
 		<label>Camera Event</label>
 		<description>Information about the camera event</description>
 		<channels>
