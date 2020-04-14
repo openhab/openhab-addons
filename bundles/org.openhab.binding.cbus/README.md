@@ -35,26 +35,26 @@ At startup the binding will scan the network for the values of all the groups an
 
 Light things have 2 channels which show the current state of the group on the cbus network and can also set the state of the group:-
 
-* **Light Channel** - On/Off state of the light
-* **Level Channel** - The level of the channel between 0 and 100
+* **state** - On/Off state of the light
+* **level** - The level of the channel between 0 and 100
 
 ### Temperature
 
 Temperature things have 1 channel which shows the current value. This is read-only and will not set the value on the CBus Network.
 
-* **Temperature** - Temperature value
+* **temp** - Temperature value
 
 ### Trigger
 
 Trigger things have 1 channel which shows the current trigger value on the cbus network and can be used to set a trigger value on the CBus Network.
 
-* **Trigger Channel** - CBus Trigger value
+* **value** - CBus Trigger value
 
 ### Dali
 
 Dali things have 1 channel which shows the current value on the cbus network and can be used to set a value on the CBus Network.
 
-* **DALI Channel** - Value from the DALI node
+* **level** - Value from the DALI node
 
 ## Example
 
