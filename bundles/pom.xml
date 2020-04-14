@@ -143,6 +143,7 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
+    <module>org.openhab.binding.monopriceaudio</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>

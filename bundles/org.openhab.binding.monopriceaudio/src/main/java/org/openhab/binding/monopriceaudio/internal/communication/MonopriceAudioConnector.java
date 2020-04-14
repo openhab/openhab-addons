@@ -1,0 +1,295 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.monopriceaudio.internal.communication;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.monopriceaudio.internal.MonopriceAudioException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Abstract class for communicating with the MonopriceAudio device
+ *
+ * @author Michael Lobstein - Adapted for the MonopriceAudio binding
+ * @author Laurent Garnier - Initial contribution
+ */
+@NonNullByDefault
+public abstract class MonopriceAudioConnector {
+
+    private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
+
+    public static final String READ_ERROR = "Command Error.";
+
+    // Message types
+    public static final String KEY_ZONE_UPDATE = "zone_update";
+    // Special keys used by the binding
+    public static final String KEY_ERROR = "error";
+    public static final String MSG_VALUE_ON = "on";
+
+    /** The output stream */
+    protected @Nullable OutputStream dataOut;
+
+    /** The input stream */
+    protected @Nullable InputStream dataIn;
+
+    /** true if the connection is established, false if not */
+    private boolean connected;
+
+    private @Nullable Thread readerThread;
+
+    private List<MonopriceAudioMessageEventListener> listeners = new ArrayList<>();
+
+    /**
+     * Get whether the connection is established or not
+     *
+     * @return true if the connection is established
+     */
+    public boolean isConnected() {
+        return connected;
+    }
+
+    /**
+     * Set whether the connection is established or not
+     *
+     * @param connected true if the connection is established
+     */
+    protected void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    /**
+     * Set the thread that handles the feedback messages
+     *
+     * @param readerThread the thread
+     */
+    protected void setReaderThread(Thread readerThread) {
+        this.readerThread = readerThread;
+    }
+
+    /**
+     * Open the connection with the MonopriceAudio device
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public abstract void open() throws MonopriceAudioException;
+
+    /**
+     * Close the connection with the MonopriceAudio device
+     */
+    public abstract void close();
+
+    /**
+     * Stop the thread that handles the feedback messages and close the opened input and output streams
+     */
+    protected void cleanup() {
+        Thread readerThread = this.readerThread;
+        if (readerThread != null) {
+            readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
+            this.readerThread = null;
+        }
+        OutputStream dataOut = this.dataOut;
+        if (dataOut != null) {
+            try {
+                dataOut.close();
+            } catch (IOException e) {
+            }
+            this.dataOut = null;
+        }
+        InputStream dataIn = this.dataIn;
+        if (dataIn != null) {
+            try {
+                dataIn.close();
+            } catch (IOException e) {
+            }
+            this.dataIn = null;
+        }
+    }
+
+    /**
+     * Reads some number of bytes from the input stream and stores them into the buffer array b. The number of bytes
+     * actually read is returned as an integer.
+     *
+     * @param dataBuffer the buffer into which the data is read.
+     *
+     * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
+     *         stream has been reached.
+     *
+     * @throws MonopriceAudioException - If the input stream is null, if the first byte cannot be read for any reason
+     *             other than the end of the file, if the input stream has been closed, or if some other I/O error
+     *             occurs.
+     * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
+     */
+    protected int readInput(byte[] dataBuffer) throws MonopriceAudioException, InterruptedIOException {
+        InputStream dataIn = this.dataIn;
+        if (dataIn == null) {
+            throw new MonopriceAudioException("readInput failed: input stream is null");
+        }
+        try {
+            return dataIn.read(dataBuffer);
+        } catch (IOException e) {
+            logger.debug("readInput failed: {}", e.getMessage());
+            throw new MonopriceAudioException("readInput failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get the status of a zone
+     *
+     * @param zone the zone to query for current status
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void queryZone(MonopriceAudioZone zone) throws MonopriceAudioException {
+        sendCommand(zone, MonopriceAudioCommand.QUERY, null);
+    }
+
+    /**
+     * Request the MonopriceAudio controller to execute a command that takes no arguments (ie power on, power off, etc.)
+     *
+     * @param zone the zone for which the command is to be run
+     * @param cmd the command to execute
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd) throws MonopriceAudioException {
+        sendCommand(zone, cmd, null);
+    }
+
+    /**
+     * Request the MonopriceAudio controller to execute a command
+     *
+     * @param zone the zone for which the command is to be run
+     * @param cmd the command to execute
+     * @param value the integer value to consider for volume, bass, treble, etc. adjustment
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value) throws MonopriceAudioException {
+        String messageStr = MonopriceAudioCommand.BEGIN_CMD.getValue() + zone.getZoneId() + cmd.getValue();
+        byte[] message = new byte[0];
+        
+        if (cmd == MonopriceAudioCommand.QUERY) {
+            // query special case - redo messageStr (ie: ? + zoneId)
+            messageStr = cmd.getValue() + zone.getZoneId();
+        } else if (value != null) {
+            //if the command passed a value, append it to the messageStr
+            switch (cmd) {
+                case SOURCE:
+                case VOLUME:
+                case TREBLE:
+                case BASS:
+                case BALANCE:
+                    if (value == 0) {
+                        messageStr += "00";
+                    } else {
+                        messageStr += String.format("%02d", value);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        messageStr += MonopriceAudioCommand.END_CMD.getValue();
+
+        message = messageStr.getBytes(StandardCharsets.US_ASCII);
+        logger.debug("Send command {}", messageStr);      
+
+        OutputStream dataOut = this.dataOut;
+        if (dataOut == null) {
+            throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: output stream is null");
+        }
+        try {
+            dataOut.write(message);
+            dataOut.flush();
+        } catch (IOException e) {
+            logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
+            throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage());
+        }
+        logger.debug("Send command \"{}\" succeeded", messageStr);
+    }
+
+    /**
+     * Add a listener to the list of listeners to be notified with events
+     *
+     * @param listener the listener
+     */
+    public void addEventListener(MonopriceAudioMessageEventListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove a listener from the list of listeners to be notified with events
+     *
+     * @param listener the listener
+     */
+    public void removeEventListener(MonopriceAudioMessageEventListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * Analyze an incoming message and dispatch corresponding (key, value) to the event listeners
+     *
+     * @param incomingMessage the received message
+     */
+    public void handleIncomingMessage(byte[] incomingMessage) {
+        String message = new String(incomingMessage).trim();
+        
+        logger.debug("handleIncomingMessage: {}", message);
+        
+        if (READ_ERROR.equals(message)) {
+            dispatchKeyValue(KEY_ERROR, MSG_VALUE_ON);
+            return;
+        }
+        
+        // Amp controller sends status string: #>1200010000130809100601
+        Pattern p=Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
+        
+        try {
+            Matcher matcher=p.matcher(message);
+            matcher.find();
+            // pull out just the digits and send them as an event
+            dispatchKeyValue(KEY_ZONE_UPDATE, matcher.group(1));
+        } catch (IllegalStateException e){
+            logger.trace("no match on message: {}", message);
+        }
+
+    }
+
+    /**
+     * Dispatch an event (key, value) to the event listeners
+     *
+     * @param key the key
+     * @param value the value
+     */
+    private void dispatchKeyValue(String key, String value) {
+        MonopriceAudioMessageEvent event = new MonopriceAudioMessageEvent(this, key, value);
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onNewMessageEvent(event);
+        }
+    }
+}

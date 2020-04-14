@@ -1,0 +1,127 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.monopriceaudio.internal.communication;
+
+/**
+ * Represents the data elements of a single zone of the Monoprice Whole House Amplifier
+ *
+ * @author Michael Lobstein - Initial contribution
+ */
+public class MonopriceAudioZoneData {
+
+    private String zone;
+    private String page;
+    private String power;
+    private String mute;
+    private String dnd;
+    private String volume;
+    private String treble;
+    private String bass;
+    private String balance;
+    private String source;
+    private String keypad;
+
+    public MonopriceAudioZoneData() {
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
+    }
+
+    public void setPage(String page) {
+        this.page = page;
+    }
+
+    public boolean isPageActive() {
+        return ("01").equals(this.page);
+    }
+
+    public void setPower(String power) {
+        this.power = power;
+    }
+
+    public boolean isPowerOn() {
+        return ("01").equals(this.power);
+    }
+
+    public void setMute(String mute) {
+        this.mute = mute;
+    }
+
+    public boolean isMuted() {
+        return ("01").equals(this.mute);
+    }
+
+    public void setDnd(String dnd) {
+        this.dnd = dnd;
+    }
+    
+    public boolean isDndOn() {
+        return ("01").equals(this.dnd);
+    }
+
+    public Integer getVolume() {
+        return Integer.parseInt(volume);
+    }
+
+    public void setVolume(String volume) {
+        this.volume = volume;
+    }
+
+    public Integer getTreble() {
+        return Integer.parseInt(treble);
+    }
+
+    public void setTreble(String treble) {
+        this.treble = treble;
+    }
+
+    public Integer getBass() {
+        return Integer.parseInt(bass);
+    }
+
+    public void setBass(String bass) {
+        this.bass = bass;
+    }
+
+    public Integer getBalance() {
+        return Integer.parseInt(balance);
+    }
+
+    public void setBalance(String balance) {
+        this.balance = balance;
+    }
+
+    public Integer getSource() {
+        return Integer.parseInt(source);
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setKeypad(String keypad) {
+        this.keypad = keypad;
+    }
+
+    public boolean isKeypadActive() {
+        return ("01").equals(this.keypad);
+    }
+
+    @Override
+    public String toString() {
+        // Re-construct the original status message from the controller
+        // This is used to determine if something changed from the last polling update
+        return zone + page + power + mute + dnd + volume + treble + bass + balance + source + keypad; 
+    }
+}
