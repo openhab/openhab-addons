@@ -22,8 +22,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
@@ -35,7 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
@@ -116,8 +118,8 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         assertThat(upnpIOService, is(notNullValue()));
 
         ChannelTypeProvider channelTypeProvider = mock(ChannelTypeProvider.class);
-        when(channelTypeProvider.getChannelType(any(), any())).thenReturn(new ChannelType(DEFAULT_CHANNEL_TYPE_UID,
-                false, "Switch", ChannelKind.STATE, "label", null, null, null, null, null, null));
+        when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), any(Locale.class))).thenReturn(
+                ChannelTypeBuilder.state(DEFAULT_CHANNEL_TYPE_UID, "label", CoreItemFactory.SWITCH).build());
         registerService(channelTypeProvider);
     }
 
