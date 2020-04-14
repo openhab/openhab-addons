@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
@@ -33,7 +34,8 @@ import org.openhab.binding.sensibo.internal.handler.SensiboSkyHandler;
  * @author Arne Seime - Initial contribution
  */
 @NonNullByDefault
-public class CallbackChannelsTypeProvider implements ChannelTypeProvider, ThingHandlerService {
+public class CallbackChannelsTypeProvider
+        implements ChannelTypeProvider, ChannelGroupTypeProvider, ThingHandlerService {
     private @NonNullByDefault({}) SensiboSkyHandler handler;
 
     @Override
