@@ -524,10 +524,9 @@ Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecre
     // Thing configuration:
     Thing NAMain inside "Netatmo Inside"       [ id="aa:aa:aa:aa:aa:aa" ]
     Thing NAModule1 outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
-    Thing NAModule3 outside "Netatmo Rain"     [ id="cc:cc:cc:cc:cc:cc", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing NAModule3 rain "Netatmo Rain"        [ id="cc:cc:cc:cc:cc:cc", parentId="aa:aa:aa:aa:aa:aa" ]
 }
 ```
-
 
 ## items/netatmo.items
 
@@ -629,7 +628,6 @@ Number:Length        Rain_Week                         "Rain This Week [%.02f %u
 Number:Length        Rain_Month                        "Rain This Month [%.02f %unit%]"                             <rain>             {channel="netatmo:NAModule3:home:rain:SumRainThisMonth"}
 Number               Rain_BatteryVP                    "Rain battery status [%d%%]"                                 <battery>          {channel="netatmo:NAModule3:home:rain:BatteryVP"}
 ```
-
 
 ## sitemaps/netatmo.sitemap
 
