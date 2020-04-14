@@ -76,9 +76,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     /**
      * shared instance of HTTP client for (a)synchronous calls
      */
-    private HttpClient httpClient;
-
-    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    private ScheduledExecutorService executor;
     private final KM200Device remoteDevice;
     private final KM200DataHandler dataHandler;
     private int readDelay;
@@ -86,7 +84,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     public KM200GatewayHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.httpClient = httpClient;
         refreshInterval = 120;
         readDelay = 100;
         updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
@@ -106,7 +103,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        if (!getDevice().getInited() && !isInitialized()) {
+        if (!getDevice().getInited()) {
             logger.debug("Update KM50/100/200 gateway configuration, it takes a minute....");
             getConfiguration();
             if (getDevice().isConfigured()) {
@@ -126,6 +123,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                 logger.debug("Starting send and receive executor");
                 SendKM200Runnable sendRunnable = new SendKM200Runnable(sendMap, getDevice());
                 GetKM200Runnable receivingRunnable = new GetKM200Runnable(sendMap, this, getDevice());
+                executor = Executors.newScheduledThreadPool(2);
                 executor.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval, TimeUnit.SECONDS);
                 executor.scheduleWithFixedDelay(sendRunnable, 60, refreshInterval * 2, TimeUnit.SECONDS);
             }
@@ -136,7 +134,13 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutdown send executor");
         executor.shutdown();
-
+        try {
+            if (!executor.awaitTermination(60000, TimeUnit.SECONDS)) {
+                logger.warn("Services didn't finish in 60000 seconds!");
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
         if (getDevice() != null) {
             synchronized (getDevice()) {
                 getDevice().setInited(false);
@@ -148,6 +152,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                 getDevice().serviceTreeMap.clear();
             }
         }
+        updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override

@@ -114,13 +114,15 @@ public class KM200ThingHandler extends BaseThingHandler {
     /**
      * Choose a tag for a channel
      */
-    Set<String> checkTags(String unitOfMeasure, boolean readOnly) {
+    Set<String> checkTags(String unitOfMeasure, Boolean readOnly) {
         Set<String> tags = new HashSet<>();
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
-            if (readOnly) {
-                tags.add("CurrentTemperature");
-            } else {
-                tags.add("TargetTemperature");
+            if (null != readOnly) {
+                if (readOnly) {
+                    tags.add("CurrentTemperature");
+                } else {
+                    tags.add("TargetTemperature");
+                }
             }
         }
         return tags;
@@ -129,14 +131,16 @@ public class KM200ThingHandler extends BaseThingHandler {
     /**
      * Choose a category for a channel
      */
-    String checkCategory(String unitOfMeasure, String topCategory, boolean readOnly) {
+    String checkCategory(String unitOfMeasure, String topCategory, Boolean readOnly) {
         String category = null;
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
             if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
-                if (readOnly) {
-                    category = "Temperature";
-                } else {
-                    category = "Heating";
+                if (null != readOnly) {
+                    if (readOnly) {
+                        category = "Temperature";
+                    } else {
+                        category = "Heating";
+                    }
                 }
             }
         } else if (unitOfMeasure.indexOf("kW") == 0 || unitOfMeasure.indexOf("kWh") == 0) {

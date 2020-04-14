@@ -48,9 +48,7 @@ public class KM200ErrorServiceHandler {
      */
     void removeAllErrors() {
         synchronized (errorMap) {
-            if (errorMap != null) {
-                errorMap.clear();
-            }
+            errorMap.clear();
         }
     }
 
@@ -106,11 +104,7 @@ public class KM200ErrorServiceHandler {
      */
     public int getActiveError() {
         synchronized (activeError) {
-            if (activeError == null) {
-                return 0;
-            } else {
-                return activeError;
-            }
+            return activeError;
         }
     }
 

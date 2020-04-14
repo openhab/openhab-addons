@@ -39,11 +39,6 @@ public class KM200Device {
     private final KM200Cryption comCryption;
     private final KM200Comm<KM200Device> deviceCommunicator;
 
-    /**
-     * shared instance of HTTP client for asynchronous calls
-     */
-    private HttpClient httpClient;
-
     /* valid IPv4 address of the KMxxx. */
     protected String ip4Address;
 
@@ -75,7 +70,6 @@ public class KM200Device {
     protected boolean isIited;
 
     public KM200Device(HttpClient httpClient) {
-        this.httpClient = httpClient;
         serviceTreeMap = new HashMap<>();
         setBlacklistMap(new ArrayList<>());
         getBlacklistMap().add("/gateway/firmware");
@@ -143,12 +137,20 @@ public class KM200Device {
     }
 
     public void setMD5Salt(String salt) {
-        md5Salt = HexUtils.hexToBytes(salt);
-        comCryption.recreateKeys();
+        if (!salt.isEmpty()) {
+            md5Salt = HexUtils.hexToBytes(salt);
+            comCryption.recreateKeys();
+        } else {
+            md5Salt = new byte[] { 0 };
+        }
     }
 
     public void setCryptKeyPriv(String key) {
-        cryptKeyPriv = HexUtils.hexToBytes(key);
+        if (!key.isEmpty()) {
+            cryptKeyPriv = HexUtils.hexToBytes(key);
+        } else {
+            cryptKeyPriv = new byte[] { 0 };
+        }
     }
 
     public void setCryptKeyPriv(byte[] key) {
