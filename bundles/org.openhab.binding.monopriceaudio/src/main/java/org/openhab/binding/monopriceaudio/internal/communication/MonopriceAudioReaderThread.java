@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 /**
  * A class that reads messages from the MonopriceAudio device in a dedicated thread
  *
- * @author Michael Lobstein - Adapted for the MonopriceAudio binding
  * @author Laurent Garnier - Initial contribution
+ * @author Michael Lobstein - Adapted for the MonopriceAudio binding
  */
 @NonNullByDefault
 public class MonopriceAudioReaderThread extends Thread {

@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract class for communicating with the MonopriceAudio device
  *
- * @author Michael Lobstein - Adapted for the MonopriceAudio binding
  * @author Laurent Garnier - Initial contribution
+ * @author Michael Lobstein - Adapted for the MonopriceAudio binding
  */
 @NonNullByDefault
 public abstract class MonopriceAudioConnector {
