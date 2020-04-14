@@ -19,19 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
 import org.openhab.binding.epsonprojector.internal.enums.Background;
 import org.openhab.binding.epsonprojector.internal.enums.Color;
@@ -41,6 +28,20 @@ import org.openhab.binding.epsonprojector.internal.enums.Luminance;
 import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
 import org.openhab.binding.epsonprojector.internal.enums.Source;
 import org.openhab.binding.epsonprojector.internal.enums.Switch;
+import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +59,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private @Nullable EpsonProjectorDevice device;
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable SerialPortManager serialPortManager;
 
-    public EpsonProjectorHandler(Thing thing) {
+    public EpsonProjectorHandler(Thing thing, @Nullable SerialPortManager serialPortManager) {
         super(thing);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -84,7 +87,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             String serialPort = (config.serialPort != null) ? config.serialPort : "";
             String host = (config.host != null) ? config.host : "";
             if (StringUtils.isNotEmpty(serialPort)) {
-                device = new EpsonProjectorDevice(serialPort);
+                device = new EpsonProjectorDevice(serialPortManager, serialPort);
             } else if (StringUtils.isNotEmpty(host) && config.port > 0) {
                 device = new EpsonProjectorDevice(host, config.port);
             } else {
@@ -411,6 +414,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             }
         } catch (EpsonProjectorException e) {
             logger.warn("Couldn't execute command '{}'", commandType, e);
+            // The OH1 binding used to close the connection on the first error, maybe it's not necessary
             // closeConnection();
         }
     }

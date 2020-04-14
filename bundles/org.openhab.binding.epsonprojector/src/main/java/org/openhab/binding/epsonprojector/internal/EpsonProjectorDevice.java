@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorSerialConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorTcpConnector;
@@ -34,6 +33,8 @@ import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
 import org.openhab.binding.epsonprojector.internal.enums.Sharpness;
 import org.openhab.binding.epsonprojector.internal.enums.Source;
 import org.openhab.binding.epsonprojector.internal.enums.Switch;
+import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +61,8 @@ public class EpsonProjectorDevice {
     private boolean connected;
     private boolean ready;
 
-    public EpsonProjectorDevice(String serialPort) {
-        connection = new EpsonProjectorSerialConnector(serialPort);
+    public EpsonProjectorDevice(@Nullable SerialPortManager serialPortManager, String serialPort) {
+        connection = new EpsonProjectorSerialConnector(serialPortManager, serialPort);
         ready = true;
     }
 

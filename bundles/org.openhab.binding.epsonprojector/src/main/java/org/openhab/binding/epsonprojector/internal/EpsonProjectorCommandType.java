@@ -14,10 +14,10 @@ package org.openhab.binding.epsonprojector.internal;
 
 import java.io.InvalidClassException;
 
-import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.StringItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
+import org.openhab.core.items.Item;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.StringItem;
+import org.openhab.core.library.items.SwitchItem;
 
 /**
  * Represents all valid command types which could be processed by this

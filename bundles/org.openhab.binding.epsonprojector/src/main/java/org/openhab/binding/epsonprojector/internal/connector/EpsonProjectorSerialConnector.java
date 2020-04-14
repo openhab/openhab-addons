@@ -15,22 +15,19 @@ package org.openhab.binding.epsonprojector.internal.connector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.TooManyListenersException;
 
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
+import org.openhab.core.io.transport.serial.PortInUseException;
+import org.openhab.core.io.transport.serial.SerialPort;
+import org.openhab.core.io.transport.serial.SerialPortEvent;
+import org.openhab.core.io.transport.serial.SerialPortEventListener;
+import org.openhab.core.io.transport.serial.SerialPortIdentifier;
+import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Connector for serial port communication.
@@ -44,21 +41,28 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
     private final String serialPortName;
     private InputStream in = null;
     private OutputStream out = null;
+    private SerialPortManager serialPortManager = null;
     private SerialPort serialPort = null;
 
-    public EpsonProjectorSerialConnector(String serialPort) {
-        serialPortName = serialPort;
+    public EpsonProjectorSerialConnector(SerialPortManager serialPortManager, String serialPort) {
+        this.serialPortManager = serialPortManager;
+        this.serialPortName = serialPort;
     }
 
     @Override
     public void connect() throws EpsonProjectorException {
         try {
             logger.debug("Open connection to serial port '{}'", serialPortName);
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
+            if (serialPortManager == null) {
+                throw new IllegalStateException("The SerialPortManager has not been not initialized");
+            }
 
-            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
+            SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(serialPortName);
 
-            serialPort = (SerialPort) commPort;
+            if (serialPortIdentifier == null) {
+                throw new IOException("Unknown serial port");
+            }
+            serialPort = serialPortIdentifier.open(this.getClass().getName(), 2000);
             serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
@@ -75,8 +79,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             // Start event listener, which will just sleep and slow down event loop
             serialPort.addEventListener(this);
             serialPort.notifyOnDataAvailable(true);
-        } catch (NoSuchPortException | PortInUseException | UnsupportedCommOperationException | IOException
-                | TooManyListenersException e) {
+        } catch (PortInUseException | UnsupportedCommOperationException | IOException | TooManyListenersException e) {
             throw new EpsonProjectorException(e);
         }
     }
@@ -177,9 +180,9 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                 }
             }
 
-            elapsedTime = Math.abs((new Date()).getTime() - startTime);
+            elapsedTime = System.currentTimeMillis() - startTime;
         }
 
-        return null;
+        return resp;
     }
 }

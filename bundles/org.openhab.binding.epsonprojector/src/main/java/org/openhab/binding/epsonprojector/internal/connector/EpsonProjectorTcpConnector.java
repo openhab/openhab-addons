@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
@@ -147,9 +146,9 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                 }
             }
 
-            elapsedTime = Math.abs((new Date()).getTime() - startTime);
+            elapsedTime = System.currentTimeMillis() - startTime;
         }
 
-        return null;
+        return resp;
     }
 }

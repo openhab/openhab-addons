@@ -52,10 +52,12 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="false">
 				<label>Serial Port</label>
+				<context>serial-port</context>
 				<description>Serial port device name that is connected to the Epson projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac</description>
 			</parameter>
 			<parameter name="host" type="text" required="false">
 				<label>Host</label>
+				<context>network-address</context>
 				<description>IP address (for serial communication over TCP, leave the serial port parameter blank)</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
@@ -159,16 +161,19 @@
 		<item-type>Number</item-type>
 		<label>Brightness</label>
 		<description>Handles the Brightness Epson command</description>
+		<state min="0" max="100"></state>
 	</channel-type>
 	<channel-type id="contrast" advanced="true">
 		<item-type>Number</item-type>
 		<label>Contrast</label>
 		<description>Handles the Contrast Epson command</description>
+		<state min="0" max="100"></state>
 	</channel-type>
 	<channel-type id="density" advanced="true">
 		<item-type>Number</item-type>
 		<label>Density</label>
 		<description>Handles the Density Epson command</description>
+		<state min="0" max="100"></state>
 	</channel-type>
 	<channel-type id="tint" advanced="true">
 		<item-type>Number</item-type>
@@ -306,11 +311,13 @@
 		<item-type>Number</item-type>
 		<label>ErrCode</label>
 		<description>Retrieves the last error code.</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="errmessage" advanced="true">
 		<item-type>String</item-type>
 		<label>ErrMessage</label>
 		<description>Retrieves the description of the last error.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>
