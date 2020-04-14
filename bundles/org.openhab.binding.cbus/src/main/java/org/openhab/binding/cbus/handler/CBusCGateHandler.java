@@ -108,15 +108,15 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         super(br);
     }
 
+    // This is abstract in base class so have to implement it.
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Nothing to do here
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.OFFLINE);
-        logger.debug("Initializing CGate Bridge handler.");
+        logger.debug("Initializing CGate Bridge handler. {} {}", getThing().getThingTypeUID(), getThing().getUID());
         CBusCGateConfiguration configuration = getConfigAs(CBusCGateConfiguration.class);
         logger.debug("Using configuration {}", configuration);
         if ("127.0.0.1".equals(configuration.ipAddress) || "localhost".equals(configuration.ipAddress)) {
@@ -313,7 +313,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             return true;
         }
 
-        @SuppressWarnings({ "null" })
         @Override
         public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
             if (cGateSession == null || status == null) {
@@ -321,7 +320,8 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             }
             if (status.startsWith("# ")) {
                 status = status.substring(2);
-                if (status.isEmpty()) {
+                // Shouldnt need to check for null but this silences a warning
+                if (status == null || status.isEmpty()) {
                     return;
                 }
             }

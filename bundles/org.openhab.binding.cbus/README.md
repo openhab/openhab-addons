@@ -54,8 +54,59 @@ Trigger things have 1 channel which shows the current trigger value on the cbus 
 
 Dali things have 1 channel which shows the current value on the cbus network and can be used to set a value on the CBus Network.
 
-* **DALI Channel** - CBus Trigger value
+* **DALI Channel** - Value from the DALI node
 
+## Example
+
+### cbus.things
+
+```
+
+/* Need a cgate bridge to connect to cgate and then 1 network bridge for each network on that system */
+Bridge cbus:cgate:cgatenetwork "file - cgate" [ ipAddress="127.0.0.1"] {
+  Bridge network cbusnetwork "file - network" [ id=254, project="OURHOME" ] {
+    /* Things can be configured within each network bridge */
+    Thing light light27 "light 27" [group=27]
+  }
+}
+
+/* Things can be configured seperatly and associated with the network bridge */
+Thing cbus:light:cgatenetwork:cbusnetwork:light31 "light 31" (cbus:network:cgatenetwork:cbusnetwork) [ group=31 ]
+Thing cbus:trigger:cgatenetwork:cbusnetwork:trigger1 "trigger 1" (cbus:network:cgatenetwork:cbusnetwork) [ group=1 ]
+Thing cbus:temperature:cgatenetwork:cbusnetwork:temp2 "temp 2" (cbus:network:cgatenetwork:cbusnetwork) [ group=2 ]
+Thing cbus:dali:cgatenetwork:cbusnetwork:dali3 "dali 3 value" (cbus:network:cgatenetwork:cbusnetwork) [ group=3 ]
+```
+
+### cbus.items
+
+```
+Dimmer light31Dimmer { channel="cbus:light:cgatenetwork:cbusnetwork:light31:level"}
+Switch light31Switch { channel="cbus:light:cgatenetwork:cbusnetwork:light31:state"}
+Number trigger1Value { channel="cbus:trigger:cgatenetwork:cbusnetwork:trigger1:value"}
+Number temp2 { channel="cbus:temperature:cgatenetwork:cbusnetwork:temp2:temp"}
+Dimmer dali3 { channel="cbus:dali:cgatenetwork:cbusnetwork:dali3:level"}
+```
+
+### cbusdemo.sitemap
+
+```
+sitemap cbusdemo label="CBus Binding Demo"
+{
+    Frame label="light" {
+        Slider item=light31Dimmer label="dimmer"
+        Switch item=light31Switch label="switch"
+    }
+    Frame label="trigger" {
+         Switch item=trigger1Value label="trigger Value" mappings=[0="light 1", 1="light 2", 2="both lights", 3="off"]
+    }
+    Frame label="temperature" {
+            Default item=temp2 label="Temperature" icon="temperature"
+    }
+    Frame label="dali" {
+            Default item=dali3 label="Dali Level"
+    }
+}
+```
 
 
 

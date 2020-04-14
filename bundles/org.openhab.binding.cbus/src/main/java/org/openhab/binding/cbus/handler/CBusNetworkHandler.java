@@ -55,6 +55,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         super(thing);
     }
 
+    // This is abstract in base class so have to implement it.
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }

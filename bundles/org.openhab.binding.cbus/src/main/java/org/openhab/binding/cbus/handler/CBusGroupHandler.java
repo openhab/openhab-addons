@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
+import org.openhab.binding.cbus.internal.CBusGroupConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,37 +61,31 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         /*
-         * Group Id has moved from config to property. Copy for backward compatibility
-         */
-        /*
          * Cast to Nullable in map to avoid compiler warnings
          */
-        Map<String, @Nullable String> properties = (Map<String, @Nullable String>) getThing().getProperties();
-        if (properties.get(CBusBindingConstants.PROPERTY_GROUP_ID) == null) {
-            if (getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID) != null) {
-                updateProperty(CBusBindingConstants.PROPERTY_GROUP_ID,
-                        getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString());
-            }
-        }
-        if (properties.get(CBusBindingConstants.PROPERTY_GROUP_NAME) == null) {
-            if (getConfig().get(CBusBindingConstants.CONFIG_NAME) != null) {
-                updateProperty(CBusBindingConstants.PROPERTY_GROUP_NAME,
-                        getConfig().get(CBusBindingConstants.CONFIG_NAME).toString());
-            }
-        }
-        groupId = Integer.parseInt(properties.get(CBusBindingConstants.PROPERTY_GROUP_ID));
-        cBusNetworkHandler = getCBusNetworkHandler();
+        CBusGroupConfiguration configuration = getConfigAs(CBusGroupConfiguration.class);
+        logger.debug("Using configuration {}", configuration);
+        groupId = configuration.group;
+
+        CBusNetworkHandler cBusNetworkHandler = getCBusNetworkHandler();
+        this.cBusNetworkHandler = cBusNetworkHandler;
         if (cBusNetworkHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No CBusNetworkHandler Bridge available");
             return;
         }
         updateStatus();
+
+        Map<String, String> updatedProperties = editProperties();
+        updatedProperties.put(CBusBindingConstants.PROPERTY_APPLICATION_ID, Integer.toString(applicationId));
+        updatedProperties.put(CBusBindingConstants.PROPERTY_NETWORK_ID,
+                Integer.toString(cBusNetworkHandler.getNetworkId()));
+        updateProperties(updatedProperties);
     }
 
     public void updateStatus() {
         try {
-            logger.debug("updateStatus {} {}", applicationId, groupId);
+            logger.debug("updateStatus UID: {} applicaton: {} group: {}", getThing().getUID(), applicationId, groupId);
             CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -106,6 +101,14 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
                             "No Group object available");
                 } else if (group.getNetwork().isOnline()) {
                     updateStatus(ThingStatus.ONLINE);
+
+                    try {
+                        Map<String, String> updatedProperties = editProperties();
+                        updatedProperties.put(CBusBindingConstants.PROPERTY_GROUP_NAME, group.getName());
+                        updateProperties(updatedProperties);
+                    } catch (CGateException e) {
+                        // Cant get name so properties wont be updated
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Network is not reporting online");
@@ -128,11 +131,15 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
             Network network = networkHandler.getNetwork();
             if (network != null) {
                 Application application = network.getApplication(applicationId);
-                logger.debug("GetGroup for id {}", groupId);
+                if (application == null) {
+                    logger.debug("getGroup() Cant get application for id {}", applicationId);
+                    return null;
+                }
+                logger.debug("GetGroup for {}/id {}", applicationId, groupId);
                 return application.getGroup(groupId);
             }
         } catch (CGateException e) {
-            logger.debug("GetGroup for id {} failed {}", groupId, e.getMessage());
+            logger.debug("GetGroup for id {}/{} failed {}", applicationId, groupId, e.getMessage());
         }
         return null;
     }
@@ -148,7 +155,7 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         if (handler instanceof CBusNetworkHandler) {
             bridgeHandler = (CBusNetworkHandler) handler;
         } else {
-            logger.debug("No available bridge handler found for bridge: {} .", bridge.getUID());
+            logger.debug("No available bridge handler found for bridge: {}", bridge.getUID());
         }
         return bridgeHandler;
     }
