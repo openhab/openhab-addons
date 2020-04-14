@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openhab.addons.bundles</groupId>
+		<artifactId>org.openhab.addons.reactor.bundles</artifactId>
+		<version>2.5.4-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.openhab.binding.bluetooth.dbusbluez</artifactId>
+
+	<name>openHAB Add-ons :: Bundles :: DBus-BlueZ Bluetooth Adapter</name>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.github.hypfvieh</groupId>
+			<artifactId>bluez-dbus-osgi</artifactId>
+			<version>0.1.2-SNAPSHOT</version>
+			<!--  <version>0.1.1</version>  -->
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openhab.addons.bundles</groupId>
+			<artifactId>org.openhab.binding.bluetooth</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+<!--
+	<build>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<extensions>true</extensions>
+					<configuration>
+						<instructions>
+							<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+							<Import-Package>!com.github.hypfvieh.bluetooth,*</Import-Package>
+							<Embed-Dependency>gson</Embed-Dependency>
+						</instructions>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		
+	</build>
+-->
+
+</project>
