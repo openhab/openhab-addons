@@ -288,16 +288,8 @@ public class ByteArrayFileCache {
      */
     String getUniqueFileName(String key) {
         try {
-            MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
-            byte[] bytesOfKey = key.getBytes(StandardCharsets.UTF_8);
-            byte[] md5Hash = md.digest(bytesOfKey);
-            BigInteger bigInt = new BigInteger(1, md5Hash);
-            String fileNameHash = bigInt.toString(16);
-            // We need to zero pad it if you actually want the full 32 chars
-            while (fileNameHash.length() < 32) {
-                fileNameHash = "0" + fileNameHash;
-            }
-            return fileNameHash;
+            final MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
+            return String.format("%032x", new BigInteger(1, md.digest(key.getBytes(StandardCharsets.UTF_8))));
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for key '{}'", key, ex);
