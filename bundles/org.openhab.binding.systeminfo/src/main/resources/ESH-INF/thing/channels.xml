@@ -18,7 +18,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="swapGroup" advanced="true">
+	<channel-group-type id="swapGroup">
 		<label>Swap Memory</label>
 		<description>Swap memory information</description>
 		<channels>
@@ -45,7 +45,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="driveGroup" advanced="true">
+	<channel-group-type id="driveGroup">
 		<label>Drive</label>
 		<description>Drive information</description>
 		<channels>
@@ -70,7 +70,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="displayGroup" advanced="true">
+	<channel-group-type id="displayGroup">
 		<label>Display</label>
 		<description>Display parameters</description>
 		<channels>
@@ -78,7 +78,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sensorsGroup" advanced="true">
+	<channel-group-type id="sensorsGroup">
 		<label>Sensor</label>
 		<description>Sensor parameters</description>
 		<channels>
@@ -112,7 +112,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="processGroup" advanced="true">
+	<channel-group-type id="processGroup">
 		<label>Process</label>
 		<description>System process information</description>
 		<channels>

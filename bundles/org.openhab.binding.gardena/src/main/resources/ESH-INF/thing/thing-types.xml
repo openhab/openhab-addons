@@ -1033,7 +1033,7 @@
 		</state>
 	</channel-type>
 
-	<channel-group-type id="ic24" advanced="true">
+	<channel-group-type id="ic24">
 		<label>Irrigation Control</label>
 		<description>The irrigation control</description>
 		<channels>
