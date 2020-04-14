@@ -13,9 +13,9 @@
 package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +51,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
 
     // Map of Bluetooth devices known to this bridge.
     // This contains the devices from the most recent scan
-    private final Map<BluetoothAddress, BD> devices = new HashMap<>();
+    private final Map<BluetoothAddress, BD> devices = new ConcurrentHashMap<>();
 
     // Actual discovery status.
     protected volatile boolean activeScanEnabled = false;
