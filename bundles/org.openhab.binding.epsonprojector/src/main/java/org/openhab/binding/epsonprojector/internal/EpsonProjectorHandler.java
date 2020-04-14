@@ -414,8 +414,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             }
         } catch (EpsonProjectorException e) {
             logger.warn("Couldn't execute command '{}'", commandType, e);
-            // The OH1 binding used to close the connection on the first error, maybe it's not necessary
-            // closeConnection();
+            closeConnection();
         }
     }
 
