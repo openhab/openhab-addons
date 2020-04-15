@@ -40,6 +40,11 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
         this.name = device.getName();
     }
 
+    @Override
+    public @Nullable String getName() {
+        return name;
+    }
+
     /**
      * Set the name of the device
      *
@@ -47,6 +52,44 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Sets the manufacturer id for the device
+     *
+     * @param manufacturer the manufacturer id
+     */
+    public void setManufacturerId(int manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    /**
+     * Returns the manufacturer ID of the device
+     *
+     * @return an integer with manufacturer ID of the device, or null if not known
+     */
+    @Override
+    public @Nullable Integer getManufacturerId() {
+        return manufacturer;
+    }
+
+    /**
+     * Sets the device transmit power
+     *
+     * @param power the current transmitter power in dBm
+     */
+    public void setTxPower(int txPower) {
+        this.txPower = txPower;
+    }
+
+    /**
+     * Returns the last Transmit Power value or null if no transmit power has been received
+     *
+     * @return the last reported transmitter power value in dBm
+     */
+    @Override
+    public @Nullable Integer getTxPower() {
+        return txPower;
     }
 
     /**
