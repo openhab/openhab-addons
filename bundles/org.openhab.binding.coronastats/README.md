@@ -5,21 +5,16 @@ This binding provides the statistic about cases of COVID-19 from the website htt
 
 ## Supported Things
 
-This binding supports a `bridge` thing, which polls the dataset in an adjustable interval. 
-The `world` thing provides the statistics for the whole world.
+This binding supports a `world` thing, which polls the dataset in an adjustable interval as a bridge and provides the statistics for the whole world.
 The `country` thing, representing the statistics for a specified country.
 
 ## Thing Configuration
 
-### Bridge
+### World
 
 | Property  | Default | Required | Description                                                                              |
 | --------- | :-----: | :------: | ---------------------------------------------------------------------------------------- |
 | `refresh` |   30    |    no    | Define the interval for polling the data from website in minutes. Minimum is 15 minutes. |
-
-### World
-
-There is no configuration needed.
 
 ### Country
 
@@ -31,33 +26,26 @@ For the correct 2-letter country Code have a look at the website https://corona-
 
 ## Channels
 
-### Bridge
-
-| channel     | type     | description                                |
-| ----------- | -------- | ------------------------------------------ |
-| `refreshed` | DateTime | Hold the time of the bridge's last refresh |
-
 ### World and Country
 
-| channels       | type                 | description                                  |
-| -------------- | -------------------- | -------------------------------------------- |
-| `cases`        | Number:Dimensionless | Total cases                                  |
-| `today_cases`  | Number:Dimensionless | Increase of total cases today                |
-| `deaths`       | Number:Dimensionless | Deaths                                       |
-| `today_deaths` | Number:Dimensionless | Increase of deaths                           |
-| `recovered`    | Number:Dimensionless | Recovered cases                              |
-| `active`       | Number:Dimensionless | Active cases                                 |
-| `critical`     | Number:Dimensionless | Critical cases                               |
-| `tests`        | Number:Dimensionless | Count of reported tests (country thing only) |
-| `updated`      | Number:Dimensionless | Data last update time (country thing only)   |
+| channels       | type                 | description                                    |
+| -------------- | -------------------- | ---------------------------------------------- |
+| `cases`        | Number:Dimensionless | Total cases                                    |
+| `today_cases`  | Number:Dimensionless | Increase of total cases today                  |
+| `deaths`       | Number:Dimensionless | Deaths                                         |
+| `today_deaths` | Number:Dimensionless | Increase of deaths                             |
+| `recovered`    | Number:Dimensionless | Recovered cases                                |
+| `active`       | Number:Dimensionless | Active cases                                   |
+| `critical`     | Number:Dimensionless | Critical cases                                 |
+| `tests`        | Number:Dimensionless | Count of reported tests (`country` thing only) |
+| `updated`      | Number:Dimensionless | Data last update time (`country` thing only)   |
 
 ## Full Example
 
 ### Things
 
 ```
-Bridge coronastats:bridge:stats "Corona Stats Bridge" @ "Corona" [refresh=15] {
-    Thing world all "Corona Stats World" @ "Corona"
+Bridge coronastats:world:stats "Corona Stats World" @ "Corona" [refresh=15] {
     Thing country usa "Corona Stats USA" @ "Corona" [countryCode="US"]
     Thing country germany "Corona Stats Germany" @ "Corona" [countryCode="DE"]
     Thing country austria "Corona Stats Austria" @ "Corona" [countryCode="AT"]
@@ -71,19 +59,19 @@ Bridge coronastats:bridge:stats "Corona Stats Bridge" @ "Corona" [refresh=15] {
 
 ```
 Number:Dimensionless coronaCasesWorld "Total Cases World [%,d]"
-    {channel="coronastats:world:stats:all:cases"}
+    {channel="coronastats:world:stats:cases"}
 
 Number:Dimensionless coronaDeathsWorld "Deaths World [%,d]"
-    {channel="coronastats:world:stats:all:deaths"}
+    {channel="coronastats:world:stats:deaths"}
 
 Number:Dimensionless coronaRecoveredWorld "Recovered Cases World [%,d]"
-    {channel="coronastats:world:stats:all:recovered"}
+    {channel="coronastats:world:stats:recovered"}
 
 Number:Dimensionless coronaActiveWorld "Active Cases World [%,d]"
-    {channel="coronastats:world:stats:all:active"}
+    {channel="coronastats:world:stats:active"}
 
 Number:Dimensionless coronaCriticalWorld "Critical Cases World [%,d]"
-    {channel="coronastats:world:stats:all:critical"}
+    {channel="coronastats:world:stats:critical"}
 
 Number:Dimensionless coronaCasesUSA "Total Cases USA [%,d]"
     {channel="coronastats:country:stats:usa:cases"}
