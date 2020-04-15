@@ -14,44 +14,25 @@ package org.openhab.binding.daikin.internal.handler;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.ArrayList;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
-import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
-import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
+import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
-
-import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.daikin.internal.api.SensorInfo;
 
 /**
  * Handles communicating with a Daikin air conditioning unit.
@@ -77,6 +58,16 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
             updateState(DaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
             updateState(DaikinBindingConstants.CHANNEL_AC_FAN_DIR, new StringType(controlInfo.fanMovement.name()));
+
+            if (!controlInfo.power) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.OFF.getValue()));
+            } else if (controlInfo.mode == Mode.COLD) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.COOL.getValue()));
+            } else if (controlInfo.mode == Mode.HEAT) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.HEAT.getValue()));
+            } else if (controlInfo.mode == Mode.AUTO) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType(HomekitMode.AUTO.getValue()));
+            }
         }
 
         SensorInfo sensorInfo = webTargets.getSensorInfo();
@@ -94,9 +85,10 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     @Override
-    protected boolean handleCommandInternal(ChannelUID channelUID, Command command) throws DaikinCommunicationException {
+    protected boolean handleCommandInternal(ChannelUID channelUID, Command command)
+            throws DaikinCommunicationException {
         switch (channelUID.getId()) {
-                case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
+            case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
                 if (command instanceof StringType) {
                     changeFanDir(((StringType) command).toString());
                     return true;

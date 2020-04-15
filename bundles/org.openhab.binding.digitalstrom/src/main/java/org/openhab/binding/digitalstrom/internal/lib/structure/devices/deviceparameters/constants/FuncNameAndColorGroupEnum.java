@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link FuncNameAndColorGroupEnum} contains all digitalSTROM functional group names and links to their
@@ -61,7 +62,7 @@ public enum FuncNameAndColorGroupEnum {
     private final short colorGroup;
     private final FunctionalColorGroupEnum color;
 
-    static final HashMap<Short, FuncNameAndColorGroupEnum> COLOR_GROUPS = new HashMap<Short, FuncNameAndColorGroupEnum>();
+    static final Map<Short, FuncNameAndColorGroupEnum> COLOR_GROUPS = new HashMap<>();
 
     static {
         for (FuncNameAndColorGroupEnum colorGroup : FuncNameAndColorGroupEnum.values()) {

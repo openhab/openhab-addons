@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  */
 @Component(service = { HomematicChannelGroupTypeProvider.class, ChannelGroupTypeProvider.class }, immediate = true)
 public class HomematicChannelGroupTypeProviderImpl implements HomematicChannelGroupTypeProvider {
-    private final Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new HashMap<ChannelGroupTypeUID, ChannelGroupType>();
+    private final Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new HashMap<>();
     protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)

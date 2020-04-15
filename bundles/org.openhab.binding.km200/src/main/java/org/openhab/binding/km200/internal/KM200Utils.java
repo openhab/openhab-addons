@@ -70,7 +70,7 @@ public class KM200Utils {
      *
      */
     public static Map<String, String> getChannelConfigurationStrings(Channel channel) {
-        Map<String, String> paraNames = new HashMap<String, String>();
+        Map<String, String> paraNames = new HashMap<>();
         if (channel.getConfiguration().containsKey("on")) {
             paraNames.put("on", channel.getConfiguration().get("on").toString());
             LOGGER.debug("Added ON: {}", channel.getConfiguration().get("on"));

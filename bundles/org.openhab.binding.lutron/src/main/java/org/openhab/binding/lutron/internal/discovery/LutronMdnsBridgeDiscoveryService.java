@@ -53,6 +53,9 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
     private static final String PRODFAM_CASETA = "Caseta";
     private static final String PRODTYP_CASETA_SBP2 = "Smart Bridge Pro 2";
     private static final String DEVCLASS_CASETA_SBP2 = "08050100";
+    private static final String PRODFAM_RA2_SELECT = "RA2 Select";
+    private static final String PRODTYP_RA2_SELECT = "Main Repeater";
+    private static final String DEVCLASS_RA2_SELECT = "080E0401";
     private static final String DEFAULT_LABEL = "Unknown Lutron bridge";
 
     private static final Pattern HOSTNAME_REGEX = Pattern.compile("lutron-([0-9a-f]+)\\."); // ex: lutron-01f1529a.local
@@ -108,6 +111,10 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
             properties.put(PROPERTY_PRODFAM, PRODFAM_CASETA);
             properties.put(PROPERTY_PRODTYP, PRODTYP_CASETA_SBP2);
             label = PRODFAM_CASETA + " " + PRODTYP_CASETA_SBP2;
+        } else if (devclass != null && devclass.equals(DEVCLASS_RA2_SELECT)) {
+            properties.put(PROPERTY_PRODFAM, PRODFAM_RA2_SELECT);
+            properties.put(PROPERTY_PRODTYP, PRODTYP_RA2_SELECT);
+            label = PRODFAM_RA2_SELECT + " " + PRODTYP_RA2_SELECT;
         } else {
             logger.info("Lutron device with unknown DEVCLASS discovered via mDNS: {}. Configure device manually.",
                     devclass);

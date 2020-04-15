@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	bindingId="etherrain"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The EtherRain Thing Type -->
+	<thing-type id="etherrain">
+		<label>EtherRain</label>
+		<description>This is a stand alone EtherRain device that allows sprinkler control</description>
+
+		<channels>
+			<channel id="commandstatus" typeId="commandstatus" />
+			<channel id="operatingstatus" typeId="operatingstatus" />
+			<channel id="operatingresult" typeId="operatingresult" />
+
+			<channel id="relayindex" typeId="relayindex" />
+			<channel id="rainsensor" typeId="rainsensor" />
+
+			<channel id="execute" typeId="execute">
+				<label>Execute</label>
+				<description>Commands EtherRain device to begin watering program</description>
+			</channel>
+			<channel id="clear" typeId="execute">
+				<label>Clear</label>
+				<description>Clears the currently running program</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host Name</label>
+				<description>The host name or IP address of the EtherRain Web API interface</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65335">
+				<label>Port</label>
+				<description>Port of the EtherRain Web API interface</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>The admin password used to access the Web API interface</description>
+				<default>pw</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh</label>
+				<description>The amount of time, in seconds, that OpenHab should poll EtherRain</description>
+				<default>60</default>
+			</parameter>
+
+			<parameter name="programDelay" type="integer">
+				<label>Program Delay</label>
+				<description>The amount of time, in minutes, that EtherRain will delay before starting a program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime1" type="integer">
+				<label>Zone 1 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 1 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime2" type="integer">
+				<label>Zone 2 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 2 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime3" type="integer">
+				<label>Zone 3 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 3 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime4" type="integer">
+				<label>Zone 4 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 4 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime5" type="integer">
+				<label>Zone 5 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 5 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime6" type="integer">
+				<label>Zone 6 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 6 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime7" type="integer">
+				<label>Zone 7 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 7 in program</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="zoneOnTime8" type="integer">
+				<label>Zone 8 Run Time</label>
+				<description>The amount of time, in minutes, that EtherRain will run zone 8 in program</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="commandstatus">
+		<item-type>String</item-type>
+		<label>Command Status</label>
+		<description>Status of the last command given to the Etherrain</description>
+		<category>Water</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="operatingstatus">
+		<item-type>String</item-type>
+		<label>Operating Status</label>
+		<description>Current operating status of the Etherrain</description>
+		<category>Water</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="operatingresult">
+		<item-type>String</item-type>
+		<label>Operating Result</label>
+		<description>Result of operating status</description>
+		<category>Water</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="rainsensor">
+		<item-type>Switch</item-type>
+		<label>Rain</label>
+		<description>Provides feedback on whether the EtherRain device has detected rain or not</description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="runtime">
+		<item-type>Number:Time</item-type>
+		<label>Runtime</label>
+		<description>How long a zone will run in seconds</description>
+		<category>Number</category>
+	</channel-type>
+
+	<channel-type id="relayindex">
+		<item-type>Number</item-type>
+		<label>Relay Index</label>
+		<description>Number of the last zone that was operating</description>
+		<category>Number</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="execute">
+		<item-type>Switch</item-type>
+		<label>Execute</label>
+		<description>Send a command to the EtherRain Controller</description>
+		<category>Switch</category>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -3,6 +3,8 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.airthings/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.am43/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>

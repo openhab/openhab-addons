@@ -75,7 +75,7 @@ public class NukiApiServlet extends HttpServlet {
                     nukiBridgeHandler.getThing().getUID());
             return;
         }
-        if (nukiBridgeHandlers.size() == 0) {
+        if (nukiBridgeHandlers.isEmpty()) {
             this.activate();
         }
         nukiBridgeHandlers.add(nukiBridgeHandler);
@@ -86,7 +86,7 @@ public class NukiApiServlet extends HttpServlet {
                 nukiBridgeHandler.getThing().getUID(),
                 nukiBridgeHandler.getThing().getConfiguration().get(NukiBindingConstants.CONFIG_IP));
         nukiBridgeHandlers.remove(nukiBridgeHandler);
-        if (nukiBridgeHandlers.size() == 0) {
+        if (nukiBridgeHandlers.isEmpty()) {
             this.deactivate();
         }
     }
@@ -98,7 +98,7 @@ public class NukiApiServlet extends HttpServlet {
     private void activate() {
         logger.debug("Activating NukiApiServlet.");
         path = NukiBindingConstants.CALLBACK_ENDPOINT;
-        Dictionary<String, String> servletParams = new Hashtable<String, String>();
+        Dictionary<String, String> servletParams = new Hashtable<>();
         try {
             httpService.registerServlet(path, this, servletParams, httpService.createDefaultHttpContext());
             logger.debug("Started NukiApiServlet at path[{}]", path);

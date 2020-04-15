@@ -250,7 +250,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SET_TEMPERATURE_ZONE1:
                 updateState(CHANNEL_SET_TEMPERATURE_ZONE1,
-                        new QuantityType<Temperature>(heatpumpDeviceStatus.getSetTemperatureZone1(), SIUnits.CELSIUS));
+                        new QuantityType<>(heatpumpDeviceStatus.getSetTemperatureZone1(), SIUnits.CELSIUS));
                 break;
             case CHANNEL_ROOM_TEMPERATURE_ZONE1:
                 updateState(CHANNEL_ROOM_TEMPERATURE_ZONE1,

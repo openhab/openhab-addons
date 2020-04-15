@@ -38,6 +38,7 @@
     <module>org.openhab.transform.xpath</module>
     <module>org.openhab.transform.xslt</module>
     <!-- bindings -->
+    <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
     <module>org.openhab.binding.allplay</module>
@@ -73,10 +74,12 @@
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
+    <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enturno</module>
+    <module>org.openhab.binding.etherrain</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
@@ -187,10 +190,12 @@
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.russound</module>
+    <module>org.openhab.binding.sagercaster</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.sensibo</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>

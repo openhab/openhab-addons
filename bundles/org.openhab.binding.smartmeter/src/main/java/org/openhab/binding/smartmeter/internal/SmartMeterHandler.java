@@ -193,7 +193,7 @@ public class SmartMeterHandler extends BaseThingHandler {
                         ChannelUID channelId = channel.getUID();
 
                         // add all valid channels to the thing builder
-                        List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
+                        List<Channel> channels = new ArrayList<>(getThing().getChannels());
                         if (channels.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
                             channels.add(channel);
                             thingBuilder.withChannels(channels);
@@ -219,7 +219,7 @@ public class SmartMeterHandler extends BaseThingHandler {
                         .withDefaultTags(channel.getDefaultTags()).withConfiguration(channel.getConfiguration())
                         .withDescription(description == null ? "" : description).withKind(channel.getKind())
                         .withLabel(label == null ? "" : label).withType(channel.getChannelTypeUID());
-                HashMap<String, String> properties = new HashMap<>(channel.getProperties());
+                Map<String, String> properties = new HashMap<>(channel.getProperties());
                 properties.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
                 newChannel.withProperties(properties);
                 updateThing(editThing().withoutChannel(channel.getUID()).withChannel(newChannel.build()).build());
@@ -251,11 +251,9 @@ public class SmartMeterHandler extends BaseThingHandler {
         if (isLinked(channelId.getId())) {
             Channel channel = this.thing.getChannel(channelId.getId());
             if (channel != null) {
-
                 String obis = channel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS);
                 MeterValue<?> value = this.smlDevice.getMeterValue(obis);
                 if (value != null) {
-
                     State state = getStateForObisValue(value, channel);
                     updateState(channel.getUID(), state);
                 }

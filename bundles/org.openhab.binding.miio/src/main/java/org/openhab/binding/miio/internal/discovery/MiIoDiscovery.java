@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -33,7 +35,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.Utils;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.cloud.CloudDeviceDTO;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.miio")
 public class MiIoDiscovery extends AbstractDiscoveryService {
 
@@ -52,15 +59,18 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private static final int BUFFER_LENGTH = 1024;
     private static final int DISCOVERY_TIME = 10;
 
-    private ScheduledFuture<?> miIoDiscoveryJob;
-    protected DatagramSocket clientSocket;
-    private Thread socketReceiveThread;
-    Set<String> responseIps = new HashSet<String>();
+    private @Nullable ScheduledFuture<?> miIoDiscoveryJob;
+    protected @Nullable DatagramSocket clientSocket;
+    private @Nullable Thread socketReceiveThread;
+    private Set<String> responseIps = new HashSet<>();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
+    private final CloudConnector cloudConnector;
 
-    public MiIoDiscovery() throws IllegalArgumentException {
+    @Activate
+    public MiIoDiscovery(@Reference CloudConnector cloudConnector) throws IllegalArgumentException {
         super(DISCOVERY_TIME);
+        this.cloudConnector = cloudConnector;
     }
 
     @Override
@@ -71,42 +81,50 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Xiaomi Mi IO background discovery");
+        final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
         if (miIoDiscoveryJob == null || miIoDiscoveryJob.isCancelled()) {
-            miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> discover(), 0, SEARCH_INTERVAL, TimeUnit.SECONDS);
+            this.miIoDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, SEARCH_INTERVAL,
+                    TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop Xiaomi  Mi IO background discovery");
-        if (miIoDiscoveryJob != null && !miIoDiscoveryJob.isCancelled()) {
+        final @Nullable ScheduledFuture<?> miIoDiscoveryJob = this.miIoDiscoveryJob;
+        if (miIoDiscoveryJob != null) {
             miIoDiscoveryJob.cancel(true);
-            miIoDiscoveryJob = null;
+            this.miIoDiscoveryJob = null;
         }
     }
 
     @Override
     protected void deactivate() {
         stopReceiverThreat();
+        final DatagramSocket clientSocket = this.clientSocket;
         if (clientSocket != null) {
             clientSocket.close();
-            clientSocket = null;
         }
+        this.clientSocket = null;
         super.deactivate();
     }
 
     @Override
     protected void startScan() {
         logger.debug("Start Xiaomi Mi IO discovery");
-        getSocket();
-        logger.debug("Discovery using socket on port {}", clientSocket.getLocalPort());
-        discover();
+        final DatagramSocket clientSocket = getSocket();
+        if (clientSocket != null) {
+            logger.debug("Discovery using socket on port {}", clientSocket.getLocalPort());
+            discover();
+        } else {
+            logger.debug("Discovery not started. Client DatagramSocket null");
+        }
     }
 
     private void discover() {
         startReceiverThreat();
-        responseIps = new HashSet<String>();
-        HashSet<String> broadcastAddresses = new HashSet<String>();
+        responseIps = new HashSet<>();
+        HashSet<String> broadcastAddresses = new HashSet<>();
         broadcastAddresses.add("224.0.0.1");
         broadcastAddresses.add("224.0.0.50");
         broadcastAddresses.addAll(NetUtil.getAllBroadcastAddresses());
@@ -121,59 +139,81 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
         String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+        String country = "";
+        boolean isOnline = false;
+        if (cloudConnector.isConnected()) {
+            cloudConnector.getDevicesList();
+            CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
+            if (cloudInfo != null) {
+                logger.debug("Cloud Info: {}", cloudInfo);
+                token = cloudInfo.getToken();
+                label = cloudInfo.getName() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+                country = cloudInfo.getServer();
+                isOnline = cloudInfo.getIsOnline();
+            }
+        }
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
         logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
+        DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
+                .withProperty(PROPERTY_DID, id);
         if (IGNORED_TOKENS.contains(token)) {
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
                     id);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
-                    .withProperty(PROPERTY_DID, id).withRepresentationProperty(id).withLabel(label).build());
+            dr = dr.withRepresentationProperty(id).withLabel(label);
         } else {
             logger.debug("Discovered token for device {}: {}", id, token);
-            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
-                    .withProperty(PROPERTY_DID, id).withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id)
-                    .withLabel(label + " with token").build());
+            dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id).withLabel(label + " with token");
         }
+        if (!country.isEmpty() && isOnline) {
+            dr = dr.withProperty(PROPERTY_CLOUDSERVER, country);
+        }
+        thingDiscovered(dr.build());
     }
 
-    synchronized DatagramSocket getSocket() {
+    synchronized @Nullable DatagramSocket getSocket() {
+        DatagramSocket clientSocket = this.clientSocket;
         if (clientSocket != null && clientSocket.isBound()) {
             return clientSocket;
         }
         try {
             logger.debug("Getting new socket for discovery");
-            DatagramSocket clientSocket = new DatagramSocket();
+            clientSocket = new DatagramSocket();
             clientSocket.setReuseAddress(true);
             clientSocket.setBroadcast(true);
             this.clientSocket = clientSocket;
             return clientSocket;
-        } catch (Exception e) {
-            logger.debug("Error getting socket for discovery: {}", e.getMessage(), e);
+        } catch (SocketException | SecurityException e) {
+            logger.debug("Error getting socket for discovery: {}", e.getMessage());
         }
         return null;
     }
 
     private void closeSocket() {
-        if (clientSocket == null) {
+        final @Nullable DatagramSocket clientSocket = this.clientSocket;
+        if (clientSocket != null) {
+            clientSocket.close();
+        } else {
             return;
         }
-        clientSocket.close();
-        clientSocket = null;
+        this.clientSocket = null;
     }
 
     private void sendDiscoveryRequest(String ipAddress) {
-        try {
-            byte[] sendData = DISCOVER_STRING;
-            logger.trace("Discovery sending ping to {} from {}:{}", ipAddress, getSocket().getLocalAddress(),
-                    getSocket().getLocalPort());
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(ipAddress),
-                    PORT);
-            for (int i = 1; i <= 1; i++) {
-                getSocket().send(sendPacket);
+        final @Nullable DatagramSocket socket = getSocket();
+        if (socket != null) {
+            try {
+                byte[] sendData = DISCOVER_STRING;
+                logger.trace("Discovery sending ping to {} from {}:{}", ipAddress, socket.getLocalAddress(),
+                        socket.getLocalPort());
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
+                        InetAddress.getByName(ipAddress), PORT);
+                for (int i = 1; i <= 1; i++) {
+                    socket.send(sendPacket);
+                }
+            } catch (IOException e) {
+                logger.trace("Discovery on {} error: {}", ipAddress, e.getMessage());
             }
-        } catch (Exception e) {
-            logger.trace("Discovery on {} error: {}", ipAddress, e.getMessage());
         }
     }
 
@@ -181,9 +221,16 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      * starts the {@link ReceiverThread} thread
      */
     private synchronized void startReceiverThreat() {
+        final Thread srt = socketReceiveThread;
+        if (srt != null) {
+            if (srt.isAlive() && !srt.isInterrupted()) {
+                return;
+            }
+        }
         stopReceiverThreat();
-        socketReceiveThread = new ReceiverThread();
+        Thread socketReceiveThread = new ReceiverThread();
         socketReceiveThread.start();
+        this.socketReceiveThread = socketReceiveThread;
     }
 
     /**
@@ -203,8 +250,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private class ReceiverThread extends Thread {
         @Override
         public void run() {
-            logger.debug("Starting discovery receiver thread for socket on port {}", getSocket().getLocalPort());
-            receiveData(getSocket());
+            DatagramSocket socket = getSocket();
+            if (socket != null) {
+                logger.debug("Starting discovery receiver thread for socket on port {}", socket.getLocalPort());
+                receiveData(socket);
+            }
         }
 
         /**

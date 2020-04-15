@@ -4,7 +4,8 @@ The Plugwise binding adds support to openHAB for [Plugwise](https://www.plugwise
 
 Users should use the Plugwise [Source](https://www.plugwise.com/source) software to define the network, reset devices or perform firmware upgrades.
 
-Currently only "V2" of the Plugwise protocol is supported. It is adviced that users of the binding upgrade their devices to the latest firmware using the Plugwise Source software.
+Currently only "V2" of the Plugwise protocol is supported.
+It is advised that users of the binding upgrade their devices to the latest firmware using the Plugwise Source software.
 
 ## Supported Things
 
@@ -23,7 +24,6 @@ The binding supports the following Plugwise devices:
 ## Discovery
 
 Automatic device discovery runs every 3 minutes which can be sped up by starting a manual discovery.
-The Stick is automatically discovered on unused serial ports.
 All Circle, Circle+ and Stealth devices are discovered immediately after adding the Stick. Battery powered devices like the Scan, Sense and Switch are discovered when they are awake.
 The Scan and Sense can be woken by pressing the "Wake" button.
 The Switch is detected when it is awake after switching the left or right button.

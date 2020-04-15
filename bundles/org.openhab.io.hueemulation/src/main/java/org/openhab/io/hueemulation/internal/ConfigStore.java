@@ -12,11 +12,10 @@
  */
 package org.openhab.io.hueemulation.internal;
 
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -198,7 +197,7 @@ public class ConfigStore {
             discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIps.split(",")).map(String::trim)
                     .map(this::byName).filter(e -> e != null).collect(Collectors.toSet()));
         } else {
-            discoveryIps = new HashSet<>();
+            discoveryIps = new LinkedHashSet<>();
             configuredAddress = byName(networkAddressService.getPrimaryIpv4HostAddress());
             if (configuredAddress != null) {
                 discoveryIps.add(configuredAddress);
@@ -212,7 +211,7 @@ public class ConfigStore {
             }
         }
 
-        if (discoveryIps.size() < 1) {
+        if (discoveryIps.isEmpty()) {
             try {
                 logger.info("No discovery ip specified. Trying to determine the host address");
                 configuredAddress = InetAddress.getLocalHost();
@@ -255,10 +254,9 @@ public class ConfigStore {
     private String getConfiguredHostAddress(InetAddress configuredAddress) {
         String hostAddress = configuredAddress.getHostAddress();
         int percentIndex = hostAddress.indexOf("%");
-        if(percentIndex != -1){
+        if (percentIndex != -1) {
             return hostAddress.substring(0, percentIndex);
-        }
-        else{
+        } else {
             return hostAddress;
         }
     }
@@ -320,7 +318,7 @@ public class ConfigStore {
     }
 
     public boolean isReady() {
-        return discoveryIps.size() > 0;
+        return !discoveryIps.isEmpty();
     }
 
     public HueEmulationConfig getConfig() {

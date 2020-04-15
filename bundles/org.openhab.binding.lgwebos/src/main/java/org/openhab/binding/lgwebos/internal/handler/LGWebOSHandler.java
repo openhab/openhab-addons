@@ -123,6 +123,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void initialize() {
+        logger.debug("Initializing handler for thing {}", getThing().getUID());
         LGWebOSConfiguration c = getLGWebOSConfig();
         logger.trace("Handler initialized with config {}", c);
         String host = c.getHost();
@@ -135,20 +136,24 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         s.setListener(this);
         socket = s;
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
+
         startReconnectJob();
     }
 
     @Override
     public void dispose() {
+        logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopKeepAliveJob();
         stopReconnectJob();
 
         LGWebOSTVSocket s = socket;
         if (s != null) {
             s.setListener(null);
-            scheduler.execute(() -> s.disconnect()); // dispose should be none-blocking
+            s.disconnect();
         }
         socket = null;
+        config = null; // ensure config gets actually refreshed during re-initialization
         super.dispose();
     }
 
@@ -237,17 +242,21 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void storeKey(@Nullable String key) {
-        // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
-        getLGWebOSConfig().key = key;
+        if (!getKey().equals(key)) {
+            logger.debug("store new key");
+            // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
+            getLGWebOSConfig().key = key;
 
-        // persist the configuration change
-        Configuration configuration = editConfiguration();
-        configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
-        updateConfiguration(configuration);
+            // persist the configuration change
+            Configuration configuration = editConfiguration();
+            configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
+            updateConfiguration(configuration);
+        }
     }
 
     @Override
     public void storeProperties(Map<String, String> properties) {
+        logger.debug("storeProperties {}", properties);
         Map<String, String> map = editProperties();
         map.putAll(properties);
         updateProperties(map);
@@ -266,14 +275,15 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 stopKeepAliveJob();
                 startReconnectJob();
                 break;
-
-            case REGISTERING:
+            case CONNECTING:
                 stopReconnectJob();
-                startKeepAliveJob();
+                break;
+            case REGISTERING:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "Registering - You may need to confirm pairing on TV.");
                 break;
             case REGISTERED:
+                startKeepAliveJob();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
 
                 channelHandlers.forEach((k, v) -> {
@@ -298,6 +308,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         switch (getSocket().getState()) {
             case DISCONNECTED:
                 break;
+            case CONNECTING:
             case REGISTERING:
             case REGISTERED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);

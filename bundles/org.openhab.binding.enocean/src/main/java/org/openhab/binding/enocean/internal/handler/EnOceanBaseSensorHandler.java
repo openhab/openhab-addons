@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,19 +44,14 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.transceiver.PacketListener;
 
-import java.util.*;
-import java.util.function.Predicate;
-
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
-
 /**
  * @author Daniel Weber - Initial contribution
- * This class defines base functionality for receiving eep messages.
+ *         This class defines base functionality for receiving eep messages.
  */
 public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements PacketListener {
 
     // List of all thing types which support receiving of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
                     THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
                     THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,

@@ -20,9 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -148,21 +145,21 @@ public class KonnectedHandler extends BaseThingHandler {
                     updateState(channelId, onOffType);
                 } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
-                    updateState(channelId, new QuantityType<Dimensionless>(Double.parseDouble(event.getHumi()),
-                            SmartHomeUnits.PERCENT));
+                    updateState(channelId,
+                            new QuantityType<>(Double.parseDouble(event.getHumi()), SmartHomeUnits.PERCENT));
                 } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
                     Configuration configuration = channel.getConfiguration();
-                    if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE) == true)) {
+                    if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE))) {
                         updateState(channelId,
-                                new QuantityType<Temperature>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
+                                new QuantityType<>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
                     } else {
                         // need to check to make sure right dsb1820 address
                         logger.debug("The address of the DSB1820 sensor received from modeule {} is: {}",
                                 this.thing.getUID(), event.getAddr());
                         if (event.getAddr().toString()
                                 .equalsIgnoreCase((String) (configuration.get(CHANNEL_TEMPERATURE_DS18B20_ADDRESS)))) {
-                            updateState(channelId, new QuantityType<Temperature>(Double.parseDouble(event.getTemp()),
-                                    SIUnits.CELSIUS));
+                            updateState(channelId,
+                                    new QuantityType<>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
                         } else {
                             logger.debug("The address of {} does not match {} not updating this channel",
                                     event.getAddr().toString(),
@@ -194,7 +191,6 @@ public class KonnectedHandler extends BaseThingHandler {
             this.retryCount = 2;
         }
         try {
-
             this.http.setRequestTimeout(Integer.parseInt(testRequestTimeout));
         } catch (NumberFormatException e) {
             logger.debug(
@@ -228,7 +224,7 @@ public class KonnectedHandler extends BaseThingHandler {
             // https://github.com/eclipse/smarthome/issues/3484 has been implemented in the framework
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
-                if (cfg[1].equals("softreset") && value instanceof Boolean && ((Boolean) value) == true) {
+                if (cfg[1].equals("softreset") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
                             http.doGet(moduleIpAddress + "/settings?restart=true", null, retryCount);
@@ -237,7 +233,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         }
                     });
                     value = false;
-                } else if (cfg[1].equals("removewifi") && value instanceof Boolean && ((Boolean) value) == true) {
+                } else if (cfg[1].equals("removewifi") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
                             http.doGet(moduleIpAddress + "/settings?restore=true", null, retryCount);
@@ -246,7 +242,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         }
                     });
                     value = false;
-                } else if (cfg[1].equals("sendConfig") && value instanceof Boolean && ((Boolean) value) == true) {
+                } else if (cfg[1].equals("sendConfig") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
                             String response = updateKonnectedModule();

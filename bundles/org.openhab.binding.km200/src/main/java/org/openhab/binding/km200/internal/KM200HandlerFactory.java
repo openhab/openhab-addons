@@ -36,7 +36,6 @@ import org.openhab.binding.km200.internal.handler.KM200GatewayHandler;
 import org.openhab.binding.km200.internal.handler.KM200ThingHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +128,7 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void registerKM200GatewayDiscoveryService(KM200GatewayHandler gatewayHandler) {
         KM200GatewayDiscoveryService discoveryService = new KM200GatewayDiscoveryService(gatewayHandler);
-        this.discoveryServiceRegs.put(gatewayHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(gatewayHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

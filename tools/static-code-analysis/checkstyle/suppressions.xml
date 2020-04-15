@@ -4,6 +4,7 @@
     <!-- These suppressions define which files to be suppressed for which checks. -->
     <suppress files=".+[\\/]internal[\\/].+\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck"/>
     <suppress files=".+DTO\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck|NullAnnotationsCheck" />
+    <suppress files=".+[\\/]dto[\\/].+\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck|NullAnnotationsCheck" />
     <suppress files=".+Impl\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck"/>
 
     <!-- Homematic and Tellstick bindings are creating and configuring things dynamically, they will log false positives for unused configuration -->

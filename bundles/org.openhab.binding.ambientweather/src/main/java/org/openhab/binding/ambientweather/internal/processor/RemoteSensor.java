@@ -41,7 +41,7 @@ public class RemoteSensor {
 
     private final Logger logger = LoggerFactory.getLogger(RemoteSensor.class);
 
-    private final TreeMap<Double, String> soilMoistureMap = new TreeMap<Double, String>();
+    private final TreeMap<Double, String> soilMoistureMap = new TreeMap<>();
 
     private int numberOfSensors;
 

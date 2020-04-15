@@ -25,7 +25,6 @@ import org.eclipse.smarthome.io.net.http.HttpClientInitializationException;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link UniFiThingHandlerFactory} is responsible for creating things and thing

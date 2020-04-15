@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 public class MetadataUtils {
     private static final Logger logger = LoggerFactory.getLogger(MetadataUtils.class);
     private static ResourceBundle descriptionsBundle;
-    private static Map<String, String> descriptions = new HashMap<String, String>();
-    private static Map<String, Set<String>> standardDatapoints = new HashMap<String, Set<String>>();
+    private static Map<String, String> descriptions = new HashMap<>();
+    private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
 
     protected static void initialize() {
         // loads all Homematic device names
@@ -75,7 +75,6 @@ public class MetadataUtils {
         Bundle bundle = FrameworkUtil.getBundle(MetadataUtils.class);
         try (InputStream stream = bundle.getResource("homematic/standard-datapoints.properties").openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-
             String line;
             while ((line = reader.readLine()) != null) {
                 if (StringUtils.trimToNull(line) != null && !StringUtils.startsWith(line, "#")) {
@@ -84,7 +83,7 @@ public class MetadataUtils {
 
                     Set<String> channelDatapoints = standardDatapoints.get(channelType);
                     if (channelDatapoints == null) {
-                        channelDatapoints = new HashSet<String>();
+                        channelDatapoints = new HashSet<>();
                         standardDatapoints.put(channelType, channelDatapoints);
                     }
 
@@ -108,7 +107,7 @@ public class MetadataUtils {
         if (dp.getOptions() == null) {
             logger.warn("No options for ENUM datapoint {}", dp);
         } else {
-            options = new ArrayList<T>();
+            options = new ArrayList<>();
             for (int i = 0; i < dp.getOptions().length; i++) {
                 String description = null;
                 if (!dp.isVariable() && !dp.isScript()) {

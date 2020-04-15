@@ -111,13 +111,13 @@ public class CcuGateway extends AbstractHomematicGateway {
                     "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device {}, channel: {}, paramset: {}",
                     channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
 
-            Collection<String> dpNames = new ArrayList<String>();
+            Collection<String> dpNames = new ArrayList<>();
             for (HmDatapoint dp : channel.getDatapoints()) {
                 if (!dp.isVirtual() && dp.isReadable() && dp.getParamsetType() == HmParamsetType.VALUES) {
                     dpNames.add(dp.getName());
                 }
             }
-            if (dpNames.size() > 0) {
+            if (!dpNames.isEmpty()) {
                 HmDevice device = channel.getDevice();
                 String channelName = String.format("%s.%s:%s.", device.getHmInterface().getName(), device.getAddress(),
                         channel.getNumber());
@@ -226,7 +226,7 @@ public class CcuGateway extends AbstractHomematicGateway {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         try (InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream()) {
             TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
-            Map<String, String> result = new HashMap<String, String>();
+            Map<String, String> result = new HashMap<>();
             if (scriptList.getScripts() != null) {
                 for (TclScript script : scriptList.getScripts()) {
                     result.put(script.name, StringUtils.trimToNull(script.data));

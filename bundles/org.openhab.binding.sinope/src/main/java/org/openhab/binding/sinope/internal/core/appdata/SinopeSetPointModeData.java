@@ -14,7 +14,7 @@ package org.openhab.binding.sinope.internal.core.appdata;
 
 /**
  * The Class SinopeRoomTempData.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeSetPointModeData extends SinopeAppData {
@@ -23,7 +23,6 @@ public class SinopeSetPointModeData extends SinopeAppData {
      * Instantiates a new sinope set point temp data.
      */
     public SinopeSetPointModeData() {
-
         super(new byte[] { 0x00, 0x00, 0x02, 0x11 }, new byte[] { 0 });
     }
 

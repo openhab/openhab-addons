@@ -53,7 +53,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private final Logger logger = LoggerFactory.getLogger(WemoLightHandler.class);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private UpnpIOService service;
 
@@ -397,7 +397,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 service.removeSubscription(this, SUBSCRIPTION);
             }
 
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
         }
     }

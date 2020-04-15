@@ -75,7 +75,8 @@ public class DoorbellHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DoorbellHandler.class);
 
     // Get a dedicated threadpool for the long-running listener thread
-    private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager.getScheduledPool("doorbirdHandler");
+    private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager
+            .getScheduledPool("doorbirdListener" + "-" + thing.getUID().getId());
     private @Nullable ScheduledFuture<?> listenerJob;
     private final DoorbirdUdpListener udpListener;
 
@@ -433,7 +434,7 @@ public class DoorbellHandler extends BaseThingHandler {
     private void updateMontage(String channelId) {
         logger.debug("Update montage for channel '{}'", channelId);
         ArrayList<BufferedImage> images = getImages(channelId);
-        if (images.size() > 0) {
+        if (!images.isEmpty()) {
             State state = createMontage(images);
             if (state != null) {
                 logger.debug("Got a montage. Updating channel '{}' with image montage", channelId);

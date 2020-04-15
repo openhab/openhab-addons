@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miio.internal.MiIoCommand;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import org.openhab.binding.miio.internal.MiIoCommand;
 
 /**
  * Mapping devices from json
@@ -31,16 +32,16 @@ public class DeviceMapping {
 
     @SerializedName("id")
     @Expose
-    private List<String> id = new ArrayList<String>();
-    @SerializedName("channels")
-    @Expose
-    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    private List<String> id = new ArrayList<>();
     @SerializedName("propertyMethod")
     @Expose
-    private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();
+    private @Nullable String propertyMethod;
     @SerializedName("maxProperties")
     @Expose
-    private int maxProperties = 5;
+    private @Nullable Integer maxProperties;
+    @SerializedName("channels")
+    @Expose
+    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
 
     public List<String> getId() {
         return id;
@@ -51,7 +52,8 @@ public class DeviceMapping {
     }
 
     public String getPropertyMethod() {
-        return propertyMethod;
+        final String propertyMethod = this.propertyMethod;
+        return propertyMethod != null ? propertyMethod : MiIoCommand.GET_PROPERTY.getCommand();
     }
 
     public void setPropertyMethod(String propertyMethod) {
@@ -59,7 +61,8 @@ public class DeviceMapping {
     }
 
     public int getMaxProperties() {
-        return maxProperties;
+        final Integer maxProperties = this.maxProperties;
+        return maxProperties != null ? maxProperties.intValue() : 5;
     }
 
     public void setMaxProperties(int maxProperties) {
@@ -73,5 +76,4 @@ public class DeviceMapping {
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
     }
-
 }
