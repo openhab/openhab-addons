@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -39,12 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 public class FSInternetRadioHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RADIO);
-    private final HttpClient httpClient;
-
-    @Activate
-    public FSInternetRadioHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
+    private HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -62,4 +56,12 @@ public class FSInternetRadioHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
+    }
 }

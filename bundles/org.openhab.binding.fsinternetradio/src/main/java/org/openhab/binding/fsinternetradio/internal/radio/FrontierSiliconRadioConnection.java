@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 /**
  * This class holds the http-connection and session information for controlling the radio.
  *
- * @author Rainer Ostendorf - Initial contribution
- * @author Patrick Koenemann - contribution
+ * @author Rainer Ostendorf
+ * @author Patrick Koenemann
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
  * @author Mihaela Memova - changed the calling of the stopHttpClient() method, fixed the hardcoded URL path, fixed the
  *         for loop condition part
@@ -52,7 +52,7 @@ public class FrontierSiliconRadioConnection {
     private String sessionId;
 
     /** http clients, store cookies, so it is kept in connection class. */
-    private final HttpClient httpClient;
+    private HttpClient httpClient = null;
 
     /** Flag indicating if we are successfully logged in. */
     private boolean isLoggedIn = false;

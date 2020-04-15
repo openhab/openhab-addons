@@ -19,7 +19,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.CharacterData;
@@ -42,11 +41,10 @@ import org.xml.sax.SAXException;
  *
  * This class parses this XML data and provides functions for reading and casting typical fields.
  *
- * @author Rainer Ostendorf - Initial contribution
- * @author Patrick Koenemann - contribution
+ * @author Rainer Ostendorf
+ * @author Patrick Koenemann
  *
  */
-@NonNullByDefault
 public class FrontierSiliconRadioApiResult {
 
     /**

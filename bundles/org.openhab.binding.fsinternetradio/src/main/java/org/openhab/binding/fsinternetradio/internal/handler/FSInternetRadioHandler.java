@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -61,9 +60,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (radio == null) {
-                return;
-            }
             if (!radio.isLoggedIn()) {
                 // radio is not set, so set all channels to 'undefined'
                 for (Channel channel : getThing().getChannels()) {
@@ -156,9 +152,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
-                    if (radio == null) {
-                        return;
-                    }
                     if (radio.login()) {
                         // Thing initialized. If done set status to ONLINE to indicate proper working.
                         updateStatus(ThingStatus.ONLINE);
@@ -185,7 +178,6 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        Validate.notNull(radio);
         if (!radio.isLoggedIn()) {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);

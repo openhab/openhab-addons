@@ -16,18 +16,16 @@ import static org.openhab.binding.fsinternetradio.internal.radio.FrontierSilicon
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
  * Class representing a internet radio based on the frontier silicon chipset. Tested with "hama IR110" and Medion
  * MD87180" internet radios.
  *
- * @author Rainer Ostendorf - Initial contribution
- * @author Patrick Koenemann - contribution
+ * @author Rainer Ostendorf
+ * @author Patrick Koenemann
  * @author Mihaela Memova - removed duplicated check for the percent value range
  */
-@NonNullByDefault
 public class FrontierSiliconRadio {
 
     /** The http connection/session used for controlling the radio. */

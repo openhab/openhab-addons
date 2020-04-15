@@ -18,10 +18,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -43,15 +41,15 @@ import org.slf4j.LoggerFactory;
  * add further supported devices!
  *
  * @author Patrick Koenemann - Initial contribution
- * @author Mihaela Memova removed the getLabel(RemoteDevice device) method due to its unreachable code lines
- * @author Markus Michels Teufel 3sixty added
+ * @author Mihaela Memova - removed the getLabel(RemoteDevice device) method due to its unreachable code lines
+ * @author Markus Michels - support for Teufel 3sixty discovery
  */
 @Component(immediate = true)
 public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioDiscoveryParticipant.class);
 
     /** Map from UPnP manufacturer to model number for supported radios; filled in static initializer below. */
-    private static final Map<String, Set<String>> SUPPORTED_RADIO_MODELS = new HashMap<>();
+    private static final Map<String, Set<String>> SUPPORTED_RADIO_MODELS = new HashMap<String, Set<String>>();
 
     static {
         // to allow case-insensitive match: add all values UPPER-CASE!
@@ -60,7 +58,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         // https://community.openhab.org/t/internet-radio-i-need-your-help/2131
 
         // list of medion internet radios taken from: http://internetradio.medion.com/
-        final Set<String> medionRadios = new HashSet<>();
+        final Set<String> medionRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("MEDION AG", medionRadios);
         medionRadios.add("MD83813");
         medionRadios.add("MD84017");
@@ -81,7 +79,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
 
         // list of hama internet radios taken from:
         // https://www.hama.com/action/searchCtrl/search?searchMode=1&q=Internet%20Radio
-        final Set<String> hamaRadios = new HashSet<>();
+        final Set<String> hamaRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("HAMA", hamaRadios);
         hamaRadios.add("IR100");
         hamaRadios.add("IR110");
@@ -95,17 +93,16 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         // and: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/20
         // and: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/23
         // these radios do not provide model number, but the model name should also be ok
-        final Set<String> radiosWithoutManufacturer = new HashSet<>();
+        final Set<String> radiosWithoutManufacturer = new HashSet<String>();
         radiosWithoutManufacturer.add(""); // empty manufacturer / model name
         radiosWithoutManufacturer.add(null); // missing manufacturer / model name
         SUPPORTED_RADIO_MODELS.put("SMRS18A1", radiosWithoutManufacturer);
         SUPPORTED_RADIO_MODELS.put("SMRS30A1", radiosWithoutManufacturer);
         SUPPORTED_RADIO_MODELS.put("SMRS35A1", radiosWithoutManufacturer);
 
-        // as reported on https://community.openhab.org/t/controlling-teufel-3sixty/88690/3
-        final Set<String> teufelRadios = new HashSet<>();
-        SUPPORTED_RADIO_MODELS.put("TEUFELS", teufelRadios);
-        teufelRadios.add("3SIXTY");
+        final Set<String> teufelRadios = new HashSet<String>();
+        SUPPORTED_RADIO_MODELS.put("Teufel", teufelRadios);
+        teufelRadios.add("Radio 3sixty");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/5
         final Set<String> ttmicroRadios = new HashSet<String>();
@@ -113,31 +110,31 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         ttmicroRadios.add("PINELL SUPERSOUND");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/7
-        final Set<String> revoRadios = new HashSet<>();
+        final Set<String> revoRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("REVO TECHNOLOGIES LTD", revoRadios);
         revoRadios.add("S10");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/10
         // and: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/21
-        final Set<String> robertsRadios = new HashSet<>();
+        final Set<String> robertsRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("ROBERTS RADIO LIMITED", robertsRadios);
         robertsRadios.add("ROBERTS STREAM 93I");
         robertsRadios.add("ROBERTS STREAM 83I");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/11
-        final Set<String> aunaRadios = new HashSet<>();
+        final Set<String> aunaRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("AUNA", aunaRadios);
         aunaRadios.add("10028154 & 10028155");
         aunaRadios.add("10028154");
         aunaRadios.add("10028155");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/22
-        final Set<String> sangeanRadios = new HashSet<>();
+        final Set<String> sangeanRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("SANGEAN RADIO LIMITED", sangeanRadios);
         sangeanRadios.add("28");
 
         // as reported in: https://community.openhab.org/t/internet-radio-i-need-your-help/2131/25
-        final Set<String> rokuRadios = new HashSet<>();
+        final Set<String> rokuRadios = new HashSet<String>();
         SUPPORTED_RADIO_MODELS.put("ROKU", rokuRadios);
         rokuRadios.add("M1001");
     }
@@ -148,72 +145,79 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
     }
 
     @Override
-    @Nullable
     public DiscoveryResult createResult(RemoteDevice device) {
-        ThingUID uid = getThingUID(device);
+        final ThingUID uid = getThingUID(device);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(1);
-            Optional<String> ip = getIp(device);
-            if (ip.isPresent()) {
-                properties.put(CONFIG_PROPERTY_IP, ip.get());
+            final Map<String, Object> properties = new HashMap<>(1);
+            final String ip = getIp(device);
+            if (ip != null) {
+                properties.put(CONFIG_PROPERTY_IP, ip);
 
                 // add manufacturer and model, if provided
-                Optional<String> manufacturer = getManufacturer(device);
-                Optional<String> model = getModel(device);
-                if (manufacturer.isPresent()) {
+                final String manufacturer = getManufacturer(device);
+                if (manufacturer != null) {
                     properties.put(PROPERTY_MANUFACTURER, manufacturer);
                 }
-                properties.put(PROPERTY_MODEL, model.isPresent() ? model : getFriendlyName(device));
-                Optional<String> thingName = !manufacturer.isPresent() && !model.isPresent() ? getFriendlyName(device)
-                        : Optional.of(device.getDisplayString());
-                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(thingName.get()).build();
+                final String model = getModel(device) != null ? getModel(device) : getFriendlyName(device);
+                if (model != null) {
+                    properties.put(PROPERTY_MODEL, model);
+                }
+                final String thingName = (manufacturer == null) && (getModel(device) == null) ? getFriendlyName(device)
+                        : device.getDisplayString();
+                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(thingName).build();
             }
         }
         return null;
     }
 
-    private Optional<String> getManufacturer(RemoteDevice device) {
-        return Optional.ofNullable(device.getDetails()).map(DeviceDetails::getManufacturerDetails)
-                .map(details -> details.getManufacturer().trim()).filter(manufacturer -> !manufacturer.isEmpty());
+    private String getManufacturer(RemoteDevice device) {
+        final DeviceDetails details = device.getDetails();
+        if ((details != null) && (details.getManufacturerDetails() != null)) {
+            String manufacturer = details.getManufacturerDetails().getManufacturer().trim();
+            return manufacturer.isEmpty() ? null : manufacturer;
+        }
+        return null;
     }
 
-    private Optional<String> getModel(RemoteDevice device) {
-        DeviceDetails details = device.getDetails();
+    private String getModel(RemoteDevice device) {
+        final DeviceDetails details = device.getDetails();
         if ((details != null) && (details.getModelDetails().getModelNumber() != null)) {
-            Optional.ofNullable(details.getModelDetails().getModelNumber().trim());
+            String model = details.getModelDetails().getModelNumber().trim();
+            return model.isEmpty() ? null : model;
         }
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<String> getFriendlyName(RemoteDevice device) {
-        String name = null;
-        DeviceDetails details = device.getDetails();
+    private String getFriendlyName(RemoteDevice device) {
+        final DeviceDetails details = device.getDetails();
         if ((details != null) && (details.getFriendlyName() != null)) {
-            name = details.getFriendlyName().trim();
+            String name = details.getFriendlyName().trim();
+            return name.isEmpty() ? null : name;
         }
-        return Optional.ofNullable(name);
+        return null;
     }
 
-    private Optional<String> getIp(RemoteDevice device) {
-        DeviceDetails details = device.getDetails();
+    private String getIp(RemoteDevice device) {
+        final DeviceDetails details = device.getDetails();
         if (details != null) {
             if (details.getBaseURL() != null) {
-                return Optional.ofNullable(details.getBaseURL().getHost());
+                return details.getBaseURL().getHost();
             }
         }
-        RemoteDeviceIdentity identity = device.getIdentity();
+        final RemoteDeviceIdentity identity = device.getIdentity();
         if (identity != null) {
             if (identity.getDescriptorURL() != null) {
-                return Optional.ofNullable(identity.getDescriptorURL().getHost());
+                return identity.getDescriptorURL().getHost();
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
      * If <code>device</code> is a supported device, a unique thing ID (e.g. serial number) must be returned. Further
      * supported devices should be added here, based on the available UPnP information.
      */
+    @SuppressWarnings("null")
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();
@@ -243,6 +247,20 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
                         final Set<String> supportedRadios = SUPPORTED_RADIO_MODELS.get(modelName.trim().toUpperCase());
                         if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
                             return new ThingUID(THING_TYPE_RADIO, serialNumber);
+                        }
+                        // Teufel reports empty manufacturer and model, but friendly name
+                        if (friendlyName.contains("Teufel")) {
+                            logger.debug("haha");
+                        }
+                        if (!friendlyName.isEmpty()) {
+                            for (Map.Entry<String, Set<String>> manufacturers : SUPPORTED_RADIO_MODELS.entrySet()) {
+                                Set<String> models = manufacturers.getValue();
+                                for (String model : models) {
+                                    if ((model != null) && !model.isEmpty() && friendlyName.contains(model)) {
+                                        return new ThingUID(THING_TYPE_RADIO, serialNumber);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
