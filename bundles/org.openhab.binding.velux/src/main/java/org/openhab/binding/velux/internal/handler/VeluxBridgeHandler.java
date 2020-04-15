@@ -448,6 +448,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
                     continue;
                 }
+                if (!channel2VeluxActuator.get(channelUID).isKnown()) {
+                    logger.trace("syncChannelsWithProducts(): channel {} not registered on bridge.", channelUID);
+                    continue;
+                }
                 ProductBridgeIndex channelPbi = channel2VeluxActuator.get(channelUID).getProductBridgeIndex();
                 if (!channelPbi.equals(productPbi)) {
                     continue;
@@ -471,6 +475,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
         bridgeParameters.actuators.getChannel().existingProducts.resetDirtyFlag();
         logger.trace("syncChannelsWithProducts() done.");
+
     }
 
     // Processing of openHAB events
