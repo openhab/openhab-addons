@@ -26,7 +26,7 @@ import io.github.hapjava.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.accessories.Lightbulb;
 
 /**
- * Abstract class implementing a Homekit Lightbulb using a SwitchItem
+ * Abstract class implementing a HomeKit Lightbulb using a SwitchItem
  *
  * @author Andy Lintner - Initial contribution
  */

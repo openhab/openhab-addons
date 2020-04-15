@@ -72,7 +72,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(
-                new String[] { buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with Homekit clients"),
+                new String[] { buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients"),
                         buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
                                 "enables or disables unauthenticated access to facilitate debugging") });
     }
@@ -99,15 +99,15 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         try {
             new HomekitAuthInfoImpl(storageService, null).clear();
             homekit.refreshAuthInfo();
-            console.println("Cleared homekit pairings");
+            console.println("Cleared HomeKit pairings");
         } catch (Exception e) {
-            logger.warn("Could not clear homekit pairings", e);
+            logger.warn("Could not clear HomeKit pairings", e);
         }
     }
 
     private void allowUnauthenticatedHomekitRequests(boolean allow, Console console) {
         homekit.allowUnauthenticatedRequests(allow);
-        console.println((allow ? "Enabled " : "Disabled ") + "unauthenticated homekit access");
+        console.println((allow ? "Enabled " : "Disabled ") + "unauthenticated HomeKit access");
     }
 
 }

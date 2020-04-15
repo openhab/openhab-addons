@@ -117,7 +117,7 @@ public class HomekitAccessoryFactory {
                 return new HomekitLockImpl(taggedItem, itemRegistry, updater);
         }
 
-        throw new HomekitException("Unknown homekit type: " + taggedItem.getAccessoryType());
+        throw new HomekitException("Unknown HomeKit type: " + taggedItem.getAccessoryType());
     }
 
     /**

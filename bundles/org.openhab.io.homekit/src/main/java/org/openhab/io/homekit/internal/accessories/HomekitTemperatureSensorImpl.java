@@ -25,7 +25,7 @@ import io.github.hapjava.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.accessories.TemperatureSensor;
 
 /**
- * Implements a Homekit TemperatureSensor using a NumberItem
+ * Implements a HomeKit TemperatureSensor using a NumberItem
  *
  * @author Andy Lintner - Initial contribution
  */
