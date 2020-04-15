@@ -121,7 +121,7 @@ public class LGWebOSTVSocket {
     private final ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> disconnectingJob;
 
-    private static final int DISCONNECTING_DELAY_SECONDS = 5;
+    private static final int DISCONNECTING_DELAY_SECONDS = 2;
 
     private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
     // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
