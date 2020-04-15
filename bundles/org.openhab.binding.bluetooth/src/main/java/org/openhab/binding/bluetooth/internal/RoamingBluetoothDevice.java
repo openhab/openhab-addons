@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.internal;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,7 +39,7 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
 
     private Map<BluetoothDevice, Listener> devices = new ConcurrentHashMap<>();
 
-    private volatile @Nullable BluetoothDevice currentDelegate = null;
+    private AtomicReference<@Nullable BluetoothDevice> currentDelegateRef = new AtomicReference<>();
 
     protected RoamingBluetoothDevice(RoamingBluetoothBridgeHandler roamingAdapter, BluetoothAddress address) {
         super(roamingAdapter, address);
@@ -132,9 +133,10 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
                 newDelegate = device;
             }
         }
-        currentDelegate = newDelegate;
-        notifyListeners(BluetoothEventType.ADAPTER_CHANGED, getAdapter(newDelegate));
-
+        BluetoothDevice oldDelegate = currentDelegateRef.getAndSet(newDelegate);
+        if (oldDelegate != newDelegate) { // using reference comparison is valid in this case
+            notifyListeners(BluetoothEventType.ADAPTER_CHANGED, getAdapter(newDelegate));
+        }
         return newDelegate;
     }
 
@@ -148,7 +150,7 @@ public class RoamingBluetoothDevice extends BluetoothDevice {
 
     @Override
     public BluetoothAdapter getAdapter() {
-        return getAdapter(currentDelegate);
+        return getAdapter(currentDelegateRef.get());
     }
 
     private class Listener implements BluetoothDeviceListener {
