@@ -18,8 +18,6 @@ import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
@@ -36,13 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, DeviceMessageListener {
+public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceMessageListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
     private final int DISCOVERY_TTL = 3600;
 
     private RFXComBridgeHandler bridgeHandler;
-    private DiscoveryServiceCallback callback;
 
     public RFXComDeviceDiscoveryService(RFXComBridgeHandler rfxcomBridgeHandler) {
         super(null, 1, false);
@@ -66,11 +62,6 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
         // this can be ignored here as we discover devices from received messages
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback callback) {
-        this.callback = callback;
     }
 
     @Override

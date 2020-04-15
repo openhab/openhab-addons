@@ -24,8 +24,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants;
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
@@ -42,7 +40,7 @@ import jcifs.smb.SmbFile;
  * @author Victor Antonovich - Initial contribution
  */
 @Component(service = DiscoveryService.class, immediate = true)
-public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AirVisualNodeDiscoveryService.class);
 
@@ -52,15 +50,8 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
 
     private ScheduledFuture<?> backgroundDiscoveryFuture;
 
-    private DiscoveryServiceCallback discoveryServiceCallback;
-
     public AirVisualNodeDiscoveryService() {
         super(Collections.singleton(AirVisualNodeBindingConstants.THING_TYPE_AVNODE), 600, true);
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
@@ -93,7 +84,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
         // Get all workgroup members
         SmbFile[] workgroupMembers;
         try {
-            String workgroupUrl = "smb://" + AVISUAL_WORKGROUP_NAME +"/";
+            String workgroupUrl = "smb://" + AVISUAL_WORKGROUP_NAME + "/";
             workgroupMembers = new SmbFile(workgroupUrl).listFiles();
         } catch (IOException e) {
             // Can't get workgroup member list
@@ -101,7 +92,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
         }
 
         // Check found workgroup members for the Node devices
-        for (SmbFile s: workgroupMembers) {
+        for (SmbFile s : workgroupMembers) {
             String serverName = s.getServer();
 
             // Check workgroup member for the Node device name match
@@ -118,12 +109,6 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
             ThingUID thingUID = new ThingUID(AirVisualNodeBindingConstants.THING_TYPE_AVNODE,
                     nodeSerialNumber.toLowerCase());
 
-            if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null ||
-                    discoveryServiceCallback.getExistingThing(thingUID) != null) {
-                // The Node with this Thing UID is already discovered or configured as a Thing, skip it
-                continue;
-            }
-
             try {
                 // Get the Node address by name
                 NbtAddress nodeNbtAddress = NbtAddress.getByName(serverName);
@@ -137,8 +122,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService impl
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
                         .withRepresentationProperty(AirVisualNodeConfig.ADDRESS)
-                        .withLabel("AirVisual Node (" + nodeSerialNumber + ")")
-                        .build();
+                        .withLabel("AirVisual Node (" + nodeSerialNumber + ")").build();
                 thingDiscovered(result);
             } catch (UnknownHostException e) {
                 logger.debug("The Node address resolving failed ", e);
