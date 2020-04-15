@@ -101,14 +101,12 @@ public class ConvertToBindingTest extends BaseConverterTest {
 
     @Test(expected = ConverterException.class)
     public void testQuantityTypeConverterFailsToConvertDecimalType() throws ConverterException {
-
         QuantityTypeConverter converter = new QuantityTypeConverter();
         converter.convertToBinding(new DecimalType(99.9), floatDp);
     }
 
     @Test(expected = ConverterException.class)
     public void testDecimalTypeConverterFailsToConvertQuantityType() throws ConverterException {
-
         DecimalTypeConverter converter = new DecimalTypeConverter();
         converter.convertToBinding(new QuantityType<>("99.9 %"), floatDp);
     }

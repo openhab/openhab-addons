@@ -14,16 +14,27 @@ package org.openhab.binding.miio.internal.handler;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,11 +43,16 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.cloud.CloudUtil;
+import org.openhab.binding.miio.internal.cloud.MiCloudException;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
+import org.openhab.binding.miio.internal.robot.RRMapDraw;
 import org.openhab.binding.miio.internal.robot.StatusType;
 import org.openhab.binding.miio.internal.robot.VacuumErrorType;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
@@ -55,15 +71,27 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
+    private static final float MAP_SCALE = 2.0f;
+    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHss");
+    private static final String MAP_PATH = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID
+            + File.separator;
+    private final ChannelUID mapChannelUid;
+
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
     private ExpiringCache<String> dnd;
     private ExpiringCache<String> history;
+    private int stateId;
+    private ExpiringCache<String> map;
     private String lastHistoryId = "";
-    private int inCleaning;
+    private String lastMap = "";
+    private CloudConnector cloudConnector;
 
-    public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
+    public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
+            CloudConnector cloudConnector) {
         super(thing, miIoDatabaseWatchService);
+        this.cloudConnector = cloudConnector;
+        mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         initializeData();
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
@@ -109,6 +137,17 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
+        map = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                int ret = sendCommand(MiIoCommand.GET_MAP);
+                if (ret != 0) {
+                    return "id:" + ret;
+                }
+            } catch (Exception e) {
+                logger.debug("Error during dnd refresh: {}", e.getMessage(), e);
+            }
+            return null;
+        });
     }
 
     @Override
@@ -120,6 +159,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
             updateData();
+            lastMap = "";
+            if (channelUID.getId().equals(CHANNEL_VACUUM_MAP)) {
+                sendCommand(MiIoCommand.GET_MAP);
+            }
             return;
         }
         if (channelUID.getId().equals(CHANNEL_VACUUM)) {
@@ -186,12 +229,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int fanLevel = statusData.get("fan_power").getAsInt();
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
         updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
-        inCleaning = statusData.get("in_cleaning").getAsInt();
-        updateState(CHANNEL_IN_CLEANING, new DecimalType(inCleaning));
+        updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsInt()));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
         updateState(CHANNEL_STATE, new StringType(state.getDescription()));
-        updateState(CHANNEL_STATE_ID, new DecimalType(statusData.get("state").getAsInt()));
+        stateId = statusData.get("state").getAsInt();
+        updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
         State vacuum = OnOffType.OFF;
         String control;
         switch (state) {
@@ -348,6 +391,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             status.getValue();
             refreshNetwork();
             consumables.getValue();
+            if (lastMap.isEmpty() || stateId != 8) {
+                if (isLinked(mapChannelUid)) {
+                    map.getValue();
+                }
+            }
         } catch (Exception e) {
             logger.debug("Error while updating '{}': '{}", getThing().getUID().toString(), e.getLocalizedMessage());
         }
@@ -395,11 +443,55 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     logger.debug("Could not extract cleaning history record from: {}", response);
                 }
                 break;
+            case GET_MAP:
+                if (response.getResult().isJsonArray()) {
+                    String mapresponse = response.getResult().getAsJsonArray().get(0).getAsString();
+                    if (!mapresponse.contentEquals("retry") && !mapresponse.contentEquals(lastMap)) {
+                        lastMap = mapresponse;
+                        scheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
+                    }
+                }
+                break;
             case UNKNOWN:
                 updateState(CHANNEL_COMMAND, new StringType(response.getResponse().toString()));
                 break;
             default:
                 break;
         }
+    }
+
+    private State getMap(String map) {
+        final MiIoBindingConfiguration configuration = this.configuration;
+        if (configuration != null && cloudConnector.isConnected()) {
+            try {
+                final @Nullable RawType mapDl = cloudConnector.getMap(map,
+                        (configuration.cloudServer != null) ? configuration.cloudServer : "");
+                if (mapDl != null) {
+                    byte[] mapData = mapDl.getBytes();
+                    RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    if (logger.isDebugEnabled()) {
+                        final String mapPath = MAP_PATH + map + DATEFORMATTER.format(new Date()) + ".rrmap";
+                        CloudUtil.writeBytesToFileNio(mapData, mapPath);
+                        logger.debug("Mapdata saved to {}", mapPath);
+                    }
+                    ImageIO.write(rrMap.getImage(MAP_SCALE), "jpg", baos);
+                    byte[] byteArray = baos.toByteArray();
+                    if (byteArray != null && byteArray.length > 0) {
+                        return new RawType(byteArray, "image/jpeg");
+                    } else {
+                        logger.debug("Mapdata empty removing image");
+                        return UnDefType.UNDEF;
+                    }
+                }
+            } catch (MiCloudException e) {
+                logger.debug("Error getting data from Xiaomi cloud. Mapdata could not be updated: {}", e.getMessage());
+            } catch (IOException e) {
+                logger.debug("Mapdata could not be updated: {}", e.getMessage());
+            }
+        } else {
+            logger.debug("Not connected to Xiaomi cloud. Cannot retreive new map: {}", map);
+        }
+        return UnDefType.UNDEF;
     }
 }

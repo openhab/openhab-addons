@@ -42,7 +42,7 @@ public enum AcknowledgeResponseValue {
             }
         }
 
-        throw new ResponseException("Cannot understand status: " + code);
+        throw new ResponseException("Cannot understand acknowledgement status: " + code);
     }
 
 }

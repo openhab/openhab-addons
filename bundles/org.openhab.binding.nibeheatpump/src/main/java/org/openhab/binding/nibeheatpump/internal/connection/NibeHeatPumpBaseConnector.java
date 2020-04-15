@@ -62,7 +62,6 @@ public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector
 
     public void sendMsgToListeners(NibeHeatPumpMessage msg) {
         if (msg != null) {
-
             for (NibeHeatPumpEventListener listener : listeners) {
                 try {
                     listener.msgReceived(msg);

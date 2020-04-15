@@ -76,7 +76,6 @@ public class NibeHeatPumpProtocolTest {
 
     @Test(timeout = 1000)
     public void test() {
-
         //@formatter:off
         final String strTestData =
                 // RMU40 message, acknowledge should be send
@@ -120,7 +119,6 @@ public class NibeHeatPumpProtocolTest {
 
         // run protocol state machine to process test data
         while (mockupContext.state().process(mockupContext)) {
-
         }
 
         // test results

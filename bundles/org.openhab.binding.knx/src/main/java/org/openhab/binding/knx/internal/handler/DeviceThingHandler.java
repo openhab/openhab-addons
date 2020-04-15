@@ -242,7 +242,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                     break;
             }
         }
-
     }
 
     private boolean isControl(ChannelUID channelUID) {
@@ -261,7 +260,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     /** KNXIO */
     private void sendGroupValueResponse(Channel channel, GroupAddress destination) {
         Set<GroupAddress> rsa = getKNXChannelType(channel).getWriteAddresses(channel.getConfiguration());
-        if (rsa.size() > 0) {
+        if (!rsa.isEmpty()) {
             logger.trace("onGroupRead size '{}'", rsa.size());
             withKNXType(channel, (selector, configuration) -> {
                 Optional<OutboundSpec> os = groupAddressesRespondingSpec.stream().filter(spec -> {

@@ -18,8 +18,6 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.lirc.internal.LIRCBindingConstants;
@@ -34,23 +32,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Nagle - Initial contribution
  */
-public class LIRCRemoteDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, LIRCMessageListener {
+public class LIRCRemoteDiscoveryService extends AbstractDiscoveryService implements LIRCMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(LIRCRemoteDiscoveryService.class);
 
     private LIRCBridgeHandler bridgeHandler;
-    private DiscoveryServiceCallback discoveryServiceCallback;
 
     public LIRCRemoteDiscoveryService(LIRCBridgeHandler lircBridgeHandler) {
         super(LIRCBindingConstants.SUPPORTED_DEVICE_TYPES, LIRCBindingConstants.DISCOVERY_TIMOUT, true);
         this.bridgeHandler = lircBridgeHandler;
         bridgeHandler.registerMessageListener(this);
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
@@ -78,20 +69,13 @@ public class LIRCRemoteDiscoveryService extends AbstractDiscoveryService
     private void addRemote(ThingUID bridge, String remote) {
         ThingTypeUID uid = LIRCBindingConstants.THING_TYPE_REMOTE;
         ThingUID thingUID = new ThingUID(uid, bridge, remote);
-        if (thingUID != null) {
-            if (discoveryServiceCallback != null
-                    && discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
-                // Ignore this remote as we already know about it
-                logger.debug("Remote {}: Already known.", remote);
-                return;
-            }
-            logger.trace("Remote {}: Discovered new remote.", remote);
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(LIRCBindingConstants.PROPERTY_REMOTE, remote);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(remote)
-                    .withBridge(bridge).withProperties(properties).build();
-            thingDiscovered(discoveryResult);
-        }
+
+        logger.trace("Remote {}: Discovered new remote.", remote);
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(LIRCBindingConstants.PROPERTY_REMOTE, remote);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(remote).withBridge(bridge)
+                .withProperties(properties).build();
+        thingDiscovered(discoveryResult);
     }
 
 }

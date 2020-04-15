@@ -88,19 +88,16 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     private @Nullable ScheduledFuture<?> procedureTimer;
 
     private Runnable connectTimeoutTask = new Runnable() {
-
         @Override
         public void run() {
             if (connectionState == ConnectionState.CONNECTING) {
                 logger.debug("Connection timeout for device {}", address);
                 connectionState = ConnectionState.DISCONNECTED;
             }
-
         }
     };
 
     private Runnable procedureTimeoutTask = new Runnable() {
-
         @Override
         public void run() {
             logger.debug("Procedure {} timeout for device {}", procedureProgress, address);
@@ -274,7 +271,6 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     }
 
     private void handleScanEvent(BlueGigaScanResponseEvent event) {
-
         // Check if this is addressed to this device
         if (!address.equals(new BluetoothAddress(event.getSender()))) {
             return;

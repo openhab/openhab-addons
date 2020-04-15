@@ -234,7 +234,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             logger.debug("{}: refresh exception {}", this.thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "refresh exception");
         }
-
     }
 
     /**
@@ -318,7 +317,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "required properties missing");
         bridgeHandler.scheduleForPropertiesUpdate(thing);
-
     }
 
     /**

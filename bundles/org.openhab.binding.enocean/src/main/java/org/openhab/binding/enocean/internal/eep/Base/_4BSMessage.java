@@ -76,14 +76,12 @@ public abstract class _4BSMessage extends EEP {
 
     @Override
     protected void teachInQueryImpl(Configuration config) {
-
         if (config == null) {
             return;
         }
 
         EnOceanChannelTeachInConfig c = config.as(EnOceanChannelTeachInConfig.class);
         if (c.teachInMSG == null || c.teachInMSG.isEmpty()) {
-
             EEPType type = getEEPType();
 
             byte db3 = (byte) ((getEEPType().getFunc() << 2) | ((type.getType()) >>> 5));
@@ -95,11 +93,9 @@ public abstract class _4BSMessage extends EEP {
                 db2 += (manufId >>> 8);
                 db1 += (manufId & 0xff);
             } catch (Exception e) {
-
             }
 
             setData(db3, db2, db1, LRN_Type_Mask);
-
         } else {
             try {
                 byte[] msg = HexUtils.hexToBytes(c.teachInMSG);

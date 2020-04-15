@@ -213,7 +213,6 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
      * @return true if this snapshot changed as a result of this operation
      */
     public void merge(BluetoothDeviceSnapshot device) {
-
         Integer txPower = device.getTxPower();
         Integer manufacturer = device.getManufacturerId();
         String name = device.getName();

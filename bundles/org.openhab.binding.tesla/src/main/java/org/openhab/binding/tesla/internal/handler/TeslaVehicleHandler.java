@@ -546,7 +546,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     protected boolean checkResponse(Response response, boolean immediatelyFail) {
-
         if (response != null && response.getStatus() == 200) {
             return true;
         } else {
