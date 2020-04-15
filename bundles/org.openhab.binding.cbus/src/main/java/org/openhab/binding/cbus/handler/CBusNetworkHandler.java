@@ -44,7 +44,6 @@ import com.daveoxley.cbus.Project;
 public class CBusNetworkHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CBusNetworkHandler.class);
-    private @Nullable CBusCGateHandler bridgeHandler = null;
     private @Nullable CBusNetworkConfiguration configuration = null;
     private @Nullable Network network = null;
     private @Nullable Project projectObject = null;
@@ -256,24 +255,20 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized @Nullable CBusCGateHandler getCBusCGateHandler() {
-        if (this.bridgeHandler == null) {
-            logger.debug("getCBusCGateHandler --");
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                logger.warn("Required bridge not defined for device.");
-                return null;
-            }
-            ThingHandler handler = bridge.getHandler();
-            logger.debug("handler is {} ", handler);
-            if (handler instanceof CBusCGateHandler) {
-                this.bridgeHandler = (CBusCGateHandler) handler;
-            } else {
-                logger.debug("No available bridge handler found for bridge: {} .", bridge.getUID());
-                this.bridgeHandler = null;
-            }
+    private @Nullable CBusCGateHandler getCBusCGateHandler() {
+        logger.debug("getCBusCGateHandler --");
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Required bridge not defined for device.");
+            return null;
         }
-        return bridgeHandler;
+        ThingHandler handler = bridge.getHandler();
+        if (handler instanceof CBusCGateHandler) {
+            return (CBusCGateHandler) handler;
+        } else {
+            logger.debug("No available bridge handler found for bridge: {}.", bridge.getUID());
+            return null;
+        }
     }
 
     public @Nullable Network getNetwork() {

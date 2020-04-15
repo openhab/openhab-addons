@@ -15,7 +15,6 @@ package org.openhab.binding.cbus.internal.discovery;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Semaphore;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -46,8 +45,6 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
 
     private final CBusNetworkHandler cbusNetworkHandler;
-    private final Semaphore scanRunning = new Semaphore(1);
-    private volatile boolean endScan;
 
     public CBusGroupDiscovery(CBusNetworkHandler cbusNetworkHandler) {
         super(CBusBindingConstants.SUPPORTED_THING_TYPES_UIDS, 30, false);
@@ -55,16 +52,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void startScan() {
-        endScan = false;
-        try {
-            scanRunning.acquire();
-        } catch (InterruptedException e) {
-            logger.debug("Failed to get lock for scan so not running");
-            return;
-        }
-        logger.debug("start scan acquired semaphore\n");
-
+    protected synchronized void startScan() {
         if (cbusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             ThingUID bridgeUid = cbusNetworkHandler.getThing().getBridgeUID();
             if (bridgeUid == null) {
@@ -92,11 +80,6 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     }
                     ArrayList<Group> groups = application.getGroups(false);
                     for (Group group : groups) {
-                        if (endScan) {
-                            // stopScan has been called so we just need to release the lock and exit.
-                            scanRunning.release();
-                            return;
-                        }
                         logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
                                 group.getName());
                         Map<String, Object> properties = new HashMap<>();
@@ -125,24 +108,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
     }
 
     private synchronized void scanFinished() {
-        scanRunning.release();
         stopScan();// this notifies the scan listener that the scan is finished
         abortScan();// this clears the scheduled call to stopScan
-    }
-
-    @Override
-    protected void stopScan() {
-        if (!scanRunning.tryAcquire()) {
-            // failed to acquire lock so stop scanner and wait for it to finish
-            endScan = true;
-            try {
-                scanRunning.acquire();
-            } catch (InterruptedException e) {
-                // Failed to acquire lock. Just carry on
-            }
-        }
-        // We will have lock here so release it for another run
-        scanRunning.release();
-        super.stopScan();
     }
 }
