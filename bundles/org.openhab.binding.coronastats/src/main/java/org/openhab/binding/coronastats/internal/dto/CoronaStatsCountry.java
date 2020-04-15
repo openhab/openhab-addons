@@ -34,11 +34,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 @NonNullByDefault
 public class CoronaStatsCountry extends CoronaStatsCases {
     private String country = "";
-
     private String countryCode = "";
-
     private int tests = -1;
-
     private long updated = -1;
 
     public String getCountryCode() {

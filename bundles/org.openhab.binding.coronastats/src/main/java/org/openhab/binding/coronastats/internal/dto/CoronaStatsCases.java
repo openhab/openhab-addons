@@ -30,17 +30,11 @@ import org.eclipse.smarthome.core.types.UnDefType;
 @NonNullByDefault
 public class CoronaStatsCases {
     private int cases = -1;
-
     private int todayCases = -1;
-
     private int deaths = -1;
-
     private int todayDeaths = -1;
-
     private int recovered = -1;
-
     private int active = -1;
-
     private int critical = -1;
 
     protected Map<String, State> getCaseChannelsStateMap() {

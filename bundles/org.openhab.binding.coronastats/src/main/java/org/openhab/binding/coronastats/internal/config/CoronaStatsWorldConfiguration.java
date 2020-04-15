@@ -15,12 +15,12 @@ package org.openhab.binding.coronastats.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for the {@link CoronaStatsBridgeHandler}
+ * Configuration for the {@link CoronaStatsWorldHandler}
  *
  * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
-public class CoronaStatsBridgeConfiguration {
+public class CoronaStatsWorldConfiguration {
     public int refresh = 30;
 
     public boolean isValid() {

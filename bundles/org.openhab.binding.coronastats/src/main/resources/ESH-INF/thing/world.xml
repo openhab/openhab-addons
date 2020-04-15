@@ -4,36 +4,27 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="world">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
-		
+	<bridge-type id="world">
 		<label>Corona Stats Online - World</label>
-		<description>Corona stats for whole world</description>
+		<description>Bridge for accessing data from https://corona-stats.online/ website and representing world statistics.</description>
 
 		<channels>
-			<channel id="cases" typeId="count">
-				<label>Total Cases</label>
-			</channel>
-			<channel id="today_cases" typeId="count">
-				<label>New Cases</label>
-			</channel>
-			<channel id="deaths" typeId="count">
-				<label>Total Deaths</label>
-			</channel>
-			<channel id="today_deaths" typeId="count">
-				<label>New Deaths</label>
-			</channel>
-			<channel id="recovered" typeId="count">
-				<label>Recovered</label>
-			</channel>
-			<channel id="active" typeId="count">
-				<label>Active</label>
-			</channel>
-			<channel id="critical" typeId="count">
-				<label>Critical</label>
-			</channel>
+			<channel id="cases" typeId="cases"/>
+			<channel id="today_cases" typeId="today_cases"/>
+			<channel id="deaths" typeId="deaths"/>
+			<channel id="today_deaths" typeId="today_deaths"/>
+			<channel id="recovered" typeId="recovered"/>
+			<channel id="active" typeId="active"/>
+			<channel id="critical" typeId="critical"/>
 		</channels>
-	</thing-type>
+
+		<config-description>
+			<parameter name="refresh" type="integer" unit="min" min="15">
+				<default>30</default>
+				<label>Refresh Interval</label>
+				<description>Time between two API requests in minutes. Minimum 15 minutes.</description>
+			</parameter>
+		</config-description>
+		
+	</bridge-type>
 </thing:thing-descriptions>

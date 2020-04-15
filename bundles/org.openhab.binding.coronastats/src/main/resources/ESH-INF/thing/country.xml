@@ -6,37 +6,21 @@
 
 	<thing-type id="country">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="world" />
 		</supported-bridge-type-refs>
 		
 		<label>Corona Stats Online - Country</label>
 		<description>Corona stats for a specific country</description>
 
 		<channels>
-			<channel id="cases" typeId="count">
-				<label>Total Cases</label>
-			</channel>
-			<channel id="today_cases" typeId="count">
-				<label>New Cases</label>
-			</channel>
-			<channel id="deaths" typeId="count">
-				<label>Total Deaths</label>
-			</channel>
-			<channel id="today_deaths" typeId="count">
-				<label>New Deaths</label>
-			</channel>
-			<channel id="recovered" typeId="count">
-				<label>Recovered</label>
-			</channel>
-			<channel id="active" typeId="count">
-				<label>Active</label>
-			</channel>
-			<channel id="critical" typeId="count">
-				<label>Critical</label>
-			</channel>
-			<channel id="tests" typeId="count">
-				<label>Tests</label>
-			</channel>
+			<channel id="cases" typeId="cases"/>
+			<channel id="today_cases" typeId="today_cases"/>
+			<channel id="deaths" typeId="deaths"/>
+			<channel id="today_deaths" typeId="today_deaths"/>
+			<channel id="recovered" typeId="recovered"/>
+			<channel id="active" typeId="active"/>
+			<channel id="critical" typeId="critical"/>
+			<channel id="tests" typeId="tests"/>
 			<channel id="updated" typeId="updated"/>
 		</channels>
 		

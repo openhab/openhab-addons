@@ -26,12 +26,6 @@ public class CoronaStatsBindingConstants {
 
     private static final String BINDING_ID = "coronastats";
 
-    // Bridge
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-
-    // Bridge channels
-    public static final String CHANNEL_REFRESHED = "refreshed";
-
     // Country
     public static final ThingTypeUID THING_TYPE_WORLD = new ThingTypeUID(BINDING_ID, "world");
 

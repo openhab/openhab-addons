@@ -29,9 +29,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.coronastats.internal.handler.CoronaStatsBridgeHandler;
-import org.openhab.binding.coronastats.internal.handler.CoronaStatsCountryHandler;
 import org.openhab.binding.coronastats.internal.handler.CoronaStatsWorldHandler;
+import org.openhab.binding.coronastats.internal.handler.CoronaStatsCountryHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,8 +45,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.coronastats", service = ThingHandlerFactory.class)
 public class CoronaStatsHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_BRIDGE, THING_TYPE_WORLD, THING_TYPE_COUNTRY).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_WORLD, THING_TYPE_COUNTRY).collect(Collectors.toSet()));
 
     private final HttpClient httpClient;
 
@@ -65,10 +64,8 @@ public class CoronaStatsHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new CoronaStatsBridgeHandler((Bridge) thing, httpClient);
-        } else if (THING_TYPE_WORLD.equals(thingTypeUID)) {
-            return new CoronaStatsWorldHandler(thing);
+        if (THING_TYPE_WORLD.equals(thingTypeUID)) {
+            return new CoronaStatsWorldHandler((Bridge) thing, httpClient);
         } else if (THING_TYPE_COUNTRY.equals(thingTypeUID)) {
             return new CoronaStatsCountryHandler(thing);
         }

@@ -13,9 +13,16 @@
 package org.openhab.binding.coronastats.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.coronastats.internal.config.CoronaStatsCountryConfiguration;
 import org.openhab.binding.coronastats.internal.dto.CoronaStats;
 import org.openhab.binding.coronastats.internal.dto.CoronaStatsCountry;
@@ -28,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
-public class CoronaStatsCountryHandler extends CoronaStatsThingHandler {
+public class CoronaStatsCountryHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CoronaStatsCountryHandler.class);
 
@@ -44,7 +51,7 @@ public class CoronaStatsCountryHandler extends CoronaStatsThingHandler {
         logger.debug("Initializing Corona Stats country handler for country code {}", thingConfig.getCountryCode());
 
         if (thingConfig.isValid()) {
-            CoronaStatsBridgeHandler handler = getBridgeHandler();
+            CoronaStatsWorldHandler handler = getBridgeHandler();
             if (handler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge handler missing");
             } else {
@@ -61,6 +68,34 @@ public class CoronaStatsCountryHandler extends CoronaStatsThingHandler {
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            refresh();
+        }
+    }
+
+    private void refresh() {
+        CoronaStatsWorldHandler handler = getBridgeHandler();
+        if (handler != null) {
+            CoronaStats coronaStats = handler.getCoronaStats();
+            if (coronaStats != null) {
+                notifyOnUpdate(coronaStats);
+            }
+        }
+    }
+
+    private synchronized @Nullable CoronaStatsWorldHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof CoronaStatsWorldHandler) {
+                return (CoronaStatsWorldHandler) handler;
+            }
+        }
+
+        return null;
+    }
+
     public void notifyOnUpdate(CoronaStats coronaStats) {
         CoronaStatsCountry country = coronaStats.getCountry(thingConfig.getCountryCode());
         if (country == null) {
