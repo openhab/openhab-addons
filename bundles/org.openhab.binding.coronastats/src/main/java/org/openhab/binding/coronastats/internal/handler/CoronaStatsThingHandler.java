@@ -29,7 +29,7 @@ import org.openhab.binding.coronastats.internal.dto.CoronaStats;
  * @author Johannes Ott - Initial contribution
  */
 @NonNullByDefault
-abstract public class CoronaStatsThingHandler extends BaseThingHandler {
+public abstract class CoronaStatsThingHandler extends BaseThingHandler {
     public CoronaStatsThingHandler(Thing thing) {
         super(thing);
     }
@@ -63,5 +63,5 @@ abstract public class CoronaStatsThingHandler extends BaseThingHandler {
         }
     }
 
-    abstract public void notifyOnUpdate(CoronaStats coronaStats);
+    public abstract void notifyOnUpdate(CoronaStats coronaStats);
 }
