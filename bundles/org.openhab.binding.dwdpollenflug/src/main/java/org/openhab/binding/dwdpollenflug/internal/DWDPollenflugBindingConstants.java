@@ -33,6 +33,8 @@ public class DWDPollenflugBindingConstants {
 
     // bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final String DWD = "dwd";
+    public static final String BRIDGE_LABEL = "DWD Pollen Count Index (Bridge)";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_REGION = new ThingTypeUID(BINDING_ID, "region");
