@@ -63,7 +63,7 @@ public class KM200DataHandler {
             KM200ServiceObject object = null;
             JsonObject jsonNode = null;
 
-            logger.info("Check state of: {}  item: {}", service, itemType);
+            logger.debug("Check state of: {}  item: {}", service, itemType);
             if (remoteDevice.getBlacklistMap().contains(service)) {
                 logger.debug("Service on blacklist: {}", service);
                 return null;
