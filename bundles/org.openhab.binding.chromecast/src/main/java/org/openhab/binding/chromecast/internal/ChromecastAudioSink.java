@@ -38,7 +38,7 @@ public class ChromecastAudioSink {
 
     private final ChromecastCommander commander;
     private final AudioHTTPServer audioHTTPServer;
-    private @Nullable final String callbackUrl;
+    private final @Nullable String callbackUrl;
 
     public ChromecastAudioSink(ChromecastCommander commander, AudioHTTPServer audioHTTPServer,
             @Nullable String callbackUrl) {

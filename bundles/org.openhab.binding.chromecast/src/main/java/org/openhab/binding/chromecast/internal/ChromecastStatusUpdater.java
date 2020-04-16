@@ -15,6 +15,7 @@ package org.openhab.binding.chromecast.internal;
 import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -214,7 +215,6 @@ public class ChromecastStatusUpdater {
 
         Double lat = (Double) metadata.get(LOCATION_METADATA_LATITUDE);
         Double lon = (Double) metadata.get(LOCATION_METADATA_LONGITUDE);
-
         if (lat == null || lon == null) {
             callback.updateState(CHANNEL_LOCATION, UnDefType.UNDEF);
         } else {
@@ -267,10 +267,14 @@ public class ChromecastStatusUpdater {
 
     private @Nullable RawType downloadImageFromCache(String url) {
         if (IMAGE_CACHE.containsKey(url)) {
-            byte[] bytes = IMAGE_CACHE.get(url);
-            String contentType = HttpUtil.guessContentTypeFromData(bytes);
-            return new RawType(bytes,
-                    contentType == null || contentType.isEmpty() ? RawType.DEFAULT_MIME_TYPE : contentType);
+            try {
+                byte[] bytes = IMAGE_CACHE.get(url);
+                String contentType = HttpUtil.guessContentTypeFromData(bytes);
+                return new RawType(bytes,
+                        contentType == null || contentType.isEmpty() ? RawType.DEFAULT_MIME_TYPE : contentType);
+            } catch (IOException e) {
+                logger.trace("Failed to download the content of URL '{}'", url, e);
+            }
         } else {
             RawType image = downloadImage(url);
             if (image != null) {

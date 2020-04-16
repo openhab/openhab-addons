@@ -64,7 +64,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
 
-        final Map<String, Object> properties = new HashMap<>(3);
+        final Map<String, Object> properties = new HashMap<>(5);
         String host = service.getHostAddresses()[0];
         properties.put(HOST, host);
         int port = service.getPort();

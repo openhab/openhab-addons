@@ -13,6 +13,7 @@
 package org.openhab.binding.chromecast.internal.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -221,8 +222,10 @@ public class ByteArrayFileCache {
      *
      * @param key the key whose associated file is to be returned
      * @return the content of the file associated with the given key
+     * @throws FileNotFoundException if the given file could not be found in cache
+     * @throws IOException if an I/O error occurs reading the given file
      */
-    public byte[] get(String key) {
+    public byte[] get(String key) throws FileNotFoundException, IOException {
         return readFile(getUniqueFile(key));
     }
 
@@ -231,8 +234,10 @@ public class ByteArrayFileCache {
      *
      * @param fileInCache the {@link File}
      * @return the content of the file
+     * @throws FileNotFoundException if the given file could not be found in cache
+     * @throws IOException if an I/O error occurs reading the given file
      */
-    private byte[] readFile(File fileInCache) {
+    private byte[] readFile(File fileInCache) throws FileNotFoundException, IOException {
         if (fileInCache.exists()) {
             logger.debug("Reading file '{}' from cache", fileInCache.getName());
             // update time of last use
@@ -241,11 +246,12 @@ public class ByteArrayFileCache {
                 return Files.readAllBytes(fileInCache.toPath());
             } catch (IOException e) {
                 logger.warn("Could not read file '{}' from cache", fileInCache.getName(), e);
+                throw new IOException(String.format("Could not read file '%s' from cache", fileInCache.getName()));
             }
         } else {
             logger.debug("File '{}' not found in cache", fileInCache.getName());
+            throw new FileNotFoundException(String.format("File '%s' not found in cache", fileInCache.getName()));
         }
-        return new byte[0];
     }
 
     /**
