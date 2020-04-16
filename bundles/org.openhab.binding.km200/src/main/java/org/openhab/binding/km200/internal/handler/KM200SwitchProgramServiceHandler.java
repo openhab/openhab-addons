@@ -529,10 +529,7 @@ public class KM200SwitchProgramServiceHandler {
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
             if (week != null) {
-                logger.debug("Week: {}", week);
-                logger.debug("Day: {}", getActiveDay());
                 List<Integer> daysList = week.get(getActiveDay());
-                logger.debug("daysList {}", week.get(getActiveDay()));
                 if (!daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
                     logger.debug("cycl: {}", cycl);
@@ -552,10 +549,8 @@ public class KM200SwitchProgramServiceHandler {
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {
-                logger.debug("Week: {}", week);
                 logger.debug("Day: {}", getActiveDay());
                 List<Integer> daysList = week.get(getActiveDay());
-                logger.debug("daysList {}", week.get(getActiveDay()));
                 if (!daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
                     logger.debug("cycl: {}", cycl);

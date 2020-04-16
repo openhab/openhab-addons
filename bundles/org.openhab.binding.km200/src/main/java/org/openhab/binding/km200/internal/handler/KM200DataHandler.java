@@ -63,7 +63,7 @@ public class KM200DataHandler {
             KM200ServiceObject object = null;
             JsonObject jsonNode = null;
 
-            logger.debug("Check state of: {}  item: {}", service, itemType);
+            logger.info("Check state of: {}  item: {}", service, itemType);
             if (remoteDevice.getBlacklistMap().contains(service)) {
                 logger.debug("Service on blacklist: {}", service);
                 return null;
@@ -79,53 +79,58 @@ public class KM200DataHandler {
                     return null;
                 }
                 type = object.getServiceType();
+                logger.debug("Type: {}", type);
             } else {
                 logger.warn("Service is not in the determined device service list: {}", service);
                 return null;
             }
-            /* For using of virtual services only one receive on the parent service is needed */
-            String parent = object.getParent();
-            if (null != parent) {
-                KM200ServiceObject objParent = remoteDevice.getServiceObject(parent);
-                if (null != objParent) {
-                    if (!object.getUpdated() || (object.getVirtual() == 1 && !objParent.getUpdated())) {
-                        if (object.getVirtual() == 1) {
+            /* Needs to be updated? */
+            if (object.getVirtual() == 0) {
+                if (!object.getUpdated()) {
+                    logger.debug("Receive data");
+                    jsonNode = remoteDevice.getServiceNode(service);
+                    if (jsonNode == null || jsonNode.isJsonNull()) {
+                        logger.error("Communication is not possible!");
+                        return null;
+                    }
+                    object.setJSONData(jsonNode);
+                    object.setUpdated(true);
+                } else {
+                    /* If already updated then use the saved data */
+                    logger.debug("Get data");
+                    jsonNode = object.getJSONData();
+                }
+            } else {
+                /* For using of virtual services only one receive on the parent service is needed */
+                String parent = object.getParent();
+                if (null != parent) {
+                    KM200ServiceObject objParent = remoteDevice.getServiceObject(parent);
+                    if (null != objParent) {
+                        if (!objParent.getUpdated()) {
                             logger.debug("Receive data for an virtual object");
                             /* If it's a virtual service then receive the data from parent service */
                             jsonNode = remoteDevice.getServiceNode(parent);
-                        } else {
-                            logger.debug("Receive data");
-                            jsonNode = remoteDevice.getServiceNode(service);
-                        }
-
-                        if (jsonNode == null || jsonNode.isJsonNull()) {
-                            logger.error("Communication is not possible!");
-                            return null;
-                        }
-                        if (object.getVirtual() == 1) {
+                            if (jsonNode == null || jsonNode.isJsonNull()) {
+                                logger.error("Communication is not possible!");
+                                return null;
+                            }
                             objParent.setJSONData(jsonNode);
                             objParent.setUpdated(true);
+                            object.setUpdated(true);
                         } else {
-                            object.setJSONData(jsonNode);
-                        }
-                        object.setUpdated(true);
-                    } else {
-                        /* If already updated then use the saved data */
-                        if (object.getVirtual() == 1) {
+                            /* If already updated then use the saved data */
                             logger.debug("Get data for an virtual object");
                             jsonNode = objParent.getJSONData();
-                        } else {
-                            logger.debug("Get data");
-                            jsonNode = object.getJSONData();
                         }
-                    }
-                    if (null != jsonNode) {
-                        return parseJSONData(jsonNode, type, service, itemType, itemPara);
                     }
                 }
             }
+            if (null != jsonNode) {
+                return parseJSONData(jsonNode, type, service, itemType, itemPara);
+            } else {
+                return null;
+            }
         }
-        return null;
     }
 
     /**
@@ -212,9 +217,9 @@ public class KM200DataHandler {
                     /* NumberItem Binding */
                     if ("Number".equals(itemType)) {
                         if (bdVal instanceof Double) { // Checking whether
-                            state = new DecimalType(((Double) bdVal).floatValue());
+                            state = new DecimalType((Double) bdVal);
                         } else {
-                            state = new DecimalType(((BigDecimal) bdVal).floatValue());
+                            state = new DecimalType(((BigDecimal) bdVal).doubleValue());
                         }
                         /* StringItem Binding */
                     } else if ("String".equals(itemType)) {
@@ -223,6 +228,7 @@ public class KM200DataHandler {
                         logger.warn("Bindingtype not supported for float values: {}", itemType.getClass());
                         return null;
                     }
+                    logger.debug("State: {}", state);
                     return state;
 
                 case "switchProgram": /* Check whether the type is a switchProgram */
