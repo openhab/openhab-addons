@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="kl50">
+		<label>KL50</label>
+		<description>Kasa Filament Smart Bulb, Soft White</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness" />
+			<channel id="power" typeId="power" />
+			<channel id="rssi" typeId="rssi" />
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:device:bulb" />
+	</thing-type>
+</thing:thing-descriptions>
