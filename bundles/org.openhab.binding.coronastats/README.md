@@ -8,6 +8,10 @@ This binding provides the statistic about cases of COVID-19 from the website htt
 This binding supports a `world` thing, which polls the dataset in an adjustable interval as a bridge and provides the statistics for the whole world.
 The `country` thing, representing the statistics for a specified country.
 
+## Discovery
+
+This binding will add a default `world` thing into the Inbox. This can be used as bridge for country things you may add manually.
+
 ## Thing Configuration
 
 ### World

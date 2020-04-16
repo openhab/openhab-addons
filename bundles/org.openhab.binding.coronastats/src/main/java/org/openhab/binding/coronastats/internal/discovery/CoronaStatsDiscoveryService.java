@@ -14,6 +14,7 @@ package org.openhab.binding.coronastats.internal.discovery;
 
 import static org.openhab.binding.coronastats.internal.CoronaStatsBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Ott - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.coronastats")
 public class CoronaStatsDiscoveryService extends AbstractDiscoveryService {
 
