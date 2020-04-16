@@ -41,6 +41,8 @@ public enum TPLinkSmartHomeThingType {
     LB130("lb130", DeviceType.BULB),
     LB200("lb200", DeviceType.BULB),
     LB230("lb230", DeviceType.BULB),
+    KL50("kl50", DeviceType.BULB),
+    KL60("kl60", DeviceType.BULB),
     KL110("kl110", DeviceType.BULB),
     KL120("kl120", DeviceType.BULB),
     KL130("kl130", DeviceType.BULB),
