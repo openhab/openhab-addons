@@ -4,19 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:tellstick:config">
-		<parameter name="interval" type="integer" min="1" max="86400">
-			<label>Interval</label>
-			<description>Refresh interval for positional data calculation in seconds.</description>
-			<default>300</default>
-		</parameter>
-		<parameter name="model" type="text">
-			<label>Model</label>
-			<description>The model used by a specific device.</description>
-			<required>false</required>
-		</parameter>
-	</config-description>
-
 	<config-description uri="thing-type:tellstick:sensor-config">
 		<parameter name="protocol" type="text">
 			<label>Protocol</label>

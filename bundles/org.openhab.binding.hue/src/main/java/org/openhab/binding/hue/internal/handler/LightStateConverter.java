@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -206,7 +206,12 @@ public class LightStateConverter {
      * @return string type representing the alert mode.
      */
     public static StringType toAlertStringType(State lightState) {
-        return new StringType(lightState.getAlertMode().toString());
+        AlertMode alertMode = lightState.getAlertMode();
+        if (alertMode == null) {
+            return new StringType("NULL");
+        } else {
+            return new StringType(alertMode.toString());
+        }
     }
 
     /**

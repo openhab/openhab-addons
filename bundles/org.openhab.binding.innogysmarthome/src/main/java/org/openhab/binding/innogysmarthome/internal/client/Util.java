@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,27 +15,22 @@ package org.openhab.binding.innogysmarthome.internal.client;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Utility class with commonly used methods.
  *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-public class Util {
+@NonNullByDefault
+public final class Util {
 
-    public static ZonedDateTime convertZuluTimeStringToDate(String timeString) {
-        DateTimeFormatter fmt = DateTimeFormatter.ISO_INSTANT;
-        return ZonedDateTime.parse(timeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    private Util() {
+        // Util class.
     }
 
-    /**
-     * Compares two strings.
-     *
-     * @param string1
-     * @param string2
-     * @return true, if both strings are equal and not null
-     */
-    public static boolean equalsIfPresent(String string1, String string2) {
-        return string1 == null ? false : string1.equals(string2);
+    public static ZonedDateTime convertZuluTimeStringToDate(String timeString) {
+        return ZonedDateTime.parse(timeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 }

@@ -49,6 +49,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="telldus-core" />
@@ -93,6 +94,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Value</label>

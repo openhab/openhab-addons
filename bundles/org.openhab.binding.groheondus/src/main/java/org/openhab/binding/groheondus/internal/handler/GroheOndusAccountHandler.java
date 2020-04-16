@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                 try {
                     setRefreshToken(ondusService.refreshAuthorization());
                 } catch (Exception e) {
-                    logger.warn("Could not refresh authorization for GROHE ONDUS account, error {}", e);
+                    logger.warn("Could not refresh authorization for GROHE ONDUS account", e);
                 }
             }, between.getSeconds(), TimeUnit.SECONDS);
         }
@@ -142,7 +142,9 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                 ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
                 scheduleTokenRefresh();
             } else {
-                ondusService = OndusService.login(config.username, config.password);
+                // TODO: That's probably really inefficient, internally the loginWebform method acquires a refresh
+                // token, maybe there should be a way to obtain this token here, somehow.
+                ondusService = OndusService.loginWebform(config.username, config.password);
             }
             updateStatus(ThingStatus.ONLINE);
 

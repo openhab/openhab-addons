@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
@@ -28,6 +29,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaSetModeResponse extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x01;

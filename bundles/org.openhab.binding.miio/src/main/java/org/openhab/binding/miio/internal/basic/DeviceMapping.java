@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,9 @@ package org.openhab.binding.miio.internal.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miio.internal.MiIoCommand;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -23,6 +26,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class DeviceMapping {
 
     @SerializedName("id")
@@ -31,6 +35,12 @@ public class DeviceMapping {
     @SerializedName("channels")
     @Expose
     private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    @SerializedName("propertyMethod")
+    @Expose
+    private String propertyMethod = MiIoCommand.GET_PROPERTY.getCommand();
+    @SerializedName("maxProperties")
+    @Expose
+    private int maxProperties = 5;
 
     public List<String> getId() {
         return id;
@@ -40,6 +50,22 @@ public class DeviceMapping {
         this.id = id;
     }
 
+    public String getPropertyMethod() {
+        return propertyMethod;
+    }
+
+    public void setPropertyMethod(String propertyMethod) {
+        this.propertyMethod = propertyMethod;
+    }
+
+    public int getMaxProperties() {
+        return maxProperties;
+    }
+
+    public void setMaxProperties(int maxProperties) {
+        this.maxProperties = maxProperties;
+    }
+
     public List<MiIoBasicChannel> getChannels() {
         return miIoBasicChannels;
     }
@@ -47,5 +73,4 @@ public class DeviceMapping {
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
     }
-
 }

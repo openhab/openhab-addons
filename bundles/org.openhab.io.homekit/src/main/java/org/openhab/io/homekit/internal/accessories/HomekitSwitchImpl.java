@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.Switch;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.Switch;
 
 /**
  * Implements Switch using an Item that provides an On/Off state.

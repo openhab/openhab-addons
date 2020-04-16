@@ -4,10 +4,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="d101">
-		<label>Doorbird D101</label>
-		<description>Doorbird doorbell model D101</description>
+		<label>Doorbird D101/D201/D205 Doorbell</label>
+		<description>Doorbird doorbell model D101/D201/D205</description>
 		<channels>
-			<channel id="doorbell" typeId="system.rawbutton" />
+			<channel id="doorbell" typeId="system.rawbutton">
+				<label>Doorbell</label>
+				<description>Trigger for doorbell press</description>
+			</channel>
 			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
 			<channel id="doorbellImage" typeId="doorbellImage" />
 			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
@@ -30,10 +33,13 @@
 	</thing-type>
 
 	<thing-type id="d210x">
-		<label>Doorbird D210x</label>
+		<label>Doorbird D210x Doorbell</label>
 		<description>Doorbird doorbell model D210x</description>
 		<channels>
-			<channel id="doorbell" typeId="system.rawbutton" />
+			<channel id="doorbell" typeId="system.rawbutton">
+				<label>Doorbell</label>
+				<description>Trigger for doorbell press</description>
+			</channel>
 			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
 			<channel id="doorbellImage" typeId="doorbellImage" />
 			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
@@ -54,6 +60,17 @@
 			<channel id="imageTimestamp" typeId="imageTimestamp" />
 		</channels>
 		<config-description-ref uri="thing-type:doorbird:config" />
+	</thing-type>
+
+	<thing-type id="a1081">
+		<label>Doorbird A1081 Controller</label>
+		<description>Doorbird model A1081 Controller</description>
+		<channels>
+			<channel id="openDoor1" typeId="openDoor1" />
+			<channel id="openDoor2" typeId="openDoor2" />
+			<channel id="openDoor3" typeId="openDoor3" />
+		</channels>
+		<config-description-ref uri="thing-type:controller:config" />
 	</thing-type>
 
 	<channel-type id="doorbellTimestamp">
@@ -96,6 +113,12 @@
 		<item-type>Switch</item-type>
 		<label>Open Door 2</label>
 		<description>Energize opendoor / alarm output relay 2</description>
+		<state pattern="%s"></state>
+	</channel-type>
+	<channel-type id="openDoor3">
+		<item-type>Switch</item-type>
+		<label>Open Door 3</label>
+		<description>Energize opendoor / alarm output relay 3</description>
 		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="imageTimestamp">

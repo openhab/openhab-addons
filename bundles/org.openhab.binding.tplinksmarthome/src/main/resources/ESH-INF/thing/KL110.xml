@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="kl10">
+	<thing-type id="kl110">
 		<label>KL110</label>
 		<description>TP-Link KL110 Smart Wi-Fi LED Bulb with Brightness</description>
 		<category>Lightbulb</category>

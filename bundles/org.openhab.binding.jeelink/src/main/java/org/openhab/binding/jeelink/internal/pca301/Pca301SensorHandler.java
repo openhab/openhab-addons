@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,8 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     private ScheduledFuture<?> retry;
     private int sendCount;
 
-    public Pca301SensorHandler(Thing thing) {
-        super(thing);
+    public Pca301SensorHandler(Thing thing, String sensorType) {
+        super(thing, sensorType);
     }
 
     @Override

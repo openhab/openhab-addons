@@ -1,0 +1,8 @@
+{
+  "sequenceNumber": -1,
+  "type": "MessageDeleted",
+  "desc": "/desc/event/MessageDeleted",
+  "namespace": "core.RWE",
+  "timestamp": "2019-07-07T19:15:39.2100000Z",
+  "data": { "id": "6e5ce2290cd247208f95a5b53736958b" }
+}

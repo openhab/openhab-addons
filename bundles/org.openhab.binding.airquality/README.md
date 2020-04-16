@@ -68,7 +68,7 @@ The AirQuality information that is retrieved is available as these channels:
 | temperature     | Number:Temperature   | Temperature in Celsius degrees               |
 | pressure        | Number:Pressure      | Pressure level                               |
 | humidity        | Number:Dimensionless | Humidity level                               |
-| dominentPol     | String               | Dominent Polutor                             |
+| dominentpol     | String               | Dominent Polutor                             |
 
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 

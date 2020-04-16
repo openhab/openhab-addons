@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -231,7 +230,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     final FullLight lastFullLight = lastLightStateCopy.remove(lightId);
                     final State lastFullLightState = lastFullLight.getState();
                     lastLightStates.put(lightId, fullLight);
-                    if (!isEqual(lastFullLightState, fullLight.getState())) {
+                    if (!lastFullLightState.equals(fullLight.getState())) {
                         logger.debug("Status update for Hue light '{}' detected.", lightId);
                         notifyLightStatusListeners(fullLight, STATE_CHANGED);
                     }
@@ -301,7 +300,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             logger.warn("No bridge connected or selected. Cannot set sensor state.");
         }
     }
-    
+
     @Override
     public void updateSensorConfig(FullSensor sensor, ConfigUpdate configUpdate) {
         if (hueBridge != null) {
@@ -356,7 +355,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             logger.trace("Error while accessing sensor: {}", e.getMessage());
         }
     }
-    
+
     private void handleConfigUpdateException(FullSensor sensor, ConfigUpdate configUpdate, Throwable e) {
         if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -766,22 +765,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
-    /**
-     * Compare to states for equality.
-     *
-     * @param state1 Reference state
-     * @param state2 State which is checked for equality.
-     * @return {@code true} if the available information of both states are equal.
-     */
-    private boolean isEqual(State state1, State state2) {
-        return state1.getAlertMode().equals(state2.getAlertMode()) && state1.isOn() == state2.isOn()
-                && state1.getBrightness() == state2.getBrightness()
-                && state1.getColorTemperature() == state2.getColorTemperature() && state1.getHue() == state2.getHue()
-                && state1.getSaturation() == state2.getSaturation() && state1.isReachable() == state2.isReachable()
-                && Objects.equals(state1.getColorMode(), state2.getColorMode())
-                && Objects.equals(state1.getEffect(), state2.getEffect());
-    }
-
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // The bridge IP address to be used for checks
@@ -796,9 +779,5 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         return configStatusMessages;
-    }
-
-    public long getSensorPollingInterval() {
-        return sensorPollingInterval;
     }
 }

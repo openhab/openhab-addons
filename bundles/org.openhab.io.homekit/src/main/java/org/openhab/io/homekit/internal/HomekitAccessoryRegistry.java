@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAccessory;
-import com.beowulfe.hap.HomekitRoot;
+import io.github.hapjava.HomekitAccessory;
+import io.github.hapjava.HomekitRoot;
 
 /**
  * Stores the created HomekitAccessories. GroupedAccessories are also held here

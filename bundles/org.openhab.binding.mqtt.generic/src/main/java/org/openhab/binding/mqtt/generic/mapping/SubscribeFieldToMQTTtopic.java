@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,7 +127,7 @@ public class SubscribeFieldToMQTTtopic implements MqttMessageSubscriber {
      */
     @SuppressWarnings({ "null", "unused" })
     @Override
-    public void processMessage(String topic, byte [] payload) {
+    public void processMessage(String topic, byte[] payload) {
         final ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) { // Cancel timeout
             scheduledFuture.cancel(false);

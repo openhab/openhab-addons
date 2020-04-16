@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,30 +34,41 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
             super("MQTT Switch");
         }
 
-        protected boolean optimistic = false;
+        protected @Nullable Boolean optimistic;
 
-        protected String state_topic = "";
-        protected String state_on = "true";
-        protected String state_off = "false";
         protected @Nullable String command_topic;
-        protected String payload_on = "true";
-        protected String payload_off = "false";
+        protected String state_topic = "";
+
+        protected @Nullable String state_on;
+        protected @Nullable String state_off;
+        protected String payload_on = "ON";
+        protected String payload_off = "OFF";
+
+        protected @Nullable String json_attributes_topic;
+        protected @Nullable String json_attributes_template;
     }
 
     public ComponentSwitch(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        // We do not support all HomeAssistant quirks
-        if (channelConfiguration.optimistic && StringUtils.isNotBlank(channelConfiguration.state_topic)) {
+        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
+                : StringUtils.isBlank(channelConfiguration.state_topic);
+
+        if (optimistic && StringUtils.isNotBlank(channelConfiguration.state_topic)) {
             throw new UnsupportedOperationException("Component:Switch does not support forced optimistic mode");
         }
 
-        OnOffValue value = new OnOffValue(channelConfiguration.state_on, channelConfiguration.state_off,
-                channelConfiguration.payload_on, channelConfiguration.payload_off);
+        String state_on = channelConfiguration.state_on != null ? channelConfiguration.state_on
+                : channelConfiguration.payload_on;
+        String state_off = channelConfiguration.state_off != null ? channelConfiguration.state_off
+                : channelConfiguration.payload_off;
 
-        buildChannel(switchChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
+        OnOffValue value = new OnOffValue(state_on, state_off, channelConfiguration.payload_on,
+                channelConfiguration.payload_off);
+
+        buildChannel(switchChannelID, value, "state", componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain, channelConfiguration.qos)//
                 .build();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.satel.internal.discovery;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -43,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Krzysztof Goworek - Initial contribution
  *
  */
+@NonNullByDefault
 public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
@@ -98,11 +102,12 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void scanForDevices(DeviceType deviceType, int maxNumber) {
         logger.debug("Scanning for {} started", deviceType.name());
+        final Charset encoding = bridgeHandler.getEncoding();
         for (int i = 1; i <= maxNumber && !scanStopped; ++i) {
             ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, i);
             cmd.ignoreResponseError();
             if (bridgeHandler.sendCommand(cmd, false)) {
-                String name = cmd.getName(bridgeHandler.getEncoding());
+                String name = cmd.getName(encoding);
                 int deviceKind = cmd.getDeviceKind();
                 int info = cmd.getAdditionalInfo();
                 logger.debug("Found device: type={}, id={}, name={}, kind/function={}, info={}", deviceType.name(), i,
@@ -145,7 +150,8 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void addThing(ThingTypeUID thingTypeUID, String deviceId, String label, Map<String, Object> properties) {
+    private void addThing(ThingTypeUID thingTypeUID, @Nullable String deviceId, String label,
+            Map<String, Object> properties) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingUID thingUID;
         if (deviceId == null) {
@@ -158,7 +164,7 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(discoveryResult);
     }
 
-    private static ThingTypeUID getThingTypeUID(DeviceType deviceType, int deviceKind) {
+    private static @Nullable ThingTypeUID getThingTypeUID(DeviceType deviceType, int deviceKind) {
         switch (deviceType) {
             case OUTPUT:
                 return (deviceKind == OUTPUT_FUNCTION_SHUTTER) ? THING_TYPE_SHUTTER : THING_TYPE_OUTPUT;

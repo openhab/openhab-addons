@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OpenSprinklerHttpApiV100} class is used for communicating with
@@ -256,6 +257,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     private static class JcResponse {
         public List<List<Integer>> ps;
+        @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class AccountServlet extends HttpServlet {
         try {
             httpService.registerServlet(servletUrl(), this, null, httpService.createDefaultHttpContext());
         } catch (Exception e) {
-            logger.warn("Register servlet fails {}", e);
+            logger.warn("Register servlet fails", e);
         }
     }
 
@@ -133,7 +133,7 @@ public class AccountServlet extends HttpServlet {
         try {
             httpService.unregister(servletUrl());
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Unregistration of servlet failed wth {}", e);
+            logger.warn("Unregistration of servlet failed", e);
         }
     }
 }

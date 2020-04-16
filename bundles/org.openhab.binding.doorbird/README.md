@@ -4,35 +4,48 @@ Binding for Doorbird D101 and D210x video doorbells.
 
 ## Supported Things
 
-Two thing types are supported:
+The following thing types are supported:
 
-- Doorbird D101
-- Doorbird D210x
+| Device                           | Thing ID  |
+|----------------------------------|-----------|
+| Doorbird D101/D201/D205 Doorbell | d101      |
+| Doorbird D210x Doorbell          | d210x     |
+| Doorbird A1081 Controller        | a1081     |
+
+## Thing Configuration
+
+### D101/D201/D205 and D210x Doorbell
+
+The following configuration parameters are available on the Doorbird D101/D201/D205 and D210x Doorbell things:
+
+| Parameter                | Parameter ID       | Required/Optional | Description |
+|--------------------------|--------------------|-------------------|-------------|
+| Hostname                 | doorbirdHost       | Required          | The hostname or IP address of the Doorbird device. |
+| User ID                  | userId             | Required          | User Id of a Doorbird user that has permissions to access the API. The User ID and Password must be created using the Doorbird smart phone application. |
+| Password                 | userPassword       | Required          | Password of a Doorbird user. |
+| Image Refresh Rate       | imageRefreshRate   | Optional          | Rate at which image channel should be automatically updated. Leave field blank (default) to disable refresh. |
+| Doorbell Off Delay       | doorbellOffDelay   | Optional          | Number of seconds to wait before setting doorbell channel OFF after a doorbell event. Leave field blank to disable. |
+| Motion Off Delay         | motionOffDelay     | Optional          | Number of seconds to wait before setting motion channel OFF after a motion event. Leave field blank to disable. |
+| Montage Number of Images | montageNumImages   | Required          | Number of images to include in the doorbell and motion montage images. Default is 0. |
+| Montage Scale Factor     | montageScaleFactor | Required          | Percent scaling factor for montage image. Default is 100. |
+
+### A1081 Controller
+
+The following configuration parameters are available on the Doorbird A1081 Controller thing:
+
+| Parameter                | Parameter ID | Required/Optional | Description |
+|--------------------------|--------------|-------------------|-------------|
+| Hostname                 | doorbirdHost | Required          | The hostname or IP address of the Doorbird device. |
+| User ID                  | userId       | Required          | User Id of a Doorbird user that has permissions to access the API. The User ID and Password must be created using the Doorbird smart phone application. |
+| Password                 | userPassword | Required          | Password of a Doorbird user. |
 
 ## Discovery
 
 Auto-discovery is not supported at this time.
 
-## Thing Configuration
-
-The following configuration parameters are available on the Doorbird thing:
-
-| Parameter                | Required/Optional | Description                                                                                                                                                                    |
-|--------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ID                       | Required          | The ID number of the Doorbird device. This is usually a single digit (e.g. 1).                                                                                                 |
-| Hostname                 | Required          | The hostname or IP address of the Doorbird device.                                                                                                                             |
-| User ID                  | Required          | User Id of a Doorbird user that has permissions to access the camera, motion sensor, etc. The User ID and Password must be created using the Doorbird smart phone application. |
-| Password                 | Required          | Password of a Doorbird user.                                                                                                                                                   |
-| Image Refresh Rate       | Optional          | Rate at which image channel should be automatically updated. Leave field blank (default) to disable refresh.                                                                   |
-| Doorbell Off Delay       | Optional          | Number of seconds to wait before setting doorbell channel OFF after a doorbell event. Leave field blank to disable.                                                            |
-| Motion Off Delay         | Optional          | Number of seconds to wait before setting motion channel OFF after a motion event. Leave field blank to disable.                                                                |
-| Montage Number of Images | Required          | Number of images to include in the doorbell and motion montage images. Default is 0.                                                                                           |
-| Montage Scale Factor     | Required          | Percent scaling factor for montage image. Default is 100.                                                                                                                      |
-
-
 ## Channels
 
-The following channels are supported by the binding.
+The following channels are supported by the binding for the Doorbird D101/D201/D205 and D210x Doorbell thing types.
 
 | Channel ID               | Item Type | Description                                       |
 |--------------------------|-----------|---------------------------------------------------|
@@ -56,6 +69,14 @@ The following channels are supported by the binding.
 | image                    | Image     | Image from the doorbird camera                    |
 | imageTimestamp           | DateTime  | Time when image was captured from device          |
 
+The following channels are supported by the binding for the Doorbird A1081 Controller thing type.
+
+| Channel ID               | Item Type | Description                                       |
+|--------------------------|-----------|---------------------------------------------------|
+| openDoor1                | Switch    | Activates the door 1 relay                        |
+| openDoor2                | Switch    | Activates the door 2 relay                        |
+| openDoor3                | Switch    | Activates the door 3 relay                        |
+
 ## Profiles
 
 Using the system default switch profile *rawbutton-on-off-switch* in a *doorbell* channel item definition will cause ON/OFF 
@@ -67,13 +88,29 @@ See *Items* example below.
 The binding supports the following actions.
 In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
  
-### restart()
+### void restart()
  
 Restarts the Doorbird device.
 
-### sipHangup()
+### void sipHangup()
 
 Hangs up a SIP call.
+
+### String getRingTimeLimit()
+
+Get the value of the SIP status parameter RING_TIME_LIMIT.
+
+### String getCallTimeLimit()
+
+Get the value of the SIP status parameter CALL_TIME_LIMIT.
+
+### String getLastErrorCode()
+
+Get the value of the SIP status parameter LASTERRORCODE.
+
+### String getLastErrorText()
+
+Get the value of the SIP status parameter LASTERRORTEXT.
 
 Example
 
@@ -84,6 +121,8 @@ if(actions === null) {
     return
  }
  actions.sipHangup()
+ 
+ var String ringTimeLimit = actions.getRingTimeLimit()
  ```
 
 ## Known Issues
@@ -93,109 +132,36 @@ If the Doorbord is on a separate subnet or VLAN from openHAB, those UDP packets 
 In that case, the Doorbird binding will not receive those events.
 Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your network to explicitly route those UDP packets.
 
-## Full Example
+## Example
 
 ### Things
 
 ```
-Thing doorbird:d101:doorbell Doorbird D101
-    [
-        doorbirdId="1",
-        doorbirdHost="192.168.1.100",
-        userId="dtfubb0004",
-        userPassword="HG7afc5TvN",
-        imageRefreshRate=60,
-        doorbellOffDelay=3,
-        motionOffDelay=30,
-        montageNumImages=3,
-        montageScaleFactor=35
-    ]
+Thing doorbird:d101:doorbell Doorbird D101 Doorbell [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN",imageRefreshRate=60,doorbellOffDelay=3,motionOffDelay=30,montageNumImages=3,montageScaleFactor=35]
+
+Thing doorbird:a1081:controller Doorbird A1081 Controller [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN"]
 ```
 
 ### Items
 
 ```
-Switch                      Doorbell_Pressed
-                            "Doorbell Pressed [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:doorbell" [profile="rawbutton-on-off-switch"] }
-
-DateTime                    Doorbell_PressedTimestamp
-                            "Doorbell Pressed Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"
-                            <time>
-                            { channel="doorbird:d101:doorbell:doorbellTimestamp" }
-
-Image                       Doorbell_PressedImage
-                            "Doorbell Pressed Image [%s]"
-                            { channel="doorbird:d101:doorbell:doorbellImage" }
-
-Switch                      Doorbell_Motion
-                            "Doorbell Motion [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:motion" }
-
-DateTime                    Doorbell_MotionTimestamp
-                            "Doorbell Motion Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"
-                            <time>
-                            { channel="doorbird:d101:doorbell:motionTimestamp" }
-
-Image                       Doorbell_MotionDetectedImage
-                            "Motion Detected Image [%s]"
-                            { channel="doorbird:d101:doorbell:motionImage" }
-
-Switch                      Doorbell_Light
-                            "Doorbell Light [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:light", expire="5s,command=OFF" }
-
-Switch                      Doorbell_OpenDoor1
-                            "Doorbell Open Door 1 [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:openDoor1", expire="5s,command=OFF" }
-
-Image                       Doorbell_Image
-                            "Doorbell Image [%s]"
-                            { channel="doorbird:d101:doorbell:image" }
-                            
-Number                      Doorbell_DoorbellHistoryIndex
-                            "Doorbell History Index [%.0f]"
-                            <none>
-                            { channel="doorbird:d101:doorbell:doorbellHistoryIndex" }
-
-DateTime                    Doorbell_DoorbellHistoryTimestamp
-                            "Doorbell History Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"
-                            <time>
-                            { channel="doorbird:d101:doorbell:doorbellHistoryTimestamp" }
-
-Image                       Doorbell_DoorbellHistoryImage
-                            "Doorbell History Image [%s]"
-                            { channel="doorbird:d101:doorbell:doorbellHistoryImage" }
-
-Number                      Doorbell_MotionHistoryIndex
-                            "Motion History Index [%.0f]"
-                            <none>
-                            { channel="doorbird:d101:doorbell:motionHistoryIndex" }
-
-DateTime                    Doorbell_MotionHistoryTimestamp
-                            "Motion History Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"
-                            <time>
-                            { channel="doorbird:d101:doorbell:motionHistoryTimestamp" }
-
-Image                       Doorbell_MotionHistoryImage
-                            "Motion History Image [%s]"
-                            { channel="doorbird:d101:doorbell:motionHistoryImage" }
-
-Image                       Doorbell_DoorbellMontage
-                            "Doorbell History Montage [%s]"
-                            { channel="doorbird:d101:doorbell:doorbellMontage" }
-
-Image                       Doorbell_MotionMontage
-                            "Motion History Montage [%s]"
-                            { channel="doorbird:d101:doorbell:motionMontage" }
+Switch Doorbell_Pressed "Doorbell Pressed [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:doorbell" [profile="rawbutton-on-off-switch"] }
+DateTime Doorbell_PressedTimestamp "Doorbell Pressed Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:doorbellTimestamp" }
+Image Doorbell_PressedImage "Doorbell Pressed Image [%s]" { channel="doorbird:d101:doorbell:doorbellImage" }
+Switch Doorbell_Motion "Doorbell Motion [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:motion" }
+DateTim Doorbell_MotionTimestamp "Doorbell Motion Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:motionTimestamp" }
+Image Doorbell_MotionDetectedImage "Motion Detected Image [%s]" { channel="doorbird:d101:doorbell:motionImage" }
+Switch Doorbell_Light "Doorbell Light [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:light", expire="5s,command=OFF" }
+Switch Doorbell_OpenDoor1 "Doorbell Open Door 1 [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:openDoor1", expire="5s,command=OFF" }
+Image Doorbell_Image "Doorbell Image [%s]" { channel="doorbird:d101:doorbell:image" }
+Number Doorbell_DoorbellHistoryIndex "Doorbell History Index [%.0f]" <none> { channel="doorbird:d101:doorbell:doorbellHistoryIndex" }
+DateTime Doorbell_DoorbellHistoryTimestamp "Doorbell History Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:doorbellHistoryTimestamp" }
+Image Doorbell_DoorbellHistoryImage "Doorbell History Image [%s]" { channel="doorbird:d101:doorbell:doorbellHistoryImage" }
+Number Doorbell_MotionHistoryIndex "Motion History Index [%.0f]" <none> { channel="doorbird:d101:doorbell:motionHistoryIndex" }
+DateTime Doorbell_MotionHistoryTimestamp "Motion History Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:motionHistoryTimestamp" }
+Image Doorbell_MotionHistoryImage "Motion History Image [%s]" { channel="doorbird:d101:doorbell:motionHistoryImage" }
+Image Doorbell_DoorbellMontage "Doorbell History Montage [%s]" { channel="doorbird:d101:doorbell:doorbellMontage" }
+Image Doorbell_MotionMontage "Motion History Montage [%s]" { channel="doorbird:d101:doorbell:motionMontage" }
 ```
 
 ### Sitemap
@@ -240,11 +206,35 @@ Frame {
 
 ### Rule
 
+Using the doorbell trigger channel to detect if the doorbell has been pressed:
+
 ```
 rule "Doorbell Button Pressed"
 when
     Channel "doorbird:d101:doorbell:doorbell" triggered PRESSED
 then
     // Do something when the doorbell is pressed
+end
+```
+
+Alternatively, detecting a doorbell press using an item that references the *rawbutton-on-off-switch* profile:
+
+```
+rule "Doorbell Button Pressed"
+when
+    Item Doorbell_Pressed received command ON
+then
+    // Do something when the doorbell is pressed
+end
+```
+
+Using the doorbell motion channel to detect motion:
+
+```
+rule "Motion Detected"
+when
+    Item Doorbell_Motion received command ON
+then
+    // Do something when motion is detected
 end
 ```

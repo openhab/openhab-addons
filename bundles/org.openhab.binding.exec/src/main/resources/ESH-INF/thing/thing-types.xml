@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="exec"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="command">
 		<label>Command</label>
 		<description>The Command encapsulates a shell command to be executed</description>
 
 		<channels>
-			<channel id="output" typeId="output"/>
-			<channel id="input" typeId="input"/>
-			<channel id="exit" typeId="exit"/>
-			<channel id="run" typeId="run"/>
+			<channel id="output" typeId="output" />
+			<channel id="input" typeId="input" />
+			<channel id="exit" typeId="exit" />
+			<channel id="run" typeId="run" />
 			<channel id="lastexecution" typeId="lastexecution" />
 		</channels>
 
@@ -26,17 +26,17 @@
 				<description>The transformation to apply on the execution result, e.g. REGEX((.*))</description>
 				<default>REGEX((.*))</default>
 			</parameter>
-			<parameter name="interval" type="integer"  required="false">
+			<parameter name="interval" type="integer" required="false">
 				<label>Interval</label>
 				<description>Interval, in seconds, the command will be repeatedly executed</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="timeout" type="integer"  required="false">
+			<parameter name="timeout" type="integer" required="false">
 				<label>Timeout</label>
 				<description>Time out, in seconds, the execution of the command will time out</description>
 				<default>15</default>
 			</parameter>
-			<parameter name="autorun" type="boolean"  required="false">
+			<parameter name="autorun" type="boolean" required="false">
 				<label>Autorun</label>
 				<description>When true, the command will execute each time the state of the input channel changes</description>
 				<default>false</default>

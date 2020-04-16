@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,10 +36,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
-import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.handler.GenericMQTTThingHandler;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 

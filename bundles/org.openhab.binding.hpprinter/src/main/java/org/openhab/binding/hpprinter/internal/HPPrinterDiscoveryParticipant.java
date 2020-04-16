@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.hpprinter.internal;
+
+import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -29,8 +31,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 
 /**
  * The {@link HPPrinterDiscoveryParticipant} class discovers HP Printers over
@@ -69,9 +69,9 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 String inetAddress = ip.toString().substring(1); // trim leading slash
                 String label = service.getName();
 
-                DiscoveryResult result = null;
                 properties.put(HPPrinterConfiguration.IP_ADDRESS, inetAddress);
-                result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
+                        .build();
                 logger.trace("Created a DiscoveryResult {} for printer on host '{}' name '{}'", result, inetAddress,
                         label);
                 return result;
@@ -105,7 +105,7 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.trace("ServiceInfo: {}", service);
             if (service.getType().equals(getServiceType())) {
                 String uidName = getUIDName(service);
-                ThingTypeUID mdl = findThingType(service);
+                ThingTypeUID mdl = findThingType();
 
                 return new ThingUID(mdl, uidName);
             }
@@ -128,7 +128,7 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return address;
     }
 
-    private @Nullable ThingTypeUID findThingType(ServiceInfo service) {
+    private ThingTypeUID findThingType() {
         return THING_PRINTER;
     }
 }

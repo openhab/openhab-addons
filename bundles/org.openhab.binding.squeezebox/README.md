@@ -97,6 +97,7 @@ All devices support some of the following channels:
 | stop                    | Switch    | Stop the current title                                                                 |
 | control                 | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                  |
 | stream                  | String    | Play the given HTTP or file stream (file:// or http://)                                |
+| source                  | String    | Shows the source of the currently playing playlist entry. (i.e. http://radio.org/radio.mp3 |
 | sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |
 | playListIndex           | Number    | Playlist Index                                                                         |
 | currentPlayingTime      | Number    | Current Playing Time                                                                   |

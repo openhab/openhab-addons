@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 updateWemoState();
                 onSubscription();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -150,7 +150,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 updateWemoState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
             }
         } else if (channelUID.getId().equals(CHANNEL_STATE)) {
             if (command instanceof OnOffType) {
@@ -423,6 +423,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     }
 
+    @SuppressWarnings("null")
     public State getDateTimeState(String attributeValue) {
         if (attributeValue != null) {
             long value = 0;

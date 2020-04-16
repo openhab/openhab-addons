@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SonosHandlerFactory.class);
 
-    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab2-addons/pull/6080 and
+    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab-addons/pull/6080 and
     // https://github.com/eclipse/smarthome/issues/5182
     private final ThingRegistry thingRegistry;
     private final UpnpIOService upnpIOService;

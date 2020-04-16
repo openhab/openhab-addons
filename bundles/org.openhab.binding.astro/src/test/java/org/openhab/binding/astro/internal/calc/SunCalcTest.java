@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,9 +36,9 @@ import org.openhab.binding.astro.internal.model.SunPhaseName;
  * <li>checks if the generated {@link Sun#getAllRanges()} are consistent with
  * each other</li>
  * </ul>
- * 
+ *
  * @author Witold Markowski - Initial contribution
- * @see <a href="https://github.com/openhab/openhab2-addons/issues/5006">[astro]
+ * @see <a href="https://github.com/openhab/openhab-addons/issues/5006">[astro]
  *      Sun Phase returns UNDEF</a>
  * @see <a href="https://www.heavens-above.com/sun.aspx">Heavens Above Sun</a>
  */
