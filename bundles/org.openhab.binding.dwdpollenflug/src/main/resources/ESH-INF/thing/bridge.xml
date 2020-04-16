@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>DWD Pollen Count Index - Bridge</label>
+		<label>DWD Pollen Count Index (Bridge)</label>
 		<description>Bridge for accessing pollen count index data of the DWD</description>
 
 		<channel-groups>
