@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BytesContentProvider;
@@ -30,14 +32,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
     private final KM200Device remoteDevice;
     private Integer maxNbrRepeats;
 
-    public KM200Comm(KM200Device device, HttpClient httpClient) {
+    public KM200Comm(KM200Device device, @Nullable HttpClient httpClient) {
         this.remoteDevice = device;
         maxNbrRepeats = Integer.valueOf(10);
         this.httpClient = httpClient;
@@ -53,22 +56,24 @@ public class KM200Comm<KM200BindingProvider> {
     /**
      * This function does the GET http communication to the device
      */
-    public byte[] getDataFromService(String service) {
+    public byte @Nullable [] getDataFromService(String service) {
         byte[] responseBodyB64 = null;
         int statusCode = 0;
 
         ContentResponse contentresponse = null;
-
         logger.debug("Starting receive connection...");
 
         try {
             // Create an instance of HttpClient.
             for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.OK_200; i++) {
-
-                contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
-                        .agent("TeleHeater/2.2.3").accept("application/json").method(HttpMethod.GET)
-                        .timeout(5, TimeUnit.SECONDS).send();
-
+                if (null != httpClient) {
+                    contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
+                            .agent("TeleHeater/2.2.3").accept("application/json").method(HttpMethod.GET)
+                            .timeout(5, TimeUnit.SECONDS).send();
+                } else {
+                    logger.warn("Httpclient is not availible");
+                    return null;
+                }
                 // Execute the method.
                 statusCode = contentresponse.getStatus();
 
@@ -118,12 +123,15 @@ public class KM200Comm<KM200BindingProvider> {
         logger.debug("Starting send connection...");
         try {
             for (int i = 0; i < maxNbrRepeats.intValue() && rCode != HttpStatus.NO_CONTENT_204; i++) {
-
-                // Create a method instance.
-                contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
-                        .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
-                        .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
-
+                if (null != httpClient) {
+                    // Create a method instance.
+                    contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
+                            .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
+                            .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
+                } else {
+                    logger.warn("Httpclient is not availible");
+                    return -1;
+                }
                 rCode = contentResponse.getStatus();
                 switch (rCode) {
                     case HttpStatus.NO_CONTENT_204: // The default return value

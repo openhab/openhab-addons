@@ -24,6 +24,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200Cryption {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Cryption.class);
@@ -71,6 +74,7 @@ public class KM200Cryption {
      * This function does the decoding for a new message from the device
      *
      */
+    @Nullable
     public String decodeMessage(byte[] encoded) {
         String retString = null;
         byte[] decodedB64 = null;
@@ -102,7 +106,7 @@ public class KM200Cryption {
      * This function does the encoding for a new message to the device
      *
      */
-    public byte[] encodeMessage(String data) {
+    public byte @Nullable [] encodeMessage(String data) {
         try {
             // --- create cipher
             byte[] bdata = data.getBytes(remoteDevice.getCharSet());
@@ -129,7 +133,7 @@ public class KM200Cryption {
      */
     public void recreateKeys() {
         if (StringUtils.isNotBlank(remoteDevice.getGatewayPassword())
-                && StringUtils.isNotBlank(remoteDevice.getPrivatePassword()) && remoteDevice.getMD5Salt() != null) {
+                && StringUtils.isNotBlank(remoteDevice.getPrivatePassword()) && remoteDevice.getMD5Salt().length > 0) {
             byte[] md5K1 = null;
             byte[] md5K2Init = null;
             byte[] md5K2Private = null;

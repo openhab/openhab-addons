@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import com.google.gson.JsonParser;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200Device {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
@@ -40,38 +43,37 @@ public class KM200Device {
     private final KM200Comm<KM200Device> deviceCommunicator;
 
     /* valid IPv4 address of the KMxxx. */
-    protected String ip4Address;
+    protected String ip4Address = new String();
 
     /* The gateway password which is provided on the type sign of the KMxxx. */
-    protected String gatewayPassword;
+    protected String gatewayPassword = new String();
 
     /* The private password which has been defined by the user via EasyControl. */
-    protected String privatePassword;
+    protected String privatePassword = new String();
 
     /* The returned device charset for communication */
-    protected String charSet;
+    protected String charSet = new String();;
 
     /* Needed keys for the communication */
-    protected byte[] cryptKeyInit;
-    protected byte[] cryptKeyPriv;
+    protected byte[] cryptKeyInit = {};
+    protected byte[] cryptKeyPriv = {};
 
     /* Buderus_MD5Salt */
-    protected byte[] md5Salt;
+    protected byte[] md5Salt = {};
 
     /* Device services */
     public Map<String, KM200ServiceObject> serviceTreeMap;
 
     /* Device services blacklist */
-    private List<String> blacklistMap;
+    private List<String> blacklistMap = new ArrayList<>();
     /* List of virtual services */
     public List<KM200ServiceObject> virtualList;
 
     /* Is the first INIT done */
     protected boolean isIited;
 
-    public KM200Device(HttpClient httpClient) {
+    public KM200Device(@Nullable HttpClient httpClient) {
         serviceTreeMap = new HashMap<>();
-        setBlacklistMap(new ArrayList<>());
         getBlacklistMap().add("/gateway/firmware");
         virtualList = new ArrayList<>();
         comCryption = new KM200Cryption(this);
@@ -79,7 +81,7 @@ public class KM200Device {
     }
 
     public Boolean isConfigured() {
-        return StringUtils.isNotBlank(ip4Address) && cryptKeyPriv != null;
+        return StringUtils.isNotBlank(ip4Address) && cryptKeyPriv.length > 0;
     }
 
     public String getIP4Address() {
@@ -178,13 +180,11 @@ public class KM200Device {
      *
      */
     public void listAllServices() {
-        if (serviceTreeMap != null) {
-            logger.debug("##################################################################");
-            logger.debug("List of avalible services");
-            logger.debug("readable;writeable;recordable;virtual;type;service;value;allowed;min;max;unit");
-            printAllServices(serviceTreeMap);
-            logger.debug("##################################################################");
-        }
+        logger.debug("##################################################################");
+        logger.debug("List of avalible services");
+        logger.debug("readable;writeable;recordable;virtual;type;service;value;allowed;min;max;unit");
+        printAllServices(serviceTreeMap);
+        logger.debug("##################################################################");
 
     }
 
@@ -194,22 +194,20 @@ public class KM200Device {
      * @param actTreeMap
      */
     public void printAllServices(Map<String, KM200ServiceObject> actTreeMap) {
-        if (actTreeMap != null) {
-            for (KM200ServiceObject object : actTreeMap.values()) {
-                if (object != null) {
-                    String val = "", type, valPara = "";
-                    logger.debug("List type: {} service: {}", object.getServiceType(), object.getFullServiceName());
-                    type = object.getServiceType();
-                    if (type == null) {
-                        type = new String();
-                    }
-                    if ("stringValue".equals(type) || "floatValue".equals(type)) {
-                        val = object.getValue().toString();
-                        if (object.getValueParameter() != null) {
-                            if ("stringValue".equals(type)) {
-                                // Type is definitely correct here
-                                @SuppressWarnings("unchecked")
-                                List<String> valParas = (List<String>) object.getValueParameter();
+        for (KM200ServiceObject object : actTreeMap.values()) {
+            String val = "", type, valPara = "";
+            logger.debug("List type: {} service: {}", object.getServiceType(), object.getFullServiceName());
+            type = object.getServiceType();
+            if ("stringValue".equals(type) || "floatValue".equals(type)) {
+                Object valObject = object.getValue();
+                if (null != valObject) {
+                    val = valObject.toString();
+                    if (object.getValueParameter() != null) {
+                        if ("stringValue".equals(type)) {
+                            // Type is definitely correct here
+                            @SuppressWarnings("unchecked")
+                            List<String> valParas = (List<String>) object.getValueParameter();
+                            if (null != valParas) {
                                 for (int i = 0; i < valParas.size(); i++) {
                                     if (i > 0) {
                                         valPara += "|";
@@ -218,10 +216,12 @@ public class KM200Device {
                                 }
                                 valPara += ";;;";
                             }
-                            if ("floatValue".equals(type)) {
-                                // Type is definitely correct here
-                                @SuppressWarnings("unchecked")
-                                List<Object> valParas = (List<Object>) object.getValueParameter();
+                        }
+                        if ("floatValue".equals(type)) {
+                            // Type is definitely correct here
+                            @SuppressWarnings("unchecked")
+                            List<Object> valParas = (List<Object>) object.getValueParameter();
+                            if (null != valParas) {
                                 valPara += ";";
                                 valPara += valParas.get(0);
                                 valPara += ";";
@@ -231,19 +231,18 @@ public class KM200Device {
                                     valPara += valParas.get(2);
                                 }
                             }
-                        } else {
-                            valPara += ";;;";
                         }
                     } else {
-                        val = "";
-                        valPara = ";";
+                        valPara += ";;;";
                     }
-                    logger.debug("{};{};{};{};{};{};{};{}", object.getReadable(), object.getWriteable(),
-                            object.getRecordable(), object.getVirtual(), type, object.getFullServiceName(), val,
-                            valPara);
-                    printAllServices(object.serviceTreeMap);
+                } else {
+                    val = "";
+                    valPara = ";";
                 }
             }
+            logger.debug("{};{};{};{};{};{};{};{}", object.getReadable(), object.getWriteable(), object.getRecordable(),
+                    object.getVirtual(), type, object.getFullServiceName(), val, valPara);
+            printAllServices(object.serviceTreeMap);
         }
     }
 
@@ -253,13 +252,9 @@ public class KM200Device {
      * @param actTreeMap
      */
     public void resetAllUpdates(Map<String, KM200ServiceObject> actTreeMap) {
-        if (actTreeMap != null) {
-            for (KM200ServiceObject stmObject : actTreeMap.values()) {
-                if (stmObject != null) {
-                    stmObject.setUpdated(false);
-                    resetAllUpdates(stmObject.serviceTreeMap);
-                }
-            }
+        for (KM200ServiceObject stmObject : actTreeMap.values()) {
+            stmObject.setUpdated(false);
+            resetAllUpdates(stmObject.serviceTreeMap);
         }
     }
 
@@ -299,6 +294,7 @@ public class KM200Device {
      *
      * @param service
      */
+    @Nullable
     public KM200ServiceObject getServiceObject(String service) {
         String[] servicePath = service.split("/");
         KM200ServiceObject object = null;
@@ -330,6 +326,7 @@ public class KM200Device {
      * possible and a JSON node in opposide case.
      *
      */
+    @Nullable
     public JsonObject getServiceNode(String service) {
         String decodedData = null;
         JsonObject nodeRoot = null;
@@ -386,11 +383,12 @@ public class KM200Device {
         if (encData == null) {
             logger.error("Couldn't encrypt data");
             return;
-        }
-        logger.debug("Send: {}", service);
-        retVal = deviceCommunicator.sendDataToService(service, encData);
-        if (retVal == 0) {
-            logger.debug("Send to device failed: {}: {}", service, newObject);
+        } else {
+            logger.debug("Send: {}", service);
+            retVal = deviceCommunicator.sendDataToService(service, encData);
+            if (retVal == 0) {
+                logger.debug("Send to device failed: {}: {}", service, newObject);
+            }
         }
     }
 }

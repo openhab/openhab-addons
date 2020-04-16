@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.km200")
 public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
@@ -57,12 +60,12 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(KM200HandlerFactory.class);
 
-    private KM200ChannelTypeProvider channelTypeProvider;
+    private @Nullable KM200ChannelTypeProvider channelTypeProvider;
 
     /**
      * shared instance of HTTP client for asynchronous calls
      */
-    private HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
 
     @Reference
     protected void setChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
@@ -88,23 +91,33 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
         logger.debug("Create thing UID: {}", thingUID);
         return createThing(thingTypeUID, configuration, thingUID);
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Create thing handler for: {}", thingTypeUID.getAsString());
         if (KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("It's a gataway: {}", thingTypeUID.getAsString());
-            KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing, httpClient);
-            registerKM200GatewayDiscoveryService(gatewayHandler);
-            return gatewayHandler;
+            if (null != httpClient) {
+                KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing, httpClient);
+                registerKM200GatewayDiscoveryService(gatewayHandler);
+                return gatewayHandler;
+            } else {
+                return null;
+            }
         } else if (KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("It's a thing: {}", thingTypeUID.getAsString());
-            return new KM200ThingHandler(thing, channelTypeProvider);
+            if (null != channelTypeProvider) {
+                return new KM200ThingHandler(thing, channelTypeProvider);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
@@ -114,10 +127,8 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof KM200GatewayHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
+            serviceReg.unregister();
+            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
         }
     }
 

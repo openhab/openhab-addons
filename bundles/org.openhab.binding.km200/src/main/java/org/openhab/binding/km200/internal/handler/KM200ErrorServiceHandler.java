@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,7 @@ import com.google.gson.JsonObject;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200ErrorServiceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KM200ErrorServiceHandler.class);
@@ -111,7 +114,7 @@ public class KM200ErrorServiceHandler {
     /**
      * This function returns a error string with all parameters
      */
-    public String getErrorString() {
+    public @Nullable String getErrorString() {
         String value = "";
         synchronized (errorMap) {
             int actN = getActiveError();
