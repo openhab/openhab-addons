@@ -72,7 +72,6 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command == RefreshType.REFRESH) {
             update(tcsStatus, zoneStatus);
         } else {

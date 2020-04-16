@@ -35,7 +35,7 @@ class SetAttributesRequest {
     public SetAttributesRequest(String name, List<HueObject> lights) {
         if (name != null && Util.stringSize(name) > 32) {
             throw new IllegalArgumentException("Name can be at most 32 characters long");
-        } else if (lights != null && (lights.size() == 0 || lights.size() > 16)) {
+        } else if (lights != null && (lights.isEmpty() || lights.size() > 16)) {
             throw new IllegalArgumentException("Group cannot be empty and cannot have more than 16 lights");
         }
 

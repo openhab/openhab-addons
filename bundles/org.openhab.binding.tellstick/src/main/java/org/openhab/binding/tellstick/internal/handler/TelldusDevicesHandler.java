@@ -128,7 +128,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         } else {
             logger.warn("Setting of channel {} not possible. Read-only", channelUID);
         }
-
     }
 
     private void refreshDevice(Device dev) {

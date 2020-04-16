@@ -17,6 +17,7 @@ import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -300,8 +301,9 @@ public class RobonectHandler extends BaseThingHandler {
     private void refreshLastErrorInfo() {
         ErrorList errorList = robonectClient.errorList();
         if (errorList.isSuccessful()) {
-            if (errorList.getErrors() != null && errorList.getErrors().size() > 0) {
-                ErrorEntry lastErrorEntry = errorList.getErrors().get(0);
+            List<ErrorEntry> errors = errorList.getErrors();
+            if (errors != null && !errors.isEmpty()) {
+                ErrorEntry lastErrorEntry = errors.get(0);
                 updateLastErrorChannels(lastErrorEntry);
             }
         } else {

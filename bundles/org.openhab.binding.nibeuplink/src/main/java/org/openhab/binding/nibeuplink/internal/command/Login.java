@@ -36,7 +36,6 @@ public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCo
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         Fields fields = new Fields();
         fields.add(LOGIN_FIELD_EMAIL, config.getUser());
         fields.add(LOGIN_FIELD_PASSWORD, config.getPassword());

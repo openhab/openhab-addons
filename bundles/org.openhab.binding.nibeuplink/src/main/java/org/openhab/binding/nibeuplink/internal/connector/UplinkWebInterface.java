@@ -152,7 +152,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                                 uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         status.getMessage());
                                 setAuthenticated(false);
-
                         }
                     }
                 };
@@ -206,7 +205,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         setAuthenticated(false);
 
         if (preCheck()) {
-
             StatusUpdateListener statusUpdater = new StatusUpdateListener() {
 
                 @Override

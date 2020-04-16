@@ -188,7 +188,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             if (command instanceof OnOffType) {
                 innogyBridgeHandler.commandSwitchAlarm(deviceId, OnOffType.ON.equals(command));
             }
-
         } else {
             logger.debug("UNSUPPORTED channel {} for device {}.", channelUID.getId(), deviceId);
         }
@@ -378,7 +377,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                                 "State is " + device.getDeviceState().getDeviceInclusionState());
                     }
                 }
-
             }
 
             if (device.isBatteryPowered()) {
@@ -675,7 +673,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
             }
         }
-
     }
 
     /**

@@ -93,6 +93,7 @@ public class LGWebOSTVSocket {
 
     public enum State {
         DISCONNECTED,
+        CONNECTING,
         REGISTERING,
         REGISTERED
     }
@@ -209,6 +210,8 @@ public class LGWebOSTVSocket {
      * WebOS WebSocket API specific Communication
      */
     void sendHello() {
+        setState(State.CONNECTING);
+
         JsonObject packet = new JsonObject();
         packet.addProperty("id", nextRequestId());
         packet.addProperty("type", "hello");
@@ -293,9 +296,11 @@ public class LGWebOSTVSocket {
                 this.sendMessage(packet);
 
                 break;
+            case CONNECTING:
             case REGISTERING:
             case DISCONNECTED:
-                logger.warn("Skipping command {} for {} in state {}", command, command.getTarget(), state);
+                logger.warn("Skipping {} command {} for {} in state {}", command.getType(), command,
+                        command.getTarget(), state);
                 break;
         }
 
@@ -393,6 +398,10 @@ public class LGWebOSTVSocket {
                 }
                 break;
             case "hello":
+                if (state != State.CONNECTING) {
+                    logger.debug("Skipping response {}, not in CONNECTING state, state was {}", message, state);
+                    break;
+                }
                 if (response.getPayload() == null) {
                     logger.warn("No payload in error message: {}", message);
                     break;
@@ -408,6 +417,10 @@ public class LGWebOSTVSocket {
                 sendRegister();
                 break;
             case "registered":
+                if (state != State.REGISTERING) {
+                    logger.debug("Skipping response {}, not in REGISTERING state, state was {}", message, state);
+                    break;
+                }
                 if (response.getPayload() == null) {
                     logger.warn("No payload in registered message: {}", message);
                     break;

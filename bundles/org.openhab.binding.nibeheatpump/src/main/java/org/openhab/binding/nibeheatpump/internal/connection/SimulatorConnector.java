@@ -134,16 +134,13 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
         @Override
         public void run() {
-
             logger.debug("Data listener simulator started");
 
             int i = 1;
 
             while (!interrupted) {
-
                 try {
                     if (i++ % 60 == 0) {
-
                         // simulate CRC error ones a while
                         ModbusDataReadOutMessage dataReadOut = new ModbusDataReadOutMessage.MessageBuilder()
                                 .values(dataReadoutValues).build();
@@ -153,15 +150,11 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
                         sendMsgToListeners(data);
                         Thread.sleep(1000);
                         continue;
-
                     } else if (i % 100 == 0) {
-
                         sendErrorToListeners("Simulated error");
                         Thread.sleep(1000);
                         continue;
-
                     } else if (i % 10 == 0) {
-
                         // ok data
                         ModbusDataReadOutMessage dataReadOut = new ModbusDataReadOutMessage.MessageBuilder()
                                 .values(dataReadoutValues).build();
@@ -171,7 +164,6 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
                     }
 
                     if (!writeQueue.isEmpty()) {
-
                         byte[] data = writeQueue.remove(0);
                         try {
                             ModbusWriteRequestMessage writeReq = (ModbusWriteRequestMessage) MessageFactory
@@ -184,9 +176,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
                         } catch (NibeHeatPumpException e) {
                             logger.debug("Simulation error, cause {}", e.getMessage());
                         }
-
                     } else if (!readQueue.isEmpty()) {
-
                         byte[] data = readQueue.remove(0);
                         try {
                             ModbusReadRequestMessage readReq = (ModbusReadRequestMessage) MessageFactory
