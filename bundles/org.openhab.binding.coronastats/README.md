@@ -10,23 +10,24 @@ The `country` thing, representing the statistics for a specified country.
 
 ## Discovery
 
-This binding will add a default `world` thing into the Inbox. This can be used as bridge for country things you may add manually.
+This binding adds a default `world` thing to the Inbox. 
+This can be used as bridge for country things you may add manually.
 
 ## Thing Configuration
 
 ### World
 
-| Property  | Default | Required | Description                                                                              |
+| Parameter | Default | Required | Description                                                                              |
 | --------- | :-----: | :------: | ---------------------------------------------------------------------------------------- |
 | `refresh` |   30    |    no    | Define the interval for polling the data from website in minutes. Minimum is 15 minutes. |
 
 ### Country
 
-| Property      | Default | Required | Description                                       |
+| Parameter     | Default | Required | Description                                       |
 | ------------- | :-----: | :------: | ------------------------------------------------- |
 | `countryCode` |    -    |   yes    | 2-letter code for the country you want to display |
 
-For the correct 2-letter country Code have a look at the website https://corona-stats.online/
+For the correct 2-letter country code have a look at the website https://corona-stats.online/
 
 ## Channels
 

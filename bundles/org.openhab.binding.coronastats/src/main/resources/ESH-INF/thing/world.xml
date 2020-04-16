@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="world">
-		<label>Corona Stats Online - World</label>
+		<label>Corona Statistics (World)</label>
 		<description>Bridge for accessing data from https://corona-stats.online/ website and representing world statistics.</description>
 
 		<channels>

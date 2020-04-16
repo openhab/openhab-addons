@@ -9,8 +9,8 @@
 			<bridge-type-ref id="world" />
 		</supported-bridge-type-refs>
 		
-		<label>Corona Stats Online - Country</label>
-		<description>Corona stats for a specific country</description>
+		<label>Corona Statistics (Country)</label>
+		<description>Corona statistics for a specific country</description>
 
 		<channels>
 			<channel id="cases" typeId="cases"/>

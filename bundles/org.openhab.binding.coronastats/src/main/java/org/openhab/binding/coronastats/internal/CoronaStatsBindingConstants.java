@@ -34,7 +34,7 @@ public class CoronaStatsBindingConstants {
     // World
     public static final ThingTypeUID THING_TYPE_WORLD = new ThingTypeUID(BINDING_ID, "world");
     public static final String STATS = "stats";
-    public static final String WORLD_LABEL = "CoronaStats World";
+    public static final String WORLD_LABEL = "Corona Statistics (World)";
 
     // Country
     public static final ThingTypeUID THING_TYPE_COUNTRY = new ThingTypeUID(BINDING_ID, "country");
