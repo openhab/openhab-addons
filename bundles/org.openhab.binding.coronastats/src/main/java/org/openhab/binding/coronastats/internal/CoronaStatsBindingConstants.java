@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.coronastats.internal;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -24,13 +29,23 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class CoronaStatsBindingConstants {
 
-    private static final String BINDING_ID = "coronastats";
+    public static final String BINDING_ID = "coronastats";
 
-    // Country
+    // World
     public static final ThingTypeUID THING_TYPE_WORLD = new ThingTypeUID(BINDING_ID, "world");
+    public static final String STATS = "stats";
+    public static final String WORLD_LABEL = "CoronaStats World";
 
     // Country
     public static final ThingTypeUID THING_TYPE_COUNTRY = new ThingTypeUID(BINDING_ID, "country");
+
+    // @formatter:off
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = 
+        Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_WORLD, THING_TYPE_COUNTRY)
+            .collect(Collectors.toSet())
+        );
+    // @formatter:on
 
     // Properties country
     public static final String PROPERTY_COUNTRY = "country";

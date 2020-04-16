@@ -14,11 +14,6 @@ package org.openhab.binding.coronastats.internal;
 
 import static org.openhab.binding.coronastats.internal.CoronaStatsBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -45,9 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.coronastats", service = ThingHandlerFactory.class)
 public class CoronaStatsHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_WORLD, THING_TYPE_COUNTRY).collect(Collectors.toSet()));
-
+    
     private final HttpClient httpClient;
 
     @Activate
