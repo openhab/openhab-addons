@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.km200.internal.KM200Device;
@@ -34,8 +33,9 @@ import com.google.gson.JsonObject;
  * The KM200SwitchProgramService representing a switch program service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
+ * @NonNullByDefault is not working here because of the switchMap array handling
  */
-@NonNullByDefault
+
 public class KM200SwitchProgramServiceHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramServiceHandler.class);
 
@@ -91,11 +91,13 @@ public class KM200SwitchProgramServiceHandler {
      */
     void initWeeklist(String setpoint) {
         Map<String, List<Integer>> weekMap = switchMap.get(setpoint);
-        weekMap = new HashMap<>();
-        for (String day : days) {
-            weekMap.put(day, new ArrayList<>());
+        if (weekMap == null) {
+            weekMap = new HashMap<>();
+            for (String day : days) {
+                weekMap.put(day, new ArrayList<>());
+            }
+            switchMap.put(setpoint, weekMap);
         }
-        switchMap.put(setpoint, weekMap);
     }
 
     /**
@@ -121,8 +123,10 @@ public class KM200SwitchProgramServiceHandler {
             }
         }
         Map<String, List<Integer>> weekMap = switchMap.get(setpoint);
-        initWeeklist(setpoint);
-        weekMap = switchMap.get(setpoint);
+        if (weekMap == null) {
+            initWeeklist(setpoint);
+            weekMap = switchMap.get(setpoint);
+        }
         List<Integer> dayList = weekMap.get(day);
         dayList.add(time);
         Collections.sort(dayList);
@@ -193,41 +197,45 @@ public class KM200SwitchProgramServiceHandler {
         }
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
-            List<Integer> daysList = week.get(getActiveDay());
-            Integer actC = getActiveCycle();
-            Integer nbrC = getNbrCycles();
-            Integer nSwitch = null;
-            boolean newS = false;
-            if (nbrC < actC) {
-                /* new Switch */
-                newS = true;
-            }
-            if (switchMap.get(getNegativeSwitch()).get(getActiveDay()).size() < actC) {
-                nSwitch = 0;
-            } else {
-                nSwitch = switchMap.get(getNegativeSwitch()).get(getActiveDay()).get(actC - 1);
-            }
-            /* The positiv switch cannot be higher then the negative */
-            if (actTime > (nSwitch - getSwitchPointTimeRaster()) && nSwitch > 0) {
-                actTime = nSwitch;
-                if (nSwitch < MAX_TIME) {
-                    actTime -= getSwitchPointTimeRaster();
+            if (week != null) {
+                List<Integer> daysList = week.get(getActiveDay());
+                if (daysList != null) {
+                    Integer actC = getActiveCycle();
+                    Integer nbrC = getNbrCycles();
+                    Integer nSwitch = null;
+                    boolean newS = false;
+                    if (nbrC < actC) {
+                        /* new Switch */
+                        newS = true;
+                    }
+                    if (switchMap.get(getNegativeSwitch()).get(getActiveDay()).size() < actC) {
+                        nSwitch = 0;
+                    } else {
+                        nSwitch = switchMap.get(getNegativeSwitch()).get(getActiveDay()).get(actC - 1);
+                    }
+                    /* The positiv switch cannot be higher then the negative */
+                    if (actTime > (nSwitch - getSwitchPointTimeRaster()) && nSwitch > 0) {
+                        actTime = nSwitch;
+                        if (nSwitch < MAX_TIME) {
+                            actTime -= getSwitchPointTimeRaster();
+                        }
+                    }
+                    /* Check whether the time would overlap with the previous one */
+                    if (actC > 1) {
+                        Integer nPrevSwitch = switchMap.get(getNegativeSwitch()).get(getActiveDay()).get(actC - 2);
+                        /* The positiv switch cannot be lower then the previous negative */
+                        if (actTime < (nPrevSwitch + getSwitchPointTimeRaster())) {
+                            actTime = nPrevSwitch + getSwitchPointTimeRaster();
+                        }
+                    }
+                    if (newS) {
+                        daysList.add(actTime);
+                    } else {
+                        daysList.set(actC - 1, actTime);
+                    }
+                    checkRemovement();
                 }
             }
-            /* Check whether the time would overlap with the previous one */
-            if (actC > 1) {
-                Integer nPrevSwitch = switchMap.get(getNegativeSwitch()).get(getActiveDay()).get(actC - 2);
-                /* The positiv switch cannot be lower then the previous negative */
-                if (actTime < (nPrevSwitch + getSwitchPointTimeRaster())) {
-                    actTime = nPrevSwitch + getSwitchPointTimeRaster();
-                }
-            }
-            if (newS) {
-                daysList.add(actTime);
-            } else {
-                daysList.set(actC - 1, actTime);
-            }
-            checkRemovement();
         }
     }
 
@@ -245,40 +253,44 @@ public class KM200SwitchProgramServiceHandler {
         }
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
-            List<Integer> daysList = week.get(getActiveDay());
-            Integer nbrC = getNbrCycles();
-            Integer actC = getActiveCycle();
-            Integer pSwitch = null;
-            boolean newS = false;
-            if (nbrC < actC) {
-                /* new Switch */
-                newS = true;
-            }
-            /* Check whether the positive switch is existing too */
-            if (switchMap.get(getPositiveSwitch()).get(getActiveDay()).size() < actC) {
-                /* No -> new Switch */
-                pSwitch = 0;
-            } else {
-                pSwitch = switchMap.get(getPositiveSwitch()).get(getActiveDay()).get(actC - 1);
-            }
-            /* The negative switch cannot be lower then the positive */
-            if (actTime < (pSwitch + getSwitchPointTimeRaster())) {
-                actTime = pSwitch + getSwitchPointTimeRaster();
-            }
-            /* Check whether the time would overlap with the next one */
-            if (nbrC > actC) {
-                Integer pNextSwitch = switchMap.get(getPositiveSwitch()).get(getActiveDay()).get(actC);
-                /* The negative switch cannot be higher then the next positive switch */
-                if (actTime > (pNextSwitch - getSwitchPointTimeRaster()) && pNextSwitch > 0) {
-                    actTime = pNextSwitch - getSwitchPointTimeRaster();
+            if (week != null) {
+                List<Integer> daysList = week.get(getActiveDay());
+                if (daysList != null) {
+                    Integer nbrC = getNbrCycles();
+                    Integer actC = getActiveCycle();
+                    Integer pSwitch = null;
+                    boolean newS = false;
+                    if (nbrC < actC) {
+                        /* new Switch */
+                        newS = true;
+                    }
+                    /* Check whether the positive switch is existing too */
+                    if (switchMap.get(getPositiveSwitch()).get(getActiveDay()).size() < actC) {
+                        /* No -> new Switch */
+                        pSwitch = 0;
+                    } else {
+                        pSwitch = switchMap.get(getPositiveSwitch()).get(getActiveDay()).get(actC - 1);
+                    }
+                    /* The negative switch cannot be lower then the positive */
+                    if (actTime < (pSwitch + getSwitchPointTimeRaster())) {
+                        actTime = pSwitch + getSwitchPointTimeRaster();
+                    }
+                    /* Check whether the time would overlap with the next one */
+                    if (nbrC > actC) {
+                        Integer pNextSwitch = switchMap.get(getPositiveSwitch()).get(getActiveDay()).get(actC);
+                        /* The negative switch cannot be higher then the next positive switch */
+                        if (actTime > (pNextSwitch - getSwitchPointTimeRaster()) && pNextSwitch > 0) {
+                            actTime = pNextSwitch - getSwitchPointTimeRaster();
+                        }
+                    }
+                    if (newS) {
+                        daysList.add(actTime);
+                    } else {
+                        daysList.set(actC - 1, actTime);
+                    }
+                    checkRemovement();
                 }
             }
-            if (newS) {
-                daysList.add(actTime);
-            } else {
-                daysList.set(actC - 1, actTime);
-            }
-            checkRemovement();
         }
     }
 
@@ -371,10 +383,13 @@ public class KM200SwitchProgramServiceHandler {
             }
             logger.debug("Positive switch: {}", positiveSwitch);
             logger.debug("Negative switch: {}", negativeSwitch);
-            if (!positiveSwitch.isEmpty()) {
+            Map<String, List<Integer>> weekMap = null;
+            weekMap = switchMap.get(positiveSwitch);
+            if (weekMap == null) {
                 initWeeklist(positiveSwitch);
             }
-            if (!negativeSwitch.isEmpty()) {
+            weekMap = switchMap.get(negativeSwitch);
+            if (weekMap == null) {
                 initWeeklist(negativeSwitch);
             }
             for (int i = 0; i < sPoints.size(); i++) {
@@ -513,11 +528,17 @@ public class KM200SwitchProgramServiceHandler {
     public Integer getActivePositiveSwitch() {
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
-            List<Integer> daysList = week.get(getActiveDay());
-            if (!daysList.isEmpty()) {
-                Integer cycl = getActiveCycle();
-                if (cycl <= daysList.size()) {
-                    return (daysList.get(getActiveCycle() - 1));
+            if (week != null) {
+                logger.debug("Week: {}", week);
+                logger.debug("Day: {}", getActiveDay());
+                List<Integer> daysList = week.get(getActiveDay());
+                logger.debug("daysList {}", week.get(getActiveDay()));
+                if (!daysList.isEmpty()) {
+                    Integer cycl = getActiveCycle();
+                    logger.debug("cycl: {}", cycl);
+                    if (cycl <= daysList.size()) {
+                        return (daysList.get(getActiveCycle() - 1));
+                    }
                 }
             }
         }
@@ -530,11 +551,17 @@ public class KM200SwitchProgramServiceHandler {
     public Integer getActiveNegativeSwitch() {
         synchronized (switchMap) {
             Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
-            List<Integer> daysList = week.get(getActiveDay());
-            if (!daysList.isEmpty()) {
-                Integer cycl = getActiveCycle();
-                if (cycl <= daysList.size()) {
-                    return (daysList.get(getActiveCycle() - 1));
+            if (week != null) {
+                logger.debug("Week: {}", week);
+                logger.debug("Day: {}", getActiveDay());
+                List<Integer> daysList = week.get(getActiveDay());
+                logger.debug("daysList {}", week.get(getActiveDay()));
+                if (!daysList.isEmpty()) {
+                    Integer cycl = getActiveCycle();
+                    logger.debug("cycl: {}", cycl);
+                    if (cycl <= daysList.size()) {
+                        return (daysList.get(getActiveCycle() - 1));
+                    }
                 }
             }
         }

@@ -73,19 +73,25 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
     @Nullable
     public ThingUID getThingUID(ServiceInfo info) {
         ThingTypeUID typeUID = getThingTypeUID(info);
-        logger.debug("getType: {}", info.getType());
-        if (info.getType() != null) {
-            if (info.getType().equalsIgnoreCase(getServiceType())) {
-                String devId = info.getPropertyString("uuid");
-                logger.info("Discovered a KMXXX gateway with name: '{}' id: '{}'", info.getName(), devId);
-                if (devId.isEmpty()) {
-                    /* If something is wrong then we are generating a random UUID */
-                    logger.debug("Error in automatic device-id detection. Using random value");
-                    Random rnd = new Random();
-                    devId = String.valueOf(rnd.nextLong());
+        if (typeUID != null) {
+            logger.debug("getType: {}", info.getType());
+            if (info.getType() != null) {
+                if (info.getType().equalsIgnoreCase(getServiceType())) {
+                    String devId = info.getPropertyString("uuid");
+                    if (null != devId) {
+                        logger.info("Discovered a KMXXX gateway with name: '{}' id: '{}'", info.getName(), devId);
+                        if (devId.isEmpty()) {
+                            /* If something is wrong then we are generating a random UUID */
+                            logger.debug("Error in automatic device-id detection. Using random value");
+                            Random rnd = new Random();
+                            devId = String.valueOf(rnd.nextLong());
+                        }
+                        ThingUID thinguid = new ThingUID(typeUID, devId);
+                        return thinguid;
+                    } else {
+                        logger.debug("No uuid property found");
+                    }
                 }
-                ThingUID thinguid = new ThingUID(typeUID, devId);
-                return thinguid;
             }
         }
         return null;

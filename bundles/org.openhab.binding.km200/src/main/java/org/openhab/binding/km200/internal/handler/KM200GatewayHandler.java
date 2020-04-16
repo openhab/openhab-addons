@@ -482,7 +482,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     /**
      * The GetKM200Runnable class get the data from device to all items.
      */
-    @NonNullByDefault
     private class GetKM200Runnable implements Runnable {
 
         private final KM200GatewayHandler gatewayHandler;
@@ -512,7 +511,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     /**
      * The GetKM200Runnable class get the data from device for one channel.
      */
-    @NonNullByDefault
     private class GetSingleKM200Runnable implements Runnable {
 
         private final Logger logger = LoggerFactory.getLogger(GetSingleKM200Runnable.class);
@@ -585,7 +583,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     /**
      * The sendKM200Thread class sends the data to the device.
      */
-    @NonNullByDefault
     private class SendKM200Runnable implements Runnable {
 
         private final Logger logger = LoggerFactory.getLogger(SendKM200Runnable.class);
