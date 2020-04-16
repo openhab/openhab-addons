@@ -83,7 +83,7 @@ public class CoronaStatsCountryHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized @Nullable CoronaStatsWorldHandler getBridgeHandler() {
+    private @Nullable CoronaStatsWorldHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
