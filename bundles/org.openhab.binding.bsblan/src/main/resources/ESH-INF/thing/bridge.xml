@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bsblan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>BSB-LAN Bridge</label>
+		<description>A bridge to connect a BSB-LAN device</description>
+		<config-description>
+			<parameter name="host" type="text" required="true" groupName="network">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>The hostname or IP address of the BSB-LAN device.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false" groupName="network">
+				<label>Port</label>
+				<description>The port BSB-LAN device.</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="passkey" type="text" required="false" groupName="network">
+				<label>Passkey</label>
+				<description>The passkey required to access the BSB-LAN device.</description>
+			</parameter>
+			<parameter name="username" type="text" required="false" groupName="network">
+				<label>Username</label>
+				<description>The username required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="network">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="5">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
