@@ -618,13 +618,13 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                         String service = KM200Utils.checkParameterReplacement(channel, remoteDevice);
                         KM200ServiceObject object = remoteDevice.getServiceObject(service);
                         if (null != object) {
-                            String parent = object.getParent();
-                            if (null != parent) {
-                                logger.debug("Sending: {} to : {}", newObject, service);
-                                if (object.getVirtual() == 1) {
+                            if (object.getVirtual() == 0) {
+                                remoteDevice.setServiceNode(service, newObject);
+                            } else {
+                                String parent = object.getParent();
+                                if (null != parent) {
+                                    logger.debug("Sending: {} to : {}", newObject, service);
                                     remoteDevice.setServiceNode(parent, newObject);
-                                } else {
-                                    remoteDevice.setServiceNode(service, newObject);
                                 }
                             }
                         }
