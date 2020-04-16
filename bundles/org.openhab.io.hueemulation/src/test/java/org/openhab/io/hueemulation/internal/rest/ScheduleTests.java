@@ -259,7 +259,6 @@ public class ScheduleTests {
 
     @Test
     public void timeStringToTrigger() {
-
         String timeString;
         Trigger trigger;
         Configuration configuration;

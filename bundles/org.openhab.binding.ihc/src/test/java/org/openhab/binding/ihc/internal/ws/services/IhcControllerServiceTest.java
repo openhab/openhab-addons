@@ -41,7 +41,7 @@ public class IhcControllerServiceTest {
     private IhcControllerService ihcControllerService;
     private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/ControllerService";
-    private Map<String, String> requestProps = new HashMap<String, String>();
+    private Map<String, String> requestProps = new HashMap<>();
     private String query;
     private final int timeout = 100;
 

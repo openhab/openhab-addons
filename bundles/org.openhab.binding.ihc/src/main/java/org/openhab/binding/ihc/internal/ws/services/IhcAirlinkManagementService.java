@@ -46,7 +46,7 @@ public class IhcAirlinkManagementService extends IhcBaseService {
     public synchronized List<WSRFDevice> getDetectedDeviceList() throws IhcExecption {
         String response = sendSoapQuery("getDetectedDeviceList", EMPTY_QUERY);
 
-        List<WSRFDevice> resourceValueList = new ArrayList<WSRFDevice>();
+        List<WSRFDevice> resourceValueList = new ArrayList<>();
 
         try {
             NodeList nodeList = XPathUtils.parseList(response,

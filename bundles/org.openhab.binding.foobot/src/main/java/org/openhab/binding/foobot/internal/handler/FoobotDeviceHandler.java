@@ -102,7 +102,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         final int refreshInterval = bridgeHandler == null ? FoobotBindingConstants.DEFAULT_REFRESH_PERIOD_MINUTES
                 : bridgeHandler.getRefreshInterval();
 
-        dataCache = new ExpiringCache<FoobotJsonData>(Duration.ofMinutes(refreshInterval), this::retrieveSensorData);
+        dataCache = new ExpiringCache<>(Duration.ofMinutes(refreshInterval), this::retrieveSensorData);
         scheduler.execute(this::refreshSensors);
     }
 
@@ -175,7 +175,6 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         if (lastTime instanceof DecimalType) {
             ((DecimalType) lastTime).intValue();
         }
-
     }
 
     @Override

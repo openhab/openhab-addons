@@ -49,7 +49,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "text") @Nullable String text) {
-        return sendMail(recipient, subject, text, new ArrayList<String>());
+        return sendMail(recipient, subject, text, new ArrayList<>());
     }
 
     @RuleAction(label = "Send Text Mail", description = "sends a text mail with URL attachment")
@@ -109,7 +109,7 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text) {
-        return SendMailActions.sendMail(actions, recipient, subject, text, new ArrayList<String>());
+        return SendMailActions.sendMail(actions, recipient, subject, text, new ArrayList<>());
     }
 
     public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
@@ -135,7 +135,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "html") @Nullable String html) {
-        return sendHtmlMail(recipient, subject, html, new ArrayList<String>());
+        return sendHtmlMail(recipient, subject, html, new ArrayList<>());
     }
 
     @RuleAction(label = "Send HTML Mail", description = "sends a HTML mail with URL attachment")
@@ -188,14 +188,14 @@ public class SendMailActions implements ThingActions {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         } catch (EmailException e) {
-            logger.warn("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
     }
 
     public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String subject, @Nullable String html) {
-        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<String>());
+        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<>());
     }
 
     public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,

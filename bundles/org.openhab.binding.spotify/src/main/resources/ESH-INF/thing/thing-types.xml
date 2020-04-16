@@ -37,6 +37,7 @@ register a bridge for each account. Go to http://your openHAB address::8080/conn
 			<channel id="trackNumber" typeId="currentlyPlayedTrackNumber" />
 			<channel id="trackDiscNumber" typeId="currentlyPlayedTrackDiscNumber" />
 			<channel id="trackPopularity" typeId="currentlyPlayedTrackPopularity" />
+			<channel id="trackExplicit" typeId="currentlyPlayedTrackExplicit" />
 			<channel id="trackDurationMs" typeId="currentlyPlayedTrackDurationMs" />
 			<channel id="trackProgressMs" typeId="currentlyPlayedTrackProgressMs" />
 			<channel id="trackDuration" typeId="currentlyPlayedTrackDuration" />
@@ -245,7 +246,13 @@ bridge you have configured.</description>
 	<channel-type id="currentlyPlayedTrackPopularity" advanced="true">
 		<item-type>Number</item-type>
 		<label>Track Popularity</label>
-		<description>The populatiry of the currently played track</description>
+		<description>The popularity of the currently played track</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackExplicit" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Track Explicit</label>
+		<description>Whether or not the track has explicit lyrics (On it does; Off it does not OR unknown)</description>
 		<state readOnly="true" />
 	</channel-type>
 

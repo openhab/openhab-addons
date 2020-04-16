@@ -113,9 +113,11 @@ public class HomekitAccessoryFactory {
                                         "Carbon monoxide accessory group should have a carbon monoxide sensor in it"));
                 return new HomekitSmokeSensorImpl(carbonMonoxideSensorAccessory, itemRegistry, updater,
                         BatteryStatus.getFromCharacteristics(characteristicItems));
+            case LOCK:
+                return new HomekitLockImpl(taggedItem, itemRegistry, updater);
         }
 
-        throw new HomekitException("Unknown homekit type: " + taggedItem.getAccessoryType());
+        throw new HomekitException("Unknown HomeKit type: " + taggedItem.getAccessoryType());
     }
 
     /**

@@ -144,7 +144,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
             }
         }
 
-        if (items.size() > 0) {
+        if (!items.isEmpty()) {
             entry.lights = items;
         }
 
@@ -301,7 +301,6 @@ public class Scenes implements RegistryChangeListener<Rule> {
         }
 
         try {
-
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
@@ -379,7 +378,6 @@ public class Scenes implements RegistryChangeListener<Rule> {
             @PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "scene id") String id,
             @PathParam("lightid") @ApiParam(value = "light id") String lightid, String body) {
-
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

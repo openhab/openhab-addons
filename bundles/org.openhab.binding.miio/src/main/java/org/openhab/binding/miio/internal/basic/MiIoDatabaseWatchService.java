@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     private static final String LOCAL_DATABASE_PATH = ConfigConstants.getConfigFolder() + File.separator + "misc"
             + File.separator + BINDING_ID;
     private static final String DATABASE_FILES = ".json";
+    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDatabaseWatchService.class);
     private Map<String, URL> databaseList = new HashMap<>();
@@ -80,16 +82,18 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     }
 
     @Override
-    protected WatchEvent.Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
-        return new WatchEvent.Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
+    protected Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
+        return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
     }
 
     @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
-            @Nullable Path path) {
-        if (path != null && path.getFileName().toString().endsWith(DATABASE_FILES)) {
-            logger.debug("Local Databases file {} changed. Refreshing device database.", path.getFileName());
-            populateDatabase();
+    protected void processWatchEvent(@Nullable WatchEvent<?> event, @Nullable Kind<?> kind, @Nullable Path path) {
+        if (path != null) {
+            final Path p = path.getFileName();
+            if (p != null && p.toString().endsWith(DATABASE_FILES)) {
+                logger.debug("Local Databases file {} changed. Refreshing device database.", p.getFileName());
+                populateDatabase();
+            }
         }
     }
 
@@ -109,14 +113,10 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         for (URL db : urlEntries) {
             logger.trace("Adding devices for db file: {}", db);
             try {
-                @Nullable
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
-                if (deviceMapping != null) {
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    for (String id : devdb.getDevice().getId()) {
-                        workingDatabaseList.put(id, db);
-                    }
+                MiIoBasicDevice devdb = GSON.fromJson(deviceMapping, MiIoBasicDevice.class);
+                for (String id : devdb.getDevice().getId()) {
+                    workingDatabaseList.put(id, db);
                 }
             } catch (JsonIOException | JsonSyntaxException | IOException e) {
                 logger.debug("Error while processing database '{}': {}", db, e.getMessage());

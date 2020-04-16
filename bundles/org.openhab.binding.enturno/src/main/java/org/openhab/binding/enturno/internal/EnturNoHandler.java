@@ -26,7 +26,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
@@ -163,7 +167,6 @@ public class EnturNoHandler extends BaseThingHandler {
             throws EnturConfigurationException, EnturCommunicationException {
         logger.debug("Update real-time data of thing '{}'.", getThing().getUID());
         try {
-
             processedData = connection.getEnturTimeTable(stopId, config.getLineCode());
 
             return true;
@@ -267,7 +270,7 @@ public class EnturNoHandler extends BaseThingHandler {
     private void updateStopPlaceChannel(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (processedData.size() > 0) {
+        if (!processedData.isEmpty()) {
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case EnturNoBindingConstants.CHANNEL_STOP_ID:

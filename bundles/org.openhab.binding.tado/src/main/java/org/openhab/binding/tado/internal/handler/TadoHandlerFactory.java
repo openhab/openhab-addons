@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.tado", service = ThingHandlerFactory.class)
 public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_HOME, THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE)));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -73,7 +73,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerTadoDiscoveryService(TadoHomeHandler tadoHomeHandler) {
         TadoDiscoveryService discoveryService = new TadoDiscoveryService(tadoHomeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>());
+                discoveryService, new Hashtable<>());
         discoveryService.activate();
         this.discoveryServiceRegs.put(tadoHomeHandler.getThing().getUID(), serviceRegistration);
     }

@@ -55,7 +55,6 @@ public class LiveDataResponseMeterless implements DataResponse {
         Map<Channel, State> valueMap = new HashMap<>();
 
         if (overview != null) {
-
             if (overview.currentPower != null) {
                 assignValue(valueMap, LiveDataChannels.PRODUCTION, overview.currentPower.power, SmartHomeUnits.WATT);
             } else {
@@ -85,7 +84,6 @@ public class LiveDataResponseMeterless implements DataResponse {
 
             // week production is not available
             assignValue(valueMap, AggregateDataChannels.WEEK_PRODUCTION, null, null);
-
         }
         return valueMap;
     }
@@ -94,15 +92,15 @@ public class LiveDataResponseMeterless implements DataResponse {
      * converts the value to QuantityType. If no value provided UnDefType.UNDEF will be used
      *
      * @param targetMap result will be put into this map
-     * @param channel   channel to assign the value
-     * @param value     the value to convert
+     * @param channel channel to assign the value
+     * @param value the value to convert
      */
     protected final <T extends Quantity<T>> void assignValue(Map<Channel, State> targetMap, Channel channel,
             Double value, Unit<T> unit) {
         State result = UnDefType.UNDEF;
 
         if (value != null && unit != null) {
-            result = new QuantityType<T>(value, unit);
+            result = new QuantityType<>(value, unit);
         } else {
             logger.debug("Channel {}: no value/unit provided", channel);
         }

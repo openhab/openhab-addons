@@ -44,6 +44,7 @@ public class JeeLinkBindingConstants {
     public static final ThingTypeUID PCA301_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "pca301");
     public static final ThingTypeUID TX22_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "tx22");
     public static final ThingTypeUID REVOLT_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "revolt");
+    public static final ThingTypeUID LGW_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "lgw");
 
     // List of all channel ids for lacrosse sensor things
     public static final String TEMPERATURE_CHANNEL = "temperature";

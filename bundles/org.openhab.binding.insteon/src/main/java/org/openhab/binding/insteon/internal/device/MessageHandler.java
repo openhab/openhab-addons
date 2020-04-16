@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,8 +53,8 @@ public abstract class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
     DeviceFeature feature;
-    HashMap<String, @Nullable String> parameters = new HashMap<>();
-    HashMap<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
+    Map<String, @Nullable String> parameters = new HashMap<>();
+    Map<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
 
     /**
      * Constructor
@@ -327,10 +328,10 @@ public abstract class MessageHandler {
     /**
      * Set parameter map
      *
-     * @param hm the parameter map for this message handler
+     * @param map the parameter map for this message handler
      */
-    public void setParameters(HashMap<String, @Nullable String> hm) {
-        parameters = hm;
+    public void setParameters(Map<String, @Nullable String> map) {
+        parameters = map;
     }
 
     //
@@ -462,7 +463,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void setParameters(HashMap<String, @Nullable String> params) {
+        public void setParameters(Map<String, @Nullable String> params) {
             super.setParameters(params);
             onCmd = getIntParameter("on", 0x2E);
             offCmd = getIntParameter("off", 0x2F);
@@ -1017,7 +1018,8 @@ public abstract class MessageHandler {
                 // last, multiply with factor and add an offset
                 double dvalue = getDoubleParameter("offset", 0) + value * getDoubleParameter("factor", 1.0);
 
-                @Nullable State state;
+                @Nullable
+                State state;
                 String scale = getStringParameter("scale", null);
                 if (scale != null && scale.equals("celsius")) {
                     state = new QuantityType<>(dvalue, SIUnits.CELSIUS);
@@ -1259,8 +1261,8 @@ public abstract class MessageHandler {
      * @param f the feature for which to create the handler
      * @return the handler which was created
      */
-    public static @Nullable <T extends MessageHandler> T makeHandler(String name,
-            HashMap<String, @Nullable String> params, DeviceFeature f) {
+    public static @Nullable <T extends MessageHandler> T makeHandler(String name, Map<String, @Nullable String> params,
+            DeviceFeature f) {
         String cname = MessageHandler.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);

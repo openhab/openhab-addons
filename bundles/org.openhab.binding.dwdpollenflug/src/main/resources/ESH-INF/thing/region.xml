@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dwdpollenflug"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="region">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		
+		<label>DWD Pollen Count Index - Region</label>
+		<description>Pollen count index for a region or partregion</description>
+
+		<channel-groups>
+			<channel-group id="alder" typeId="pollentype">
+				<label>Alder</label>
+				<description>Information for alder</description>
+			</channel-group>
+			<channel-group id="ambrosia" typeId="pollentype">
+				<label>Ambrosia</label>
+				<description>Information for ambrosia</description>
+			</channel-group>
+			<channel-group id="ash" typeId="pollentype">
+				<label>Ash tree</label>
+				<description>Information for ash tree</description>
+			</channel-group>
+			<channel-group id="birch" typeId="pollentype">
+				<label>Birch</label>
+				<description>Information for birch</description>
+			</channel-group>
+			<channel-group id="grasses" typeId="pollentype">
+				<label>Grasses</label>
+				<description>Information for grasses</description>
+			</channel-group>
+			<channel-group id="hazel" typeId="pollentype">
+				<label>Hazel</label>
+				<description>Information for hazel</description>
+			</channel-group>
+			<channel-group id="mugwort" typeId="pollentype">
+				<label>Mugwort</label>
+				<description>Information for mugwort</description>
+			</channel-group>
+			<channel-group id="rye" typeId="pollentype">
+				<label>Rye</label>
+				<description>Information for rye</description>
+			</channel-group>
+		</channel-groups>
+		
+		<properties>
+			<property name="region_name"/>
+			<property name="partregion_name"/>
+		</properties>
+		
+		<config-description>
+			<parameter name="regionID" type="integer" required="true">
+				<label>Region</label>
+				<description>The partregion or region that should be reported.</description>
+				<options>
+					<option value="11">Inseln und Marschen</option>
+					<option value="12">Geest, Schleswig-Holstein und Hamburg</option>
+					<option value="20">Mecklenburg-Vorpommern</option>
+					<option value="31">Westl. Niedersachsen/Bremen</option>
+					<option value="32">Östl. Niedersachsen</option>
+					<option value="41">Rhein.-Westfäl. Tiefland</option>
+					<option value="42">Ostwestfalen</option>
+					<option value="43">Mittelgebirge NRW</option>
+					<option value="50">Brandenburg und Berlin</option>
+					<option value="61">Tiefland Sachsen-Anhalt</option>
+					<option value="62">Harz</option>
+					<option value="71">Tiefland Thüringen</option>
+					<option value="72">Mittelgebirge Thüringen</option>
+					<option value="81">Tiefland Sachsen</option>
+					<option value="82">Mittelgebirge Sachsen</option>
+					<option value="91">Nordhessen und hess. Mittelgebirge</option>
+					<option value="92">Rhein-Main</option>
+					<option value="101">Rhein, Pfalz, Nahe und Mosel</option>
+					<option value="102">Mittelgebirgsbereich Rheinland-Pfalz</option>
+					<option value="103">Saarland</option>
+					<option value="111">Oberrhein und unteres Neckartal</option>
+					<option value="112">Hohenlohe/mittlerer Neckar/Oberschwaben</option>
+					<option value="113">Mittelgebirge Baden-Württemberg</option>
+					<option value="121">Allgäu/Oberbayern/Bay. Wald</option>
+					<option value="122">Donauniederungen</option>
+					<option value="123">Bayern n. der Donau, o. Bayr. Wald, o. Mainfranken</option>
+					<option value="124">Mainfranken</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<channel-group-type id="pollentype">
+		<label>Pollen Type Group</label>
+		<description>For each pollen type there are three channels for today, tomorrow and day after tomorrow</description>
+		<channels>
+			<channel id="today" typeId="pollencount">
+				<label>Today</label>
+			</channel>
+			<channel id="tomorrow" typeId="pollencount">
+				<label>Tomorrow</label>
+			</channel>
+			<channel id="dayafter_to" typeId="pollencount">
+				<label>Day After Tomorrow</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="pollencount">
+		<item-type>String</item-type>
+		<label>Pollen Count</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

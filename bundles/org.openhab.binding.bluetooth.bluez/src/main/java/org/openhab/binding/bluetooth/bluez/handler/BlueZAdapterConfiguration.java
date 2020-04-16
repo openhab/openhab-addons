@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluez.handler;
 
+import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
+
 /**
  * Configuration properties class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class BlueZAdapterConfiguration {
+public class BlueZAdapterConfiguration extends BaseBluetoothBridgeHandlerConfiguration {
 
     public String address;
 
-    public Boolean discovery;
 }

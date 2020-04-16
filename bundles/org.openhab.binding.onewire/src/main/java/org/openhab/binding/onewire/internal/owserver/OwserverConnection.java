@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -99,7 +100,7 @@ public class OwserverConnection {
         boolean success = false;
         do {
             success = open();
-        } while (success != true && owserverConnectionState != OwserverConnectionState.FAILED);
+        } while (!success && owserverConnectionState != OwserverConnectionState.FAILED);
     }
 
     /**
@@ -116,21 +117,24 @@ public class OwserverConnection {
      *
      * @return a list of device ids
      */
-    public List<SensorId> getDirectory(String basePath) throws OwException {
+    public @NonNullByDefault({}) List<SensorId> getDirectory(String basePath) throws OwException {
         OwserverPacket requestPacket = new OwserverPacket(OwserverMessageType.DIRALL, basePath);
         OwserverPacket returnPacket = request(requestPacket);
 
         if ((returnPacket.getReturnCode() != -1) && returnPacket.hasPayload()) {
             connectionErrorCounter = 0;
-            return Arrays.stream(returnPacket.getPayloadString().split(",")).map(s -> {
-                try {
-                    return new SensorId(s);
-                } catch (IllegalArgumentException e) {
-                    return null;
-                }
-            }).filter(s -> s != null).collect(Collectors.toList());
+            return Arrays.stream(returnPacket.getPayloadString().split(",")).map(this::stringToSensorId)
+                    .filter(Objects::nonNull).collect(Collectors.toList());
         } else {
             throw new OwException("invalid of empty packet");
+        }
+    }
+
+    private @Nullable SensorId stringToSensorId(String s) {
+        try {
+            return new SensorId(s);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 

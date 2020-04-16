@@ -81,6 +81,6 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
      * @param address the {@link BluetoothAddress} to check for
      * @return true if this adapter has a {@link BluetoothDevice} with that address
      */
-    boolean hasDevice(BluetoothAddress address);
+    boolean hasHandlerForDevice(BluetoothAddress address);
 
 }

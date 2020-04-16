@@ -48,11 +48,59 @@
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
-				<description>Insteon address of the device.</description>
+				<description>Insteon address of the device. Example: 12.34.56</description>
 			</parameter>
 			<parameter name="productKey" type="text" required="true">
 				<label>Product Key</label>
 				<description>Insteon binding product key that is used to identify the model of the device.</description>
+				<options>
+					<option value="F00.00.01">2477D SwitchLinc Dimmer - F00.00.01</option>
+					<option value="F00.00.02">2477S SwitchLinc Switch- F00.00.02</option>
+					<option value="F00.00.03">2845-222 Hidden Door Sensor - F00.00.03</option>
+					<option value="F00.00.04">2876S ICON Switch - F00.00.04</option>
+					<option value="F00.00.05">2456D3 LampLinc V2 - F00.00.05</option>
+					<option value="F00.00.06">2442-222 Micro Dimmer - F00.00.06</option>
+					<option value="F00.00.07">2453-222 DIN Rail On/Off - F00.00.07</option>
+					<option value="F00.00.08">2452-222 DIN Rail Dimmer - F00.00.08</option>
+					<option value="F00.00.09">2458-A1 MorningLinc RF Lock Controller - F00.00.09</option>
+					<option value="F00.00.0A">2852-222 Leak Sensor - F00.00.0A</option>
+					<option value="F00.00.0B">2672-422 LED Dimmer - F00.00.0B</option>
+					<option value="F00.00.0C">2476D SwitchLinc Dimmer - F00.00.0C</option>
+					<option value="F00.00.0D">2634-222 On/Off Dual-Band Outdoor Module - F00.00.0D</option>
+					<option value="F00.00.10">2342-2 Mini Remote - F00.00.10</option>
+					<option value="F00.00.11">2466D ToggleLinc Dimmer - F00.00.11</option>
+					<option value="F00.00.12">2466S ToggleLinc Switch - F00.00.12</option>
+					<option value="F00.00.13">2672-222 LED Bulb - F00.00.13</option>
+					<option value="F00.00.14">2487S KeypadLinc On/Off 6-Button - F00.00.14</option>
+					<option value="F00.00.15">2334-232 KeypadLink Dimmer 6-Button - F00.00.15</option>
+					<option value="F00.00.16">2334-232 KeypadLink Dimmer 8-Button - F00.00.16</option>
+					<option value="F00.00.17">2423A1 iMeter Solo Power Meter - F00.00.17</option>
+					<option value="F00.00.18">2423A1 Thermostat 2441TH - F00.00.18</option>
+					<option value="F00.00.19">2457D2 LampLinc Dimmer - F00.00.19</option>
+					<option value="F00.00.1A">2475SDB In-LineLinc Relay - F00.00.1A</option>
+					<option value="F00.00.1B">2635-222 On/Off Module - F00.00.1B</option>
+					<option value="F00.00.1C">2475F FanLinc Module - F00.00.1C</option>
+					<option value="F00.00.1D">2456S3 ApplianceLinc - F00.00.1D</option>
+					<option value="F00.00.1E">2674-222 LED Bulb (Recessed) - F00.00.1E</option>
+					<option value="F00.00.1F">2477SA1 220V 30-amp Load Controller N/O - F00.00.1F</option>
+					<option value="F00.00.20">2342-222 Mini Remote (8-Button) - F00.00.20</option>
+					<option value="F00.00.21">2441V Insteon Thermostat Adaptor for Venstar - F00.00.21</option>
+					<option value="F00.00.22">2982-222 Insteon Smoke Bridge - F00.00.22</option>
+					<option value="F00.00.23">2487S KeypadLinc On/Off 8-Button - F00.00.23</option>
+					<option value="0x00001A">2450 IO Link - 0x00001A</option>
+					<option value="0x000037">2486D KeypadLinc Dimmer - 0x000037</option>
+					<option value="0x000039">2663-222 On/Off Outlet - 0x000039</option>
+					<option value="0x000041">2484DWH8 KeypadLinc Countdown Timer - 0x000041</option>
+					<option value="0x000045">2413U PowerLinc 2413U USB modem - 0x000045</option>
+					<option value="0x000049">2843-222 Wireless Open/Close Sensor - 0x000049</option>
+					<option value="0x00004A">2842-222 Motion Sensor - 0x00004A</option>
+					<option value="0x000051">2486DWH8 KeypadLinc Dimmer - 0x000051</option>
+					<option value="0x000068">2472D OutletLincDimmer - 0x000068</option>
+					<option value="X00.00.01">X10 switch Generic X10 switch - X00.00.01</option>
+					<option value="X00.00.02">X10 dimmer Generic X10 dimmer - X00.00.02</option>
+					<option value="X00.00.03">X10 motion Generic X10 motion sensor - X00.00.03</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -75,6 +123,11 @@
 	<channel-type id="batteryWatermarkLevel">
 		<item-type>Number</item-type>
 		<label>Battery Watermark Level</label>
+	</channel-type>
+
+	<channel-type id="beep">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
 	</channel-type>
 
 	<channel-type id="bottomOutlet">
@@ -177,6 +230,26 @@
 		<label>Fast On/Off Button D</label>
 	</channel-type>
 
+	<channel-type id="fastOnOffButtonE">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button E</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonF">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button F</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonG">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button G</label>
+	</channel-type>
+
+	<channel-type id="fastOnOffButtonH">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button H</label>
+	</channel-type>
+
 	<channel-type id="heatSetPoint">
 		<item-type>Number</item-type>
 		<label>Heat Set Point</label>
@@ -262,6 +335,11 @@
 		<label>LED Brightness</label>
 	</channel-type>
 
+	<channel-type id="ledOnOff">
+		<item-type>Switch</item-type>
+		<label>LED On/Off</label>
+	</channel-type>
+
 	<channel-type id="lightDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Light Dimmer</label>
@@ -270,6 +348,11 @@
 	<channel-type id="lightLevel">
 		<item-type>Number</item-type>
 		<label>Light Level</label>
+	</channel-type>
+	
+	<channel-type id="lightLevelAboveThreshold">
+		<item-type>Contact</item-type>
+		<label>Light Level Above/Below Threshold</label>
 	</channel-type>
 
 	<channel-type id="loadDimmer">
@@ -290,6 +373,11 @@
 	<channel-type id="loadSwitchManualChange">
 		<item-type>Number</item-type>
 		<label>Load Switch Manual Change</label>
+	</channel-type>
+
+	<channel-type id="lowBattery">
+		<item-type>Contact</item-type>
+		<label>Low Battery</label>
 	</channel-type>
 
 	<channel-type id="manualChange">
@@ -315,6 +403,26 @@
 	<channel-type id="manualChangeButtonD">
 		<item-type>Number</item-type>
 		<label>Manual Change Button D</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonE">
+		<item-type>Number</item-type>
+		<label>Manual Change Button E</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonF">
+		<item-type>Number</item-type>
+		<label>Manual Change Button F</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonG">
+		<item-type>Number</item-type>
+		<label>Manual Change Button G</label>
+	</channel-type>
+
+	<channel-type id="manualChangeButtonH">
+		<item-type>Number</item-type>
+		<label>Manual Change Button H</label>
 	</channel-type>
 
 	<channel-type id="notification">

@@ -87,7 +87,7 @@ public class AirQualityJsonData {
      * @return {String}
      */
     public String getAttributions() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (int i = 0; i < attributions.size(); i++) {
             list.add(attributions.get(i).getName());
         }

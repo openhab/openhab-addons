@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -63,8 +62,9 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
 
-        if (thingTypeUID.equals(THING_TYPE_RDS))
+        if (thingTypeUID.equals(THING_TYPE_RDS)) {
             return new RdsHandler(thing);
+        }
 
         return null;
     }
@@ -86,7 +86,7 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
 
         // register the discovery service
         ServiceRegistration<?> serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), ds,
-                new Hashtable<String, Object>());
+                new Hashtable<>());
 
         /*
          * store service registration in a list so we can destroy it when the respective
@@ -113,8 +113,9 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
             serviceReg.unregister();
 
             // deactivate the service
-            if (disco != null)
+            if (disco != null) {
                 disco.deactivate();
+            }
         }
     }
 

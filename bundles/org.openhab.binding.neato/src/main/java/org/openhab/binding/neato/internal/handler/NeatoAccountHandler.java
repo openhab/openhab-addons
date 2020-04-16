@@ -77,7 +77,7 @@ public class NeatoAccountHandler extends BaseBridgeHandler {
             logger.debug("Error attempting to find robots registered to account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to find robots registered to account");
-            return new ArrayList<Robot>();
+            return new ArrayList<>();
         }
     }
 
@@ -90,7 +90,7 @@ public class NeatoAccountHandler extends BaseBridgeHandler {
             return sendGetRobots(accessToken);
         }
 
-        return new ArrayList<Robot>();
+        return new ArrayList<>();
     }
 
     private String authenticate(String username, String password) {

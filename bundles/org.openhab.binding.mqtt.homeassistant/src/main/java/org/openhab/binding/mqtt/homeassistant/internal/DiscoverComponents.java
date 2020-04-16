@@ -131,7 +131,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      */
     public CompletableFuture<@Nullable Void> startDiscovery(MqttBrokerConnection connection, int discoverTime,
             Set<HaID> topicDescriptions, ComponentDiscovered componentsDiscoveredListener) {
-
         this.topics = topicDescriptions.stream().map(id -> id.getTopic("config")).collect(Collectors.toSet());
         this.discoverTime = discoverTime;
         this.discoveredListener = componentsDiscoveredListener;

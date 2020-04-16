@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -83,10 +84,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     private final LauncherApplication appLauncher = new LauncherApplication();
 
-    private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
     private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
+
+    private @Nullable LGWebOSTVSocket socket;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;
@@ -123,6 +125,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void initialize() {
+        logger.debug("Initializing handler for thing {}", getThing().getUID());
         LGWebOSConfiguration c = getLGWebOSConfig();
         logger.trace("Handler initialized with config {}", c);
         String host = c.getHost();
@@ -131,24 +134,28 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             return;
         }
 
-        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort());
+        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort(), scheduler);
         s.setListener(this);
         socket = s;
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
 
         startReconnectJob();
     }
 
     @Override
     public void dispose() {
+        logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopKeepAliveJob();
         stopReconnectJob();
 
         LGWebOSTVSocket s = socket;
         if (s != null) {
             s.setListener(null);
-            scheduler.execute(() -> s.disconnect()); // dispose should be none-blocking
+            s.disconnect();
         }
         socket = null;
+        config = null; // ensure config gets actually refreshed during re-initialization
         super.dispose();
     }
 
@@ -237,17 +244,21 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void storeKey(@Nullable String key) {
-        // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
-        getLGWebOSConfig().key = key;
+        if (!getKey().equals(key)) {
+            logger.debug("store new key");
+            // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
+            getLGWebOSConfig().key = key;
 
-        // persist the configuration change
-        Configuration configuration = editConfiguration();
-        configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
-        updateConfiguration(configuration);
+            // persist the configuration change
+            Configuration configuration = editConfiguration();
+            configuration.put(LGWebOSBindingConstants.CONFIG_KEY, key);
+            updateConfiguration(configuration);
+        }
     }
 
     @Override
     public void storeProperties(Map<String, String> properties) {
+        logger.debug("storeProperties {}", properties);
         Map<String, String> map = editProperties();
         map.putAll(properties);
         updateProperties(map);
@@ -256,6 +267,9 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     @Override
     public void onStateChanged(LGWebOSTVSocket.State state) {
         switch (state) {
+            case DISCONNECTING:
+                postUpdate(CHANNEL_POWER, OnOffType.OFF);
+                break;
             case DISCONNECTED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
                 channelHandlers.forEach((k, v) -> {
@@ -266,14 +280,15 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                 stopKeepAliveJob();
                 startReconnectJob();
                 break;
-
-            case REGISTERING:
+            case CONNECTING:
                 stopReconnectJob();
-                startKeepAliveJob();
+                break;
+            case REGISTERING:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "Registering - You may need to confirm pairing on TV.");
                 break;
             case REGISTERED:
+                startKeepAliveJob();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
 
                 channelHandlers.forEach((k, v) -> {
@@ -296,8 +311,10 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         logger.debug("Connection failed - error: {}", error);
 
         switch (getSocket().getState()) {
+            case DISCONNECTING:
             case DISCONNECTED:
                 break;
+            case CONNECTING:
             case REGISTERING:
             case REGISTERED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
