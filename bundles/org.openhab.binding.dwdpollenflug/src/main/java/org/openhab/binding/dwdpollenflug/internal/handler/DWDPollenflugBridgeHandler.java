@@ -86,8 +86,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
         bridgeConfig = getConfigAs(DWDPollenflugBridgeConfiguration.class);
 
         if (bridgeConfig.isValid()) {
+            updateStatus(ThingStatus.UNKNOWN);
             startPolling();
-            updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh interval has to be at least 15 minutes.");

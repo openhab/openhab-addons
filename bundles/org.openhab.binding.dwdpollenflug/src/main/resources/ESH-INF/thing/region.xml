@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		
-		<label>DWD Pollen Count Index - Region</label>
+		<label>DWD Pollen Count Index (Region)</label>
 		<description>Pollen count index for a region or partregion</description>
 
 		<channel-groups>
