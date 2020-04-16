@@ -15,13 +15,13 @@ And it supports a region thing (`region`), representing the data for all pollen 
 
 ### Bridge
 
-| Property  | Default | Required | Description                                                                          |
+| Parameter  | Default | Required | Description                                                                          |
 | --------- | :-----: | :------: | ------------------------------------------------------------------------------------ |
 | `refresh` |   30    |    no    | Define the interval for polling the data from DWD in minutes. Minimum is 15 minutes. |
 
 ### Region
 
-| Property   | Default | Required | Description                                                                                              |
+| Parameter   | Default | Required | Description                                                                                              |
 | ---------- | :-----: | :------: | -------------------------------------------------------------------------------------------------------- |
 | `regionID` |    -    |   yes    | In PaperUI just select the region you want to display data for. For files-configuration see table below. |
 
