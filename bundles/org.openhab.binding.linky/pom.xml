@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.4-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.linky</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Linky Binding</name>
+  
+   <properties>
+    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>3.12.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
+      <version>1.15.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>
