@@ -120,7 +120,7 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
             @Override
             public void onSuccess(@Nullable AppInfo appInfo) {
-                if (appInfo == null) {
+                if (appInfo == null || appInfo.getId().isEmpty()) {
                     handler.postUpdate(channelId, UnDefType.UNDEF);
                 } else {
                     handler.postUpdate(channelId, new StringType(appInfo.getId()));
