@@ -84,10 +84,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     private final LauncherApplication appLauncher = new LauncherApplication();
 
-    private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
     private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
+
+    private @Nullable LGWebOSTVSocket socket;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;

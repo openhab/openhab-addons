@@ -92,37 +92,6 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class LGWebOSTVSocket {
 
-    private static final Gson GSON = new GsonBuilder().create();
-
-    public enum State {
-        DISCONNECTING,
-        DISCONNECTED,
-        CONNECTING,
-        REGISTERING,
-        REGISTERED
-    }
-
-    private State state = State.DISCONNECTED;
-
-    private final ConfigProvider config;
-    private final WebSocketClient client;
-    private @Nullable Session session;
-    private final URI destUri;
-    private @Nullable WebOSTVSocketListener listener;
-    private final LGWebOSTVKeyboardInput keyboardInput;
-    /**
-     * Requests to which we are awaiting response.
-     */
-    private HashMap<Integer, ServiceCommand<?>> requests = new HashMap<>();
-
-    private final Logger logger = LoggerFactory.getLogger(LGWebOSTVSocket.class);
-    private int nextRequestId = 0;
-
-    private final ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> disconnectingJob;
-
-    private static final int DISCONNECTING_DELAY_SECONDS = 2;
-
     private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
     // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
     // private static final String APP_STATE = "ssap://system.launcher/getAppState";
@@ -134,6 +103,40 @@ public class LGWebOSTVSocket {
     // private static final String PROGRAM = "ssap://tv/getChannelProgramInfo";
     // private static final String CURRENT_PROGRAM = "ssap://tv/getChannelCurrentProgramInfo";
     // private static final String THREED_STATUS = "ssap://com.webos.service.tv.display/get3DStatus";
+
+    private static final int DISCONNECTING_DELAY_SECONDS = 2;
+
+    private static final Gson GSON = new GsonBuilder().create();
+
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSTVSocket.class);
+
+    private final ConfigProvider config;
+    private final WebSocketClient client;
+    private final URI destUri;
+    private final LGWebOSTVKeyboardInput keyboardInput;
+    private final ScheduledExecutorService scheduler;
+
+    public enum State {
+        DISCONNECTING,
+        DISCONNECTED,
+        CONNECTING,
+        REGISTERING,
+        REGISTERED
+    }
+
+    private State state = State.DISCONNECTED;
+
+    private @Nullable Session session;
+    private @Nullable WebOSTVSocketListener listener;
+
+    /**
+     * Requests to which we are awaiting response.
+     */
+    private HashMap<Integer, ServiceCommand<?>> requests = new HashMap<>();
+
+    private int nextRequestId = 0;
+
+    private @Nullable ScheduledFuture<?> disconnectingJob;
 
     public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port,
             ScheduledExecutorService scheduler) {
