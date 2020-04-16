@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.coronastats")
 public class CoronaStatsDiscoveryService extends AbstractDiscoveryService {
-
     private static final ThingUID WORLD_THING_UID = new ThingUID(THING_TYPE_WORLD, STATS);
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
 

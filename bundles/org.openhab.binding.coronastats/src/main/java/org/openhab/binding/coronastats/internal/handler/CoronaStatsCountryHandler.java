@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CoronaStatsCountryHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(CoronaStatsCountryHandler.class);
 
     private CoronaStatsCountryConfiguration thingConfig = new CoronaStatsCountryConfiguration();

@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class CoronaStatsBindingConstants {
-
     public static final String BINDING_ID = "coronastats";
 
     // World

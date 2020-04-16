@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CoronaStatsPollingException extends Exception {
-
     private static final long serialVersionUID = 1L;
 
     public CoronaStatsPollingException(String message) {

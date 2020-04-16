@@ -39,8 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.coronastats", service = ThingHandlerFactory.class)
 public class CoronaStatsHandlerFactory extends BaseThingHandlerFactory {
-
-    
     private final HttpClient httpClient;
 
     @Activate
