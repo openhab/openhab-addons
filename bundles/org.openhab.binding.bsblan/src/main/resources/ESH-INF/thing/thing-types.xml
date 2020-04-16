@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bsblan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Parameter Thing Type -->
+	<thing-type id="parameter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Parameter</label>
+		<description>Represents a single parameter available at the BSB-LAN device and identified by a numeric id.</description>
+
+		<channels>
+			<channel id="name" typeId="parameter_name" />
+			<channel id="number-value" typeId="parameter_number_value" />
+			<channel id="string-value" typeId="parameter_string_value" />
+			<channel id="switch-value" typeId="parameter_switch_value" />
+			<channel id="unit" typeId="parameter_unit" />
+			<channel id="description" typeId="parameter_description" />
+			<channel id="datatype" typeId="parameter_datatype" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Parameter ID</label>
+				<description>Specific parameter identifier</description>
+			</parameter>
+			<parameter name="setId" type="integer" required="false" groupName="Change Requests">
+				<label>Parameter Set-ID</label>
+				<description>Parameter identifier used for change requests. Defaults to the value of Parameter ID</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="setType" type="text" required="false" groupName="Change Requests">
+				<label>Message Type</label>
+				<description>Message type used for change requests. Defaults to SET.</description>
+				<default>SET</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="INF">INF</option>
+					<option value="SET">SET</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="parameter_name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the parameter</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="parameter_number_value">
+		<item-type>Number</item-type>
+		<label>Value</label>
+		<description>Value of the parameter</description>
+		<state readOnly="false" pattern="%.1f °C"></state>
+	</channel-type>
+	<channel-type id="parameter_string_value">
+		<item-type>String</item-type>
+		<label>Value</label>
+		<description>Value of the parameter</description>
+		<state readOnly="false"></state>
+	</channel-type>
+		<channel-type id="parameter_switch_value">
+		<item-type>Switch</item-type>
+		<label>Value</label>
+		<description>Value of the parameter</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="parameter_unit">
+		<item-type>String</item-type>
+		<label>Unit</label>
+		<description>Unit of the parameter</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="parameter_description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Description of the parameter</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="parameter_datatype">
+		<item-type>Number</item-type>
+		<label>Data Type</label>
+		<description>Data type of the parameter</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
