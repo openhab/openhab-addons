@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
     private final Logger logger = LoggerFactory.getLogger(PowerControlPower.class);
 
-    private boolean powerOn;
-
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -51,11 +49,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
              */
             handler.postUpdate(channelId, OnOffType.OFF);
         } else if (OnOffType.OFF == command) {
-            if (powerOn) {
-                handler.getSocket().powerOff(getDefaultResponseListener());
-            } else {
-                logger.debug("Received OFF - Ignored as the TV is already off.");
-            }
+            handler.getSocket().powerOff(getDefaultResponseListener());
         } else {
             logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
@@ -64,13 +58,11 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
 
     @Override
     public void onDeviceReady(String channelId, LGWebOSHandler handler) {
-        powerOn = true;
         handler.postUpdate(channelId, OnOffType.ON);
     }
 
     @Override
     public void onDeviceRemoved(String channelId, LGWebOSHandler handler) {
-        powerOn = false;
         handler.postUpdate(channelId, OnOffType.OFF);
     }
 }
