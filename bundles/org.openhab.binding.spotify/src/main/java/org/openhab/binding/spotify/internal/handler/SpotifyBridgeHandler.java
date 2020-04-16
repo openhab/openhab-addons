@@ -473,6 +473,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_TRACKNUMBER, valueOrZero(item.getTrackNumber()));
             updateChannelState(CHANNEL_PLAYED_TRACKDISCNUMBER, valueOrZero(item.getDiscNumber()));
             updateChannelState(CHANNEL_PLAYED_TRACKPOPULARITY, valueOrZero(item.getPopularity()));
+            updateChannelState(CHANNEL_PLAYED_TRACKEXPLICIT, OnOffType.from(item.isExplicit()));
 
             final boolean hasAlbum = hasItem && item.getAlbum() != null;
             final Album album = hasAlbum ? item.getAlbum() : EMPTY_ALBUM;
