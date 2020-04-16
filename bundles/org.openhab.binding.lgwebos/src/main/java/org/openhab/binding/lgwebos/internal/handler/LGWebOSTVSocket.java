@@ -342,7 +342,7 @@ public class LGWebOSTVSocket {
             case REGISTERING:
             case DISCONNECTING:
             case DISCONNECTED:
-                logger.warn("Skipping {} command {} for {} in state {}", command.getType(), command,
+                logger.debug("Skipping {} command {} for {} in state {}", command.getType(), command,
                         command.getTarget(), state);
                 break;
         }
