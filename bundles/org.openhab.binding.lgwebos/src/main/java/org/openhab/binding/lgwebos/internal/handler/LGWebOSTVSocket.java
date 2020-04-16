@@ -188,16 +188,18 @@ public class LGWebOSTVSocket {
         setState(State.DISCONNECTED);
     }
 
+    public void disconnecting() {
+        logger.debug("disconnecting");
+        if (state == State.REGISTERED) {
+            setState(State.DISCONNECTING);
+        }
+    }
+
     private void scheduleDisconectingJob() {
         logger.debug("Schedule disconecting job");
         ScheduledFuture<?> job = disconnectingJob;
         if (job == null || job.isCancelled()) {
-            disconnectingJob = scheduler.schedule(() -> {
-                logger.debug("Run disconecting job");
-                if (state == State.REGISTERED) {
-                    setState(State.DISCONNECTING);
-                }
-            }, DISCONNECTING_DELAY_SECONDS, TimeUnit.SECONDS);
+            disconnectingJob = scheduler.schedule(this::disconnecting, DISCONNECTING_DELAY_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -640,8 +642,8 @@ public class LGWebOSTVSocket {
 
             @Override
             public void onSuccess(CommandConfirmation confirmation) {
-                if (confirmation.getReturnValue() && state == State.REGISTERED) {
-                    setState(State.DISCONNECTING);
+                if (confirmation.getReturnValue()) {
+                    disconnecting();
                 }
                 listener.onSuccess(confirmation);
             }
