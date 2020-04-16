@@ -189,7 +189,7 @@ public class LGWebOSTVSocket {
         setState(State.DISCONNECTED);
     }
 
-    public void disconnecting() {
+    private void disconnecting() {
         logger.debug("disconnecting");
         if (state == State.REGISTERED) {
             setState(State.DISCONNECTING);
