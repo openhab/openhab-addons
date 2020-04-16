@@ -185,6 +185,7 @@ public class LGWebOSTVSocket {
 
     public void disconnect() {
         Optional.ofNullable(this.session).ifPresent(s -> s.close());
+        stopDisconnectingJob();
         setState(State.DISCONNECTED);
     }
 
@@ -196,9 +197,9 @@ public class LGWebOSTVSocket {
     }
 
     private void scheduleDisconectingJob() {
-        logger.debug("Schedule disconecting job");
         ScheduledFuture<?> job = disconnectingJob;
         if (job == null || job.isCancelled()) {
+            logger.debug("Schedule disconecting job");
             disconnectingJob = scheduler.schedule(this::disconnecting, DISCONNECTING_DELAY_SECONDS, TimeUnit.SECONDS);
         }
     }
