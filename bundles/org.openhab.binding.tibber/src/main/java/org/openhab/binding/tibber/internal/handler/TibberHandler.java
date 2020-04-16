@@ -70,8 +70,8 @@ public class TibberHandler extends BaseThingHandler {
     private final Properties httpHeader = new Properties();
     private final SslContextFactory sslContextFactory = new SslContextFactory(true);
     private final Executor websocketExecutor = ThreadPoolManager.getPool("tibber.websocket");
-    private final TibberWebSocketListener socket = new TibberWebSocketListener();
-    private @NonNullByDefault({}) TibberConfiguration tibberConfig;
+    private TibberConfiguration tibberConfig = new TibberConfiguration();
+    private @Nullable TibberWebSocketListener socket;
     private @Nullable Session session;
     private @Nullable WebSocketClient client;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -110,7 +110,7 @@ public class TibberHandler extends BaseThingHandler {
             String response = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, connectionStream, null,
                     REQUEST_TIMEOUT);
 
-            if (!response.contains("error")) {
+            if (!response.contains("error") && !response.contains("<html>")) {
                 updateStatus(ThingStatus.ONLINE);
 
                 getURLInput(BASE_URL);
@@ -130,7 +130,8 @@ public class TibberHandler extends BaseThingHandler {
                     logger.debug("No Pulse associated with HomeId: No live stream will be started");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect token/homeid");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Problems connecting/communicating with server: " + response);
             }
         } catch (IOException | JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -144,7 +145,7 @@ public class TibberHandler extends BaseThingHandler {
         String jsonResponse = HttpUtil.executeUrl("POST", url, httpHeader, inputStream, null, REQUEST_TIMEOUT);
         logger.debug("API response: {}", jsonResponse);
 
-        if (!jsonResponse.contains("error")) {
+        if (!jsonResponse.contains("error") && !jsonResponse.contains("<html>")) {
             if (getThing().getStatus() == ThingStatus.OFFLINE || getThing().getStatus() == ThingStatus.INITIALIZING) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -158,7 +159,7 @@ public class TibberHandler extends BaseThingHandler {
                             .getAsJsonObject("current");
 
                     updateState(CURRENT_TOTAL, new DecimalType(myObject.get("total").toString()));
-                    String timestamp = (myObject.get("startsAt").toString()).substring(1, 20);
+                    String timestamp = myObject.get("startsAt").toString().substring(1, 20);
                     updateState(CURRENT_STARTSAT, new DateTimeType(timestamp));
 
                 } catch (JsonSyntaxException e) {
@@ -171,10 +172,10 @@ public class TibberHandler extends BaseThingHandler {
                     JsonObject myObject = (JsonObject) object.getAsJsonObject("data").getAsJsonObject("viewer")
                             .getAsJsonObject("home").getAsJsonObject("daily").getAsJsonArray("nodes").get(0);
 
-                    String timestampDailyFrom = (myObject.get("from").toString()).substring(1, 20);
+                    String timestampDailyFrom = myObject.get("from").toString().substring(1, 20);
                     updateState(DAILY_FROM, new DateTimeType(timestampDailyFrom));
 
-                    String timestampDailyTo = (myObject.get("to").toString()).substring(1, 20);
+                    String timestampDailyTo = myObject.get("to").toString().substring(1, 20);
                     updateState(DAILY_TO, new DateTimeType(timestampDailyTo));
 
                     updateChannel(DAILY_COST, myObject.get("cost").toString());
@@ -190,10 +191,10 @@ public class TibberHandler extends BaseThingHandler {
                     JsonObject myObject = (JsonObject) object.getAsJsonObject("data").getAsJsonObject("viewer")
                             .getAsJsonObject("home").getAsJsonObject("hourly").getAsJsonArray("nodes").get(0);
 
-                    String timestampHourlyFrom = (myObject.get("from").toString()).substring(1, 20);
+                    String timestampHourlyFrom = myObject.get("from").toString().substring(1, 20);
                     updateState(HOURLY_FROM, new DateTimeType(timestampHourlyFrom));
 
-                    String timestampHourlyTo = (myObject.get("to").toString()).substring(1, 20);
+                    String timestampHourlyTo = myObject.get("to").toString().substring(1, 20);
                     updateState(HOURLY_TO, new DateTimeType(timestampHourlyTo));
 
                     updateChannel(HOURLY_COST, myObject.get("cost").toString());
@@ -207,8 +208,21 @@ public class TibberHandler extends BaseThingHandler {
         } else if (jsonResponse.contains("error")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error in response from Tibber API: " + jsonResponse);
+            try {
+                Thread.sleep(300 * 1000);
+                return;
+            } catch (InterruptedException e) {
+                logger.debug("Tibber OFFLINE, attempting thread sleep: {}", e.getMessage());
+            }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected response from Tibber");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unexpected response from Tibber: " + jsonResponse);
+            try {
+                Thread.sleep(300 * 1000);
+                return;
+            } catch (InterruptedException e) {
+                logger.debug("Tibber OFFLINE, attempting thread sleep: {}", e.getMessage());
+            }
         }
     }
 
@@ -269,10 +283,11 @@ public class TibberHandler extends BaseThingHandler {
             WebSocketClient client = this.client;
             if (client != null) {
                 try {
+                    logger.debug("Stopping and Terminating Websocket connection");
                     client.stop();
-                    logger.debug("Stopping Websocket connection");
+                    client.destroy();
                 } catch (Exception e) {
-                    logger.debug("Websocket Client Stop Exception: {}", e.getMessage());
+                    logger.warn("Websocket Client Stop Exception: {}", e.getMessage());
                 }
                 this.client = null;
             }
@@ -290,7 +305,13 @@ public class TibberHandler extends BaseThingHandler {
             WebSocketClient client = this.client;
             if (client == null) {
                 client = new WebSocketClient(sslContextFactory, websocketExecutor);
-                client.setMaxIdleTimeout(360 * 1000);
+                this.client = client;
+            }
+
+            TibberWebSocketListener socket = this.socket;
+            if (socket == null) {
+                socket = new TibberWebSocketListener();
+                this.socket = socket;
             }
 
             ClientUpgradeRequest newRequest = new ClientUpgradeRequest();
@@ -298,18 +319,18 @@ public class TibberHandler extends BaseThingHandler {
             newRequest.setSubProtocols("graphql-subscriptions");
 
             try {
-                client.start();
                 logger.debug("Starting Websocket connection");
+                client.start();
             } catch (Exception e) {
-                logger.debug("Websocket Start Exception: {}", e.getMessage());
+                logger.warn("Websocket Start Exception: {}", e.getMessage());
             }
             try {
-                client.connect(socket, new URI(SUBSCRIPTION_URL), newRequest);
                 logger.debug("Connecting Websocket connection");
+                client.connect(socket, new URI(SUBSCRIPTION_URL), newRequest);
             } catch (IOException e) {
-                logger.debug("Websocket Connect Exception: {}", e.getMessage());
+                logger.warn("Websocket Connect Exception: {}", e.getMessage());
             } catch (URISyntaxException e) {
-                logger.debug("Websocket URI Exception: {}", e.getMessage());
+                logger.warn("Websocket URI Exception: {}", e.getMessage());
             }
         }
     }
@@ -319,12 +340,19 @@ public class TibberHandler extends BaseThingHandler {
         if (session != null) {
             String disconnect = "{\"type\":\"connection_terminate\",\"payload\":null}";
             try {
-                socket.sendMessage(disconnect);
+                TibberWebSocketListener socket = this.socket;
+                if (socket != null) {
+                    logger.debug("Sending websocket disconnect message");
+                    socket.sendMessage(disconnect);
+                } else {
+                    logger.debug("Socket unable to send disconnect message: Socket is null");
+                }
             } catch (IOException e) {
-                logger.debug("Websocket Close Exception: {}", e.getMessage());
+                logger.warn("Websocket Close Exception: {}", e.getMessage());
             }
-            session.close();
+            session.close(0, "Tibber websocket disposed");
             this.session = null;
+            this.socket = null;
         }
     }
 
@@ -340,11 +368,15 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
             TibberHandler.this.session = wssession;
-            logger.debug("Connected to Server");
-
+            TibberWebSocketListener socket = TibberHandler.this.socket;
             String connection = "{\"type\":\"connection_init\", \"payload\":\"token=" + tibberConfig.getToken() + "\"}";
             try {
-                sendMessage(connection);
+                if (socket != null) {
+                    logger.debug("Sending websocket connect message");
+                    socket.sendMessage(connection);
+                } else {
+                    logger.debug("Socket unable to send connect message: Socket is null");
+                }
             } catch (IOException e) {
                 logger.warn("Send Message Exception: {}", e.getMessage());
             }
@@ -352,9 +384,20 @@ public class TibberHandler extends BaseThingHandler {
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            logger.warn("Closing a WebSocket due to {}", reason);
+            logger.debug("Closing a WebSocket due to {}", reason);
+            WebSocketClient client = TibberHandler.this.client;
+            if (client != null && client.isRunning()) {
+                try {
+                    logger.debug("Stopping and Terminating Websocket connection");
+                    client.stop();
+                    client.destroy();
+                } catch (Exception e) {
+                    logger.warn("Websocket Client Stop Exception: {}", e.getMessage());
+                }
+            }
             TibberHandler.this.session = null;
             TibberHandler.this.client = null;
+            TibberHandler.this.socket = null;
         }
 
         @OnWebSocketError
@@ -366,16 +409,17 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketMessage
         public void onMessage(String message) {
             if (message.contains("connection_ack")) {
+                logger.debug("Connected to Server");
                 startSubscription();
-            } else if (message.contains("error")) {
+            } else if (message.contains("error") || message.contains("terminate")) {
+                logger.debug("Error/terminate received from server: {}", message);
                 close();
-                logger.debug("WebSocket Connection closed due to Connection error: {}", message);
-            } else if (!message.contains("error") && message.contains("liveMeasurement")) {
+            } else if (message.contains("liveMeasurement")) {
                 JsonObject object = (JsonObject) new JsonParser().parse(message);
                 JsonObject myObject = object.getAsJsonObject("payload").getAsJsonObject("data")
                         .getAsJsonObject("liveMeasurement");
                 if (myObject.has("timestamp")) {
-                    String liveTimestamp = (myObject.get("timestamp").toString()).substring(1, 20);
+                    String liveTimestamp = myObject.get("timestamp").toString().substring(1, 20);
                     updateState(LIVE_TIMESTAMP, new DateTimeType(liveTimestamp));
                 }
                 if (myObject.has("power")) {
@@ -451,7 +495,12 @@ public class TibberHandler extends BaseThingHandler {
                     + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n accumulatedConsumption\\n accumulatedCost\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
                     + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentPhase1\\n currentPhase2\\n currentPhase3\\n powerProduction\\n accumulatedProduction\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
             try {
-                sendMessage(query);
+                TibberWebSocketListener socket = TibberHandler.this.socket;
+                if (socket != null) {
+                    socket.sendMessage(query);
+                } else {
+                    logger.debug("Socket unable to send subscription message: Socket is null");
+                }
             } catch (IOException e) {
                 logger.warn("Send Message Exception: {}", e.getMessage());
             }

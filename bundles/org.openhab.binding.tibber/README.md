@@ -1,16 +1,23 @@
 # Tibber Binding
 
-The Tibber Binding connects to the [Tibber API](https://developer.tibber.com), and use queries at frequent polls to retrieve price and consumption information for users with Tibber subscription, and provides additional live measurements via websocket for users having Tibber Pulse. 
+The Tibber Binding connects to the [Tibber API](https://developer.tibber.com), and enables users to retrieve electricity data:
+
+* Default: Frequent polls are performed to retrieve electricity price and cost/consumption information
+* Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements  
 
 Refresh time (poll frequency) is set manually as part of setup, minimum 1 minute.
 
-If using Tibber Pulse, Pulse will be recognized automatically by the binding if associated with HomeID used for setup, and live data stream will be initiated if Pulse verified present. 
+Tibber Pulse will automatically be detected by the Binding if present and associated with the token/HomeID used for setup.
 
 ## Supported Things
 
-Provided one have Tibber Account, the Tibber API is recognized as a thing in OpenHab using the Tibber binding. Tibber Pulse is optional, but will enable live measurements. The channels (i.e. measurements) associated with the binding: 
+Provided one have a Tibber User Account, the Tibber API is recognized as a thing in openHAB using the Tibber Binding. 
 
-Tibber Account:
+Tibber Pulse is optional, but will enable live measurements.
+
+The channels (i.e. measurements) associated with the Binding: 
+
+Tibber Default:
 
 | Channel ID         | Description                             | Read-only |
 |--------------------|-----------------------------------------|-----------|
@@ -25,7 +32,7 @@ Tibber Account:
 | Hourly From        | Timestamp (hourly from)                 | True      |
 | Hourly To          | Timestamp (hourly to)                   | True      |
 
-Tibber Pulse:
+Tibber Pulse (optional):
 
 | Channel ID              | Description                              | Read-only |
 |-------------------------|------------------------------------------|-----------|
@@ -48,9 +55,9 @@ Tibber Pulse:
 
 ## Binding Configuration
 
-To access and initiate the Tibber binding, a Tibber account is required.
+To access and initiate the Tibber Binding, a Tibber user account is required.
 
-Required input needed for initialization:
+The following input is required for initialization:
 
 * Tibber token
 * Tibber HomeId
@@ -59,7 +66,13 @@ Required input needed for initialization:
 Note: Tibber token is retrieved from your Tibber account:
 [Tibber Account](https://developer.tibber.com/settings/accesstoken)
 
-Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibber.com/explorer). Sign in (Tibber account) and load personal token. HomeId is retrieved by copying and running query below from Tibber API explorer. If Pulse is connected, realTimeConsumptionEnabled will report "true" for the associated HomeId. Copy desired HomeId, without quotation marks, and paste into PaperUI configuration.
+Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibber.com/explorer): 
+
+* Sign in (Tibber user account) and "load" personal token.
+* Copy query from below and paste into the Tibber API Explorer, and run query. 
+* If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
+* Copy HomeId from Tibber API Explorer, without quotation marks, and paste into Paper UI configuration
+
 
 ```
 {
@@ -74,12 +87,16 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 }
 ```
 
-If user have multiple HomeIds / Pulse, separate Things have to be created for the desired HomeIds in PaperUI (created manually).
+If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds in Paper UI.
 
 
 ## Thing Configuration
 
-When Tibber binding is installed, Tibber API should be autodiscovered in PaperUI. Retrieve personal token and HomeId from description above, and initialize/start binding from PaperUI. Tibber API will be autodiscovered if provided input is correct.
+When Tibber Binding is installed, Tibber API should be autodiscovered in Paper UI. 
+
+Retrieve personal token and HomeId from description above, and initialize/start Binding from Paper UI. 
+
+Tibber API will be autodiscovered if provided input is correct.
 
 
 ## Full Example

@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TibberConfiguration {
-    private @NonNullByDefault({}) String token;
-    private @NonNullByDefault({}) String homeid;
+    private String token = "";
+    private String homeid = "";
     private int refresh;
 
     public String getToken() {
