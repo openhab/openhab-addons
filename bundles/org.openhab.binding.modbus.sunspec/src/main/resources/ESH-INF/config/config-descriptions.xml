@@ -6,9 +6,9 @@
 
 	<config-description uri="thing-type:sunspec:modbusconfig">
 
-		<parameter name="refresh" type="integer" min="0">
-			<label>Interval</label>
-			<description>Poll interval in seconds. Use zero to disable automatic polling.</description>
+		<parameter name="refresh" type="integer" min="0" unit="s">
+			<label>Refresh Interval</label>
+			<description>Poll interval. Use zero to disable automatic polling.</description>
 			<default>5</default>
 		</parameter>
 

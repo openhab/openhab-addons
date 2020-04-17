@@ -90,13 +90,13 @@ Different things support a subset of the following groups.
 
 This group contains general operational information about the device.
 
-| Channel ID           | Item Type | Description                                                         |
-|----------------------|-----------|---------------------------------------------------------------------|
-| cabinet-temperature  | Number    | Temperature of the cabinet if supported in Celsius                  |
-| heatsink-temperature | Number    | Device heat sink temperature in Celsius                             |
-| transformer-temperature | Number    | Temperature of the transformer in Celsius                        |
-| other-temperature    | Number    | Any other temperature reading not covered by the above items if available. Celsius |
-| status               | Number    | Device status: 1=Off, 2=Sleeping/night mode, 4=On - producing power |
+| Channel ID              | Item Type             | Description                                                                        |
+|-------------------------|-----------------------|------------------------------------------------------------------------------------|
+| cabinet-temperature     | Number:Temperature    | Temperature of the cabinet if supported in Celsius                                 |
+| heatsink-temperature    | Number:Temperature    | Device heat sink temperature in Celsius                                            |
+| transformer-temperature | Number:Temperature    | Temperature of the transformer in Celsius                                          |
+| other-temperature       | Number:Temperature    | Any other temperature reading not covered by the above items if available. Celsius |
+| status                  | String                | Device status: OFF=Off, SLEEP=Sleeping/night mode, ON=On - producing power         |
 
 Supported by: all inverter things
 
@@ -107,15 +107,15 @@ Supported by: all inverter things
 This group contains summarized values for the AC side of the inverter.
 Even if the inverter supports multiple phases this group will appear only once.
 
-| Channel ID           | Item Type | Description                                                         |
-|----------------------|-----------|---------------------------------------------------------------------|
-| ac-total-current     | Number    | Total AC current over all phases in Amperes                         |
-| ac-power             | Number    | Actual AC power over all phases in Watts                            |
-| ac-frequency         | Number    | Actual grid frequency                                               |
-| ac-apparent-power    | Number    | Actual AC apparent power                                            |
-| ac-reactive-power    | Number    | Actual AC reactive power                                            |
-| ac-power-factor      | Number    | Actual AC power factor (%)                                          |
-| ac-lifetime-energy   | Number    | Ac lifetime energy production for this device in WattHours          |
+| Channel ID           | Item Type              | Description                                                         |
+|----------------------|------------------------|---------------------------------------------------------------------|
+| ac-total-current     | Number:ElectricCurrent | Total AC current over all phases in Amperes                         |
+| ac-power             | Number:Power           | Actual AC power over all phases in Watts                            |
+| ac-frequency         | Number:Frequency       | Actual grid frequency                                               |
+| ac-apparent-power    | Number:Power           | Actual AC apparent power                                            |
+| ac-reactive-power    | Number:Power           | Actual AC reactive power                                            |
+| ac-power-factor      | Number:Dimensionless   | Actual AC power factor (%)                                          |
+| ac-lifetime-energy   | Number:Energy          | AC lifetime energy production for this device in WattHours          |
 
 Supported by: all inverter things
 
@@ -124,24 +124,24 @@ Supported by: all inverter things
 
 This group contains summarized values for the power meter over all phases.
 
-| Channel ID                           | Item Type | Description                                                         |
-|--------------------------------------|-----------|---------------------------------------------------------------------|
-| ac-total-current                     | Number    | Total AC current over all phases in Amperes                         |
-| ac-average-voltage-to-n              | Number    | Average Line to Neutral AC Voltage over all phases                  |
-| ac-average-voltage-to-next           | Number    | Average Line to Line AC Voltage  over all phases                    |
-| ac-frequency                         | Number    | Actual grid frequency                                               |
-| ac-total-real-power                  | Number    | Total Real Power over all phases(W)                                 |
-| ac-total-apparent-power              | Number    | Total Apparent Power over all phases (W)                            |
-| ac-total-reactive-power              | Number    | Total Reactive Power over all phases (W)                            |
-| ac-average-power-factor              | Number    | Average AC Power Factor over all phases (%)                         |
-| ac-total-exported-real-energy        | Number    | Total Real Energy Exported over all phases (Wh)                     |
-| ac-total-imported-real-energy        | Number    | Total Real Energy Imported  over all phases (Wh)                    |
-| ac-total-exported-apparent-energy    | Number    | Total Apparent Energy Exported over all phases (VAh)                |
-| ac-total-imported-apparent-energy    | Number    | Total Apparent Energy Imported over all phases (VAh)                |
-| ac-total-imported-reactive-energy-q1 | Number    | Total Reactive Energy Imported Quadrant 1 over all phases (VARh)    |
-| ac-total-imported-reactive-energy-q2 | Number    | Total Reactive Energy Imported Quadrant 2 over all phases (VARh)    |
-| ac-total-exported-reactive-energy-q3 | Number    | Total Reactive Energy Exported Quadrant 3 over all phases (VARh)    |
-| ac-total-exported-reactive-energy-q4 | Number    | Total Reactive Energy Exported Quadrant 4 over all phases (VARh)    |
+| Channel ID                           | Item Type                | Description                                                         |
+|--------------------------------------|--------------------------|---------------------------------------------------------------------|
+| ac-total-current                     | Number:ElectricCurrent   | Total AC current over all phases in Amperes                         |
+| ac-average-voltage-to-n              | Number:ElectricPotential | Average Line to Neutral AC Voltage over all phases                  |
+| ac-average-voltage-to-next           | Number:ElectricPotential | Average Line to Line AC Voltage  over all phases                    |
+| ac-frequency                         | Number:Frequency         | Actual grid frequency                                               |
+| ac-total-real-power                  | Number:Power             | Total Real Power over all phases(W)                                 |
+| ac-total-apparent-power              | Number:Power             | Total Apparent Power over all phases (W)                            |
+| ac-total-reactive-power              | Number:Power             | Total Reactive Power over all phases (W)                            |
+| ac-average-power-factor              | Number:Dimensionless     | Average AC Power Factor over all phases (%)                         |
+| ac-total-exported-real-energy        | Number:Energy            | Total Real Energy Exported over all phases (Wh)                     |
+| ac-total-imported-real-energy        | Number:Energy            | Total Real Energy Imported  over all phases (Wh)                    |
+| ac-total-exported-apparent-energy    | Number:Energy            | Total Apparent Energy Exported over all phases (VAh)                |
+| ac-total-imported-apparent-energy    | Number:Energy            | Total Apparent Energy Imported over all phases (VAh)                |
+| ac-total-imported-reactive-energy-q1 | Number:Energy            | Total Reactive Energy Imported Quadrant 1 over all phases (VARh)    |
+| ac-total-imported-reactive-energy-q2 | Number:Energy            | Total Reactive Energy Imported Quadrant 2 over all phases (VARh)    |
+| ac-total-exported-reactive-energy-q3 | Number:Energy            | Total Reactive Energy Exported Quadrant 3 over all phases (VARh)    |
+| ac-total-exported-reactive-energy-q4 | Number:Energy            | Total Reactive Energy Exported Quadrant 4 over all phases (VARh)    |
 
 Supported by: all meter things
 
@@ -159,11 +159,11 @@ acPhaseB: available for inverter-slit-phase and inverter-three-phase type invert
 
 acPhaseC: available only for inverter-three-phase type inverters.
 
-| Channel ID           | Item Type | Description                                                         |
-|----------------------|-----------|---------------------------------------------------------------------|
-| ac-phase-current     | Number    | Actual current over this phase in Watts                             |
-| ac-voltage-to-next   | Number    | Voltage of this phase relative to the next phase, or to the ground in case of single phase inverter. Note: some single phase SolarEdge inverters incorrectly use this value to report the voltage to neutral value|
-| ac-voltage-to-n      | Number    | Voltage of this phase relative to the ground                        |
+| Channel ID           | Item Type                | Description                                                         |
+|----------------------|--------------------------|---------------------------------------------------------------------|
+| ac-phase-current     | Number:ElectricCurrent   | Actual current over this phase in Watts                             |
+| ac-voltage-to-next   | Number:ElectricPotential | Voltage of this phase relative to the next phase, or to the ground in case of single phase inverter. Note: some single phase SolarEdge inverters incorrectly use this value to report the voltage to neutral value|
+| ac-voltage-to-n      | Number:ElectricPotential | Voltage of this phase relative to the ground                        |
 
 Supported by: all inverter things
 
@@ -179,23 +179,23 @@ acPhaseB: available for meter-split-phase, meter-wye-phase and meter-delta-phase
 acPhaseC: available only for meter-wye-phase and meter-delta-phase meters type inverters.
 
 
-| Channel ID                     | Item Type | Description                                                         |
-|--------------------------------|-----------|---------------------------------------------------------------------|
-| ac-phase-current               | Number    | Actual current over this line in Watts                              |
-| ac-voltage-to-n                | Number    | Voltage of this line relative to the neutral line                   |
-| ac-voltage-to-next             | Number    | Voltage of this line relative to the next line                      |
-| ac-real-power                  | Number    | AC Real Power value (W)                                             |
-| ac-apparent-power              | Number    | AC Apparent Power value                                             |
-| ac-reactive-power              | Number    | AC Reactive Power value                                             |
-| ac-power-factor                | Number    | AC Power Factor (%)                                                 |
-| ac-exported-real-energy        | Number    | Real Energy Exported (Wh                                            |
-| ac-imported-real-energy        | Number    | Real Energy Imported (Wh)                                           |
-| ac-exported-apparent-energy    | Number    | Apparent Energy Exported (VAh)                                      |
-| ac-imported-apparent-energy    | Number    | Apparent Energy Imported (VAh)                                      |
-| ac-imported-reactive-energy-q1 | Number    | Reactive Energy Imported Quadrant 1 (VARh)                          |
-| ac-imported-reactive-energy-q2 | Number    | Reactive Energy Imported Quadrant 2 (VARh)                          |
-| ac-exported-reactive-energy-q3 | Number    | Reactive Energy Exported Quadrant 3 (VARh)                          |
-| ac-exported-reactive-energy-q4 | Number    | Reactive Energy Exported Quadrant 4 (VARh)                          |
+| Channel ID                     | Item Type                | Description                                                         |
+|--------------------------------|--------------------------|---------------------------------------------------------------------|
+| ac-phase-current               | Number:ElectricCurrent   | Actual current over this line in Watts                              |
+| ac-voltage-to-n                | Number:ElectricPotential | Voltage of this line relative to the neutral line                   |
+| ac-voltage-to-next             | Number:ElectricPotential | Voltage of this line relative to the next line                      |
+| ac-real-power                  | Number:Power             | AC Real Power value (W)                                             |
+| ac-apparent-power              | Number:Power             | AC Apparent Power value                                             |
+| ac-reactive-power              | Number:Power             | AC Reactive Power value                                             |
+| ac-power-factor                | Number:Dimensionless     | AC Power Factor (%)                                                 |
+| ac-exported-real-energy        | Number:Energy            | Real Energy Exported (Wh                                            |
+| ac-imported-real-energy        | Number:Energy            | Real Energy Imported (Wh)                                           |
+| ac-exported-apparent-energy    | Number:Energy            | Apparent Energy Exported (VAh)                                      |
+| ac-imported-apparent-energy    | Number:Energy            | Apparent Energy Imported (VAh)                                      |
+| ac-imported-reactive-energy-q1 | Number:Energy            | Reactive Energy Imported Quadrant 1 (VARh)                          |
+| ac-imported-reactive-energy-q2 | Number:Energy            | Reactive Energy Imported Quadrant 2 (VARh)                          |
+| ac-exported-reactive-energy-q3 | Number:Energy            | Reactive Energy Exported Quadrant 3 (VARh)                          |
+| ac-exported-reactive-energy-q4 | Number:Energy            | Reactive Energy Exported Quadrant 4 (VARh)                          |
 
 
 Supported by: all meter things
@@ -205,11 +205,11 @@ Supported by: all meter things
 This group contains summarized data for the DC side of the inverter.
 DC information is summarized even if the inverter has multiple strings.
 
-| Channel ID           | Item Type | Description                                                         |
-|----------------------|-----------|---------------------------------------------------------------------|
-| dc-current           | Number    | Actual DC current in Amperes                                        |
-| dc-voltage           | Number    | Actual DC voltage                                                   |
-| dc-power             | Number    | Actual DC power produced                                            |
+| Channel ID           | Item Type                | Description                                                         |
+|----------------------|--------------------------|---------------------------------------------------------------------|
+| dc-current           | Number:ElectricCurrent   | Actual DC current in Amperes                                        |
+| dc-voltage           | Number:ElectricPotential | Actual DC voltage                                                   |
+| dc-power             | Number:Power             | Actual DC power produced                                            |
 
 Supported by: all inverter things
 
