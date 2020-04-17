@@ -9,46 +9,39 @@
 		<label>Descriptors</label>
 		<description>Box descriptors like Location, description, etc.</description>
 		<channels>
-			<channel id="location" typeId="location"/>
+			<channel id="location" typeId="system.location" />
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="measurements">
 		<label>Measurements</label>
-		<description>Measurements as fetched from the API</description>
+		<description>Measurements as fetched from the API.</description>
 		<channels>
-			<channel id="uvIntensity" typeId="uvIntensity"/>
-			<channel id="illuminance" typeId="illuminance"/>
-			<channel id="pressure" typeId="pressure"/>
-			<channel id="humidity" typeId="humidity"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="particulateMatter2dot5" typeId="particulateMatter2dot5"/>
-			<channel id="particulateMatter10" typeId="particulateMatter10"/>
+			<channel id="uvIntensity" typeId="uvIntensity" />
+			<channel id="illuminance" typeId="illuminance" />
+			<channel id="pressure" typeId="system.barometric-pressure" />
+			<channel id="humidity" typeId="system.atmospheric-humidity" />
+			<channel id="temperature" typeId="system.outdoor-temperature" />
+			<channel id="particulateMatter2dot5" typeId="particulateMatter2dot5" />
+			<channel id="particulateMatter10" typeId="particulateMatter10" />
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="lastReported">
 		<label>Last Reported</label>
-		<description>Timestamps when a measurement was last reported</description>
+		<description>Timestamps when a measurement was last reported.</description>
 		<channels>
-			<channel id="uvIntensityLastReported" typeId="uvIntensityLastReported"/>
-			<channel id="illuminanceLastReported" typeId="illuminanceLastReported"/>
-			<channel id="pressureLastReported" typeId="pressureLastReported"/>
-			<channel id="humidityLastReported" typeId="humidityLastReported"/>
-			<channel id="temperatureLastReported" typeId="temperatureLastReported"/>
-			<channel id="particulateMatter2dot5LastReported" typeId="particulateMatter2dot5LastReported"/>
-			<channel id="particulateMatter10LastReported" typeId="particulateMatter10LastReported"/>
+			<channel id="uvIntensityLastReported" typeId="uvIntensityLastReported" />
+			<channel id="illuminanceLastReported" typeId="illuminanceLastReported" />
+			<channel id="pressureLastReported" typeId="pressureLastReported" />
+			<channel id="humidityLastReported" typeId="humidityLastReported" />
+			<channel id="temperatureLastReported" typeId="temperatureLastReported" />
+			<channel id="particulateMatter2dot5LastReported" typeId="particulateMatter2dot5LastReported" />
+			<channel id="particulateMatter10LastReported" typeId="particulateMatter10LastReported" />
 		</channels>
 	</channel-group-type>
 
 	<!-- The channels themselves -->
-	<channel-type id="location">
-		<item-type>Location</item-type>
-		<label>Location</label>
-		<description>Location of the device</description>
-		<state readOnly="true" pattern="%2$s°N, %3$s°W, %1$s m"/>
-	</channel-type>
-
 	<!--
 		"title": "UV-Intensität",
 		"unit": "µW/cm²",
@@ -57,15 +50,15 @@
 	<channel-type id="uvIntensity">
 		<item-type>Number:Intensity</item-type>
 		<label>UV Intensity</label>
-		<description>Current UV intensity</description>
+		<description>Current UV intensity.</description>
 		<state readOnly="true" pattern="%.2f µW/cm²"></state>
 	</channel-type>
 
 	<channel-type id="uvIntensityLastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>UV Intensity Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!--
@@ -76,15 +69,15 @@
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
-		<description>Current illuminance</description>
+		<description>Current illuminance.</description>
 		<state readOnly="true" pattern="%.2f lx"></state>
 	</channel-type>
 
 	<channel-type id="illuminanceLastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Illuminance Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!--
@@ -92,19 +85,11 @@
 		"unit": "hPa",
 		"sensorType": "BMP280",
 	-->
-	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
-		<label>Pressure</label>
-		<description>Current pressure</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.2f hPa"></state>
-	</channel-type>
-
 	<channel-type id="pressureLastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Pressure Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!--
@@ -112,20 +97,11 @@
 		"unit": "%",
 		"sensorType": "HDC1008",
 	-->
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Current humidity</description>
-		<category>Humidity</category>
-		<state readOnly="true" pattern="%2f %%">
-		</state>
-	</channel-type>
-
 	<channel-type id="humidityLastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Humidity Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!--
@@ -133,20 +109,11 @@
 		"unit": "°C",
 		"sensorType": "HDC1008",
 	-->
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.2f °C">
-		</state>
-	</channel-type>
-
 	<channel-type id="temperatureLastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Temperature Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!--
@@ -157,7 +124,7 @@
 	<channel-type id="particulateMatter2dot5">
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
-		<description>Current density of particles less than 2.5 µm in diameter</description>
+		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f µg/m³">
 		</state>
 	</channel-type>
@@ -165,8 +132,8 @@
 	<channel-type id="particulateMatter2dot5LastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Particulate Matter 2.5 Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!--
@@ -177,7 +144,7 @@
 	<channel-type id="particulateMatter10">
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM10</label>
-		<description>Current density of particles less than 10 µm in diameter</description>
+		<description>Current density of particles less than 10 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f µg/m³">
 		</state>
 	</channel-type>
@@ -185,8 +152,8 @@
 	<channel-type id="particulateMatter10LastReported" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Particulate Matter 10 Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<state readOnly="true"/>
+		<description>Timestamp when data was measured.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>
