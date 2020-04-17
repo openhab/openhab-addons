@@ -7,7 +7,7 @@ These values can be used to
 - send your meter reading to your electricity provider with a simple copy/paste,
 - improve your rules and minimize electricity costs,
 - check if your subscription is relevant for your needs,
-- monitor your electric consumption,
+- monitor your electricity consumption,
 
 ## Supported Things
 
@@ -20,16 +20,16 @@ The Teleinfo binding provides support for the following mode:
 
 ## Thing Configuration
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing named __Teleinfo ADCO #id__ will be created (__#id__ is  your delivery point number).
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing named __Teleinfo ADCO #id__ will be created (__#id__ is  your delivery point identifier).
 
-| Thing type       | Parameter  | Meaning                        | Posible values |
-|------------------|------------|--------------------------------|----------------|
-| SerialController | serialPort | Path to the serial controller  | /dev/ttyXXXX   |
-| cbemm_xxx        | adco       | Electric delivery point number | 031728832562   |
+| Thing type       | Parameter  | Meaning                               | Posible values |
+|------------------|------------|---------------------------------------|----------------|
+| SerialController | serialPort | Path to the serial controller         | /dev/ttyXXXX   |
+| cbemm_xxx        | adco       | Electricity delivery point identifier | 031728832562   |
 
 ## Channels
 
-Channel availabity depends on the electric meter mode. 
+Channel availabity depends on the electricity meter mode. 
 
 | channel  | type                      | description                                          | availabilty    |
 |----------|---------------------------|------------------------------------------------------|----------------|
