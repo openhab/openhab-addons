@@ -42,9 +42,9 @@ public class KM200SwitchProgramServiceHandler {
     private int maxNbOfSwitchPoints = 8;
     private int maxNbOfSwitchPointsPerDay = 8;
     private int switchPointTimeRaster = 10;
-    private String setpointProperty = new String();
-    private String positiveSwitch = new String();
-    private String negativeSwitch = new String();
+    private String setpointProperty = "";
+    private String positiveSwitch = "";
+    private String negativeSwitch = "";
 
     protected final Integer MIN_TIME = 0;
     protected final Integer MAX_TIME = 1430;
@@ -405,8 +405,7 @@ public class KM200SwitchProgramServiceHandler {
     /**
      * This function updates objects JSONData on the actual set switch points.
      */
-    @Nullable
-    public JsonObject getUpdatedJSONData(KM200ServiceObject parObject) {
+    public @Nullable JsonObject getUpdatedJSONData(KM200ServiceObject parObject) {
         synchronized (switchMap) {
             boolean prepareNewOnly = false;
             JsonArray sPoints = new JsonArray();
@@ -477,18 +476,15 @@ public class KM200SwitchProgramServiceHandler {
         return switchPointTimeRaster;
     }
 
-    @Nullable
-    public String getSetpointProperty() {
+    public @Nullable String getSetpointProperty() {
         return setpointProperty;
     }
 
-    @Nullable
-    public String getPositiveSwitch() {
+    public @Nullable String getPositiveSwitch() {
         return positiveSwitch;
     }
 
-    @Nullable
-    public String getNegativeSwitch() {
+    public @Nullable String getNegativeSwitch() {
         return negativeSwitch;
     }
 

@@ -93,18 +93,15 @@ public class KM200ServiceObject {
         return fullServiceName;
     }
 
-    @Nullable
-    public Object getValue() {
+    public @Nullable Object getValue() {
         return value;
     }
 
-    @Nullable
-    public Object getValueParameter() {
+    public @Nullable Object getValueParameter() {
         return valueParameter;
     }
 
-    @Nullable
-    public String getParent() {
+    public @Nullable String getParent() {
         return parent;
     }
 
@@ -116,8 +113,7 @@ public class KM200ServiceObject {
         return updated;
     }
 
-    @Nullable
-    public JsonObject getJSONData() {
+    public @Nullable JsonObject getJSONData() {
         return jsonData;
     }
 }

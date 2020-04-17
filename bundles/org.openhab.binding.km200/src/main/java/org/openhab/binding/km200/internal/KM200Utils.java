@@ -59,7 +59,7 @@ public class KM200Utils {
             if (device.containsService(currentService)) {
                 KM200ServiceObject curSerObj = device.getServiceObject(currentService);
                 if (null != curSerObj) {
-                    if ("stringValue".equals(curSerObj.getServiceType())) {
+                    if (DATA_TYPE_STRING_VALUE.equals(curSerObj.getServiceType())) {
                         String val = (String) curSerObj.getValue();
                         service = service.replace(SWITCH_PROGRAM_REPLACEMENT, val);
                         return service;

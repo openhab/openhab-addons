@@ -380,7 +380,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             }
             logger.debug("Create things: {} id: {} channel: {}", thing.getUID(), subKey, thing.getUID().getId());
             switch (subKeyType) {
-                case "stringValue":
+                case DATA_TYPE_STRING_VALUE:
                     /* Creating an new channel type with capabilities from service */
                     List<StateOption> options = null;
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
@@ -405,7 +405,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                             subKey, true, false, state, unitOfMeasure);
                     break;
 
-                case "floatValue":
+                case DATA_TYPE_FLOAT_VALUE:
                     /*
                      * Check whether the value is a NaN. Usually all floats are BigDecimal. If it's a double then it's
                      * Double.NaN. In this case we are ignoring this channel.
@@ -461,7 +461,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                             subKey, true, false, state, unitOfMeasure);
                     break;
 
-                case "refEnum":
+                case DATA_TYPE_REF_ENUM:
                     /* Check whether the sub service should be ignored */
                     boolean ignoreIt = false;
                     for (KM200ThingType tType : KM200ThingType.values()) {
@@ -480,7 +480,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                     addChannels(serObj.serviceTreeMap.get(subKey), thing, subChannels, subKey + "_");
                     break;
 
-                case "errorList":
+                case DATA_TYPE_ERROR_LIST:
                     if ("nbrErrors".equals(subKey) || "error".equals(subKey)) {
                         state = StateDescriptionFragmentBuilder.create().withPattern("%.0f").withReadOnly(readOnly)
                                 .build();

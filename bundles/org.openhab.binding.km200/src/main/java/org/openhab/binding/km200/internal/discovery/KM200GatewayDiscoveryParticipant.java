@@ -51,8 +51,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(ServiceInfo info) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo info) {
         logger.debug("createResult: {}", info);
         DiscoveryResult discoveryResult = null;
         ThingUID uid = getThingUID(info);
@@ -70,8 +69,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(ServiceInfo info) {
+    public @Nullable ThingUID getThingUID(ServiceInfo info) {
         ThingTypeUID typeUID = getThingTypeUID(info);
         if (typeUID != null) {
             logger.debug("getType: {}", info.getType());
@@ -102,8 +100,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
         return "_http._tcp.local.";
     }
 
-    @Nullable
-    private ThingTypeUID getThingTypeUID(ServiceInfo info) {
+    private @Nullable ThingTypeUID getThingTypeUID(ServiceInfo info) {
         InetAddress[] addrs = info.getInetAddresses();
         if (addrs.length > 0) {
             String hardwareID;

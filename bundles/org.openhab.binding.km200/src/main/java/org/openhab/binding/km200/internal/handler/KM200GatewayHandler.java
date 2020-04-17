@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.km200.internal.handler;
 
-import static org.openhab.binding.km200.internal.KM200BindingConstants.THING_TYPE_KMDEVICE;
+import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -332,7 +332,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                     if (serObj.serviceTreeMap.containsKey(subKey)) {
                         KM200ServiceObject subKeyObj = serObj.serviceTreeMap.get(subKey);
                         String subKeyType = subKeyObj.getServiceType();
-                        if (!"stringValue".equals(subKeyType) && !"floatValue".equals(subKeyType)) {
+                        if (!DATA_TYPE_STRING_VALUE.equals(subKeyType) && !DATA_TYPE_FLOAT_VALUE.equals(subKeyType)) {
                             continue;
                         }
                         if (bridgeProperties.containsKey(subKey)) {

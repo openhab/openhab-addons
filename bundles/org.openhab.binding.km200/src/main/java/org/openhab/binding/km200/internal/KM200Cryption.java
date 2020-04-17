@@ -74,8 +74,7 @@ public class KM200Cryption {
      * This function does the decoding for a new message from the device
      *
      */
-    @Nullable
-    public String decodeMessage(byte[] encoded) {
+    public @Nullable String decodeMessage(byte[] encoded) {
         String retString = null;
         byte[] decodedB64 = null;
 

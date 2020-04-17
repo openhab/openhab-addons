@@ -100,13 +100,13 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                 boolean enumOnly = true;
                 KM200ServiceObject object = gateway.getDevice().getServiceObject(root);
                 if (null == object) {
-                    logger.error("No root service object found");
+                    logger.warn("No root service object found");
                     return;
                 }
                 Set<String> keys = object.serviceTreeMap.keySet();
                 /* Check whether all sub services are refEnum */
                 for (String key : keys) {
-                    if (!"refEnum".equals(object.serviceTreeMap.get(key).getServiceType())) {
+                    if (!DATA_TYPE_REF_ENUM.equals(object.serviceTreeMap.get(key).getServiceType())) {
                         enumOnly = false;
                         break;
                     }
@@ -160,7 +160,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                                 String posName = valPara.getPositiveSwitch();
                                 String negName = valPara.getNegativeSwitch();
                                 if (null == posName || null == negName) {
-                                    logger.error("Service switches not found!");
+                                    logger.warn("Service switches not found!");
                                     return;
                                 }
                                 ThingUID subThingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID,

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.km200.internal.handler;
 
+import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.km200.internal.KM200Device;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
@@ -47,7 +49,7 @@ public class KM200VirtualServiceHandler {
                 String id = object.getFullServiceName();
                 String type = object.getServiceType();
                 switch (type) {
-                    case "switchProgram":
+                    case DATA_TYPE_SWITCH_PROGRAM:
                         KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) object
                                 .getValueParameter());
                         if (null != sPService) {
@@ -82,7 +84,7 @@ public class KM200VirtualServiceHandler {
                             }
                         }
                         break;
-                    case "errorList":
+                    case DATA_TYPE_ERROR_LIST:
                         newObject = new KM200ServiceObject(id + "/nbrErrors", type, 1, 0, 0, 1, id);
                         object.serviceTreeMap.put("nbrErrors", newObject);
                         newObject = new KM200ServiceObject(id + "/error", type, 1, 1, 0, 1, id);

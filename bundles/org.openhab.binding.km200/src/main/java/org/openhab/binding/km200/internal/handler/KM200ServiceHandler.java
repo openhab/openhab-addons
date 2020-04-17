@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.km200.internal.handler;
 
+import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +79,7 @@ public class KM200ServiceHandler {
         if (nodeRoot.toString().length() == 2) {
             readable = 0;
             id = service;
-            type = "$$PROTECTED$$";
+            type = DATA_TYPE_PROTECTED;
         } else {
             type = nodeRoot.get("type").getAsString();
             id = nodeRoot.get("id").getAsString();
@@ -109,10 +111,10 @@ public class KM200ServiceHandler {
         JsonObject dataObject = serviceObject.getJSONData();
         if (null != dataObject) {
             switch (serviceObject.getServiceType()) {
-                case "stringValue": /*
-                                     * Check whether the type is a single value containing a
-                                     * string value
-                                     */
+                case DATA_TYPE_STRING_VALUE: /*
+                                              * Check whether the type is a single value containing a
+                                              * string value
+                                              */
                     logger.debug("initDevice: type string value: {}", dataObject);
                     valObject = new String(nodeRoot.get("value").getAsString());
                     serviceObject.setValue(valObject);
@@ -127,7 +129,7 @@ public class KM200ServiceHandler {
                     }
                     break;
 
-                case "floatValue": /* Check whether the type is a single value containing a float value */
+                case DATA_TYPE_FLOAT_VALUE: /* Check whether the type is a single value containing a float value */
                     logger.debug("initDevice: type float value: {}", dataObject);
                     valObject = nodeRoot.get("value");
                     try {
@@ -149,7 +151,7 @@ public class KM200ServiceHandler {
                     }
                     break;
 
-                case "switchProgram": /* Check whether the type is a switchProgram */
+                case DATA_TYPE_SWITCH_PROGRAM: /* Check whether the type is a switchProgram */
                     logger.debug("initDevice: type switchProgram {}", dataObject);
                     KM200SwitchProgramServiceHandler sPService = new KM200SwitchProgramServiceHandler();
                     sPService.setMaxNbOfSwitchPoints(nodeRoot.get("maxNbOfSwitchPoints").getAsInt());
@@ -162,7 +164,7 @@ public class KM200ServiceHandler {
                     remoteDevice.virtualList.add(serviceObject);
                     break;
 
-                case "errorList": /* Check whether the type is a errorList */
+                case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
                     logger.debug("initDevice: type errorList: {}", dataObject);
                     KM200ErrorServiceHandler eService = new KM200ErrorServiceHandler();
                     eService.updateErrors(nodeRoot);
@@ -171,7 +173,7 @@ public class KM200ServiceHandler {
                     remoteDevice.virtualList.add(serviceObject);
                     break;
 
-                case "refEnum": /* Check whether the type is a refEnum */
+                case DATA_TYPE_REF_ENUM: /* Check whether the type is a refEnum */
                     logger.debug("initDevice: type refEnum: {}", dataObject);
                     JsonArray refers = nodeRoot.get("references").getAsJsonArray();
                     for (int i = 0; i < refers.size(); i++) {
@@ -182,7 +184,7 @@ public class KM200ServiceHandler {
                     }
                     break;
 
-                case "moduleList": /* Check whether the type is a moduleList */
+                case DATA_TYPE_MODULE_LIST: /* Check whether the type is a moduleList */
                     logger.debug("initDevice: type moduleList: {}", dataObject);
                     JsonArray vals = nodeRoot.get("values").getAsJsonArray();
                     for (int i = 0; i < vals.size(); i++) {
@@ -193,30 +195,30 @@ public class KM200ServiceHandler {
                     }
                     break;
 
-                case "yRecording": /* Check whether the type is a yRecording */
+                case DATA_TYPE_Y_RECORDING: /* Check whether the type is a yRecording */
                     logger.debug("initDevice: type yRecording: {}", dataObject);
                     /* have to be completed */
                     break;
 
-                case "systeminfo": /* Check whether the type is a systeminfo */
+                case DATA_TYPE_SYSTEM_INFO: /* Check whether the type is a systeminfo */
                     logger.debug("initDevice: type systeminfo: {}", dataObject);
                     JsonArray sInfo = nodeRoot.get("values").getAsJsonArray();
                     serviceObject.setValue(sInfo);
                     /* have to be completed */
                     break;
-                case "arrayData":
+                case DATA_TYPE_ARRAY_DATA:
                     logger.debug("initDevice: type arrayData: {}", dataObject);
                     serviceObject.setJSONData(dataObject);
                     /* have to be completed */
                     break;
 
-                case "eMonitoringList":
+                case DATA_TYPE_E_MONITORING_LIST:
                     logger.debug("initDevice: type eMonitoringList: {}", dataObject);
                     serviceObject.setJSONData(dataObject);
                     /* have to be completed */
                     break;
 
-                case "$$PROTECTED$$":
+                case DATA_TYPE_PROTECTED:
                     logger.debug("initDevice: readonly");
                     serviceObject.setJSONData(dataObject);
                     break;

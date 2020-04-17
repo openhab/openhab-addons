@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.km200.internal.handler;
 
+import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -56,8 +59,7 @@ public class KM200DataHandler {
     /**
      * This function checks the state of a service on the device
      */
-    @Nullable
-    public State getProvidersState(String service, String itemType, Map<String, String> itemPara) {
+    public @Nullable State getProvidersState(String service, String itemType, Map<String, String> itemPara) {
         synchronized (remoteDevice) {
             String type = null;
             KM200ServiceObject object = null;
@@ -71,7 +73,7 @@ public class KM200DataHandler {
             if (remoteDevice.containsService(service)) {
                 object = remoteDevice.getServiceObject(service);
                 if (null == object) {
-                    logger.warn("Serviceobject is not existing");
+                    logger.warn("Serviceobject does not exist");
                     return null;
                 }
                 if (object.getReadable() == 0) {
@@ -90,7 +92,7 @@ public class KM200DataHandler {
                     logger.debug("Receive data");
                     jsonNode = remoteDevice.getServiceNode(service);
                     if (jsonNode == null || jsonNode.isJsonNull()) {
-                        logger.error("Communication is not possible!");
+                        logger.warn("Communication is not possible!");
                         return null;
                     }
                     object.setJSONData(jsonNode);
@@ -154,7 +156,7 @@ public class KM200DataHandler {
                 return null;
             }
             switch (type) {
-                case "stringValue": /* Check whether the type is a single value containing a string value */
+                case DATA_TYPE_STRING_VALUE: /* Check whether the type is a single value containing a string value */
                     logger.debug("parseJSONData type string value: {} Type: {}", nodeRoot, itemType.toString());
                     String sVal = nodeRoot.get("value").getAsString();
                     object.setValue(sVal);
@@ -176,7 +178,7 @@ public class KM200DataHandler {
                             return null;
                         }
                         /* NumberItem Binding */
-                    } else if ("Number".equals(itemType)) {
+                    } else if (CoreItemFactory.NUMBER.equals(itemType)) {
                         try {
                             state = new DecimalType(Float.parseFloat(sVal));
                         } catch (NumberFormatException e) {
@@ -186,7 +188,7 @@ public class KM200DataHandler {
                             return null;
                         }
                         /* DateTimeItem Binding */
-                    } else if ("DateTime".equals(itemType)) {
+                    } else if (CoreItemFactory.DATETIME.equals(itemType)) {
                         try {
                             state = new DateTimeType(sVal);
                         } catch (IllegalArgumentException e) {
@@ -196,7 +198,7 @@ public class KM200DataHandler {
                             return null;
                         }
                         /* StringItem Binding */
-                    } else if ("String".equals(itemType)) {
+                    } else if (CoreItemFactory.STRING.equals(itemType)) {
                         state = new StringType(sVal);
                     } else {
                         logger.warn("Bindingtype not supported for string values: {}", itemType.getClass());
@@ -204,7 +206,7 @@ public class KM200DataHandler {
                     }
                     return state;
 
-                case "floatValue": /* Check whether the type is a single value containing a float value */
+                case DATA_TYPE_FLOAT_VALUE: /* Check whether the type is a single value containing a float value */
                     logger.debug("state of type float value: {}", nodeRoot);
                     Object bdVal = null;
                     try {
@@ -215,14 +217,14 @@ public class KM200DataHandler {
                     }
                     object.setValue(bdVal);
                     /* NumberItem Binding */
-                    if ("Number".equals(itemType)) {
+                    if (CoreItemFactory.NUMBER.equals(itemType)) {
                         if (bdVal instanceof Double) { // Checking whether
                             state = new DecimalType((Double) bdVal);
                         } else {
-                            state = new DecimalType(((BigDecimal) bdVal).doubleValue());
+                            state = new DecimalType(((Number) bdVal).doubleValue());
                         }
                         /* StringItem Binding */
-                    } else if ("String".equals(itemType)) {
+                    } else if (CoreItemFactory.STRING.equals(itemType)) {
                         state = new StringType(bdVal.toString());
                     } else {
                         logger.warn("Bindingtype not supported for float values: {}", itemType.getClass());
@@ -231,7 +233,7 @@ public class KM200DataHandler {
                     logger.debug("State: {}", state);
                     return state;
 
-                case "switchProgram": /* Check whether the type is a switchProgram */
+                case DATA_TYPE_SWITCH_PROGRAM: /* Check whether the type is a switchProgram */
                     KM200SwitchProgramServiceHandler sPService = null;
                     logger.debug("state of type switchProgram: {}", nodeRoot);
                     if (null != parent) {
@@ -254,7 +256,7 @@ public class KM200DataHandler {
                                     /*
                                      * if access to the parent non virtual service the return the switchPoints jsonarray
                                      */
-                                    if ("String".equals(itemType)) {
+                                    if (CoreItemFactory.STRING.equals(itemType)) {
                                         state = new StringType(
                                                 nodeRoot.get("switchPoints").getAsJsonArray().toString());
                                     } else {
@@ -270,7 +272,7 @@ public class KM200DataHandler {
                     }
                     return null;
 
-                case "errorList": /* Check whether the type is a errorList */
+                case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
                     KM200ErrorServiceHandler eService = null;
                     logger.debug("state of type errorList: {}", nodeRoot);
                     if (null != parent) {
@@ -293,7 +295,7 @@ public class KM200DataHandler {
                                     /*
                                      * if access to the parent non virtual service the return the switchPoints jsonarray
                                      */
-                                    if ("String".equals(itemType)) {
+                                    if (CoreItemFactory.STRING.equals(itemType)) {
                                         state = new StringType(nodeRoot.get("values").getAsJsonArray().toString());
                                     } else {
                                         logger.warn(
@@ -306,22 +308,22 @@ public class KM200DataHandler {
                         }
                     }
 
-                case "yRecording": /* Check whether the type is a yRecording */
+                case DATA_TYPE_Y_RECORDING: /* Check whether the type is a yRecording */
                     logger.info("state of: type yRecording is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
 
-                case "systeminfo": /* Check whether the type is a systeminfo */
+                case DATA_TYPE_SYSTEM_INFO: /* Check whether the type is a systeminfo */
                     logger.info("state of: type systeminfo is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
 
-                case "arrayData": /* Check whether the type is a arrayData */
+                case DATA_TYPE_ARRAY_DATA: /* Check whether the type is a arrayData */
                     logger.info("state of: type arrayData is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
 
-                case "eMonitoringList": /* Check whether the type is a eMonitoringList */
+                case DATA_TYPE_E_MONITORING_LIST: /* Check whether the type is a eMonitoringList */
                     logger.info("state of: type eMonitoringList is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
@@ -339,19 +341,20 @@ public class KM200DataHandler {
         State state = null;
         String type = object.getServiceType();
         String parent = object.getParent();
+
         if (null != parent) {
             KM200ServiceObject objParent = remoteDevice.getServiceObject(parent);
             if (null != objParent) {
                 logger.debug("Check virtual state of: {} type: {} item: {}", service, type, itemType);
                 switch (type) {
-                    case "switchProgram":
+                    case DATA_TYPE_SWITCH_PROGRAM:
                         KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) objParent
                                 .getValueParameter());
                         if (null != sPService) {
                             String[] servicePath = service.split("/");
                             String virtService = servicePath[servicePath.length - 1];
                             if ("weekday".equals(virtService)) {
-                                if ("String".equals(itemType)) {
+                                if (CoreItemFactory.STRING.equals(itemType)) {
                                     String actDay = sPService.getActiveDay();
                                     state = new StringType(actDay);
                                 } else {
@@ -359,7 +362,7 @@ public class KM200DataHandler {
                                     return null;
                                 }
                             } else if ("nbrCycles".equals(virtService)) {
-                                if ("Number".equals(itemType)) {
+                                if (CoreItemFactory.NUMBER.equals(itemType)) {
                                     Integer nbrCycles = sPService.getNbrCycles();
                                     state = new DecimalType(nbrCycles);
                                 } else {
@@ -368,7 +371,7 @@ public class KM200DataHandler {
                                     return null;
                                 }
                             } else if ("cycle".equals(virtService)) {
-                                if ("Number".equals(itemType)) {
+                                if (CoreItemFactory.NUMBER.equals(itemType)) {
                                     Integer cycle = sPService.getActiveCycle();
                                     state = new DecimalType(cycle);
                                 } else {
@@ -376,10 +379,10 @@ public class KM200DataHandler {
                                     return null;
                                 }
                             } else if (virtService.equals(sPService.getPositiveSwitch())) {
-                                if ("Number".equals(itemType)) {
+                                if (CoreItemFactory.NUMBER.equals(itemType)) {
                                     Integer minutes = sPService.getActivePositiveSwitch();
                                     state = new DecimalType(minutes);
-                                } else if ("DateTime".equals(itemType)) {
+                                } else if (CoreItemFactory.DATETIME.equals(itemType)) {
                                     Integer minutes = sPService.getActivePositiveSwitch();
                                     ZonedDateTime rightNow = ZonedDateTime.now();
                                     rightNow.minusHours(rightNow.getHour());
@@ -391,10 +394,10 @@ public class KM200DataHandler {
                                     return null;
                                 }
                             } else if (virtService.equals(sPService.getNegativeSwitch())) {
-                                if ("Number".equals(itemType)) {
+                                if (CoreItemFactory.NUMBER.equals(itemType)) {
                                     Integer minutes = sPService.getActiveNegativeSwitch();
                                     state = new DecimalType(minutes);
-                                } else if ("DateTime".equals(itemType)) {
+                                } else if (CoreItemFactory.DATETIME.equals(itemType)) {
                                     Integer minutes = sPService.getActiveNegativeSwitch();
                                     ZonedDateTime rightNow = ZonedDateTime.now();
                                     rightNow.minusHours(rightNow.getHour());
@@ -410,7 +413,7 @@ public class KM200DataHandler {
                         } else {
                             return null;
                         }
-                    case "errorList":
+                    case DATA_TYPE_ERROR_LIST:
                         KM200ErrorServiceHandler eService = ((KM200ErrorServiceHandler) objParent.getValueParameter());
                         if (null != eService) {
                             String[] nServicePath = service.split("/");
@@ -418,7 +421,7 @@ public class KM200DataHandler {
                             /* Go through the parameters and read the values */
                             switch (nVirtService) {
                                 case "nbrErrors":
-                                    if ("Number".equals(itemType)) {
+                                    if (CoreItemFactory.NUMBER.equals(itemType)) {
                                         Integer nbrErrors = eService.getNbrErrors();
                                         state = new DecimalType(nbrErrors);
                                     } else {
@@ -428,7 +431,7 @@ public class KM200DataHandler {
                                     }
                                     break;
                                 case "error":
-                                    if ("Number".equals(itemType)) {
+                                    if (CoreItemFactory.NUMBER.equals(itemType)) {
                                         Integer actError = eService.getActiveError();
                                         state = new DecimalType(actError);
                                     } else {
@@ -438,7 +441,7 @@ public class KM200DataHandler {
                                     }
                                     break;
                                 case "errorString":
-                                    if ("String".equals(itemType)) {
+                                    if (CoreItemFactory.STRING.equals(itemType)) {
                                         String errorString = eService.getErrorString();
                                         if (errorString == null) {
                                             return null;
@@ -494,7 +497,7 @@ public class KM200DataHandler {
             /* The service is availible, set now the values depeding on the item and binding type */
             logger.debug("state of: {} type: {}", command, type);
             /* Binding is a NumberItem */
-            if ("Number".equals(itemType)) {
+            if (CoreItemFactory.NUMBER.equals(itemType)) {
                 BigDecimal bdVal = ((DecimalType) command).toBigDecimal();
                 logger.debug("val: {}", bdVal);
                 /* Check the capabilities of this service */
@@ -514,21 +517,21 @@ public class KM200DataHandler {
                     }
                 }
                 newObject = new JsonObject();
-                if ("floatValue".equals(type)) {
+                if (DATA_TYPE_FLOAT_VALUE.equals(type)) {
                     newObject.addProperty("value", bdVal);
-                } else if ("stringValue".equals(type)) {
+                } else if (DATA_TYPE_STRING_VALUE.equals(type)) {
                     newObject.addProperty("value", bdVal.toString());
-                } else if ("switchProgram".equals(type) && object.getVirtual() == 1) {
+                } else if (DATA_TYPE_SWITCH_PROGRAM.equals(type) && object.getVirtual() == 1) {
                     /* A switchProgram as NumberItem is always virtual */
                     newObject = sendVirtualState(object, service, command, itemType);
-                } else if ("errorList".equals(type) && object.getVirtual() == 1) {
+                } else if (DATA_TYPE_ERROR_LIST.equals(type) && object.getVirtual() == 1) {
                     /* A errorList as NumberItem is always virtual */
                     newObject = sendVirtualState(object, service, command, itemType);
                 } else {
                     logger.warn("Not supported type for numberItem: {}", type);
                 }
                 /* Binding is a StringItem */
-            } else if ("String".equals(itemType)) {
+            } else if (CoreItemFactory.STRING.equals(itemType)) {
                 String val = ((StringType) command).toString();
                 newObject = new JsonObject();
                 /* Check the capabilities of this service */
@@ -543,11 +546,11 @@ public class KM200DataHandler {
                         }
                     }
                 }
-                if ("stringValue".equals(type)) {
+                if (DATA_TYPE_STRING_VALUE.equals(type)) {
                     newObject.addProperty("value", val);
-                } else if ("floatValue".equals(type)) {
+                } else if (DATA_TYPE_FLOAT_VALUE.equals(type)) {
                     newObject.addProperty("value", Float.parseFloat(val));
-                } else if ("switchProgram".equals(type)) {
+                } else if (DATA_TYPE_SWITCH_PROGRAM.equals(type)) {
                     if (object.getVirtual() == 1) {
                         newObject = sendVirtualState(object, service, command, itemType);
                     } else {
@@ -566,12 +569,12 @@ public class KM200DataHandler {
                     logger.warn("Not supported type for stringItem: {}", type);
                 }
                 /* Binding is a DateTimeItem */
-            } else if ("DateTime".equals(itemType)) {
+            } else if (CoreItemFactory.DATETIME.equals(itemType)) {
                 String val = ((DateTimeType) command).toString();
                 newObject = new JsonObject();
-                if ("stringValue".equals(type)) {
+                if (DATA_TYPE_STRING_VALUE.equals(type)) {
                     newObject.addProperty("value", val);
-                } else if ("switchProgram".equals(type)) {
+                } else if (DATA_TYPE_SWITCH_PROGRAM.equals(type)) {
                     newObject = sendVirtualState(object, service, command, itemType);
                 } else {
                     logger.warn("Not supported type for dateTimeItem: {}", type);
@@ -604,7 +607,7 @@ public class KM200DataHandler {
                     logger.warn("Switch-Item only on configured on/off string values {}", command);
                     return null;
                 }
-                if ("stringValue".equals(type)) {
+                if (DATA_TYPE_STRING_VALUE.equals(type)) {
                     newObject.addProperty("value", val);
                 } else {
                     logger.warn("Not supported type for SwitchItem:{}", type);
@@ -637,10 +640,10 @@ public class KM200DataHandler {
             if (null != objParent) {
                 type = object.getServiceType();
                 /* Binding is a StringItem */
-                if ("String".equals(itemType)) {
+                if (CoreItemFactory.STRING.equals(itemType)) {
                     String val = ((StringType) command).toString();
                     switch (type) {
-                        case "switchProgram":
+                        case DATA_TYPE_SWITCH_PROGRAM:
                             KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) objParent
                                     .getValueParameter());
                             if (null != sPService) {
@@ -654,10 +657,10 @@ public class KM200DataHandler {
                             break;
                     }
                     /* Binding is a NumberItem */
-                } else if ("Number".equals(itemType)) {
+                } else if (CoreItemFactory.NUMBER.equals(itemType)) {
                     Integer val = ((DecimalType) command).intValue();
                     switch (type) {
-                        case "switchProgram":
+                        case DATA_TYPE_SWITCH_PROGRAM:
                             KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) objParent
                                     .getValueParameter());
                             if (null != sPService) {
@@ -677,7 +680,7 @@ public class KM200DataHandler {
                                 }
                             }
                             break;
-                        case "errorList":
+                        case DATA_TYPE_ERROR_LIST:
                             KM200ErrorServiceHandler eService = ((KM200ErrorServiceHandler) objParent
                                     .getValueParameter());
                             if (null != eService) {
@@ -690,7 +693,7 @@ public class KM200DataHandler {
                             }
                             break;
                     }
-                } else if ("DateTime".equals(itemType)) {
+                } else if (CoreItemFactory.DATETIME.equals(itemType)) {
                     ZonedDateTime swTime = ((DateTimeType) command).getZonedDateTime();
                     KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) objParent
                             .getValueParameter());
