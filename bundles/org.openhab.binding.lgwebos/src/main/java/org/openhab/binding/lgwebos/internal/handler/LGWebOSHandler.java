@@ -149,6 +149,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopKeepAliveJob();
         stopReconnectJob();
+        stopChannelSubscriptionJob();
 
         LGWebOSTVSocket s = socket;
         if (s != null) {
