@@ -54,10 +54,9 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
             if (State.DISCONNECTED == state) {
                 String macAddress = configProvider.getMacAddress();
                 if (macAddress.isEmpty()) {
-                    logger.debug(
-                            "Received ON - Turning TV on via API is not supported by LG WebOS TVs. " 
+                    logger.debug("Received ON - Turning TV on via API is not supported by LG WebOS TVs. "
                             + "You may succeed using wake on lan (WOL). "
-                            +"Please set the macAddress config value in Thing configuration to enable this.");
+                            + "Please set the macAddress config value in Thing configuration to enable this.");
                     handler.postUpdate(channelId, OnOffType.OFF);
                 } else {
                     for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
