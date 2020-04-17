@@ -1,7 +1,7 @@
 # Teleinfo Binding
 
 The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](http://www.linuxembarque.free.fr/electro/compt_energie/specifications_techniques_edf_teleinfo.pdf) for (French) Electricity Meter.
-Teleinfo is a protocol to read many electrical statTeleinfo ADCO istics of your electricity meter: instantaneous power consumption, current price period, meter reading... 
+Teleinfo is a protocol to read many electrical statistics of your electricity meter: instantaneous power consumption, current price period, meter reading... 
 These values can be used to
 
 - send your meter reading to your electricity provider with a simple copy/paste,
