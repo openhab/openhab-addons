@@ -1,11 +1,13 @@
 # Teleinfo Binding
 
-_The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](http://www.linuxembarque.free.fr/electro/compt_energie/specifications_techniques_edf_teleinfo.pdf) for (French) Electricity Meter._
-_Teleinfo is a protocol to read many electrical statistics of your electricity meter: TODO_
+The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](http://www.linuxembarque.free.fr/electro/compt_energie/specifications_techniques_edf_teleinfo.pdf) for (French) Electricity Meter.
+Teleinfo is a protocol to read many electrical statTeleinfo ADCO istics of your electricity meter: instantaneous power consumption, current price period, meter reading... 
+These values can be used to
 
-
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+- send your meter reading to your electricity provider with a simple copy/paste,
+- improve your rules and minimize electricity costs,
+- check if your subscription is relevant for your needs,
+- monitor your electric consumption,
 
 ## Supported Things
 
@@ -16,20 +18,9 @@ The Teleinfo binding provides support for the following mode:
 - Tempo mode
 - EJP mode
 
-### Teleinfo controller
-
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port.
-
-
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing named __Teleinfo ADCO #id__ will be created (__#id__ is  your delivery point number).
 
 | Thing type       | Parameter  | Meaning                        | Posible values |
 |------------------|------------|--------------------------------|----------------|
@@ -38,23 +29,20 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Channel availabity depends on the electric meter mode. 
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-| channel  | type                      | description                                          |
-|----------|---------------------------|------------------------------------------------------|
-| isousc   | `Number:ElectricCurrent`  | Subscribed electric current                          |
-| ptec     | `String`                  | Current pricing period                               |
-| imax     | `Number:ElectricCurrent`  | Maximum electric current                             |
-| adps     | `Number:ElectricCurrent`  | Excess electric current warning                      |
-| iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                       |
-| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)            |
-| hhphc    | `String`                  | Pricing schedule group (HCHP mode only)              | 
-| hchc     | `Number:Energy`           | Meter reading for low rate pricing (HCHP mode only)  | 
-| hchp     | `Number:Energy`           | Meter reading for high rate pricing (HCHP mode only) |
-| base     | `Number:Energy`           | Meter reading (Base mode only)                       |
-
+| channel  | type                      | description                                          | availabilty    |
+|----------|---------------------------|------------------------------------------------------|----------------|
+| isousc   | `Number:ElectricCurrent`  | Subscribed electric current                          | always         |
+| ptec     | `String`                  | Current pricing period                               | always         |
+| imax     | `Number:ElectricCurrent`  | Maximum electric current                             | always         |
+| adps     | `Number:ElectricCurrent`  | Excess electric current warning                      | always         |
+| iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                       | always         |
+| papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)            | always         |
+| hhphc    | `String`                  | Pricing schedule group (HCHP mode only)              | HCHP mode only |
+| hchc     | `Number:Energy`           | Meter reading for low rate pricing (HCHP mode only)  | HCHP mode only |
+| hchp     | `Number:Energy`           | Meter reading for high rate pricing (HCHP mode only) | HCHP mode only |
+| base     | `Number:Energy`           | Meter reading (Base mode only)                       | Base mode only |
 
 ## Full Example
 
@@ -75,7 +63,7 @@ Number:ElectricCurrent iSousc "iSousc" {channel="teleinfo:teleinfo1:isousc"}
 
 ## Supported hardwares
 
-_The Teleinfo binding has been successfully validated with below hardware configuration:_
+The Teleinfo binding has been successfully validated with below hardware configuration:
 
 | Serial interface | Power Energy Meter model    | Mode                   |
 |----------|--------|------------------------------|
