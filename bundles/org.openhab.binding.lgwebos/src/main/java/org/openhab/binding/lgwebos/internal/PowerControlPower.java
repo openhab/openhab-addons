@@ -32,11 +32,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
-    private final Logger logger = LoggerFactory.getLogger(PowerControlPower.class);
-    private final ConfigProvider configProvider;
-    private ScheduledExecutorService scheduler;
     private static final int WOL_PACKET_RETRY_COUNT = 10;
     private static final int WOL_PACKET_RETRY_DELAY_MILLIS = 100;
+
+    private final Logger logger = LoggerFactory.getLogger(PowerControlPower.class);
+    private final ConfigProvider configProvider;
+    private final ScheduledExecutorService scheduler;
 
     public PowerControlPower(ConfigProvider configProvider, ScheduledExecutorService scheduler) {
         this.configProvider = configProvider;

@@ -93,7 +93,6 @@ public class WakeOnLanUtility {
             LOGGER.debug("Problem executing command {} to retrieve MAC address for {}: {}", cmd, hostName, response);
         }
         return macAddress;
-
     }
 
     /**
