@@ -47,7 +47,7 @@ Parameters:
 Set host and key parameter as in the following example:
 
 ```
-Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
 ## Channels
@@ -100,7 +100,7 @@ A sample HABPanel remote control widget can be found [in this github repository.
 demo.things:
 
 ```
-Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
 demo.items:

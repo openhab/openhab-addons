@@ -48,40 +48,38 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         if (RefreshType.REFRESH == command) {
             handler.postUpdate(channelId, handler.getSocket().isConnected() ? OnOffType.ON : OnOffType.OFF);
-            return;
-        }
-        if (!handler.getSocket().isConnected()) {
-            /*
-             * Unable to send anything to a not connected device.
-             * onDeviceReady nor onDeviceRemoved will be called and item state would be permanently inconsistent.
-             * Therefore setting state to OFF
-             */
-            handler.postUpdate(channelId, OnOffType.OFF);
-        }
-
-        if (OnOffType.ON == command) {
-            String macAddress = configProvider.getMacAddress();
-            if (macAddress.isEmpty()) {
-                logger.debug(
-                        "Received ON - Turning TV on via API is not supported by LG WebOS TVs. You may succeed using wake on lan (WOL). Please set the macAddress config value in Thing configuration to enable this.");
+        } else if (OnOffType.ON == command) {
+            if (handler.getSocket().isConnected()) {
+                logger.debug("Received ON - TV is already on.");
+                handler.postUpdate(channelId, OnOffType.ON);
             } else {
-                for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
-                    scheduler.schedule(() -> {
-                        try {
-                            WakeOnLanUtility.sendWOLPacket(macAddress);
-                        } catch (IllegalArgumentException e) {
-                            logger.debug("Failed to send WOL packet: {}", e.getMessage());
-                        }
-                    }, i * WOL_PACKET_RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+                String macAddress = configProvider.getMacAddress();
+                if (macAddress.isEmpty()) {
+                    logger.debug(
+                            "Received ON - Turning TV on via API is not supported by LG WebOS TVs. You may succeed using wake on lan (WOL). Please set the macAddress config value in Thing configuration to enable this.");
+                    handler.postUpdate(channelId, OnOffType.OFF);
+                } else {
+                    for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
+                        scheduler.schedule(() -> {
+                            try {
+                                WakeOnLanUtility.sendWOLPacket(macAddress);
+                            } catch (IllegalArgumentException e) {
+                                logger.debug("Failed to send WOL packet: {}", e.getMessage());
+                            }
+                        }, i * WOL_PACKET_RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+                    }
                 }
-
             }
         } else if (OnOffType.OFF == command) {
-            handler.getSocket().powerOff(getDefaultResponseListener());
+            if (!handler.getSocket().isConnected()) {
+                logger.debug("Received OFF - TV is already off.");
+                handler.postUpdate(channelId, OnOffType.OFF);
+            } else {
+                handler.getSocket().powerOff(getDefaultResponseListener());
+            }
         } else {
             logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
-
     }
 
     @Override
