@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.State;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +47,11 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        final State state = handler.getSocket().getState();
         if (RefreshType.REFRESH == command) {
             handler.postUpdate(channelId, handler.getSocket().isConnected() ? OnOffType.ON : OnOffType.OFF);
         } else if (OnOffType.ON == command) {
-            if (handler.getSocket().isConnected()) {
-                logger.debug("Received ON - TV is already on.");
-                handler.postUpdate(channelId, OnOffType.ON);
-            } else {
+            if (State.DISCONNECTED == state) {
                 String macAddress = configProvider.getMacAddress();
                 if (macAddress.isEmpty()) {
                     logger.debug(
@@ -69,13 +68,42 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                         }, i * WOL_PACKET_RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
                     }
                 }
+            } else {
+                switch (state) {
+                    case CONNECTING:
+                    case REGISTERING:
+                    case REGISTERED:
+                        logger.debug("Received ON - TV is already on.");
+                        handler.postUpdate(channelId, OnOffType.ON);
+                        break;
+                    case DISCONNECTING:
+                        logger.debug("Received ON - TV is currently disconnecting.");
+                        handler.postUpdate(channelId, OnOffType.OFF);
+                        break;
+                    case DISCONNECTED:
+                        // none reachable code
+                        break;
+                }
             }
         } else if (OnOffType.OFF == command) {
-            if (!handler.getSocket().isConnected()) {
-                logger.debug("Received OFF - TV is already off.");
-                handler.postUpdate(channelId, OnOffType.OFF);
-            } else {
+            if (State.REGISTERED == state || State.REGISTERING == state) {
                 handler.getSocket().powerOff(getDefaultResponseListener());
+            } else {
+                switch (state) {
+                    case CONNECTING:
+                        logger.debug("Received OFF - TV is currently connecting.");
+                        handler.postUpdate(channelId, OnOffType.ON);
+                        break;
+                    case REGISTERING:
+                    case REGISTERED:
+                        // non reachable code
+                        break;
+                    case DISCONNECTING:
+                    case DISCONNECTED:
+                        logger.debug("Received OFF - TV is already off.");
+                        handler.postUpdate(channelId, OnOffType.OFF);
+                        break;
+                }
             }
         } else {
             logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
