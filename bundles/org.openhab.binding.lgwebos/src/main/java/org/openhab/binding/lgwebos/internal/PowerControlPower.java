@@ -58,7 +58,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                     logger.debug("Received ON - TV is already on.");
                     handler.postUpdate(channelId, OnOffType.ON);
                     break;
-                case DISCONNECTING:
+                case DISCONNECTING: // WOL will not stop the shutdown process, but we must not update the state to ON
                 case DISCONNECTED:
                     String macAddress = configProvider.getMacAddress();
                     if (macAddress.isEmpty()) {
@@ -83,6 +83,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
             switch (state) {
                 case CONNECTING:
                 case REGISTERING:
+                    // in both states no message will sent to TV, thus the operation won't have an effect
                     logger.debug("Received OFF - TV is currently connecting.");
                     handler.postUpdate(channelId, OnOffType.ON);
                     break;
