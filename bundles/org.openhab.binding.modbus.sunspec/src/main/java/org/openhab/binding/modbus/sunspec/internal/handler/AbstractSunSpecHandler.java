@@ -78,20 +78,17 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Configuration instance
      */
-    @Nullable
-    protected SunSpecConfiguration config = null;
+    protected @Nullable SunSpecConfiguration config = null;
 
     /**
      * This is the task used to poll the device
      */
-    @Nullable
-    private volatile PollTask pollTask = null;
+    private volatile @Nullable PollTask pollTask = null;
 
     /**
      * This is the slave endpoint we're connecting to
      */
-    @Nullable
-    protected volatile ModbusSlaveEndpoint endpoint = null;
+    protected volatile @Nullable ModbusSlaveEndpoint endpoint = null;
 
     /**
      * This is the slave id, we store this once initialization is complete
@@ -325,7 +322,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
                     @Nullable ModbusRegisterArray registers) {
                 if (registers == null) {
-                    logger.info("Received empty register array on poll");
+                    logger.debug("Received empty register array on poll");
                     return;
                 }
 
