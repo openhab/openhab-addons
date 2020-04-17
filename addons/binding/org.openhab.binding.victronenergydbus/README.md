@@ -11,6 +11,7 @@ To allow the user openhab the access via dbus to com.victronenergy edit the file
         </policy>
 
 ```
+Please check dbus-communication with command `dbus-send --print-reply --system --dest=com.victronenergy.solarcharger.ttyUSB0 /ProductName` before you try with the binding. May be you have to choose the correct USB-Port. If you don't know the port, try `ls -la /dev/serial/by-id/`
 
 ## Supported Things
 

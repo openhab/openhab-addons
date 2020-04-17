@@ -24,9 +24,10 @@ public class VictronEnergyVRMBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INSTALLATION = new ThingTypeUID(BINDING_ID, "sc");
+    public static final ThingTypeUID THING_TYPE_INSTALLATION_BM = new ThingTypeUID(BINDING_ID, "bm");
     // public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
 
-    // List of all Channel ids
+    // List of all Channel ids SC
     public static final String CHANNEL_BV = "bv";
     public static final String CHANNEL_ScV = "ScV";
     public static final String CHANNEL_ScS = "ScS";
@@ -34,6 +35,23 @@ public class VictronEnergyVRMBindingConstants {
     public static final String CHANNEL_YY = "YY";
     public static final String CHANNEL_ScW = "ScW";
     public static final String CHANNEL_secondsAgo = "secondsAgo";
+
+    // List of all Channel ids BM
+    public static final String CHANNEL_BmV = "BmV";
+    public static final String CHANNEL_BmVS = "BmVS";
+    public static final String CHANNEL_BmI = "BmI";
+    public static final String CHANNEL_BmCE = "BmCE";
+    public static final String CHANNEL_BmSOC = "BmSOC";
+    public static final String CHANNEL_BmTTG = "BmTTG";
+    public static final String CHANNEL_BmAL = "BmAL";
+    public static final String CHANNEL_BmAH = "BmAH";
+    public static final String CHANNEL_BmALS = "BmALS";
+    public static final String CHANNEL_BmAHS = "BmAHS";
+    public static final String CHANNEL_BmASoc = "BmASoc";
+    public static final String CHANNEL_BmALT = "BmALT";
+    public static final String CHANNEL_BmAHT = "BmAHT";
+    public static final String CHANNEL_BmAM = "BmAM";
+    public static final String CHANNEL_BmSecondsAgo = "BmSecondsAgo";
 
     // Config Params
     public static final String USERNAME = "username";

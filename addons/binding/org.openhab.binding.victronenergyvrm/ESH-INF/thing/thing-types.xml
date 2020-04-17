@@ -4,20 +4,42 @@
 						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="sc">
-		<label>VictronEnergyVRM SolarCharger</label>
-		<description>Your SolarCharger in VRM</description>
-
+	<thing-type id="bm">
+		<label>VictronEnergyVRM BatteryMonitor</label>
+		<description>Your BatteryMonitor in VRM</description>
 		<channels>
-			<channel id="ScV" typeId="ScV"/>
-			<channel id="ScS" typeId="ScS"/>
-			<channel id="YT" typeId="YT"/>
-			<channel id="YY" typeId="YY"/>
-			<channel id="ScW" typeId="ScW"/>
-			<channel id="secondsAgo" typeId="secondsAgo"/>
+			<channel id="BmV" typeId="BmV"/>
+			<channel id="BmVS" typeId="BmVS"/>
+			<channel id="BmI" typeId="BmI"/>
+			<channel id="BmCE" typeId="BmCE"/>
+			<channel id="BmSOC" typeId="BmSOC"/>
+			<channel id="BmTTG" typeId="BmTTG"/>
+			<channel id="BmAL" typeId="BmAL"/>
+			<channel id="BmAH" typeId="BmAH"/>
+			<channel id="BmALS" typeId="BmALS"/>
+            <channel id="BmAHS" typeId="BmAHS"/>
+            <channel id="BmASoc" typeId="BmASoc"/>
+            <channel id="BmALT" typeId="BmALT"/>
+            <channel id="BmAHT" typeId="BmAHT"/>
+            <channel id="BmAM" typeId="BmAM"/>
+			<channel id="BmSecondsAgo" typeId="BmSecondsAgo"/>
 		</channels>
-		<config-description-ref uri="thing-type:sc:set" />
+		<config-description-ref uri="thing-type:bm:set" />
 	</thing-type>
+	<thing-type id="sc">
+        <label>VictronEnergyVRM SolarCharger</label>
+        <description>Your SolarCharger in VRM</description>
+
+        <channels>
+            <channel id="ScV" typeId="ScV"/>
+            <channel id="ScS" typeId="ScS"/>
+            <channel id="YT" typeId="YT"/>
+            <channel id="YY" typeId="YY"/>
+            <channel id="ScW" typeId="ScW"/>
+            <channel id="secondsAgo" typeId="secondsAgo"/>
+        </channels>
+        <config-description-ref uri="thing-type:sc:set" />
+    </thing-type>
 	<!-- 
 	<thing-type id="alarm">
         <label>VictronEnergyVRM Alarm</label>
@@ -78,4 +100,109 @@
         <state readOnly="true" pattern="%d s"></state>
     </channel-type>
 
+    <channel-type id="BmV">
+        <item-type>Number</item-type>
+        <label>Battery Monitor Voltage</label>
+        <description>Battery Monitor Voltage</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="BmVS">
+        <item-type>Number</item-type>
+        <label>Battery Monitor Voltage Starter Battery</label>
+        <description>Battery Monitor Voltage Starter Battery</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="BmI">
+        <item-type>Number</item-type>
+        <label>Battery Monitor Current</label>
+        <description>Battery Monitor Current</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    
+    <channel-type id="BmCE">
+        <item-type>Number</item-type>
+        <label>Battery Monitor Consumed Amphours</label>
+        <description>Battery Monitor Consumed Amphours</description>
+        <state readOnly="true" pattern="%.2f Ah"></state>
+    </channel-type>
+    
+    <channel-type id="BmSOC">
+        <item-type>Number</item-type>
+        <label>Battery Monitor State of charge</label>
+        <description>Battery Monitor State of charge</description>
+        <state readOnly="true" pattern="%.1f %%"></state>
+    </channel-type>
+    
+    <channel-type id="BmTTG">
+        <item-type>Number</item-type>
+        <label>Battery Monitor Time to go</label>
+        <description>Battery Monitor Time to go</description>
+        <state readOnly="true" pattern="%.2f h"></state>
+    </channel-type>
+    
+    <channel-type id="BmAL">
+        <item-type>String</item-type>
+        <label>Battery Monitor Low voltage alarm</label>
+        <description>Battery Monitor Low voltage alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="BmAH">
+        <item-type>String</item-type>
+        <label>Battery Monitor High voltage alarm</label>
+        <description>Battery Monitor High voltage alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="BmALS">
+        <item-type>String</item-type>
+        <label>Battery Monitor Low starter-voltage alarm</label>
+        <description>Battery Monitor Low voltage alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="BmAHS">
+        <item-type>String</item-type>
+        <label>Battery Monitor High starter-voltage alarm</label>
+        <description>Battery Monitor High voltage alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="BmASoc">
+        <item-type>String</item-type>
+        <label>Battery Monitor Low state-of-charge alarm</label>
+        <description>Battery Monitor Low state-of-charge alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="BmALT">
+        <item-type>String</item-type>
+        <label>Battery Monitor Low battery temperature alarm</label>
+        <description>Battery Monitor Low battery temperature alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="BmAHT">
+        <item-type>String</item-type>
+        <label>Battery Monitor High battery temperature alarm</label>
+        <description>Battery Monitor High battery temperature alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="BmAM">
+        <item-type>String</item-type>
+        <label>Battery Monitor Mid-voltage alarm</label>
+        <description>Battery Monitor Mid-voltage alarm</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="BmSecondsAgo">
+        <item-type>Number</item-type>
+        <label>Seconds Ago</label>
+        <description>Time in Seconds how long the last update was ago.</description>
+        <state readOnly="true" pattern="%d s"></state>
+    </channel-type>
+    
 </thing:thing-descriptions>

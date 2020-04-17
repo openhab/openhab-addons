@@ -17,15 +17,22 @@
 	<packaging>eclipse-plugin</packaging>
 	
 	<dependencies>
+    
     <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore</artifactId>
-        <version>4.4</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
+        <version>9.4.11.v20180605</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-http</artifactId>
+        <version>9.4.11.v20180605</version>
     </dependency>
     <dependency>
-    	<groupId>org.apache.httpcomponents</groupId>
-    	<artifactId>httpclient</artifactId>
-    	<version>4.5</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-client</artifactId>
+        <version>9.4.11.v20180605</version>
     </dependency>
 	</dependencies>
 

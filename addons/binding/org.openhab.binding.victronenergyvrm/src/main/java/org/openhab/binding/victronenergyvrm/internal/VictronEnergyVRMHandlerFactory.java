@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.victronenergyvrm.internal;
 
-import static org.openhab.binding.victronenergyvrm.VictronEnergyVRMBindingConstants.THING_TYPE_INSTALLATION;
+import static org.openhab.binding.victronenergyvrm.VictronEnergyVRMBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.victronenergyvrm.handler.VictronEnergyVRMHandler;
+import org.openhab.binding.victronenergyvrm.handler.VictronEnergyVrmBmHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -33,7 +34,8 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class VictronEnergyVRMHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INSTALLATION);
+    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_INSTALLATION,
+            THING_TYPE_INSTALLATION_BM);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,6 +48,8 @@ public class VictronEnergyVRMHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_INSTALLATION)) {
             return new VictronEnergyVRMHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_INSTALLATION_BM)) {
+            return new VictronEnergyVrmBmHandler(thing);
         }
 
         return null;

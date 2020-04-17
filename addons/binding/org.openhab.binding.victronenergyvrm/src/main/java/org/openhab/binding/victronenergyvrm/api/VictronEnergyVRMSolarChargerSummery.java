@@ -8,17 +8,17 @@
  */
 package org.openhab.binding.victronenergyvrm.api;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,36 +59,32 @@ public class VictronEnergyVRMSolarChargerSummery {
         String strSuccess;
         String ScSUrl = baseUrl + "installations/" + instId.toString() + "/widgets/SolarChargerSummary?instance="
                 + instance.toString();
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        HttpClient httpJettyClient = new HttpClient(sslContextFactory);
+        httpJettyClient.setFollowRedirects(false);
 
         try {
-            HttpGet getRequest = new HttpGet(ScSUrl);
-            getRequest.setHeader("Content-type", "application/json");
-            getRequest.setHeader("X-Authorization", "Bearer " + token);
-            logger.debug("getRequest: " + getRequest.toString());
 
-            /*
-             * Header[] headers = getRequest.getAllHeaders();
-             *
-             * for (int i = 0; i < headers.length; i++) {
-             * Header tmp = headers[i];
-             * logger.debug("Headers Name: " + tmp.getName() + " Headers Value: " + tmp.getValue());
-             * }
-             */
+            httpJettyClient.start();
+            Request request = httpJettyClient.newRequest(ScSUrl);
+            request.method(HttpMethod.GET);
+            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            request.header("X-Authorization", "Bearer " + token);
+            logger.debug("Request: " + request.toString());
 
-            HttpResponse httpResponse = httpClient.execute(getRequest);
-            if (httpResponse.getStatusLine().getStatusCode() != 200) {
-                logger.warn("httpResponse: " + httpResponse.getStatusLine().toString());
+            ContentResponse response = request.send();
+            String res = new String(response.getContent());
+
+            logger.debug("StatusCode: " + response.getStatus());
+            logger.debug("Reason: " + response.getReason());
+
+            if (response.getStatus() != 200) {
+                logger.warn("httpResponse: " + response.getReason());
             } else {
-                logger.debug("httpResponse: " + httpResponse.getStatusLine().toString());
-            }
-            BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-            StringBuilder bd = new StringBuilder();
-            for (String line = null; (line = rd.readLine()) != null;) {
-                bd.append(line).append("\n");
+                logger.debug("httpResponse: " + response.getReason());
             }
             JsonParser jp = new JsonParser();
-            JsonObject jo = (JsonObject) jp.parse(bd.toString());
+            JsonObject jo = (JsonObject) jp.parse(res);
 
             strSuccess = jo.get("success").toString();
             if (strSuccess.equals("true")) {
@@ -156,13 +152,11 @@ public class VictronEnergyVRMSolarChargerSummery {
                 success = false;
             }
             logger.debug("scs load data state success?: " + success.toString() + "!");
-            httpClient.getConnectionManager().shutdown();
+            httpJettyClient.stop();
 
-        } catch (
-
-        ParseException e) {
-            logger.error(e.toString());
         } catch (IOException e) {
+            logger.error(e.toString());
+        } catch (Exception e) {
             logger.error(e.toString());
         }
 

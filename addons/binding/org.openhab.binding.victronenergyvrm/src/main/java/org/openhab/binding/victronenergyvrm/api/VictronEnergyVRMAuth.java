@@ -8,16 +8,15 @@
  */
 package org.openhab.binding.victronenergyvrm.api;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,33 +45,34 @@ public class VictronEnergyVRMAuth {
 
         String authUrl = baseUrl + "auth/login";
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        HttpClient httpJettyClient = new HttpClient(sslContextFactory);
+        httpJettyClient.setFollowRedirects(false);
 
         try {
-            HttpPost postRequest = new HttpPost(authUrl);
-            postRequest
-                    .setEntity(new StringEntity("{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}",
-                            ContentType.create("application/json")));
 
-            HttpResponse httpResponse = httpClient.execute(postRequest);
-            logger.debug("httpResponse: " + httpResponse.getStatusLine().toString());
-            BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-            StringBuilder bd = new StringBuilder();
-            for (String line = null; (line = rd.readLine()) != null;) {
-                bd.append(line).append("\n");
-            }
+            httpJettyClient.start();
+            Request request = httpJettyClient.newRequest(authUrl);
+            request.method(HttpMethod.POST);
+            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            request.content(new StringContentProvider(
+                    "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}", "utf-8"));
+            ContentResponse response = request.send();
+            String res = new String(response.getContent());
+
             JsonParser jp = new JsonParser();
-            JsonObject jo = (JsonObject) jp.parse(bd.toString());
+            JsonObject jo = (JsonObject) jp.parse(res); //
 
             token = jo.get("token").toString();
             // Entferne " am Anfang und Ende des token
             token = token.substring(1, token.length() - 1);
-            httpClient.getConnectionManager().shutdown();
+            // httpClient.getConnectionManager().shutdown();
+            httpJettyClient.stop();
 
-        } catch (ParseException e) {
-            logger.error(e.toString());
         } catch (IOException e) {
-            logger.error(e.toString());
+            logger.debug(e.toString());
+        } catch (Exception e) {
+            logger.debug(e.toString());
         }
         return token;
     }

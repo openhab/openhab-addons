@@ -34,6 +34,37 @@
             <advanced>false</advanced>
         </parameter>
     </config-description>
+        <config-description uri="thing-type:bm:set">
+        <parameter name="username" type="text">
+            <label>Username</label>
+            <description>Your VRM Username</description>
+            <required>true</required>
+        </parameter>
+        <parameter name="password" type="text">
+            <label>Password</label>
+            <description>Your VRM password</description>
+            <required>true</required>
+            <advanced>false</advanced>
+            <context>password</context>
+        </parameter>
+        <parameter name="installation-id" type="integer">
+            <label>Installation ID</label>
+            <description>
+                Your Installation ID
+            </description>
+            <required>true</required>
+            <advanced>false</advanced>
+        </parameter>
+        <parameter name="instance-id" type="integer">
+            <label>Instance ID</label>
+            <description>
+                The Device Instance ID. You find it in your device list. 
+            </description>
+            <required>true</required>
+            <default>288</default>
+            <advanced>false</advanced>
+        </parameter>
+    </config-description>
     <!-- alarm:set erstmal deaktiviert
     <config-description uri="thing-type:alarm:set">
         <parameter name="username" type="text">
