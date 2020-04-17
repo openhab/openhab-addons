@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="sensebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="sensebox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- This thing represents the Arduino box that sends data to api.opensensebox.org . -->
 	<thing-type id="box">
-		<label>Sensebox</label>
-		<description>Sensor Box</description>
+		<label>senseBox</label>
+		<description>This is a senseBox sensor.</description>
 
 		<channel-groups>
-			<channel-group typeId="descriptors" id="descriptors"/>
-			<channel-group typeId="measurements" id="measurements"/>
-			<channel-group typeId="lastReported" id="lastReported"/>
+			<channel-group typeId="descriptors" id="descriptors" />
+			<channel-group typeId="measurements" id="measurements" />
+			<channel-group typeId="lastReported" id="lastReported" />
 		</channel-groups>
+
+		<representation-property>senseBoxId</representation-property>
 
 		<config-description-ref uri="thing-type:sensebox:config" />
 	</thing-type>
