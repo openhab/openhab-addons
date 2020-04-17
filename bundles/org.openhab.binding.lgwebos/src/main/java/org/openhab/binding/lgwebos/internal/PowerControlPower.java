@@ -51,60 +51,49 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
         if (RefreshType.REFRESH == command) {
             handler.postUpdate(channelId, handler.getSocket().isConnected() ? OnOffType.ON : OnOffType.OFF);
         } else if (OnOffType.ON == command) {
-            if (State.DISCONNECTED == state) {
-                String macAddress = configProvider.getMacAddress();
-                if (macAddress.isEmpty()) {
-                    logger.debug("Received ON - Turning TV on via API is not supported by LG WebOS TVs. "
-                            + "You may succeed using wake on lan (WOL). "
-                            + "Please set the macAddress config value in Thing configuration to enable this.");
-                    handler.postUpdate(channelId, OnOffType.OFF);
-                } else {
-                    for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
-                        scheduler.schedule(() -> {
-                            try {
-                                WakeOnLanUtility.sendWOLPacket(macAddress);
-                            } catch (IllegalArgumentException e) {
-                                logger.debug("Failed to send WOL packet: {}", e.getMessage());
-                            }
-                        }, i * WOL_PACKET_RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
-                    }
-                }
-            } else {
-                switch (state) {
-                    case CONNECTING:
-                    case REGISTERING:
-                    case REGISTERED:
-                        logger.debug("Received ON - TV is already on.");
-                        handler.postUpdate(channelId, OnOffType.ON);
-                        break;
-                    case DISCONNECTING:
-                        logger.debug("Received ON - TV is currently disconnecting.");
+            switch (state) {
+                case CONNECTING:
+                case REGISTERING:
+                case REGISTERED:
+                    logger.debug("Received ON - TV is already on.");
+                    handler.postUpdate(channelId, OnOffType.ON);
+                    break;
+                case DISCONNECTING:
+                case DISCONNECTED:
+                    String macAddress = configProvider.getMacAddress();
+                    if (macAddress.isEmpty()) {
+                        logger.debug("Received ON - Turning TV on via API is not supported by LG WebOS TVs. "
+                                + "You may succeed using wake on lan (WOL). "
+                                + "Please set the macAddress config value in Thing configuration to enable this.");
                         handler.postUpdate(channelId, OnOffType.OFF);
-                        break;
-                    case DISCONNECTED:
-                        // none reachable code
-                        break;
-                }
+                    } else {
+                        for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
+                            scheduler.schedule(() -> {
+                                try {
+                                    WakeOnLanUtility.sendWOLPacket(macAddress);
+                                } catch (IllegalArgumentException e) {
+                                    logger.debug("Failed to send WOL packet: {}", e.getMessage());
+                                }
+                            }, i * WOL_PACKET_RETRY_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+                        }
+                    }
+                    break;
             }
         } else if (OnOffType.OFF == command) {
-            if (State.REGISTERED == state || State.REGISTERING == state) {
-                handler.getSocket().powerOff(getDefaultResponseListener());
-            } else {
-                switch (state) {
-                    case CONNECTING:
-                        logger.debug("Received OFF - TV is currently connecting.");
-                        handler.postUpdate(channelId, OnOffType.ON);
-                        break;
-                    case REGISTERING:
-                    case REGISTERED:
-                        // non reachable code
-                        break;
-                    case DISCONNECTING:
-                    case DISCONNECTED:
-                        logger.debug("Received OFF - TV is already off.");
-                        handler.postUpdate(channelId, OnOffType.OFF);
-                        break;
-                }
+            switch (state) {
+                case CONNECTING:
+                case REGISTERING:
+                    logger.debug("Received OFF - TV is currently connecting.");
+                    handler.postUpdate(channelId, OnOffType.ON);
+                    break;
+                case REGISTERED:
+                    handler.getSocket().powerOff(getDefaultResponseListener());
+                    break;
+                case DISCONNECTING:
+                case DISCONNECTED:
+                    logger.debug("Received OFF - TV is already off.");
+                    handler.postUpdate(channelId, OnOffType.OFF);
+                    break;
             }
         } else {
             logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
