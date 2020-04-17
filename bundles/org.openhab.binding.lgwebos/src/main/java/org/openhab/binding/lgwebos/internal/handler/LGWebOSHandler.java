@@ -69,7 +69,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
      */
     private static final int RECONNECT_INTERVAL_SECONDS = 10;
     private static final int RECONNECT_START_UP_DELAY_SECONDS = 0;
-
+    private static final int CHANNEL_SUBSCRIPTION_DELAY_SECONDS = 1;
     private static final String APP_ID_LIVETV = "com.webos.app.livetv";
 
     /*
@@ -92,6 +92,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;
+    private @Nullable ScheduledFuture<?> channelSubscriptionJob;
 
     private @Nullable LGWebOSConfiguration config;
 
@@ -148,6 +149,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopKeepAliveJob();
         stopReconnectJob();
+        stopChannelSubscriptionJob();
 
         LGWebOSTVSocket s = socket;
         if (s != null) {
@@ -332,10 +334,34 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             updateState(channelId, state);
         }
 
-        // channel subscription only works when on livetv app.
-        if (CHANNEL_APP_LAUNCHER.equals(channelId) && APP_ID_LIVETV.equals(state.toString())) {
-            channelHandlers.get(CHANNEL_CHANNEL).refreshSubscription(CHANNEL_CHANNEL, this);
+        // channel subscription only works when livetv app is started,
+        // therefore we need to slightly delay the subscription
+        if (CHANNEL_APP_LAUNCHER.equals(channelId)) {
+            if (APP_ID_LIVETV.equals(state.toString())) {
+                scheduleChannelSubscriptionJob();
+            } else {
+                stopChannelSubscriptionJob();
+            }
         }
+    }
+
+    private void scheduleChannelSubscriptionJob() {
+        ScheduledFuture<?> job = channelSubscriptionJob;
+        if (job == null || job.isCancelled()) {
+            logger.debug("Schedule channel subscription job");
+            channelSubscriptionJob = scheduler.schedule(
+                    () -> channelHandlers.get(CHANNEL_CHANNEL).refreshSubscription(CHANNEL_CHANNEL, this),
+                    CHANNEL_SUBSCRIPTION_DELAY_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopChannelSubscriptionJob() {
+        ScheduledFuture<?> job = channelSubscriptionJob;
+        if (job != null && !job.isCancelled()) {
+            logger.debug("Stop channel subscription job");
+            job.cancel(true);
+        }
+        channelSubscriptionJob = null;
     }
 
     @Override
