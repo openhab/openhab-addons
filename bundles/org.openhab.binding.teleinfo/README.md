@@ -20,7 +20,7 @@ The Teleinfo binding provides support for the following mode:
 
 ## Thing Configuration
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing named __Teleinfo ADCO #id__ will be created (__#id__ is  your delivery point identifier).
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port. Once the serial controller added, electricity meters will be automatically discovered and a new thing labelled __Teleinfo ADCO #id__ will be created (where __#id__ is  your delivery point identifier).
 
 | Thing type       | Parameter  | Meaning                               | Posible values |
 |------------------|------------|---------------------------------------|----------------|
