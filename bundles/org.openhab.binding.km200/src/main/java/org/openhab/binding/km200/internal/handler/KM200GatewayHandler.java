@@ -85,7 +85,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     private int readDelay;
     private int refreshInterval;
 
-    public KM200GatewayHandler(Bridge bridge, @Nullable HttpClient httpClient) {
+    public KM200GatewayHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         refreshInterval = 120;
         readDelay = 100;

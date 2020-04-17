@@ -75,7 +75,7 @@ public class KM200Device {
     /* Is the first INIT done */
     protected boolean isIited;
 
-    public KM200Device(@Nullable HttpClient httpClient) {
+    public KM200Device(HttpClient httpClient) {
         serviceTreeMap = new HashMap<>();
         getBlacklistMap().add("/gateway/firmware");
         virtualList = new ArrayList<>();

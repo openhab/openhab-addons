@@ -36,11 +36,11 @@ import org.slf4j.LoggerFactory;
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private @Nullable HttpClient httpClient;
+    private HttpClient httpClient;
     private final KM200Device remoteDevice;
     private Integer maxNbrRepeats;
 
-    public KM200Comm(KM200Device device, @Nullable HttpClient httpClient) {
+    public KM200Comm(KM200Device device, HttpClient httpClient) {
         this.remoteDevice = device;
         maxNbrRepeats = Integer.valueOf(10);
         this.httpClient = httpClient;
@@ -60,28 +60,23 @@ public class KM200Comm<KM200BindingProvider> {
         byte[] responseBodyB64 = null;
         int statusCode = 0;
 
-        ContentResponse contentresponse = null;
+        ContentResponse contentResponse = null;
         logger.debug("Starting receive connection...");
 
         try {
             // Create an instance of HttpClient.
             for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.OK_200; i++) {
-                if (null != httpClient) {
-                    contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
-                            .agent("TeleHeater/2.2.3").accept("application/json").method(HttpMethod.GET)
-                            .timeout(5, TimeUnit.SECONDS).send();
-                } else {
-                    logger.warn("Httpclient is not availible");
-                    return null;
-                }
+                contentResponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
+                        .agent("TeleHeater/2.2.3").accept("application/json").method(HttpMethod.GET)
+                        .timeout(5, TimeUnit.SECONDS).send();
                 // Execute the method.
-                statusCode = contentresponse.getStatus();
+                statusCode = contentResponse.getStatus();
 
                 // Release the connection.
                 switch (statusCode) {
                     case HttpStatus.OK_200:
                         remoteDevice.setCharSet(StandardCharsets.UTF_8.name());
-                        responseBodyB64 = contentresponse.getContent();
+                        responseBodyB64 = contentResponse.getContent();
                         break;
                     case HttpStatus.INTERNAL_SERVER_ERROR_500:
                         /* Unknown problem with the device, wait and try again */
@@ -98,7 +93,7 @@ public class KM200Comm<KM200BindingProvider> {
                         responseBodyB64 = null;
                         break;
                     default:
-                        logger.debug("HTTP GET failed: {}", contentresponse.getReason());
+                        logger.debug("HTTP GET failed: {}", contentResponse.getReason());
                         responseBodyB64 = null;
                         break;
                 }
@@ -123,15 +118,10 @@ public class KM200Comm<KM200BindingProvider> {
         logger.debug("Starting send connection...");
         try {
             for (int i = 0; i < maxNbrRepeats.intValue() && rCode != HttpStatus.NO_CONTENT_204; i++) {
-                if (null != httpClient) {
-                    // Create a method instance.
-                    contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
-                            .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
-                            .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
-                } else {
-                    logger.warn("Httpclient is not availible");
-                    return -1;
-                }
+                // Create a method instance.
+                contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
+                        .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
+                        .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
                 rCode = contentResponse.getStatus();
                 switch (rCode) {
                     case HttpStatus.NO_CONTENT_204: // The default return value

@@ -64,9 +64,4 @@ public class KM200BindingConstants {
     public static final String SWITCH_PROGRAM_CURRENT_PATH_NAME = "activeSwitchProgram";
     public static final String SWITCH_PROGRAM_POSITIVE = "activeSwitchProgramPos";
     public static final String SWITCH_PROGRAM_NEGATIVE = "activeSwitchProgramNeg";
-
-    public static final String ITEM_TYPE_NUMBER = "Number";
-    public static final String ITEM_TYPE_STRING = "String";
-    public static final String ITEM_TYPE_DATE_TIME = "DateTime";
-
 }
