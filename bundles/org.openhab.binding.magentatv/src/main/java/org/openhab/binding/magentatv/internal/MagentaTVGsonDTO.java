@@ -17,7 +17,6 @@ import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.InstanceCreator;
@@ -30,7 +29,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Markus Michels - Initial contribution
  */
-@NonNullByDefault
 public class MagentaTVGsonDTO {
     /*
      * Program information event is send by the MR when a channel is changed.
