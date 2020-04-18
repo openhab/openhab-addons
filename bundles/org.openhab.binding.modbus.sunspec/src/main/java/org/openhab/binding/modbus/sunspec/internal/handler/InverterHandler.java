@@ -117,6 +117,15 @@ public class InverterHandler extends AbstractSunSpecHandler {
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_LIFETIME_ENERGY),
                 getScaled(block.acEnergyLifetime, block.acEnergyLifetimeSF, WATT_HOUR));
 
+        // AC Phase specific groups
+        // All types of inverters
+        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_PHASE_CURRENT),
+                getScaled(block.acCurrentPhaseA, block.acCurrentSF, AMPERE));
+        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_NEXT),
+                getScaled(block.acVoltageAB, Optional.of(block.acVoltageSF), VOLT));
+        updateState(new ChannelUID(getThing().getUID(), GROUP_AC_PHASE_A, CHANNEL_AC_VOLTAGE_TO_N),
+                getScaled(block.acVoltageAtoN, block.acVoltageSF, VOLT));
+
         resetCommunicationError();
     }
 

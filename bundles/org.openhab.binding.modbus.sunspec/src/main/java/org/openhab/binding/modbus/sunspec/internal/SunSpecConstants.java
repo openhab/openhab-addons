@@ -58,6 +58,7 @@ public class SunSpecConstants {
     // Channel group ids
     public static final String GROUP_DEVICE_INFO = "deviceInformation";
     public static final String GROUP_AC_GENERAL = "acGeneral";
+    public static final String GROUP_AC_PHASE_A = "acPhaseA";
     public static final String GROUP_DC_GENERAL = "dcGeneral";
 
     // List of all Channel ids in device information group
@@ -76,6 +77,11 @@ public class SunSpecConstants {
     public static final String CHANNEL_AC_REACTIVE_POWER = "ac-reactive-power";
     public static final String CHANNEL_AC_POWER_FACTOR = "ac-power-factor";
     public static final String CHANNEL_AC_LIFETIME_ENERGY = "ac-lifetime-energy";
+
+    // List of channel ids in AC phase group for inverter
+    public static final String CHANNEL_AC_PHASE_CURRENT = "ac-phase-current";
+    public static final String CHANNEL_AC_VOLTAGE_TO_NEXT = "ac-voltage-to-next";
+    public static final String CHANNEL_AC_VOLTAGE_TO_N = "ac-voltage-to-n";
 
     // List of channel ids in DC group for inverter
     public static final String CHANNEL_DC_CURRENT = "dc-current";

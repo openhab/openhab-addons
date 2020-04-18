@@ -27,6 +27,15 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="ac-phase">
+		<label>AC Phase</label>
+		<channels>
+			<channel id="ac-phase-current" typeId="ac-phase-current-type" />
+			<channel id="ac-voltage-to-next" typeId="ac-voltage-to-next-type" />
+			<channel id="ac-voltage-to-n" typeId="ac-voltage-to-n-type" />
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="dc-general">
 		<label>DS summary</label>
 		<channels>
