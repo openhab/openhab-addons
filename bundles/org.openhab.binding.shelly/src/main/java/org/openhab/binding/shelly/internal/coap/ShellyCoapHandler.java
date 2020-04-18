@@ -158,8 +158,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // int validity = 0;
         int serial = 0;
         try {
-            logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
-                    response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
+                        response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
+            }
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
                 return;
@@ -286,7 +288,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      *
      * @param sen CoIotDescrSen of the sensor
      */
-    private void addSensor(CoIotDescrSen sen) {
+    private synchronized void addSensor(CoIotDescrSen sen) {
         logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.id, sen.desc, sen.type, sen.range,
                 sen.links);
         try {
@@ -393,10 +395,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                                         toQuantityType(value, DIGITS_NONE, SIUnits.CELSIUS));
                                 break;
-                            case "external temperature f": // Shelly 1/1PM externaö temp sensors
+                            case "external temperature f": // Shelly 1/1PM external temp sensors
                                 // ignore F, we use C only
                                 break;
-                            case "external temperature c": // Shelly 1/1PM externaö temp sensors
+                            case "external temperature c": // Shelly 1/1PM external temp sensors
                             case "external_temperature":
                                 int idx = getExtTempId(sen.id);
                                 if (idx > 0) {
@@ -942,7 +944,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     /**
      * Cancel pending requests and shutdown the client
      */
-    public void stop() {
+    public synchronized void stop() {
         if (isStarted()) {
             logger.debug("{}: Stopping CoAP Listener", thingName);
             coapServer.stop(this);

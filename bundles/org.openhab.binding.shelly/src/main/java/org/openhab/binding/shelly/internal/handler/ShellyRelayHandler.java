@@ -429,12 +429,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 // and send a OFF status to the same channel.
                 // When the device's brightness is > 0 we send the new value to the channel and a ON command
                 if (dimmer.ison) {
-                    logger.debug("Dimmer is on");
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
                             new Double(getInteger(dimmer.brightness)), DIGITS_NONE, SmartHomeUnits.PERCENT));
                 } else {
-                    logger.debug("Dimmer is off");
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                             toQuantityType(new Double(0), DIGITS_NONE, SmartHomeUnits.PERCENT));

@@ -145,19 +145,16 @@ public class ShellyVersionDTO {
             }
 
         }
-        if (tokenizer2.moveNext()) {
-            do {
-                number2 = tokenizer2.getNumber();
-                suffix2 = tokenizer2.getSuffix();
-                if (number2 != 0 || suffix2.length() != 0) {
-                    // Version one is longer than version two, and non-zero
-                    return -1;
-                }
-            } while (tokenizer2.moveNext());
 
-            // Version two is longer than version one, but zero
-            return 0;
+        while (tokenizer2.moveNext()) {
+            number2 = tokenizer2.getNumber();
+            suffix2 = tokenizer2.getSuffix();
+            if (number2 != 0 || suffix2.length() != 0) {
+                // Version one is longer than version two, and non-zero
+                return -1;
+            }
         }
+        // Version two is longer than version one, but zero
         return 0;
     }
 

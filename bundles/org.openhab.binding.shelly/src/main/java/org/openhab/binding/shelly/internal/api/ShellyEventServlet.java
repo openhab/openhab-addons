@@ -64,7 +64,7 @@ public class ShellyEventServlet extends HttpServlet {
             httpService.registerServlet(SHELLY_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
             logger.debug("ShellyEventServlet started at '{}'", SHELLY_CALLBACK_URI);
         } catch (NamespaceException | ServletException | IllegalArgumentException e) {
-            logger.warn("Could not start CallbackServlet: {} ({})", e.getMessage(), e.getClass());
+            logger.warn("Could not start CallbackServlet", e);
         }
     }
 
@@ -125,8 +125,8 @@ public class ShellyEventServlet extends HttpServlet {
             }
             handlerFactory.onEvent(ipAddress, deviceName, index, type, parms);
         } catch (IllegalArgumentException e) {
-            logger.debug("{}: Exception processing callback: {path={}, data='{}'; index={}, type={}, parameters={}{}",
-                    deviceName, path, data, index, type, request.getParameterMap().toString(), e.toString());
+            logger.debug("{}: Exception processing callback: {path={}, data='{}'; index={}, type={}, parameters={}",
+                    deviceName, path, data, index, type, request.getParameterMap().toString());
         } finally {
             resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");

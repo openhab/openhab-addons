@@ -43,11 +43,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>s</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -79,11 +79,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>s</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -131,11 +131,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -172,11 +172,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -207,11 +207,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>60</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -250,11 +250,11 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true">
+		<parameter name="updateInterval" type="integer" required="true" unit="s">
 			<label>Update Interval</label>
-			<description>Interval in seconds to query an update from the device.</description>
+			<description>Interval to query an update from the device.</description>
 			<default>3600</default>
-			<unitLabel>sec</unitLabel>
+			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

@@ -366,13 +366,8 @@ public class ShellyHttpApi {
     private void setSensorEventUrls() throws ShellyApiException, ShellyApiException {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
-            setEventUrl(SHELLY_EVENT_SENSORREPORT, config.eventsSensorReport);
-            setEventUrl(SHELLY_EVENT_DARK, config.eventsSensorReport);
-            setEventUrl(SHELLY_EVENT_TWILIGHT, config.eventsSensorReport);
-            setEventUrl(SHELLY_EVENT_FLOOD_DETECTED, config.eventsSensorReport);
-            setEventUrl(SHELLY_EVENT_FLOOD_GONE, config.eventsSensorReport);
-            setEventUrl(SHELLY_EVENT_CLOSE, config.eventsSensorReport);
-            setEventUrl(SHELLY_EVENT_VIBRATION, config.eventsSensorReport);
+            setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
+                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_CLOSE, SHELLY_EVENT_VIBRATION);
         }
     }
 
@@ -383,79 +378,73 @@ public class ShellyHttpApi {
      * @throws ShellyApiException
      */
     private void setEventUrls(Integer index) throws ShellyApiException {
-        String type = "";
         if (profile.isRoller) {
-            setEventUrl(EVENT_TYPE_ROLLER, 0, SHELLY_EVENT_ROLLER_OPEN, config.eventsRoller);
-            setEventUrl(EVENT_TYPE_ROLLER, 0, SHELLY_EVENT_ROLLER_CLOSE, config.eventsRoller);
-            setEventUrl(EVENT_TYPE_ROLLER, 0, SHELLY_EVENT_ROLLER_STOP, config.eventsRoller);
+            setEventUrl(EVENT_TYPE_ROLLER, 0, config.eventsRoller, SHELLY_EVENT_ROLLER_OPEN, SHELLY_EVENT_ROLLER_CLOSE,
+                    SHELLY_EVENT_ROLLER_STOP);
         } else if (profile.isDimmer) {
             // 2 set of URLs
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_BTN1_ON, config.eventsButton);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_BTN1_OFF, config.eventsButton);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_SHORTPUSH1, config.eventsPush);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_LONGPUSH1, config.eventsPush);
-
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_BTN2_ON, config.eventsButton);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_BTN2_OFF, config.eventsButton);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_SHORTPUSH2, config.eventsPush);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_LONGPUSH2, config.eventsPush);
+            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsButton, SHELLY_EVENT_BTN1_ON, SHELLY_EVENT_BTN1_OFF,
+                    SHELLY_EVENT_BTN2_ON, SHELLY_EVENT_BTN2_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsPush, SHELLY_EVENT_SHORTPUSH1, SHELLY_EVENT_LONGPUSH1,
+                    SHELLY_EVENT_SHORTPUSH2, SHELLY_EVENT_LONGPUSH2);
 
             // Relay output
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_OUT_ON, config.eventsSwitch);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_OUT_OFF, config.eventsSwitch);
+            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsSwitch, SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
         } else if (profile.hasRelays) {
             // Standard relays: btn_xxx, out_xxx, short/longpush URLs
-            setEventUrl(EVENT_TYPE_RELAY, index, SHELLY_EVENT_BTN_ON, config.eventsButton);
-            setEventUrl(EVENT_TYPE_RELAY, index, SHELLY_EVENT_BTN_OFF, config.eventsButton);
-            setEventUrl(EVENT_TYPE_RELAY, index, SHELLY_EVENT_SHORTPUSH, config.eventsPush);
-            setEventUrl(EVENT_TYPE_RELAY, index, SHELLY_EVENT_LONGPUSH, config.eventsPush);
-            setEventUrl(EVENT_TYPE_RELAY, index, SHELLY_EVENT_OUT_ON, config.eventsSwitch);
-            setEventUrl(EVENT_TYPE_RELAY, index, SHELLY_EVENT_OUT_OFF, config.eventsSwitch);
+            setEventUrl(EVENT_TYPE_RELAY, index, config.eventsButton, SHELLY_EVENT_BTN_ON, SHELLY_EVENT_BTN_OFF);
+            setEventUrl(EVENT_TYPE_RELAY, index, config.eventsPush, SHELLY_EVENT_SHORTPUSH, SHELLY_EVENT_LONGPUSH);
+            setEventUrl(EVENT_TYPE_RELAY, index, config.eventsSwitch, SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
         } else if (profile.isLight) {
             // Duo, Bulb
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_OUT_ON, config.eventsSwitch);
-            setEventUrl(EVENT_TYPE_LIGHT, index, SHELLY_EVENT_OUT_OFF, config.eventsSwitch);
+            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsSwitch, SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
         }
     }
 
-    private void setEventUrl(String eventType, boolean enabled) throws ShellyApiException {
-        if (profile.containsEventUrl(eventType)) {
-            // Sensors add the type=xx to report_url themself, so we need to ommit here
-            String urlParm = !eventType.equalsIgnoreCase(SHELLY_EVENT_SENSORREPORT) ? "?type=" + eventType : "";
-            String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
-                    + profile.thingName + "/" + eventType + urlParm;
-            String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
-            String test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
-            if (!enabled && !profile.settingsJson.contains(test)) {
-                // Don't set URL to null when the current one doesn't point to this OH
-                // Don't interfer a 3rd party App
-                return;
-            }
-            if (!profile.settingsJson.contains(test)) {
-                // Current Action URL is != new URL
-                request(SHELLY_URL_SETTINGS + "?" + mkEventUrl(eventType) + "=" + urlEncode(newUrl));
+    private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
+        for (String eventType : eventTypes) {
+            if (profile.containsEventUrl(eventType)) {
+                // Sensors add the type=xx to report_url themself, so we need to ommit here
+                String urlParm = !eventType.equalsIgnoreCase(SHELLY_EVENT_SENSORREPORT) ? "?type=" + eventType : "";
+                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                        + profile.thingName + "/" + eventType + urlParm;
+                String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
+                String test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
+                if (!enabled && !profile.settingsJson.contains(test)) {
+                    // Don't set URL to null when the current one doesn't point to this OH
+                    // Don't interfere with a 3rd party App
+                    return;
+                }
+                if (!profile.settingsJson.contains(test)) {
+                    // Current Action URL is != new URL
+                    request(SHELLY_URL_SETTINGS + "?" + mkEventUrl(eventType) + "=" + urlEncode(newUrl));
+                }
             }
         }
     }
 
-    private void setEventUrl(String deviceClass, Integer index, String eventType, boolean enabled)
+    private void setEventUrl(String deviceClass, Integer index, boolean enabled, String... eventTypes)
             throws ShellyApiException {
-        if (profile.containsEventUrl(eventType)) {
-            String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
-                    + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
-            String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
-            String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
-            if (!enabled && !profile.settingsJson.contains(test)) {
-                // Don't set URL to null when the current one doesn't point to this OH
-                // Don't interfer a 3rd party App
-                return;
-            }
-            test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
-            if (!profile.settingsJson.contains(test)) {
-                // Current Action URL is != new URL
-                logger.debug("{}: Set URL for type {} to {}", thingName, eventType, newUrl);
-                request(SHELLY_URL_SETTINGS + "/" + deviceClass + "/" + index + "?" + mkEventUrl(eventType) + "="
-                        + urlEncode(newUrl));
+        for (String eventType : eventTypes) {
+            if (profile.containsEventUrl(eventType)) {
+                if (profile.containsEventUrl(eventType)) {
+                    String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                            + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
+                    String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
+                    String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
+                    if (!enabled && !profile.settingsJson.contains(test)) {
+                        // Don't set URL to null when the current one doesn't point to this OH
+                        // Don't interfere with a 3rd party App
+                        return;
+                    }
+                    test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
+                    if (!profile.settingsJson.contains(test)) {
+                        // Current Action URL is != new URL
+                        logger.debug("{}: Set URL for type {} to {}", thingName, eventType, newUrl);
+                        request(SHELLY_URL_SETTINGS + "/" + deviceClass + "/" + index + "?" + mkEventUrl(eventType)
+                                + "=" + urlEncode(newUrl));
+                    }
+                }
             }
         }
     }

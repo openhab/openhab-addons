@@ -57,19 +57,20 @@ If a channel is missing make sure the thing was discovered correctly and is ONLI
 
 ### Important for battery power devices
 
-Make sure to wake-up battery powered devices (press the button inside the device), so that they show up on the network.
+Make sure to wake up battery powered devices (press the button inside the device), so that they show up on the network.
 The device has a push button inside, open the case, press that button and the LED starts blinking.
 The device should show up in the Inbox and can be added.
 
 `
 Important: If device is in sleep mode and can't be reached by the binding, the Thing will change into UNKNOWN state.
-Once the device wakes up the thing does the initialization and the state changes to ONLINE.
+Once the device wakes up, the thing will perform initialization and the state will change to ONLINE.
 `
 
-Once the device is discovered and initialized successful the binding is able to perform an auto-initialization when OH was restarted in between. The device wake-up triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers the initialization.
-So you don't need to manually wake-up the devices after an openHAB restart.
+The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted. 
+Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization.
+Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart.
 
-Devices having no battery are expected to be ON/reachable on the network all the time.
+Devices that have no battery are expected to be ON/reachable on the network at all times.
 Otherwise the thing will go OFFLINE with COMMUNICATION_ERROR as status.
 
 ### Re-discover when IP address has changed
@@ -81,7 +82,7 @@ This can be achieved by
 - assigning a static IP address or
 - using DHCP and setup the router to always assign the same IP address to the device
 
-When you change the IP address for a specific reason you need to delete the Thing and re-discover the device.
+When the IP address changes for a device you need to delete the Thing and then re-discover the device.
 In this case channel linkage gets lost and you need to re-link the channels/items.
 
 ### Password Protected Devices
