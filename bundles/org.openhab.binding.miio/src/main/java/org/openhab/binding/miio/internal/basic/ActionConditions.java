@@ -37,7 +37,7 @@ public class ActionConditions {
      * @param condition
      * @param deviceVariables
      * @param value
-     * @return value is case firmware is matching, return null if not
+     * @return value in case firmware is matching, return null if not
      */
     private static @Nullable JsonElement firmwareCheck(MiIoDeviceActionCondition condition,
             Map<String, Object> deviceVariables, @Nullable JsonElement value) {
@@ -53,18 +53,16 @@ public class ActionConditions {
      * @return
      */
     private static @Nullable JsonElement brightness(@Nullable JsonElement value) {
-        if (value != null && value.isJsonPrimitive()) {
-            try {
-                int intVal = value.getAsInt();
-                if (intVal > 99) {
-                    return new JsonPrimitive("on");
-                }
-                if (intVal < 1) {
-                    return new JsonPrimitive("off");
-                }
-            } catch (ClassCastException e) {
-                LOGGER.debug("Error parsing brightness. Value {} is not an int", value);
+        if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
+            int intVal = value.getAsInt();
+            if (intVal > 99) {
+                return new JsonPrimitive("on");
             }
+            if (intVal < 1) {
+                return new JsonPrimitive("off");
+            }
+        } else {
+            LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
         }
         return null;
     }
@@ -77,15 +75,13 @@ public class ActionConditions {
      * @return
      */
     private static @Nullable JsonElement brightnessExists(@Nullable JsonElement value) {
-        if (value != null && value.isJsonPrimitive()) {
-            try {
-                int intVal = value.getAsInt();
-                if (intVal > 0 && intVal < 99) {
-                    return value;
-                }
-            } catch (ClassCastException e) {
-                LOGGER.debug("Error parsing brightness. Value {} is not an int", value);
+        if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
+            int intVal = value.getAsInt();
+            if (intVal > 0 && intVal < 99) {
+                return value;
             }
+        } else {
+            LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
         }
         return null;
     }

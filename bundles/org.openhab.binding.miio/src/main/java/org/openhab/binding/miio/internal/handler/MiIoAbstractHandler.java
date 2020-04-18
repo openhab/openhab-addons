@@ -359,27 +359,23 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         Map<String, String> properties = editProperties();
         if (info.model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, info.model);
-            deviceVariables.put(Thing.PROPERTY_MODEL_ID, info.model);
         }
         if (info.fwVer != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, info.fwVer);
-            deviceVariables.put(Thing.PROPERTY_FIRMWARE_VERSION, info.fwVer);
         }
         if (info.hwVer != null) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, info.hwVer);
-            deviceVariables.put(Thing.PROPERTY_HARDWARE_VERSION, info.hwVer);
         }
         if (info.wifiFwVer != null) {
             properties.put("wifiFirmware", info.wifiFwVer);
-            deviceVariables.put("wifiFirmware", info.hwVer);
         }
         if (info.mcuFwVer != null) {
             properties.put("mcuFirmware", info.mcuFwVer);
-            deviceVariables.put("mcuFirmware", info.mcuFwVer);
         }
+        deviceVariables.putAll(properties);
         updateProperties(properties);
     }
-    
+
     protected boolean updateThingType(JsonObject miioInfo) {
         MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         String model = miioInfo.get("model").getAsString();
