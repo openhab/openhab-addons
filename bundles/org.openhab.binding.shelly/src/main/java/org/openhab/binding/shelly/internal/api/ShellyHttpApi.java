@@ -413,7 +413,7 @@ public class ShellyHttpApi {
                 if (!enabled && !profile.settingsJson.contains(test)) {
                     // Don't set URL to null when the current one doesn't point to this OH
                     // Don't interfere with a 3rd party App
-                    return;
+                    continue;
                 }
                 if (!profile.settingsJson.contains(test)) {
                     // Current Action URL is != new URL
@@ -435,7 +435,7 @@ public class ShellyHttpApi {
                     if (!enabled && !profile.settingsJson.contains(test)) {
                         // Don't set URL to null when the current one doesn't point to this OH
                         // Don't interfere with a 3rd party App
-                        return;
+                        continue;
                     }
                     test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
                     if (!profile.settingsJson.contains(test)) {
