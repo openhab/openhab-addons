@@ -107,7 +107,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @parm config ShellyThingConfiguration
      * @thows ShellyApiException
      */
-    public void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+    public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         if (isStarted()) {
             logger.trace("{}: CoAP Listener was already started", thingName);
             return;
