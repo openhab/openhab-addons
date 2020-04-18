@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="inverter-single-phase">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>Single Phase Inverter</label>
+		<description>Single phase inverter supporting SunSpec mapping over tcp modbus connection.</description>
+		<category>Inverter</category>
+
+		<channel-groups>
+			<channel-group id="deviceInformation" typeId="device-information" />
+			<channel-group id="acGeneral" typeId="ac-general" />
+		</channel-groups>
+
+		<properties>
+			<property name="vendor" />
+			<property name="model" />
+			<property name="version" />
+			<property name="serialNumber" />
+			<property name="uniqueAddress" />
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:sunspec:modbusconfig" />
+
+	</thing-type>
+
+</thing:thing-descriptions>

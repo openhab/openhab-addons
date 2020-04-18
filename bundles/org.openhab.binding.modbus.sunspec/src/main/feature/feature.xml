@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.modbus.sunspec-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>file:${basedirRoot}/bundles/org.openhab.binding.modbus/target/feature/feature.xml</repository>
+
+    <feature name="openhab-binding-modbus-sunspec" description="SunSpec Bundle" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-binding-modbus</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.sunspec/${project.version}</bundle>
+    </feature>
+</features>
